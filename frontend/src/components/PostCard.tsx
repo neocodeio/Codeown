@@ -44,7 +44,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email || "User")}&background=000&color=ffffff&size=128&bold=true&font-size=0.5`;
   };
 
-  const userName = post.user?.name || "Unknown User";
+  const userName = post.user?.name || "User";
   const userEmail = post.user?.email || null;
   // Use avatar_url from backend if available, otherwise generate one
   const avatarUrl = post.user?.avatar_url || getAvatarUrl(userName, userEmail);

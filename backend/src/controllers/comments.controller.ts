@@ -53,13 +53,26 @@ export async function getComments(req: Request, res: Response) {
           try {
             const clerkUser = await clerkClient.users.getUser(userId);
             
-            let userName = "Unknown User";
+            // Extract user name with better fallback logic
+            let userName: string | null = null;
             if (clerkUser.firstName && clerkUser.lastName) {
-              userName = `${clerkUser.firstName} ${clerkUser.lastName}`;
+              userName = `${clerkUser.firstName} ${clerkUser.lastName}`.trim();
+            } else if (clerkUser.firstName) {
+              userName = clerkUser.firstName;
+            } else if (clerkUser.lastName) {
+              userName = clerkUser.lastName;
             } else if (clerkUser.username) {
               userName = clerkUser.username;
             } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
-              userName = clerkUser.emailAddresses[0].emailAddress;
+              const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
+              if (emailAddress) {
+                userName = emailAddress.split("@")[0]; // Use email username as fallback
+              }
+            }
+            
+            // If still no name, use a default
+            if (!userName) {
+              userName = "User";
             }
             
             clerkUserMap.set(userId, {
@@ -89,17 +102,41 @@ export async function getComments(req: Request, res: Response) {
       const clerkUser = clerkUserMap.get(comment.user_id);
       const user = supabaseUser || clerkUser;
 
-      return {
-        ...comment,
-        user: user ? {
-          name: user.name || user.email || "Unknown User",
-          email: user.email || null,
-          avatar_url: user.avatar_url || null,
-        } : {
-          name: "Unknown User",
+      // Extract user data with better fallback logic
+      let userData;
+      if (user) {
+        // Handle both Supabase format and Clerk format
+        const userName = user.name || 
+                        (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) ||
+                        user.firstName || 
+                        user.lastName || 
+                        user.username ||
+                        null;
+        
+        const userEmail = user.email || 
+                         (user.emailAddresses?.[0]?.emailAddress) ||
+                         null;
+        
+        const avatarUrl = user.avatar_url || 
+                         user.imageUrl || 
+                         null;
+
+        userData = {
+          name: userName || (userEmail ? userEmail.split("@")[0] : "User"),
+          email: userEmail,
+          avatar_url: avatarUrl,
+        };
+      } else {
+        userData = {
+          name: "User",
           email: null,
           avatar_url: null,
-        }
+        };
+      }
+
+      return {
+        ...comment,
+        user: userData
       };
     });
     
@@ -136,10 +173,23 @@ export async function createComment(req: Request, res: Response) {
     }
 
     // Ensure user exists in Supabase
+    // If JWT token doesn't have full user data, fetch from Clerk API
+    let userDataForSync = user;
+    if (!user?.email_addresses && !user?.emailAddresses && process.env.CLERK_SECRET_KEY) {
+      try {
+        console.log("JWT token missing user data, fetching from Clerk API for userId:", userId);
+        const fullUserData = await clerkClient.users.getUser(userId);
+        userDataForSync = fullUserData;
+      } catch (clerkError: any) {
+        console.error("Error fetching user from Clerk API:", clerkError?.message);
+        // Continue with JWT token data
+      }
+    }
+    
     try {
-      await ensureUserExists(userId, user);
+      await ensureUserExists(userId, userDataForSync);
     } catch (error: any) {
-      console.error("Error ensuring user exists:", error);
+      console.error("Error ensuring user exists:", error?.message || error);
     }
 
     console.log("Creating comment with:", { post_id, content, userId });

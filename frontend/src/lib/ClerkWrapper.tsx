@@ -7,7 +7,15 @@ export function ClerkWrapper({ children }: { children: ReactNode }) {
   // This handles cases where the key might exist but detection failed
   if (clerkPublishableKey && clerkPublishableKey.length > 0) {
     try {
-      return <ClerkProvider publishableKey={clerkPublishableKey}>{children}</ClerkProvider>;
+      return (
+        <ClerkProvider 
+          publishableKey={clerkPublishableKey}
+          afterSignInUrl="/"
+          afterSignUpUrl="/"
+        >
+          {children}
+        </ClerkProvider>
+      );
     } catch (error) {
       console.error("ClerkProvider error:", error);
       return <>{children}</>;

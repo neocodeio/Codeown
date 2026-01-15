@@ -18,7 +18,7 @@ export default function Navbar() {
       padding: "16px 24px",
       borderBottom: "1px solid #e4e7eb",
       display: "flex",
-      borderRadius: "40px",
+      borderRadius: "25px",
       justifyContent: "space-between",
       alignItems: "center",
       backgroundColor: "#000",
@@ -128,9 +128,9 @@ export default function Navbar() {
               <Link to="/sign-in">
                 <button style={{
                   padding: "10px 24px",
-                  backgroundColor: "#000",
+                  backgroundColor: "#fff",
                   border: "none",
-                  color: "#ffffff",
+                  color: "#000",
                   borderRadius: "12px",
                   cursor: "pointer",
                   fontSize: "14px",
@@ -138,11 +138,13 @@ export default function Navbar() {
                   transition: "all 0.2s",
                 }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#2563eb";
+                    e.currentTarget.style.backgroundColor = "#000";
+                    e.currentTarget.style.color = "#fff";
                     e.currentTarget.style.transform = "translateY(-1px)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#000";
+                    e.currentTarget.style.backgroundColor = "#fff";
+                    e.currentTarget.style.color = "#000";
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >

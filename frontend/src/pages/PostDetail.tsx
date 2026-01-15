@@ -200,7 +200,7 @@ export default function PostDetail() {
     );
   }
 
-  const userName = post.user?.name || "Unknown User";
+  const userName = post.user?.name || "User";
   const userEmail = post.user?.email || null;
   const avatarUrl = post.user?.avatar_url || getAvatarUrl(userName, userEmail);
 
@@ -396,7 +396,7 @@ export default function PostDetail() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {comments.map((comment) => {
-              const commentUserName = comment.user?.name || "Unknown User";
+              const commentUserName = comment.user?.name || "User";
               const commentUserEmail = comment.user?.email || null;
               const commentAvatarUrl = comment.user?.avatar_url || getAvatarUrl(commentUserName, commentUserEmail);
 

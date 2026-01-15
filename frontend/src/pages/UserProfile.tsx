@@ -35,17 +35,31 @@ export default function UserProfile() {
         // Fetch user profile from API
         const userRes = await api.get(`/users/${userId}`);
         if (userRes.data) {
-          setUser({
+          // Ensure we have valid user data with proper fallbacks
+          const userData = {
             id: userId,
-            name: userRes.data.name,
-            email: userRes.data.email,
-            avatar_url: userRes.data.avatar_url,
-            bio: userRes.data.bio,
-            username: userRes.data.username,
-          });
+            name: userRes.data.name || "User",
+            email: userRes.data.email || null,
+            avatar_url: userRes.data.avatar_url || null,
+            bio: userRes.data.bio || null,
+            username: userRes.data.username || null,
+          };
+          
+          // Don't set user if name is "Unknown User" - treat as error
+          if (userData.name && userData.name !== "Unknown User") {
+            setUser(userData);
+          } else {
+            console.error("Invalid user data received:", userRes.data);
+            setUser(null);
+          }
+        } else {
+          console.error("No user data received from API");
+          setUser(null);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching user:", error);
+        console.error("Error details:", error?.response?.data);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -82,7 +96,7 @@ export default function UserProfile() {
     );
   }
 
-  if (!user) {
+  if (!user || !user.name || user.name === "Unknown User") {
     return (
       <div style={{
         maxWidth: "680px",
@@ -91,11 +105,12 @@ export default function UserProfile() {
         textAlign: "center",
       }}>
         <h2 style={{ marginBottom: "16px", color: "#1a1a1a" }}>User not found</h2>
+        <p style={{ color: "#64748b" }}>The user you're looking for doesn't exist or couldn't be loaded.</p>
       </div>
     );
   }
 
-  const avatarUrl = user.avatar_url || getAvatarUrl(user.name, user.email);
+  const avatarUrl = user.avatar_url || getAvatarUrl(user.name || "User", user.email);
 
   return (
     <div style={{
@@ -133,7 +148,7 @@ export default function UserProfile() {
           fontWeight: 700,
           color: "#1a1a1a",
         }}>
-          {user.name}
+          {user.name || "User"}
         </h1>
         {user.email && (
           <p style={{

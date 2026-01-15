@@ -33,6 +33,8 @@ export async function getPosts(req: Request, res: Response) {
       .in("id", userIds);
     
     console.log(`Fetched ${users?.length || 0} users from Supabase for ${userIds.length} user IDs`);
+    console.log(`User IDs requested:`, userIds);
+    console.log(`Users found in Supabase:`, users?.map((u: any) => u.id) || []);
 
     if (usersError) {
       console.error("Supabase error fetching users:", usersError);
@@ -50,7 +52,8 @@ export async function getPosts(req: Request, res: Response) {
     if (missingUserIds.length > 0 && process.env.CLERK_SECRET_KEY) {
       console.log(`Fetching ${missingUserIds.length} missing users from Clerk:`, missingUserIds);
       try {
-        for (const userId of missingUserIds) {
+        // Fetch users in parallel for better performance
+        const clerkUserPromises = missingUserIds.map(async (userId: string) => {
           try {
             console.log(`Fetching Clerk user: ${userId}`);
             const clerkUser = await clerkClient.users.getUser(userId);
@@ -63,7 +66,7 @@ export async function getPosts(req: Request, res: Response) {
             });
             
             // Get username - try multiple fields
-            let userName = "Unknown User";
+            let userName: string | null = null;
             if (clerkUser.firstName && clerkUser.lastName) {
               userName = `${clerkUser.firstName} ${clerkUser.lastName}`.trim();
             } else if (clerkUser.firstName) {
@@ -73,7 +76,15 @@ export async function getPosts(req: Request, res: Response) {
             } else if (clerkUser.username) {
               userName = clerkUser.username;
             } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
-              userName = clerkUser.emailAddresses[0].emailAddress.split("@")[0];
+              const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
+              if (emailAddress) {
+                userName = emailAddress.split("@")[0];
+              }
+            }
+            
+            // If still no name, use a default
+            if (!userName) {
+              userName = "User";
             }
             
             const userData = {
@@ -93,15 +104,23 @@ export async function getPosts(req: Request, res: Response) {
               // Ignore sync errors, we already have the data from Clerk
               console.error(`Could not sync user ${userId} to Supabase:`, syncError?.message);
             }
+            
+            return { userId, success: true };
           } catch (clerkError: any) {
             console.error(`Error fetching user ${userId} from Clerk:`, clerkError?.message);
             console.error(`Full Clerk error:`, clerkError);
+            return { userId, success: false, error: clerkError };
           }
-        }
+        });
+        
+        await Promise.all(clerkUserPromises);
+        console.log(`Fetched ${clerkUserMap.size} users from Clerk`);
       } catch (error: any) {
         console.error("Error fetching users from Clerk:", error?.message);
         console.error("Full error:", error);
       }
+    } else if (missingUserIds.length > 0) {
+      console.warn(`CLERK_SECRET_KEY not set, cannot fetch ${missingUserIds.length} missing users from Clerk`);
     }
 
     // Combine posts with user data (prefer Supabase, fallback to Clerk)
@@ -113,19 +132,45 @@ export async function getPosts(req: Request, res: Response) {
       // Log for debugging
       if (!user) {
         console.log(`No user data found for user_id: ${post.user_id}`);
+        console.log(`Available Supabase users:`, Array.from(userMap.keys()));
+        console.log(`Available Clerk users:`, Array.from(clerkUserMap.keys()));
       }
 
-      const userData = user ? {
-        name: user.name || user.email?.split("@")[0] || "Unknown User",
-        email: user.email || null,
-        avatar_url: user.avatar_url || null,
-      } : {
-        name: "Unknown User",
-        email: null,
-        avatar_url: null,
-      };
+      // Extract user data with better fallback logic
+      let userData;
+      if (user) {
+        // Handle both Supabase format and Clerk format
+        const userName = user.name || 
+                        (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) ||
+                        user.firstName || 
+                        user.lastName || 
+                        user.username ||
+                        null;
+        
+        const userEmail = user.email || 
+                         (user.emailAddresses?.[0]?.emailAddress) ||
+                         null;
+        
+        const avatarUrl = user.avatar_url || 
+                         user.imageUrl || 
+                         null;
+
+        userData = {
+          name: userName || (userEmail ? userEmail.split("@")[0] : "User"),
+          email: userEmail,
+          avatar_url: avatarUrl,
+        };
+      } else {
+        // No user data found - log for debugging
+        console.log(`No user data found for user_id: ${post.user_id} in getPosts`);
+        userData = {
+          name: "User",
+          email: null,
+          avatar_url: null,
+        };
+      }
       
-      console.log(`Post ${post.id}: User data:`, userData);
+      console.log(`Post ${post.id} (user_id: ${post.user_id}): User data:`, userData);
       
       return {
         ...post,
@@ -181,40 +226,83 @@ export async function getPostsByUser(req: Request, res: Response) {
     let userData = user;
     if (!user && process.env.CLERK_SECRET_KEY) {
       try {
+        console.log(`User ${userId} not found in Supabase for getPostsByUser, fetching from Clerk`);
         const clerkUser = await clerkClient.users.getUser(userId);
-        let userName = "Unknown User";
+        
+        // Extract user name with better fallback logic
+        let userName: string | null = null;
         if (clerkUser.firstName && clerkUser.lastName) {
-          userName = `${clerkUser.firstName} ${clerkUser.lastName}`;
+          userName = `${clerkUser.firstName} ${clerkUser.lastName}`.trim();
+        } else if (clerkUser.firstName) {
+          userName = clerkUser.firstName;
+        } else if (clerkUser.lastName) {
+          userName = clerkUser.lastName;
         } else if (clerkUser.username) {
           userName = clerkUser.username;
         } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
-          userName = clerkUser.emailAddresses[0].emailAddress;
+          const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
+          if (emailAddress) {
+            userName = emailAddress.split("@")[0]; // Use email username as fallback
+          }
         }
+        
+        // If still no name, use a default
+        if (!userName) {
+          userName = "User";
+        }
+        
+        const emailAddress = clerkUser.emailAddresses?.[0]?.emailAddress || null;
         
         userData = {
           id: userId,
           name: userName,
-          email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
+          email: emailAddress,
           avatar_url: clerkUser.imageUrl || null,
         };
-      } catch (clerkError) {
-        console.error("Error fetching user from Clerk:", clerkError);
+        
+        // Sync user to Supabase for future requests
+        try {
+          await ensureUserExists(userId, clerkUser);
+          console.log(`User ${userId} synced to Supabase from getPostsByUser`);
+        } catch (syncError: any) {
+          console.error(`Could not sync user ${userId} to Supabase:`, syncError?.message);
+          // Continue anyway - we have the data from Clerk
+        }
+      } catch (clerkError: any) {
+        console.error("Error fetching user from Clerk:", clerkError?.message || clerkError);
+        console.error("Full Clerk error:", clerkError);
       }
     }
 
     // Combine posts with user data
-    const postsWithUsers = posts.map((post: any) => ({
-      ...post,
-      user: userData ? {
-        name: userData.name || userData.email || "Unknown User",
-        email: userData.email || null,
-        avatar_url: userData.avatar_url || null,
-      } : {
-        name: "Unknown User",
-        email: null,
-        avatar_url: null,
+    const postsWithUsers = posts.map((post: any) => {
+      let userDisplayData;
+      if (userData) {
+        // Extract name with proper fallback
+        const userName = userData.name || 
+                        (userData.email ? userData.email.split("@")[0] : null) ||
+                        "User";
+        
+        userDisplayData = {
+          name: userName,
+          email: userData.email || null,
+          avatar_url: userData.avatar_url || null,
+        };
+      } else {
+        // No user data found
+        console.log(`No user data found for user_id: ${userId} in getPostsByUser`);
+        userDisplayData = {
+          name: "User",
+          email: null,
+          avatar_url: null,
+        };
       }
-    }));
+      
+      return {
+        ...post,
+        user: userDisplayData
+      };
+    });
     
     return res.json(postsWithUsers);
   } catch (error: any) {
@@ -258,12 +346,31 @@ export async function createPost(req: Request, res: Response) {
     }
 
     // Ensure user exists in Supabase (creates if doesn't exist)
+    // If JWT token doesn't have full user data, fetch from Clerk API
+    let userDataForSync = user;
+    if (!user?.email_addresses && !user?.emailAddresses && process.env.CLERK_SECRET_KEY) {
+      try {
+        console.log("JWT token missing user data, fetching from Clerk API for userId:", userId);
+        const fullUserData = await clerkClient.users.getUser(userId);
+        userDataForSync = fullUserData;
+        console.log("Fetched full user data from Clerk:", {
+          firstName: fullUserData.firstName,
+          lastName: fullUserData.lastName,
+          email: fullUserData.emailAddresses?.[0]?.emailAddress,
+        });
+      } catch (clerkError: any) {
+        console.error("Error fetching user from Clerk API:", clerkError?.message);
+        // Continue with JWT token data
+      }
+    }
+    
     try {
-      const syncedUser = await ensureUserExists(userId, user);
-      console.log("User synced to Supabase:", syncedUser);
+      const syncedUser = await ensureUserExists(userId, userDataForSync);
+      console.log("User synced to Supabase:", syncedUser?.id || userId);
     } catch (error: any) {
-      console.error("Error ensuring user exists:", error);
-      // Continue anyway - user might already exist, or we'll fetch from Clerk
+      console.error("Error ensuring user exists:", error?.message || error);
+      console.error("Full error:", error);
+      // Continue anyway - user might already exist, or we'll fetch from Clerk when displaying posts
     }
 
     console.log("Creating post with:", { title, content, userId });

@@ -153,27 +153,61 @@ export async function getUserProfile(req: Request, res: Response) {
     let userData = user;
     if (!user && process.env.CLERK_SECRET_KEY) {
       try {
+        console.log(`User ${userId} not found in Supabase, fetching from Clerk`);
         const clerkUser = await clerkClient.users.getUser(userId);
-        let userName = "Unknown User";
+        console.log(`Clerk user data for ${userId}:`, {
+          firstName: clerkUser.firstName,
+          lastName: clerkUser.lastName,
+          username: clerkUser.username,
+          email: clerkUser.emailAddresses?.[0]?.emailAddress,
+          imageUrl: clerkUser.imageUrl,
+        });
+        
+        // Extract user name with better fallback logic
+        let userName: string | null = null;
         if (clerkUser.firstName && clerkUser.lastName) {
-          userName = `${clerkUser.firstName} ${clerkUser.lastName}`;
+          userName = `${clerkUser.firstName} ${clerkUser.lastName}`.trim();
+        } else if (clerkUser.firstName) {
+          userName = clerkUser.firstName;
+        } else if (clerkUser.lastName) {
+          userName = clerkUser.lastName;
         } else if (clerkUser.username) {
           userName = clerkUser.username;
         } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
-          userName = clerkUser.emailAddresses[0].emailAddress;
+          const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
+          if (emailAddress) {
+            userName = emailAddress.split("@")[0]; // Use email username as fallback
+          }
         }
+        
+        // If still no name, use a default
+        if (!userName) {
+          userName = "User";
+        }
+        
+        const emailAddress = clerkUser.emailAddresses?.[0]?.emailAddress || null;
         
         userData = {
           id: userId,
           name: userName,
-          email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
+          email: emailAddress,
           avatar_url: clerkUser.imageUrl || null,
           bio: null,
           username: clerkUser.username || null,
           username_changed_at: null,
         };
-      } catch (clerkError) {
-        console.error("Error fetching user from Clerk:", clerkError);
+        
+        // Sync user to Supabase for future requests
+        try {
+          await ensureUserExists(userId, clerkUser);
+          console.log(`User ${userId} synced to Supabase`);
+        } catch (syncError: any) {
+          console.error(`Could not sync user ${userId} to Supabase:`, syncError?.message);
+          // Continue anyway - we have the data from Clerk
+        }
+      } catch (clerkError: any) {
+        console.error("Error fetching user from Clerk:", clerkError?.message || clerkError);
+        console.error("Full Clerk error:", clerkError);
         return res.status(404).json({ error: "User not found" });
       }
     }
@@ -210,12 +244,19 @@ export async function getUserProfile(req: Request, res: Response) {
 export async function updateUserProfile(req: Request, res: Response) {
   try {
     const user = (req as any).user;
-    const userId = user?.sub || user?.id || user?.userId;
+    const authenticatedUserId = user?.sub || user?.id || user?.userId;
     
-    if (!userId) {
+    if (!authenticatedUserId) {
       return res.status(401).json({ error: "User ID not found" });
     }
 
+    // Validate that the userId in the URL matches the authenticated user
+    const { userId: urlUserId } = req.params;
+    if (urlUserId && urlUserId !== authenticatedUserId) {
+      return res.status(403).json({ error: "You can only update your own profile" });
+    }
+
+    const userId = authenticatedUserId;
     const { name, username, bio, avatar_url } = req.body;
 
     // Get current user data

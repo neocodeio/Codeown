@@ -1,9 +1,6 @@
 import { useAuth } from "@clerk/clerk-react";
 import { isClerkEnabled } from "../lib/clerk";
 
-// Always call the hook (React rules), but handle errors
-let authHook: ReturnType<typeof useAuth> | null = null;
-
 export function useClerkAuth() {
   if (!isClerkEnabled) {
     return {
