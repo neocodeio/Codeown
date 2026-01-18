@@ -6,11 +6,9 @@ import { ClerkWrapper } from "./lib/ClerkWrapper";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <ClerkWrapper>
-        <App />
-      </ClerkWrapper>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <ClerkWrapper>
+      <App />
+    </ClerkWrapper>
+  </BrowserRouter>
 );

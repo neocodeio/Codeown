@@ -200,6 +200,91 @@ export async function getPosts(req: Request, res: Response) {
   }
 }
 
+export async function getPostById(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({ error: "Post ID is required" });
+    }
+
+    // Fetch the post by ID
+    const { data: post, error: postError } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (postError || !post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    // Get user data for the post author
+    const { data: user, error: userError } = await supabase
+      .from("users")
+      .select("id, name, email, avatar_url, username")
+      .eq("id", post.user_id)
+      .single();
+
+    // If user not in Supabase, try Clerk
+    let userData = user;
+    if (!user && process.env.CLERK_SECRET_KEY) {
+      try {
+        const clerkUser = await clerkClient.users.getUser(post.user_id);
+        if (clerkUser) {
+          const email = clerkUser.emailAddresses?.[0]?.emailAddress || null;
+          let name = null;
+          if (clerkUser.firstName && clerkUser.lastName) {
+            name = `${clerkUser.firstName} ${clerkUser.lastName}`;
+          } else if (clerkUser.firstName) {
+            name = clerkUser.firstName;
+          } else if (clerkUser.lastName) {
+            name = clerkUser.lastName;
+          } else if (clerkUser.username) {
+            name = clerkUser.username;
+          } else if (email) {
+            name = email.split("@")[0];
+          }
+
+          userData = {
+            id: clerkUser.id,
+            name: name || "User",
+            email: email,
+            avatar_url: clerkUser.imageUrl || null,
+            username: clerkUser.username || null,
+          };
+        }
+      } catch (clerkError) {
+        console.error("Error fetching user from Clerk:", clerkError);
+      }
+    }
+
+    // Format user data
+    const userInfo = userData ? {
+      name: userData.name || "User",
+      email: userData.email || null,
+      avatar_url: userData.avatar_url || null,
+      username: userData.username || null,
+    } : {
+      name: "User",
+      email: null,
+      avatar_url: null,
+      username: null,
+    };
+
+    return res.json({
+      ...post,
+      user: userInfo
+    });
+  } catch (error) {
+    console.error("Unexpected error in getPostById:", error);
+    return res.status(500).json({ 
+      error: "Internal server error", 
+      details: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+}
+
 export async function getPostsByUser(req: Request, res: Response) {
   try {
     const { userId } = req.params;

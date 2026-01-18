@@ -32,26 +32,35 @@ export function usePosts(page: number = 1, limit: number = 20) {
     setLoading(true);
     try {
       const res = await api.get(`/posts?page=${pageNum}&limit=${limit}`);
+      let postsData: Post[] = [];
+      
       if (res.data.posts) {
         // Paginated response
-        if (append) {
-          setPosts((prev) => [...prev, ...res.data.posts]);
-        } else {
-          setPosts(res.data.posts);
-        }
+        postsData = Array.isArray(res.data.posts) ? res.data.posts : [];
         setTotal(res.data.total || 0);
         setTotalPages(res.data.totalPages || 0);
         setHasMore(pageNum < (res.data.totalPages || 0));
-      } else {
+      } else if (Array.isArray(res.data)) {
         // Legacy response (array)
-        if (append) {
-          setPosts((prev) => [...prev, ...res.data]);
-        } else {
-          setPosts(res.data);
-        }
+        postsData = res.data;
+      } else {
+        // Fallback: try to extract posts from response
+        postsData = res.data?.data || res.data?.posts || [];
+      }
+      
+      // Ensure postsData is always an array
+      if (!Array.isArray(postsData)) {
+        postsData = [];
+      }
+      
+      if (append) {
+        setPosts((prev) => [...prev, ...postsData]);
+      } else {
+        setPosts(postsData);
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
+      setPosts([]);
     } finally {
       setLoading(false);
     }

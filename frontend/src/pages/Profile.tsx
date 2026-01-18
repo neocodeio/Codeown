@@ -19,7 +19,7 @@ interface UserProfile {
 
 export default function Profile() {
   const { user, isLoaded, isSignedIn } = useClerkUser();
-  const { signOut } = useClerkAuth();
+  const { signOut, getToken } = useClerkAuth();
   const navigate = useNavigate();
   const userId = user?.id || null;
   const { posts, loading: postsLoading, fetchUserPosts } = useUserPosts(userId);
@@ -27,33 +27,51 @@ export default function Profile() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
-  const { getToken } = useClerkAuth();
-
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchProfile = async () => {
       if (!userId) {
-        setLoadingProfile(false);
+        if (isMounted) {
+          setLoadingProfile(false);
+        }
         return;
       }
 
       try {
-        setLoadingProfile(true);
+        if (isMounted) {
+          setLoadingProfile(true);
+        }
         const token = await getToken();
         const res = await api.get(`/users/${userId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        setUserProfile(res.data);
+        if (isMounted && res.data) {
+          setUserProfile(res.data);
+        }
       } catch (error) {
         console.error("Error fetching profile:", error);
+        if (isMounted) {
+          setUserProfile(null);
+        }
       } finally {
-        setLoadingProfile(false);
+        if (isMounted) {
+          setLoadingProfile(false);
+        }
       }
     };
 
     if (userId) {
       fetchProfile();
+    } else {
+      setLoadingProfile(false);
     }
-  }, [userId, getToken]);
+
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const handleSignOut = async () => {
     try {
@@ -80,16 +98,42 @@ export default function Profile() {
     }
   };
 
+  // Show loading state while Clerk is initializing
+  if (!isLoaded) {
+    return (
+      <div style={{ 
+        padding: "20px", 
+        textAlign: "center",
+        minHeight: "calc(100vh - 80px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f5f7fa",
+      }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  // Redirect to sign-in if not signed in
   if (isLoaded && !isSignedIn) {
     return <Navigate to="/sign-in" replace />;
   }
 
-  if (!isLoaded) {
-    return <div style={{ padding: "20px", textAlign: "center" }}>Loading...</div>;
-  }
-
-  if (!user) {
-    return <div style={{ padding: "20px" }}>Please sign in to view your profile</div>;
+  // Show message if user data is not available yet
+  if (!user || !userId) {
+    return (
+      <div style={{ 
+        padding: "20px",
+        minHeight: "calc(100vh - 80px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f5f7fa",
+      }}>
+        <div>Please sign in to view your profile</div>
+      </div>
+    );
   }
 
   return (
@@ -98,7 +142,6 @@ export default function Profile() {
       margin: "0 auto",
       padding: "32px 20px",
       backgroundColor: "#f5f7fa",
-      minHeight: "calc(100vh - 80px)",
       minHeight: "calc(100vh - 80px)",
     }}>
       {/* Profile Header Card */}
@@ -288,7 +331,7 @@ export default function Profile() {
               }
             `}</style>
           </div>
-        ) : posts.length === 0 ? (
+        ) : !Array.isArray(posts) || posts.length === 0 ? (
           <div style={{
             textAlign: "center",
             padding: "60px 20px",

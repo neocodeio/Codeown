@@ -47,7 +47,7 @@ export default function Feed() {
             <PostCardSkeleton key={i} />
           ))}
         </>
-      ) : posts.length === 0 ? (
+      ) : !Array.isArray(posts) || posts.length === 0 ? (
         <div style={{
           textAlign: "center",
           padding: "60px 20px",
@@ -59,7 +59,7 @@ export default function Feed() {
       ) : (
         <>
           {posts.map(p => <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(page, false)} />)}
-          {loading && posts.length > 0 && (
+          {loading && Array.isArray(posts) && posts.length > 0 && (
             <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
               <div style={{
                 width: "32px",

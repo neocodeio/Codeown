@@ -64,33 +64,55 @@ export default function PostDetail() {
   };
 
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchPostAndComments = async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        // Fetch post from posts list (we'll need to get it from the feed or create a single post endpoint)
-        const postsRes = await api.get("/posts");
-        const foundPost = postsRes.data.find((p: Post) => p.id === parseInt(id || "0"));
-
-        if (!foundPost) {
-          setLoading(false);
-          return;
+        
+        // Fetch single post by ID
+        const postRes = await api.get(`/posts/${id}`);
+        
+        if (isMounted && postRes.data) {
+          setPost(postRes.data);
         }
 
-        setPost(foundPost);
-
         // Fetch comments
-        const commentsRes = await api.get(`/comments/${id}`);
-        setComments(commentsRes.data);
+        try {
+          const commentsRes = await api.get(`/comments/${id}`);
+          if (isMounted && Array.isArray(commentsRes.data)) {
+            setComments(commentsRes.data);
+          } else if (isMounted) {
+            setComments([]);
+          }
+        } catch (commentError) {
+          console.error("Error fetching comments:", commentError);
+          if (isMounted) {
+            setComments([]);
+          }
+        }
       } catch (error) {
-        console.error("Error fetching post and comments:", error);
+        console.error("Error fetching post:", error);
+        if (isMounted) {
+          setPost(null);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    if (id) {
-      fetchPostAndComments();
-    }
+    fetchPostAndComments();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   const handleSubmitComment = async () => {

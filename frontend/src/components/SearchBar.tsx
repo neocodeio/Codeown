@@ -144,7 +144,7 @@ export default function SearchBar() {
             </div>
           )}
 
-          {posts.length > 0 && (
+          {Array.isArray(posts) && posts.length > 0 && (
             <div style={{ padding: "12px", borderTop: users.length > 0 ? "1px solid #e4e7eb" : "none" }}>
               <div style={{ fontSize: "12px", fontWeight: 600, color: "#64748b", marginBottom: "8px", padding: "0 8px" }}>
                 POSTS

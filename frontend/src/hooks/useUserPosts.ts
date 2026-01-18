@@ -9,13 +9,16 @@ export function useUserPosts(userId: string | null) {
   const fetchUserPosts = async () => {
     if (!userId) {
       setLoading(false);
+      setPosts([]);
       return;
     }
 
     setLoading(true);
     try {
       const res = await api.get(`/posts/user/${userId}`);
-      setPosts(res.data);
+      // Ensure posts is always an array
+      const postsData = Array.isArray(res.data) ? res.data : (res.data?.posts || res.data?.data || []);
+      setPosts(postsData);
     } catch (error) {
       console.error("Error fetching user posts:", error);
       setPosts([]);

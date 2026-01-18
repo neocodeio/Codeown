@@ -242,7 +242,7 @@ export default function UserProfile() {
               animation: "spin 0.8s linear infinite",
             }} />
           </div>
-        ) : posts.length === 0 ? (
+        ) : !Array.isArray(posts) || posts.length === 0 ? (
           <div style={{
             textAlign: "center",
             padding: "60px 20px",
