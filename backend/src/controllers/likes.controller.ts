@@ -106,14 +106,19 @@ export async function getPostLikes(req: Request, res: Response) {
     // Check if current user liked it
     let isLiked = false;
     if (userId) {
-      const { data: userLike } = await supabase
+      const { data: userLike, error: likeCheckError } = await supabase
         .from("likes")
         .select("id")
         .eq("user_id", userId)
         .eq("post_id", postId)
-        .single();
+        .maybeSingle();
 
-      isLiked = !!userLike;
+      // If error is PGRST116, it means no row found (not liked) - this is expected
+      if (likeCheckError && likeCheckError.code !== "PGRST116") {
+        console.error("Error checking user like:", likeCheckError);
+      } else {
+        isLiked = !!userLike;
+      }
     }
 
     return res.json({ count: count || 0, isLiked });

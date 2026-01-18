@@ -3,6 +3,7 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useUserPosts } from "../hooks/useUserPosts";
+import { useSavedPosts } from "../hooks/useSavedPosts";
 import PostCard from "../components/PostCard";
 import EditProfileModal from "../components/EditProfileModal";
 import api from "../api/axios";
@@ -23,9 +24,11 @@ export default function Profile() {
   const navigate = useNavigate();
   const userId = user?.id || null;
   const { posts, loading: postsLoading, fetchUserPosts } = useUserPosts(userId);
+  const { savedPosts, loading: savedPostsLoading, fetchSavedPosts } = useSavedPosts();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
 
   useEffect(() => {
     let isMounted = true;
@@ -92,6 +95,7 @@ export default function Profile() {
         });
         setUserProfile(res.data);
         fetchUserPosts();
+        fetchSavedPosts();
       } catch (error) {
         console.error("Error refreshing profile:", error);
       }
@@ -253,6 +257,7 @@ export default function Profile() {
           justifyContent: "center",
           gap: "16px",
           marginBottom: "24px",
+          flexWrap: "wrap",
         }}>
           <div style={{
             display: "inline-flex",
@@ -267,6 +272,20 @@ export default function Profile() {
           }}>
             <span>{posts.length}</span>
             <span>{posts.length === 1 ? "Post" : "Posts"}</span>
+          </div>
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px 16px",
+            backgroundColor: "#fef3c7",
+            borderRadius: "12px",
+            color: "#92400e",
+            fontSize: "14px",
+            fontWeight: 600,
+          }}>
+            <span>{savedPosts.length}</span>
+            <span>{savedPosts.length === 1 ? "Saved" : "Saved"}</span>
           </div>
           {(userProfile?.username || user.username) && (
             <div style={{
@@ -298,59 +317,168 @@ export default function Profile() {
         )}
       </div>
 
+      {/* Tabs Section */}
+      <div style={{
+        display: "flex",
+        gap: "8px",
+        marginBottom: "20px",
+        borderBottom: "2px solid #e4e7eb",
+        paddingBottom: "0",
+      }}>
+        <button
+          onClick={() => setActiveTab("posts")}
+          style={{
+            padding: "12px 24px",
+            backgroundColor: "transparent",
+            border: "none",
+            borderBottom: activeTab === "posts" ? "3px solid #000" : "3px solid transparent",
+            color: activeTab === "posts" ? "#000" : "#64748b",
+            fontSize: "16px",
+            fontWeight: activeTab === "posts" ? 600 : 500,
+            cursor: "pointer",
+            transition: "all 0.2s",
+            marginBottom: "-2px",
+          }}
+          onMouseEnter={(e) => {
+            if (activeTab !== "posts") {
+              e.currentTarget.style.color = "#000";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (activeTab !== "posts") {
+              e.currentTarget.style.color = "#64748b";
+            }
+          }}
+        >
+          My Posts ({posts.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("saved")}
+          style={{
+            padding: "12px 24px",
+            backgroundColor: "transparent",
+            border: "none",
+            borderBottom: activeTab === "saved" ? "3px solid #000" : "3px solid transparent",
+            color: activeTab === "saved" ? "#000" : "#64748b",
+            fontSize: "16px",
+            fontWeight: activeTab === "saved" ? 600 : 500,
+            cursor: "pointer",
+            transition: "all 0.2s",
+            marginBottom: "-2px",
+          }}
+          onMouseEnter={(e) => {
+            if (activeTab !== "saved") {
+              e.currentTarget.style.color = "#000";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (activeTab !== "saved") {
+              e.currentTarget.style.color = "#64748b";
+            }
+          }}
+        >
+          Saved Posts ({savedPosts.length})
+        </button>
+      </div>
+
       {/* Posts Section */}
       <div>
-        <h2 style={{
-          fontSize: "22px",
-          fontWeight: 700,
-          color: "#1a1a1a",
-          marginBottom: "20px",
-          paddingLeft: "4px",
-        }}>
-          My Posts
-        </h2>
-
-        {postsLoading ? (
-          <div style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "60px 20px",
-          }}>
-            <div style={{
-              width: "40px",
-              height: "40px",
-              border: "4px solid #e4e7eb",
-              borderTopColor: "#317ff5",
-              borderRadius: "50%",
-              animation: "spin 0.8s linear infinite",
-            }} />
-            <style>{`
-              @keyframes spin {
-                to { transform: rotate(360deg); }
-              }
-            `}</style>
-          </div>
-        ) : !Array.isArray(posts) || posts.length === 0 ? (
-          <div style={{
-            textAlign: "center",
-            padding: "60px 20px",
-            color: "#64748b",
-            backgroundColor: "#ffffff",
-            borderRadius: "30px",
-            border: "1px solid #e4e7eb",
-          }}>
-            <p style={{ fontSize: "18px", marginBottom: "8px" }}>No posts yet</p>
-            <p style={{ fontSize: "14px" }}>Start sharing your thoughts with the community!</p>
-          </div>
+        {activeTab === "posts" ? (
+          <>
+            {postsLoading ? (
+              <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "60px 20px",
+              }}>
+                <div style={{
+                  width: "40px",
+                  height: "40px",
+                  border: "4px solid #e4e7eb",
+                  borderTopColor: "#317ff5",
+                  borderRadius: "50%",
+                  animation: "spin 0.8s linear infinite",
+                }} />
+                <style>{`
+                  @keyframes spin {
+                    to { transform: rotate(360deg); }
+                  }
+                `}</style>
+              </div>
+            ) : !Array.isArray(posts) || posts.length === 0 ? (
+              <div style={{
+                textAlign: "center",
+                padding: "60px 20px",
+                color: "#64748b",
+                backgroundColor: "#ffffff",
+                borderRadius: "30px",
+                border: "1px solid #e4e7eb",
+              }}>
+                <p style={{ fontSize: "18px", marginBottom: "8px" }}>No posts yet</p>
+                <p style={{ fontSize: "14px" }}>Start sharing your thoughts with the community!</p>
+              </div>
+            ) : (
+              posts.map(post => (
+                <PostCard 
+                  key={post.id} 
+                  post={post} 
+                  onUpdated={() => {
+                    fetchUserPosts();
+                    fetchSavedPosts();
+                  }}
+                />
+              ))
+            )}
+          </>
         ) : (
-          posts.map(post => (
-            <PostCard 
-              key={post.id} 
-              post={post} 
-              onUpdated={fetchUserPosts}
-            />
-          ))
+          <>
+            {savedPostsLoading ? (
+              <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "60px 20px",
+              }}>
+                <div style={{
+                  width: "40px",
+                  height: "40px",
+                  border: "4px solid #e4e7eb",
+                  borderTopColor: "#317ff5",
+                  borderRadius: "50%",
+                  animation: "spin 0.8s linear infinite",
+                }} />
+                <style>{`
+                  @keyframes spin {
+                    to { transform: rotate(360deg); }
+                  }
+                `}</style>
+              </div>
+            ) : !Array.isArray(savedPosts) || savedPosts.length === 0 ? (
+              <div style={{
+                textAlign: "center",
+                padding: "60px 20px",
+                color: "#64748b",
+                backgroundColor: "#ffffff",
+                borderRadius: "30px",
+                border: "1px solid #e4e7eb",
+              }}>
+                <p style={{ fontSize: "18px", marginBottom: "8px" }}>No saved posts yet</p>
+                <p style={{ fontSize: "14px" }}>Save posts you like to find them easily later!</p>
+              </div>
+            ) : (
+              savedPosts.map(post => (
+                <PostCard 
+                  key={post.id} 
+                  post={post} 
+                  onUpdated={() => {
+                    fetchUserPosts();
+                    fetchSavedPosts();
+                  }}
+                />
+              ))
+            )}
+          </>
         )}
       </div>
 

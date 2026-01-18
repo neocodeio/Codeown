@@ -11,8 +11,7 @@ import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faHeart as faHeartSolid, 
-  faHeart as faHeartRegular,
+  faHeart as faHeartSolid,
   faComment,
   faBookmark as faBookmarkSolid,
   faBookmark as faBookmarkRegular
@@ -29,7 +28,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const { getToken } = useClerkAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { isLiked, likeCount, toggleLike, fetchLikeStatus } = useLikes(post.id);
+  const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(post.id);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id);
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -342,7 +341,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       >
         <button
           onClick={toggleLike}
-          disabled={!currentUser}
+          disabled={!currentUser || likeLoading}
           style={{
             display: "flex",
             alignItems: "center",
@@ -350,14 +349,14 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             padding: "6px 12px",
             backgroundColor: "transparent",
             border: "none",
-            cursor: currentUser ? "pointer" : "not-allowed",
+            cursor: currentUser && !likeLoading ? "pointer" : "not-allowed",
             borderRadius: "12px",
             transition: "all 0.2s",
             color: isLiked ? "#dc2626" : "#64748b",
             opacity: currentUser ? 1 : 0.5,
           }}
           onMouseEnter={(e) => {
-            if (currentUser) {
+            if (currentUser && !likeLoading) {
               e.currentTarget.style.backgroundColor = "#f5f7fa";
             }
           }}
@@ -366,8 +365,13 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           }}
         >
           <FontAwesomeIcon 
-            icon={isLiked ? faHeartSolid : faHeartRegular} 
-            style={{ fontSize: "18px" }}
+            icon={faHeartSolid} 
+            style={{ 
+              fontSize: "18px",
+              color: isLiked ? "#dc2626" : "#64748b",
+            }}
+            className={isLiked ? "liked-heart" : "unliked-heart"}
+            color={isLiked ? "#dc2626" : "#64748b"}
           />
           <span style={{ fontSize: "14px", fontWeight: 500 }}>
             {likeCount || post.like_count || 0}

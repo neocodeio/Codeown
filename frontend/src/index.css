@@ -44,3 +44,27 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+/* Ensure liked heart icon is red */
+.liked-heart {
+  color: #dc2626 !important;
+}
+
+.liked-heart svg,
+.liked-heart path {
+  fill: #dc2626 !important;
+  color: #dc2626 !important;
+  stroke: #dc2626 !important;
+}
+
+/* Ensure unliked heart icon is gray */
+.unliked-heart {
+  color: #64748b !important;
+}
+
+.unliked-heart svg,
+.unliked-heart path {
+  fill: #64748b !important;
+  color: #64748b !important;
+  stroke: #64748b !important;
+}
