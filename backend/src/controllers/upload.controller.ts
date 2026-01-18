@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabase.js";
 // In production, you should use Supabase Storage or similar service
 export async function uploadImage(req: Request, res: Response) {
   try {
-    const user = (req as any).user;
+    const user = req.user;
     const userId = user?.sub || user?.id || user?.userId;
     
     if (!userId) {

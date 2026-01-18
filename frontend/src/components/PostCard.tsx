@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -6,6 +6,17 @@ import api from "../api/axios";
 import type { Post } from "../hooks/usePosts";
 import EditPostModal from "./EditPostModal";
 import ImageSlider from "./ImageSlider";
+import { useLikes } from "../hooks/useLikes";
+import { useSaved } from "../hooks/useSaved";
+import { useWindowSize } from "../hooks/useWindowSize";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faHeart as faHeartSolid, 
+  faHeart as faHeartRegular,
+  faComment,
+  faBookmark as faBookmarkSolid,
+  faBookmark as faBookmarkRegular
+} from "@fortawesome/free-solid-svg-icons";
 
 interface PostCardProps {
   post: Post;
@@ -18,8 +29,19 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const { getToken } = useClerkAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { isLiked, likeCount, toggleLike, fetchLikeStatus } = useLikes(post.id);
+  const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id);
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   const isOwnPost = currentUser?.id === post.user_id;
+
+  useEffect(() => {
+    if (post.id) {
+      fetchLikeStatus();
+      fetchSavedStatus();
+    }
+  }, [post.id]);
 
   const handleUserClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent post card click
@@ -82,9 +104,10 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       } else {
         window.location.reload();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error deleting post:", error);
-      alert("Failed to delete post");
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete post";
+      alert(`Failed to delete post: ${errorMessage}`);
     } finally {
       setIsDeleting(false);
     }
@@ -95,8 +118,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       onClick={handleClick}
       style={{
         backgroundColor: "#ffffff",
-        borderRadius: "50px",
-        padding: "35px",
+        borderRadius: isMobile ? "20px" : "50px",
+        padding: isMobile ? "20px" : "35px",
         marginBottom: "16px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
         border: "1px solid #e4e7eb",
@@ -120,6 +143,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         marginBottom: "16px",
         paddingBottom: "20px",
         borderBottom: "2px solid #f5f7fa",
+        flexWrap: isMobile ? "wrap" : "nowrap",
       }}>
         <img
           src={avatarUrl}
@@ -132,16 +156,17 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             border: "2px solid #e4e7eb",
           }}
         />
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div
             onClick={handleUserClick}
             style={{
-              fontSize: "16px",
+              fontSize: isMobile ? "14px" : "16px",
               fontWeight: 600,
               color: "#000",
               marginBottom: "2px",
               cursor: "pointer",
               transition: "color 0.2s",
+              wordBreak: "break-word",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = "#2563eb";
@@ -154,25 +179,28 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           >
             {userName}
           </div>
-          {userEmail && (
+          {userEmail && !isMobile && (
             <div style={{
               fontSize: "13px",
               color: "#64748b",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}>
               {userEmail}
             </div>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
           <time style={{
             color: "#64748b",
-            fontSize: "13px",
+            fontSize: isMobile ? "11px" : "13px",
             fontWeight: 500,
           }}>
             {formatDate(post.created_at)}
           </time>
           {isOwnPost && (
-            <div style={{ display: "flex", gap: "4px", marginLeft: "8px" }}>
+            <div style={{ display: "flex", gap: "4px", marginLeft: isMobile ? "0" : "8px", flexWrap: "wrap" }}>
               <button
                 onClick={handleEditClick}
                 style={{
@@ -236,7 +264,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       {post.title && (
         <h3 style={{
           color: "#1a1a1a",
-          fontSize: "20px",
+          fontSize: isMobile ? "18px" : "20px",
           fontWeight: 700,
           lineHeight: "1.4",
           marginBottom: "12px",
@@ -250,7 +278,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       {/* Post Content */}
       <p style={{
         color: "#1a1a1a",
-        fontSize: "16px",
+        fontSize: isMobile ? "14px" : "16px",
         lineHeight: "1.6",
         marginBottom: post.images && post.images.length > 0 ? "16px" : 0,
         whiteSpace: "pre-wrap",
@@ -263,6 +291,148 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       {post.images && post.images.length > 0 && (
         <ImageSlider images={post.images} />
       )}
+
+      {/* Tags */}
+      {post.tags && post.tags.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "16px", marginBottom: "16px" }}>
+          {post.tags.map((tag, idx) => (
+            <span
+              key={idx}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/search?q=${encodeURIComponent(`#${tag}`)}`);
+              }}
+              style={{
+                fontSize: "13px",
+                padding: "4px 10px",
+                backgroundColor: "#f0f7ff",
+                color: "#2563eb",
+                borderRadius: "12px",
+                cursor: "pointer",
+                fontWeight: 500,
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#2563eb";
+                e.currentTarget.style.color = "#ffffff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#f0f7ff";
+                e.currentTarget.style.color = "#2563eb";
+              }}
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Actions */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: isMobile ? "16px" : "24px",
+          marginTop: "20px",
+          paddingTop: "16px",
+          borderTop: "1px solid #f5f7fa",
+          flexWrap: "wrap",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={toggleLike}
+          disabled={!currentUser}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "6px 12px",
+            backgroundColor: "transparent",
+            border: "none",
+            cursor: currentUser ? "pointer" : "not-allowed",
+            borderRadius: "12px",
+            transition: "all 0.2s",
+            color: isLiked ? "#dc2626" : "#64748b",
+            opacity: currentUser ? 1 : 0.5,
+          }}
+          onMouseEnter={(e) => {
+            if (currentUser) {
+              e.currentTarget.style.backgroundColor = "#f5f7fa";
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+        >
+          <FontAwesomeIcon 
+            icon={isLiked ? faHeartSolid : faHeartRegular} 
+            style={{ fontSize: "18px" }}
+          />
+          <span style={{ fontSize: "14px", fontWeight: 500 }}>
+            {likeCount || post.like_count || 0}
+          </span>
+        </button>
+
+        <button
+          onClick={() => navigate(`/post/${post.id}`)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "6px 12px",
+            backgroundColor: "transparent",
+            border: "none",
+            cursor: "pointer",
+            borderRadius: "12px",
+            transition: "all 0.2s",
+            color: "#64748b",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#f5f7fa";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+        >
+          <FontAwesomeIcon 
+            icon={faComment} 
+            style={{ fontSize: "18px" }}
+          />
+          <span style={{ fontSize: "14px", fontWeight: 500 }}>
+            {post.comment_count || 0}
+          </span>
+        </button>
+
+        {currentUser && (
+          <button
+            onClick={toggleSave}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 12px",
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              borderRadius: "12px",
+              transition: "all 0.2s",
+              color: isSaved ? "#2563eb" : "#64748b",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#f5f7fa";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+          >
+            <FontAwesomeIcon 
+              icon={isSaved ? faBookmarkSolid : faBookmarkRegular} 
+              style={{ fontSize: "18px" }}
+            />
+          </button>
+        )}
+      </div>
 
       <EditPostModal
         isOpen={isEditModalOpen}

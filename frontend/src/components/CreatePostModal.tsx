@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -13,6 +15,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
 
@@ -93,12 +97,18 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
         return;
       }
 
+      // Extract tags from content and combine with manually added tags
+      const hashtagRegex = /#(\w+)/g;
+      const contentTags = content.match(hashtagRegex)?.map((tag) => tag.substring(1).toLowerCase()) || [];
+      const allTags = [...new Set([...tags, ...contentTags])].slice(0, 10);
+
       await api.post(
         "/posts",
         {
           title: title.trim(),
           content: content.trim(),
           images: images.length > 0 ? images : null,
+          tags: allTags.length > 0 ? allTags : null,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -108,24 +118,30 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
       setTitle("");
       setContent("");
       setImages([]);
+      setTags([]);
+      setTagInput("");
       // Dispatch custom event to refresh posts
       window.dispatchEvent(new CustomEvent("postCreated"));
       onCreated();
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating post:", error);
-      const errorData = error?.response?.data;
       let errorMessage = "Failed to create post";
 
-      if (errorData) {
-        if (errorData.details) {
-          errorMessage = `${errorData.error || "Failed to create post"}: ${errorData.details}`;
-        } else if (errorData.error) {
-          errorMessage = errorData.error;
-        } else if (errorData.message) {
-          errorMessage = errorData.message;
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: { error?: string; details?: string; message?: string } } };
+        const errorData = axiosError.response?.data;
+
+        if (errorData) {
+          if (errorData.details) {
+            errorMessage = `${errorData.error || "Failed to create post"}: ${errorData.details}`;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
         }
-      } else if (error?.message) {
+      } else if (error instanceof Error) {
         errorMessage = error.message;
       }
 
@@ -419,7 +435,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                     e.currentTarget.style.backgroundColor = "#f0f7ff";
                   }}
                 >
-                  📷 Upload Images
+                  <FontAwesomeIcon icon={faImage} style={{ marginRight: "8px" }} />
+                  Upload Images
                 </label>
                 {images.length > 0 && (
                   <div style={{
@@ -468,6 +485,94 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Tags Section */}
+              <div>
+                <label style={{
+                  display: "block",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#1a1a1a",
+                  marginBottom: "8px",
+                }}>
+                  Tags / Hashtags (Optional)
+                </label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
+                  {tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        padding: "4px 10px",
+                        backgroundColor: "#f0f7ff",
+                        color: "#2563eb",
+                        borderRadius: "12px",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                      }}
+                    >
+                      #{tag}
+                      <button
+                        type="button"
+                        onClick={() => setTags(tags.filter((_, i) => i !== idx))}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#2563eb",
+                          cursor: "pointer",
+                          padding: 0,
+                          fontSize: "16px",
+                          lineHeight: 1,
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") {
+                      e.preventDefault();
+                      const tag = tagInput.trim().toLowerCase().replace(/^#/, "");
+                      if (tag && tag.length > 0 && tag.length <= 50 && !tags.includes(tag) && tags.length < 10) {
+                        setTags([...tags, tag]);
+                        setTagInput("");
+                      }
+                    }
+                  }}
+                  placeholder="Add tags (press Enter or comma)"
+                  style={{
+                    width: "100%",
+                    padding: "10px 16px",
+                    border: "1px solid #e4e7eb",
+                    borderRadius: "25px",
+                    fontSize: "14px",
+                    fontFamily: "inherit",
+                    outline: "none",
+                    transition: "all 0.15s",
+                    color: "#1a1a1a",
+                    backgroundColor: "#ffffff",
+                    boxSizing: "border-box",
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#000";
+                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#e4e7eb";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                />
+                <div style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
+                  {tags.length}/10 tags. Tags starting with # in content are automatically added.
+                </div>
               </div>
             </div>
 

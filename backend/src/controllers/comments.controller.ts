@@ -152,7 +152,7 @@ export async function getComments(req: Request, res: Response) {
 
 export async function createComment(req: Request, res: Response) {
   try {
-    const user = (req as any).user;
+    const user = req.user;
     const { post_id, content } = req.body;
 
     // Validate input
@@ -194,6 +194,11 @@ export async function createComment(req: Request, res: Response) {
 
     console.log("Creating comment with:", { post_id, content, userId });
 
+    // Extract mentions from content (@username)
+    const mentionRegex = /@(\w+)/g;
+    const mentions = content.match(mentionRegex) || [];
+    const mentionedUsernames = mentions.map((m: string) => m.substring(1).toLowerCase());
+
     // Ensure post_id is an integer (posts table uses INTEGER/SERIAL, not UUID)
     const postIdInt = typeof post_id === 'string' ? parseInt(post_id, 10) : post_id;
     
@@ -215,6 +220,48 @@ export async function createComment(req: Request, res: Response) {
         code: error.code,
         hint: error.hint
       });
+    }
+
+    // Get post owner for notification
+    const { data: post } = await supabase
+      .from("posts")
+      .select("user_id")
+      .eq("id", postIdInt)
+      .single();
+
+    // Create notification for post owner (if not the commenter)
+    if (post && post.user_id !== userId) {
+      await supabase.from("notifications").insert({
+        user_id: post.user_id,
+        type: "comment",
+        actor_id: userId,
+        post_id: postIdInt,
+        comment_id: data?.[0]?.id || null,
+      });
+    }
+
+    // Create notifications for mentioned users
+    if (mentionedUsernames.length > 0) {
+      const { data: mentionedUsers } = await supabase
+        .from("users")
+        .select("id")
+        .in("username", mentionedUsernames);
+
+      if (mentionedUsers && mentionedUsers.length > 0) {
+        const mentionNotifications = mentionedUsers
+          .filter((u: any) => u.id !== userId && u.id !== post?.user_id) // Don't notify commenter or post owner
+          .map((u: any) => ({
+            user_id: u.id,
+            type: "mention",
+            actor_id: userId,
+            post_id: postIdInt,
+            comment_id: data?.[0]?.id || null,
+          }));
+
+        if (mentionNotifications.length > 0) {
+          await supabase.from("notifications").insert(mentionNotifications);
+        }
+      }
     }
 
     console.log("Comment created successfully:", data);

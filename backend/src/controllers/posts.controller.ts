@@ -5,11 +5,17 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function getPosts(req: Request, res: Response) {
   try {
-    // Fetch posts
-    const { data: posts, error: postsError } = await supabase
+    const { page = "1", limit = "20" } = req.query;
+    const pageNum = parseInt(page as string, 10) || 1;
+    const limitNum = parseInt(limit as string, 10) || 20;
+    const offset = (pageNum - 1) * limitNum;
+
+    // Fetch posts with pagination
+    const { data: posts, error: postsError, count } = await supabase
       .from("posts")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limitNum - 1);
 
     if (postsError) {
       console.error("Supabase error in getPosts:", postsError);
@@ -178,7 +184,13 @@ export async function getPosts(req: Request, res: Response) {
       };
     });
     
-    return res.json(postsWithUsers);
+    return res.json({
+      posts: postsWithUsers,
+      total: count || 0,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil((count || 0) / limitNum),
+    });
   } catch (error: any) {
     console.error("Unexpected error in getPosts:", error);
     return res.status(500).json({ 
@@ -304,7 +316,13 @@ export async function getPostsByUser(req: Request, res: Response) {
       };
     });
     
-    return res.json(postsWithUsers);
+    return res.json({
+      posts: postsWithUsers,
+      total: posts.length,
+      page: 1,
+      limit: posts.length,
+      totalPages: 1,
+    });
   } catch (error: any) {
     console.error("Unexpected error in getPostsByUser:", error);
     return res.status(500).json({ 
@@ -316,8 +334,8 @@ export async function getPostsByUser(req: Request, res: Response) {
 
 export async function createPost(req: Request, res: Response) {
   try {
-    const user = (req as any).user;
-    const { title, content, images } = req.body;
+    const user = req.user;
+    const { title, content, images, tags } = req.body;
 
     // Validate input
     if (!title || title.trim().length === 0) {
@@ -333,6 +351,27 @@ export async function createPost(req: Request, res: Response) {
     if (images && Array.isArray(images)) {
       imageUrls = images.filter((img: any) => typeof img === "string" && img.trim().length > 0);
     }
+
+    // Extract and validate tags/hashtags
+    let postTags: string[] = [];
+    if (tags && Array.isArray(tags)) {
+      postTags = tags
+        .map((tag: any) => {
+          const tagStr = typeof tag === "string" ? tag.trim().toLowerCase() : String(tag).trim().toLowerCase();
+          // Remove # if present, we'll add it back when displaying
+          return tagStr.startsWith("#") ? tagStr.substring(1) : tagStr;
+        })
+        .filter((tag: string) => tag.length > 0 && tag.length <= 50)
+        .slice(0, 10); // Limit to 10 tags
+    }
+
+    // Also extract hashtags from content
+    const hashtagRegex = /#(\w+)/g;
+    const contentHashtags = content.match(hashtagRegex) || [];
+    const extractedTags = contentHashtags.map((tag: string) => tag.substring(1).toLowerCase());
+    
+    // Merge tags from both sources, remove duplicates
+    const allTags = [...new Set([...postTags, ...extractedTags])].slice(0, 10);
 
     // Log user object to debug
     console.log("User object from Clerk:", JSON.stringify(user, null, 2));
@@ -383,6 +422,7 @@ export async function createPost(req: Request, res: Response) {
       content: content.trim(),
       user_id: userId, // This should be TEXT type in the database
       images: imageUrls.length > 0 ? imageUrls : null, // Store as JSON array
+      tags: allTags.length > 0 ? allTags : null, // Store as TEXT array
     });
 
     if (error) {
@@ -408,7 +448,7 @@ export async function createPost(req: Request, res: Response) {
 
 export async function updatePost(req: Request, res: Response) {
   try {
-    const user = (req as any).user;
+    const user = req.user;
     const { id } = req.params;
     const { title, content, images } = req.body;
 
@@ -482,7 +522,7 @@ export async function updatePost(req: Request, res: Response) {
 
 export async function deletePost(req: Request, res: Response) {
   try {
-    const user = (req as any).user;
+    const user = req.user;
     const { id } = req.params;
 
     const userId = user?.sub || user?.id || user?.userId;

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 
 interface EditPostModalProps {
   isOpen: boolean;
@@ -99,17 +101,23 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
 
       onUpdated();
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating post:", error);
-      const errorData = error?.response?.data;
       let errorMessage = "Failed to update post";
 
-      if (errorData) {
-        if (errorData.details) {
-          errorMessage = `${errorData.error || "Failed to update post"}: ${errorData.details}`;
-        } else if (errorData.error) {
-          errorMessage = errorData.error;
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: { error?: string; details?: string } } };
+        const errorData = axiosError.response?.data;
+
+        if (errorData) {
+          if (errorData.details) {
+            errorMessage = `${errorData.error || "Failed to update post"}: ${errorData.details}`;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          }
         }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
       }
 
       alert(`Failed to update post: ${errorMessage}`);
@@ -341,7 +349,8 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                     boxSizing: "border-box",
                   }}
                 >
-                  📷 Upload Images
+                  <FontAwesomeIcon icon={faImage} style={{ marginRight: "8px" }} />
+                  Upload Images
                 </label>
                 {images.length > 0 && (
                   <div style={{

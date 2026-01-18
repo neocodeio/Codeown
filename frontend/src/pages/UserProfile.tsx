@@ -56,9 +56,12 @@ export default function UserProfile() {
           console.error("No user data received from API");
           setUser(null);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error fetching user:", error);
-        console.error("Error details:", error?.response?.data);
+        if (error && typeof error === "object" && "response" in error) {
+          const axiosError = error as { response?: { data?: unknown } };
+          console.error("Error details:", axiosError.response?.data);
+        }
         setUser(null);
       } finally {
         setLoading(false);
@@ -117,6 +120,7 @@ export default function UserProfile() {
       maxWidth: "680px",
       margin: "0 auto",
       padding: "32px 20px",
+      backgroundColor: "#f5f7fa",
       minHeight: "calc(100vh - 80px)",
     }}>
       {/* Profile Header Card */}

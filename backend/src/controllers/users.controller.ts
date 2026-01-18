@@ -130,7 +130,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
 export async function getUserProfile(req: Request, res: Response) {
   try {
     const { userId } = req.params;
-    const currentUser = (req as any).user;
+    const currentUser = req.user;
     const currentUserId = currentUser?.sub || currentUser?.id || currentUser?.userId;
 
     if (!userId) {
@@ -243,7 +243,7 @@ export async function getUserProfile(req: Request, res: Response) {
 // Update user profile
 export async function updateUserProfile(req: Request, res: Response) {
   try {
-    const user = (req as any).user;
+    const user = req.user;
     const authenticatedUserId = user?.sub || user?.id || user?.userId;
     
     if (!authenticatedUserId) {

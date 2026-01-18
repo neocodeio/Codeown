@@ -34,9 +34,10 @@ export async function handleClerkWebhook(req: Request, res: Response) {
       "svix-timestamp": svix_timestamp,
       "svix-signature": svix_signature,
     }) as any;
-  } catch (err: any) {
-    console.error("Webhook verification error:", err);
-    return res.status(400).json({ error: "Webhook verification failed" });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Webhook verification failed";
+    console.error("Webhook verification error:", errorMessage);
+    return res.status(400).json({ error: "Webhook verification failed", details: errorMessage });
   }
 
   // Handle the webhook
@@ -53,9 +54,10 @@ export async function handleClerkWebhook(req: Request, res: Response) {
     }
 
     return res.status(200).json({ received: true });
-  } catch (error: any) {
-    console.error("Error handling webhook:", error);
-    return res.status(500).json({ error: "Error processing webhook" });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error handling webhook:", errorMessage);
+    return res.status(500).json({ error: "Error processing webhook", details: errorMessage });
   }
 }
 

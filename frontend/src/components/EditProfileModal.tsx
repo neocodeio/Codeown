@@ -140,20 +140,26 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
       onUpdated();
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating profile:", error);
-      const errorData = error?.response?.data;
       let errorMessage = "Failed to update profile";
 
-      if (errorData) {
-        if (errorData.details) {
-          errorMessage = `${errorData.error || "Failed to update profile"}: ${errorData.details}`;
-        } else if (errorData.error) {
-          errorMessage = errorData.error;
-          if (errorMessage.includes("14 days")) {
-            setUsernameError(errorMessage);
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: { error?: string; details?: string } } };
+        const errorData = axiosError.response?.data;
+
+        if (errorData) {
+          if (errorData.details) {
+            errorMessage = `${errorData.error || "Failed to update profile"}: ${errorData.details}`;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+            if (errorMessage.includes("14 days")) {
+              setUsernameError(errorMessage);
+            }
           }
         }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
       }
 
       if (!usernameError) {

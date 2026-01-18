@@ -97,6 +97,8 @@ export default function Profile() {
       maxWidth: "680px",
       margin: "0 auto",
       padding: "32px 20px",
+      backgroundColor: "#f5f7fa",
+      minHeight: "calc(100vh - 80px)",
       minHeight: "calc(100vh - 80px)",
     }}>
       {/* Profile Header Card */}

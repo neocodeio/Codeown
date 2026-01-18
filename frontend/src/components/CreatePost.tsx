@@ -32,24 +32,26 @@ export default function CreatePost({ onCreated }: { onCreated: () => void }) {
       console.log("Post created successfully:", response.status);
       setContent("");
       onCreated();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating post:", error);
-      console.error("Error response:", error?.response?.data);
-      console.error("Error status:", error?.response?.status);
       
       // Get detailed error message
-      const errorData = error?.response?.data;
       let errorMessage = "Failed to create post";
       
-      if (errorData) {
-        if (errorData.details) {
-          errorMessage = `${errorData.error || "Failed to create post"}: ${errorData.details}`;
-        } else if (errorData.error) {
-          errorMessage = errorData.error;
-        } else if (errorData.message) {
-          errorMessage = errorData.message;
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: { error?: string; details?: string; message?: string } } };
+        const errorData = axiosError.response?.data;
+        
+        if (errorData) {
+          if (errorData.details) {
+            errorMessage = `${errorData.error || "Failed to create post"}: ${errorData.details}`;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
         }
-      } else if (error?.message) {
+      } else if (error instanceof Error) {
         errorMessage = error.message;
       }
       

@@ -125,17 +125,23 @@ export default function PostDetail() {
       // Refresh comments
       const commentsRes = await api.get(`/comments/${id}`);
       setComments(commentsRes.data);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating comment:", error);
-      const errorData = error?.response?.data;
       let errorMessage = "Failed to create comment";
 
-      if (errorData) {
-        if (errorData.details) {
-          errorMessage = `${errorData.error || "Failed to create comment"}: ${errorData.details}`;
-        } else if (errorData.error) {
-          errorMessage = errorData.error;
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: { error?: string; details?: string } } };
+        const errorData = axiosError.response?.data;
+
+        if (errorData) {
+          if (errorData.details) {
+            errorMessage = `${errorData.error || "Failed to create comment"}: ${errorData.details}`;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          }
         }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
       }
 
       alert(`Failed to create comment: ${errorMessage}`);
@@ -210,6 +216,7 @@ export default function PostDetail() {
       margin: "0 auto",
       padding: "32px 20px",
       minHeight: "calc(100vh - 80px)",
+      backgroundColor: "#f5f7fa",
     }}>
       {/* Post Card */}
       <article style={{
