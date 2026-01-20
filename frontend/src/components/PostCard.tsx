@@ -6,6 +6,7 @@ import api from "../api/axios";
 import type { Post } from "../hooks/usePosts";
 import EditPostModal from "./EditPostModal";
 import ImageSlider from "./ImageSlider";
+import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -275,16 +276,11 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       )}
 
       {/* Post Content */}
-      <p style={{
-        color: "#1a1a1a",
-        fontSize: isMobile ? "14px" : "16px",
-        lineHeight: "1.6",
+      <div style={{
         marginBottom: post.images && post.images.length > 0 ? "16px" : 0,
-        whiteSpace: "pre-wrap",
-        wordBreak: "break-word",
       }}>
-        {post.content}
-      </p>
+        <ContentRenderer content={post.content} fontSize={isMobile ? "14px" : "16px"} />
+      </div>
 
       {/* Images */}
       {post.images && post.images.length > 0 && (

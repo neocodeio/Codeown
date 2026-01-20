@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useUserPosts } from "../hooks/useUserPosts";
+import { useClerkUser } from "../hooks/useClerkUser";
+import { useClerkAuth } from "../hooks/useClerkAuth";
 import PostCard from "../components/PostCard";
+import FollowersModal from "../components/FollowersModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart, faUsers, faUserPlus, faThumbtack, faUserCheck } from "@fortawesome/free-solid-svg-icons";
 
 interface User {
   id: string;
@@ -11,13 +16,27 @@ interface User {
   avatar_url: string | null;
   bio: string | null;
   username: string | null;
+  follower_count: number;
+  following_count: number;
+  total_likes: number;
+  pinned_post_id: number | null;
+  pinned_post: any | null;
 }
 
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
+  const { user: currentUser, isSignedIn } = useClerkUser();
+  const { getToken } = useClerkAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const { posts, loading: postsLoading } = useUserPosts(userId || null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+  const { posts, loading: postsLoading, fetchUserPosts } = useUserPosts(userId || null);
+  const [followersModalOpen, setFollowersModalOpen] = useState(false);
+  const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
+
+  const isOwnProfile = currentUser?.id === userId;
 
   const getAvatarUrl = (name: string, email: string | null) => {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email || "User")}&background=000&color=ffffff&size=128&bold=true&font-size=0.5`;
@@ -32,36 +51,42 @@ export default function UserProfile() {
 
       try {
         setLoading(true);
-        // Fetch user profile from API
-        const userRes = await api.get(`/users/${userId}`);
+        const token = await getToken();
+        const userRes = await api.get(`/users/${userId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        
         if (userRes.data) {
-          // Ensure we have valid user data with proper fallbacks
-          const userData = {
+          setUser({
             id: userId,
             name: userRes.data.name || "User",
             email: userRes.data.email || null,
             avatar_url: userRes.data.avatar_url || null,
             bio: userRes.data.bio || null,
             username: userRes.data.username || null,
-          };
-          
-          // Don't set user if name is "Unknown User" - treat as error
-          if (userData.name && userData.name !== "Unknown User") {
-            setUser(userData);
-          } else {
-            console.error("Invalid user data received:", userRes.data);
-            setUser(null);
-          }
+            follower_count: userRes.data.follower_count || 0,
+            following_count: userRes.data.following_count || 0,
+            total_likes: userRes.data.total_likes || 0,
+            pinned_post_id: userRes.data.pinned_post_id || null,
+            pinned_post: userRes.data.pinned_post || null,
+          });
         } else {
-          console.error("No user data received from API");
           setUser(null);
+        }
+
+        // Check follow status
+        if (isSignedIn && !isOwnProfile) {
+          try {
+            const followRes = await api.get(`/follows/${userId}/status`, {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            setIsFollowing(followRes.data.isFollowing || false);
+          } catch (error) {
+            console.error("Error checking follow status:", error);
+          }
         }
       } catch (error) {
         console.error("Error fetching user:", error);
-        if (error && typeof error === "object" && "response" in error) {
-          const axiosError = error as { response?: { data?: unknown } };
-          console.error("Error details:", axiosError.response?.data);
-        }
         setUser(null);
       } finally {
         setLoading(false);
@@ -69,12 +94,52 @@ export default function UserProfile() {
     };
 
     fetchUser();
-  }, [userId]);
+  }, [userId, isSignedIn, isOwnProfile, getToken]);
+
+  const handleFollow = async () => {
+    if (!isSignedIn || !userId) {
+      alert("Please sign in to follow users");
+      return;
+    }
+
+    setFollowLoading(true);
+    try {
+      const token = await getToken();
+      if (!token) {
+        alert("Please sign in to follow users");
+        return;
+      }
+
+      const res = await api.post(`/follows/${userId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setIsFollowing(res.data.following);
+      
+      // Update follower count
+      if (user) {
+        setUser({
+          ...user,
+          follower_count: res.data.followerCount ?? (res.data.following ? user.follower_count + 1 : Math.max(0, user.follower_count - 1)),
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+      alert("Failed to follow/unfollow user");
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
+  const openFollowersModal = (type: "followers" | "following") => {
+    setFollowersModalType(type);
+    setFollowersModalOpen(true);
+  };
 
   if (loading) {
     return (
       <div style={{
-        maxWidth: "680px",
+        maxWidth: "720px",
         margin: "0 auto",
         padding: "32px 20px",
         display: "flex",
@@ -90,11 +155,7 @@ export default function UserProfile() {
           borderRadius: "50%",
           animation: "spin 0.8s linear infinite",
         }} />
-        <style>{`
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -102,13 +163,59 @@ export default function UserProfile() {
   if (!user || !user.name || user.name === "Unknown User") {
     return (
       <div style={{
-        maxWidth: "680px",
+        maxWidth: "720px",
         margin: "0 auto",
         padding: "32px 20px",
         textAlign: "center",
       }}>
         <h2 style={{ marginBottom: "16px", color: "#1a1a1a" }}>User not found</h2>
-        <p style={{ color: "#64748b" }}>The user you're looking for doesn't exist or couldn't be loaded.</p>
+        <p style={{ color: "#64748b", marginBottom: "24px" }}>
+          The user you're looking for doesn't exist or couldn't be loaded.
+        </p>
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            padding: "12px 24px",
+            backgroundColor: "#000",
+            border: "none",
+            color: "#ffffff",
+            borderRadius: "12px",
+            cursor: "pointer",
+            fontSize: "15px",
+            fontWeight: 600,
+          }}
+        >
+          Go to Feed
+        </button>
+      </div>
+    );
+  }
+
+  // Redirect to own profile if viewing own user page
+  if (isOwnProfile) {
+    return (
+      <div style={{
+        maxWidth: "720px",
+        margin: "0 auto",
+        padding: "32px 20px",
+        textAlign: "center",
+      }}>
+        <p style={{ color: "#64748b", marginBottom: "24px" }}>Redirecting to your profile...</p>
+        <button
+          onClick={() => navigate("/profile")}
+          style={{
+            padding: "12px 24px",
+            backgroundColor: "#000",
+            border: "none",
+            color: "#ffffff",
+            borderRadius: "12px",
+            cursor: "pointer",
+            fontSize: "15px",
+            fontWeight: 600,
+          }}
+        >
+          Go to My Profile
+        </button>
       </div>
     );
   }
@@ -117,107 +224,256 @@ export default function UserProfile() {
 
   return (
     <div style={{
-      maxWidth: "680px",
+      maxWidth: "720px",
       margin: "0 auto",
       padding: "32px 20px",
       backgroundColor: "#f5f7fa",
       minHeight: "calc(100vh - 80px)",
     }}>
-      {/* Profile Header Card */}
+      {/* Profile Header Card - Modern Design */}
       <div style={{
         backgroundColor: "#ffffff",
-        borderRadius: "30px",
-        padding: "40px",
+        borderRadius: "32px",
+        padding: "0",
         marginBottom: "24px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
         border: "1px solid #e4e7eb",
-        textAlign: "center",
+        overflow: "hidden",
       }}>
-        <img
-          src={avatarUrl}
-          alt={user.name}
-          style={{
-            width: "120px",
-            height: "120px",
-            borderRadius: "50%",
-            marginBottom: "20px",
-            objectFit: "cover",
-            border: "4px solid #f5f7fa",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-          }}
-        />
-        <h1 style={{
-          margin: "0 0 8px 0",
-          fontSize: "28px",
-          fontWeight: 700,
-          color: "#1a1a1a",
-        }}>
-          {user.name || "User"}
-        </h1>
-        {user.email && (
-          <p style={{
-            color: "#64748b",
-            margin: "0 0 12px 0",
-            fontSize: "16px",
-          }}>
-            {user.email}
-          </p>
-        )}
-        {user.bio && (
-          <p style={{
-            color: "#1a1a1a",
-            margin: "0 0 24px 0",
-            fontSize: "15px",
-            lineHeight: "1.6",
-            maxWidth: "500px",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}>
-            {user.bio}
-          </p>
-        )}
+        {/* Cover gradient */}
         <div style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "16px",
-          marginBottom: "24px",
+          height: "65px",
+          background: "linear-gradient(135deg, #000 0%, #000 100%)",
+          position: "relative",
+          marginBottom: "80px",
         }}>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "8px 16px",
-            backgroundColor: "#f0f7ff",
-            borderRadius: "20px",
-            color: "#000",
-            fontSize: "14px",
-            fontWeight: 600,
-          }}>
-            <span>{posts.length}</span>
-            <span>{posts.length === 1 ? "Post" : "Posts"}</span>
-          </div>
-          {user.username && (
-            <div style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px 16px",
-              backgroundColor: "#f5f7fa",
-              borderRadius: "20px",
-              color: "#64748b",
-              fontSize: "14px",
-              fontWeight: 600,
-            }}>
-              <span>@{user.username}</span>
-            </div>
+          {/* Follow Button */}
+          {isSignedIn && (
+            <button
+              onClick={handleFollow}
+              disabled={followLoading}
+              style={{
+                position: "absolute",
+                top: "16px",
+                right: "16px",
+                padding: "10px 20px",
+                backgroundColor: isFollowing ? "#ffffff" : "#000",
+                border: isFollowing ? "2px solid #000" : "none",
+                color: isFollowing ? "#000" : "#ffffff",
+                borderRadius: "12px",
+                cursor: followLoading ? "not-allowed" : "pointer",
+                fontSize: "14px",
+                fontWeight: 600,
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                opacity: followLoading ? 0.7 : 1,
+              }}
+              onMouseEnter={(e) => {
+                if (!followLoading) {
+                  if (isFollowing) {
+                    e.currentTarget.style.backgroundColor = "#fee2e2";
+                    e.currentTarget.style.borderColor = "#dc2626";
+                    e.currentTarget.style.color = "#dc2626";
+                  } else {
+                    e.currentTarget.style.backgroundColor = "#2563eb";
+                  }
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!followLoading) {
+                  if (isFollowing) {
+                    e.currentTarget.style.backgroundColor = "#ffffff";
+                    e.currentTarget.style.borderColor = "#000";
+                    e.currentTarget.style.color = "#000";
+                  } else {
+                    e.currentTarget.style.backgroundColor = "#000";
+                  }
+                }
+              }}
+            >
+              <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
+              {followLoading ? "..." : isFollowing ? "Following" : "Follow"}
+            </button>
           )}
         </div>
+
+        {/* Profile content */}
+        <div style={{ padding: "0 32px 32px", marginTop: "-50px", textAlign: "center" }}>
+          {/* Avatar */}
+          <img
+            src={avatarUrl}
+            alt={user.name}
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "4px solid #ffffff",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            }}
+          />
+
+          {/* Name and username */}
+          <h1 style={{
+            margin: "16px 0 4px 0",
+            fontSize: "24px",
+            fontWeight: 700,
+            color: "#1a1a1a",
+          }}>
+            {user.name || "User"}
+          </h1>
+          
+          {user.username && (
+            <p style={{
+              color: "#64748b",
+              margin: "0 0 8px 0",
+              fontSize: "15px",
+            }}>
+              @{user.username}
+            </p>
+          )}
+
+          {/* Bio */}
+          {user.bio && (
+            <p style={{
+              color: "#475569",
+              margin: "12px auto 0",
+              fontSize: "15px",
+              lineHeight: 1.6,
+              maxWidth: "400px",
+            }}>
+              {user.bio}
+            </p>
+          )}
+
+          {/* Stats */}
+          <div style={{
+            display: "flex",
+            justifyContent: "center",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "16px",
+            padding: "5px",
+            gap: "24px",
+            marginTop: "24px",
+            flexWrap: "wrap",
+          }}>
+            <div
+              onClick={() => openFollowersModal("followers")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
+                padding: "12px 20px",
+                borderRadius: "16px",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#64748b";
+                e.currentTarget.style.color = "#000";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#f5f5f5";
+                e.currentTarget.style.color = "#1a1a1a";
+              }}
+            >
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+                {user.follower_count}
+              </span>
+              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+                <FontAwesomeIcon icon={faUsers} style={{ marginRight: "4px" }} />
+                Followers
+              </span>
+            </div>
+
+            <div
+              onClick={() => openFollowersModal("following")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
+                padding: "12px 20px",
+                borderRadius: "16px",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#64748b";
+                e.currentTarget.style.color = "#000";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#f5f5f5";
+                e.currentTarget.style.color = "#1a1a1a";
+              }}
+            >
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+                {user.following_count}
+              </span>
+              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+                <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: "4px" }} />
+                Following
+              </span>
+            </div>
+
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "12px 20px",
+              borderRadius: "16px",
+            }}>
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#dc2626" }}>
+                {user.total_likes}
+              </span>
+              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+                <FontAwesomeIcon icon={faHeart} style={{ marginRight: "4px", color: "#dc2626" }} />
+                Total Likes
+              </span>
+            </div>
+
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "12px 20px",
+              borderRadius: "16px",
+            }}>
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+                {posts.length}
+              </span>
+              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+                Posts
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Pinned Post */}
+      {user.pinned_post && (
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: "12px",
+            paddingLeft: "4px",
+          }}>
+            <FontAwesomeIcon icon={faThumbtack} style={{ color: "#2563eb" }} />
+            <span style={{ fontSize: "16px", fontWeight: 600, color: "#1a1a1a" }}>
+              Pinned Post
+            </span>
+          </div>
+          <PostCard post={user.pinned_post} onUpdated={fetchUserPosts} />
+        </div>
+      )}
 
       {/* Posts Section */}
       <div>
         <h2 style={{
-          fontSize: "22px",
+          fontSize: "20px",
           fontWeight: 700,
           color: "#1a1a1a",
           marginBottom: "20px",
@@ -248,17 +504,30 @@ export default function UserProfile() {
             padding: "60px 20px",
             color: "#64748b",
             backgroundColor: "#ffffff",
-            borderRadius: "30px",
+            borderRadius: "24px",
             border: "1px solid #e4e7eb",
           }}>
             <p style={{ fontSize: "18px", marginBottom: "8px" }}>No posts yet</p>
             <p style={{ fontSize: "14px" }}>This user hasn't shared anything yet.</p>
           </div>
         ) : (
-          posts.map(post => <PostCard key={post.id} post={post} />)
+          posts
+            .filter(post => post.id !== user.pinned_post_id)
+            .map(post => (
+              <PostCard key={post.id} post={post} onUpdated={fetchUserPosts} />
+            ))
         )}
       </div>
+
+      {userId && (
+        <FollowersModal
+          isOpen={followersModalOpen}
+          onClose={() => setFollowersModalOpen(false)}
+          userId={userId}
+          type={followersModalType}
+          title={followersModalType === "followers" ? "Followers" : "Following"}
+        />
+      )}
     </div>
   );
 }
-

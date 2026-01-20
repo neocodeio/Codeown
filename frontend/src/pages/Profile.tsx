@@ -6,7 +6,10 @@ import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
 import PostCard from "../components/PostCard";
 import EditProfileModal from "../components/EditProfileModal";
+import FollowersModal from "../components/FollowersModal";
 import api from "../api/axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart, faUsers, faUserPlus, faThumbtack } from "@fortawesome/free-solid-svg-icons";
 
 interface UserProfile {
   id: string;
@@ -16,6 +19,11 @@ interface UserProfile {
   avatar_url: string | null;
   bio: string | null;
   username_changed_at: string | null;
+  follower_count: number;
+  following_count: number;
+  total_likes: number;
+  pinned_post_id: number | null;
+  pinned_post: any | null;
 }
 
 export default function Profile() {
@@ -29,6 +37,9 @@ export default function Profile() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
+  const [followersModalOpen, setFollowersModalOpen] = useState(false);
+  const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
+  const [pinningPostId, setPinningPostId] = useState<number | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,8 +84,7 @@ export default function Profile() {
     return () => {
       isMounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, getToken]);
 
   const handleSignOut = async () => {
     try {
@@ -86,7 +96,6 @@ export default function Profile() {
   };
 
   const handleProfileUpdated = async () => {
-    // Refresh profile and posts
     if (userId) {
       try {
         const token = await getToken();
@@ -102,7 +111,37 @@ export default function Profile() {
     }
   };
 
-  // Show loading state while Clerk is initializing
+  const handlePinPost = async (postId: number) => {
+    try {
+      setPinningPostId(postId);
+      const token = await getToken();
+      if (!token) return;
+
+      const endpoint = userProfile?.pinned_post_id === postId 
+        ? "/users/pin/unpin" 
+        : `/users/pin/${postId}`;
+      
+      await api.post(endpoint, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Refresh profile
+      const res = await api.get(`/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUserProfile(res.data);
+    } catch (error) {
+      console.error("Error pinning post:", error);
+    } finally {
+      setPinningPostId(null);
+    }
+  };
+
+  const openFollowersModal = (type: "followers" | "following") => {
+    setFollowersModalType(type);
+    setFollowersModalOpen(true);
+  };
+
   if (!isLoaded) {
     return (
       <div style={{ 
@@ -114,17 +153,23 @@ export default function Profile() {
         justifyContent: "center",
         backgroundColor: "#f5f7fa",
       }}>
-        <div>Loading...</div>
+        <div style={{
+          width: "40px",
+          height: "40px",
+          border: "4px solid #e4e7eb",
+          borderTopColor: "#000",
+          borderRadius: "50%",
+          animation: "spin 0.8s linear infinite",
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
-  // Redirect to sign-in if not signed in
   if (isLoaded && !isSignedIn) {
     return <Navigate to="/sign-in" replace />;
   }
 
-  // Show message if user data is not available yet
   if (!user || !userId) {
     return (
       <div style={{ 
@@ -142,180 +187,304 @@ export default function Profile() {
 
   return (
     <div style={{
-      maxWidth: "680px",
+      maxWidth: "720px",
       margin: "0 auto",
       padding: "32px 20px",
       backgroundColor: "#f5f7fa",
       minHeight: "calc(100vh - 80px)",
     }}>
-      {/* Profile Header Card */}
+      {/* Profile Header Card - Modern Design */}
       <div style={{
         backgroundColor: "#ffffff",
-        borderRadius: "30px",
-        padding: "40px",
+        borderRadius: "32px",
+        padding: "0",
         marginBottom: "24px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
         border: "1px solid #e4e7eb",
-        textAlign: "center",
-        position: "relative",
+        overflow: "hidden",
       }}>
-        {/* Sign Out Button - Top Left */}
-        <button
-          onClick={handleSignOut}
-          style={{
-            position: "absolute",
-            top: "20px",
-            left: "20px",
-            padding: "8px 16px",
-            backgroundColor: "#dc2626",
-            border: "none",
-            color: "#ffffff",
-            borderRadius: "12px",
-            cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: 600,
-            transition: "all 0.2s",
-            boxShadow: "0 2px 8px rgba(220, 38, 38, 0.3)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#b91c1c";
-            e.currentTarget.style.transform = "translateY(-1px)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "#dc2626";
-            e.currentTarget.style.transform = "translateY(0)";
-          }}
-        >
-          Sign Out
-        </button>
-
-        {/* Edit Button - Top Right */}
-        <button
-          onClick={() => setIsEditModalOpen(true)}
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            padding: "8px 16px",
-            backgroundColor: "#000",
-            border: "none",
-            color: "#ffffff",
-            borderRadius: "12px",
-            cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: 600,
-            transition: "all 0.2s",
-          }}
-        >
-          Edit Profile
-        </button>
-        <img
-          src={userProfile?.avatar_url || user.imageUrl || "https://ui-avatars.com/api/?name=User&background=317ff5&color=ffffff&size=128"}
-          alt={userProfile?.name || user.fullName || "Profile"}
-          style={{
-            width: "120px",
-            height: "120px",
-            borderRadius: "50%",
-            marginBottom: "20px",
-            objectFit: "cover",
-            border: "4px solid #f5f7fa",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-          }}
-        />
-        <h1 style={{
-          margin: "0 0 8px 0",
-          fontSize: "28px",
-          fontWeight: 700,
-          color: "#1a1a1a",
-        }}>
-          {userProfile?.name || user.fullName || "User"}
-        </h1>
-        {(userProfile?.email || user.primaryEmailAddress) && (
-          <p style={{
-            color: "#64748b",
-            margin: "0 0 12px 0",
-            fontSize: "16px",
-          }}>
-            {userProfile?.email || user.primaryEmailAddress?.emailAddress}
-          </p>
-        )}
-        {userProfile?.bio && (
-          <p style={{
-            color: "#1a1a1a",
-            margin: "0 0 24px 0",
-            fontSize: "15px",
-            lineHeight: "1.6",
-            maxWidth: "500px",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}>
-            {userProfile.bio}
-          </p>
-        )}
+        {/* Cover gradient */}
         <div style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "16px",
-          marginBottom: "24px",
-          flexWrap: "wrap",
+          height: "65px",
+          background: "linear-gradient(135deg, #000 0%, #000 100%)",
+          position: "relative",
+          marginBottom: "80px",
         }}>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "8px 16px",
-            backgroundColor: "#f0f7ff",
-            borderRadius: "12px",
-            color: "#64748b",
-            fontSize: "14px",
-            fontWeight: 600,
-          }}>
-            <span>{posts.length}</span>
-            <span>{posts.length === 1 ? "Post" : "Posts"}</span>
-          </div>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "8px 16px",
-            backgroundColor: "#fef3c7",
-            borderRadius: "12px",
-            color: "#92400e",
-            fontSize: "14px",
-            fontWeight: 600,
-          }}>
-            <span>{savedPosts.length}</span>
-            <span>{savedPosts.length === 1 ? "Saved" : "Saved"}</span>
-          </div>
-          {(userProfile?.username || user.username) && (
-            <div style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
+          {/* Sign Out Button */}
+          <button
+            onClick={handleSignOut}
+            style={{
+              position: "absolute",
+              top: "16px",
+              left: "16px",
               padding: "8px 16px",
-              backgroundColor: "#f5f7fa",
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              border: "none",
+              color: "#dc2626",
               borderRadius: "12px",
-              color: "#000",
-              fontSize: "14px",
+              cursor: "pointer",
+              fontSize: "13px",
               fontWeight: 600,
+              transition: "all 0.2s",
+              backdropFilter: "blur(8px)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#dc2626";
+              e.currentTarget.style.color = "#ffffff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+              e.currentTarget.style.color = "#dc2626";
+            }}
+          >
+            Sign Out
+          </button>
+
+          {/* Edit Button */}
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            style={{
+              position: "absolute",
+              top: "16px",
+              right: "16px",
+              padding: "8px 16px",
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              border: "none",
+              color: "#000",
+              borderRadius: "12px",
+              cursor: "pointer",
+              fontSize: "13px",
+              fontWeight: 600,
+              transition: "all 0.2s",
+              backdropFilter: "blur(8px)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#bfff70";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+            }}
+          >
+            Edit Profile
+          </button>
+        </div>
+
+        {/* Profile content */}
+        <div style={{ padding: "0 32px 32px", marginTop: "-50px", textAlign: "center" }}>
+          {/* Avatar */}
+          <img
+            src={userProfile?.avatar_url || user.imageUrl || "https://ui-avatars.com/api/?name=User&background=317ff5&color=ffffff&size=128"}
+            alt={userProfile?.name || user.fullName || "Profile"}
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "4px solid #ffffff",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            }}
+          />
+
+          {/* Name and username */}
+          <h1 style={{
+            margin: "16px 0 4px 0",
+            fontSize: "24px",
+            fontWeight: 700,
+            color: "#1a1a1a",
+          }}>
+            {userProfile?.name || user.fullName || "User"}
+          </h1>
+          
+          {(userProfile?.username || user.username) && (
+            <p style={{
+              color: "#64748b",
+              margin: "0 0 8px 0",
+              fontSize: "15px",
             }}>
-              <span>@{userProfile?.username || user.username}</span>
+              @{userProfile?.username || user.username}
+            </p>
+          )}
+
+          {/* Bio */}
+          {userProfile?.bio && (
+            <p style={{
+              color: "#475569",
+              margin: "12px auto 0",
+              fontSize: "15px",
+              lineHeight: 1.6,
+              maxWidth: "400px",
+            }}>
+              {userProfile.bio}
+            </p>
+          )}
+
+          {/* Stats */}
+          <div style={{
+            display: "flex",
+            justifyContent: "center",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "16px",
+            padding: "5px",
+            gap: "24px",
+            marginTop: "24px",
+            flexWrap: "wrap",
+          }}>
+            <div
+              onClick={() => openFollowersModal("followers")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
+                padding: "12px 20px",
+                borderRadius: "16px",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#64748b";
+                e.currentTarget.style.color = "#000";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#f5f5f5";
+                e.currentTarget.style.color = "#1a1a1a";
+              }}
+            >
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+                {userProfile?.follower_count || 0}
+              </span>
+              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+                <FontAwesomeIcon icon={faUsers} style={{ marginRight: "4px" }} />
+                Followers
+              </span>
             </div>
+
+            <div
+              onClick={() => openFollowersModal("following")}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
+                padding: "12px 20px",
+                borderRadius: "16px",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#64748b";
+                e.currentTarget.style.color = "#000";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#f5f5f5";
+                e.currentTarget.style.color = "#1a1a1a";
+              }}
+            >
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+                {userProfile?.following_count || 0}
+              </span>
+              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+                <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: "4px" }} />
+                Following
+              </span>
+            </div>
+
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "12px 20px",
+              borderRadius: "16px",
+            }}>
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#dc2626" }}>
+                {userProfile?.total_likes || 0}
+              </span>
+              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+                <FontAwesomeIcon icon={faHeart} style={{ marginRight: "4px", color: "#dc2626" }} />
+                Total Likes
+              </span>
+            </div>
+
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "12px 20px",
+              borderRadius: "16px",
+            }}>
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+                {posts.length}
+              </span>
+              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+                Posts
+              </span>
+            </div>
+          </div>
+
+          {/* Member since */}
+          {user.createdAt && (
+            <p style={{
+              color: "#94a3b8",
+              margin: "20px 0 0 0",
+              fontSize: "13px",
+            }}>
+              Member since {new Date(user.createdAt).toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric"
+              })}
+            </p>
           )}
         </div>
-        {user.createdAt && (
-          <p style={{
-            color: "#94a3b8",
-            margin: 0,
-            fontSize: "13px",
-          }}>
-            Member since {new Date(user.createdAt).toLocaleDateString("en-US", {
-              month: "long",
-              year: "numeric"
-            })}
-          </p>
-        )}
       </div>
+
+      {/* Pinned Post */}
+      {userProfile?.pinned_post && (
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: "12px",
+            paddingLeft: "4px",
+          }}>
+            <FontAwesomeIcon icon={faThumbtack} style={{ color: "#2563eb" }} />
+            <span style={{ fontSize: "16px", fontWeight: 600, color: "#1a1a1a" }}>
+              Pinned Post
+            </span>
+          </div>
+          <div style={{ position: "relative" }}>
+            <PostCard 
+              post={userProfile.pinned_post} 
+              onUpdated={() => {
+                fetchUserPosts();
+                handleProfileUpdated();
+              }}
+            />
+            <button
+              onClick={() => handlePinPost(userProfile.pinned_post.id)}
+              disabled={pinningPostId === userProfile.pinned_post.id}
+              style={{
+                position: "absolute",
+                top: "12px",
+                right: "30px",
+                padding: "10px",
+                marginBottom: "20px",
+                backgroundColor: "#2563eb",
+                border: "none",
+                color: "#ffffff",
+                borderRadius: "50px",
+                cursor: "pointer",
+                fontSize: "12px",
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                zIndex: 10,
+              }}
+            >
+              <FontAwesomeIcon icon={faThumbtack} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Tabs Section */}
       <div style={{
@@ -396,15 +565,10 @@ export default function Profile() {
                   width: "40px",
                   height: "40px",
                   border: "4px solid #e4e7eb",
-                  borderTopColor: "#317ff5",
+                  borderTopColor: "#000",
                   borderRadius: "50%",
                   animation: "spin 0.8s linear infinite",
                 }} />
-                <style>{`
-                  @keyframes spin {
-                    to { transform: rotate(360deg); }
-                  }
-                `}</style>
               </div>
             ) : !Array.isArray(posts) || posts.length === 0 ? (
               <div style={{
@@ -412,23 +576,69 @@ export default function Profile() {
                 padding: "60px 20px",
                 color: "#64748b",
                 backgroundColor: "#ffffff",
-                borderRadius: "30px",
+                borderRadius: "24px",
                 border: "1px solid #e4e7eb",
               }}>
                 <p style={{ fontSize: "18px", marginBottom: "8px" }}>No posts yet</p>
                 <p style={{ fontSize: "14px" }}>Start sharing your thoughts with the community!</p>
               </div>
             ) : (
-              posts.map(post => (
-                <PostCard 
-                  key={post.id} 
-                  post={post} 
-                  onUpdated={() => {
-                    fetchUserPosts();
-                    fetchSavedPosts();
-                  }}
-                />
-              ))
+              posts
+                .filter(post => post.id !== userProfile?.pinned_post_id)
+                .map(post => (
+                  <div key={post.id} style={{ position: "relative" }}>
+                    <PostCard 
+                      post={post} 
+                      onUpdated={() => {
+                        fetchUserPosts();
+                        fetchSavedPosts();
+                        handleProfileUpdated();
+                      }}
+                    />
+                    {/* Pin button for each post */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePinPost(post.id);
+                      }}
+                      disabled={pinningPostId === post.id}
+                      style={{
+                        position: "absolute",
+                        top: "12px",
+                        right: "35px",
+                        marginBottom: "20px",
+                        padding: "6px",
+                        backgroundColor: userProfile?.pinned_post_id === post.id ? "#2563eb" : "#f0f7ff",
+                        border: "1px solid #2563eb",
+                        color: userProfile?.pinned_post_id === post.id ? "#ffffff" : "#2563eb",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        zIndex: 10,
+                        opacity: pinningPostId === post.id ? 0.6 : 1,
+                        transition: "all 0.15s",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (userProfile?.pinned_post_id !== post.id) {
+                          e.currentTarget.style.backgroundColor = "#2563eb";
+                          e.currentTarget.style.color = "#ffffff";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (userProfile?.pinned_post_id !== post.id) {
+                          e.currentTarget.style.backgroundColor = "#f0f7ff";
+                          e.currentTarget.style.color = "#2563eb";
+                        }
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faThumbtack} />
+                    </button>
+                  </div>
+                ))
             )}
           </>
         ) : (
@@ -444,15 +654,10 @@ export default function Profile() {
                   width: "40px",
                   height: "40px",
                   border: "4px solid #e4e7eb",
-                  borderTopColor: "#317ff5",
+                  borderTopColor: "#000",
                   borderRadius: "50%",
                   animation: "spin 0.8s linear infinite",
                 }} />
-                <style>{`
-                  @keyframes spin {
-                    to { transform: rotate(360deg); }
-                  }
-                `}</style>
               </div>
             ) : !Array.isArray(savedPosts) || savedPosts.length === 0 ? (
               <div style={{
@@ -460,7 +665,7 @@ export default function Profile() {
                 padding: "60px 20px",
                 color: "#64748b",
                 backgroundColor: "#ffffff",
-                borderRadius: "30px",
+                borderRadius: "24px",
                 border: "1px solid #e4e7eb",
               }}>
                 <p style={{ fontSize: "18px", marginBottom: "8px" }}>No saved posts yet</p>
@@ -488,6 +693,16 @@ export default function Profile() {
           onClose={() => setIsEditModalOpen(false)}
           onUpdated={handleProfileUpdated}
           currentUser={userProfile}
+        />
+      )}
+
+      {userId && (
+        <FollowersModal
+          isOpen={followersModalOpen}
+          onClose={() => setFollowersModalOpen(false)}
+          userId={userId}
+          type={followersModalType}
+          title={followersModalType === "followers" ? "Followers" : "Following"}
         />
       )}
     </div>

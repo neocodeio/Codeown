@@ -178,8 +178,8 @@ export async function createComment(req: Request, res: Response) {
     if (!user?.email_addresses && !user?.emailAddresses && process.env.CLERK_SECRET_KEY) {
       try {
         console.log("JWT token missing user data, fetching from Clerk API for userId:", userId);
-        const fullUserData = await clerkClient.users.getUser(userId);
-        userDataForSync = fullUserData;
+        const fullUserData = await clerkClient.users.getUser(userId as string);
+        userDataForSync = fullUserData as any;
       } catch (clerkError: any) {
         console.error("Error fetching user from Clerk API:", clerkError?.message);
         // Continue with JWT token data
@@ -187,7 +187,7 @@ export async function createComment(req: Request, res: Response) {
     }
     
     try {
-      await ensureUserExists(userId, userDataForSync);
+      await ensureUserExists(userId as string, userDataForSync as unknown as any);
     } catch (error: any) {
       console.error("Error ensuring user exists:", error?.message || error);
     }
@@ -222,6 +222,18 @@ export async function createComment(req: Request, res: Response) {
       });
     }
 
+    // Get the created comment ID
+    const { data: newComment } = await supabase
+      .from("comments")
+      .select("id")
+      .eq("post_id", postIdInt)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    const commentId = newComment?.id || null;
+
     // Get post owner for notification
     const { data: post } = await supabase
       .from("posts")
@@ -231,13 +243,24 @@ export async function createComment(req: Request, res: Response) {
 
     // Create notification for post owner (if not the commenter)
     if (post && post.user_id !== userId) {
-      await supabase.from("notifications").insert({
-        user_id: post.user_id,
-        type: "comment",
-        actor_id: userId,
-        post_id: postIdInt,
-        comment_id: data?.[0]?.id || null,
-      });
+      try {
+        const { error: notifError } = await supabase.from("notifications").insert({
+          user_id: post.user_id,
+          type: "comment",
+          actor_id: userId,
+          post_id: postIdInt,
+          comment_id: commentId,
+          read: false,
+        });
+        
+        if (notifError) {
+          console.error("Error creating comment notification:", notifError);
+        } else {
+          console.log(`Created comment notification for user ${post.user_id} from ${userId} on post ${postIdInt}`);
+        }
+      } catch (notifError) {
+        console.error("Error creating comment notification:", notifError);
+      }
     }
 
     // Create notifications for mentioned users
@@ -255,17 +278,27 @@ export async function createComment(req: Request, res: Response) {
             type: "mention",
             actor_id: userId,
             post_id: postIdInt,
-            comment_id: data?.[0]?.id || null,
+            comment_id: commentId,
+            read: false,
           }));
 
         if (mentionNotifications.length > 0) {
-          await supabase.from("notifications").insert(mentionNotifications);
+          try {
+            const { error: mentionNotifError } = await supabase.from("notifications").insert(mentionNotifications);
+            if (mentionNotifError) {
+              console.error("Error creating mention notifications:", mentionNotifError);
+            } else {
+              console.log(`Created ${mentionNotifications.length} mention notifications`);
+            }
+          } catch (mentionNotifError) {
+            console.error("Error creating mention notifications:", mentionNotifError);
+          }
         }
       }
     }
 
     console.log("Comment created successfully:", data);
-    return res.status(201).json({ success: true, data });
+    return res.status(201).json({ success: true, data, commentId });
   } catch (error: any) {
     console.error("Unexpected error in createComment:", error);
     return res.status(500).json({ 

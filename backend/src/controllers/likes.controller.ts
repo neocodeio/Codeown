@@ -15,13 +15,18 @@ export async function likePost(req: Request, res: Response) {
       return res.status(400).json({ error: "Post ID is required" });
     }
 
+    const postIdNum = parseInt(postId, 10);
+    if (isNaN(postIdNum)) {
+      return res.status(400).json({ error: "Invalid post ID" });
+    }
+
     // Check if already liked
     const { data: existingLike, error: checkError } = await supabase
       .from("likes")
       .select("*")
       .eq("user_id", userId)
-      .eq("post_id", postId)
-      .single();
+      .eq("post_id", postIdNum)
+      .maybeSingle();
 
     if (checkError && checkError.code !== "PGRST116") {
       console.error("Error checking like:", checkError);
@@ -34,21 +39,27 @@ export async function likePost(req: Request, res: Response) {
         .from("likes")
         .delete()
         .eq("user_id", userId)
-        .eq("post_id", postId);
+        .eq("post_id", postIdNum);
 
       if (deleteError) {
         console.error("Error unliking post:", deleteError);
         return res.status(500).json({ error: "Failed to unlike post" });
       }
 
-      return res.json({ liked: false, message: "Post unliked" });
+      // Get updated like count
+      const { count } = await supabase
+        .from("likes")
+        .select("*", { count: "exact", head: true })
+        .eq("post_id", postIdNum);
+
+      return res.json({ liked: false, message: "Post unliked", likeCount: count || 0 });
     } else {
       // Like
       const { data, error } = await supabase
         .from("likes")
         .insert({
           user_id: userId,
-          post_id: parseInt(postId, 10),
+          post_id: postIdNum,
         })
         .select()
         .single();
@@ -62,19 +73,36 @@ export async function likePost(req: Request, res: Response) {
       const { data: post } = await supabase
         .from("posts")
         .select("user_id")
-        .eq("id", postId)
+        .eq("id", postIdNum)
         .single();
 
       if (post && post.user_id !== userId) {
-        await supabase.from("notifications").insert({
-          user_id: post.user_id,
-          type: "like",
-          actor_id: userId,
-          post_id: parseInt(postId, 10),
-        });
+        try {
+          const { error: notifError } = await supabase.from("notifications").insert({
+            user_id: post.user_id,
+            type: "like",
+            actor_id: userId,
+            post_id: postIdNum,
+            read: false,
+          });
+          
+          if (notifError) {
+            console.error("Error creating like notification:", notifError);
+          } else {
+            console.log(`Created like notification for user ${post.user_id} from ${userId} on post ${postIdNum}`);
+          }
+        } catch (notifError) {
+          console.error("Error creating like notification:", notifError);
+        }
       }
 
-      return res.json({ liked: true, message: "Post liked", data });
+      // Get updated like count
+      const { count } = await supabase
+        .from("likes")
+        .select("*", { count: "exact", head: true })
+        .eq("post_id", postIdNum);
+
+      return res.json({ liked: true, message: "Post liked", data, likeCount: count || 0 });
     }
   } catch (error: any) {
     console.error("Unexpected error in likePost:", error);

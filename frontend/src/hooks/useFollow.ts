@@ -3,8 +3,8 @@ import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 
 export function useFollow(userId: string | null) {
-  const [following, setFollowing] = useState(false);
-  const [followers, setFollowers] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const { getToken } = useClerkAuth();
@@ -17,9 +17,9 @@ export function useFollow(userId: string | null) {
       const res = await api.get(`/follows/${userId}/status`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      setFollowing(res.data.following || false);
-      setFollowers(res.data.followers || 0);
-      setFollowingCount(res.data.following || 0);
+      setIsFollowing(res.data.isFollowing || false);
+      setFollowerCount(res.data.followerCount || 0);
+      setFollowingCount(res.data.followingCount || 0);
     } catch (error) {
       console.error("Error fetching follow status:", error);
     }
@@ -49,12 +49,8 @@ export function useFollow(userId: string | null) {
         }
       );
 
-      setFollowing(res.data.following);
-      if (res.data.following) {
-        setFollowers((prev) => prev + 1);
-      } else {
-        setFollowers((prev) => Math.max(0, prev - 1));
-      }
+      setIsFollowing(res.data.following);
+      setFollowerCount(res.data.followerCount || (res.data.following ? followerCount + 1 : Math.max(0, followerCount - 1)));
     } catch (error) {
       console.error("Error toggling follow:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to follow user";
@@ -64,5 +60,5 @@ export function useFollow(userId: string | null) {
     }
   };
 
-  return { following, followers, followingCount, loading, toggleFollow, fetchFollowStatus };
+  return { isFollowing, followerCount, followingCount, loading, toggleFollow, fetchFollowStatus };
 }

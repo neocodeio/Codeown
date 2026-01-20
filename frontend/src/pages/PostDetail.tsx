@@ -4,6 +4,8 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import ImageSlider from "../components/ImageSlider";
+import ContentRenderer from "../components/ContentRenderer";
+import MentionInput from "../components/MentionInput";
 
 interface Comment {
   id: number;
@@ -312,16 +314,11 @@ export default function PostDetail() {
         )}
 
         {/* Post Content */}
-        <p style={{
-          color: "#1a1a1a",
-          fontSize: "16px",
-          lineHeight: "1.6",
+        <div style={{
           marginBottom: post.images && post.images.length > 0 ? "16px" : 0,
-          whiteSpace: "pre-wrap",
-          wordBreak: "break-word",
         }}>
-          {post.content}
-        </p>
+          <ContentRenderer content={post.content} />
+        </div>
 
         {/* Images */}
         {post.images && post.images.length > 0 && (
@@ -353,35 +350,12 @@ export default function PostDetail() {
             paddingBottom: "24px",
             borderBottom: "1px solid #f5f7fa",
           }}>
-            <textarea
+            <MentionInput
               value={commentContent}
-              onChange={(e) => setCommentContent(e.target.value)}
-              placeholder="Write a comment..."
-              style={{
-                width: "100%",
-                minHeight: "100px",
-                padding: "12px 16px",
-                border: "1px solid #e4e7eb",
-                borderRadius: "25px",
-                fontSize: "16px",
-                fontFamily: "inherit",
-                resize: "vertical",
-                outline: "none",
-                transition: "all 0.15s",
-                color: "#1a1a1a",
-                backgroundColor: "#ffffff",
-                boxSizing: "border-box",
-                lineHeight: 1.5,
-                marginBottom: "12px",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#000";
-                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = "#e4e7eb";
-                e.currentTarget.style.boxShadow = "none";
-              }}
+              onChange={setCommentContent}
+              placeholder="Write a comment... (Use @ to mention users)"
+              minHeight="100px"
+              style={{ marginBottom: "12px" }}
             />
             <button
               onClick={handleSubmitComment}
@@ -473,16 +447,9 @@ export default function PostDetail() {
                       {formatDate(comment.created_at)}
                     </time>
                   </div>
-                  <p style={{
-                    color: "#1a1a1a",
-                    fontSize: "15px",
-                    lineHeight: "1.5",
-                    margin: 0,
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                  }}>
-                    {comment.content}
-                  </p>
+                  <div style={{ margin: 0 }}>
+                    <ContentRenderer content={comment.content} fontSize="15px" />
+                  </div>
                 </div>
               );
             })}

@@ -195,6 +195,10 @@ export async function getUserProfile(req: Request, res: Response) {
           bio: null,
           username: clerkUser.username || null,
           username_changed_at: null,
+          pinned_post_id: null,
+          follower_count: 0,
+          following_count: 0,
+          total_likes: 0,
         };
         
         // Sync user to Supabase for future requests
@@ -216,7 +220,56 @@ export async function getUserProfile(req: Request, res: Response) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Only return username_changed_at if it's the current user's profile
+    // Get accurate follow counts
+    const [followerResult, followingResult] = await Promise.all([
+      supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("following_id", userId),
+      supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("follower_id", userId),
+    ]);
+
+    // Get total likes on user's posts
+    const { data: userPosts } = await supabase
+      .from("posts")
+      .select("id")
+      .eq("user_id", userId);
+    
+    let totalLikes = 0;
+    if (userPosts && userPosts.length > 0) {
+      const postIds = userPosts.map((p: any) => p.id);
+      const { count: likesCount } = await supabase
+        .from("likes")
+        .select("*", { count: "exact", head: true })
+        .in("post_id", postIds);
+      totalLikes = likesCount || 0;
+    }
+
+    // Fetch pinned post if exists
+    let pinnedPost = null;
+    if (userData.pinned_post_id) {
+      const { data: post } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("id", userData.pinned_post_id)
+        .single();
+      
+      if (post) {
+        pinnedPost = {
+          ...post,
+          user: {
+            name: userData.name,
+            email: userData.email,
+            avatar_url: userData.avatar_url,
+          },
+        };
+      }
+    }
+
+    // Build response data
     const responseData: any = {
       id: userData.id,
       name: userData.name,
@@ -224,6 +277,11 @@ export async function getUserProfile(req: Request, res: Response) {
       avatar_url: userData.avatar_url,
       bio: userData.bio || null,
       username: userData.username || null,
+      follower_count: followerResult.count || 0,
+      following_count: followingResult.count || 0,
+      total_likes: totalLikes,
+      pinned_post_id: userData.pinned_post_id || null,
+      pinned_post: pinnedPost,
     };
 
     if (currentUserId === userId) {
@@ -344,5 +402,103 @@ export async function updateUserProfile(req: Request, res: Response) {
       error: "Internal server error", 
       details: error?.message 
     });
+  }
+}
+
+// Pin or unpin a post to user's profile
+export async function pinPost(req: Request, res: Response) {
+  try {
+    const user = req.user;
+    const userId = user?.sub || user?.id || user?.userId;
+    const { postId } = req.params;
+
+    if (!userId) {
+      return res.status(401).json({ error: "User ID not found" });
+    }
+
+    // If postId is "unpin", unpin the current post
+    if (postId === "unpin") {
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ pinned_post_id: null })
+        .eq("id", userId);
+
+      if (updateError) {
+        console.error("Error unpinning post:", updateError);
+        return res.status(500).json({ error: "Failed to unpin post" });
+      }
+
+      return res.json({ success: true, message: "Post unpinned" });
+    }
+
+    const postIdNum = parseInt(postId, 10);
+    if (isNaN(postIdNum)) {
+      return res.status(400).json({ error: "Invalid post ID" });
+    }
+
+    // Verify the post exists and belongs to the user
+    const { data: post, error: postError } = await supabase
+      .from("posts")
+      .select("id, user_id")
+      .eq("id", postIdNum)
+      .single();
+
+    if (postError || !post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if (post.user_id !== userId) {
+      return res.status(403).json({ error: "You can only pin your own posts" });
+    }
+
+    // Pin the post
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ pinned_post_id: postIdNum })
+      .eq("id", userId);
+
+    if (updateError) {
+      console.error("Error pinning post:", updateError);
+      return res.status(500).json({ error: "Failed to pin post" });
+    }
+
+    return res.json({ success: true, message: "Post pinned", pinnedPostId: postIdNum });
+  } catch (error: any) {
+    console.error("Unexpected error in pinPost:", error);
+    return res.status(500).json({ error: "Internal server error", details: error?.message });
+  }
+}
+
+// Get user's total likes
+export async function getUserTotalLikes(req: Request, res: Response) {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Get all posts by user
+    const { data: posts } = await supabase
+      .from("posts")
+      .select("id")
+      .eq("user_id", userId);
+
+    if (!posts || posts.length === 0) {
+      return res.json({ totalLikes: 0 });
+    }
+
+    const postIds = posts.map((p: any) => p.id);
+    
+    // Count likes on all user's posts
+    const { count } = await supabase
+      .from("likes")
+      .select("*", { count: "exact", head: true })
+      .in("post_id", postIds);
+
+    return res.json({ totalLikes: count || 0 });
+  } catch (error: any) {
+    console.error("Unexpected error in getUserTotalLikes:", error);
+    return res.status(500).json({ error: "Internal server error", details: error?.message });
   }
 }

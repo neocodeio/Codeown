@@ -3,7 +3,8 @@ import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { faImage, faCode } from "@fortawesome/free-solid-svg-icons";
+import MentionInput from "./MentionInput";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -362,35 +363,56 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 }}
                 autoFocus
               />
-              <textarea
+              <MentionInput
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="What's on your mind?"
-                style={{
-                  width: "100%",
-                  minHeight: "150px",
-                  padding: "12px 16px",
-                  border: "1px solid #e4e7eb",
-                  borderRadius: "25px",
-                  fontSize: "16px",
-                  fontFamily: "inherit",
-                  resize: "vertical",
-                  outline: "none",
-                  transition: "all 0.15s",
-                  color: "#1a1a1a",
-                  backgroundColor: "#ffffff",
-                  boxSizing: "border-box",
-                  lineHeight: 1.5,
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "#000";
-                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "#e4e7eb";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
+                onChange={setContent}
+                placeholder="What's on your mind? (Use @ to mention users, ``` for code blocks)"
+                minHeight="150px"
               />
+              
+              {/* Code block helper */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                marginTop: "-8px",
+                marginBottom: "8px",
+              }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const codeTemplate = "\n```javascript\n// Your code here\n```\n";
+                    setContent(content + codeTemplate);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "6px 12px",
+                    backgroundColor: "#f5f7fa",
+                    border: "1px solid #e4e7eb",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    color: "#64748b",
+                    transition: "all 0.15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#e4e7eb";
+                    e.currentTarget.style.color = "#1a1a1a";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f5f7fa";
+                    e.currentTarget.style.color = "#64748b";
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCode} />
+                  Add Code Block
+                </button>
+                <span style={{ fontSize: "11px", color: "#94a3b8" }}>
+                  Tip: Use ```language for syntax highlighting (js, python, etc.)
+                </span>
+              </div>
 
               {/* Image Upload Section */}
               <div>
