@@ -156,6 +156,137 @@ export async function getPostLikes(req: Request, res: Response) {
   }
 }
 
+export async function likeComment(req: Request, res: Response) {
+  try {
+    const user = req.user;
+    const userId = user?.sub || user?.id || user?.userId;
+    const { commentId } = req.params;
+
+    if (!userId) {
+      return res.status(401).json({ error: "User ID not found" });
+    }
+    if (!commentId) {
+      return res.status(400).json({ error: "Comment ID is required" });
+    }
+
+    const commentIdNum = parseInt(commentId, 10);
+    if (isNaN(commentIdNum)) {
+      return res.status(400).json({ error: "Invalid comment ID" });
+    }
+
+    const { data: existingLike, error: checkError } = await supabase
+      .from("likes")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("comment_id", commentIdNum)
+      .is("post_id", null)
+      .maybeSingle();
+
+    if (checkError && checkError.code !== "PGRST116") {
+      console.error("Error checking comment like:", checkError);
+      return res.status(500).json({ error: "Failed to check like status" });
+    }
+
+    if (existingLike) {
+      const { error: deleteError } = await supabase
+        .from("likes")
+        .delete()
+        .eq("user_id", userId)
+        .eq("comment_id", commentIdNum);
+
+      if (deleteError) {
+        console.error("Error unliking comment:", deleteError);
+        return res.status(500).json({ error: "Failed to unlike comment" });
+      }
+      const { count } = await supabase
+        .from("likes")
+        .select("*", { count: "exact", head: true })
+        .eq("comment_id", commentIdNum);
+      return res.json({ liked: false, likeCount: count || 0 });
+    } else {
+      const { error } = await supabase
+        .from("likes")
+        .insert({ user_id: userId, comment_id: commentIdNum })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error liking comment:", error);
+        return res.status(500).json({ error: "Failed to like comment", details: error.message });
+      }
+
+      const { data: comment } = await supabase
+        .from("comments")
+        .select("user_id")
+        .eq("id", commentIdNum)
+        .single();
+
+      if (comment && comment.user_id !== userId) {
+        try {
+          await supabase.from("notifications").insert({
+            user_id: comment.user_id,
+            type: "like",
+            actor_id: userId,
+            comment_id: commentIdNum,
+            read: false,
+          });
+        } catch (notifErr) {
+          console.error("Error creating comment like notification:", notifErr);
+        }
+      }
+
+      const { count } = await supabase
+        .from("likes")
+        .select("*", { count: "exact", head: true })
+        .eq("comment_id", commentIdNum);
+      return res.json({ liked: true, likeCount: count || 0 });
+    }
+  } catch (error: any) {
+    console.error("Unexpected error in likeComment:", error);
+    return res.status(500).json({ error: "Internal server error", details: error?.message });
+  }
+}
+
+export async function getCommentLikes(req: Request, res: Response) {
+  try {
+    const { commentId } = req.params;
+    const user = req.user;
+    const userId = user?.sub || user?.id || user?.userId;
+
+    if (!commentId) {
+      return res.status(400).json({ error: "Comment ID is required" });
+    }
+
+    const { count, error: countError } = await supabase
+      .from("likes")
+      .select("*", { count: "exact", head: true })
+      .eq("comment_id", commentId);
+
+    if (countError) {
+      console.error("Error getting comment like count:", countError);
+      return res.status(500).json({ error: "Failed to get like count" });
+    }
+
+    let isLiked = false;
+    if (userId) {
+      const { data: userLike, error: likeCheckError } = await supabase
+        .from("likes")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("comment_id", commentId)
+        .maybeSingle();
+      if (!likeCheckError || likeCheckError.code === "PGRST116") {
+        isLiked = !!userLike;
+      }
+    }
+
+    return res.json({ count: count || 0, isLiked });
+  } catch (error: any) {
+    console.error("Unexpected error in getCommentLikes:", error);
+    return res.status(500).json({ error: "Internal server error", details: error?.message });
+  }
+}
+
 export async function getUserLikes(req: Request, res: Response) {
   try {
     const { userId } = req.params;

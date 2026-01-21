@@ -1,24 +1,30 @@
 import { useEffect, useState } from "react";
 import PostCard from "../components/PostCard";
-import { usePosts } from "../hooks/usePosts";
+import { usePosts, type FeedFilter } from "../hooks/usePosts";
+import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useClerkUser } from "../hooks/useClerkUser";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 
 export default function Feed() {
   const [page, setPage] = useState(1);
-  const { posts, loading, fetchPosts, hasMore } = usePosts(page, 20);
+  const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
+  const { getToken } = useClerkAuth();
+  const { isSignedIn } = useClerkUser();
+  const { posts, loading, fetchPosts, hasMore } = usePosts(page, 20, feedFilter, getToken);
 
-  // Listen for post creation events
+  useEffect(() => {
+    if (!isSignedIn && feedFilter === "following") setFeedFilter("all");
+  }, [isSignedIn, feedFilter]);
+
   useEffect(() => {
     const handlePostCreated = () => {
       setPage(1);
       fetchPosts(1, false);
     };
-
     window.addEventListener("postCreated", handlePostCreated);
     return () => window.removeEventListener("postCreated", handlePostCreated);
   }, [fetchPosts]);
 
-  // Infinite scroll
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1000) {
@@ -28,10 +34,18 @@ export default function Feed() {
         }
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasMore, loading, page, fetchPosts]);
+
+  const handleFilterChange = (f: FeedFilter) => {
+    setFeedFilter(f);
+    setPage(1);
+  };
+
+  const emptyMessage = feedFilter === "following"
+    ? "Follow users to see their posts here."
+    : "No posts yet. Be the first to share something!";
 
   return (
     <div style={{
@@ -39,8 +53,41 @@ export default function Feed() {
       margin: "0 auto",
       padding: "32px 20px",
       minHeight: "calc(100vh - 80px)",
-      backgroundColor: "#f5f7fa",
+      backgroundColor: "#f6f6f6",
     }}>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
+        <button
+          onClick={() => handleFilterChange("all")}
+          style={{
+            padding: "10px 20px",
+            borderRadius: "20px",
+            border: "none",
+            fontWeight: 600,
+            cursor: "pointer",
+            backgroundColor: feedFilter === "all" ? "var(--accent)" : "var(--bg-elevated)",
+            color: feedFilter === "all" ? "gray" : "#000",
+          }}
+        >
+          For you
+        </button>
+        {isSignedIn && (
+          <button
+            onClick={() => handleFilterChange("following")}
+            style={{
+              padding: "10px 20px",
+              borderRadius: "20px",
+              border: "none",
+              fontWeight: 600,
+              cursor: "pointer",
+              backgroundColor: feedFilter === "following" ? "var(--accent)" : "var(--bg-elevated)",
+              color: feedFilter === "following" ? "gray" : "#000",
+            }}
+          >
+            Following
+          </button>
+        )}
+      </div>
+
       {loading && posts.length === 0 ? (
         <>
           {[...Array(3)].map((_, i) => (
@@ -48,13 +95,9 @@ export default function Feed() {
           ))}
         </>
       ) : !Array.isArray(posts) || posts.length === 0 ? (
-        <div style={{
-          textAlign: "center",
-          padding: "60px 20px",
-          color: "#64748b",
-        }}>
-          <p style={{ fontSize: "18px", marginBottom: "8px" }}>No posts yet</p>
-          <p style={{ fontSize: "14px" }}>Be the first to share something!</p>
+        <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-secondary)" }}>
+          <p style={{ fontSize: "18px", marginBottom: "8px" }}>{feedFilter === "following" ? "No posts from people you follow" : "No posts yet"}</p>
+          <p style={{ fontSize: "14px" }}>{emptyMessage}</p>
         </div>
       ) : (
         <>
@@ -64,8 +107,8 @@ export default function Feed() {
               <div style={{
                 width: "32px",
                 height: "32px",
-                border: "3px solid #e4e7eb",
-                borderTopColor: "#000",
+                border: "3px solid var(--border-color)",
+                borderTopColor: "var(--accent)",
                 borderRadius: "50%",
                 animation: "spin 0.8s linear infinite",
               }} />

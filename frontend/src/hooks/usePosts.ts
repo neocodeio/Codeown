@@ -21,7 +21,9 @@ export interface Post {
   isSaved?: boolean;
 }
 
-export function usePosts(page: number = 1, limit: number = 20) {
+export type FeedFilter = "all" | "following";
+
+export function usePosts(page: number = 1, limit: number = 20, filter: FeedFilter = "all", getToken?: () => Promise<string | null>) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -31,7 +33,10 @@ export function usePosts(page: number = 1, limit: number = 20) {
   const fetchPosts = async (pageNum: number = page, append: boolean = false) => {
     setLoading(true);
     try {
-      const res = await api.get(`/posts?page=${pageNum}&limit=${limit}`);
+      const token = getToken ? await getToken() : null;
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const filterParam = filter === "following" ? "&filter=following" : "";
+      const res = await api.get(`/posts?page=${pageNum}&limit=${limit}${filterParam}`, { headers });
       let postsData: Post[] = [];
       
       if (res.data.posts) {
@@ -68,7 +73,7 @@ export function usePosts(page: number = 1, limit: number = 20) {
 
   useEffect(() => {
     fetchPosts(page, false);
-  }, [page]);
+  }, [page, filter]);
 
   return { posts, loading, fetchPosts, total, totalPages, hasMore };
 }

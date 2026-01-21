@@ -6,10 +6,17 @@ import CreatePostModal from "./CreatePostModal";
 import SearchBar from "./SearchBar";
 import NotificationDropdown from "./NotificationDropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes, faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
+import { useTheme } from "../hooks/useTheme";
 
-export default function Navbar() {
+interface NavbarProps {
+  onToggleTheme?: () => void;
+}
+
+export default function Navbar({ onToggleTheme }: NavbarProps) {
   const { isLoaded, isSignedIn } = useClerkUser();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -53,7 +60,7 @@ export default function Navbar() {
 
   return (
     <nav style={{
-      padding: "16px 24px",
+      padding: "-0px 24px",
       borderBottom: "1px solid #e4e7eb",
       display: "flex",
       borderRadius: "25px",
@@ -75,7 +82,7 @@ export default function Navbar() {
             color: "#fefefe",
             // fontFamily: "ubuntu",
           }}>
-            Codeown
+            <img src={"./src/assets/logo-removed.png"} alt="logo" style={{ width: "82px", height: "82px" }} />
           </h2>
         </Link>
         {!isMobile && (
@@ -190,6 +197,27 @@ export default function Navbar() {
                   <span style={{ fontSize: "18px", lineHeight: 1 }}>+</span>
                 </button>
               </>
+            )}
+            {onToggleTheme && (
+              <button
+                onClick={onToggleTheme}
+                style={{
+                  padding: "8px 12px",
+                  backgroundColor: "transparent",
+                  border: "1px solid var(--nav-text)",
+                  color: "var(--nav-text)",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "40px",
+                  height: "40px",
+                }}
+                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                <FontAwesomeIcon icon={isDark ? faSun : faMoon} style={{ fontSize: "16px" }} />
+              </button>
             )}
             {isLoaded ? (
               <>

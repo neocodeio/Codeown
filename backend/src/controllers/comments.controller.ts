@@ -6,34 +6,61 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 export async function getComments(req: Request, res: Response) {
   try {
     const { postId } = req.params;
+    const sort = ((req.query.sort as string) || "newest").toLowerCase() === "top" ? "top" : "newest";
 
-    // Fetch comments for the post
     const { data: comments, error: commentsError } = await supabase
       .from("comments")
       .select("*")
-      .eq("post_id", postId)
-      .order("created_at", { ascending: true });
+      .eq("post_id", postId);
 
     if (commentsError) {
       console.error("Supabase error in getComments:", commentsError);
-      return res.status(500).json({ 
-        error: "Failed to fetch comments", 
-        details: commentsError.message 
-      });
+      return res.status(500).json({ error: "Failed to fetch comments", details: commentsError.message });
     }
 
     if (!comments || comments.length === 0) {
       return res.json([]);
     }
 
-    // Get unique user IDs
-    const userIds = [...new Set(comments.map((c: any) => c.user_id))];
-    
-    // Fetch users
+    const commentIds = comments.map((c: any) => c.id);
+    const { data: likeRows } = await supabase
+      .from("likes")
+      .select("comment_id")
+      .in("comment_id", commentIds)
+      .not("comment_id", "is", null);
+
+    const likeCountMap = new Map<number, number>();
+    for (const r of likeRows || []) {
+      const id = (r as any).comment_id;
+      if (id != null) likeCountMap.set(id, (likeCountMap.get(id) || 0) + 1);
+    }
+
+    const withLikes = comments.map((c: any) => ({
+      ...c,
+      like_count: likeCountMap.get(c.id) || 0,
+    }));
+
+    if (sort === "top") {
+      withLikes.sort((a: any, b: any) => {
+        if (b.like_count !== a.like_count) return b.like_count - a.like_count;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+    } else {
+      withLikes.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    }
+
+    const userIds = new Set<string>(withLikes.map((c: any) => c.user_id));
+    for (const c of withLikes) {
+      if (c.parent_id) {
+        const p = withLikes.find((x: any) => x.id === c.parent_id);
+        if (p) userIds.add(p.user_id);
+      }
+    }
+
     const { data: users, error: usersError } = await supabase
       .from("users")
       .select("id, name, email, avatar_url")
-      .in("id", userIds);
+      .in("id", [...userIds]);
 
     if (usersError) {
       console.error("Supabase error fetching users:", usersError);
@@ -42,8 +69,7 @@ export async function getComments(req: Request, res: Response) {
     // Create a map of user_id to user data from Supabase
     const userMap = new Map((users || []).map((u: any) => [u.id, u]));
 
-    // Find user IDs that don't have data in Supabase
-    const missingUserIds = userIds.filter((id: string) => !userMap.has(id));
+    const missingUserIds = [...userIds].filter((id: string) => !userMap.has(id));
 
     // Fetch missing users from Clerk as fallback
     const clerkUserMap = new Map();
@@ -96,50 +122,33 @@ export async function getComments(req: Request, res: Response) {
       }
     }
 
-    // Combine comments with user data
-    const commentsWithUsers = comments.map((comment: any) => {
+    const commentsWithUsers = withLikes.map((comment: any) => {
       const supabaseUser = userMap.get(comment.user_id);
       const clerkUser = clerkUserMap.get(comment.user_id);
       const user = supabaseUser || clerkUser;
 
-      // Extract user data with better fallback logic
-      let userData;
+      let userData: { name: string; email: string | null; avatar_url: string | null };
       if (user) {
-        // Handle both Supabase format and Clerk format
-        const userName = user.name || 
-                        (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) ||
-                        user.firstName || 
-                        user.lastName || 
-                        user.username ||
-                        null;
-        
-        const userEmail = user.email || 
-                         (user.emailAddresses?.[0]?.emailAddress) ||
-                         null;
-        
-        const avatarUrl = user.avatar_url || 
-                         user.imageUrl || 
-                         null;
-
-        userData = {
-          name: userName || (userEmail ? userEmail.split("@")[0] : "User"),
-          email: userEmail,
-          avatar_url: avatarUrl,
-        };
+        const userName = user.name || (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) || user.firstName || user.lastName || user.username || null;
+        const userEmail = user.email || (user.emailAddresses?.[0]?.emailAddress) || null;
+        const avatarUrl = user.avatar_url || user.imageUrl || null;
+        userData = { name: userName || (userEmail ? userEmail.split("@")[0] : "User"), email: userEmail, avatar_url: avatarUrl };
       } else {
-        userData = {
-          name: "User",
-          email: null,
-          avatar_url: null,
-        };
+        userData = { name: "User", email: null, avatar_url: null };
       }
 
-      return {
-        ...comment,
-        user: userData
-      };
+      let parent_author_name: string | null = null;
+      if (comment.parent_id) {
+        const p = withLikes.find((x: any) => x.id === comment.parent_id);
+        if (p) {
+          const pu = userMap.get(p.user_id) || clerkUserMap.get(p.user_id);
+          parent_author_name = pu?.name ?? null;
+        }
+      }
+
+      return { ...comment, user: userData, parent_author_name };
     });
-    
+
     return res.json(commentsWithUsers);
   } catch (error: any) {
     console.error("Unexpected error in getComments:", error);
@@ -153,7 +162,7 @@ export async function getComments(req: Request, res: Response) {
 export async function createComment(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { post_id, content } = req.body;
+    const { post_id, content, parent_id: parentIdRaw } = req.body;
 
     // Validate input
     if (!post_id) {
@@ -206,11 +215,24 @@ export async function createComment(req: Request, res: Response) {
       return res.status(400).json({ error: "Invalid post ID" });
     }
 
-    const { data, error } = await supabase.from("comments").insert({
+    let parentIdInt: number | null = null;
+    if (parentIdRaw != null) {
+      parentIdInt = typeof parentIdRaw === "string" ? parseInt(parentIdRaw, 10) : parentIdRaw;
+      if (parentIdInt != null && isNaN(parentIdInt)) {
+        parentIdInt = null;
+        console.error("Invalid parent ID:", parentIdRaw);
+        return res.status(400).json({ error: "Invalid parent ID" });
+      }
+    }
+
+    const insertRow: Record<string, unknown> = {
       post_id: postIdInt,
       content: content.trim(),
       user_id: userId,
-    });
+    };
+    if (parentIdInt != null) insertRow.parent_id = parentIdInt;
+
+    const { data, error } = await supabase.from("comments").insert(insertRow);
 
     if (error) {
       console.error("Supabase error:", error);
@@ -244,7 +266,7 @@ export async function createComment(req: Request, res: Response) {
     // Create notification for post owner (if not the commenter)
     if (post && post.user_id !== userId) {
       try {
-        const { error: notifError } = await supabase.from("notifications").insert({
+        await supabase.from("notifications").insert({
           user_id: post.user_id,
           type: "comment",
           actor_id: userId,
@@ -252,14 +274,27 @@ export async function createComment(req: Request, res: Response) {
           comment_id: commentId,
           read: false,
         });
-        
-        if (notifError) {
-          console.error("Error creating comment notification:", notifError);
-        } else {
-          console.log(`Created comment notification for user ${post.user_id} from ${userId} on post ${postIdInt}`);
-        }
       } catch (notifError) {
         console.error("Error creating comment notification:", notifError);
+      }
+    }
+
+    // Create "reply" notification for parent comment author
+    if (parentIdInt != null) {
+      const { data: parentComment } = await supabase.from("comments").select("user_id").eq("id", parentIdInt).single();
+      if (parentComment && parentComment.user_id !== userId) {
+        try {
+          await supabase.from("notifications").insert({
+            user_id: parentComment.user_id,
+            type: "reply",
+            actor_id: userId,
+            post_id: postIdInt,
+            comment_id: commentId,
+            read: false,
+          });
+        } catch (replyNotifErr) {
+          console.error("Error creating reply notification:", replyNotifErr);
+        }
       }
     }
 

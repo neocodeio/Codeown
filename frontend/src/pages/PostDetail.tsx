@@ -6,19 +6,7 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import ImageSlider from "../components/ImageSlider";
 import ContentRenderer from "../components/ContentRenderer";
 import MentionInput from "../components/MentionInput";
-
-interface Comment {
-  id: number;
-  post_id: number;
-  content: string;
-  user_id: string;
-  created_at: string;
-  user?: {
-    name: string;
-    email: string | null;
-    avatar_url?: string | null;
-  };
-}
+import CommentBlock, { type CommentWithMeta } from "../components/CommentBlock";
 
 interface Post {
   id: number;
@@ -40,7 +28,8 @@ export default function PostDetail() {
   const { getToken, isLoaded: authLoaded } = useClerkAuth();
   const { isSignedIn } = useClerkUser();
   const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<CommentWithMeta[]>([]);
+  const [commentSort, setCommentSort] = useState<"newest" | "top">("newest");
   const [loading, setLoading] = useState(true);
   const [commentContent, setCommentContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,55 +56,28 @@ export default function PostDetail() {
 
   useEffect(() => {
     let isMounted = true;
-    
-    const fetchPostAndComments = async () => {
+    const run = async () => {
       if (!id) {
         setLoading(false);
         return;
       }
-
       try {
         setLoading(true);
-        
-        // Fetch single post by ID
         const postRes = await api.get(`/posts/${id}`);
-        
-        if (isMounted && postRes.data) {
-          setPost(postRes.data);
-        }
-
-        // Fetch comments
-        try {
-          const commentsRes = await api.get(`/comments/${id}`);
-          if (isMounted && Array.isArray(commentsRes.data)) {
-            setComments(commentsRes.data);
-          } else if (isMounted) {
-            setComments([]);
-          }
-        } catch (commentError) {
-          console.error("Error fetching comments:", commentError);
-          if (isMounted) {
-            setComments([]);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching post:", error);
-        if (isMounted) {
-          setPost(null);
-        }
+        if (isMounted && postRes.data) setPost(postRes.data);
+        const commentsRes = await api.get(`/comments/${id}?sort=${commentSort}`);
+        if (isMounted && Array.isArray(commentsRes.data)) setComments(commentsRes.data);
+        else if (isMounted) setComments([]);
+      } catch (e) {
+        if (isMounted) setPost(null);
+        if (isMounted) setComments([]);
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     };
-
-    fetchPostAndComments();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [id]);
+    run();
+    return () => { isMounted = false; };
+  }, [id, commentSort]);
 
   const handleSubmitComment = async () => {
     if (!isSignedIn || !authLoaded) {
@@ -146,9 +108,8 @@ export default function PostDetail() {
       );
 
       setCommentContent("");
-      // Refresh comments
-      const commentsRes = await api.get(`/comments/${id}`);
-      setComments(commentsRes.data);
+      const commentsRes = await api.get(`/comments/${id}?sort=${commentSort}`);
+      setComments(Array.isArray(commentsRes.data) ? commentsRes.data : []);
     } catch (error) {
       console.error("Error creating comment:", error);
       let errorMessage = "Failed to create comment";
@@ -173,6 +134,42 @@ export default function PostDetail() {
       setIsSubmitting(false);
     }
   };
+
+  const handleReply = async (parentId: number, content: string) => {
+    if (!id || !authLoaded || !isSignedIn) return;
+    const token = await getToken();
+    if (!token) return;
+    await api.post("/comments", { post_id: id, content, parent_id: parentId }, { headers: { Authorization: `Bearer ${token}` } });
+    const commentsRes = await api.get(`/comments/${id}?sort=${commentSort}`);
+    setComments(Array.isArray(commentsRes.data) ? commentsRes.data : []);
+  };
+
+  function buildTree(list: CommentWithMeta[]): CommentWithMeta[] {
+    const map = new Map<number, CommentWithMeta & { children: CommentWithMeta[] }>();
+    list.forEach((c) => map.set(c.id, { ...c, children: [] }));
+    list.forEach((c) => {
+      if (c.parent_id != null) {
+        const p = map.get(c.parent_id);
+        if (p) p.children.push(map.get(c.id)!);
+      }
+    });
+    const roots = list.filter((c) => c.parent_id == null).map((c) => map.get(c.id)!);
+    roots.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    if (commentSort === "top") {
+      roots.sort((a, b) => {
+        const la = a.like_count ?? 0, lb = b.like_count ?? 0;
+        if (lb !== la) return lb - la;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+    }
+    roots.forEach((r) => {
+      r.children.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    });
+    return roots;
+  }
+
+  const commentTree = buildTree(comments);
+  const totalComments = comments.length;
 
   if (loading) {
     return (
@@ -240,25 +237,23 @@ export default function PostDetail() {
       margin: "0 auto",
       padding: "32px 20px",
       minHeight: "calc(100vh - 80px)",
-      backgroundColor: "#f5f7fa",
+      backgroundColor: "var(--bg-page)",
     }}>
-      {/* Post Card */}
       <article style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "#fff",
         borderRadius: "30px",
         padding: "24px",
         marginBottom: "24px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
-        border: "1px solid #e4e7eb",
+        boxShadow: "var(--shadow)",
+        border: "1px solid var(--border-color)",
       }}>
-        {/* User Info Header */}
         <div style={{
           display: "flex",
           alignItems: "center",
           gap: "12px",
           marginBottom: "16px",
           paddingBottom: "16px",
-          borderBottom: "1px solid #f5f7fa",
+          borderBottom: "1px solid var(--border-light)",
         }}>
           <img
             src={avatarUrl}
@@ -268,40 +263,19 @@ export default function PostDetail() {
               height: "48px",
               borderRadius: "50%",
               objectFit: "cover",
-              border: "2px solid #e4e7eb",
+              border: "2px solid var(--border-color)",
             }}
           />
           <div style={{ flex: 1 }}>
-            <div style={{
-              fontSize: "16px",
-              fontWeight: 600,
-              color: "#1a1a1a",
-              marginBottom: "2px",
-            }}>
-              {userName}
-            </div>
-            {userEmail && (
-              <div style={{
-                fontSize: "13px",
-                color: "#64748b",
-              }}>
-                {userEmail}
-              </div>
-            )}
+            <div style={{ fontSize: "16px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "2px" }}>{userName}</div>
+            {userEmail && <div style={{ fontSize: "13px", color: "var(--text-secondary)" }}>{userEmail}</div>}
           </div>
-          <time style={{
-            color: "#64748b",
-            fontSize: "13px",
-            fontWeight: 500,
-          }}>
-            {formatDate(post.created_at)}
-          </time>
+          <time style={{ color: "var(--text-secondary)", fontSize: "13px", fontWeight: 500 }}>{formatDate(post.created_at)}</time>
         </div>
 
-        {/* Post Title */}
         {post.title && (
           <h1 style={{
-            color: "#1a1a1a",
+            color: "var(--text-primary)",
             fontSize: "28px",
             fontWeight: 700,
             lineHeight: "1.4",
@@ -313,73 +287,81 @@ export default function PostDetail() {
           </h1>
         )}
 
-        {/* Post Content */}
-        <div style={{
-          marginBottom: post.images && post.images.length > 0 ? "16px" : 0,
-        }}>
+        <div style={{ marginBottom: post.images && post.images.length > 0 ? "16px" : 0 }}>
           <ContentRenderer content={post.content} />
         </div>
 
-        {/* Images */}
-        {post.images && post.images.length > 0 && (
-          <ImageSlider images={post.images} />
-        )}
+        {post.images && post.images.length > 0 && <ImageSlider images={post.images} />}
       </article>
 
       {/* Comments Section */}
       <div style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "#fff",
         borderRadius: "30px",
         padding: "24px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
-        border: "1px solid #e4e7eb",
+        boxShadow: "var(--shadow)",
+        border: "1px solid var(--border-color)",
       }}>
-        <h2 style={{
-          fontSize: "20px",
-          fontWeight: 700,
-          color: "#1a1a1a",
-          marginBottom: "20px",
-        }}>
-          Comments ({comments.length})
-        </h2>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+          <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
+            Comments ({totalComments})
+          </h2>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              onClick={() => setCommentSort("newest")}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "16px",
+                border: "none",
+                fontWeight: 600,
+                fontSize: "13px",
+                cursor: "pointer",
+                backgroundColor: commentSort === "newest" ? "var(--accent)" : "var(--bg-elevated)",
+                color: commentSort === "newest" ? "gray" : "#000",
+              }}
+            >
+              Newest
+            </button>
+            <button
+              onClick={() => setCommentSort("top")}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "16px",
+                border: "none",
+                fontWeight: 600,
+                fontSize: "13px",
+                cursor: "pointer",
+                backgroundColor: commentSort === "top" ? "var(--accent)" : "var(--bg-elevated)",
+                color: commentSort === "top" ? "gray" : "#000",
+              }}
+            >
+              Top
+            </button>
+          </div>
+        </div>
 
-        {/* Comment Form */}
         {isSignedIn && (
-          <div style={{
-            marginBottom: "24px",
-            paddingBottom: "24px",
-            borderBottom: "1px solid #f5f7fa",
-          }}>
+          <div style={{ marginBottom: "24px", paddingBottom: "24px", borderBottom: "1px solid var(--border-light)" }}>
             <MentionInput
               value={commentContent}
               onChange={setCommentContent}
               placeholder="Write a comment... (Use @ to mention users)"
               minHeight="100px"
-              style={{ marginBottom: "12px" }}
+              style={{ marginBottom: "12px", borderRadius: "15px" }}
             />
             <button
               onClick={handleSubmitComment}
               disabled={!commentContent.trim() || isSubmitting}
               style={{
                 padding: "10px 20px",
-                backgroundColor: commentContent.trim() && !isSubmitting ? "#000" : "#e4e7eb",
+                backgroundColor: commentContent.trim() && !isSubmitting ? "var(--accent)" : "var(--border-color)",
                 border: "none",
-                color: commentContent.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
-                borderRadius: "25px",
+                color: commentContent.trim() && !isSubmitting ? "#fff" : "#000",
+                backgroundColor: commentContent.trim() && !isSubmitting ? "#000" : "#e4e7eb",
+                borderRadius: "12px",
                 cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
                 fontSize: "15px",
                 fontWeight: 500,
-                transition: "all 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                if (commentContent.trim() && !isSubmitting) {
-                  e.currentTarget.style.backgroundColor = "#2563eb";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (commentContent.trim() && !isSubmitting) {
-                  e.currentTarget.style.backgroundColor = "#000";
-                }
               }}
             >
               {isSubmitting ? "Posting..." : "Post Comment"}
@@ -387,72 +369,22 @@ export default function PostDetail() {
           </div>
         )}
 
-        {/* Comments List */}
-        {comments.length === 0 ? (
-          <div style={{
-            textAlign: "center",
-            padding: "40px 20px",
-            color: "#64748b",
-          }}>
+        {commentTree.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "gray" }}>
             <p>No comments yet. Be the first to comment!</p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {comments.map((comment) => {
-              const commentUserName = comment.user?.name || "User";
-              const commentUserEmail = comment.user?.email || null;
-              const commentAvatarUrl = comment.user?.avatar_url || getAvatarUrl(commentUserName, commentUserEmail);
-
-              return (
-                <div
-                  key={comment.id}
-                  style={{
-                    padding: "16px",
-                    backgroundColor: "#f5f7fa",
-                    borderRadius: "12px",
-                    border: "1px solid #e4e7eb",
-                  }}
-                >
-                  <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    marginBottom: "8px",
-                  }}>
-                    <img
-                      src={commentAvatarUrl}
-                      alt={commentUserName}
-                      style={{
-                        width: "32px",
-                        height: "32px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        border: "2px solid #e4e7eb",
-                      }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "#1a1a1a",
-                      }}>
-                        {commentUserName}
-                      </div>
-                    </div>
-                    <time style={{
-                      color: "#64748b",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                    }}>
-                      {formatDate(comment.created_at)}
-                    </time>
-                  </div>
-                  <div style={{ margin: 0 }}>
-                    <ContentRenderer content={comment.content} fontSize="15px" />
-                  </div>
-                </div>
-              );
-            })}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            {commentTree.map((c) => (
+              <CommentBlock
+                key={c.id}
+                comment={c}
+                depth={0}
+                getAvatarUrl={getAvatarUrl}
+                formatDate={formatDate}
+                onReply={handleReply}
+              />
+            ))}
           </div>
         )}
       </div>

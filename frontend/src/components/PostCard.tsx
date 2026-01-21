@@ -15,7 +15,9 @@ import {
   faHeart as faHeartSolid,
   faComment,
   faBookmark as faBookmarkSolid,
-  faBookmark as faBookmarkRegular
+  faBookmark as faBookmarkRegular,
+  faTrash,
+  faPenToSquare
 } from "@fortawesome/free-solid-svg-icons";
 
 interface PostCardProps {
@@ -117,21 +119,21 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
     <article
       onClick={handleClick}
       style={{
-        backgroundColor: "#ffffff",
-        borderRadius: isMobile ? "20px" : "50px",
-        padding: isMobile ? "20px" : "35px",
-        marginBottom: "16px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
-        border: "1px solid #e4e7eb",
+        backgroundColor: "#fff",
+        borderRadius: isMobile ? "20px" : "35px",
+        padding: isMobile ? "20px" : "30px 50px",
+        marginBottom: "55px",
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.25)",
+        border: "1px solid var(--border-color)",
         transition: "all 0.2s ease",
         cursor: "pointer",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.12)";
+        e.currentTarget.style.boxShadow = "var(--shadow-hover)";
         e.currentTarget.style.transform = "translateY(-2px)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.08)";
+        e.currentTarget.style.boxShadow = "var(--shadow)";
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
@@ -223,7 +225,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                   e.currentTarget.style.color = "#000";
                 }}
               >
-                Edit
+                <FontAwesomeIcon icon={faPenToSquare} style={{ fontSize: "12px" }} />
               </button>
               <button
                 onClick={handleDeleteClick}
@@ -253,7 +255,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                   }
                 }}
               >
-                {isDeleting ? "..." : "Delete"}
+                {isDeleting ? "..." : <FontAwesomeIcon icon={faTrash} style={{ fontSize: "12px" }} />}
               </button>
             </div>
           )}

@@ -1,14 +1,63 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+/* ---- Light theme (default) ---- */
 :root {
   --primary: #317ff5;
+  --accent: #2563eb;
   --white: #ffffff;
   --dark: #1a1a1a;
   --gray-light: #f5f7fa;
   --gray-medium: #e4e7eb;
   --gray-text: #64748b;
   --gray-dark: #334155;
+  /* Semantic tokens for components */
+  --bg-page: #f5f7fa;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-input: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #64748b;
+  --border-color: #e4e7eb;
+  --border-light: #f5f7fa;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --nav-bg: #000;
+  --nav-text: #fefefe;
+  --nav-text-muted: #999;
+  --heart-liked: #dc2626;
+  --heart-unliked: #64748b;
+  --code-bg: #2d2d2d;
+  --code-head: #2d2d2d;
+  --inline-code-bg: #f1f5f9;
+  --inline-code: #e11d48;
   font-family: 'Montserrat', sans-serif;
+}
+
+/* ---- Dark theme ---- */
+.dark {
+  --bg-page: #0f0f0f;
+  --bg-card: #1a1a1a;
+  --bg-elevated: #242424;
+  --bg-input: #1a1a1a;
+  --text-primary: #f5f5f5;
+  --text-secondary: #94a3b8;
+  --border-color: #2d2d2d;
+  --border-light: #242424;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --nav-bg: #000;
+  --nav-text: #fefefe;
+  --nav-text-muted: #94a3b8;
+  --heart-liked: #f87171;
+  --heart-unliked: #64748b;
+  --code-bg: #1e1e1e;
+  --code-head: #2d2d2d;
+  --inline-code-bg: #2d2d2d;
+  --inline-code: #f472b6;
+  --gray-light: #1a1a1a;
+  --gray-medium: #2d2d2d;
+  --gray-text: #94a3b8;
+  --gray-dark: #cbd5e1;
 }
 
 * {
@@ -20,8 +69,8 @@
 
 body {
   margin: 0;
-  background-color: var(--gray-light);
-  color: var(--dark);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
 }
@@ -45,26 +94,9 @@ a {
   color: inherit;
 }
 
-/* Ensure liked heart icon is red */
-.liked-heart {
-  color: #dc2626 !important;
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.liked-heart svg,
-.liked-heart path {
-  fill: #dc2626 !important;
-  color: #dc2626 !important;
-  stroke: #dc2626 !important;
-}
-
-/* Ensure unliked heart icon is gray */
-.unliked-heart {
-  color: #64748b !important;
-}
-
-.unliked-heart svg,
-.unliked-heart path {
-  fill: #64748b !important;
-  color: #64748b !important;
-  stroke: #64748b !important;
-}
+.liked-heart { color: var(--heart-liked) !important; }
+.liked-heart svg, .liked-heart path { fill: var(--heart-liked) !important; color: var(--heart-liked) !important; stroke: var(--heart-liked) !important; }
+.unliked-heart { color: var(--heart-unliked) !important; }
+.unliked-heart svg, .unliked-heart path { fill: var(--heart-unliked) !important; color: var(--heart-unliked) !important; stroke: var(--heart-unliked) !important; }

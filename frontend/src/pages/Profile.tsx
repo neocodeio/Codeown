@@ -35,7 +35,7 @@ export default function Profile() {
   const { savedPosts, loading: savedPostsLoading, fetchSavedPosts } = useSavedPosts();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [, setLoadingProfile] = useState(true);
   const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
