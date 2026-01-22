@@ -124,24 +124,25 @@ export default function PostDetail() {
             gap: "8px", 
             marginBottom: "40px",
             border: "none",
+            background: "transparent",
             fontSize: "12px",
             padding: "0"
           }}
         >
           <FontAwesomeIcon icon={faArrowLeft} />
-          <span>BACK TO FEED</span>
+          <span style={{ fontWeight: 600, fontSize: "20px", background: "transparent" }}>BACK</span>
         </button>
 
-        <article className="fade-in" style={{ marginBottom: "80px" }}>
+        <article className="fade-in" style={{ marginBottom: "80px", background: "#f5f5f5", padding: "30px", borderRadius: "25px" }}>
           <header style={{ marginBottom: "40px", borderBottom: "1px solid var(--border-color)", paddingBottom: "40px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
               <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)" }} />
               <div>
-                <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{userName.toUpperCase()}</h3>
+                <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{userName}</h3>
                 <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700 }}>{formatDate(post.created_at)}</span>
               </div>
             </div>
-            <h1 style={{ fontSize: "42px", marginBottom: "24px" }}>{post.title}</h1>
+            <h1 style={{ fontSize: "42px", marginBottom: "4px" }}>{post.title}</h1>
           </header>
           
           <div style={{ fontSize: "18px", lineHeight: "1.7", marginBottom: "40px" }}>
@@ -158,32 +159,19 @@ export default function PostDetail() {
         <section id="comments" style={{ borderTop: "4px solid var(--border-color)", paddingTop: "60px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "40px" }}>
             <h2 style={{ fontSize: "24px" }}>COMMENTS ({comments.length})</h2>
-            <div style={{ display: "flex", gap: "24px" }}>
-              <button
-                onClick={() => setCommentSort("newest")}
-                style={{ border: "none", padding: "0", fontSize: "11px", fontWeight: 800, color: commentSort === "newest" ? "var(--text-primary)" : "var(--text-tertiary)", borderBottom: commentSort === "newest" ? "2px solid var(--text-primary)" : "none", borderRadius: 0 }}
-              >
-                NEWEST
-              </button>
-              <button
-                onClick={() => setCommentSort("top")}
-                style={{ border: "none", padding: "0", fontSize: "11px", fontWeight: 800, color: commentSort === "top" ? "var(--text-primary)" : "var(--text-tertiary)", borderBottom: commentSort === "top" ? "2px solid var(--text-primary)" : "none", borderRadius: 0 }}
-              >
-                TOP
-              </button>
-            </div>
           </div>
 
           {isSignedIn && (
             <div style={{ marginBottom: "60px" }}>
-              <div style={{ border: "1px solid var(--border-color)", padding: "12px" }}>
+              <div style={{ padding: "12px" }}>
                 <MentionInput value={commentContent} onChange={setCommentContent} placeholder="TYPE YOUR THOUGHTS..." minHeight="100px" />
               </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <button
                   onClick={handleSubmitComment}
                   className="primary"
                   disabled={!commentContent.trim() || isSubmitting}
+                  style={{ padding: "12px 24px", borderRadius: "12px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "14px" }}
                 >
                   {isSubmitting ? "POSTING..." : "POST COMMENT"}
                 </button>
@@ -191,7 +179,7 @@ export default function PostDetail() {
             </div>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "40px", backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "25px" }}>
             {buildTree(comments).length === 0 ? (
               <div style={{ textAlign: "left", padding: "40px 0", color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 700 }}>NO COMMENTS YET.</div>
             ) : (

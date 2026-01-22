@@ -113,7 +113,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
               fontWeight: 800,
             }}
           >
-            <FontAwesomeIcon icon={faHeart} />
+            <FontAwesomeIcon icon={faHeart} style={{ color: isLiked ? "red" : "#000", cursor: "pointer" }} />
             <span>{likeCount ?? 0}</span>
           </button>
           {isSignedIn && (
@@ -131,7 +131,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 fontWeight: 800,
               }}
             >
-              <FontAwesomeIcon icon={faReply} />
+              <FontAwesomeIcon icon={faReply} style={{ cursor: "pointer" }} />
               <span>REPLY</span>
             </button>
           )}

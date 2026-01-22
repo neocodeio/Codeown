@@ -104,9 +104,9 @@ export default function Profile() {
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <section className="fade-in" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "60px" }}>
+        <section className="fade-in" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "10px", backgroundColor: "#f5f5f5", padding: "30px", borderRadius: "30px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
-            <div style={{ width: "160px", height: "160px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
+            <div style={{ width: "160px", height: "160px", border: "1px solid #ddd", overflow: "hidden", borderRadius: "50%" }}>
               <img
                 src={userProfile?.avatar_url || user.imageUrl || `https://ui-avatars.com/api/?name=${user.fullName}&background=000000&color=fff&bold=true`}
                 alt="Avatar"
@@ -114,8 +114,8 @@ export default function Profile() {
               />
             </div>
             <div style={{ display: "flex", gap: "16px" }}>
-              <button onClick={() => setIsEditModalOpen(true)} className="primary">EDIT PROFILE</button>
-              <button onClick={handleSignOut} style={{ border: "1px solid var(--border-color)", padding: "8px 16px" }}>
+              <button onClick={() => setIsEditModalOpen(true)} className="primary" style={{ borderRadius: "9px", backgroundColor: "#000", color: "#fff", fontSize: "15px", border: "none", fontWeight: "600" }}>Edit Profile</button>
+              <button onClick={handleSignOut} style={{ border: "1px solid red", padding: "8px 16px", backgroundColor: "red", color: "#fff", borderRadius: "9px", fontSize: "15px" }}>
                 <FontAwesomeIcon icon={faSignOutAlt} />
               </button>
             </div>
@@ -123,7 +123,7 @@ export default function Profile() {
 
           <header style={{ marginBottom: "40px" }}>
             <h1 style={{ fontSize: "48px", marginBottom: "8px" }}>{userProfile?.name || user.fullName}</h1>
-            <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>
+            <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, marginBottom: "24px" }}>
               @{userProfile?.username || user.username}
             </p>
             {userProfile?.bio && (
@@ -160,12 +160,12 @@ export default function Profile() {
             onClick={() => setActiveTab("posts")}
             style={{ 
               border: "none", 
-              padding: "12px 0", 
+              padding: "12px 6px", 
               fontSize: "13px", 
               fontWeight: 800, 
               color: activeTab === "posts" ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === "posts" ? "2px solid var(--text-primary)" : "2px solid transparent",
-              borderRadius: 0
+              borderRadius: "15px"
             }}
           >
             POSTS ({posts.length})
@@ -174,12 +174,12 @@ export default function Profile() {
             onClick={() => setActiveTab("saved")}
             style={{ 
               border: "none", 
-              padding: "12px 0", 
+              padding: "12px 6px", 
               fontSize: "13px", 
               fontWeight: 800, 
               color: activeTab === "saved" ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === "saved" ? "2px solid var(--text-primary)" : "2px solid transparent",
-              borderRadius: 0
+              borderRadius: "15px"
             }}
           >
             SAVED ({savedPosts.length})
@@ -198,11 +198,12 @@ export default function Profile() {
                     onClick={() => handlePinPost(p.id)}
                     style={{ 
                       position: "absolute", 
-                      top: "24px", 
-                      right: "24px", 
+                      top: "5px",
+                      left: "5px",
+                      cursor: "pointer",
                       padding: "8px", 
                       border: "1px solid var(--border-color)",
-                      color: userProfile?.pinned_post_id === p.id ? "var(--accent)" : "var(--text-tertiary)",
+                      color: userProfile?.pinned_post_id === p.id ? "#f5f5f5" : "#f5f5f5",
                       backgroundColor: "var(--bg-card)"
                     }}
                   >
