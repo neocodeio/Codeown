@@ -6,7 +6,7 @@ import CreatePostModal from "./CreatePostModal";
 import SearchBar from "./SearchBar";
 import NotificationDropdown from "./NotificationDropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes, faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 
 interface NavbarProps {
   onToggleTheme?: () => void;
@@ -49,29 +49,19 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
       alignItems: "center",
       position: "sticky",
       top: 0,
+      borderRadius: "20px",
       zIndex: 1000,
-      backgroundColor: "var(--bg-page)",
-      borderBottom: "1px solid var(--border-color)",
+      backgroundColor: "#000",
       transition: "all 0.2s ease",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : "60px", flex: 1 }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{
-            width: "32px",
-            height: "32px",
-            backgroundColor: "var(--primary)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <span style={{ color: "var(--bg-page)", fontWeight: 800, fontSize: "18px" }}>C</span>
-          </div>
+        <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
           <span style={{ 
-            fontSize: "20px", 
-            fontWeight: 800, 
-            color: "var(--text-primary)", 
+            fontSize: "25px", 
+            textDecoration: "none",
+            fontWeight: 600, 
+            color: "#FFF", 
             letterSpacing: "-0.05em",
-            textTransform: "uppercase"
           }}>
             Codeown
           </span>
@@ -82,11 +72,12 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
             <Link
               to="/"
               className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
+              style={{ color: "#000", backgroundColor: "#fff", padding: "8px 12px", borderRadius: "12px", textDecoration: "none", fontSize: "20px", fontWeight: 600 }}
             >
               Feed
             </Link>
             {isLoaded && isSignedIn && (
-              <div style={{ width: "240px" }}>
+              <div style={{ width: "240px", border: "2px solid #d9d9daff", borderRadius: "12px", backgroundColor: "#fff" }}>
                 <SearchBar />
               </div>
             )}
@@ -103,12 +94,16 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 className="primary"
                 style={{
                   display: "flex",
+                  backgroundColor: "#fff",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontSize: "14px",
+                  padding: "6px 12px",
                   alignItems: "center",
-                  gap: "8px",
                 }}
               >
                 <FontAwesomeIcon icon={faPlus} />
-                <span>Create</span>
+                <span style={{ fontSize: "14px", backgroundColor: "#fff", padding: "4px 8px", borderRadius: "12px", color: "#000", fontWeight: 700 }}>Create Post</span>
               </button>
             )}
             <NotificationDropdown />
@@ -119,19 +114,19 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
           isSignedIn ? (
             <Link to="/profile">
               <div style={{
-                width: "36px",
-                height: "36px",
-                border: "1px solid var(--border-color)",
-                backgroundColor: "var(--bg-elevated)",
+                border: "1px solid #fff",
+                backgroundColor: "#fff",
+                padding: "6px",
+                borderRadius: "12px",
+                color: "#000",
+                textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "11px",
-                fontWeight: 800,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em"
+                fontSize: "18px",
+                fontWeight: 700,
               }}>
-                Profile
+                <FontAwesomeIcon icon={faUser} /> 
               </div>
             </Link>
           ) : (
@@ -151,7 +146,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
               fontSize: "20px",
             }}
           >
-            <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} />
+            <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} style={{ color: "#ffffff" }} />
           </button>
         )}
       </div>
@@ -162,10 +157,11 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
           className="fade-in"
           style={{
             position: "absolute",
-            top: "100%",
+            top: "120%",
             left: 0,
             right: 0,
-            backgroundColor: "var(--bg-page)",
+            borderRadius: "15px",
+            backgroundColor: "#000",
             borderBottom: "1px solid var(--border-color)",
             padding: "24px",
             display: "flex",
@@ -173,15 +169,15 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
             gap: "16px",
           }}
         >
-          <Link to="/" className="nav-link" style={{ fontSize: "16px" }}>Feed</Link>
+          <Link to="/" className="nav-link" style={{ fontSize: "16px", color: "#ffffff", textDecoration: "none" }}>Feed</Link>
           {isLoaded && isSignedIn && (
             <>
               <SearchBar />
-              <button onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }} className="primary" style={{ width: "100%" }}>New Post</button>
-              <Link to="/profile" className="nav-link" style={{ fontSize: "16px" }}>Profile</Link>
+              <button onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }} className="primary" style={{ width: "100%", padding: "6px", borderRadius: "12px", fontWeight: "bold" }}>Create New Post +</button>
+              <Link to="/profile" className="nav-link" style={{ fontSize: "16px", color: "#ffffff", textDecoration: "none" }}>Profile</Link>
             </>
           )}
-          {!isSignedIn && <Link to="/sign-in"><button className="primary" style={{ width: "100%" }}>Login</button></Link>}
+          {!isSignedIn && <Link to="/sign-in"><button className="primary" style={{ width: "100%", padding: "12px" }}>Login</button></Link>}
         </div>
       )}
 

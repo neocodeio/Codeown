@@ -43,14 +43,14 @@ export default function SearchBar() {
         onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
         onFocus={() => setIsOpen(true)}
         style={{
-          width: "100%",
+          width: "87%",
           padding: "10px 16px",
           border: "1px solid var(--border-color)",
+          borderRadius: "12px",
           backgroundColor: "var(--bg-input)",
           fontSize: "12px",
           fontWeight: 700,
           letterSpacing: "0.05em",
-          textTransform: "uppercase",
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && query.trim().length >= 2) {
@@ -63,11 +63,12 @@ export default function SearchBar() {
       {isOpen && showResults && (users.length > 0 || posts.length > 0) && (
         <div className="fade-in" style={{
           position: "absolute",
-          top: "100%",
+          top: "175%",
           left: 0,
           right: 0,
-          backgroundColor: "var(--bg-page)",
+          backgroundColor: "#f5f5f5",
           border: "1px solid var(--border-color)",
+          borderRadius: "12px",
           borderTop: "none",
           maxHeight: "360px",
           overflowY: "auto",
@@ -76,12 +77,12 @@ export default function SearchBar() {
         }}>
           {users.length > 0 && (
             <div style={{ padding: "8px" }}>
-              <span style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "0 8px 8px", display: "block" }}>Users</span>
+              <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "0 8px 8px", display: "block" }}>Users</span>
               {users.map((u) => (
-                <div key={u.id} onClick={() => handleUserClick(u.id)} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                <div key={u.id} onClick={() => handleUserClick(u.id)} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px", cursor: "pointer", transition: "all 0.2s", borderRadius: "12px", marginBottom: "6px" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#2563eb"; e.currentTarget.style.color = "white" }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "inherit" }}>
                   <img src={u.avatar_url || `https://ui-avatars.com/api/?name=${u.name}&background=000000&color=fff&bold=true`} alt="" style={{ width: "24px", height: "24px", border: "1px solid var(--border-color)" }} />
                   <div>
-                    <div style={{ fontSize: "13px", fontWeight: 800, textTransform: "uppercase" }}>{u.name}</div>
+                    <div style={{ fontSize: "13px", fontWeight: 700, }}>{u.name}</div>
                   </div>
                 </div>
               ))}
