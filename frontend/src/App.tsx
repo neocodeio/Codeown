@@ -15,7 +15,7 @@ export default function App() {
   const { toggleTheme } = useTheme();
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f6f6f6" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#fffdf6" }}>
       <Navbar onToggleTheme={toggleTheme} />
       <ErrorBoundary>
         <Routes>

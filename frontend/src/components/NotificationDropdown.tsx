@@ -72,8 +72,8 @@ export default function NotificationDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         style={{
           position: "relative",
-          padding: "8px",
-          backgroundColor: "transparent",
+          padding: "10px 9px",
+          backgroundColor: "#1c2f29",
           border: "none",
           cursor: "pointer",
           borderRadius: "50%",

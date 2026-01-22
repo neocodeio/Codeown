@@ -61,13 +61,11 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
   return (
     <nav style={{
       padding: "-0px 24px",
-      borderBottom: "1px solid #e4e7eb",
       display: "flex",
-      borderRadius: "25px",
+      borderRadius: "30px",
       justifyContent: "space-between",
       alignItems: "center",
-      backgroundColor: "#000",
-      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+      backgroundColor: "transparent",
       position: "sticky",
       top: 0,
       zIndex: 100,
@@ -82,7 +80,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
             color: "#fefefe",
             // fontFamily: "ubuntu",
           }}>
-            <img src={"./src/assets/logo-removed.png"} alt="logo" style={{ width: "82px", height: "82px" }} />
+            <img src={"./src/assets/logo-removed.png"} alt="logo" style={{ width: "67px", height: "67px", background: "#1c2f29", padding: "0px", borderRadius: "30%" }} />
           </h2>
         </Link>
         {!isMobile && (
@@ -92,12 +90,12 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 to="/"
                 style={{
                   textDecoration: "none",
-                  color: location.pathname === "/" ? "#000" : "#000",
+                  color: location.pathname === "/" ? "#fff" : "#fff",
                   fontWeight: location.pathname === "/" ? 600 : 500,
                   padding: "10px 20px",
                   borderRadius: "20px",
                   transition: "all 0.2s",
-                  backgroundColor: location.pathname === "/" ? "#fff" : "#fff",
+                  backgroundColor: location.pathname === "/" ? "#1c2f29" : "#1c2f29",
                 }}
               >
                 Home
@@ -127,9 +125,9 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                   onClick={() => setIsModalOpen(true)}
                   style={{
                     padding: "8px 12px",
-                    backgroundColor: "#fefefe",
+                    backgroundColor: "#1c2f29",
                     border: "none",
-                    color: "#000",
+                    color: "#fff",
                     borderRadius: "25px",
                     cursor: "pointer",
                     fontSize: "14px",
@@ -150,7 +148,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 padding: "8px",
                 backgroundColor: "transparent",
                 border: "none",
-                color: "#fefefe",
+                color: "#1c2f29",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -171,9 +169,9 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                   onClick={() => setIsModalOpen(true)}
                   style={{
                     padding: "10px 15px",
-                    backgroundColor: "#fefefe",
+                    backgroundColor: "#1c2f29",
                     border: "none",
-                    color: "#000",
+                    color: "#fff",
                     borderRadius: "25px",
                     cursor: "pointer",
                     fontSize: "16px",
@@ -198,7 +196,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 </button>
               </>
             )}
-            {onToggleTheme && (
+            {/* {onToggleTheme && (
               <button
                 onClick={onToggleTheme}
                 style={{
@@ -218,14 +216,14 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
               >
                 <FontAwesomeIcon icon={isDark ? faSun : faMoon} style={{ fontSize: "16px" }} />
               </button>
-            )}
+            )} */}
             {isLoaded ? (
               <>
                 {isSignedIn ? (
                   <Link to="/profile">
                     <button style={{
                       padding: "10px 20px",
-                      backgroundColor: location.pathname === "/profile" ? "#000" : "transparent",
+                      backgroundColor: location.pathname === "/profile" ? "#1c2f29" : "#1c2f29",
                       border: "2px solid #fefefe",
                       color: location.pathname === "/profile" ? "#ffffff" : "#fefefe",
                       borderRadius: "20px",

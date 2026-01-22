@@ -120,11 +120,10 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       onClick={handleClick}
       style={{
         backgroundColor: "#fff",
-        borderRadius: isMobile ? "20px" : "35px",
+        borderRadius: isMobile ? "20px" : "50px",
         padding: isMobile ? "20px" : "30px 50px",
         marginBottom: "55px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.25)",
-        border: "1px solid var(--border-color)",
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.30)",
         transition: "all 0.2s ease",
         cursor: "pointer",
       }}
