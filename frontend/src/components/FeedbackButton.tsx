@@ -77,7 +77,7 @@ export default function FeedbackButton() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#000",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
       }}
       onClick={(e) => e.target === e.currentTarget && handleClose()}
     >
@@ -87,7 +87,7 @@ export default function FeedbackButton() {
           maxWidth: "420px",
           maxHeight: "90vh",
           overflow: "auto",
-          backgroundColor: "#fff",
+          backgroundColor: "#f5f5f5",
           borderRadius: "25px",
           boxShadow: "var(--shadow-hover)",
           border: "1px solid var(--border-color)",

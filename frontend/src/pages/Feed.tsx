@@ -49,23 +49,38 @@ export default function Feed() {
 
   return (
     <div style={{
-      maxWidth: "680px",
+      maxWidth: "720px",
       margin: "0 auto",
-      padding: "32px 20px",
+      padding: "24px 16px",
       minHeight: "calc(100vh - 80px)",
-      backgroundColor: "#fffdf6",
+      backgroundColor: "transparent",
     }}>
-      <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
         <button
           onClick={() => handleFilterChange("all")}
           style={{
             padding: "10px 20px",
-            borderRadius: "20px",
+            borderRadius: "var(--radius-lg)",
             border: "none",
             fontWeight: 600,
             cursor: "pointer",
-            backgroundColor: feedFilter === "all" ? "var(--accent)" : "var(--bg-elevated)",
+            fontSize: "15px",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            backgroundColor: feedFilter === "all" ? "var(--primary)" : "var(--bg-card)",
             color: feedFilter === "all" ? "gray" : "#000",
+            boxShadow: feedFilter === "all" ? "var(--shadow-md)" : "var(--shadow-sm)",
+          }}
+          onMouseEnter={(e) => {
+            if (feedFilter !== "all") {
+              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (feedFilter !== "all") {
+              e.currentTarget.style.backgroundColor = "var(--bg-card)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }
           }}
         >
           For you
@@ -75,12 +90,27 @@ export default function Feed() {
             onClick={() => handleFilterChange("following")}
             style={{
               padding: "10px 20px",
-              borderRadius: "20px",
+              borderRadius: "var(--radius-lg)",
               border: "none",
               fontWeight: 600,
               cursor: "pointer",
-              backgroundColor: feedFilter === "following" ? "var(--accent)" : "var(--bg-elevated)",
+              fontSize: "15px",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              backgroundColor: feedFilter === "following" ? "var(--primary)" : "var(--bg-card)",
               color: feedFilter === "following" ? "gray" : "#000",
+              boxShadow: feedFilter === "following" ? "var(--shadow-md)" : "var(--shadow-sm)",
+            }}
+            onMouseEnter={(e) => {
+              if (feedFilter !== "following") {
+                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (feedFilter !== "following") {
+                e.currentTarget.style.backgroundColor = "var(--bg-card)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }
             }}
           >
             Following
@@ -95,20 +125,39 @@ export default function Feed() {
           ))}
         </>
       ) : !Array.isArray(posts) || posts.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "18px", marginBottom: "8px" }}>{feedFilter === "following" ? "No posts from people you follow" : "No posts yet"}</p>
-          <p style={{ fontSize: "14px" }}>{emptyMessage}</p>
+        <div style={{ 
+          textAlign: "center", 
+          padding: "80px 20px", 
+          backgroundColor: "var(--bg-card)",
+          borderRadius: "var(--radius-xl)",
+          boxShadow: "var(--shadow)",
+        }}>
+          <div style={{
+            width: "64px",
+            height: "64px",
+            margin: "0 auto 24px",
+            backgroundColor: "var(--bg-hover)",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "32px",
+          }}>📝</div>
+          <p style={{ fontSize: "20px", marginBottom: "8px", fontWeight: 600, color: "var(--text-primary)" }}>
+            {feedFilter === "following" ? "No posts from people you follow" : "No posts yet"}
+          </p>
+          <p style={{ fontSize: "15px", color: "var(--text-secondary)" }}>{emptyMessage}</p>
         </div>
       ) : (
         <>
           {posts.map(p => <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(page, false)} />)}
           {loading && Array.isArray(posts) && posts.length > 0 && (
-            <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
+            <div style={{ display: "flex", justifyContent: "center", padding: "32px" }}>
               <div style={{
-                width: "32px",
-                height: "32px",
-                border: "3px solid var(--border-color)",
-                borderTopColor: "var(--accent)",
+                width: "40px",
+                height: "40px",
+                border: "4px solid var(--border-color)",
+                borderTopColor: "var(--primary)",
                 borderRadius: "50%",
                 animation: "spin 0.8s linear infinite",
               }} />

@@ -119,31 +119,33 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
     <article
       onClick={handleClick}
       style={{
-        backgroundColor: "#fff",
-        borderRadius: isMobile ? "20px" : "50px",
-        padding: isMobile ? "20px" : "30px 50px",
-        marginBottom: "55px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.30)",
-        transition: "all 0.2s ease",
+        backgroundColor: "#F5F5F5",
+        borderRadius: "30px",
+        padding: isMobile ? "20px" : "28px",
+        marginBottom: "50px",
+        boxShadow: "var(--shadow)",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         cursor: "pointer",
+        border: "1px solid var(--border-light)",
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = "var(--shadow-hover)";
-        e.currentTarget.style.transform = "translateY(-2px)";
+        e.currentTarget.style.transform = "translateY(-4px)";
+        e.currentTarget.style.borderColor = "var(--border-color)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = "var(--shadow)";
         e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.borderColor = "var(--border-light)";
       }}
     >
-      {/* User Info Header */}
       <div style={{
         display: "flex",
         alignItems: "center",
         gap: "12px",
         marginBottom: "16px",
-        paddingBottom: "20px",
-        borderBottom: "2px solid #f5f7fa",
+        paddingBottom: "16px",
+        borderBottom: "1px solid var(--border-light)",
         flexWrap: isMobile ? "wrap" : "nowrap",
       }}>
         <img
@@ -152,9 +154,9 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           style={{
             width: "48px",
             height: "48px",
-            borderRadius: "30%",
+            borderRadius: "50%",
             objectFit: "cover",
-            border: "2px solid #e4e7eb",
+            border: "2px solid var(--border-color)",
           }}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -163,18 +165,18 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             style={{
               fontSize: isMobile ? "14px" : "16px",
               fontWeight: 600,
-              color: "#000",
+              color: "var(--text-primary)",
               marginBottom: "2px",
               cursor: "pointer",
               transition: "color 0.2s",
               wordBreak: "break-word",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#2563eb";
+              e.currentTarget.style.color = "var(--primary)";
               e.currentTarget.style.textDecoration = "underline";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#000";
+              e.currentTarget.style.color = "var(--text-primary)";
               e.currentTarget.style.textDecoration = "none";
             }}
           >
@@ -183,7 +185,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           {userEmail && !isMobile && (
             <div style={{
               fontSize: "13px",
-              color: "#64748b",
+              color: "var(--text-secondary)",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
@@ -194,7 +196,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
           <time style={{
-            color: "#64748b",
+            color: "var(--text-tertiary)",
             fontSize: isMobile ? "11px" : "13px",
             fontWeight: 500,
           }}>
@@ -206,9 +208,9 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 onClick={handleEditClick}
                 style={{
                   padding: "4px 8px",
-                  backgroundColor: "#f0f7ff",
-                  border: "1px solid #000",
-                  color: "#000",
+                  backgroundColor: "var(--bg-hover)",
+                  border: "1px solid var(--border-color)",
+                  color: "var(--text-primary)",
                   borderRadius: "6px",
                   cursor: "pointer",
                   fontSize: "12px",
@@ -216,12 +218,14 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                   transition: "all 0.15s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#000";
+                  e.currentTarget.style.backgroundColor = "var(--primary)";
                   e.currentTarget.style.color = "#ffffff";
+                  e.currentTarget.style.borderColor = "var(--primary)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f0f7ff";
-                  e.currentTarget.style.color = "#000";
+                  e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                  e.currentTarget.style.color = "var(--text-primary)";
+                  e.currentTarget.style.borderColor = "var(--border-color)";
                 }}
               >
                 <FontAwesomeIcon icon={faPenToSquare} style={{ fontSize: "12px" }} />
@@ -232,7 +236,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 style={{
                   padding: "4px 8px",
                   backgroundColor: "#fef2f2",
-                  border: "1px solid #dc2626",
+                  border: "1px solid #fecaca",
                   color: "#dc2626",
                   borderRadius: "6px",
                   cursor: isDeleting ? "not-allowed" : "pointer",
@@ -245,12 +249,14 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                   if (!isDeleting) {
                     e.currentTarget.style.backgroundColor = "#dc2626";
                     e.currentTarget.style.color = "#ffffff";
+                    e.currentTarget.style.borderColor = "#dc2626";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isDeleting) {
                     e.currentTarget.style.backgroundColor = "#fef2f2";
                     e.currentTarget.style.color = "#dc2626";
+                    e.currentTarget.style.borderColor = "#fecaca";
                   }
                 }}
               >
@@ -261,16 +267,16 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         </div>
       </div>
 
-      {/* Post Title */}
       {post.title && (
         <h3 style={{
-          color: "#1a1a1a",
-          fontSize: isMobile ? "18px" : "20px",
+          color: "var(--text-primary)",
+          fontSize: isMobile ? "18px" : "22px",
           fontWeight: 700,
-          lineHeight: "1.4",
+          lineHeight: "1.3",
           marginBottom: "12px",
           marginTop: 0,
           wordBreak: "break-word",
+          letterSpacing: "-0.01em",
         }}>
           {post.title}
         </h3>
@@ -288,9 +294,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         <ImageSlider images={post.images} />
       )}
 
-      {/* Tags */}
       {post.tags && post.tags.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "16px", marginBottom: "16px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "16px", marginBottom: "16px" }}>
           {post.tags.map((tag, idx) => (
             <span
               key={idx}
@@ -300,21 +305,26 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
               }}
               style={{
                 fontSize: "13px",
-                padding: "4px 10px",
-                backgroundColor: "#f0f7ff",
-                color: "#2563eb",
-                borderRadius: "12px",
+                padding: "6px 12px",
+                backgroundColor: "var(--bg-hover)",
+                color: "var(--primary)",
+                borderRadius: "var(--radius-md)",
                 cursor: "pointer",
-                fontWeight: 500,
-                transition: "all 0.2s",
+                fontWeight: 600,
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                border: "1px solid var(--border-color)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#2563eb";
+                e.currentTarget.style.backgroundColor = "var(--primary)";
                 e.currentTarget.style.color = "#ffffff";
+                e.currentTarget.style.borderColor = "var(--primary)";
+                e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#f0f7ff";
-                e.currentTarget.style.color = "#2563eb";
+                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                e.currentTarget.style.color = "var(--primary)";
+                e.currentTarget.style.borderColor = "var(--border-color)";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
               #{tag}
@@ -323,15 +333,14 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         </div>
       )}
 
-      {/* Actions */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: isMobile ? "16px" : "24px",
+          gap: isMobile ? "12px" : "20px",
           marginTop: "20px",
           paddingTop: "16px",
-          borderTop: "1px solid #f5f7fa",
+          borderTop: "1px solid var(--border-light)",
           flexWrap: "wrap",
         }}
         onClick={(e) => e.stopPropagation()}
@@ -343,34 +352,36 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             display: "flex",
             alignItems: "center",
             gap: "6px",
-            padding: "6px 12px",
+            padding: "8px 14px",
             backgroundColor: "transparent",
             border: "none",
             cursor: currentUser && !likeLoading ? "pointer" : "not-allowed",
-            borderRadius: "12px",
-            transition: "all 0.2s",
-            color: isLiked ? "#dc2626" : "#64748b",
+            borderRadius: "var(--radius-md)",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            color: isLiked ? "var(--heart-liked)" : "var(--text-secondary)",
             opacity: currentUser ? 1 : 0.5,
           }}
           onMouseEnter={(e) => {
             if (currentUser && !likeLoading) {
-              e.currentTarget.style.backgroundColor = "#f5f7fa";
+              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+              e.currentTarget.style.transform = "scale(1.05)";
             }
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.transform = "scale(1)";
           }}
         >
           <FontAwesomeIcon 
             icon={faHeartSolid} 
             style={{ 
-              fontSize: "18px",
-              color: isLiked ? "#dc2626" : "#64748b",
+              fontSize: "20px",
+              color: isLiked ? "var(--heart-liked)" : "var(--text-secondary)",
             }}
             className={isLiked ? "liked-heart" : "unliked-heart"}
-            color={isLiked ? "#dc2626" : "#64748b"}
+            color={isLiked ? "var(--heart-liked)" : "var(--text-secondary)"}
           />
-          <span style={{ fontSize: "14px", fontWeight: 500 }}>
+          <span style={{ fontSize: "15px", fontWeight: 600 }}>
             {likeCount || post.like_count || 0}
           </span>
         </button>
@@ -381,26 +392,28 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             display: "flex",
             alignItems: "center",
             gap: "6px",
-            padding: "6px 12px",
+            padding: "8px 14px",
             backgroundColor: "transparent",
             border: "none",
             cursor: "pointer",
-            borderRadius: "12px",
-            transition: "all 0.2s",
-            color: "#64748b",
+            borderRadius: "var(--radius-md)",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            color: "var(--text-secondary)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#f5f7fa";
+            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+            e.currentTarget.style.transform = "scale(1.05)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.transform = "scale(1)";
           }}
         >
           <FontAwesomeIcon 
             icon={faComment} 
-            style={{ fontSize: "18px" }}
+            style={{ fontSize: "20px" }}
           />
-          <span style={{ fontSize: "14px", fontWeight: 500 }}>
+          <span style={{ fontSize: "15px", fontWeight: 600 }}>
             {post.comment_count || 0}
           </span>
         </button>
@@ -412,24 +425,26 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              padding: "6px 12px",
+              padding: "8px 14px",
               backgroundColor: "transparent",
               border: "none",
               cursor: "pointer",
-              borderRadius: "12px",
-              transition: "all 0.2s",
-              color: isSaved ? "#2563eb" : "#64748b",
+              borderRadius: "var(--radius-md)",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              color: isSaved ? "var(--primary)" : "var(--text-secondary)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#f5f7fa";
+              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+              e.currentTarget.style.transform = "scale(1.05)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.transform = "scale(1)";
             }}
           >
             <FontAwesomeIcon 
               icon={isSaved ? faBookmarkSolid : faBookmarkRegular} 
-              style={{ fontSize: "18px" }}
+              style={{ fontSize: "20px" }}
             />
           </button>
         )}

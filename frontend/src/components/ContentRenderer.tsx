@@ -75,11 +75,11 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
             {language && language !== "plaintext" && (
               <div
                 style={{
-                  backgroundColor: "#2d2d2d",
-                  color: "#a0a0a0",
+                  backgroundColor: "#000",
+                  color: "#fff",
                   padding: "6px 12px",
-                  borderTopLeftRadius: "8px",
-                  borderTopRightRadius: "8px",
+                  borderTopLeftRadius: "15px",
+                  borderTopRightRadius: "15px",
                   fontSize: "12px",
                   fontFamily: "monospace",
                   borderBottom: "1px solid #3d3d3d",
@@ -93,7 +93,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
                 margin: 0,
                 padding: "16px",
                 backgroundColor: "#2d2d2d",
-                borderRadius: language && language !== "plaintext" ? "0 0 8px 8px" : "8px",
+                borderRadius: language && language !== "plaintext" ? "0 0 15px 15px" : "15px",
                 overflow: "auto",
                 fontSize: "14px",
                 lineHeight: 1.5,

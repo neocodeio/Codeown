@@ -97,10 +97,11 @@ export default function Search() {
 
   return (
     <div className="search-page" style={{
-      maxWidth: "680px",
+      maxWidth: "720px",
       margin: "0 auto",
-      padding: "32px 20px",
+      padding: "24px 16px",
       minHeight: "calc(100vh - 80px)",
+      backgroundColor: "transparent",
     }}>
       <h1 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "20px", color: "var(--text-primary)" }}>
         Search {q ? `"${q}"` : ""}
@@ -116,14 +117,29 @@ export default function Search() {
                 key={tab}
                 onClick={() => setActiveTab(tab as "all" | "people" | "posts")}
                 style={{
-                  padding: "8px 16px",
-                  borderRadius: "20px",
+                  padding: "10px 20px",
+                  borderRadius: "var(--radius-lg)",
                   border: "none",
                   fontWeight: 600,
                   cursor: "pointer",
                   textTransform: "capitalize" as const,
-                  backgroundColor: activeTab === tab ? "var(--accent)" : "var(--bg-elevated)",
-                  color: activeTab === tab ? "var(--bg-page)" : "var(--text-secondary)",
+                  fontSize: "15px",
+                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                  backgroundColor: activeTab === tab ? "var(--primary)" : "var(--bg-card)",
+                  color: activeTab === tab ? "#fff" : "var(--text-secondary)",
+                  boxShadow: activeTab === tab ? "var(--shadow-md)" : "var(--shadow-sm)",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== tab) {
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== tab) {
+                    e.currentTarget.style.backgroundColor = "var(--bg-card)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }
                 }}
               >
                 {tab}

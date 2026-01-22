@@ -224,26 +224,26 @@ export default function UserProfile() {
 
   return (
     <div style={{
-      maxWidth: "720px",
+      maxWidth: "800px",
       margin: "0 auto",
-      padding: "32px 20px",
-      backgroundColor: "#f5f7fa",
+      padding: "24px 16px",
+      backgroundColor: "transparent",
       minHeight: "calc(100vh - 80px)",
     }}>
       {/* Profile Header Card - Modern Design */}
       <div style={{
-        backgroundColor: "#ffffff",
-        borderRadius: "32px",
+        backgroundColor: "#f5f5f5",
+        borderRadius: "30px",
         padding: "0",
         marginBottom: "24px",
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-        border: "1px solid #e4e7eb",
+        boxShadow: "var(--shadow-lg)",
+        border: "1px solid var(--border-light)",
         overflow: "hidden",
       }}>
         {/* Cover gradient */}
         <div style={{
           height: "65px",
-          background: "linear-gradient(135deg, #000 0%, #000 100%)",
+          background: "#000",
           position: "relative",
           marginBottom: "80px",
         }}>
@@ -256,40 +256,43 @@ export default function UserProfile() {
                 position: "absolute",
                 top: "16px",
                 right: "16px",
-                padding: "10px 20px",
-                backgroundColor: isFollowing ? "#ffffff" : "#000",
-                border: isFollowing ? "2px solid #000" : "none",
-                color: isFollowing ? "#000" : "#ffffff",
-                borderRadius: "12px",
+                padding: "10px 15px",
+                backgroundColor: isFollowing ? "rgba(255, 255, 255, 0.95)" : "var(--primary)",
+                border: isFollowing ? "1px solid var(--border-color)" : "none",
+                color: isFollowing ? "var(--text-primary)" : "#ffffff",
+                borderRadius: "25px",
                 cursor: followLoading ? "not-allowed" : "pointer",
-                fontSize: "14px",
+                fontSize: "15px",
                 fontWeight: 600,
-                transition: "all 0.2s",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
                 opacity: followLoading ? 0.7 : 1,
+                boxShadow: "var(--shadow-sm)",
               }}
               onMouseEnter={(e) => {
                 if (!followLoading) {
                   if (isFollowing) {
-                    e.currentTarget.style.backgroundColor = "#fee2e2";
-                    e.currentTarget.style.borderColor = "#dc2626";
-                    e.currentTarget.style.color = "#dc2626";
+                    e.currentTarget.style.backgroundColor = "#f5f5f5";
+                    e.currentTarget.style.borderColor = "var(--error)";
+                    e.currentTarget.style.color = "var(--error)";
                   } else {
-                    e.currentTarget.style.backgroundColor = "#2563eb";
+                    e.currentTarget.style.backgroundColor = "var(--primary-dark)";
                   }
+                  e.currentTarget.style.transform = "translateY(-1px)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!followLoading) {
                   if (isFollowing) {
-                    e.currentTarget.style.backgroundColor = "#ffffff";
-                    e.currentTarget.style.borderColor = "#000";
-                    e.currentTarget.style.color = "#000";
+                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
+                    e.currentTarget.style.borderColor = "var(--border-color)";
+                    e.currentTarget.style.color = "var(--text-primary)";
                   } else {
-                    e.currentTarget.style.backgroundColor = "#000";
+                    e.currentTarget.style.backgroundColor = "var(--primary)";
                   }
+                  e.currentTarget.style.transform = "translateY(0)";
                 }
               }}
             >
@@ -306,30 +309,31 @@ export default function UserProfile() {
             src={avatarUrl}
             alt={user.name}
             style={{
-              width: "100px",
-              height: "100px",
+              width: "120px",
+              height: "120px",
               borderRadius: "50%",
               objectFit: "cover",
-              border: "4px solid #ffffff",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              border: "5px solid var(--bg-card)",
+              boxShadow: "var(--shadow-lg)",
             }}
           />
 
           {/* Name and username */}
           <h1 style={{
-            margin: "16px 0 4px 0",
-            fontSize: "24px",
+            margin: "20px 0 4px 0",
+            fontSize: "28px",
             fontWeight: 700,
-            color: "#1a1a1a",
+            color: "var(--text-primary)",
+            letterSpacing: "-0.02em",
           }}>
             {user.name || "User"}
           </h1>
           
           {user.username && (
             <p style={{
-              color: "#64748b",
+              color: "var(--text-secondary)",
               margin: "0 0 8px 0",
-              fontSize: "15px",
+              fontSize: "16px",
             }}>
               @{user.username}
             </p>
@@ -338,11 +342,11 @@ export default function UserProfile() {
           {/* Bio */}
           {user.bio && (
             <p style={{
-              color: "#475569",
-              margin: "12px auto 0",
+              color: "var(--text-secondary)",
+              margin: "16px auto 0",
               fontSize: "15px",
               lineHeight: 1.6,
-              maxWidth: "400px",
+              maxWidth: "500px",
             }}>
               {user.bio}
             </p>
@@ -352,12 +356,13 @@ export default function UserProfile() {
           <div style={{
             display: "flex",
             justifyContent: "center",
-            backgroundColor: "#f5f5f5",
-            borderRadius: "16px",
-            padding: "5px",
-            gap: "24px",
-            marginTop: "24px",
+            backgroundColor: "var(--bg-hover)",
+            borderRadius: "var(--radius-xl)",
+            padding: "16px",
+            gap: "32px",
+            marginTop: "28px",
             flexWrap: "wrap",
+            border: "1px solid var(--border-light)",
           }}>
             <div
               onClick={() => openFollowersModal("followers")}

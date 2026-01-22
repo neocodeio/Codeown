@@ -60,42 +60,57 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
 
   return (
     <nav style={{
-      padding: "-0px 24px",
+      padding: "16px 24px",
       display: "flex",
-      borderRadius: "30px",
       justifyContent: "space-between",
       alignItems: "center",
-      backgroundColor: "transparent",
+      backgroundColor: "var(--nav-bg)",
       position: "sticky",
       top: 0,
       zIndex: 100,
-      backdropFilter: "blur(10px)",
+      backdropFilter: "blur(12px)",
+      borderBottom: "1px solid var(--nav-border)",
+      boxShadow: "var(--shadow-sm)",
+      transition: "all 0.3s ease",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "12px" : "32px", flex: 1 }}>
-        <Link to="/" style={{ textDecoration: "none"}}>
+        <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "12px"}}>
           <h2 style={{
             margin: 0,
             fontSize: isMobile ? "20px" : "24px",
-            fontWeight: 600,
-            color: "#fefefe",
-            // fontFamily: "ubuntu",
+            fontWeight: 700,
+            color: "var(--nav-text)",
+            letterSpacing: "-0.02em",
           }}>
-            <img src={"./src/assets/logo-removed.png"} alt="logo" style={{ width: "67px", height: "67px", background: "#1c2f29", padding: "0px", borderRadius: "30%" }} />
+            <img src={"./src/assets/logo-removed.png"} alt="logo" style={{ width: isMobile ? "50px" : "56px", height: isMobile ? "50px" : "56px", borderRadius: "12px" }} />
           </h2>
         </Link>
         {!isMobile && (
           <>
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "4px" }}>
               <Link
                 to="/"
                 style={{
                   textDecoration: "none",
-                  color: location.pathname === "/" ? "#fff" : "#fff",
+                  color: location.pathname === "/" ? "var(--primary)" : "var(--nav-text-muted)",
                   fontWeight: location.pathname === "/" ? 600 : 500,
-                  padding: "10px 20px",
-                  borderRadius: "20px",
-                  transition: "all 0.2s",
-                  backgroundColor: location.pathname === "/" ? "#1c2f29" : "#1c2f29",
+                  padding: "8px 16px",
+                  borderRadius: "var(--radius-lg)",
+                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                  backgroundColor: location.pathname === "/" ? "var(--bg-hover)" : "transparent",
+                  fontSize: "20px",
+                }}
+                onMouseEnter={(e) => {
+                  if (location.pathname !== "/") {
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.color = "var(--nav-text)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (location.pathname !== "/") {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--nav-text-muted)";
+                  }
                 }}
               >
                 Home
@@ -124,21 +139,32 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 <button
                   onClick={() => setIsModalOpen(true)}
                   style={{
-                    padding: "8px 12px",
-                    backgroundColor: "#1c2f29",
+                    padding: "10px 14px",
+                    backgroundColor: "var(--primary)",
                     border: "none",
                     color: "#fff",
-                    borderRadius: "25px",
+                    borderRadius: "var(--radius-lg)",
                     cursor: "pointer",
-                    fontSize: "14px",
+                    fontSize: "18px",
                     fontWeight: 600,
-                    transition: "all 0.2s",
+                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--primary-dark)";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                    e.currentTarget.style.boxShadow = "var(--shadow-md)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--primary)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "var(--shadow-sm)";
                   }}
                 >
-                  <span style={{ fontSize: "18px", lineHeight: 1 }}>+</span>
+                  <span style={{ fontSize: "20px", lineHeight: 1 }}>+</span>
                 </button>
               </>
             )}
@@ -148,7 +174,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 padding: "8px",
                 backgroundColor: "transparent",
                 border: "none",
-                color: "#1c2f29",
+                color: "var(--nav-text)",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -168,70 +194,62 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 <button
                   onClick={() => setIsModalOpen(true)}
                   style={{
-                    padding: "10px 15px",
-                    backgroundColor: "#1c2f29",
+                    padding: "10px 20px",
+                    backgroundColor: "transparent",
                     border: "none",
-                    color: "#fff",
-                    borderRadius: "25px",
+                    color: "#000",
+                    borderRadius: "var(--radius-lg)",
                     cursor: "pointer",
-                    fontSize: "16px",
+                    fontSize: "20px",
                     fontWeight: 600,
-                    transition: "all 0.2s",
+                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                     display: "flex",
                     alignItems: "center",
-                    gap: "8px",
+                    gap: "5px",
+                    boxShadow: "var(--shadow-sm)",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#000";
-                    e.currentTarget.style.color = "#fff";
+                    e.currentTarget.style.backgroundColor = "var(--primary-dark)";
                     e.currentTarget.style.transform = "translateY(-1px)";
+                    e.currentTarget.style.boxShadow = "var(--shadow-md)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#fefefe";
-                    e.currentTarget.style.color = "#000";
+                    e.currentTarget.style.backgroundColor = "var(--primary)";
                     e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "var(--shadow-sm)";
                   }}
                 >
-                  <span style={{ fontSize: "18px", lineHeight: 1 }}>+</span>
+                  <span style={{ fontSize: "20px", lineHeight: 1 }}>+</span>
+                  <span>New Post</span>
                 </button>
               </>
             )}
-            {/* {onToggleTheme && (
-              <button
-                onClick={onToggleTheme}
-                style={{
-                  padding: "8px 12px",
-                  backgroundColor: "transparent",
-                  border: "1px solid var(--nav-text)",
-                  color: "var(--nav-text)",
-                  borderRadius: "50%",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "40px",
-                  height: "40px",
-                }}
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                <FontAwesomeIcon icon={isDark ? faSun : faMoon} style={{ fontSize: "16px" }} />
-              </button>
-            )} */}
             {isLoaded ? (
               <>
                 {isSignedIn ? (
                   <Link to="/profile">
                     <button style={{
-                      padding: "10px 20px",
-                      backgroundColor: location.pathname === "/profile" ? "#1c2f29" : "#1c2f29",
-                      border: "2px solid #fefefe",
-                      color: location.pathname === "/profile" ? "#ffffff" : "#fefefe",
-                      borderRadius: "20px",
+                      padding: "6px 15px",
+                      backgroundColor: location.pathname === "/profile" ? "var(--bg-hover)" : "transparent",
+                      border: "2px solid #000",
+                      color: location.pathname === "/profile" ? "#000" : "#000",
+                      borderRadius: "30px",
                       cursor: "pointer",
-                      fontSize: "14px",
+                      fontSize: "20px",
                       fontWeight: 600,
-                      transition: "all 0.2s",
-                    }}>
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (location.pathname !== "/profile") {
+                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (location.pathname !== "/profile") {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                      }
+                    }}
+                    >
                       Profile
                     </button>
                   </Link>
@@ -239,24 +257,25 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                   <Link to="/sign-in">
                     <button style={{
                       padding: "10px 24px",
-                      backgroundColor: "#fff",
+                      backgroundColor: "var(--primary)",
                       border: "none",
-                      color: "#000",
-                      borderRadius: "12px",
+                      color: "#fff",
+                      borderRadius: "var(--radius-lg)",
                       cursor: "pointer",
-                      fontSize: "14px",
+                      fontSize: "15px",
                       fontWeight: 600,
-                      transition: "all 0.2s",
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      boxShadow: "var(--shadow-sm)",
                     }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#000";
-                        e.currentTarget.style.color = "#fff";
+                        e.currentTarget.style.backgroundColor = "var(--primary-dark)";
                         e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.boxShadow = "var(--shadow-md)";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#fff";
-                        e.currentTarget.style.color = "#000";
+                        e.currentTarget.style.backgroundColor = "var(--primary)";
                         e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "var(--shadow-sm)";
                       }}
                     >
                       Login
@@ -268,14 +287,15 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
               <Link to="/sign-in">
                 <button style={{
                   padding: "10px 24px",
-                  backgroundColor: "#000",
+                  backgroundColor: "var(--primary)",
                   border: "none",
                   color: "#ffffff",
-                  borderRadius: "8px",
+                  borderRadius: "var(--radius-lg)",
                   cursor: "pointer",
-                  fontSize: "14px",
+                  fontSize: "15px",
                   fontWeight: 600,
-                  transition: "all 0.2s",
+                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                  boxShadow: "var(--shadow-sm)",
                 }}>
                   Login
                 </button>
@@ -292,18 +312,18 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
           style={{
             position: "absolute",
             top: "100%",
-            left: 0,
-            right: 0,
-            backgroundColor: "#000",
-            borderTop: "1px solid #333",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+            left: "16px",
+            right: "16px",
+            backgroundColor: "var(--nav-bg)",
+            borderTop: "1px solid var(--nav-border)",
+            boxShadow: "var(--shadow-lg)",
             zIndex: 1000,
-            borderRadius: "25px",
-            marginTop: "16px",
+            borderRadius: "var(--radius-xl)",
+            marginTop: "12px",
             padding: "16px",
             display: "flex",
             flexDirection: "column",
-            gap: "12px",
+            gap: "8px",
             animation: "slideDown 0.2s ease-out",
           }}
         >
@@ -326,15 +346,16 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
             style={{
               textDecoration: "none",
               padding: "12px 16px",
-              borderRadius: "12px",
-              backgroundColor: location.pathname === "/" ? "#333" : "transparent",
-              color: "#fefefe",
+              borderRadius: "var(--radius-md)",
+              backgroundColor: location.pathname === "/" ? "var(--bg-hover)" : "transparent",
+              color: location.pathname === "/" ? "var(--primary)" : "var(--nav-text)",
               fontWeight: location.pathname === "/" ? 600 : 500,
-              transition: "all 0.2s",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              fontSize: "15px",
             }}
             onMouseEnter={(e) => {
               if (location.pathname !== "/") {
-                e.currentTarget.style.backgroundColor = "#333";
+                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
               }
             }}
             onMouseLeave={(e) => {
@@ -348,8 +369,8 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
           
           {isLoaded && isSignedIn && (
             <>
-              <div style={{ padding: "12px 16px", borderTop: "1px solid #333", marginTop: "4px" }}>
-                <div style={{ fontSize: "12px", color: "#999", marginBottom: "8px", fontWeight: 600 }}>
+              <div style={{ padding: "12px 16px", borderTop: "1px solid var(--border-light)", marginTop: "4px" }}>
+                <div style={{ fontSize: "12px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 600, letterSpacing: "0.05em" }}>
                   SEARCH
                 </div>
                 <SearchBar />
@@ -361,15 +382,16 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 style={{
                   textDecoration: "none",
                   padding: "12px 16px",
-                  borderRadius: "12px",
-                  backgroundColor: location.pathname === "/profile" ? "#333" : "transparent",
-                  color: "#fefefe",
+                  borderRadius: "var(--radius-md)",
+                  backgroundColor: location.pathname === "/profile" ? "var(--bg-hover)" : "transparent",
+                  color: location.pathname === "/profile" ? "var(--primary)" : "var(--nav-text)",
                   fontWeight: location.pathname === "/profile" ? 600 : 500,
-                  transition: "all 0.2s",
+                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                  fontSize: "15px",
                 }}
                 onMouseEnter={(e) => {
                   if (location.pathname !== "/profile") {
-                    e.currentTarget.style.backgroundColor = "#333";
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -390,20 +412,24 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
               style={{
                 textDecoration: "none",
                 padding: "12px 16px",
-                borderRadius: "12px",
-                backgroundColor: "#fff",
-                color: "#000",
+                borderRadius: "var(--radius-md)",
+                backgroundColor: "var(--primary)",
+                color: "#fff",
                 fontWeight: 600,
                 textAlign: "center",
-                transition: "all 0.2s",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                fontSize: "15px",
+                boxShadow: "var(--shadow-sm)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#333";
-                e.currentTarget.style.color = "#fff";
+                e.currentTarget.style.backgroundColor = "var(--primary-dark)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "var(--shadow-md)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#fff";
-                e.currentTarget.style.color = "#000";
+                e.currentTarget.style.backgroundColor = "var(--primary)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "var(--shadow-sm)";
               }}
             >
               Login

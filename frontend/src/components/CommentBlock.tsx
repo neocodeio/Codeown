@@ -162,12 +162,12 @@ export default function CommentBlock({ comment, depth, getAvatarUrl, formatDate,
               disabled={!replyContent.trim() || submitting}
               style={{
                 padding: "8px 16px",
-                backgroundColor: replyContent.trim() && !submitting ? "var(--accent)" : "var(--border-color)",
-                color: "#fff",
+                backgroundColor: replyContent.trim() && !submitting ? "#000" : "var(--border-color)",
+                color: "#000",
                 border: "none",
+                fontWeight: "600",
                 borderRadius: "8px",
-                fontWeight: 600,
-                fontSize: "13px",
+                fontSize: "15px",
                 cursor: replyContent.trim() && !submitting ? "pointer" : "not-allowed",
               }}
             >
@@ -179,9 +179,10 @@ export default function CommentBlock({ comment, depth, getAvatarUrl, formatDate,
                 padding: "8px 16px",
                 backgroundColor: "transparent",
                 border: "1px solid var(--border-color)",
-                color: "var(--text-secondary)",
+                color: "#000",
                 borderRadius: "8px",
-                fontSize: "13px",
+                fontWeight: "600",
+                fontSize: "15px",
                 cursor: "pointer",
               }}
             >

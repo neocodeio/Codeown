@@ -233,19 +233,19 @@ export default function PostDetail() {
 
   return (
     <div style={{
-      maxWidth: "680px",
+      maxWidth: "720px",
       margin: "0 auto",
-      padding: "32px 20px",
+      padding: "24px 16px",
       minHeight: "calc(100vh - 80px)",
-      backgroundColor: "var(--bg-page)",
+      backgroundColor: "transparent",
     }}>
       <article style={{
-        backgroundColor: "#fff",
+        backgroundColor: "#F5F5F5",
         borderRadius: "30px",
-        padding: "24px",
+        padding: "28px",
         marginBottom: "24px",
         boxShadow: "var(--shadow)",
-        border: "1px solid var(--border-color)",
+        border: "1px solid var(--border-light)",
       }}>
         <div style={{
           display: "flex",
@@ -296,11 +296,11 @@ export default function PostDetail() {
 
       {/* Comments Section */}
       <div style={{
-        backgroundColor: "#fff",
+        backgroundColor: "#F5F5F5",
         borderRadius: "30px",
-        padding: "24px",
+        padding: "28px",
         boxShadow: "var(--shadow)",
-        border: "1px solid var(--border-color)",
+        border: "1px solid var(--border-light)",
       }}>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
           <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>

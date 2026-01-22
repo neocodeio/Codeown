@@ -73,7 +73,7 @@ export default function NotificationDropdown() {
         style={{
           position: "relative",
           padding: "10px 9px",
-          backgroundColor: "#1c2f29",
+          backgroundColor: "#000",
           border: "none",
           cursor: "pointer",
           borderRadius: "50%",
@@ -81,7 +81,7 @@ export default function NotificationDropdown() {
           alignItems: "center",
           justifyContent: "center",
           fontSize: "20px",
-          color: "#fefefe",
+          color: "#000",
         }}
       >
         <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px", color: "#fefefe" }} />

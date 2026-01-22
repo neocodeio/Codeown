@@ -84,7 +84,7 @@ export default function CreatePost({ onCreated }: { onCreated: () => void }) {
           resize: "vertical",
           outline: "none",
           transition: "all 0.2s",
-          color: "#1a1a1a",
+          color: "#000",
           backgroundColor: "#ffffff",
         }}
         onFocus={(e) => {

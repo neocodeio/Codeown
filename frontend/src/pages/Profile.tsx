@@ -187,26 +187,26 @@ export default function Profile() {
 
   return (
     <div style={{
-      maxWidth: "720px",
+      maxWidth: "800px",
       margin: "0 auto",
-      padding: "32px 20px",
-      backgroundColor: "#f5f7fa",
+      padding: "24px 16px",
+      backgroundColor: "transparent",
       minHeight: "calc(100vh - 80px)",
     }}>
       {/* Profile Header Card - Modern Design */}
       <div style={{
-        backgroundColor: "#ffffff",
-        borderRadius: "32px",
+        backgroundColor: "#f5f5f5",
+        borderRadius: "25px",
         padding: "0",
-        marginBottom: "24px",
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-        border: "1px solid #e4e7eb",
+        marginBottom: "50px",
+        boxShadow: "var(--shadow-lg)",
+        border: "1px solid var(--border-light)",
         overflow: "hidden",
       }}>
         {/* Cover gradient */}
         <div style={{
           height: "65px",
-          background: "linear-gradient(135deg, #000 0%, #000 100%)",
+          backgroundImage: 'linear-gradient(to right, #402662, #3900a6)',
           position: "relative",
           marginBottom: "80px",
         }}>
@@ -218,23 +218,26 @@ export default function Profile() {
               top: "16px",
               left: "16px",
               padding: "8px 16px",
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              backgroundColor: "red",
               border: "none",
-              color: "#dc2626",
-              borderRadius: "12px",
+              color: "#fff",
+              borderRadius: "25px",
               cursor: "pointer",
-              fontSize: "13px",
+              fontSize: "14px",
               fontWeight: 600,
-              transition: "all 0.2s",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               backdropFilter: "blur(8px)",
+              boxShadow: "var(--shadow-sm)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#dc2626";
-              e.currentTarget.style.color = "#ffffff";
+              e.currentTarget.style.backgroundColor = "#000";
+              e.currentTarget.style.color = "red";
+              e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-              e.currentTarget.style.color = "#dc2626";
+              e.currentTarget.style.backgroundColor = "red";
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.transform = "translateY(0)";
             }}
           >
             Sign Out
@@ -248,21 +251,26 @@ export default function Profile() {
               top: "16px",
               right: "16px",
               padding: "8px 16px",
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
               border: "none",
-              color: "#000",
-              borderRadius: "12px",
+              color: "var(--primary)",
+              borderRadius: "25px",
               cursor: "pointer",
-              fontSize: "13px",
+              fontSize: "14px",
               fontWeight: 600,
-              transition: "all 0.2s",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               backdropFilter: "blur(8px)",
+              boxShadow: "var(--shadow-sm)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#bfff70";
+              e.currentTarget.style.backgroundColor = "var(--primary)";
+              e.currentTarget.style.color = "#ffffff";
+              e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
+              e.currentTarget.style.color = "var(--primary)";
+              e.currentTarget.style.transform = "translateY(0)";
             }}
           >
             Edit Profile
@@ -276,30 +284,33 @@ export default function Profile() {
             src={userProfile?.avatar_url || user.imageUrl || "https://ui-avatars.com/api/?name=User&background=317ff5&color=ffffff&size=128"}
             alt={userProfile?.name || user.fullName || "Profile"}
             style={{
-              width: "100px",
-              height: "100px",
+              width: "120px",
+              height: "120px",
+              backgroundColor: "#fff",
               borderRadius: "50%",
+              padding: "3px",
               objectFit: "cover",
-              border: "4px solid #ffffff",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              border: "3px solid #000",
+              boxShadow: "var(--shadow-lg)",
             }}
           />
 
           {/* Name and username */}
           <h1 style={{
-            margin: "16px 0 4px 0",
-            fontSize: "24px",
+            margin: "20px 0 4px 0",
+            fontSize: "28px",
             fontWeight: 700,
-            color: "#1a1a1a",
+            color: "var(--text-primary)",
+            letterSpacing: "-0.02em",
           }}>
             {userProfile?.name || user.fullName || "User"}
           </h1>
           
           {(userProfile?.username || user.username) && (
             <p style={{
-              color: "#64748b",
+              color: "var(--text-secondary)",
               margin: "0 0 8px 0",
-              fontSize: "15px",
+              fontSize: "16px",
             }}>
               @{userProfile?.username || user.username}
             </p>
@@ -308,11 +319,11 @@ export default function Profile() {
           {/* Bio */}
           {userProfile?.bio && (
             <p style={{
-              color: "#475569",
-              margin: "12px auto 0",
+              color: "var(--text-secondary)",
+              margin: "16px auto 0",
               fontSize: "15px",
               lineHeight: 1.6,
-              maxWidth: "400px",
+              maxWidth: "500px",
             }}>
               {userProfile.bio}
             </p>
@@ -322,11 +333,11 @@ export default function Profile() {
           <div style={{
             display: "flex",
             justifyContent: "center",
-            backgroundColor: "#f5f5f5",
-            borderRadius: "16px",
-            padding: "5px",
-            gap: "24px",
-            marginTop: "24px",
+            backgroundColor: "#000",
+            borderRadius: "25px",
+            padding: "6px",
+            gap: "32px",
+            marginTop: "28px",
             flexWrap: "wrap",
           }}>
             <div
@@ -335,24 +346,25 @@ export default function Profile() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                color: "#fff",
                 cursor: "pointer",
-                padding: "12px 20px",
-                borderRadius: "16px",
-                transition: "all 0.2s",
+                padding: "8px 16px",
+                borderRadius: "var(--radius-lg)",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#64748b";
-                e.currentTarget.style.color = "#000";
+                e.currentTarget.style.backgroundColor = "var(--bg-card)";
+                e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#f5f5f5";
-                e.currentTarget.style.color = "#1a1a1a";
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+              <span style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>
                 {userProfile?.follower_count || 0}
               </span>
-              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+              <span style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "4px", fontWeight: 500 }}>
                 <FontAwesomeIcon icon={faUsers} style={{ marginRight: "4px" }} />
                 Followers
               </span>
@@ -365,23 +377,24 @@ export default function Profile() {
                 flexDirection: "column",
                 alignItems: "center",
                 cursor: "pointer",
-                padding: "12px 20px",
-                borderRadius: "16px",
-                transition: "all 0.2s",
+                padding: "8px 16px",
+                color: "#fff",
+                borderRadius: "var(--radius-lg)",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#64748b";
-                e.currentTarget.style.color = "#000";
+                e.currentTarget.style.backgroundColor = "var(--bg-card)";
+                e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#f5f5f5";
-                e.currentTarget.style.color = "#1a1a1a";
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+              <span style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>
                 {userProfile?.following_count || 0}
               </span>
-              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+              <span style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "4px", fontWeight: 500 }}>
                 <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: "4px" }} />
                 Following
               </span>
@@ -391,14 +404,15 @@ export default function Profile() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              padding: "12px 20px",
-              borderRadius: "16px",
+              padding: "8px 16px",
+                color: "#fff",
+              borderRadius: "var(--radius-lg)",
             }}>
-              <span style={{ fontSize: "24px", fontWeight: 700, color: "#dc2626" }}>
+              <span style={{ fontSize: "28px", fontWeight: 700, color: "var(--heart-liked)" }}>
                 {userProfile?.total_likes || 0}
               </span>
-              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
-                <FontAwesomeIcon icon={faHeart} style={{ marginRight: "4px", color: "#dc2626" }} />
+              <span style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "4px", fontWeight: 500 }}>
+                <FontAwesomeIcon icon={faHeart} style={{ marginRight: "4px", color: "var(--heart-liked)" }} />
                 Total Likes
               </span>
             </div>
@@ -407,13 +421,14 @@ export default function Profile() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              padding: "12px 20px",
-              borderRadius: "16px",
+              padding: "8px 16px",
+              color: "#fff",  
+              borderRadius: "var(--radius-lg)",
             }}>
-              <span style={{ fontSize: "24px", fontWeight: 700, color: "#1a1a1a" }}>
+              <span style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>
                 {posts.length}
               </span>
-              <span style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>
+              <span style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "4px", fontWeight: 500 }}>
                 Posts
               </span>
             </div>
@@ -422,9 +437,9 @@ export default function Profile() {
           {/* Member since */}
           {user.createdAt && (
             <p style={{
-              color: "#94a3b8",
-              margin: "20px 0 0 0",
-              fontSize: "13px",
+              color: "var(--text-tertiary)",
+              margin: "24px 0 0 0",
+              fontSize: "14px",
             }}>
               Member since {new Date(user.createdAt).toLocaleDateString("en-US", {
                 month: "long",
@@ -445,8 +460,8 @@ export default function Profile() {
             marginBottom: "12px",
             paddingLeft: "4px",
           }}>
-            <FontAwesomeIcon icon={faThumbtack} style={{ color: "#2563eb" }} />
-            <span style={{ fontSize: "16px", fontWeight: 600, color: "#1a1a1a" }}>
+            <FontAwesomeIcon icon={faThumbtack} style={{ color: "var(--primary)" }} />
+            <span style={{ fontSize: "16px", fontWeight: 600, color: "var(--text-primary)" }}>
               Pinned Post
             </span>
           </div>
@@ -465,12 +480,11 @@ export default function Profile() {
                 position: "absolute",
                 top: "12px",
                 right: "30px",
-                padding: "10px",
-                marginBottom: "20px",
-                backgroundColor: "#2563eb",
-                border: "none",
-                color: "#ffffff",
-                borderRadius: "50px",
+                padding: "8px 12px",
+                backgroundColor: "var(--bg-card)",
+                border: "1px solid var(--border-color)",
+                color: "var(--text-secondary)",
+                borderRadius: "999px",
                 cursor: "pointer",
                 fontSize: "12px",
                 fontWeight: 600,
@@ -478,6 +492,8 @@ export default function Profile() {
                 alignItems: "center",
                 gap: "4px",
                 zIndex: 10,
+                boxShadow: "var(--shadow-sm)",
+                opacity: pinningPostId === userProfile.pinned_post.id ? 0.7 : 1,
               }}
             >
               <FontAwesomeIcon icon={faThumbtack} />
@@ -490,8 +506,8 @@ export default function Profile() {
       <div style={{
         display: "flex",
         gap: "8px",
-        marginBottom: "20px",
-        borderBottom: "2px solid #e4e7eb",
+        marginBottom: "24px",
+        borderBottom: "1px solid var(--border-color)",
         paddingBottom: "0",
       }}>
         <button
@@ -500,22 +516,22 @@ export default function Profile() {
             padding: "12px 24px",
             backgroundColor: "transparent",
             border: "none",
-            borderBottom: activeTab === "posts" ? "3px solid #000" : "3px solid transparent",
-            color: activeTab === "posts" ? "#000" : "#64748b",
-            fontSize: "16px",
+            borderBottom: activeTab === "posts" ? "2px solid var(--primary)" : "2px solid transparent",
+            color: activeTab === "posts" ? "var(--primary)" : "var(--text-secondary)",
+            fontSize: "15px",
             fontWeight: activeTab === "posts" ? 600 : 500,
             cursor: "pointer",
-            transition: "all 0.2s",
-            marginBottom: "-2px",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            marginBottom: "-1px",
           }}
           onMouseEnter={(e) => {
             if (activeTab !== "posts") {
-              e.currentTarget.style.color = "#000";
+              e.currentTarget.style.color = "var(--text-primary)";
             }
           }}
           onMouseLeave={(e) => {
             if (activeTab !== "posts") {
-              e.currentTarget.style.color = "#64748b";
+              e.currentTarget.style.color = "var(--text-secondary)";
             }
           }}
         >
@@ -527,22 +543,22 @@ export default function Profile() {
             padding: "12px 24px",
             backgroundColor: "transparent",
             border: "none",
-            borderBottom: activeTab === "saved" ? "3px solid #000" : "3px solid transparent",
-            color: activeTab === "saved" ? "#000" : "#64748b",
-            fontSize: "16px",
+            borderBottom: activeTab === "saved" ? "2px solid var(--primary)" : "2px solid transparent",
+            color: activeTab === "saved" ? "var(--primary)" : "var(--text-secondary)",
+            fontSize: "15px",
             fontWeight: activeTab === "saved" ? 600 : 500,
             cursor: "pointer",
-            transition: "all 0.2s",
-            marginBottom: "-2px",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            marginBottom: "-1px",
           }}
           onMouseEnter={(e) => {
             if (activeTab !== "saved") {
-              e.currentTarget.style.color = "#000";
+              e.currentTarget.style.color = "var(--text-primary)";
             }
           }}
           onMouseLeave={(e) => {
             if (activeTab !== "saved") {
-              e.currentTarget.style.color = "#64748b";
+              e.currentTarget.style.color = "var(--text-secondary)";
             }
           }}
         >

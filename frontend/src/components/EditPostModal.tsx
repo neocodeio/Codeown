@@ -198,10 +198,10 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
           <div
             className="modal-content"
             style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "30px",
-              border: "1px solid rgba(0, 0, 0, 0.2)",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)",
+              backgroundColor: "#f5f5f5",
+              borderRadius: "25px",
+              border: "1px solid var(--border-light)",
+              boxShadow: "var(--shadow-xl)",
               display: "flex",
               flexDirection: "column",
               maxHeight: "100%",
