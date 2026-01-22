@@ -60,7 +60,7 @@ export default function SearchBar() {
           }}
           onFocus={() => setIsOpen(true)}
           style={{
-            width: "60%",
+            width: "150%",
             padding: isMobile ? "8px 12px" : "10px 16px",
             borderRadius: "25px",
             border: "2px solid #e4e7eb",

@@ -187,7 +187,7 @@ export default function Profile() {
 
   return (
     <div style={{
-      maxWidth: "1000px",
+      maxWidth: "900px",
       margin: "0 auto",
       padding: "40px 24px",
       backgroundColor: "transparent",
@@ -197,8 +197,8 @@ export default function Profile() {
       <div style={{
         backgroundColor: "#FFFFFF",
         borderRadius: "25px",
-        padding: "48px",
-        marginBottom: "24px",
+        padding: "38px",
+        marginBottom: "60px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
         border: "1px solid #e5e7eb",
       }}>
@@ -405,12 +405,12 @@ export default function Profile() {
               disabled={pinningPostId === userProfile.pinned_post.id}
               style={{
                 position: "absolute",
-                top: "20px",
-                right: "32px",
-                padding: "8px 12px",
-                backgroundColor: "#FFFFFF",
-                border: "1px solid #e5e7eb",
-                color: "#6b7280",
+                top: "8px",
+                right: "27px",
+                padding: "5px 9px",
+                backgroundColor: "#2563EB",
+                border: "none",
+                color: "#fff",
                 borderRadius: "8px",
                 cursor: "pointer",
                 fontSize: "13px",
@@ -421,12 +421,14 @@ export default function Profile() {
               }}
               onMouseEnter={(e) => {
                 if (pinningPostId !== userProfile.pinned_post.id) {
-                  e.currentTarget.style.backgroundColor = "#f9fafb";
+                  e.currentTarget.style.backgroundColor = "#fff";
+                  e.currentTarget.style.color = "#2563EB";
                 }
               }}
               onMouseLeave={(e) => {
                 if (pinningPostId !== userProfile.pinned_post.id) {
-                  e.currentTarget.style.backgroundColor = "#FFFFFF";
+                  e.currentTarget.style.backgroundColor = "#2563EB";
+                  e.currentTarget.style.color = "#fff";
                 }
               }}
             >
@@ -549,12 +551,12 @@ export default function Profile() {
                       disabled={pinningPostId === post.id}
                       style={{
                         position: "absolute",
-                        top: "20px",
-                        right: "32px",
-                        padding: "8px 12px",
-                        backgroundColor: "#FFFFFF",
+                        top: "8px",
+                        right: "27px",
+                        padding: "5px 9px",
+                        backgroundColor: "#fff",
                         border: "1px solid #e5e7eb",
-                        color: "#6b7280",
+                        color: "#2563EB",
                         borderRadius: "8px",
                         cursor: "pointer",
                         fontSize: "13px",

@@ -73,7 +73,7 @@ export default function NotificationDropdown() {
         style={{
           position: "relative",
           padding: "10px 9px",
-          backgroundColor: "#000",
+          backgroundColor: "#2563EB",
           border: "none",
           cursor: "pointer",
           borderRadius: "50%",
