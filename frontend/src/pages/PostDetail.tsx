@@ -240,8 +240,9 @@ export default function PostDetail() {
       backgroundColor: "transparent",
     }}>
       <article style={{
-        backgroundColor: "#F5F5F5",
+        backgroundColor: "#0F172A",
         borderRadius: "30px",
+        color: "#fff",
         padding: "28px",
         marginBottom: "24px",
         boxShadow: "var(--shadow)",
@@ -296,8 +297,9 @@ export default function PostDetail() {
 
       {/* Comments Section */}
       <div style={{
-        backgroundColor: "#F5F5F5",
+        backgroundColor: "#0F172A",
         borderRadius: "30px",
+        color: "#fff",
         padding: "28px",
         boxShadow: "var(--shadow)",
         border: "1px solid var(--border-light)",
@@ -317,7 +319,7 @@ export default function PostDetail() {
                 fontSize: "13px",
                 cursor: "pointer",
                 backgroundColor: commentSort === "newest" ? "var(--accent)" : "var(--bg-elevated)",
-                color: commentSort === "newest" ? "gray" : "#000",
+                color: commentSort === "newest" ? "#fff" : "gray",
               }}
             >
               Newest
@@ -332,7 +334,7 @@ export default function PostDetail() {
                 fontSize: "13px",
                 cursor: "pointer",
                 backgroundColor: commentSort === "top" ? "var(--accent)" : "var(--bg-elevated)",
-                color: commentSort === "top" ? "gray" : "#000",
+                color: commentSort === "top" ? "#fff" : "gray",
               }}
             >
               Top
@@ -356,8 +358,8 @@ export default function PostDetail() {
                 padding: "10px 20px",
                 backgroundColor: commentContent.trim() && !isSubmitting ? "var(--accent)" : "var(--border-color)",
                 border: "none",
-                color: commentContent.trim() && !isSubmitting ? "#fff" : "#000",
-                backgroundColor: commentContent.trim() && !isSubmitting ? "#000" : "#e4e7eb",
+                color: commentContent.trim() && !isSubmitting ? "#000" : "#000",
+                backgroundColor: commentContent.trim() && !isSubmitting ? "#fff" : "#f5f5f5",
                 borderRadius: "12px",
                 cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
                 fontSize: "15px",

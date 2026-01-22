@@ -119,7 +119,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
     <article
       onClick={handleClick}
       style={{
-        backgroundColor: "#F5F5F5",
+        backgroundColor: "#0F172A",
         borderRadius: "30px",
         padding: isMobile ? "20px" : "28px",
         marginBottom: "50px",
@@ -165,18 +165,18 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             style={{
               fontSize: isMobile ? "14px" : "16px",
               fontWeight: 600,
-              color: "var(--text-primary)",
+              color: "#fff",
               marginBottom: "2px",
               cursor: "pointer",
               transition: "color 0.2s",
               wordBreak: "break-word",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = "var(--primary)";
+              e.currentTarget.style.color = "#fff";
               e.currentTarget.style.textDecoration = "underline";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = "var(--text-primary)";
+              e.currentTarget.style.color = "#fff";
               e.currentTarget.style.textDecoration = "none";
             }}
           >
@@ -185,7 +185,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           {userEmail && !isMobile && (
             <div style={{
               fontSize: "13px",
-              color: "var(--text-secondary)",
+              color: "#fff",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
@@ -196,7 +196,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
           <time style={{
-            color: "var(--text-tertiary)",
+            color: "#fff",
             fontSize: isMobile ? "11px" : "13px",
             fontWeight: 500,
           }}>
@@ -210,7 +210,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                   padding: "4px 8px",
                   backgroundColor: "var(--bg-hover)",
                   border: "1px solid var(--border-color)",
-                  color: "var(--text-primary)",
+                  color: "#fff",
                   borderRadius: "6px",
                   cursor: "pointer",
                   fontSize: "12px",
@@ -224,7 +224,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                  e.currentTarget.style.color = "var(--text-primary)";
+                  e.currentTarget.style.color = "#fff";
                   e.currentTarget.style.borderColor = "var(--border-color)";
                 }}
               >
@@ -269,7 +269,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
 
       {post.title && (
         <h3 style={{
-          color: "var(--text-primary)",
+          color: "#fff",
           fontSize: isMobile ? "18px" : "22px",
           fontWeight: 700,
           lineHeight: "1.3",
@@ -284,7 +284,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
 
       {/* Post Content */}
       <div style={{
-        marginBottom: post.images && post.images.length > 0 ? "16px" : 0,
+        marginBottom: post.images && post.images.length > 0 ? "16px" : 0, color: "#fff",
       }}>
         <ContentRenderer content={post.content} fontSize={isMobile ? "14px" : "16px"} />
       </div>
@@ -307,7 +307,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 fontSize: "13px",
                 padding: "6px 12px",
                 backgroundColor: "var(--bg-hover)",
-                color: "var(--primary)",
+                color: "#fff",
                 borderRadius: "var(--radius-md)",
                 cursor: "pointer",
                 fontWeight: 600,
@@ -322,7 +322,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                e.currentTarget.style.color = "var(--primary)";
+                e.currentTarget.style.color = "#fff";
                 e.currentTarget.style.borderColor = "var(--border-color)";
                 e.currentTarget.style.transform = "translateY(0)";
               }}
@@ -342,6 +342,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           paddingTop: "16px",
           borderTop: "1px solid var(--border-light)",
           flexWrap: "wrap",
+          color: "#fff",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -358,7 +359,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             cursor: currentUser && !likeLoading ? "pointer" : "not-allowed",
             borderRadius: "var(--radius-md)",
             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            color: isLiked ? "var(--heart-liked)" : "var(--text-secondary)",
+            color: isLiked ? "var(--heart-liked)" : "#fff",
             opacity: currentUser ? 1 : 0.5,
           }}
           onMouseEnter={(e) => {
@@ -398,7 +399,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             cursor: "pointer",
             borderRadius: "var(--radius-md)",
             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            color: "var(--text-secondary)",
+            color: "#fff",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "var(--bg-hover)";
@@ -431,7 +432,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
               cursor: "pointer",
               borderRadius: "var(--radius-md)",
               transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-              color: isSaved ? "var(--primary)" : "var(--text-secondary)",
+              color: isSaved ? "#262bef" : "#fff",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "var(--bg-hover)";

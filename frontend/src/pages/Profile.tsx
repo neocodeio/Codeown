@@ -206,7 +206,7 @@ export default function Profile() {
         {/* Cover gradient */}
         <div style={{
           height: "65px",
-          backgroundImage: 'linear-gradient(to right, #402662, #3900a6)',
+          backgroundImage: 'linear-gradient(to right, #805ef4, #805ef4)',
           position: "relative",
           marginBottom: "80px",
         }}>

@@ -203,7 +203,8 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
     <div
       ref={contentRef}
       style={{
-        color: "#1a1a1a",
+        color: "#fff",
+        marginTop: "20px",
         fontSize,
         lineHeight: 1.6,
         whiteSpace: "pre-wrap",

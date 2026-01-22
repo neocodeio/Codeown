@@ -82,7 +82,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
             color: "var(--nav-text)",
             letterSpacing: "-0.02em",
           }}>
-            <img src={"./src/assets/logo-removed.png"} alt="logo" style={{ width: isMobile ? "50px" : "56px", height: isMobile ? "50px" : "56px", borderRadius: "12px" }} />
+            <img src={"./src/assets/logo-removed.png"} alt="logo" style={{ width: isMobile ? "50px" : "56px", height: isMobile ? "50px" : "56px", borderRadius: "12px", backgroundColor: "#2563EB", }} />
           </h2>
         </Link>
         {!isMobile && (
@@ -92,7 +92,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                 to="/"
                 style={{
                   textDecoration: "none",
-                  color: location.pathname === "/" ? "var(--primary)" : "var(--nav-text-muted)",
+                  color: location.pathname === "/" ? "#2563EB" : "#2563EB",
                   fontWeight: location.pathname === "/" ? 600 : 500,
                   padding: "8px 16px",
                   borderRadius: "var(--radius-lg)",
@@ -197,7 +197,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                     padding: "10px 20px",
                     backgroundColor: "transparent",
                     border: "none",
-                    color: "#000",
+                    color: "#2563EB",
                     borderRadius: "var(--radius-lg)",
                     cursor: "pointer",
                     fontSize: "20px",
@@ -231,8 +231,8 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                     <button style={{
                       padding: "6px 15px",
                       backgroundColor: location.pathname === "/profile" ? "var(--bg-hover)" : "transparent",
-                      border: "2px solid #000",
-                      color: location.pathname === "/profile" ? "#000" : "#000",
+                      border: "2px solid #2563EB",
+                      color: location.pathname === "/profile" ? "#2563EB" : "#2563EB",
                       borderRadius: "30px",
                       cursor: "pointer",
                       fontSize: "20px",
@@ -348,7 +348,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
               padding: "12px 16px",
               borderRadius: "var(--radius-md)",
               backgroundColor: location.pathname === "/" ? "var(--bg-hover)" : "transparent",
-              color: location.pathname === "/" ? "var(--primary)" : "var(--nav-text)",
+              color: location.pathname === "/" ? "#2563EB" : "#2563EB",
               fontWeight: location.pathname === "/" ? 600 : 500,
               transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               fontSize: "15px",
@@ -384,7 +384,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
                   padding: "12px 16px",
                   borderRadius: "var(--radius-md)",
                   backgroundColor: location.pathname === "/profile" ? "var(--bg-hover)" : "transparent",
-                  color: location.pathname === "/profile" ? "var(--primary)" : "var(--nav-text)",
+                  color: location.pathname === "/profile" ? "#2563EB" : "#2563EB",
                   fontWeight: location.pathname === "/profile" ? 600 : 500,
                   transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                   fontSize: "15px",

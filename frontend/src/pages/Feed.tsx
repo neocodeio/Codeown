@@ -53,7 +53,7 @@ export default function Feed() {
       margin: "0 auto",
       padding: "24px 16px",
       minHeight: "calc(100vh - 80px)",
-      backgroundColor: "transparent",
+      backgroundColor: "#F8FAFC",
     }}>
       <div style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
         <button
