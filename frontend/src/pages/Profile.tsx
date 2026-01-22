@@ -196,7 +196,7 @@ export default function Profile() {
       {/* Profile Header - Minimalist Design */}
       <div style={{
         backgroundColor: "#FFFFFF",
-        borderRadius: "16px",
+        borderRadius: "25px",
         padding: "48px",
         marginBottom: "24px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
@@ -216,7 +216,7 @@ export default function Profile() {
               backgroundColor: "transparent",
               border: "1px solid #e5e7eb",
               color: "#6b7280",
-              borderRadius: "8px",
+              borderRadius: "12px",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: 500,
@@ -241,7 +241,7 @@ export default function Profile() {
               backgroundColor: "#2563EB",
               border: "none",
               color: "#FFFFFF",
-              borderRadius: "8px",
+              borderRadius: "12px",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: 500,
@@ -267,7 +267,8 @@ export default function Profile() {
             style={{
               width: "120px",
               height: "120px",
-              borderRadius: "12px",
+              padding: "8px",
+              borderRadius: "25px",
               objectFit: "cover",
               border: "1px solid #e5e7eb",
               flexShrink: 0,
