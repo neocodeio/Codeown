@@ -56,14 +56,13 @@ export default function Feed() {
             <button
               onClick={() => handleFilterChange("all")}
               style={{
-                border: "none",
-                padding: "0",
+                border: "1px solid #333",
+                padding: "5px 15px",
                 fontSize: "13px",
                 letterSpacing: "0.1em",
                 fontWeight: 800,
-                color: feedFilter === "all" ? "var(--text-primary)" : "var(--text-tertiary)",
-                borderBottom: feedFilter === "all" ? "2px solid var(--text-primary)" : "2px solid transparent",
-                borderRadius: 0,
+                color: feedFilter === "all" ? "gray" : "#333",
+                borderRadius: "5px",
               }}
             >
               LATEST
@@ -72,14 +71,13 @@ export default function Feed() {
               <button
                 onClick={() => handleFilterChange("following")}
                 style={{
-                  border: "none",
-                  padding: "0",
-                  fontSize: "13px",
-                  letterSpacing: "0.1em",
-                  fontWeight: 800,
-                  color: feedFilter === "following" ? "var(--text-primary)" : "var(--text-tertiary)",
-                  borderBottom: feedFilter === "following" ? "2px solid var(--text-primary)" : "2px solid transparent",
-                  borderRadius: 0,
+                 border: "1px solid #333",
+                padding: "5px 15px",
+                fontSize: "13px",
+                letterSpacing: "0.1em",
+                fontWeight: 800,
+                color: feedFilter === "following" ? "gray" : "#333",
+                borderRadius: "5px",
                 }}
               >
                 FOLLOWING

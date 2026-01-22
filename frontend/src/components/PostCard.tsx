@@ -17,7 +17,7 @@ import {
   faBookmark as faBookmarkSolid,
   faBookmark as faBookmarkRegular,
   faTrash,
-  faPenToSquare,
+  faPen, 
   faShareNodes
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -95,10 +95,12 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       onClick={handleClick}
       className="fade-in"
       style={{
-        backgroundColor: "var(--bg-card)",
+        backgroundColor: "#f5f5f5",
         padding: "0",
+        borderRadius: "20px",
+        marginBottom: "30px",
         cursor: "pointer",
-        border: "1px solid var(--border-color)",
+        border: "1px solid #e0e0e0",
         position: "relative",
         transition: "transform 0.2s ease",
       }}
@@ -153,11 +155,15 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 onClick={handleEditClick}
                 style={{
                   padding: "4px 8px",
-                  border: "1px solid var(--border-color)",
-                  fontSize: "10px",
+                  border: "1px solid gray",
+                  borderRadius: "4px",
+                  fontSize: "15px",
+                  backgroundColor: "gray",
+                  color: "#fff",
+                  fontWeight: 700,
                 }}
               >
-                EDIT
+                <FontAwesomeIcon icon={faPen} />
               </button>
               <button
                 onClick={handleDeleteClick}
@@ -165,10 +171,13 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 style={{
                   padding: "4px 8px",
                   border: "1px solid var(--border-color)",
-                  fontSize: "10px",
+                  backgroundColor: "red",
+                  color: "white",
+                  borderRadius: "4px",
+                  fontSize: "15px",
                 }}
               >
-                DELETE
+                <FontAwesomeIcon icon={faTrash} />
               </button>
             </div>
           )}
@@ -208,11 +217,11 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                   navigate(`/search?q=${encodeURIComponent(`#${tag}`)}`);
                 }}
                 style={{
-                  fontSize: "10px",
+                  fontSize: "13px",
+                  marginTop: "5px",
                   padding: "2px 8px",
                   border: "1px solid var(--border-color)",
                   fontWeight: 800,
-                  textTransform: "uppercase",
                 }}
               >
                 #{tag}
@@ -239,6 +248,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             padding: "12px",
             display: "flex",
             alignItems: "center",
+            cursor: "pointer",
             justifyContent: "center",
             gap: "8px",
             fontSize: "12px",
@@ -258,10 +268,12 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             borderRight: "1px solid var(--border-color)",
             padding: "12px",
             display: "flex",
+            color: "#000",
             alignItems: "center",
             justifyContent: "center",
             gap: "8px",
-            fontSize: "12px",
+            fontSize: "14px",
+            cursor: "pointer",
           }}
         >
           <FontAwesomeIcon icon={faComment} />
@@ -275,11 +287,12 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             border: "none",
             padding: "12px",
             display: "flex",
+            cursor: "pointer",
             alignItems: "center",
             justifyContent: "center",
             fontSize: "12px",
             backgroundColor: isSaved ? "var(--accent)" : "transparent",
-            color: isSaved ? "white" : "var(--text-primary)",
+            color: isSaved ? "#2563eb" : "var(--text-primary)",
           }}
         >
           <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} />
