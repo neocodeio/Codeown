@@ -55,16 +55,19 @@ export default function CommentBlock({ comment, depth, getAvatarUrl, formatDate,
   const isReply = !!comment.parent_id;
 
   return (
-    <div style={{ marginLeft: isReply ? "24px" : 0, marginBottom: "12px" }}>
+    <div style={{ marginLeft: isReply ? "16px" : 0, marginBottom: "16px" }} className="fade-in">
       <div
         style={{
-          padding: "14px",
-          backgroundColor: "var(--bg-elevated)",
-          borderRadius: "12px",
-          border: "1px solid var(--border-color)",
+          padding: "20px",
+          backgroundColor: "var(--bg-card)",
+          borderRadius: "var(--radius-lg)",
+          border: "1px solid var(--border-light)",
+          transition: "all 0.3s ease",
         }}
+        onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--border-color)"}
+        onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border-light)"}
       >
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "8px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
           <img
             src={avatarUrl}
             alt={name}
@@ -72,9 +75,9 @@ export default function CommentBlock({ comment, depth, getAvatarUrl, formatDate,
             style={{
               width: "36px",
               height: "36px",
-              borderRadius: "50%",
+              borderRadius: "10px",
               objectFit: "cover",
-              border: "2px solid var(--border-color)",
+              border: "1px solid var(--border-color)",
               cursor: "pointer",
             }}
           />
@@ -82,50 +85,44 @@ export default function CommentBlock({ comment, depth, getAvatarUrl, formatDate,
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
               <span
                 onClick={() => comment.user_id && navigate(`/user/${comment.user_id}`)}
-                style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", cursor: "pointer" }}
+                style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", cursor: "pointer" }}
               >
                 {name}
               </span>
               {comment.parent_author_name && (
-                <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
-                  Replying to {comment.parent_author_name}
+                <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
+                  Replying to <span style={{ color: "var(--primary)", fontWeight: 600 }}>@{comment.parent_author_name}</span>
                 </span>
               )}
+              <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>•</span>
+              <time style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
+                {formatDate(comment.created_at)}
+              </time>
             </div>
-            <time style={{ fontSize: "12px", color: "var(--text-secondary)", display: "block", marginTop: "2px" }}>
-              {formatDate(comment.created_at)}
-            </time>
           </div>
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <ContentRenderer content={comment.content} fontSize="15px" />
+        <div style={{ marginBottom: "16px", paddingLeft: "48px" }}>
+          <ContentRenderer content={comment.content} />
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          {isSignedIn && (
-            <button
-              onClick={toggleLike}
-              disabled={likeLoading}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "4px 8px",
-                background: "none",
-                border: "none",
-                cursor: likeLoading ? "not-allowed" : "pointer",
-                color: isLiked ? "var(--heart-liked)" : "var(--heart-unliked)",
-                fontSize: "13px",
-              }}
-            >
-              <FontAwesomeIcon icon={faHeart} style={{ fontSize: "14px" }} />
-              {likeCount ?? comment.like_count ?? 0}
-            </button>
-          )}
-          {!isSignedIn && (
-            <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "var(--text-secondary)" }}>
-              <FontAwesomeIcon icon={faHeart} /> {likeCount ?? comment.like_count ?? 0}
-            </span>
-          )}
+        <div style={{ display: "flex", alignItems: "center", gap: "20px", paddingLeft: "48px" }}>
+          <button
+            onClick={toggleLike}
+            disabled={!isSignedIn || likeLoading}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              background: "none",
+              border: "none",
+              cursor: isSignedIn && !likeLoading ? "pointer" : "default",
+              color: isLiked ? "var(--error)" : "var(--text-secondary)",
+              fontSize: "13px",
+              fontWeight: 600,
+            }}
+          >
+            <FontAwesomeIcon icon={faHeart} style={{ fontSize: "14px", transform: isLiked ? "scale(1.1)" : "scale(1)", transition: "transform 0.2s" }} />
+            <span>{likeCount ?? 0}</span>
+          </button>
           {isSignedIn && (
             <button
               onClick={() => setShowReply((s) => !s)}
@@ -133,67 +130,49 @@ export default function CommentBlock({ comment, depth, getAvatarUrl, formatDate,
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
-                padding: "4px 8px",
                 background: "none",
                 border: "none",
                 cursor: "pointer",
                 color: "var(--text-secondary)",
                 fontSize: "13px",
+                fontWeight: 600,
               }}
             >
-              <FontAwesomeIcon icon={faReply} /> Reply
+              <FontAwesomeIcon icon={faReply} />
+              <span>Reply</span>
             </button>
           )}
         </div>
       </div>
 
       {showReply && isSignedIn && (
-        <div style={{ marginTop: "10px", marginLeft: "0" }}>
+        <div style={{ marginTop: "12px", paddingLeft: "48px" }} className="fade-in">
           <MentionInput
             value={replyContent}
             onChange={setReplyContent}
             placeholder={`Reply to ${name}...`}
             minHeight="80px"
-            style={{ marginBottom: "8px" }}
           />
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end" }}>
+            <button
+              onClick={() => { setShowReply(false); setReplyContent(""); }}
+              style={{ padding: "8px 20px", backgroundColor: "transparent", border: "1px solid var(--border-color)", color: "var(--text-secondary)", borderRadius: "var(--radius-md)", fontSize: "14px", fontWeight: 600 }}
+            >
+              Cancel
+            </button>
             <button
               onClick={handleReplySubmit}
               disabled={!replyContent.trim() || submitting}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: replyContent.trim() && !submitting ? "#000" : "var(--border-color)",
-                color: "#fff",
-                border: "none",
-                fontWeight: "600",
-                borderRadius: "8px",
-                fontSize: "15px",
-                cursor: replyContent.trim() && !submitting ? "pointer" : "not-allowed",
-              }}
+              style={{ padding: "8px 20px", backgroundColor: "var(--primary)", border: "none", color: "white", borderRadius: "var(--radius-md)", fontSize: "14px", fontWeight: 600, opacity: replyContent.trim() ? 1 : 0.6 }}
             >
               {submitting ? "Posting..." : "Reply"}
-            </button>
-            <button
-              onClick={() => { setShowReply(false); setReplyContent(""); }}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "transparent",
-                border: "1px solid var(--border-color)",
-                color: "#fff",
-                borderRadius: "8px",
-                fontWeight: "600",
-                fontSize: "15px",
-                cursor: "pointer",
-              }}
-            >
-              Cancel
             </button>
           </div>
         </div>
       )}
 
       {comment.children && comment.children.length > 0 && (
-        <div style={{ marginTop: "12px" }}>
+        <div style={{ marginTop: "12px", borderLeft: "2px solid var(--border-light)", marginLeft: "18px" }}>
           {comment.children.map((c) => (
             <CommentBlock
               key={c.id}
@@ -201,7 +180,7 @@ export default function CommentBlock({ comment, depth, getAvatarUrl, formatDate,
               depth={depth + 1}
               getAvatarUrl={getAvatarUrl}
               formatDate={formatDate}
-              onReply={onReply}
+              onReply={handleReply}
             />
           ))}
         </div>

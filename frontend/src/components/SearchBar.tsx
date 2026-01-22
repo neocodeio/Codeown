@@ -18,7 +18,6 @@ export default function SearchBar() {
         setShowResults(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setShowResults]);
@@ -35,187 +34,68 @@ export default function SearchBar() {
     setIsOpen(false);
   };
 
-  const handleTagClick = (tag: string) => {
-    navigate(`/search?q=${encodeURIComponent(`#${tag}`)}`);
-    clearSearch();
-    setIsOpen(false);
-  };
-
   return (
-    <div ref={searchRef} style={{ 
-      position: "relative", 
-      flex: 1, 
-      maxWidth: isMobile ? "100%" : "500px", 
-            margin: isMobile ? "0" : "0 20px",
-      width: "100%",
-    }}>
-      <div style={{ position: "relative" }}>
-        <input
-          type="text"
-          placeholder="Search users, posts, or tags..."
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => setIsOpen(true)}
-          style={{
-            width: "60%",
-            padding: isMobile ? "8px 12px" : "10px 16px",
-            borderRadius: "25px",
-            border: "2px solid #e4e7eb",
-            fontSize: isMobile ? "12px" : "14px",
-            outline: "none",
-            transition: "all 0.2s",
-            backgroundColor: "#ffffff",
-            boxSizing: "border-box",
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && query.trim().length >= 2) {
-              navigate(`/search?q=${encodeURIComponent(query)}`);
-              setIsOpen(false);
-            }
-          }}
-        />
-      </div>
+    <div ref={searchRef} style={{ position: "relative", width: "100%" }}>
+      <input
+        type="text"
+        placeholder="Search..."
+        value={query}
+        onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
+        onFocus={() => setIsOpen(true)}
+        style={{
+          width: "100%",
+          padding: "10px 18px",
+          borderRadius: "var(--radius-full)",
+          border: "1px solid var(--border-color)",
+          backgroundColor: "var(--bg-input)",
+          fontSize: "14px",
+          transition: "all 0.3s ease",
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && query.trim().length >= 2) {
+            navigate(`/search?q=${encodeURIComponent(query)}`);
+            setIsOpen(false);
+          }
+        }}
+      />
 
       {isOpen && showResults && (users.length > 0 || posts.length > 0) && (
-        <div
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            marginTop: "8px",
-            backgroundColor: "#ffffff",
-            borderRadius: "16px",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
-            border: "1px solid #e4e7eb",
-            maxHeight: "400px",
-            overflowY: "auto",
-            zIndex: 1000,
-          }}
-        >
+        <div className="glass fade-in" style={{
+          position: "absolute",
+          top: "calc(100% + 12px)",
+          left: 0,
+          right: 0,
+          borderRadius: "var(--radius-xl)",
+          boxShadow: "var(--shadow-lg)",
+          maxHeight: "360px",
+          overflowY: "auto",
+          zIndex: 2000,
+          padding: "8px",
+        }}>
           {users.length > 0 && (
-            <div style={{ padding: "12px" }}>
-              <div style={{ fontSize: "12px", fontWeight: 600, color: "#64748b", marginBottom: "8px", padding: "0 8px" }}>
-                USERS
-              </div>
-              {users.map((user) => (
-                <div
-                  key={user.id}
-                  onClick={() => handleUserClick(user.id)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f5f7fa";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  <img
-                    src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}&background=000&color=ffffff&size=64`}
-                    alt={user.name}
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a" }}>
-                      {user.name}
-                    </div>
-                    {user.username && (
-                      <div style={{ fontSize: "12px", color: "#64748b" }}>@{user.username}</div>
-                    )}
+            <div style={{ padding: "8px" }}>
+              <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "0 8px 8px", display: "block" }}>Users</span>
+              {users.map((u) => (
+                <div key={u.id} onClick={() => handleUserClick(u.id)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px", borderRadius: "var(--radius-md)", cursor: "pointer", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                  <img src={u.avatar_url || `https://ui-avatars.com/api/?name=${u.name}&background=5046e5&color=fff`} alt="" style={{ width: "32px", height: "32px", borderRadius: "8px" }} />
+                  <div>
+                    <div style={{ fontSize: "14px", fontWeight: 700 }}>{u.name}</div>
+                    {u.username && <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>@{u.username}</div>}
                   </div>
                 </div>
               ))}
             </div>
           )}
-
-          {Array.isArray(posts) && posts.length > 0 && (
-            <div style={{ padding: "12px", borderTop: users.length > 0 ? "1px solid #e4e7eb" : "none" }}>
-              <div style={{ fontSize: "12px", fontWeight: 600, color: "#64748b", marginBottom: "8px", padding: "0 8px" }}>
-                POSTS
-              </div>
-              {posts.map((post) => (
-                <div
-                  key={post.id}
-                  onClick={() => handlePostClick(post.id)}
-                  style={{
-                    padding: "10px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f5f7fa";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", marginBottom: "4px" }}>
-                    {post.title || post.content.substring(0, 50) + "..."}
-                  </div>
-                  {post.tags && post.tags.length > 0 && (
-                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginTop: "4px" }}>
-                      {post.tags.slice(0, 3).map((tag, idx) => (
-                        <span
-                          key={idx}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleTagClick(tag);
-                          }}
-                          style={{
-                            fontSize: "11px",
-                            padding: "2px 6px",
-                            backgroundColor: "#f0f7ff",
-                            color: "#2563eb",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+          {posts.length > 0 && (
+            <div style={{ padding: "8px", borderTop: "1px solid var(--border-light)" }}>
+              <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "8px 8px 8px", display: "block" }}>Posts</span>
+              {posts.map((p) => (
+                <div key={p.id} onClick={() => handlePostClick(p.id)} style={{ padding: "8px", borderRadius: "var(--radius-md)", cursor: "pointer", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                  <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.title || p.content.slice(0, 40) + "..."}</div>
                 </div>
               ))}
             </div>
           )}
-        </div>
-      )}
-
-      {loading && isOpen && (
-        <div
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            marginTop: "8px",
-            backgroundColor: "#ffffff",
-            borderRadius: "16px",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
-            padding: "20px",
-            textAlign: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div style={{ fontSize: "14px", color: "#64748b" }}>Searching...</div>
         </div>
       )}
     </div>

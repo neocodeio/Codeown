@@ -1,70 +1,55 @@
 import { SignUp } from "@clerk/clerk-react";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { Navigate } from "react-router-dom";
-import { isClerkEnabled } from "../lib/clerk";
+import { isClerkEnabled, clerkPublishableKey } from "../lib/clerk";
 
 export default function SignUpPage() {
   const { isSignedIn, isLoaded } = useClerkUser();
 
-  // If already signed in, redirect to feed
-  if (isLoaded && isSignedIn) {
-    return <Navigate to="/" replace />;
-  }
-
-  // If Clerk is not enabled, show a message
-  if (!isClerkEnabled) {
-    return (
-      <div style={{ 
-        display: "flex", 
-        flexDirection: "column",
-        justifyContent: "center", 
-        alignItems: "center", 
-        minHeight: "calc(100vh - 80px)",
-        padding: "20px",
-        textAlign: "center"
-      }}>
-        <h1 style={{ marginBottom: "16px" }}>Sign Up</h1>
-        <p style={{ color: "#666", marginBottom: "24px" }}>
-          Please configure VITE_CLERK_PUBLISHABLE_KEY in your .env file to enable authentication.
-        </p>
-        <div style={{
-          backgroundColor: "#fff",
-          border: "1px solid #ddd",
-          borderRadius: "25px",
-          padding: "24px",
-          maxWidth: "400px",
-          width: "100%"
-        }}>
-          <p style={{ color: "#999", fontSize: "14px" }}>
-            Once Clerk is configured, the sign-up form will appear here.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  if (isLoaded && isSignedIn) return <Navigate to="/" replace />;
 
   return (
-    <div style={{ 
+    <div className="fade-in" style={{ 
       display: "flex", 
       justifyContent: "center", 
       alignItems: "center", 
-      minHeight: "calc(100vh - 100px)",
-      padding: "20px"
+      minHeight: "calc(100vh - 120px)",
+      padding: "40px 20px",
     }}>
-      <SignUp 
-        routing="path" 
-        path="/sign-up"
-        signInUrl="/sign-in"
-        afterSignInUrl="/"
-        afterSignUpUrl="/"
-        appearance={{
-          elements: {
-            rootBox: "mx-auto",
-            card: "shadow-lg"
-          }
-        }}
-      />
+      <div style={{ 
+        width: "100%", 
+        maxWidth: "460px",
+        backgroundColor: "var(--bg-card)",
+        borderRadius: "var(--radius-2xl)",
+        padding: "48px",
+        boxShadow: "var(--shadow-xl)",
+        border: "1px solid var(--border-color)",
+      }}>
+        {isClerkEnabled && clerkPublishableKey ? (
+          <SignUp 
+            routing="path" 
+            path="/sign-up"
+            signInUrl="/sign-in"
+            appearance={{
+              elements: {
+                rootBox: "w-full",
+                card: "shadow-none border-0 p-0 m-0",
+                headerTitle: "text-3xl font-bold tracking-tight text-gray-900",
+                headerSubtitle: "text-gray-500 mt-2",
+                socialButtonsBlockButton: "border-gray-200 hover:bg-gray-50 transition-all rounded-xl",
+                formButtonPrimary: "bg-[#5046e5] hover:bg-[#3730a3] transition-all rounded-xl py-3",
+                footerActionLink: "text-[#5046e5] hover:text-[#3730a3]",
+                formFieldInput: "rounded-xl border-gray-200 focus:ring-[#5046e5] transition-all",
+              }
+            }}
+          />
+        ) : (
+          <div style={{ textAlign: "center" }}>
+            <h1 style={{ marginBottom: "16px", fontSize: "28px", color: "var(--text-primary)" }}>Sign Up</h1>
+            <p style={{ color: "var(--text-secondary)", marginBottom: "32px" }}>Please configure Clerk to continue.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-

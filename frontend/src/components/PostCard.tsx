@@ -17,7 +17,8 @@ import {
   faBookmark as faBookmarkSolid,
   faBookmark as faBookmarkRegular,
   faTrash,
-  faPenToSquare
+  faPenToSquare,
+  faShareNodes
 } from "@fortawesome/free-solid-svg-icons";
 
 interface PostCardProps {
@@ -46,31 +47,30 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   }, [post.id]);
 
   const handleUserClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent post card click
+    e.stopPropagation();
     if (post.user_id) {
       navigate(`/user/${post.user_id}`);
     }
   };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (diffInSeconds < 60) return "just now";
+    if (diffInSeconds < 60) return "Just now";
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
     if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined });
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
-  // Generate avatar URL from user's name or email (fallback if no avatar_url)
   const getAvatarUrl = (name: string, email: string | null) => {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email || "User")}&background=000&color=ffffff&size=128&bold=true&font-size=0.5`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email || "User")}&background=5046e5&color=ffffff&size=128&bold=true`;
   };
 
   const userName = post.user?.name || "User";
   const userEmail = post.user?.email || null;
-  // Use avatar_url from backend if available, otherwise generate one
   const avatarUrl = post.user?.avatar_url || getAvatarUrl(userName, userEmail);
 
   const handleClick = () => {
@@ -84,32 +84,18 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
 
   const handleDeleteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
-      return;
-    }
+    if (!confirm("Delete this post?")) return;
 
     setIsDeleting(true);
     try {
       const token = await getToken();
-      if (!token) {
-        alert("Please sign in to delete post");
-        setIsDeleting(false);
-        return;
-      }
-
+      if (!token) return;
       await api.delete(`/posts/${post.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (onUpdated) {
-        onUpdated();
-      } else {
-        window.location.reload();
-      }
+      onUpdated ? onUpdated() : window.location.reload();
     } catch (error) {
       console.error("Error deleting post:", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to delete post";
-      alert(`Failed to delete post: ${errorMessage}`);
     } finally {
       setIsDeleting(false);
     }
@@ -118,184 +104,139 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   return (
     <article
       onClick={handleClick}
+      className="fade-in"
       style={{
-        backgroundColor: "#0F172A",
-        borderRadius: "30px",
-        padding: isMobile ? "20px" : "28px",
-        marginBottom: "50px",
+        backgroundColor: "var(--bg-card)",
+        borderRadius: "var(--radius-xl)",
+        padding: isMobile ? "20px" : "24px",
+        marginBottom: "24px",
         boxShadow: "var(--shadow)",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
         cursor: "pointer",
-        border: "1px solid var(--border-light)",
+        border: "1px solid var(--border-color)",
+        position: "relative",
+        overflow: "hidden",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = "var(--shadow-hover)";
+        e.currentTarget.style.boxShadow = "var(--shadow-md)";
         e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.borderColor = "var(--border-color)";
+        e.currentTarget.style.borderColor = "var(--primary-light)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = "var(--shadow)";
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.borderColor = "var(--border-light)";
+        e.currentTarget.style.borderColor = "var(--border-color)";
       }}
     >
       <div style={{
         display: "flex",
         alignItems: "center",
-        gap: "12px",
-        marginBottom: "16px",
-        paddingBottom: "16px",
-        borderBottom: "1px solid var(--border-light)",
-        flexWrap: isMobile ? "wrap" : "nowrap",
+        justifyContent: "space-between",
+        marginBottom: "20px",
       }}>
-        <img
-          src={avatarUrl}
-          alt={userName}
-          style={{
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            border: "2px solid var(--border-color)",
-          }}
-        />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <img
+            src={avatarUrl}
+            alt={userName}
             onClick={handleUserClick}
             style={{
-              fontSize: isMobile ? "14px" : "16px",
-              fontWeight: 600,
-              color: "#fff",
-              marginBottom: "2px",
+              width: "44px",
+              height: "44px",
+              borderRadius: "12px",
+              objectFit: "cover",
+              border: "1px solid var(--border-color)",
               cursor: "pointer",
-              transition: "color 0.2s",
-              wordBreak: "break-word",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#fff";
-              e.currentTarget.style.textDecoration = "underline";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#fff";
-              e.currentTarget.style.textDecoration = "none";
-            }}
-          >
-            {userName}
+          />
+          <div>
+            <div
+              onClick={handleUserClick}
+              style={{
+                fontSize: "15px",
+                fontWeight: 700,
+                color: "var(--text-primary)",
+                cursor: "pointer",
+              }}
+            >
+              {userName}
+            </div>
+            <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+              {formatDate(post.created_at)}
+            </div>
           </div>
-          {userEmail && !isMobile && (
-            <div style={{
-              fontSize: "13px",
-              color: "#fff",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}>
-              {userEmail}
-            </div>
-          )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-          <time style={{
-            color: "#fff",
-            fontSize: isMobile ? "11px" : "13px",
-            fontWeight: 500,
-          }}>
-            {formatDate(post.created_at)}
-          </time>
-          {isOwnPost && (
-            <div style={{ display: "flex", gap: "4px", marginLeft: isMobile ? "0" : "8px", flexWrap: "wrap" }}>
-              <button
-                onClick={handleEditClick}
-                style={{
-                  padding: "4px 8px",
-                  backgroundColor: "var(--bg-hover)",
-                  border: "1px solid var(--border-color)",
-                  color: "#fff",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--primary)";
-                  e.currentTarget.style.color = "#ffffff";
-                  e.currentTarget.style.borderColor = "var(--primary)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                  e.currentTarget.style.color = "#fff";
-                  e.currentTarget.style.borderColor = "var(--border-color)";
-                }}
-              >
-                <FontAwesomeIcon icon={faPenToSquare} style={{ fontSize: "12px" }} />
-              </button>
-              <button
-                onClick={handleDeleteClick}
-                disabled={isDeleting}
-                style={{
-                  padding: "4px 8px",
-                  backgroundColor: "#fef2f2",
-                  border: "1px solid #fecaca",
-                  color: "#dc2626",
-                  borderRadius: "6px",
-                  cursor: isDeleting ? "not-allowed" : "pointer",
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  transition: "all 0.15s",
-                  opacity: isDeleting ? 0.6 : 1,
-                }}
-                onMouseEnter={(e) => {
-                  if (!isDeleting) {
-                    e.currentTarget.style.backgroundColor = "#dc2626";
-                    e.currentTarget.style.color = "#ffffff";
-                    e.currentTarget.style.borderColor = "#dc2626";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isDeleting) {
-                    e.currentTarget.style.backgroundColor = "#fef2f2";
-                    e.currentTarget.style.color = "#dc2626";
-                    e.currentTarget.style.borderColor = "#fecaca";
-                  }
-                }}
-              >
-                {isDeleting ? "..." : <FontAwesomeIcon icon={faTrash} style={{ fontSize: "12px" }} />}
-              </button>
-            </div>
-          )}
-        </div>
+
+        {isOwnPost && (
+          <div style={{ display: "flex", gap: "8px" }} onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={handleEditClick}
+              style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "8px",
+                border: "none",
+                backgroundColor: "var(--bg-hover)",
+                color: "var(--text-secondary)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s",
+              }}
+            >
+              <FontAwesomeIcon icon={faPenToSquare} style={{ fontSize: "14px" }} />
+            </button>
+            <button
+              onClick={handleDeleteClick}
+              disabled={isDeleting}
+              style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "8px",
+                border: "none",
+                backgroundColor: "rgba(220, 38, 38, 0.05)",
+                color: "var(--error)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s",
+              }}
+            >
+              <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px" }} />
+            </button>
+          </div>
+        )}
       </div>
 
       {post.title && (
         <h3 style={{
-          color: "#fff",
-          fontSize: isMobile ? "18px" : "22px",
+          color: "var(--text-primary)",
+          fontSize: isMobile ? "18px" : "20px",
           fontWeight: 700,
-          lineHeight: "1.3",
+          lineHeight: "1.4",
           marginBottom: "12px",
-          marginTop: 0,
-          wordBreak: "break-word",
-          letterSpacing: "-0.01em",
+          fontFamily: "Outfit, sans-serif",
         }}>
           {post.title}
         </h3>
       )}
 
-      {/* Post Content */}
       <div style={{
-        marginBottom: post.images && post.images.length > 0 ? "16px" : 0, color: "#fff",
+        marginBottom: post.images && post.images.length > 0 ? "16px" : "0",
+        color: "var(--text-secondary)",
+        fontSize: "15px",
+        lineHeight: "1.6",
       }}>
-        <ContentRenderer content={post.content} fontSize={isMobile ? "14px" : "16px"} />
+        <ContentRenderer content={post.content} />
       </div>
 
-      {/* Images */}
       {post.images && post.images.length > 0 && (
-        <ImageSlider images={post.images} />
+        <div style={{ borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: "16px" }}>
+          <ImageSlider images={post.images} />
+        </div>
       )}
 
       {post.tags && post.tags.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "16px", marginBottom: "16px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "20px" }}>
           {post.tags.map((tag, idx) => (
             <span
               key={idx}
@@ -304,27 +245,13 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 navigate(`/search?q=${encodeURIComponent(`#${tag}`)}`);
               }}
               style={{
-                fontSize: "13px",
-                padding: "6px 12px",
-                backgroundColor: "var(--bg-hover)",
-                color: "#fff",
-                borderRadius: "var(--radius-md)",
-                cursor: "pointer",
+                fontSize: "12px",
+                padding: "4px 10px",
+                backgroundColor: "var(--primary-light)",
+                color: "white",
+                borderRadius: "6px",
                 fontWeight: 600,
-                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                border: "1px solid var(--border-color)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--primary)";
-                e.currentTarget.style.color = "#ffffff";
-                e.currentTarget.style.borderColor = "var(--primary)";
-                e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                e.currentTarget.style.color = "#fff";
-                e.currentTarget.style.borderColor = "var(--border-color)";
-                e.currentTarget.style.transform = "translateY(0)";
+                opacity: 0.9,
               }}
             >
               #{tag}
@@ -337,12 +264,9 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         style={{
           display: "flex",
           alignItems: "center",
-          gap: isMobile ? "12px" : "20px",
-          marginTop: "20px",
+          gap: "24px",
           paddingTop: "16px",
           borderTop: "1px solid var(--border-light)",
-          flexWrap: "wrap",
-          color: "#fff",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -352,39 +276,24 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "6px",
-            padding: "8px 14px",
-            backgroundColor: "transparent",
+            gap: "8px",
+            background: "none",
             border: "none",
-            cursor: currentUser && !likeLoading ? "pointer" : "not-allowed",
-            borderRadius: "var(--radius-md)",
-            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            color: isLiked ? "var(--heart-liked)" : "#fff",
-            opacity: currentUser ? 1 : 0.5,
-          }}
-          onMouseEnter={(e) => {
-            if (currentUser && !likeLoading) {
-              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-              e.currentTarget.style.transform = "scale(1.05)";
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.transform = "scale(1)";
+            color: isLiked ? "var(--error)" : "var(--text-secondary)",
+            fontWeight: 600,
+            fontSize: "14px",
+            padding: "4px 0",
           }}
         >
           <FontAwesomeIcon 
             icon={faHeartSolid} 
             style={{ 
-              fontSize: "20px",
-              color: isLiked ? "var(--heart-liked)" : "var(--text-secondary)",
+              fontSize: "18px",
+              transition: "transform 0.2s",
+              transform: isLiked ? "scale(1.1)" : "scale(1)",
             }}
-            className={isLiked ? "liked-heart" : "unliked-heart"}
-            color={isLiked ? "var(--heart-liked)" : "var(--text-secondary)"}
           />
-          <span style={{ fontSize: "15px", fontWeight: 600 }}>
-            {likeCount || post.like_count || 0}
-          </span>
+          <span>{likeCount || 0}</span>
         </button>
 
         <button
@@ -392,75 +301,58 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "6px",
-            padding: "8px 14px",
-            backgroundColor: "transparent",
+            gap: "8px",
+            background: "none",
             border: "none",
-            cursor: "pointer",
-            borderRadius: "var(--radius-md)",
-            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            color: "#fff",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-            e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.transform = "scale(1)";
+            color: "var(--text-secondary)",
+            fontWeight: 600,
+            fontSize: "14px",
+            padding: "4px 0",
           }}
         >
-          <FontAwesomeIcon 
-            icon={faComment} 
-            style={{ fontSize: "20px" }}
-          />
-          <span style={{ fontSize: "15px", fontWeight: 600 }}>
-            {post.comment_count || 0}
-          </span>
+          <FontAwesomeIcon icon={faComment} style={{ fontSize: "18px" }} />
+          <span>{post.comment_count || 0}</span>
         </button>
 
-        {currentUser && (
-          <button
-            onClick={toggleSave}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "8px 14px",
-              backgroundColor: "transparent",
-              border: "none",
-              cursor: "pointer",
-              borderRadius: "var(--radius-md)",
-              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-              color: isSaved ? "#262bef" : "#fff",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-              e.currentTarget.style.transform = "scale(1.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.transform = "scale(1)";
-            }}
-          >
-            <FontAwesomeIcon 
-              icon={isSaved ? faBookmarkSolid : faBookmarkRegular} 
-              style={{ fontSize: "20px" }}
-            />
-          </button>
-        )}
+        <button
+          onClick={toggleSave}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "auto",
+            background: "none",
+            border: "none",
+            color: isSaved ? "var(--primary)" : "var(--text-secondary)",
+            fontSize: "18px",
+            padding: "4px",
+          }}
+        >
+          <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} />
+        </button>
+        
+        <button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            background: "none",
+            border: "none",
+            color: "var(--text-secondary)",
+            fontSize: "18px",
+            padding: "4px",
+          }}
+          onClick={() => {
+            navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+            alert("Link copied!");
+          }}
+        >
+          <FontAwesomeIcon icon={faShareNodes} />
+        </button>
       </div>
 
       <EditPostModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onUpdated={() => {
-          if (onUpdated) {
-            onUpdated();
-          } else {
-            window.location.reload();
-          }
-        }}
+        onUpdated={() => onUpdated ? onUpdated() : window.location.reload()}
         post={post}
       />
     </article>

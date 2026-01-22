@@ -89,140 +89,81 @@ export default function Search() {
   }, [q]);
 
   const getAvatarUrl = (name: string) =>
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=000&color=ffffff&size=64`;
-
-  const displayUsers = activeTab === "posts" ? [] : users;
-  const displayPosts = activeTab === "people" ? [] : posts;
-  const showAll = activeTab === "all";
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=5046e5&color=ffffff&size=64&bold=true`;
 
   return (
-    <div className="search-page" style={{
-      maxWidth: "720px",
-      margin: "0 auto",
-      padding: "24px 16px",
-      minHeight: "calc(100vh - 80px)",
-      backgroundColor: "transparent",
-    }}>
-      <h1 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "20px", color: "var(--text-primary)" }}>
-        Search {q ? `"${q}"` : ""}
+    <main style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 20px" }} className="fade-in">
+      <h1 style={{ fontSize: "32px", marginBottom: "32px", color: "var(--text-primary)" }}>
+        Results for <span style={{ color: "var(--primary)" }}>"{q}"</span>
       </h1>
 
-      {q.length < 2 ? (
-        <p style={{ color: "var(--text-secondary)" }}>Enter at least 2 characters to search.</p>
+      <div style={{ display: "flex", gap: "12px", marginBottom: "40px", padding: "4px", backgroundColor: "var(--gray-100)", borderRadius: "var(--radius-xl)", width: "fit-content" }}>
+        {["all", "people", "posts"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab as any)}
+            style={{
+              padding: "10px 24px",
+              borderRadius: "var(--radius-lg)",
+              border: "none",
+              fontWeight: 700,
+              fontSize: "14px",
+              textTransform: "capitalize",
+              backgroundColor: activeTab === tab ? "var(--bg-card)" : "transparent",
+              color: activeTab === tab ? "var(--primary)" : "var(--text-secondary)",
+              boxShadow: activeTab === tab ? "var(--shadow-sm)" : "none",
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          {[...Array(3)].map((_, i) => <PostCardSkeleton key={i} />)}
+        </div>
       ) : (
-        <>
-          <div style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
-            {["all", "people", "posts"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab as "all" | "people" | "posts")}
-                style={{
-                  padding: "10px 20px",
-                  borderRadius: "var(--radius-lg)",
-                  border: "none",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  textTransform: "capitalize" as const,
-                  fontSize: "15px",
-                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                  backgroundColor: activeTab === tab ? "var(--primary)" : "var(--bg-card)",
-                  color: activeTab === tab ? "#fff" : "var(--text-secondary)",
-                  boxShadow: activeTab === tab ? "var(--shadow-md)" : "var(--shadow-sm)",
-                }}
-                onMouseEnter={(e) => {
-                  if (activeTab !== tab) {
-                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (activeTab !== tab) {
-                    e.currentTarget.style.backgroundColor = "var(--bg-card)";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }
-                }}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          {loading ? (
-            <>
-              {(showAll || activeTab === "people") && (
-                <div style={{ marginBottom: "24px" }}>
-                  <h2 style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "12px" }}>PEOPLE</h2>
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} style={{ padding: "12px", borderRadius: "12px", backgroundColor: "var(--bg-elevated)", marginBottom: "8px", height: "64px" }} />
-                  ))}
-                </div>
-              )}
-              {(showAll || activeTab === "posts") && (
-                <div>
-                  <h2 style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "12px" }}>POSTS</h2>
-                  {[...Array(2)].map((_, i) => (
-                    <PostCardSkeleton key={i} />
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              {(showAll || activeTab === "people") && (
-                <div style={{ marginBottom: "24px" }}>
-                  <h2 style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "12px" }}>PEOPLE</h2>
-                  {displayUsers.length === 0 ? (
-                    <p style={{ color: "var(--text-secondary)", padding: "16px 0" }}>No people found.</p>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                      {displayUsers.map((u) => (
-                        <div
-                          key={u.id}
-                          onClick={() => navigate(`/user/${u.id}`)}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "12px",
-                            padding: "12px",
-                            borderRadius: "12px",
-                            backgroundColor: "var(--bg-elevated)",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <img src={u.avatar_url || getAvatarUrl(u.name)} alt="" style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover" }} />
-                          <div>
-                            <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{u.name}</div>
-                            {u.username && <div style={{ fontSize: "13px", color: "var(--text-secondary)" }}>@{u.username}</div>}
-                          </div>
-                        </div>
-                      ))}
+        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+          {(activeTab === "all" || activeTab === "people") && users.length > 0 && (
+            <section>
+              <h2 style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "16px" }}>People</h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px" }}>
+                {users.map((u) => (
+                  <div
+                    key={u.id}
+                    onClick={() => navigate(`/user/${u.id}`)}
+                    style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", borderRadius: "var(--radius-xl)", backgroundColor: "var(--bg-card)", border: "1px solid var(--border-color)", cursor: "pointer", transition: "all 0.3s ease" }}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--primary-light)"}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border-color)"}
+                  >
+                    <img src={u.avatar_url || getAvatarUrl(u.name)} alt="" style={{ width: "48px", height: "48px", borderRadius: "14px", objectFit: "cover" }} />
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{u.name}</div>
+                      {u.username && <div style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>@{u.username}</div>}
                     </div>
-                  )}
-                </div>
-              )}
-
-              {(showAll || activeTab === "posts") && (
-                <div>
-                  <h2 style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "12px" }}>POSTS</h2>
-                  {displayPosts.length === 0 ? (
-                    <p style={{ color: "var(--text-secondary)", padding: "16px 0" }}>No posts found.</p>
-                  ) : (
-                    displayPosts.map((p) => (
-                      <PostCard
-                        key={p.id}
-                        post={p as Post}
-                        onUpdated={() => {
-                          setPosts((prev) => prev.filter((x) => x.id !== p.id));
-                        }}
-                      />
-                    ))
-                  )}
-                </div>
-              )}
-            </>
+                  </div>
+                ))}
+              </div>
+            </section>
           )}
-        </>
+
+          {(activeTab === "all" || activeTab === "posts") && (
+            <section>
+              <h2 style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "16px" }}>Posts</h2>
+              {posts.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)" }}>No posts found matching your search.</div>
+              ) : (
+                posts.map((p) => <PostCard key={p.id} post={p as Post} onUpdated={() => setPosts(prev => prev.filter(x => x.id !== p.id))} />)
+              )}
+            </section>
+          )}
+
+          {activeTab === "people" && users.length === 0 && (
+            <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)" }}>No people found matching your search.</div>
+          )}
+        </div>
       )}
-    </div>
+    </main>
   );
 }
