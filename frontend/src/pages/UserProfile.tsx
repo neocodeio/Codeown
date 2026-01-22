@@ -7,7 +7,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import PostCard from "../components/PostCard";
 import FollowersModal from "../components/FollowersModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faUsers, faUserPlus, faThumbtack, faUserCheck } from "@fortawesome/free-solid-svg-icons";
+import { faUserPlus, faThumbtack, faUserCheck } from "@fortawesome/free-solid-svg-icons";
 
 interface User {
   id: string;
@@ -37,10 +37,6 @@ export default function UserProfile() {
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
 
   const isOwnProfile = currentUser?.id === userId;
-
-  const getAvatarUrl = (name: string, email: string | null) => {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email || "User")}&background=5046e5&color=ffffff&size=128&bold=true`;
-  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -115,100 +111,100 @@ export default function UserProfile() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "40px", height: "40px", border: "3px solid var(--gray-200)", borderTopColor: "var(--primary)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "var(--primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
-  if (!user) return <div style={{ textAlign: "center", padding: "100px" }}>User not found</div>;
+  if (!user) return <div style={{ textAlign: "center", padding: "100px" }}>USER NOT FOUND.</div>;
 
   if (isOwnProfile) {
     navigate("/profile", { replace: true });
     return null;
   }
 
-  const avatarUrl = user.avatar_url || getAvatarUrl(user.name || "User", user.email);
+  const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=000000&color=ffffff&bold=true`;
 
   return (
-    <main style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 20px" }} className="fade-in">
-      <div style={{
-        backgroundColor: "var(--bg-card)",
-        borderRadius: "var(--radius-2xl)",
-        padding: "40px",
-        marginBottom: "32px",
-        boxShadow: "var(--shadow-md)",
-        border: "1px solid var(--border-color)",
-        position: "relative",
-      }}>
-        <div style={{ display: "flex", justifyContent: "flex-end", position: "absolute", top: "24px", right: "24px" }}>
-          {isSignedIn && (
-            <button
-              onClick={handleFollow}
-              disabled={followLoading}
-              style={{
-                padding: "10px 24px",
-                backgroundColor: isFollowing ? "var(--bg-hover)" : "var(--primary)",
-                border: "none",
-                color: isFollowing ? "var(--text-primary)" : "white",
-                borderRadius: "var(--radius-md)",
-                fontSize: "14px",
-                fontWeight: 600,
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                transition: "all 0.3s ease",
-              }}
-            >
-              <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
-              <span>{isFollowing ? "Following" : "Follow"}</span>
-            </button>
-          )}
-        </div>
+    <main className="container" style={{ padding: "60px 20px" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <section className="fade-in" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "60px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
+            <div style={{ width: "160px", height: "160px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
+              <img
+                src={avatarUrl}
+                alt={user.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </div>
+            {isSignedIn && (
+              <button
+                onClick={handleFollow}
+                disabled={followLoading}
+                className={isFollowing ? "" : "primary"}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
+                <span>{isFollowing ? "FOLLOWING" : "FOLLOW"}</span>
+              </button>
+            )}
+          </div>
 
-        <div style={{ display: "flex", gap: "32px", alignItems: "center", flexWrap: "wrap" }}>
-          <img
-            src={avatarUrl}
-            alt={user.name}
-            style={{ width: "120px", height: "120px", borderRadius: "30px", objectFit: "cover", border: "4px solid var(--bg-card)", boxShadow: "var(--shadow-lg)" }}
-          />
-          <div style={{ flex: 1 }}>
-            <h1 style={{ fontSize: "32px", marginBottom: "4px" }}>{user.name}</h1>
-            <p style={{ color: "var(--text-secondary)", fontSize: "16px", marginBottom: "16px" }}>@{user.username || "user"}</p>
-            {user.bio && <p style={{ color: "var(--text-primary)", fontSize: "15px", lineHeight: "1.6", marginBottom: "20px", maxWidth: "500px" }}>{user.bio}</p>}
-            
-            <div style={{ display: "flex", gap: "24px" }}>
-              <div onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
-                <span style={{ fontWeight: 800, fontSize: "18px" }}>{user.follower_count}</span>
-                <span style={{ color: "var(--text-secondary)", fontSize: "14px", marginLeft: "4px" }}>Followers</span>
-              </div>
-              <div onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
-                <span style={{ fontWeight: 800, fontSize: "18px" }}>{user.following_count}</span>
-                <span style={{ color: "var(--text-secondary)", fontSize: "14px", marginLeft: "4px" }}>Following</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 800, fontSize: "18px" }}>{user.total_likes}</span>
-                <span style={{ color: "var(--text-secondary)", fontSize: "14px", marginLeft: "4px" }}>Likes</span>
-              </div>
+          <header style={{ marginBottom: "40px" }}>
+            <h1 style={{ fontSize: "48px", marginBottom: "8px" }}>{user.name}</h1>
+            <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>
+              @{user.username || "user"}
+            </p>
+            {user.bio && (
+              <p style={{ fontSize: "18px", lineHeight: "1.6", maxWidth: "600px", color: "var(--text-secondary)" }}>
+                {user.bio}
+              </p>
+            )}
+          </header>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "1px solid var(--border-color)", textAlign: "center" }}>
+            <div 
+              onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} 
+              style={{ padding: "24px", borderRight: "1px solid var(--border-color)", cursor: "pointer" }}
+            >
+              <div style={{ fontSize: "24px", fontWeight: 800 }}>{user.follower_count}</div>
+              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWERS</div>
+            </div>
+            <div 
+              onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} 
+              style={{ padding: "24px", borderRight: "1px solid var(--border-color)", cursor: "pointer" }}
+            >
+              <div style={{ fontSize: "24px", fontWeight: 800 }}>{user.following_count}</div>
+              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWING</div>
+            </div>
+            <div style={{ padding: "24px" }}>
+              <div style={{ fontSize: "24px", fontWeight: 800 }}>{user.total_likes}</div>
+              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>LIKES</div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <div style={{ marginBottom: "24px" }}>
-        <h2 style={{ fontSize: "20px", marginBottom: "20px", color: "var(--text-primary)" }}>Posts</h2>
-        {posts.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "60px", color: "var(--text-tertiary)" }}>No posts yet.</div>
-        ) : (
-          posts.map(p => (
-            <div key={p.id} style={{ position: "relative" }}>
-              <PostCard post={p} onUpdated={fetchUserPosts} />
-              {user.pinned_post_id === p.id && (
-                <div style={{ position: "absolute", top: "24px", right: "24px", color: "var(--primary)" }}>
-                  <FontAwesomeIcon icon={faThumbtack} />
-                </div>
-              )}
-            </div>
-          ))
-        )}
+        <h2 style={{ fontSize: "20px", marginBottom: "40px", letterSpacing: "0.1em" }}>POSTS</h2>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+          {posts.length === 0 ? (
+            <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS YET.</div>
+          ) : (
+            posts.map(p => (
+              <div key={p.id} style={{ position: "relative" }}>
+                <PostCard post={p} onUpdated={fetchUserPosts} />
+                {user.pinned_post_id === p.id && (
+                  <div style={{ position: "absolute", top: "24px", right: "24px", color: "var(--accent)" }}>
+                    <FontAwesomeIcon icon={faThumbtack} />
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {userId && (
@@ -217,7 +213,7 @@ export default function UserProfile() {
           onClose={() => setFollowersModalOpen(false)}
           userId={userId}
           type={followersModalType}
-          title={followersModalType === "followers" ? "Followers" : "Following"}
+          title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
         />
       )}
     </main>

@@ -88,59 +88,69 @@ export default function Search() {
     return () => { cancelled = true; };
   }, [q]);
 
-  const getAvatarUrl = (name: string) =>
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=5046e5&color=ffffff&size=64&bold=true`;
-
   return (
-    <main style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 20px" }} className="fade-in">
-      <h1 style={{ fontSize: "32px", marginBottom: "32px", color: "var(--text-primary)" }}>
-        Results for <span style={{ color: "var(--primary)" }}>"{q}"</span>
-      </h1>
+    <main className="container" style={{ padding: "60px 20px" }}>
+      <header style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "40px" }}>
+        <h1 style={{ fontSize: "48px", marginBottom: "20px" }}>Search</h1>
+        <p style={{ fontSize: "18px", color: "var(--text-secondary)" }}>
+          RESULTS FOR <span style={{ fontWeight: 800, color: "var(--text-primary)" }}>"{q.toUpperCase()}"</span>
+        </p>
+      </header>
 
-      <div style={{ display: "flex", gap: "12px", marginBottom: "40px", padding: "4px", backgroundColor: "var(--gray-100)", borderRadius: "var(--radius-xl)", width: "fit-content" }}>
+      <nav style={{ display: "flex", gap: "40px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)" }}>
         {["all", "people", "posts"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
             style={{
-              padding: "10px 24px",
-              borderRadius: "var(--radius-lg)",
               border: "none",
-              fontWeight: 700,
-              fontSize: "14px",
-              textTransform: "capitalize",
-              backgroundColor: activeTab === tab ? "var(--bg-card)" : "transparent",
-              color: activeTab === tab ? "var(--primary)" : "var(--text-secondary)",
-              boxShadow: activeTab === tab ? "var(--shadow-sm)" : "none",
+              padding: "12px 0",
+              fontSize: "13px",
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              color: activeTab === tab ? "var(--text-primary)" : "var(--text-tertiary)",
+              borderBottom: activeTab === tab ? "2px solid var(--text-primary)" : "2px solid transparent",
+              borderRadius: 0,
             }}
           >
             {tab}
           </button>
         ))}
-      </div>
+      </nav>
 
       {loading ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
           {[...Array(3)].map((_, i) => <PostCardSkeleton key={i} />)}
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "60px" }}>
           {(activeTab === "all" || activeTab === "people") && users.length > 0 && (
             <section>
-              <h2 style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "16px" }}>People</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px" }}>
+              <h2 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", marginBottom: "24px" }}>PEOPLE</h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "24px" }}>
                 {users.map((u) => (
                   <div
                     key={u.id}
                     onClick={() => navigate(`/user/${u.id}`)}
-                    style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", borderRadius: "var(--radius-xl)", backgroundColor: "var(--bg-card)", border: "1px solid var(--border-color)", cursor: "pointer", transition: "all 0.3s ease" }}
-                    onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--primary-light)"}
-                    onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border-color)"}
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "16px", 
+                      padding: "20px", 
+                      border: "1px solid var(--border-color)", 
+                      cursor: "pointer",
+                      backgroundColor: "var(--bg-card)"
+                    }}
                   >
-                    <img src={u.avatar_url || getAvatarUrl(u.name)} alt="" style={{ width: "48px", height: "48px", borderRadius: "14px", objectFit: "cover" }} />
+                    <img 
+                      src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=000000&color=ffffff&bold=true`} 
+                      alt="" 
+                      style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)" }} 
+                    />
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{u.name}</div>
-                      {u.username && <div style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>@{u.username}</div>}
+                      <div style={{ fontWeight: 800, fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{u.name}</div>
+                      {u.username && <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700 }}>@{u.username}</div>}
                     </div>
                   </div>
                 ))}
@@ -150,17 +160,19 @@ export default function Search() {
 
           {(activeTab === "all" || activeTab === "posts") && (
             <section>
-              <h2 style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "16px" }}>Posts</h2>
+              <h2 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", marginBottom: "24px" }}>POSTS</h2>
               {posts.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)" }}>No posts found matching your search.</div>
+                <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS FOUND.</div>
               ) : (
-                posts.map((p) => <PostCard key={p.id} post={p as Post} onUpdated={() => setPosts(prev => prev.filter(x => x.id !== p.id))} />)
+                <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+                  {posts.map((p) => <PostCard key={p.id} post={p as Post} onUpdated={() => setPosts(prev => prev.filter(x => x.id !== p.id))} />)}
+                </div>
               )}
             </section>
           )}
 
           {activeTab === "people" && users.length === 0 && (
-            <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)" }}>No people found matching your search.</div>
+            <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PEOPLE FOUND.</div>
           )}
         </div>
       )}

@@ -44,108 +44,81 @@ export default function Feed() {
   };
 
   return (
-    <main style={{
-      maxWidth: "720px",
-      margin: "0 auto",
-      padding: "32px 16px",
-      minHeight: "calc(100vh - 70px)",
-      transition: "all 0.4s ease",
-    }}>
-      <header style={{ 
-        display: "flex", 
-        gap: "12px", 
-        marginBottom: "32px", 
-        padding: "4px",
-        backgroundColor: "var(--gray-100)",
-        borderRadius: "var(--radius-xl)",
-        width: "fit-content",
-      }}>
-        <button
-          onClick={() => handleFilterChange("all")}
-          style={{
-            padding: "10px 24px",
-            borderRadius: "var(--radius-lg)",
-            border: "none",
-            fontWeight: 700,
-            fontSize: "14px",
-            backgroundColor: feedFilter === "all" ? "var(--bg-card)" : "transparent",
-            color: feedFilter === "all" ? "var(--primary)" : "var(--text-secondary)",
-            boxShadow: feedFilter === "all" ? "var(--shadow-sm)" : "none",
-          }}
-        >
-          For you
-        </button>
-        {isSignedIn && (
-          <button
-            onClick={() => handleFilterChange("following")}
-            style={{
-              padding: "10px 24px",
-              borderRadius: "var(--radius-lg)",
-              border: "none",
-              fontWeight: 700,
-              fontSize: "14px",
-              backgroundColor: feedFilter === "following" ? "var(--bg-card)" : "transparent",
-              color: feedFilter === "following" ? "var(--primary)" : "var(--text-secondary)",
-              boxShadow: feedFilter === "following" ? "var(--shadow-sm)" : "none",
-            }}
-          >
-            Following
-          </button>
-        )}
-      </header>
-
-      {loading && posts.length === 0 ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          {[...Array(3)].map((_, i) => (
-            <PostCardSkeleton key={i} />
-          ))}
-        </div>
-      ) : !Array.isArray(posts) || posts.length === 0 ? (
-        <div className="fade-in" style={{ 
-          textAlign: "center", 
-          padding: "120px 20px", 
-          backgroundColor: "var(--bg-card)",
-          borderRadius: "var(--radius-2xl)",
-          border: "1px solid var(--border-color)",
-          boxShadow: "var(--shadow-sm)",
+    <main className="container" style={{ padding: "40px 20px", minHeight: "100vh" }}>
+      <div style={{ maxWidth: "640px", margin: "0 auto" }}>
+        <header style={{ 
+          marginBottom: "60px", 
+          borderBottom: "1px solid var(--border-color)",
+          paddingBottom: "20px"
         }}>
-          <div style={{
-            width: "80px",
-            height: "80px",
-            margin: "0 auto 24px",
-            backgroundColor: "var(--gray-50)",
-            borderRadius: "24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "32px",
-          }}>✨</div>
-          <h2 style={{ fontSize: "24px", marginBottom: "12px", color: "var(--text-primary)" }}>
-            Your feed is empty
-          </h2>
-          <p style={{ fontSize: "16px", color: "var(--text-secondary)", maxWidth: "400px", margin: "0 auto" }}>
-            {feedFilter === "following" 
-              ? "Follow some amazing creators to see their latest thoughts here." 
-              : "Be the pioneer! Start the conversation by sharing your first post."}
-          </p>
-        </div>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          {posts.map(p => <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(page, false)} />)}
-          {loading && Array.isArray(posts) && posts.length > 0 && (
-            <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
-              <div style={{
-                width: "32px",
-                height: "32px",
-                border: "3px solid var(--gray-200)",
-                borderTopColor: "var(--primary)",
-                borderRadius: "50%",
-                animation: "spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite",
-              }} />
-            </div>
-          )}
-        </div>
-      )}
+          <h1 style={{ fontSize: "48px", marginBottom: "20px" }}>Feed</h1>
+          <div style={{ display: "flex", gap: "32px" }}>
+            <button
+              onClick={() => handleFilterChange("all")}
+              style={{
+                border: "none",
+                padding: "0",
+                fontSize: "13px",
+                letterSpacing: "0.1em",
+                fontWeight: 800,
+                color: feedFilter === "all" ? "var(--text-primary)" : "var(--text-tertiary)",
+                borderBottom: feedFilter === "all" ? "2px solid var(--text-primary)" : "2px solid transparent",
+                borderRadius: 0,
+              }}
+            >
+              LATEST
+            </button>
+            {isSignedIn && (
+              <button
+                onClick={() => handleFilterChange("following")}
+                style={{
+                  border: "none",
+                  padding: "0",
+                  fontSize: "13px",
+                  letterSpacing: "0.1em",
+                  fontWeight: 800,
+                  color: feedFilter === "following" ? "var(--text-primary)" : "var(--text-tertiary)",
+                  borderBottom: feedFilter === "following" ? "2px solid var(--text-primary)" : "2px solid transparent",
+                  borderRadius: 0,
+                }}
+              >
+                FOLLOWING
+              </button>
+            )}
+          </div>
+        </header>
+
+        {loading && posts.length === 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+            {[...Array(3)].map((_, i) => (
+              <PostCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : !Array.isArray(posts) || posts.length === 0 ? (
+          <div className="fade-in" style={{ padding: "80px 0", textAlign: "left" }}>
+            <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>NOTHING HERE.</h2>
+            <p style={{ color: "var(--text-secondary)", fontSize: "16px" }}>
+              The feed is currently empty. Start following people or create a post to see content here.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+            {posts.map(p => <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(page, false)} />)}
+            {loading && Array.isArray(posts) && posts.length > 0 && (
+              <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
+                <div style={{
+                  width: "24px",
+                  height: "24px",
+                  border: "2px solid var(--text-tertiary)",
+                  borderTopColor: "var(--text-primary)",
+                  borderRadius: "50%",
+                  animation: "spin 0.6s linear infinite",
+                }} />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </main>
   );
 }

@@ -38,18 +38,19 @@ export default function SearchBar() {
     <div ref={searchRef} style={{ position: "relative", width: "100%" }}>
       <input
         type="text"
-        placeholder="Search..."
+        placeholder="SEARCH..."
         value={query}
         onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
         onFocus={() => setIsOpen(true)}
         style={{
           width: "100%",
-          padding: "10px 18px",
-          borderRadius: "var(--radius-full)",
+          padding: "10px 16px",
           border: "1px solid var(--border-color)",
           backgroundColor: "var(--bg-input)",
-          fontSize: "14px",
-          transition: "all 0.3s ease",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && query.trim().length >= 2) {
@@ -60,13 +61,14 @@ export default function SearchBar() {
       />
 
       {isOpen && showResults && (users.length > 0 || posts.length > 0) && (
-        <div className="glass fade-in" style={{
+        <div className="fade-in" style={{
           position: "absolute",
-          top: "calc(100% + 12px)",
+          top: "100%",
           left: 0,
           right: 0,
-          borderRadius: "var(--radius-xl)",
-          boxShadow: "var(--shadow-lg)",
+          backgroundColor: "var(--bg-page)",
+          border: "1px solid var(--border-color)",
+          borderTop: "none",
           maxHeight: "360px",
           overflowY: "auto",
           zIndex: 2000,
@@ -74,24 +76,23 @@ export default function SearchBar() {
         }}>
           {users.length > 0 && (
             <div style={{ padding: "8px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "0 8px 8px", display: "block" }}>Users</span>
+              <span style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "0 8px 8px", display: "block" }}>Users</span>
               {users.map((u) => (
-                <div key={u.id} onClick={() => handleUserClick(u.id)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px", borderRadius: "var(--radius-md)", cursor: "pointer", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
-                  <img src={u.avatar_url || `https://ui-avatars.com/api/?name=${u.name}&background=5046e5&color=fff`} alt="" style={{ width: "32px", height: "32px", borderRadius: "8px" }} />
+                <div key={u.id} onClick={() => handleUserClick(u.id)} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                  <img src={u.avatar_url || `https://ui-avatars.com/api/?name=${u.name}&background=000000&color=fff&bold=true`} alt="" style={{ width: "24px", height: "24px", border: "1px solid var(--border-color)" }} />
                   <div>
-                    <div style={{ fontSize: "14px", fontWeight: 700 }}>{u.name}</div>
-                    {u.username && <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>@{u.username}</div>}
+                    <div style={{ fontSize: "13px", fontWeight: 800, textTransform: "uppercase" }}>{u.name}</div>
                   </div>
                 </div>
               ))}
             </div>
           )}
           {posts.length > 0 && (
-            <div style={{ padding: "8px", borderTop: "1px solid var(--border-light)" }}>
-              <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "8px 8px 8px", display: "block" }}>Posts</span>
+            <div style={{ padding: "8px", borderTop: "1px solid var(--border-color)" }}>
+              <span style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "8px 8px 8px", display: "block" }}>Posts</span>
               {posts.map((p) => (
-                <div key={p.id} onClick={() => handlePostClick(p.id)} style={{ padding: "8px", borderRadius: "var(--radius-md)", cursor: "pointer", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
-                  <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.title || p.content.slice(0, 40) + "..."}</div>
+                <div key={p.id} onClick={() => handlePostClick(p.id)} style={{ padding: "8px", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                  <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textTransform: "uppercase" }}>{p.title || p.content.slice(0, 40) + "..."}</div>
                 </div>
               ))}
             </div>

@@ -42,70 +42,51 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
   }, [location.pathname]);
 
   return (
-    <nav className="glass" style={{
-      padding: isMobile ? "12px 16px" : "14px 40px",
+    <nav style={{
+      padding: isMobile ? "12px 16px" : "16px 40px",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
       position: "sticky",
       top: 0,
       zIndex: 1000,
-      borderBottom: "1px solid var(--nav-border)",
-      boxShadow: "var(--shadow-sm)",
-      transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+      backgroundColor: "var(--bg-page)",
+      borderBottom: "1px solid var(--border-color)",
+      transition: "all 0.2s ease",
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : "48px", flex: 1 }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", transition: "transform 0.3s ease" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : "60px", flex: 1 }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div style={{
-            width: isMobile ? "36px" : "42px",
-            height: isMobile ? "36px" : "42px",
-            borderRadius: "10px",
+            width: "32px",
+            height: "32px",
             backgroundColor: "var(--primary)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 4px 12px rgba(80, 70, 229, 0.2)"
           }}>
-            <img 
-              src={"/src/assets/logo-removed.png"} 
-              alt="logo" 
-              style={{ width: "80%", height: "80%", objectFit: "contain" }} 
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement!.innerHTML = '<span style="color: white; font-weight: 800; font-size: 20px;">C</span>';
-              }}
-            />
+            <span style={{ color: "var(--bg-page)", fontWeight: 800, fontSize: "18px" }}>C</span>
           </div>
           <span style={{ 
-            fontSize: isMobile ? "18px" : "22px", 
+            fontSize: "20px", 
             fontWeight: 800, 
             color: "var(--text-primary)", 
-            letterSpacing: "-0.03em",
-            fontFamily: "Outfit, sans-serif"
+            letterSpacing: "-0.05em",
+            textTransform: "uppercase"
           }}>
             Codeown
           </span>
         </Link>
 
         {!isMobile && (
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
             <Link
               to="/"
-              style={{
-                textDecoration: "none",
-                color: location.pathname === "/" ? "var(--primary)" : "var(--text-secondary)",
-                fontWeight: 600,
-                padding: "8px 16px",
-                borderRadius: "var(--radius-md)",
-                transition: "all 0.3s ease",
-                backgroundColor: location.pathname === "/" ? "var(--bg-hover)" : "transparent",
-                fontSize: "15px",
-              }}
+              className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
             >
-              Home
+              Feed
             </Link>
             {isLoaded && isSignedIn && (
-              <div style={{ width: "300px", marginLeft: "24px" }}>
+              <div style={{ width: "240px" }}>
                 <SearchBar />
               </div>
             )}
@@ -113,28 +94,21 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
         )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
         {isLoaded && isSignedIn && (
           <>
             {!isMobile && (
               <button
                 onClick={() => setIsModalOpen(true)}
+                className="primary"
                 style={{
-                  padding: "10px 20px",
-                  backgroundColor: "var(--primary)",
-                  border: "none",
-                  color: "#fff",
-                  borderRadius: "var(--radius-md)",
-                  fontSize: "14px",
-                  fontWeight: 600,
                   display: "flex",
                   alignItems: "center",
                   gap: "8px",
-                  boxShadow: "var(--shadow-sm)",
                 }}
               >
                 <FontAwesomeIcon icon={faPlus} />
-                <span>New Post</span>
+                <span>Create</span>
               </button>
             )}
             <NotificationDropdown />
@@ -145,45 +119,24 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
           isSignedIn ? (
             <Link to="/profile">
               <div style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "var(--radius-full)",
-                border: "2px solid var(--border-color)",
-                overflow: "hidden",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                padding: "2px"
+                width: "36px",
+                height: "36px",
+                border: "1px solid var(--border-color)",
+                backgroundColor: "var(--bg-elevated)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "11px",
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em"
               }}>
-                <div style={{
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: "var(--radius-full)",
-                  backgroundColor: "var(--gray-100)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  color: "var(--text-secondary)"
-                }}>
-                  Me
-                </div>
+                Profile
               </div>
             </Link>
           ) : (
             <Link to="/sign-in">
-              <button style={{
-                padding: "10px 24px",
-                backgroundColor: "var(--primary)",
-                border: "none",
-                color: "#fff",
-                borderRadius: "var(--radius-md)",
-                fontSize: "14px",
-                fontWeight: 600,
-                boxShadow: "var(--shadow-sm)",
-              }}>
-                Login
-              </button>
+              <button className="primary">Login</button>
             </Link>
           )
         ) : null}
@@ -192,10 +145,9 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             style={{
-              padding: "8px",
-              backgroundColor: "transparent",
+              padding: "4px",
               border: "none",
-              color: "var(--text-primary)",
+              background: "none",
               fontSize: "20px",
             }}
           >
@@ -207,30 +159,29 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
       {isMobile && isMobileMenuOpen && (
         <div
           ref={mobileMenuRef}
-          className="glass fade-in"
+          className="fade-in"
           style={{
             position: "absolute",
             top: "100%",
-            left: "12px",
-            right: "12px",
-            borderRadius: "var(--radius-lg)",
-            marginTop: "12px",
-            padding: "20px",
+            left: 0,
+            right: 0,
+            backgroundColor: "var(--bg-page)",
+            borderBottom: "1px solid var(--border-color)",
+            padding: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "12px",
-            boxShadow: "var(--shadow-xl)",
+            gap: "16px",
           }}
         >
-          <Link to="/" style={{ padding: "12px", borderRadius: "var(--radius-md)", backgroundColor: location.pathname === "/" ? "var(--bg-hover)" : "transparent", color: location.pathname === "/" ? "var(--primary)" : "var(--text-primary)", fontWeight: 600 }}>Home</Link>
+          <Link to="/" className="nav-link" style={{ fontSize: "16px" }}>Feed</Link>
           {isLoaded && isSignedIn && (
             <>
               <SearchBar />
-              <button onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }} style={{ padding: "12px", borderRadius: "var(--radius-md)", backgroundColor: "var(--primary)", color: "white", border: "none", fontWeight: 600 }}>New Post</button>
-              <Link to="/profile" style={{ padding: "12px", borderRadius: "var(--radius-md)", color: "var(--text-primary)", fontWeight: 600 }}>Profile</Link>
+              <button onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }} className="primary" style={{ width: "100%" }}>New Post</button>
+              <Link to="/profile" className="nav-link" style={{ fontSize: "16px" }}>Profile</Link>
             </>
           )}
-          {!isSignedIn && <Link to="/sign-in" style={{ padding: "12px", borderRadius: "var(--radius-md)", backgroundColor: "var(--primary)", color: "white", textAlign: "center", fontWeight: 600 }}>Login</Link>}
+          {!isSignedIn && <Link to="/sign-in"><button className="primary" style={{ width: "100%" }}>Login</button></Link>}
         </div>
       )}
 

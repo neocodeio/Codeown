@@ -8,7 +8,7 @@ import ContentRenderer from "../components/ContentRenderer";
 import MentionInput from "../components/MentionInput";
 import CommentBlock, { type CommentWithMeta } from "../components/CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 interface Post {
   id: number;
@@ -27,7 +27,7 @@ interface Post {
 export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getToken, isLoaded: authLoaded } = useClerkAuth();
+  const { getToken } = useClerkAuth();
   const { isSignedIn } = useClerkUser();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<CommentWithMeta[]>([]);
@@ -38,11 +38,7 @@ export default function PostDetail() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: '2-digit', minute: '2-digit' });
-  };
-
-  const getAvatarUrl = (name: string, email: string | null) => {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email || "User")}&background=5046e5&color=ffffff&size=128&bold=true`;
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase();
   };
 
   useEffect(() => {
@@ -108,88 +104,104 @@ export default function PostDetail() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "40px", height: "40px", border: "3px solid var(--gray-200)", borderTopColor: "var(--primary)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "var(--primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
   if (!post) return <div style={{ textAlign: "center", padding: "100px" }}>Post not found</div>;
 
   const userName = post.user?.name || "User";
-  const avatarUrl = post.user?.avatar_url || getAvatarUrl(userName, post.user?.email || null);
+  const avatarUrl = post.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=000000&color=ffffff&bold=true`;
 
   return (
-    <main style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 20px" }} className="fade-in">
-      <button onClick={() => navigate(-1)} style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "var(--text-secondary)", fontWeight: 600, marginBottom: "24px", padding: "8px 0" }}>
-        <FontAwesomeIcon icon={faArrowLeft} />
-        Back
-      </button>
+    <main className="container" style={{ padding: "60px 20px" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <button 
+          onClick={() => navigate(-1)} 
+          style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "8px", 
+            marginBottom: "40px",
+            border: "none",
+            fontSize: "12px",
+            padding: "0"
+          }}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} />
+          <span>BACK TO FEED</span>
+        </button>
 
-      <article style={{ backgroundColor: "var(--bg-card)", borderRadius: "var(--radius-2xl)", padding: "40px", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-md)", marginBottom: "32px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
-          <img src={avatarUrl} alt={userName} style={{ width: "56px", height: "56px", borderRadius: "16px", border: "1px solid var(--border-color)" }} />
-          <div>
-            <h3 style={{ fontSize: "18px", color: "var(--text-primary)" }}>{userName}</h3>
-            <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>{formatDate(post.created_at)}</span>
+        <article className="fade-in" style={{ marginBottom: "80px" }}>
+          <header style={{ marginBottom: "40px", borderBottom: "1px solid var(--border-color)", paddingBottom: "40px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
+              <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)" }} />
+              <div>
+                <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{userName.toUpperCase()}</h3>
+                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700 }}>{formatDate(post.created_at)}</span>
+              </div>
+            </div>
+            <h1 style={{ fontSize: "42px", marginBottom: "24px" }}>{post.title}</h1>
+          </header>
+          
+          <div style={{ fontSize: "18px", lineHeight: "1.7", marginBottom: "40px" }}>
+            <ContentRenderer content={post.content} />
           </div>
-        </div>
 
-        <h1 style={{ fontSize: "32px", lineHeight: "1.3", marginBottom: "24px", fontFamily: "Outfit, sans-serif" }}>{post.title}</h1>
-        
-        <div style={{ fontSize: "16px", lineHeight: "1.8", color: "var(--text-secondary)", marginBottom: "32px" }}>
-          <ContentRenderer content={post.content} />
-        </div>
+          {post.images && post.images.length > 0 && (
+            <div style={{ border: "1px solid var(--border-color)" }}>
+              <ImageSlider images={post.images} />
+            </div>
+          )}
+        </article>
 
-        {post.images && post.images.length > 0 && (
-          <div style={{ borderRadius: "var(--radius-xl)", overflow: "hidden" }}>
-            <ImageSlider images={post.images} />
-          </div>
-        )}
-      </article>
-
-      <section style={{ backgroundColor: "var(--bg-card)", borderRadius: "var(--radius-2xl)", padding: "40px", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-md)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
-          <h2 style={{ fontSize: "22px" }}>Comments ({comments.length})</h2>
-          <div style={{ display: "flex", gap: "8px", backgroundColor: "var(--gray-100)", padding: "4px", borderRadius: "var(--radius-lg)" }}>
-            <button
-              onClick={() => setCommentSort("newest")}
-              style={{ padding: "6px 16px", borderRadius: "var(--radius-md)", border: "none", fontSize: "13px", fontWeight: 700, backgroundColor: commentSort === "newest" ? "var(--bg-card)" : "transparent", color: commentSort === "newest" ? "var(--primary)" : "var(--text-secondary)", boxShadow: commentSort === "newest" ? "var(--shadow-sm)" : "none" }}
-            >
-              Newest
-            </button>
-            <button
-              onClick={() => setCommentSort("top")}
-              style={{ padding: "6px 16px", borderRadius: "var(--radius-md)", border: "none", fontSize: "13px", fontWeight: 700, backgroundColor: commentSort === "top" ? "var(--bg-card)" : "transparent", color: commentSort === "top" ? "var(--primary)" : "var(--text-secondary)", boxShadow: commentSort === "top" ? "var(--shadow-sm)" : "none" }}
-            >
-              Top
-            </button>
-          </div>
-        </div>
-
-        {isSignedIn && (
-          <div style={{ marginBottom: "40px" }}>
-            <MentionInput value={commentContent} onChange={setCommentContent} placeholder="Share your thoughts..." minHeight="120px" />
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
+        <section id="comments" style={{ borderTop: "4px solid var(--border-color)", paddingTop: "60px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "40px" }}>
+            <h2 style={{ fontSize: "24px" }}>COMMENTS ({comments.length})</h2>
+            <div style={{ display: "flex", gap: "24px" }}>
               <button
-                onClick={handleSubmitComment}
-                disabled={!commentContent.trim() || isSubmitting}
-                style={{ padding: "12px 32px", backgroundColor: "var(--primary)", border: "none", color: "white", borderRadius: "var(--radius-lg)", fontWeight: 700, opacity: commentContent.trim() ? 1 : 0.6 }}
+                onClick={() => setCommentSort("newest")}
+                style={{ border: "none", padding: "0", fontSize: "11px", fontWeight: 800, color: commentSort === "newest" ? "var(--text-primary)" : "var(--text-tertiary)", borderBottom: commentSort === "newest" ? "2px solid var(--text-primary)" : "none", borderRadius: 0 }}
               >
-                {isSubmitting ? "Posting..." : "Post Comment"}
+                NEWEST
+              </button>
+              <button
+                onClick={() => setCommentSort("top")}
+                style={{ border: "none", padding: "0", fontSize: "11px", fontWeight: 800, color: commentSort === "top" ? "var(--text-primary)" : "var(--text-tertiary)", borderBottom: commentSort === "top" ? "2px solid var(--text-primary)" : "none", borderRadius: 0 }}
+              >
+                TOP
               </button>
             </div>
           </div>
-        )}
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          {buildTree(comments).length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)" }}>No comments yet.</div>
-          ) : (
-            buildTree(comments).map(c => (
-              <CommentBlock key={c.id} comment={c} depth={0} getAvatarUrl={getAvatarUrl} formatDate={formatDate} onReply={handleReply} />
-            ))
+          {isSignedIn && (
+            <div style={{ marginBottom: "60px" }}>
+              <div style={{ border: "1px solid var(--border-color)", padding: "12px" }}>
+                <MentionInput value={commentContent} onChange={setCommentContent} placeholder="TYPE YOUR THOUGHTS..." minHeight="100px" />
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
+                <button
+                  onClick={handleSubmitComment}
+                  className="primary"
+                  disabled={!commentContent.trim() || isSubmitting}
+                >
+                  {isSubmitting ? "POSTING..." : "POST COMMENT"}
+                </button>
+              </div>
+            </div>
           )}
-        </div>
-      </section>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+            {buildTree(comments).length === 0 ? (
+              <div style={{ textAlign: "left", padding: "40px 0", color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 700 }}>NO COMMENTS YET.</div>
+            ) : (
+              buildTree(comments).map(c => (
+                <CommentBlock key={c.id} comment={c} depth={0} onReply={handleReply} />
+              ))
+            )}
+          </div>
+        </section>
+      </div>
     </main>
   );
 }
