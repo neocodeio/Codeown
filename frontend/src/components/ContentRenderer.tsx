@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
 // Import common languages
@@ -24,11 +24,81 @@ import "prismjs/components/prism-php";
 import "prismjs/components/prism-ruby";
 import "prismjs/components/prism-swift";
 import "prismjs/components/prism-kotlin";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCopy, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 interface ContentRendererProps {
   content: string;
   fontSize?: string;
 }
+
+
+const CodeBlock = ({ language, code }: { language: string; code: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const langClass = Prism.languages[language] ? `language-${language}` : "language-markdown";
+  const hasHeader = language && language !== "plaintext";
+
+  return (
+    <div style={{ margin: "12px 0", position: "relative" }}>
+      <button
+        onClick={handleCopy}
+        style={{
+          position: "absolute",
+          top: hasHeader ? "6px" : "10px",
+          right: "12px",
+          zIndex: 10,
+          background: "transparent",
+          border: "none",
+          color: copied ? "#4ade80" : "#a1a1aa",
+          cursor: "pointer",
+          fontSize: "14px",
+          transition: "color 0.2s"
+        }}
+        title="Copy code"
+      >
+        <FontAwesomeIcon icon={copied ? faCheck : faCopy} />
+      </button>
+
+      {hasHeader && (
+        <div
+          style={{
+            backgroundColor: "#000",
+            color: "#fff",
+            padding: "6px 12px",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+            fontSize: "12px",
+            fontFamily: "monospace",
+            borderBottom: "1px solid #3d3d3d",
+          }}
+        >
+          {language}
+        </div>
+      )}
+      <pre
+        style={{
+          margin: 0,
+          padding: "16px",
+          backgroundColor: "#2d2d2d",
+          borderRadius: hasHeader ? "0 0 15px 15px" : "15px",
+          overflow: "auto",
+          fontSize: "14px",
+          lineHeight: 1.5,
+        }}
+      >
+        <code className={langClass}>{code}</code>
+      </pre>
+    </div>
+  );
+};
 
 export default function ContentRenderer({ content, fontSize = "16px" }: ContentRendererProps) {
   const navigate = useNavigate();
@@ -36,14 +106,14 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
 
   useEffect(() => {
     if (!contentRef.current) return;
-  
+
     try {
       Prism.highlightAllUnder(contentRef.current);
     } catch (err) {
       console.error("Prism highlight error:", err);
     }
   }, [content]);
-  
+
 
   const handleMentionClick = (username: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -65,43 +135,11 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
     while ((match = codeBlockRegex.exec(text)) !== null) {
       const language = match[1] || "plaintext";
       const code = match[2].trim();
-      const langClass = Prism.languages[language] ? `language-${language}` : "language-markdown";
-      
       codeBlocks.push({
         start: match.index,
         end: match.index + match[0].length,
         element: (
-          <div key={`code-block-${key++}`} style={{ margin: "12px 0" }}>
-            {language && language !== "plaintext" && (
-              <div
-                style={{
-                  backgroundColor: "#000",
-                  color: "#fff",
-                  padding: "6px 12px",
-                  borderTopLeftRadius: "15px",
-                  borderTopRightRadius: "15px",
-                  fontSize: "12px",
-                  fontFamily: "monospace",
-                  borderBottom: "1px solid #3d3d3d",
-                }}
-              >
-                {language}
-              </div>
-            )}
-            <pre
-              style={{
-                margin: 0,
-                padding: "16px",
-                backgroundColor: "#2d2d2d",
-                borderRadius: language && language !== "plaintext" ? "0 0 15px 15px" : "15px",
-                overflow: "auto",
-                fontSize: "14px",
-                lineHeight: 1.5,
-              }}
-            >
-              <code className={langClass}>{code}</code>
-            </pre>
-          </div>
+          <CodeBlock key={`code-block-${key++}`} language={language} code={code} />
         ),
       });
     }

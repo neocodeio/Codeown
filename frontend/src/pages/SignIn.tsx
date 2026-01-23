@@ -9,15 +9,15 @@ export default function SignInPage() {
   if (isLoaded && isSignedIn) return <Navigate to="/" replace />;
 
   return (
-    <div className="fade-in" style={{ 
-      display: "flex", 
-      justifyContent: "center", 
-      alignItems: "center", 
+    <div className="fade-in" style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
       minHeight: "calc(100vh - 120px)",
       padding: "40px 20px",
     }}>
-      <div style={{ 
-        width: "100%", 
+      <div style={{
+        width: "100%",
         maxWidth: "460px",
         backgroundColor: "var(--bg-card)",
         borderRadius: "var(--radius-2xl)",
@@ -26,8 +26,8 @@ export default function SignInPage() {
         border: "1px solid var(--border-color)",
       }}>
         {isClerkEnabled && clerkPublishableKey ? (
-          <SignIn 
-            routing="path" 
+          <SignIn
+            routing="path"
             path="/sign-in"
             signUpUrl="/sign-up"
             appearance={{

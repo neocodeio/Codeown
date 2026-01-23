@@ -46,8 +46,8 @@ export default function Feed() {
   return (
     <main className="container" style={{ padding: "40px 20px", minHeight: "100vh" }}>
       <div style={{ maxWidth: "640px", margin: "0 auto" }}>
-        <header style={{ 
-          marginBottom: "60px", 
+        <header style={{
+          marginBottom: "60px",
           borderBottom: "1px solid var(--border-color)",
           paddingBottom: "20px"
         }}>
@@ -71,13 +71,13 @@ export default function Feed() {
               <button
                 onClick={() => handleFilterChange("following")}
                 style={{
-                 border: "1px solid #333",
-                padding: "5px 15px",
-                fontSize: "13px",
-                letterSpacing: "0.1em",
-                fontWeight: 800,
-                color: feedFilter === "following" ? "gray" : "#333",
-                borderRadius: "5px",
+                  border: "1px solid #333",
+                  padding: "5px 15px",
+                  fontSize: "13px",
+                  letterSpacing: "0.1em",
+                  fontWeight: 800,
+                  color: feedFilter === "following" ? "gray" : "#333",
+                  borderRadius: "5px",
                 }}
               >
                 FOLLOWING

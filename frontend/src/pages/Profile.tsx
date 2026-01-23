@@ -124,16 +124,16 @@ export default function Profile() {
               />
             </div>
             <div style={{ display: "flex", gap: "16px" }}>
-              <button 
-                onClick={() => setIsProjectModalOpen(true)} 
-                className="primary" 
-                style={{ 
-                  borderRadius: "9px", 
-                  backgroundColor: "#007bff", 
-                  color: "#fff", 
-                  fontSize: "15px", 
-                  border: "none", 
-                  fontWeight: "600" 
+              <button
+                onClick={() => setIsProjectModalOpen(true)}
+                className="primary"
+                style={{
+                  borderRadius: "9px",
+                  backgroundColor: "#007bff",
+                  color: "#fff",
+                  fontSize: "15px",
+                  border: "none",
+                  fontWeight: "600"
                 }}
               >
                 <FontAwesomeIcon icon={faPlus} style={{ marginRight: "8px" }} />
@@ -159,15 +159,15 @@ export default function Profile() {
           </header>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "1px solid var(--border-color)", textAlign: "center" }}>
-            <div 
-              onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} 
+            <div
+              onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
               style={{ padding: "24px", borderRight: "1px solid var(--border-color)", cursor: "pointer" }}
             >
               <div style={{ fontSize: "24px", fontWeight: 800 }}>{userProfile?.follower_count || 0}</div>
               <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWERS</div>
             </div>
-            <div 
-              onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} 
+            <div
+              onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
               style={{ padding: "24px", borderRight: "1px solid var(--border-color)", cursor: "pointer" }}
             >
               <div style={{ fontSize: "24px", fontWeight: 800 }}>{userProfile?.following_count || 0}</div>
@@ -183,11 +183,11 @@ export default function Profile() {
         <nav style={{ display: "flex", gap: "40px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)" }}>
           <button
             onClick={() => setActiveTab("posts")}
-            style={{ 
-              border: "none", 
-              padding: "12px 6px", 
-              fontSize: "13px", 
-              fontWeight: 800, 
+            style={{
+              border: "none",
+              padding: "12px 6px",
+              fontSize: "13px",
+              fontWeight: 800,
               color: activeTab === "posts" ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === "posts" ? "2px solid var(--text-primary)" : "2px solid transparent",
               borderRadius: "15px"
@@ -197,11 +197,11 @@ export default function Profile() {
           </button>
           <button
             onClick={() => setActiveTab("projects")}
-            style={{ 
-              border: "none", 
-              padding: "12px 6px", 
-              fontSize: "13px", 
-              fontWeight: 800, 
+            style={{
+              border: "none",
+              padding: "12px 6px",
+              fontSize: "13px",
+              fontWeight: 800,
               color: activeTab === "projects" ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === "projects" ? "2px solid var(--text-primary)" : "2px solid transparent",
               borderRadius: "15px"
@@ -211,11 +211,11 @@ export default function Profile() {
           </button>
           <button
             onClick={() => setActiveTab("saved")}
-            style={{ 
-              border: "none", 
-              padding: "12px 6px", 
-              fontSize: "13px", 
-              fontWeight: 800, 
+            style={{
+              border: "none",
+              padding: "12px 6px",
+              fontSize: "13px",
+              fontWeight: 800,
               color: activeTab === "saved" ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === "saved" ? "2px solid var(--text-primary)" : "2px solid transparent",
               borderRadius: "15px"
@@ -235,12 +235,12 @@ export default function Profile() {
                   <PostCard post={p} onUpdated={handleProfileUpdated} />
                   <button
                     onClick={() => handlePinPost(p.id)}
-                    style={{ 
-                      position: "absolute", 
+                    style={{
+                      position: "absolute",
                       top: "5px",
                       left: "5px",
                       cursor: "pointer",
-                      padding: "8px", 
+                      padding: "8px",
                       border: "1px solid var(--border-color)",
                       color: userProfile?.pinned_post_id === p.id ? "#f5f5f5" : "#f5f5f5",
                       backgroundColor: "var(--bg-card)"

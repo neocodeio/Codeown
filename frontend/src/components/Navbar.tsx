@@ -54,11 +54,11 @@ export default function Navbar() {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : "60px", flex: 1 }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-          <span style={{ 
-            fontSize: "25px", 
+          <span style={{
+            fontSize: "25px",
             textDecoration: "none",
-            fontWeight: 600, 
-            color: "#FFF", 
+            fontWeight: 600,
+            color: "#FFF",
             letterSpacing: "-0.05em",
           }}>
             Codeown
@@ -124,7 +124,7 @@ export default function Navbar() {
                 fontSize: "18px",
                 fontWeight: 700,
               }}>
-                <FontAwesomeIcon icon={faUser} /> 
+                <FontAwesomeIcon icon={faUser} />
               </div>
             </Link>
           ) : (

@@ -7,33 +7,35 @@
   --bg-elevated: #f4f4f5;
   --bg-hover: #f4f4f5;
   --bg-input: #ffffff;
-  
+
   --text-primary: #000000;
   --text-secondary: #52525b;
   --text-tertiary: #a1a1aa;
-  
+
   --primary: #000000;
   --primary-contrast: #ffffff;
-  --accent: #1d4ed8; /* Electric Blue */
-  
+  --accent: #1d4ed8;
+  /* Electric Blue */
+
   --border-color: #000000;
   --border-light: #e4e4e7;
   --border-strong: #000000;
-  
+
   /* Modernism emphasizes grid and lines, not shadows */
   --shadow: none;
   --shadow-sm: none;
   --shadow-md: none;
-  
+
   /* Small radius for a "sharp but professional" look */
   --radius-xs: 2px;
   --radius-sm: 4px;
   --radius-md: 6px;
-  --radius-lg: 0px; /* Sharp corners for cards */
-  
+  --radius-lg: 0px;
+  /* Sharp corners for cards */
+
   --max-width: 1100px;
   --feed-width: 640px;
-  
+
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
@@ -43,15 +45,15 @@
   --bg-elevated: #18181b;
   --bg-hover: #18181b;
   --bg-input: #09090b;
-  
+
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
   --text-tertiary: #52525b;
-  
+
   --primary: #ffffff;
   --primary-contrast: #000000;
   --accent: #3b82f6;
-  
+
   --border-color: #ffffff;
   --border-light: #27272a;
   --border-strong: #ffffff;
@@ -73,7 +75,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 800;
   letter-spacing: -0.04em;
   text-transform: uppercase;
@@ -117,7 +124,8 @@ a {
   color: inherit;
 }
 
-input, textarea {
+input,
+textarea {
   font-family: inherit;
   border: 1px solid var(--border-color);
   background: var(--bg-input);
@@ -127,7 +135,8 @@ input, textarea {
   width: 100%;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
   border-width: 2px;
 }
@@ -146,11 +155,29 @@ input:focus, textarea:focus {
 }
 
 /* Typography Scale */
-.text-xs { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
-.text-sm { font-size: 14px; }
-.text-base { font-size: 16px; }
-.text-lg { font-size: 18px; font-weight: 700; }
-.text-xl { font-size: 24px; font-weight: 800; }
+.text-xs {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.text-sm {
+  font-size: 14px;
+}
+
+.text-base {
+  font-size: 16px;
+}
+
+.text-lg {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.text-xl {
+  font-size: 24px;
+  font-weight: 800;
+}
 
 /* Grid System */
 .modern-grid {
@@ -171,8 +198,13 @@ input:focus, textarea:focus {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* Navbar specific */
@@ -195,7 +227,9 @@ input:focus, textarea:focus {
 
 /* Animations */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design for Project Components */
@@ -205,27 +239,27 @@ input:focus, textarea:focus {
   .container {
     padding: 0 15px;
   }
-  
+
   .hide-mobile {
     display: none;
   }
-  
+
   .show-mobile {
     display: block;
   }
-  
+
   .text-center-mobile {
     text-align: center;
   }
-  
+
   .flex-column-mobile {
     flex-direction: column;
   }
-  
+
   .gap-mobile-16 {
     gap: 16px;
   }
-  
+
   .mb-mobile-20 {
     margin-bottom: 20px;
   }
@@ -243,7 +277,7 @@ input:focus, textarea:focus {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   a {
     min-height: 44px;
     display: inline-flex;
