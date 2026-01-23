@@ -131,7 +131,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
             </Link>
           ) : (
             <Link to="/sign-in">
-              <button className="primary">Login</button>
+              <button className="primary" style={{ backgroundColor: "#fff", color: "#000", fontSize: "18px", fontWeight: 600, borderRadius: "15px", border: "1px solid #fff", padding: "6px 12px" }}>Login</button>
             </Link>
           )
         ) : null}
@@ -177,7 +177,7 @@ export default function Navbar({ onToggleTheme }: NavbarProps) {
               <Link to="/profile" className="nav-link" style={{ fontSize: "16px", color: "#ffffff", textDecoration: "none" }}>Profile</Link>
             </>
           )}
-          {!isSignedIn && <Link to="/sign-in"><button className="primary" style={{ width: "100%", padding: "12px" }}>Login</button></Link>}
+          {!isSignedIn && <Link to="/sign-in"><button className="primary" style={{ width: "100%", padding: "12px", border: "none", backgroundColor: "transparent" }}>Login</button></Link>}
         </div>
       )}
 
