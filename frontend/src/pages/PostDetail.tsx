@@ -123,19 +123,21 @@ export default function PostDetail() {
             alignItems: "center", 
             gap: "8px", 
             marginBottom: "40px",
-            border: "none",
-            background: "transparent",
+            border: "2px solid #e0e0e0",
+            background: "#f5f5f5",
             fontSize: "12px",
-            padding: "0"
+            padding: "4px",
+            borderRadius: "12px",
+            cursor: "pointer",
           }}
         >
           <FontAwesomeIcon icon={faArrowLeft} />
           <span style={{ fontWeight: 600, fontSize: "20px", background: "transparent" }}>BACK</span>
         </button>
 
-        <article className="fade-in" style={{ marginBottom: "80px", background: "#f5f5f5", padding: "30px", borderRadius: "25px" }}>
-          <header style={{ marginBottom: "40px", borderBottom: "1px solid var(--border-color)", paddingBottom: "40px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
+        <article className="fade-in" style={{ background: "#f5f5f5", padding: "20px", borderRadius: "25px", border: "2px solid #e0e0e0" }}>
+          <header style={{ marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
               <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)", borderRadius: "50%" }} />
               <div>
                 <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{userName}</h3>
@@ -145,7 +147,7 @@ export default function PostDetail() {
             <h1 style={{ fontSize: "42px", marginBottom: "4px" }}>{post.title}</h1>
           </header>
           
-          <div style={{ fontSize: "18px", lineHeight: "1.7", marginBottom: "40px" }}>
+          <div style={{ fontSize: "18px", lineHeight: "1.7", marginBottom: "20px" }}>
             <ContentRenderer content={post.content} />
           </div>
 
@@ -179,7 +181,7 @@ export default function PostDetail() {
             </div>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "40px", backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "25px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "40px", backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "25px", border: "2px solid #e0e0e0" }}>
             {buildTree(comments).length === 0 ? (
               <div style={{ textAlign: "left", padding: "40px 0", color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 700 }}>NO COMMENTS YET.</div>
             ) : (
