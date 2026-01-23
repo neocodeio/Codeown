@@ -5,6 +5,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
 import { useUserProjects } from "../hooks/useUserProjects";
+import { useUserSavedProjects } from "../hooks/useUserSavedProjects";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import EditProfileModal from "../components/EditProfileModal";
@@ -37,10 +38,12 @@ export default function Profile() {
   const { posts, loading: postsLoading, fetchUserPosts } = useUserPosts(userId);
   const { savedPosts, loading: savedPostsLoading, fetchSavedPosts } = useSavedPosts();
   const { projects, loading: projectsLoading, fetchUserProjects } = useUserProjects(userId);
+  const { projects: savedProjects, loading: savedProjectsLoading, fetchUserSavedProjects } = useUserSavedProjects(userId);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "saved" | "projects">("posts");
+  const [savedSubTab, setSavedSubTab] = useState<"posts" | "projects">("posts");
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
 
@@ -80,6 +83,7 @@ export default function Profile() {
         fetchUserPosts();
         fetchSavedPosts();
         fetchUserProjects();
+        fetchUserSavedProjects();
       } catch (error) {
         console.error("Error refreshing profile:", error);
       }
@@ -273,11 +277,62 @@ export default function Profile() {
               projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
             )
           ) : (
-            savedPosts.length === 0 ? (
-              <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO SAVED POSTS.</div>
-            ) : (
-              savedPosts.map(p => <PostCard key={p.id} post={p} onUpdated={handleProfileUpdated} />)
-            )
+            <div>
+              {/* Sub-tabs for saved content */}
+              <div style={{ display: "flex", gap: "20px", marginBottom: "30px", borderBottom: "2px solid var(--border-color)" }}>
+                <button
+                  onClick={() => setSavedSubTab("posts")}
+                  style={{
+                    padding: "12px 0",
+                    border: "none",
+                    background: "transparent",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: savedSubTab === "posts" ? "var(--primary)" : "var(--text-secondary)",
+                    borderBottom: savedSubTab === "posts" ? "2px solid var(--primary)" : "2px solid transparent",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  SAVED POSTS ({savedPosts.length})
+                </button>
+                <button
+                  onClick={() => setSavedSubTab("projects")}
+                  style={{
+                    padding: "12px 0",
+                    border: "none",
+                    background: "transparent",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: savedSubTab === "projects" ? "var(--primary)" : "var(--text-secondary)",
+                    borderBottom: savedSubTab === "projects" ? "2px solid var(--primary)" : "2px solid transparent",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  SAVED PROJECTS ({savedProjects.length})
+                </button>
+              </div>
+
+              {/* Saved content based on sub-tab */}
+              {savedSubTab === "posts" ? (
+                savedPostsLoading ? (
+                  <div style={{ padding: "60px 0", color: "var(--text-secondary)", fontWeight: 700 }}>Loading saved posts...</div>
+                ) : savedPosts.length === 0 ? (
+                  <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO SAVED POSTS.</div>
+                ) : (
+                  savedPosts.map(p => <PostCard key={p.id} post={p} onUpdated={handleProfileUpdated} />)
+                )
+              ) : (
+                savedProjectsLoading ? (
+                  <div style={{ padding: "60px 0", color: "var(--text-secondary)", fontWeight: 700 }}>Loading saved projects...</div>
+                ) : savedProjects.length === 0 ? (
+                  <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO SAVED PROJECTS.</div>
+                ) : (
+                  savedProjects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />)
+                )
+              )}
+            </div>
           )}
         </div>
       </div>

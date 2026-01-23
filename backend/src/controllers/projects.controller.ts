@@ -1,5 +1,26 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
+
+// Helper function to create notifications
+async function createProjectNotification(
+  userId: string,
+  type: "like" | "comment" | "save",
+  actorId: string,
+  projectId: number
+) {
+  try {
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      type: type,
+      actor_id: actorId,
+      project_id: projectId,
+      read: false,
+      created_at: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Error creating project notification:", error);
+  }
+}
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 
@@ -393,6 +414,11 @@ export async function toggleProjectLike(req: Request, res: Response) {
           user_id: userId
         });
       isLiked = true;
+
+      // Create notification for project owner (if not the liker)
+      if (project.user_id !== userId) {
+        await createProjectNotification(project.user_id, "like", userId, parseInt(id));
+      }
     }
 
     // Update like count
@@ -500,6 +526,11 @@ export async function toggleProjectSave(req: Request, res: Response) {
           user_id: userId
         });
       isSaved = true;
+
+      // Create notification for project owner (if not the saver)
+      if (project.user_id !== userId) {
+        await createProjectNotification(project.user_id, "save", userId, parseInt(id));
+      }
     }
 
     return res.json({ isSaved });

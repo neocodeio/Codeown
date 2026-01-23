@@ -30,6 +30,8 @@ export default function NotificationDropdown() {
 
     if (notification.post_id) {
       navigate(`/post/${notification.post_id}`);
+    } else if (notification.project_id) {
+      navigate(`/project/${notification.project_id}`);
     } else if (notification.actor_id) {
       navigate(`/user/${notification.actor_id}`);
     }
@@ -40,13 +42,21 @@ export default function NotificationDropdown() {
     const actorName = notification.actor?.name || "Someone";
     switch (notification.type) {
       case "like":
-        return `${actorName} liked your post`;
+        return notification.project_id 
+          ? `${actorName} liked your project`
+          : `${actorName} liked your post`;
       case "comment":
-        return `${actorName} commented on your post`;
+        return notification.project_id 
+          ? `${actorName} commented on your project`
+          : `${actorName} commented on your post`;
       case "follow":
         return `${actorName} started following you`;
       case "mention":
         return `${actorName} mentioned you`;
+      case "reply":
+        return `${actorName} replied to your comment`;
+      case "save":
+        return `${actorName} saved your project`;
       default:
         return "New notification";
     }

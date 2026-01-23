@@ -1,6 +1,30 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
+import { clerkClient } from "@clerk/clerk-sdk-node";
+
+// Helper function to create project comment notifications
+async function createProjectCommentNotification(
+  userId: string,
+  type: "comment" | "reply",
+  actorId: string,
+  projectId: number,
+  commentId?: number
+) {
+  try {
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      type: type,
+      actor_id: actorId,
+      project_id: projectId,
+      comment_id: commentId,
+      read: false,
+      created_at: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Error creating project comment notification:", error);
+  }
+}
 
 export async function getProjectComments(req: Request, res: Response) {
   try {
@@ -161,6 +185,25 @@ export async function createProjectComment(req: Request, res: Response) {
       .from("projects")
       .update({ comment_count: commentCount })
       .eq("id", id);
+
+    // Create notifications
+    if (parent_id) {
+      // This is a reply - notify parent comment author
+      const { data: parentComment } = await supabase
+        .from("project_comments")
+        .select("user_id")
+        .eq("id", parent_id)
+        .single();
+      
+      if (parentComment && parentComment.user_id !== userId) {
+        await createProjectCommentNotification(parentComment.user_id, "reply", userId, parseInt(id as string), comment.id);
+      }
+    } else {
+      // This is a new comment - notify project owner
+      if (project.user_id !== userId) {
+        await createProjectCommentNotification(project.user_id, "comment", userId, parseInt(id as string), comment.id);
+      }
+    }
 
     // Get user data for response
     const { data: user, error: userError } = await supabase

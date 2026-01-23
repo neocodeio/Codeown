@@ -4,10 +4,11 @@ import { useClerkAuth } from "./useClerkAuth";
 
 export interface Notification {
   id: number;
-  type: "like" | "comment" | "follow" | "mention";
+  type: "like" | "comment" | "follow" | "mention" | "reply" | "save";
   actor_id: string;
   post_id?: number | null;
   comment_id?: number | null;
+  project_id?: number | null;
   read: boolean;
   created_at: string;
   actor?: {
