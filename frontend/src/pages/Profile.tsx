@@ -13,7 +13,7 @@ import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt, faThumbtack, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt, faThumbtack, faPlus, faEllipsisH, faPen, faUserEdit } from "@fortawesome/free-solid-svg-icons";
 
 interface UserProfile {
   id: string;
@@ -46,6 +46,16 @@ export default function Profile() {
   const [savedSubTab, setSavedSubTab] = useState<"posts" | "projects">("posts");
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const closeMenu = () => setIsMenuOpen(false);
+    if (isMenuOpen) {
+      document.addEventListener("click", closeMenu);
+    }
+    return () => document.removeEventListener("click", closeMenu);
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -113,8 +123,8 @@ export default function Profile() {
 
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <section className="fade-in" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "10px", backgroundColor: "#f5f5f5", padding: "30px", borderRadius: "30px" }}>
+      <div style={{ maxWidth: "700px", margin: "0 auto" }}>
+        <section className="fade-in slide-up" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "10px", backgroundColor: "#f5f5f5", padding: "30px", borderRadius: "30px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
             <div style={{ width: "160px", height: "160px", border: "1px solid #ddd", overflow: "hidden", borderRadius: "50%" }}>
               <img
@@ -123,30 +133,113 @@ export default function Profile() {
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
-            <div style={{ display: "flex", gap: "16px" }}>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
               <button
                 onClick={() => setIsProjectModalOpen(true)}
-                className="primary"
-                style={{
-                  borderRadius: "9px",
-                  backgroundColor: "#007bff",
-                  color: "#fff",
-                  fontSize: "15px",
-                  border: "none",
-                  fontWeight: "600"
-                }}
+                className="btn-primary"
+                style={{ fontSize: "16px", display: "flex", alignItems: "center", gap: "8px", fontWeight: 600, border: "none", padding: "4px", backgroundColor: "#000", borderRadius: "25px", color: "#fff" }}
               >
-                <FontAwesomeIcon icon={faPlus} style={{ marginRight: "8px" }} />
-                Add Project
+                <FontAwesomeIcon icon={faPlus} size="lg" />
+                <span style={{ fontWeight: 600, border: "none", padding: "4px", backgroundColor: "#000", borderRadius: "25px", color: "#fff" }}>Add Project</span>
               </button>
-              <button onClick={() => setIsEditModalOpen(true)} className="primary" style={{ borderRadius: "9px", backgroundColor: "#000", color: "#fff", fontSize: "15px", border: "none", fontWeight: "600" }}>Edit Profile</button>
-              <button onClick={handleSignOut} style={{ border: "1px solid red", padding: "8px 16px", backgroundColor: "red", color: "#fff", borderRadius: "9px", fontSize: "15px" }}>
-                <FontAwesomeIcon icon={faSignOutAlt} />
-              </button>
+
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(!isMenuOpen);
+                  }}
+                  className="btn-secondary"
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    display: "flex",
+                    alignItems: "center",
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    border: "none",
+                    color: "#000",
+                    backgroundColor: "#f5f5f5",
+                    justifyContent: "center",
+                    padding: 0,
+                    borderRadius: "50%"
+                  }}
+                >
+                  <FontAwesomeIcon icon={faEllipsisH} size="lg" style={{ border: "none", padding: "5px", borderRadius: "25px", color: "#000" }} />
+                </button>
+
+                {isMenuOpen && (
+                  <div
+                    className="fade-in scale-in"
+                    style={{
+                      position: "absolute",
+                      top: "120%",
+                      right: 0,
+                      backgroundColor: "#fff",
+                      border: "2px solid #e0e0e0",
+                      borderRadius: "15px",
+                      boxShadow: "var(--shadow-lg)",
+                      minWidth: "160px",
+                      zIndex: 50,
+                      padding: "6px",
+                      overflow: "hidden"
+                    }}
+                  >
+                    <button
+                      onClick={() => setIsEditModalOpen(true)}
+                      style={{
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "10px 12px",
+                        background: "transparent",
+                        border: "none",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        color: "#000",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        borderRadius: "6px",
+                        transition: "background-color 0.2s"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f5f5f5"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <FontAwesomeIcon icon={faUserEdit} style={{ width: "16px" }} />
+                      Edit Profile
+                    </button>
+                    <button
+                      onClick={handleSignOut}
+                      style={{
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "10px 12px",
+                        background: "transparent",
+                        border: "none",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        color: "#ef4444",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        borderRadius: "6px",
+                        transition: "background-color 0.2s"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f5f5f5"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px" }} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <header style={{ marginBottom: "40px" }}>
+          <header style={{ marginBottom: "40px" }} className="stagger-1 slide-up">
             <h1 style={{ fontSize: "48px", marginBottom: "8px" }}>{userProfile?.name || user?.fullName}</h1>
             <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, marginBottom: "24px" }}>
               @{userProfile?.username || user?.username}
@@ -158,17 +251,17 @@ export default function Profile() {
             )}
           </header>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "1px solid var(--border-color)", textAlign: "center" }}>
+          <div className="stagger-1 slide-up" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "2px solid #e0e0e0", textAlign: "center", backgroundColor: "#f9f9f9", borderRadius: "25px" }}>
             <div
               onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
-              style={{ padding: "24px", borderRight: "1px solid var(--border-color)", cursor: "pointer" }}
+              style={{ padding: "24px", borderRight: "1px solid #e0e0e0", cursor: "pointer" }}
             >
               <div style={{ fontSize: "24px", fontWeight: 800 }}>{userProfile?.follower_count || 0}</div>
               <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWERS</div>
             </div>
             <div
               onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
-              style={{ padding: "24px", borderRight: "1px solid var(--border-color)", cursor: "pointer" }}
+              style={{ padding: "24px", borderRight: "1px solid #e0e0e0", cursor: "pointer" }}
             >
               <div style={{ fontSize: "24px", fontWeight: 800 }}>{userProfile?.following_count || 0}</div>
               <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWING</div>
@@ -180,11 +273,11 @@ export default function Profile() {
           </div>
         </section>
 
-        <nav style={{ display: "flex", gap: "40px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)" }}>
+        <nav className="stagger-2 slide-up" style={{ display: "flex", gap: "40px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)" }}>
           <button
             onClick={() => setActiveTab("posts")}
             style={{
-              border: "none",
+              border: "2px solid #e0e0e0",
               padding: "12px 6px",
               fontSize: "13px",
               fontWeight: 800,
@@ -198,7 +291,7 @@ export default function Profile() {
           <button
             onClick={() => setActiveTab("projects")}
             style={{
-              border: "none",
+              border: "2px solid #e0e0e0",
               padding: "12px 6px",
               fontSize: "13px",
               fontWeight: 800,
@@ -212,7 +305,7 @@ export default function Profile() {
           <button
             onClick={() => setActiveTab("saved")}
             style={{
-              border: "none",
+              border: "2px solid #e0e0e0",
               padding: "12px 6px",
               fontSize: "13px",
               fontWeight: 800,
@@ -225,14 +318,14 @@ export default function Profile() {
           </button>
         </nav>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+        <div className="stagger-3 slide-up" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
           {activeTab === "posts" ? (
             posts.length === 0 ? (
               <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS YET.</div>
             ) : (
-              posts.map(p => (
+              posts.map((p, i) => (
                 <div key={p.id} style={{ position: "relative" }}>
-                  <PostCard post={p} onUpdated={handleProfileUpdated} />
+                  <PostCard post={p} index={i} onUpdated={handleProfileUpdated} />
                   <button
                     onClick={() => handlePinPost(p.id)}
                     style={{
@@ -274,7 +367,7 @@ export default function Profile() {
                 </button>
               </div>
             ) : (
-              projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={() => fetchUserProjects()} />)
+              projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} onUpdated={() => fetchUserProjects()} />)
             )
           ) : (
             <div>
@@ -321,7 +414,7 @@ export default function Profile() {
                 ) : savedPosts.length === 0 ? (
                   <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO SAVED POSTS.</div>
                 ) : (
-                  savedPosts.map(p => <PostCard key={p.id} post={p} onUpdated={handleProfileUpdated} />)
+                  savedPosts.map((p, i) => <PostCard key={p.id} post={p} index={i} onUpdated={handleProfileUpdated} />)
                 )
               ) : (
                 savedProjectsLoading ? (
@@ -329,7 +422,7 @@ export default function Profile() {
                 ) : savedProjects.length === 0 ? (
                   <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO SAVED PROJECTS.</div>
                 ) : (
-                  savedProjects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />)
+                  savedProjects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} onUpdated={fetchUserSavedProjects} />)
                 )
               )}
             </div>

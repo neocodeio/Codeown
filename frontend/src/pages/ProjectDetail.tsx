@@ -8,7 +8,7 @@ import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
+import {
   faHeart as faHeartSolid,
   faBookmark as faBookmarkSolid,
   faBookmark as faBookmarkRegular,
@@ -18,7 +18,8 @@ import {
   faArrowLeft,
   faPlay,
   faPause,
-  faCheck
+  faCheck,
+  faStar
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub as faGithubBrand } from "@fortawesome/free-brands-svg-icons";
 
@@ -33,7 +34,10 @@ export default function ProjectDetail() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+
   const [likeCount, setLikeCount] = useState(0);
+  const [userRating, setUserRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -46,7 +50,9 @@ export default function ProjectDetail() {
     try {
       const response = await api.get(`/projects/${id}`);
       setProject(response.data);
+
       setLikeCount(response.data.like_count || 0);
+      setUserRating(response.data.user_rating || 0);
     } catch (error) {
       console.error("Error fetching project:", error);
       navigate("/");
@@ -176,6 +182,35 @@ export default function ProjectDetail() {
     } catch (error) {
       console.error("Error toggling save:", error);
     }
+  }
+
+
+  const handleRate = async (rating: number) => {
+    if (!currentUser) {
+      navigate("/sign-in");
+      return;
+    }
+
+    try {
+      const token = await getToken();
+      if (!token) return;
+
+      const response = await api.post(
+        `/projects/${id}/rate`,
+        { rating },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setUserRating(rating);
+      // Update project with new average
+      setProject(prev => prev ? {
+        ...prev,
+        rating: response.data.average,
+        rating_count: response.data.count
+      } : null);
+    } catch (error) {
+      console.error("Error rating project:", error);
+    }
   };
 
   const handleProjectUpdated = () => {
@@ -227,9 +262,9 @@ export default function ProjectDetail() {
         </button>
 
         {project.cover_image && (
-          <div style={{ 
-            width: "100%", 
-            height: "400px", 
+          <div style={{
+            width: "100%",
+            height: "400px",
             overflow: "hidden",
             borderRadius: "20px",
             marginBottom: "40px",
@@ -266,9 +301,9 @@ export default function ProjectDetail() {
           </div>
         )}
 
-        <div style={{ 
-          display: "flex", 
-          justifyContent: "space-between", 
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
           alignItems: "flex-start",
           marginBottom: "40px"
         }}>
@@ -281,9 +316,9 @@ export default function ProjectDetail() {
             }}>
               {project.title}
             </h1>
-            
+
             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
-              <div 
+              <div
                 onClick={handleUserClick}
                 style={{
                   display: "flex",
@@ -362,6 +397,64 @@ export default function ProjectDetail() {
                 </div>
               </div>
             )}
+
+            {project.contributors && project.contributors.length > 0 && (
+              <div style={{ marginBottom: "30px" }}>
+                <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px" }}>Contributors</h3>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                  {project.contributors.map((contrib) => (
+                    <div
+                      key={contrib.user_id}
+                      onClick={() => navigate(`/user/${contrib.user_id}`)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "8px 12px",
+                        backgroundColor: "#f8f9fa",
+                        borderRadius: "30px",
+                        cursor: "pointer",
+                        border: "1px solid var(--border-light)"
+                      }}
+                    >
+                      <img
+                        src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=000000&color=ffffff&bold=true`}
+                        alt={contrib.username}
+                        style={{ width: "32px", height: "32px", borderRadius: "50%" }}
+                      />
+                      <span style={{ fontWeight: 600, fontSize: "14px" }}>{contrib.name || contrib.username}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginBottom: "30px" }}>
+              <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px" }}>Rate this Project</h3>
+              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => handleRate(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "24px",
+                      color: (hoverRating || userRating) >= star ? "#f57f17" : "#e0e0e0",
+                      transition: "color 0.2s"
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faStar} />
+                  </button>
+                ))}
+                <span style={{ fontSize: "14px", color: "var(--text-secondary)", marginLeft: "10px", fontWeight: 600 }}>
+                  {project.rating ? `${project.rating.toFixed(1)} (${project.rating_count} ratings)` : "No ratings yet"}
+                </span>
+              </div>
+            </div>
 
             <div style={{ display: "flex", gap: "16px", marginBottom: "30px" }}>
               {project.github_repo && (
@@ -536,8 +629,8 @@ export default function ProjectDetail() {
 
         <div>
           <h2 style={{ fontSize: "32px", fontWeight: 800, marginBottom: "24px" }}>Comments</h2>
-          <CommentsSection 
-            resourceId={project.id} 
+          <CommentsSection
+            resourceId={project.id}
             resourceType="project"
             onCommentAdded={() => {
               // Refresh project to update comment count

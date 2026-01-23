@@ -46,7 +46,7 @@ export default function Feed() {
   return (
     <main className="container" style={{ padding: "40px 20px", minHeight: "100vh" }}>
       <div style={{ maxWidth: "640px", margin: "0 auto" }}>
-        <header style={{
+        <header className="fade-in slide-up" style={{
           marginBottom: "60px",
           borderBottom: "1px solid var(--border-color)",
           paddingBottom: "20px"
@@ -56,7 +56,7 @@ export default function Feed() {
             <button
               onClick={() => handleFilterChange("all")}
               style={{
-                border: "1px solid #333",
+                border: "2px solid #e0e0e0",
                 padding: "5px 15px",
                 fontSize: "13px",
                 letterSpacing: "0.1em",
@@ -71,7 +71,7 @@ export default function Feed() {
               <button
                 onClick={() => handleFilterChange("following")}
                 style={{
-                  border: "1px solid #333",
+                  border: "2px solid #e0e0e0",
                   padding: "5px 15px",
                   fontSize: "13px",
                   letterSpacing: "0.1em",
@@ -93,15 +93,15 @@ export default function Feed() {
             ))}
           </div>
         ) : !Array.isArray(posts) || posts.length === 0 ? (
-          <div className="fade-in" style={{ padding: "80px 0", textAlign: "left" }}>
+          <div className="fade-in slide-up" style={{ padding: "80px 0", textAlign: "left" }}>
             <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>NOTHING HERE.</h2>
             <p style={{ color: "var(--text-secondary)", fontSize: "16px" }}>
               The feed is currently empty. Start following people or create a post to see content here.
             </p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-            {posts.map(p => <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(page, false)} />)}
+          <div className="stagger-1" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+            {posts.map((p, i) => <PostCard key={p.id} post={p} index={i} onUpdated={() => fetchPosts(page, false)} />)}
             {loading && Array.isArray(posts) && posts.length > 0 && (
               <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
                 <div style={{

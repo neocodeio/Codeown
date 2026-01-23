@@ -25,6 +25,7 @@
   --shadow: none;
   --shadow-sm: none;
   --shadow-md: none;
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
   /* Small radius for a "sharp but professional" look */
   --radius-xs: 2px;
@@ -35,6 +36,10 @@
 
   --max-width: 1100px;
   --feed-width: 640px;
+
+  /* Animation Timings */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -71,7 +76,7 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.3s var(--ease-smooth), color 0.3s var(--ease-smooth);
   overflow-x: hidden;
 }
 
@@ -94,7 +99,7 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-size: 12px;
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-smooth);
   border: 1px solid var(--border-color);
   background: transparent;
   padding: 8px 16px;
@@ -104,10 +109,12 @@ button {
 button:hover {
   background: var(--text-primary);
   color: var(--bg-page);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 button:active {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
 button.primary {
@@ -117,11 +124,18 @@ button.primary {
 
 button.primary:hover {
   opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 a {
   text-decoration: none;
   color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.8;
 }
 
 input,
@@ -133,12 +147,14 @@ textarea {
   color: var(--text-primary);
   border-radius: var(--radius-xs);
   width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 input:focus,
 textarea:focus {
   outline: none;
   border-width: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Layout Utilities */
@@ -152,6 +168,12 @@ textarea:focus {
   border: 1px solid var(--border-color);
   padding: 24px;
   background: var(--bg-card);
+  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
 }
 
 /* Typography Scale */
@@ -192,9 +214,31 @@ textarea:focus {
   }
 }
 
-/* Transitions */
+/* Transitions & Animations */
 .fade-in {
-  animation: fadeIn 0.4s ease forwards;
+  animation: fadeIn 0.6s var(--ease-smooth) forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.6s var(--ease-spring) forwards;
+  opacity: 0;
+}
+
+.scale-in {
+  animation: scaleIn 0.4s var(--ease-spring) forwards;
+  opacity: 0;
+}
+
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
 }
 
 @keyframes fadeIn {
@@ -207,6 +251,36 @@ textarea:focus {
   }
 }
 
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Navbar specific */
 .nav-link {
   font-weight: 700;
@@ -215,26 +289,31 @@ textarea:focus {
   letter-spacing: 0.1em;
   padding: 8px 0;
   border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.nav-link:hover {
-  border-bottom-color: var(--border-color);
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--border-color);
+  transition: width 0.3s var(--ease-smooth);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
 }
 
 .nav-link.active {
-  border-bottom-color: var(--border-color);
-}
-
-/* Animations */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  color: var(--text-primary);
 }
 
 /* Responsive Design for Project Components */
-
-/* Project Modal Responsive */
 @media (max-width: 768px) {
   .container {
     padding: 0 15px;

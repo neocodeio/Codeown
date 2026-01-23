@@ -46,35 +46,71 @@ export async function getProjects(req: Request, res: Response) {
       return res.json({ projects: [], total: count || 0, page: pageNum, limit: limitNum, totalPages: Math.ceil((count || 0) / limitNum) });
     }
 
-    // Get unique user IDs
-    const userIds = [...new Set(projects.map((p: any) => p.user_id))];
-    
+    // Get project IDs
+    const projectIds = projects.map((p: any) => p.id);
+
+    // Fetch Ratings
+    const { data: ratingsData } = await supabase
+      .from("project_ratings")
+      .select("project_id, rating")
+      .in("project_id", projectIds);
+
+    // Fetch Contributors
+    const { data: contributorsData } = await supabase
+      .from("project_contributors")
+      .select("project_id, user_id")
+      .in("project_id", projectIds);
+
+    // Collect all user IDs (creators + contributors)
+    const creatorIds = projects.map((p: any) => p.user_id);
+    const contributorUserIds = contributorsData?.map((c: any) => c.user_id) || [];
+    const allUserIds = [...new Set([...creatorIds, ...contributorUserIds])];
+
     // Fetch users
     const { data: users, error: usersError } = await supabase
       .from("users")
       .select("id, name, email, avatar_url, username")
-      .in("id", userIds);
-    
+      .in("id", allUserIds);
+
     if (usersError) {
       console.error("Error fetching users for projects:", usersError);
       return res.status(500).json({ error: "Failed to fetch user data" });
     }
 
-    // Attach user data to projects
-    const projectsWithUsers = projects.map((project: any) => {
+    // Attach data to projects
+    const projectsWithDetails = projects.map((project: any) => {
       const user = users?.find((u: any) => u.id === project.user_id);
+
+      // Calculate ratings
+      const projectRatings = ratingsData?.filter((r: any) => r.project_id === project.id) || [];
+      const ratingCount = projectRatings.length;
+      const ratingSum = projectRatings.reduce((sum: number, r: any) => sum + r.rating, 0);
+      const averageRating = ratingCount > 0 ? ratingSum / ratingCount : 0;
+
+      // Attach contributors
+      const projectContributors = contributorsData
+        ?.filter((c: any) => c.project_id === project.id)
+        .map((c: any) => {
+          const u = users?.find((user: any) => user.id === c.user_id);
+          return u ? { user_id: u.id, username: u.username, avatar_url: u.avatar_url, name: u.name } : null;
+        })
+        .filter(Boolean) || [];
+
       return {
         ...project,
-        user: user || { id: project.user_id, name: "Unknown User", email: null, avatar_url: null, username: null }
+        user: user || { id: project.user_id, name: "Unknown User", email: null, avatar_url: null, username: null },
+        rating: averageRating,
+        rating_count: ratingCount,
+        contributors: projectContributors
       };
     });
 
-    return res.json({ 
-      projects: projectsWithUsers, 
-      total: count || 0, 
-      page: pageNum, 
-      limit: limitNum, 
-      totalPages: Math.ceil((count || 0) / limitNum) 
+    return res.json({
+      projects: projectsWithDetails,
+      total: count || 0,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil((count || 0) / limitNum)
     });
   } catch (error) {
     console.error("Error in getProjects:", error);
@@ -85,7 +121,7 @@ export async function getProjects(req: Request, res: Response) {
 export async function getProject(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    
+
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select("*")
@@ -108,9 +144,45 @@ export async function getProject(req: Request, res: Response) {
       return res.status(500).json({ error: "Failed to fetch user data" });
     }
 
+    // Fetch Ratings
+    const { data: ratingsData } = await supabase
+      .from("project_ratings")
+      .select("rating, user_id")
+      .eq("project_id", id);
+
+    // Calculate ratings
+    const ratingCount = ratingsData?.length || 0;
+    const ratingSum = ratingsData?.reduce((sum, r) => sum + r.rating, 0) || 0;
+    const averageRating = ratingCount > 0 ? ratingSum / ratingCount : 0;
+
+    // Get current user's rating if applicable
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    const userRating = userId ? ratingsData?.find(r => r.user_id === userId)?.rating : undefined;
+
+    // Fetch Contributors
+    const { data: contributorsData } = await supabase
+      .from("project_contributors")
+      .select("user_id")
+      .eq("project_id", id);
+
+    // Fetch Contributor User Infos
+    let contributors: any[] = [];
+    if (contributorsData && contributorsData.length > 0) {
+      const contributorIds = contributorsData.map(c => c.user_id);
+      const { data: contribUsers } = await supabase
+        .from("users")
+        .select("id, name, username, avatar_url")
+        .in("id", contributorIds);
+      contributors = contribUsers || [];
+    }
+
     return res.json({
       ...project,
-      user: user || { id: project.user_id, name: "Unknown User", email: null, avatar_url: null, username: null }
+      user: user || { id: project.user_id, name: "Unknown User", email: null, avatar_url: null, username: null },
+      rating: averageRating,
+      rating_count: ratingCount,
+      user_rating: userRating,
+      contributors: contributors
     });
   } catch (error) {
     console.error("Error in getProject:", error);
@@ -166,7 +238,7 @@ export async function getUserProjects(req: Request, res: Response) {
 export async function createProject(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
-    
+
     if (!userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
@@ -179,7 +251,8 @@ export async function createProject(req: Request, res: Response) {
       github_repo,
       live_demo,
       cover_image,
-      project_details
+      project_details,
+      contributors // Array of usernames
     } = req.body;
 
     // Validate required fields
@@ -230,6 +303,31 @@ export async function createProject(req: Request, res: Response) {
       console.error("Error fetching user for project:", userError);
     }
 
+    // Handle Contributors
+    if (contributors && Array.isArray(contributors) && contributors.length > 0) {
+      // 1. Resolve usernames to IDs
+      const { data: foundUsers } = await supabase
+        .from("users")
+        .select("id, username")
+        .in("username", contributors);
+
+      if (foundUsers && foundUsers.length > 0) {
+        // 2. Insert into project_contributors
+        const contributorsToInsert = foundUsers.map(u => ({
+          project_id: project.id,
+          user_id: u.id
+        }));
+
+        const { error: contribError } = await supabase
+          .from("project_contributors")
+          .insert(contributorsToInsert);
+
+        if (contribError) {
+          console.error("Error inserting contributors:", contribError);
+        }
+      }
+    }
+
     return res.status(201).json({
       ...project,
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
@@ -244,7 +342,7 @@ export async function updateProject(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
-    
+
     if (!userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
@@ -331,7 +429,7 @@ export async function deleteProject(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
-    
+
     if (!userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
@@ -371,7 +469,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
-    
+
     if (!userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
@@ -396,7 +494,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
       .single();
 
     let isLiked;
-    
+
     if (existingLike) {
       // Remove like
       await supabase
@@ -445,7 +543,7 @@ export async function getProjectLikeStatus(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
-    
+
     if (!userId) {
       return res.json({ isLiked: false, likeCount: 0 });
     }
@@ -469,9 +567,9 @@ export async function getProjectLikeStatus(req: Request, res: Response) {
       .eq("user_id", userId)
       .single();
 
-    return res.json({ 
-      isLiked: !!existingLike, 
-      likeCount: project.like_count || 0 
+    return res.json({
+      isLiked: !!existingLike,
+      likeCount: project.like_count || 0
     });
   } catch (error) {
     console.error("Error in getProjectLikeStatus:", error);
@@ -483,7 +581,7 @@ export async function toggleProjectSave(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
-    
+
     if (!userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
@@ -508,7 +606,7 @@ export async function toggleProjectSave(req: Request, res: Response) {
       .single();
 
     let isSaved;
-    
+
     if (existingSave) {
       // Remove save
       await supabase
@@ -544,7 +642,7 @@ export async function getProjectSaveStatus(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
-    
+
     if (!userId) {
       return res.json({ isSaved: false });
     }
@@ -571,6 +669,56 @@ export async function getProjectSaveStatus(req: Request, res: Response) {
     return res.json({ isSaved: !!existingSave });
   } catch (error) {
     console.error("Error in getProjectSaveStatus:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function rateProject(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    const { id } = req.params;
+    const { rating } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Rating must be between 1 and 5" });
+    }
+
+    // Upsert rating
+    const { error: upsertError } = await supabase
+      .from("project_ratings")
+      .upsert({
+        project_id: parseInt(id),
+        user_id: userId,
+        rating: rating,
+        created_at: new Date().toISOString()
+      }, { onConflict: "project_id,user_id" });
+
+    if (upsertError) {
+      console.error("Error upserting rating:", upsertError);
+      return res.status(500).json({ error: "Failed to save rating" });
+    }
+
+    // Recalculate average
+    const { data: ratings, error: fetchError } = await supabase
+      .from("project_ratings")
+      .select("rating")
+      .eq("project_id", id);
+
+    let average = 0;
+    let total = 0;
+    if (ratings) {
+      total = ratings.length;
+      const sum = ratings.reduce((acc: number, r: any) => acc + r.rating, 0);
+      average = total > 0 ? sum / total : 0;
+    }
+
+    return res.json({ average, count: total, user_rating: rating });
+  } catch (error) {
+    console.error("Error in rateProject:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 }

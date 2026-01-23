@@ -8,7 +8,7 @@ import api from "../api/axios";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
+import {
   faHeart as faHeartSolid,
   faComment,
   faBookmark as faBookmarkSolid,
@@ -18,16 +18,18 @@ import {
   faExternalLinkAlt,
   faPlay,
   faPause,
-  faCheck
+  faCheck,
+  faStar
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 interface ProjectCardProps {
   project: Project;
   onUpdated?: () => void;
+  index?: number;
 }
 
-export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
+export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCardProps) {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -130,7 +132,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   return (
     <article
       onClick={handleClick}
-      className="fade-in"
+      className="fade-in slide-up"
       style={{
         backgroundColor: "#f5f5f5",
         padding: "0",
@@ -140,6 +142,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         border: "1px solid #e0e0e0",
         position: "relative",
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        animationDelay: `${index * 0.1}s`
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-2px)";
@@ -151,9 +154,9 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       }}
     >
       {project.cover_image && (
-        <div style={{ 
-          width: "100%", 
-          height: "200px", 
+        <div style={{
+          width: "100%",
+          height: "200px",
           overflow: "hidden",
           borderRadius: "20px 20px 0 0",
           position: "relative"
@@ -197,7 +200,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           marginBottom: "20px",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div 
+            <div
               onClick={handleUserClick}
               style={{
                 width: "40px",
@@ -233,43 +236,50 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               </div>
             </div>
           </div>
-
-          {isOwnProject && (
-            <div style={{ display: "flex", gap: "8px" }} onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={handleEditClick}
-                style={{
-                  padding: "8px 12px",
-                  border: "1px solid #007bff",
-                  backgroundColor: "#007bff",
-                  color: "#fff",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                <FontAwesomeIcon icon={faPen} />
-              </button>
-              <button
-                onClick={handleDeleteClick}
-                disabled={isDeleting}
-                style={{
-                  padding: "8px 12px",
-                  border: "1px solid #dc3545",
-                  backgroundColor: "#dc3545",
-                  color: "#fff",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  cursor: isDeleting ? "not-allowed" : "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+          {project.rating ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", backgroundColor: "#fff9c4", padding: "4px 8px", borderRadius: "12px", border: "1px solid #f9a825" }}>
+              <FontAwesomeIcon icon={faStar} style={{ color: "#f9a825", fontSize: "12px" }} />
+              <span style={{ fontSize: "12px", fontWeight: 800, color: "#f57f17" }}>{project.rating.toFixed(1)}</span>
+              <span style={{ fontSize: "10px", color: "#f9a825" }}>({project.rating_count})</span>
             </div>
-          )}
+          ) : null}
         </div>
+
+        {isOwnProject && (
+          <div style={{ display: "flex", gap: "8px" }} onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={handleEditClick}
+              style={{
+                padding: "8px 12px",
+                border: "1px solid #007bff",
+                backgroundColor: "#007bff",
+                color: "#fff",
+                borderRadius: "6px",
+                fontSize: "14px",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              <FontAwesomeIcon icon={faPen} />
+            </button>
+            <button
+              onClick={handleDeleteClick}
+              disabled={isDeleting}
+              style={{
+                padding: "8px 12px",
+                border: "1px solid #dc3545",
+                backgroundColor: "#dc3545",
+                color: "#fff",
+                borderRadius: "6px",
+                fontSize: "14px",
+                cursor: isDeleting ? "not-allowed" : "pointer",
+                fontWeight: 600,
+              }}
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </div>
+        )}
 
         <h3 style={{
           fontSize: "24px",
@@ -319,71 +329,110 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               </span>
             ))}
           </div>
-        )}
+      )}
+
+
+      {project.contributors && project.contributors.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-tertiary)" }}>CONTRIBUTORS:</span>
+              <div style={{ display: "flex", marginLeft: "4px" }}>
+                {project.contributors.map((contrib, idx) => (
+                  <div
+                    key={contrib.user_id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/user/${contrib.user_id}`);
+                    }}
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "50%",
+                      border: "2px solid #fff",
+                      overflow: "hidden",
+                      marginLeft: idx > 0 ? "-8px" : "0",
+                      cursor: "pointer",
+                      zIndex: 10 - idx
+                    }}
+                    title={contrib.username}
+                  >
+                    <img
+                      src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=000000&color=ffffff&bold=true`}
+                      alt={contrib.username}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
         <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
-          {project.github_repo && (
-            <a
-              href={project.github_repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "8px 16px",
-                backgroundColor: "#24292e",
-                color: "#fff",
-                borderRadius: "6px",
-                textDecoration: "none",
-                fontSize: "14px",
-                fontWeight: 600,
-                transition: "background-color 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#0366d6";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#24292e";
-              }}
-            >
-              <FontAwesomeIcon icon={faGithub} />
-              GitHub
-            </a>
-          )}
-          {project.live_demo && (
-            <a
-              href={project.live_demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "8px 16px",
-                backgroundColor: "#28a745",
-                color: "#fff",
-                borderRadius: "6px",
-                textDecoration: "none",
-                fontSize: "14px",
-                fontWeight: 600,
-                transition: "background-color 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#218838";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#28a745";
-              }}
-            >
-              <FontAwesomeIcon icon={faExternalLinkAlt} />
-              Live Demo
-            </a>
-          )}
-        </div>
-      </div>
+          {
+            project.github_repo && (
+              <a
+                href={project.github_repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "8px 16px",
+                  backgroundColor: "#24292e",
+                  color: "#fff",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  transition: "background-color 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#0366d6";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#24292e";
+                }}
+              >
+                <FontAwesomeIcon icon={faGithub} />
+                GitHub
+              </a>
+            )
+          }
+          {
+            project.live_demo && (
+              <a
+                href={project.live_demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "8px 16px",
+                  backgroundColor: "#28a745",
+                  color: "#fff",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  transition: "background-color 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#218838";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#28a745";
+                }}
+              >
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                Live Demo
+              </a>
+            )
+          }
+        </div >
+      </div >
 
       <div
         style={{
@@ -463,17 +512,19 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         </button>
       </div>
 
-      {showEditModal && (
-        <ProjectModal
-          isOpen={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          onUpdated={() => {
-            setShowEditModal(false);
-            if (onUpdated) onUpdated();
-          }}
-          project={project}
-        />
-      )}
-    </article>
+      {
+        showEditModal && (
+          <ProjectModal
+            isOpen={showEditModal}
+            onClose={() => setShowEditModal(false)}
+            onUpdated={() => {
+              setShowEditModal(false);
+              if (onUpdated) onUpdated();
+            }}
+            project={project}
+          />
+        )
+      }
+    </article >
   );
 }

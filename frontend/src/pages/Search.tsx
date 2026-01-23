@@ -157,20 +157,20 @@ export default function Search() {
                   <div
                     key={u.id}
                     onClick={() => navigate(`/user/${u.id}`)}
-                    style={{ 
-                      display: "flex", 
-                      alignItems: "center", 
-                      gap: "16px", 
-                      padding: "20px", 
-                      border: "1px solid var(--border-color)", 
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      padding: "20px",
+                      border: "1px solid var(--border-color)",
                       cursor: "pointer",
                       backgroundColor: "var(--bg-card)"
                     }}
                   >
-                    <img 
-                      src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=000000&color=ffffff&bold=true`} 
-                      alt="" 
-                      style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)" }} 
+                    <img
+                      src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=000000&color=ffffff&bold=true`}
+                      alt=""
+                      style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)" }}
                     />
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontWeight: 800, fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{u.name}</div>
@@ -189,7 +189,7 @@ export default function Search() {
                 <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS FOUND.</div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-                  {posts.map((p) => <PostCard key={p.id} post={p as Post} onUpdated={() => setPosts(prev => prev.filter(x => x.id !== p.id))} />)}
+                  {posts.map((p, i) => <PostCard key={p.id} post={p as Post} index={i} onUpdated={() => setPosts(prev => prev.filter(x => x.id !== p.id))} />)}
                 </div>
               )}
             </section>
@@ -202,7 +202,7 @@ export default function Search() {
                 <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PROJECTS FOUND.</div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-                  {projects.map((p) => <ProjectCard key={p.id} project={p as Project} onUpdated={() => setProjects(prev => prev.filter(x => x.id !== p.id))} />)}
+                  {projects.map((p, i) => <ProjectCard key={p.id} project={p as Project} index={i} onUpdated={() => setProjects(prev => prev.filter(x => x.id !== p.id))} />)}
                 </div>
               )}
             </section>

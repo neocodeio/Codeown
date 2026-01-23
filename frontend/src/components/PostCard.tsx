@@ -11,21 +11,22 @@ import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 // import { useWindowSize } from "../hooks/useWindowSize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
+import {
   faHeart as faHeartSolid,
   faComment,
   faBookmark as faBookmarkSolid,
   faBookmark as faBookmarkRegular,
   faTrash,
-  faPen, 
+  faPen,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface PostCardProps {
   post: Post;
   onUpdated?: () => void;
+  index?: number;
 }
 
-export default function PostCard({ post, onUpdated }: PostCardProps) {
+export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -33,8 +34,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(post.id);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id);
-//   const { width } = useWindowSize();
-//   const isMobile = width < 768;
+  //   const { width } = useWindowSize();
+  //   const isMobile = width < 768;
 
   const isOwnPost = currentUser?.id === post.user_id;
 
@@ -67,23 +68,23 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
     navigate(`/post/${post.id}#comments`);
   };
 
-//   const handleShare = async (e: React.MouseEvent) => {
-//     e.stopPropagation();
-//     if (navigator.share) {
-//       try {
-//         await navigator.share({
-//           title: `Post by ${post.user?.name || post.user?.username || 'User'}`,
-//           text: post.content?.substring(0, 100) || '',
-//           url: `${window.location.origin}/post/${post.id}`,
-//         });
-//       } catch (error) {
-//         console.log('Error sharing:', error);
-//       }
-//     } else {
-//       // Fallback: copy to clipboard
-//       navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
-//     }
-//   };
+  //   const handleShare = async (e: React.MouseEvent) => {
+  //     e.stopPropagation();
+  //     if (navigator.share) {
+  //       try {
+  //         await navigator.share({
+  //           title: `Post by ${post.user?.name || post.user?.username || 'User'}`,
+  //           text: post.content?.substring(0, 100) || '',
+  //           url: `${window.location.origin}/post/${post.id}`,
+  //         });
+  //       } catch (error) {
+  //         console.log('Error sharing:', error);
+  //       }
+  //     } else {
+  //       // Fallback: copy to clipboard
+  //       navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+  //     }
+  //   };
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -113,14 +114,14 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
     navigate(`/post/${post.id}`);
   };
 
-  const avatarUrl = post.user?.avatar_url || 
+  const avatarUrl = post.user?.avatar_url ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user?.name || post.user?.username || "User")}&background=000&color=ffffff&size=64`;
   const userName = post.user?.name || post.user?.username || "User";
 
   return (
     <>
-      <div 
-        className="card"
+      <div
+        className="card fade-in slide-up"
         style={{
           cursor: "pointer",
           transition: "all 0.3s ease",
@@ -130,6 +131,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           padding: "10px",
           borderRadius: "25px",
           overflow: "hidden",
+          animationDelay: `${index * 0.9}s`
         }}
         onClick={handleCardClick}
       >
@@ -138,10 +140,10 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "20px",
-          borderBottom: "1px solid var(--border-light)",
+          padding: "15px",
+          borderBottom: "2px solid #e0e0e0",
         }}>
-          <div 
+          <div
             style={{
               display: "flex",
               alignItems: "center",
@@ -191,7 +193,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           {isOwnPost && (
             <div style={{
               display: "flex",
-              gap: "8px",
+              gap: "0",
             }}>
               <button
                 onClick={handleEdit}
@@ -216,7 +218,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                   e.currentTarget.style.color = "var(--text-secondary)";
                 }}
               >
-                <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px" }} />
+                <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px", backgroundColor: "#fff", borderRadius: "8px", padding: "8px", color: "#000", border: "2px solid #e0e0e0" }} />
               </button>
               <button
                 onClick={handleDelete}
@@ -244,7 +246,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                   e.currentTarget.style.color = isDeleting ? "var(--text-tertiary)" : "var(--text-secondary)";
                 }}
               >
-                <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px" }} />
+                <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px", backgroundColor: "red", borderRadius: "8px", padding: "8px", color: "#fff", border: "2px solid #e0e0e0", }} />
               </button>
             </div>
           )}
@@ -276,6 +278,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "16px 20px",
+          backgroundColor: "#e0e0e0",
+          borderRadius: "15px",
           borderTop: "1px solid var(--border-light)",
         }}>
           <div style={{
@@ -291,11 +295,11 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 alignItems: "center",
                 gap: "8px",
                 padding: "8px 12px",
-                background: "none",
+                background: "red",
                 border: "none",
-                color: isLiked ? "var(--error)" : "var(--text-secondary)",
+                color: isLiked ? "var(--error)" : "#fff",
                 cursor: likeLoading ? "not-allowed" : "pointer",
-                borderRadius: "var(--radius-sm)",
+                borderRadius: "10px",
                 fontSize: "14px",
                 fontWeight: "500",
                 transition: "all 0.2s ease",
@@ -311,9 +315,9 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 e.currentTarget.style.color = isLiked ? "var(--error)" : "var(--text-secondary)";
               }}
             >
-              <FontAwesomeIcon 
-                icon={faHeartSolid} 
-                style={{ 
+              <FontAwesomeIcon
+                icon={faHeartSolid}
+                style={{
                   fontSize: "16px",
                   transition: "transform 0.2s ease",
                 }}
@@ -379,9 +383,9 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                 e.currentTarget.style.color = isSaved ? "var(--accent)" : "var(--text-secondary)";
               }}
             >
-              <FontAwesomeIcon 
-                icon={isSaved ? faBookmarkSolid : faBookmarkRegular} 
-                style={{ fontSize: "16px" }} 
+              <FontAwesomeIcon
+                icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
+                style={{ fontSize: "16px" }}
               />
             </button>
           </div>
@@ -392,9 +396,9 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         post={post}
-        onUpdated={onUpdated || (() => {})}
+        onUpdated={onUpdated || (() => { })}
       />
     </>
   );
 }
-    
+

@@ -83,11 +83,11 @@ export default function FeedbackButton() {
     >
       <div
         style={{
-          width: "100%",
-          maxWidth: "420px",
+          width: "95%",
+          maxWidth: "400px",
           maxHeight: "90vh",
           overflow: "auto",
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#e0e0e0",
           borderRadius: "25px",
           boxShadow: "var(--shadow-hover)",
           border: "1px solid var(--border-color)",
@@ -96,7 +96,7 @@ export default function FeedbackButton() {
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#000" }}>Feedback</h2>
+          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#000" }}>We value your feedback!</h2>
           <button
             type="button"
             onClick={handleClose}

@@ -9,7 +9,8 @@ import {
   toggleProjectLike,
   getProjectLikeStatus,
   toggleProjectSave,
-  getProjectSaveStatus
+  getProjectSaveStatus,
+  rateProject
 } from "../controllers/projects.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
@@ -31,5 +32,8 @@ router.get("/:id/like", requireAuth, getProjectLikeStatus);
 // Save routes
 router.post("/:id/save", requireAuth, toggleProjectSave);
 router.get("/:id/save", requireAuth, getProjectSaveStatus);
+
+// Rating routes
+router.post("/:id/rate", requireAuth, rateProject);
 
 export default router;

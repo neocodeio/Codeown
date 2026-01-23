@@ -20,6 +20,15 @@ export interface Project {
     avatar_url: string | null;
     email: string | null;
   };
+  rating?: number;
+  rating_count?: number;
+  user_rating?: number;
+  contributors?: {
+    user_id: string;
+    username: string;
+    avatar_url: string | null;
+    name: string;
+  }[];
 }
 
 export interface ProjectFormData {
@@ -31,6 +40,7 @@ export interface ProjectFormData {
   live_demo?: string;
   cover_image?: string;
   project_details: string;
+  contributors?: string[]; // Array of usernames
 }
 
 export interface ProjectReaction {

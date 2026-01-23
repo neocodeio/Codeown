@@ -55,7 +55,7 @@ export default function UserProfile() {
         const userRes = await api.get(`/users/${userId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        
+
         if (userRes.data) {
           setUser(userRes.data);
         } else {
@@ -99,7 +99,7 @@ export default function UserProfile() {
       });
 
       setIsFollowing(res.data.following);
-      
+
       if (user) {
         setUser({
           ...user,
@@ -171,17 +171,17 @@ export default function UserProfile() {
             )}
           </header>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "1px solid var(--border-color)", textAlign: "center" }}>
-            <div 
-              onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} 
-              style={{ padding: "24px", borderRight: "1px solid var(--border-color)", cursor: "pointer" }}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "2px solid #e0e0e0", textAlign: "center", backgroundColor: "#f9f9f9", borderRadius: "25px" }}>
+            <div
+              onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
+              style={{ padding: "24px", borderRight: "2px solid #e5e7eb", cursor: "pointer" }}
             >
               <div style={{ fontSize: "24px", fontWeight: 800 }}>{user.follower_count}</div>
               <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWERS</div>
             </div>
-            <div 
-              onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} 
-              style={{ padding: "24px", borderRight: "1px solid var(--border-color)", cursor: "pointer" }}
+            <div
+              onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
+              style={{ padding: "24px", borderRight: "2px solid #e5e7eb", cursor: "pointer" }}
             >
               <div style={{ fontSize: "24px", fontWeight: 800 }}>{user.following_count}</div>
               <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWING</div>
@@ -236,9 +236,9 @@ export default function UserProfile() {
               ) : posts.length === 0 ? (
                 <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS YET.</div>
               ) : (
-                posts.map(p => (
+                posts.map((p, i) => (
                   <div key={p.id} style={{ position: "relative" }}>
-                    <PostCard post={p} onUpdated={fetchUserPosts} />
+                    <PostCard post={p} index={i} onUpdated={fetchUserPosts} />
                     {user.pinned_post_id === p.id && (
                       <div style={{ position: "absolute", top: "24px", right: "24px", color: "var(--accent)" }}>
                         <FontAwesomeIcon icon={faThumbtack} />
@@ -257,11 +257,12 @@ export default function UserProfile() {
               ) : projects.length === 0 ? (
                 <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PROJECTS YET.</div>
               ) : (
-                projects.map(project => (
-                  <ProjectCard 
-                    key={project.id} 
-                    project={project} 
-                    onUpdated={fetchUserProjects} 
+                projects.map((project, i) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    index={i}
+                    onUpdated={fetchUserProjects}
                   />
                 ))
               )}

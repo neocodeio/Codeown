@@ -17,7 +17,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [techInput, setTechInput] = useState("");
-  
+
   const [formData, setFormData] = useState<ProjectFormData>({
     title: "",
     description: "",
@@ -27,7 +27,9 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
     live_demo: "",
     cover_image: "",
     project_details: "",
+    contributors: [],
   });
+  const [contributorInput, setContributorInput] = useState("");
 
   useEffect(() => {
     if (project) {
@@ -51,9 +53,11 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         live_demo: "",
         cover_image: "",
         project_details: "",
+        contributors: [],
       });
     }
     setTechInput("");
+    setContributorInput("");
     setError("");
   }, [project, isOpen]);
 
@@ -79,6 +83,23 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
     }));
   };
 
+  const handleAddContributor = () => {
+    if (contributorInput.trim() && !formData.contributors?.includes(contributorInput.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        contributors: [...(prev.contributors || []), contributorInput.trim()]
+      }));
+      setContributorInput("");
+    }
+  };
+
+  const handleRemoveContributor = (contributorToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      contributors: prev.contributors?.filter(c => c !== contributorToRemove)
+    }));
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -98,7 +119,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
           ...(token && { Authorization: `Bearer ${token}` }),
         },
       });
-      
+
       setFormData(prev => ({
         ...prev,
         cover_image: response.data.url
@@ -144,7 +165,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="modal-overlay"
       style={{
         position: "fixed",
@@ -161,7 +182,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
       }}
       onClick={onClose}
     >
-      <div 
+      <div
         className="modal-content"
         style={{
           backgroundColor: "#fff",
@@ -308,6 +329,77 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                       border: "none",
                       cursor: "pointer",
                       color: "#666",
+                      fontSize: "16px",
+                    }}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
+
+          <div style={{ marginBottom: "20px" }}>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+              Contributors (Usernames)
+            </label>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+              <input
+                type="text"
+                value={contributorInput}
+                onChange={(e) => setContributorInput(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddContributor())}
+                placeholder="Enter username and press Add"
+                style={{
+                  flex: 1,
+                  padding: "12px",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleAddContributor}
+                style={{
+                  padding: "12px 20px",
+                  backgroundColor: "#000",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Add
+              </button>
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {(formData.contributors || []).map((contributor, index) => (
+                <span
+                  key={index}
+                  style={{
+                    backgroundColor: "#e0f2fe",
+                    color: "#0369a1",
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    fontSize: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontWeight: 500
+                  }}
+                >
+                  @{contributor}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveContributor(contributor)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "#0369a1",
                       fontSize: "16px",
                     }}
                   >
@@ -467,7 +559,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
