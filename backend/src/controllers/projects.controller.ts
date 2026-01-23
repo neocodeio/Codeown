@@ -26,16 +26,31 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function getProjects(req: Request, res: Response) {
   try {
-    const { page = "1", limit = "20" } = req.query;
+    const { page = "1", limit = "20", filter = "all" } = req.query;
     const pageNum = parseInt(page as string, 10) || 1;
     const limitNum = parseInt(limit as string, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
 
-    const { data: projects, error: projectsError, count } = await supabase
+    let projectsQuery = supabase
       .from("projects")
       .select("*", { count: "exact" })
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limitNum - 1);
+      .order("created_at", { ascending: false });
+
+    if (String(filter).toLowerCase() === "following") {
+      const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: "Sign in to view the Following feed." });
+      }
+      const { data: followingRows } = await supabase.from("follows").select("following_id").eq("follower_id", userId);
+      const followingIds = (followingRows || []).map((r: any) => r.following_id);
+
+      if (followingIds.length === 0) {
+        return res.json({ projects: [], total: 0, page: pageNum, limit: limitNum, totalPages: 0 });
+      }
+      projectsQuery = projectsQuery.in("user_id", followingIds);
+    }
+
+    const { data: projects, error: projectsError, count } = await projectsQuery.range(offset, offset + limitNum - 1);
 
     if (projectsError) {
       console.error("Supabase error in getProjects:", projectsError);
