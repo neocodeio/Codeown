@@ -124,7 +124,7 @@ export default function Profile() {
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
       <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-        <section className="fade-in slide-up" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "10px", backgroundColor: "#f5f5f5", padding: "30px", borderRadius: "30px" }}>
+        <section className="fade-in slide-up" style={{ marginBottom: "60px", border: "2px solid #e0e0e0", paddingBottom: "10px", backgroundColor: "#f5f5f5", padding: "30px", borderRadius: "30px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
             <div style={{ width: "160px", height: "160px", border: "1px solid #ddd", overflow: "hidden", borderRadius: "50%" }}>
               <img

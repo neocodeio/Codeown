@@ -58,6 +58,10 @@ export default function Navbar() {
             fontSize: "25px",
             textDecoration: "none",
             fontWeight: 600,
+            cursor: "pointer",
+            border: "2px solid #e0e0e0",
+            borderRadius: "12px",
+            padding: "8px 12px",
             color: "#FFF",
             letterSpacing: "-0.05em",
           }}>

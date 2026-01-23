@@ -117,7 +117,7 @@ export default function Search() {
       <header style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "40px" }}>
         <h1 style={{ fontSize: "48px", marginBottom: "20px" }}>Search</h1>
         <p style={{ fontSize: "18px", color: "var(--text-secondary)" }}>
-          RESULTS FOR <span style={{ fontWeight: 800, color: "var(--text-primary)" }}>"{q.toUpperCase()}"</span>
+          RESULTS FOR <span style={{ fontWeight: 800, color: "var(--text-primary)" }}>"{q}"</span>
         </p>
       </header>
 
@@ -131,7 +131,6 @@ export default function Search() {
               padding: "12px 0",
               fontSize: "13px",
               fontWeight: 800,
-              textTransform: "uppercase",
               letterSpacing: "0.1em",
               color: activeTab === tab ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === tab ? "2px solid var(--text-primary)" : "2px solid transparent",
@@ -173,7 +172,7 @@ export default function Search() {
                       style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)" }}
                     />
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 800, fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{u.name}</div>
+                      <div style={{ fontWeight: 800, fontSize: "14px", }}>{u.name}</div>
                       {u.username && <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700 }}>@{u.username}</div>}
                     </div>
                   </div>
