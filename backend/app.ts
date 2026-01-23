@@ -17,7 +17,7 @@ import projectCommentsRoutes from "./src/routes/projectComments.routes.js";
 const app = express();
 
 app.use(cors({
-  origin: ["https://codeown.vercel.app"],
+  origin: ["http://localhost:5173"],
   credentials: true
 }));
 
