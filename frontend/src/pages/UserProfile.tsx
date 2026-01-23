@@ -127,7 +127,7 @@ export default function UserProfile() {
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <section className="fade-in" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "60px" }}>
+        <section className="fade-in" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "60px", backgroundColor: "#f5f5f5", padding: "30px", borderRadius: "25px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
             <div style={{ width: "160px", height: "160px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
               <img
@@ -145,10 +145,12 @@ export default function UserProfile() {
                   display: "flex",
                   alignItems: "center",
                   gap: "8px",
+                  border: "none",
+                  background: "transparent",
                 }}
               >
                 <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
-                <span>{isFollowing ? "FOLLOWING" : "FOLLOW"}</span>
+                <span style={{ fontWeight: 600, backgroundColor: isFollowing ? "#2563eb" : "#000", color: "white", padding: "8px 16px", borderRadius: "25px", border: "none" }}>{isFollowing ? "FOLLOWING" : "FOLLOW"}</span>
               </button>
             )}
           </div>
