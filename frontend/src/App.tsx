@@ -5,6 +5,7 @@ import Feed from "./pages/Feed";
 import Profile from "./pages/Profile";
 import UserProfile from "./pages/UserProfile";
 import PostDetail from "./pages/PostDetail";
+import ProjectDetail from "./pages/ProjectDetail";
 import Search from "./pages/Search";
 import SignInPage from "./pages/SignIn";
 import SignUpPage from "./pages/SignUp";
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/" element={<Feed />} />
           <Route path="/search" element={<Search />} />
           <Route path="/post/:id" element={<PostDetail />} />
+          <Route path="/project/:id" element={<ProjectDetail />} />
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/sign-in/*" element={<SignInPage />} />
           <Route path="/sign-up/*" element={<SignUpPage />} />

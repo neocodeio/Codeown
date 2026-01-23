@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import PostCard from "../components/PostCard";
+import ProjectCard from "../components/ProjectCard";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import type { Post } from "../hooks/usePosts";
+import type { Project } from "../types/project";
 
 interface SearchUser {
   id: string;
@@ -23,19 +25,32 @@ interface SearchPost {
   user?: { name: string; email: string | null; avatar_url: string | null; username?: string | null };
 }
 
+interface SearchProject {
+  id: number;
+  title: string;
+  description: string;
+  user_id: string;
+  created_at: string;
+  technologies_used: string[];
+  status: string;
+  user?: { name: string; email: string | null; avatar_url: string | null; username?: string | null };
+}
+
 export default function Search() {
   const [searchParams] = useSearchParams();
   const q = searchParams.get("q") || "";
   const navigate = useNavigate();
   const [users, setUsers] = useState<SearchUser[]>([]);
   const [posts, setPosts] = useState<SearchPost[]>([]);
+  const [projects, setProjects] = useState<SearchProject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"all" | "people" | "posts">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "people" | "posts" | "projects">("all");
 
   useEffect(() => {
     if (!q || q.length < 2) {
       setUsers([]);
       setPosts([]);
+      setProjects([]);
       setLoading(false);
       return;
     }
@@ -50,34 +65,43 @@ export default function Search() {
         const cleanQ = isTag || isMention ? q.slice(1) : q;
 
         if (isMention) {
-          const [uRes, pRes] = await Promise.all([
+          const [uRes, pRes, prRes] = await Promise.all([
             api.get(`/search/users?q=${encodeURIComponent(cleanQ)}`),
             api.get(`/search/posts?q=${encodeURIComponent(q)}&limit=20`),
+            api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20`),
           ]);
           if (!cancelled) {
             setUsers(Array.isArray(uRes.data) ? uRes.data : []);
             setPosts(pRes.data?.posts || []);
+            setProjects(prRes.data?.projects || []);
           }
         } else if (isTag) {
-          const pRes = await api.get(`/search/posts?q=${encodeURIComponent(q)}&limit=20`);
+          const [pRes, prRes] = await Promise.all([
+            api.get(`/search/posts?q=${encodeURIComponent(q)}&limit=20`),
+            api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20`),
+          ]);
           if (!cancelled) {
             setUsers([]);
             setPosts(pRes.data?.posts || []);
+            setProjects(prRes.data?.projects || []);
           }
         } else {
-          const [uRes, pRes] = await Promise.all([
+          const [uRes, pRes, prRes] = await Promise.all([
             api.get(`/search/users?q=${encodeURIComponent(q)}`),
             api.get(`/search/posts?q=${encodeURIComponent(q)}&limit=20`),
+            api.get(`/search/projects?q=${encodeURIComponent(q)}&limit=20`),
           ]);
           if (!cancelled) {
             setUsers(Array.isArray(uRes.data) ? uRes.data : []);
             setPosts(pRes.data?.posts || []);
+            setProjects(prRes.data?.projects || []);
           }
         }
       } catch (e) {
         if (!cancelled) {
           setUsers([]);
           setPosts([]);
+          setProjects([]);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -98,7 +122,7 @@ export default function Search() {
       </header>
 
       <nav style={{ display: "flex", gap: "40px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)" }}>
-        {["all", "people", "posts"].map((tab) => (
+        {["all", "people", "posts", "projects"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
@@ -171,8 +195,27 @@ export default function Search() {
             </section>
           )}
 
+          {(activeTab === "all" || activeTab === "projects") && (
+            <section>
+              <h2 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", marginBottom: "24px" }}>PROJECTS</h2>
+              {projects.length === 0 ? (
+                <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PROJECTS FOUND.</div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+                  {projects.map((p) => <ProjectCard key={p.id} project={p as Project} onUpdated={() => setProjects(prev => prev.filter(x => x.id !== p.id))} />)}
+                </div>
+              )}
+            </section>
+          )}
+
           {activeTab === "people" && users.length === 0 && (
             <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PEOPLE FOUND.</div>
+          )}
+          {activeTab === "posts" && posts.length === 0 && (
+            <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS FOUND.</div>
+          )}
+          {activeTab === "projects" && projects.length === 0 && (
+            <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PROJECTS FOUND.</div>
           )}
         </div>
       )}

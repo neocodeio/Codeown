@@ -11,6 +11,8 @@ import searchRoutes from "./src/routes/search.routes.js";
 import savedRoutes from "./src/routes/saved.routes.js";
 import notificationsRoutes from "./src/routes/notifications.routes.js";
 import feedbackRoutes from "./src/routes/feedback.routes.js";
+import projectsRoutes from "./src/routes/projects.routes.js";
+import projectCommentsRoutes from "./src/routes/projectComments.routes.js";
 
 const app = express();
 
@@ -31,5 +33,7 @@ app.use("/search", searchRoutes);
 app.use("/saved", savedRoutes);
 app.use("/notifications", notificationsRoutes);
 app.use("/feedback", feedbackRoutes);
+app.use("/projects", projectsRoutes);
+app.use("/", projectCommentsRoutes);
 
 export default app;

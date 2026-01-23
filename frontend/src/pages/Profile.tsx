@@ -4,12 +4,15 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
+import { useUserProjects } from "../hooks/useUserProjects";
 import PostCard from "../components/PostCard";
+import ProjectCard from "../components/ProjectCard";
 import EditProfileModal from "../components/EditProfileModal";
+import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt, faThumbtack } from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt, faThumbtack, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 interface UserProfile {
   id: string;
@@ -33,9 +36,11 @@ export default function Profile() {
   const userId = user?.id || null;
   const { posts, loading: postsLoading, fetchUserPosts } = useUserPosts(userId);
   const { savedPosts, loading: savedPostsLoading, fetchSavedPosts } = useSavedPosts();
+  const { projects, loading: projectsLoading, fetchUserProjects } = useUserProjects(userId);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"posts" | "saved" | "projects">("posts");
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
 
@@ -74,6 +79,7 @@ export default function Profile() {
         setUserProfile(res.data);
         fetchUserPosts();
         fetchSavedPosts();
+        fetchUserProjects();
       } catch (error) {
         console.error("Error refreshing profile:", error);
       }
@@ -108,12 +114,27 @@ export default function Profile() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
             <div style={{ width: "160px", height: "160px", border: "1px solid #ddd", overflow: "hidden", borderRadius: "50%" }}>
               <img
-                src={userProfile?.avatar_url || user.imageUrl || `https://ui-avatars.com/api/?name=${user.fullName}&background=000000&color=fff&bold=true`}
+                src={userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${user?.fullName}&background=000000&color=fff&bold=true`}
                 alt="Avatar"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
             <div style={{ display: "flex", gap: "16px" }}>
+              <button 
+                onClick={() => setIsProjectModalOpen(true)} 
+                className="primary" 
+                style={{ 
+                  borderRadius: "9px", 
+                  backgroundColor: "#007bff", 
+                  color: "#fff", 
+                  fontSize: "15px", 
+                  border: "none", 
+                  fontWeight: "600" 
+                }}
+              >
+                <FontAwesomeIcon icon={faPlus} style={{ marginRight: "8px" }} />
+                Add Project
+              </button>
               <button onClick={() => setIsEditModalOpen(true)} className="primary" style={{ borderRadius: "9px", backgroundColor: "#000", color: "#fff", fontSize: "15px", border: "none", fontWeight: "600" }}>Edit Profile</button>
               <button onClick={handleSignOut} style={{ border: "1px solid red", padding: "8px 16px", backgroundColor: "red", color: "#fff", borderRadius: "9px", fontSize: "15px" }}>
                 <FontAwesomeIcon icon={faSignOutAlt} />
@@ -122,9 +143,9 @@ export default function Profile() {
           </div>
 
           <header style={{ marginBottom: "40px" }}>
-            <h1 style={{ fontSize: "48px", marginBottom: "8px" }}>{userProfile?.name || user.fullName}</h1>
+            <h1 style={{ fontSize: "48px", marginBottom: "8px" }}>{userProfile?.name || user?.fullName}</h1>
             <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, marginBottom: "24px" }}>
-              @{userProfile?.username || user.username}
+              @{userProfile?.username || user?.username}
             </p>
             {userProfile?.bio && (
               <p style={{ fontSize: "18px", lineHeight: "1.6", maxWidth: "600px", color: "var(--text-secondary)" }}>
@@ -171,6 +192,20 @@ export default function Profile() {
             POSTS ({posts.length})
           </button>
           <button
+            onClick={() => setActiveTab("projects")}
+            style={{ 
+              border: "none", 
+              padding: "12px 6px", 
+              fontSize: "13px", 
+              fontWeight: 800, 
+              color: activeTab === "projects" ? "var(--text-primary)" : "var(--text-tertiary)",
+              borderBottom: activeTab === "projects" ? "2px solid var(--text-primary)" : "2px solid transparent",
+              borderRadius: "15px"
+            }}
+          >
+            PROJECTS ({projects.length})
+          </button>
+          <button
             onClick={() => setActiveTab("saved")}
             style={{ 
               border: "none", 
@@ -212,6 +247,31 @@ export default function Profile() {
                 </div>
               ))
             )
+          ) : activeTab === "projects" ? (
+            projects.length === 0 ? (
+              <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700, textAlign: "center" }}>
+                NO PROJECTS YET.
+                <br />
+                <button
+                  onClick={() => setIsProjectModalOpen(true)}
+                  style={{
+                    marginTop: "20px",
+                    padding: "12px 24px",
+                    backgroundColor: "#007bff",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  <FontAwesomeIcon icon={faPlus} style={{ marginRight: "8px" }} />
+                  Create Your First Project
+                </button>
+              </div>
+            ) : (
+              projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
+            )
           ) : (
             savedPosts.length === 0 ? (
               <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO SAVED POSTS.</div>
@@ -225,6 +285,11 @@ export default function Profile() {
       {userProfile && (
         <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onUpdated={handleProfileUpdated} currentUser={userProfile} />
       )}
+      <ProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+        onUpdated={fetchUserProjects}
+      />
       {userId && (
         <FollowersModal isOpen={followersModalOpen} onClose={() => setFollowersModalOpen(false)} userId={userId} type={followersModalType} title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"} />
       )}
