@@ -16,7 +16,10 @@ import projectCommentsRoutes from "./src/routes/projectComments.routes.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["https://codeown.vercel.app"],
+  credentials: true
+}));
 
 // Webhooks need raw body for signature verification - must be before express.json()
 app.use("/webhooks", express.raw({ type: "application/json" }), webhooksRoutes);
