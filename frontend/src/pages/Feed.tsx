@@ -137,7 +137,7 @@ export default function Feed() {
                 fontWeight: 800,
                 backgroundColor: feedFilter === "all" ? "#000" : "transparent",
                 color: feedFilter === "all" ? "#fff" : "var(--text-secondary)",
-                borderRadius: "20px",
+                borderRadius: "10px",
                 cursor: "pointer",
                 transition: "all 0.2s ease"
               }}
@@ -155,7 +155,7 @@ export default function Feed() {
                   fontWeight: 800,
                   backgroundColor: feedFilter === "following" ? "#000" : "transparent",
                   color: feedFilter === "following" ? "#fff" : "var(--text-secondary)",
-                  borderRadius: "20px",
+                  borderRadius: "10px",
                   cursor: "pointer",
                   transition: "all 0.2s ease"
                 }}
