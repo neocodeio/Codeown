@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { useTheme } from "./hooks/useTheme";
+// import { useTheme } from "./hooks/useTheme";
 import Navbar from "./components/Navbar";
 import Feed from "./pages/Feed";
 import Profile from "./pages/Profile";
@@ -13,11 +13,10 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
 
 export default function App() {
-  const { toggleTheme } = useTheme();
 
   return (
     <div style={{ minHeight: "100vh", transition: "background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1)" }}>
-      <Navbar onToggleTheme={toggleTheme} />
+      <Navbar />
       <ErrorBoundary>
         <Routes>
           <Route path="/" element={<Feed />} />

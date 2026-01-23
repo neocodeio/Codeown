@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearch } from "../hooks/useSearch";
-import { useWindowSize } from "../hooks/useWindowSize";
+// import { useWindowSize } from "../hooks/useWindowSize";
 
 export default function SearchBar() {
-  const { query, setQuery, users, posts, loading, showResults, setShowResults, clearSearch } = useSearch();
+  const { query, setQuery, users, posts, showResults, setShowResults, clearSearch } = useSearch();
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
+  // const { width } = useWindowSize();
+  // const isMobile = width < 768;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

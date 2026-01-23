@@ -31,7 +31,7 @@ export default function PostDetail() {
   const { isSignedIn } = useClerkUser();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<CommentWithMeta[]>([]);
-  const [commentSort, setCommentSort] = useState<"newest" | "top">("newest");
+  const [commentSort] = useState<"newest" | "top">("newest");
   const [loading, setLoading] = useState(true);
   const [commentContent, setCommentContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

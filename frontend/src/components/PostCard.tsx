@@ -9,7 +9,7 @@ import ImageSlider from "./ImageSlider";
 import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
-import { useWindowSize } from "../hooks/useWindowSize";
+// import { useWindowSize } from "../hooks/useWindowSize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faHeart as faHeartSolid,
@@ -18,7 +18,6 @@ import {
   faBookmark as faBookmarkRegular,
   faTrash,
   faPen, 
-  faShareNodes
 } from "@fortawesome/free-solid-svg-icons";
 
 interface PostCardProps {
@@ -34,8 +33,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(post.id);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id);
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
+//   const { width } = useWindowSize();
+//   const isMobile = width < 768;
 
   const isOwnPost = currentUser?.id === post.user_id;
 
@@ -68,23 +67,23 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
     navigate(`/post/${post.id}#comments`);
   };
 
-  const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Post by ${post.user?.name || post.user?.username || 'User'}`,
-          text: post.content?.substring(0, 100) || '',
-          url: `${window.location.origin}/post/${post.id}`,
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
-    }
-  };
+//   const handleShare = async (e: React.MouseEvent) => {
+//     e.stopPropagation();
+//     if (navigator.share) {
+//       try {
+//         await navigator.share({
+//           title: `Post by ${post.user?.name || post.user?.username || 'User'}`,
+//           text: post.content?.substring(0, 100) || '',
+//           url: `${window.location.origin}/post/${post.id}`,
+//         });
+//       } catch (error) {
+//         console.log('Error sharing:', error);
+//       }
+//     } else {
+//       // Fallback: copy to clipboard
+//       navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+//     }
+//   };
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();

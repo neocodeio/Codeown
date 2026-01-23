@@ -8,11 +8,9 @@ import NotificationDropdown from "./NotificationDropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes, faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 
-interface NavbarProps {
-  onToggleTheme?: () => void;
-}
 
-export default function Navbar({ onToggleTheme }: NavbarProps) {
+
+export default function Navbar() {
   const { isLoaded, isSignedIn } = useClerkUser();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);

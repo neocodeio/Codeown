@@ -35,9 +35,9 @@ export default function Profile() {
   const { signOut, getToken } = useClerkAuth();
   const navigate = useNavigate();
   const userId = user?.id || null;
-  const { posts, loading: postsLoading, fetchUserPosts } = useUserPosts(userId);
+  const { posts, fetchUserPosts } = useUserPosts(userId);
   const { savedPosts, loading: savedPostsLoading, fetchSavedPosts } = useSavedPosts();
-  const { projects, loading: projectsLoading, fetchUserProjects } = useUserProjects(userId);
+  const { projects, fetchUserProjects } = useUserProjects(userId);
   const { projects: savedProjects, loading: savedProjectsLoading, fetchUserSavedProjects } = useUserSavedProjects(userId);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -274,7 +274,7 @@ export default function Profile() {
                 </button>
               </div>
             ) : (
-              projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
+              projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={() => fetchUserProjects()} />)
             )
           ) : (
             <div>
@@ -343,7 +343,7 @@ export default function Profile() {
       <ProjectModal
         isOpen={isProjectModalOpen}
         onClose={() => setIsProjectModalOpen(false)}
-        onUpdated={fetchUserProjects}
+        onUpdated={() => fetchUserProjects()}
       />
       {userId && (
         <FollowersModal isOpen={followersModalOpen} onClose={() => setFollowersModalOpen(false)} userId={userId} type={followersModalType} title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"} />
