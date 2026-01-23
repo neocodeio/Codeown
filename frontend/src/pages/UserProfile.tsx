@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useUserPosts } from "../hooks/useUserPosts";
+import { useUserProjects } from "../hooks/useUserProjects";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import PostCard from "../components/PostCard";
+import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus, faThumbtack, faUserCheck } from "@fortawesome/free-solid-svg-icons";
@@ -33,8 +35,10 @@ export default function UserProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const { posts, loading: postsLoading, fetchUserPosts } = useUserPosts(userId || null);
+  const { projects, loading: projectsLoading, fetchUserProjects } = useUserProjects(userId || null);
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
+  const [activeTab, setActiveTab] = useState<"posts" | "projects">("posts");
 
   const isOwnProfile = currentUser?.id === userId;
 
@@ -133,7 +137,7 @@ export default function UserProfile() {
               <img
                 src={avatarUrl}
                 alt={user.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
               />
             </div>
             {isSignedIn && (
@@ -158,7 +162,7 @@ export default function UserProfile() {
           <header style={{ marginBottom: "40px" }}>
             <h1 style={{ fontSize: "48px", marginBottom: "8px" }}>{user.name}</h1>
             <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>
-              @{user.username || "user"}
+              @{user.username || "USER"}
             </p>
             {user.bio && (
               <p style={{ fontSize: "18px", lineHeight: "1.6", maxWidth: "600px", color: "var(--text-secondary)" }}>
@@ -189,22 +193,79 @@ export default function UserProfile() {
           </div>
         </section>
 
-        <h2 style={{ fontSize: "20px", marginBottom: "40px", letterSpacing: "0.1em" }}>POSTS</h2>
+        <div style={{ marginBottom: "40px" }}>
+          <div style={{ display: "flex", gap: "20px", marginBottom: "30px", borderBottom: "2px solid var(--border-color)" }}>
+            <button
+              onClick={() => setActiveTab("posts")}
+              style={{
+                padding: "12px 0",
+                border: "none",
+                background: "transparent",
+                fontSize: "16px",
+                fontWeight: 600,
+                color: activeTab === "posts" ? "var(--primary)" : "var(--text-secondary)",
+                borderBottom: activeTab === "posts" ? "2px solid var(--primary)" : "2px solid transparent",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+            >
+              POSTS
+            </button>
+            <button
+              onClick={() => setActiveTab("projects")}
+              style={{
+                padding: "12px 0",
+                border: "none",
+                background: "transparent",
+                fontSize: "16px",
+                fontWeight: 600,
+                color: activeTab === "projects" ? "var(--primary)" : "var(--text-secondary)",
+                borderBottom: activeTab === "projects" ? "2px solid var(--primary)" : "2px solid transparent",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+            >
+              PROJECTS
+            </button>
+          </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-          {posts.length === 0 ? (
-            <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS YET.</div>
-          ) : (
-            posts.map(p => (
-              <div key={p.id} style={{ position: "relative" }}>
-                <PostCard post={p} onUpdated={fetchUserPosts} />
-                {user.pinned_post_id === p.id && (
-                  <div style={{ position: "absolute", top: "24px", right: "24px", color: "var(--accent)" }}>
-                    <FontAwesomeIcon icon={faThumbtack} />
+          {activeTab === "posts" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+              {postsLoading ? (
+                <div style={{ padding: "60px 0", color: "var(--text-secondary)", fontWeight: 700 }}>Loading posts...</div>
+              ) : posts.length === 0 ? (
+                <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS YET.</div>
+              ) : (
+                posts.map(p => (
+                  <div key={p.id} style={{ position: "relative" }}>
+                    <PostCard post={p} onUpdated={fetchUserPosts} />
+                    {user.pinned_post_id === p.id && (
+                      <div style={{ position: "absolute", top: "24px", right: "24px", color: "var(--accent)" }}>
+                        <FontAwesomeIcon icon={faThumbtack} />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))
+                ))
+              )}
+            </div>
+          )}
+
+          {activeTab === "projects" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+              {projectsLoading ? (
+                <div style={{ padding: "60px 0", color: "var(--text-secondary)", fontWeight: 700 }}>Loading projects...</div>
+              ) : projects.length === 0 ? (
+                <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PROJECTS YET.</div>
+              ) : (
+                projects.map(project => (
+                  <ProjectCard 
+                    key={project.id} 
+                    project={project} 
+                    onUpdated={fetchUserProjects} 
+                  />
+                ))
+              )}
+            </div>
           )}
         </div>
       </div>

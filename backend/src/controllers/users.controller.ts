@@ -28,6 +28,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
         email: email,
         name: name || "User",
         avatar_url: data.imageUrl || null,
+        username: data.username || name || null, // Use name as fallback for username
       };
     }
     
@@ -50,7 +51,8 @@ export async function ensureUserExists(userId: string, userData?: any) {
       return {
         email: email,
         name: name || "User",
-        avatar_url: data.image_url || null,
+        avatar_url: data?.avatar_url || data?.image_url || null,
+        username: data.username || name || null, // Use name as fallback for username
       };
     }
     
@@ -62,10 +64,11 @@ export async function ensureUserExists(userId: string, userData?: any) {
       email: email,
       name: name,
       avatar_url: data?.avatar_url || data?.image_url || null,
+      username: data?.username || name || null, // Use name as fallback for username
     };
   };
 
-  const userInfo = userData ? getUserInfo(userData) : { email: null, name: "User", avatar_url: null };
+  const userInfo = userData ? getUserInfo(userData) : { email: null, name: "User", avatar_url: null, username: null };
   
   console.log("User info extracted:", userInfo);
 
@@ -89,6 +92,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
           email: userInfo.email,
           name: userInfo.name,
           avatar_url: userInfo.avatar_url,
+          username: userInfo.username,
           updated_at: new Date().toISOString(),
         })
         .eq("id", userId);
@@ -111,6 +115,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
       email: userInfo.email,
       name: userInfo.name,
       avatar_url: userInfo.avatar_url,
+      username: userInfo.username,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
