@@ -136,7 +136,7 @@ export default function PostDetail() {
         <article className="fade-in" style={{ marginBottom: "80px", background: "#f5f5f5", padding: "30px", borderRadius: "25px" }}>
           <header style={{ marginBottom: "40px", borderBottom: "1px solid var(--border-color)", paddingBottom: "40px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
-              <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)" }} />
+              <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)", borderRadius: "50%" }} />
               <div>
                 <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{userName}</h3>
                 <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700 }}>{formatDate(post.created_at)}</span>
