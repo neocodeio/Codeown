@@ -93,9 +93,8 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
     try {
       const token = await getToken();
-      const response = await api.post("/upload", formData, {
+      const response = await api.post("/upload/image", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
       });
