@@ -6,6 +6,7 @@ import { useProjectLikes } from "../hooks/useProjectLikes";
 import { useProjectSaved } from "../hooks/useProjectSaved";
 import api from "../api/axios";
 import type { Project } from "../types/project";
+import ProjectModal from "./ProjectModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faHeart as faHeartSolid,
@@ -33,6 +34,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id);
   const { isSaved, toggleSave } = useProjectSaved(project.id);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const isOwnProject = currentUser?.id === project.user_id;
 
@@ -84,7 +86,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/project/${project.id}/edit`);
+    setShowEditModal(true);
   };
 
   const handleDeleteClick = async (e: React.MouseEvent) => {
@@ -460,6 +462,18 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} />
         </button>
       </div>
+
+      {showEditModal && (
+        <ProjectModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onUpdated={() => {
+            setShowEditModal(false);
+            if (onUpdated) onUpdated();
+          }}
+          project={project}
+        />
+      )}
     </article>
   );
 }
