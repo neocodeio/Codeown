@@ -13,7 +13,7 @@ import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt, faThumbtack, faPlus, faEllipsisH, faPen, faUserEdit } from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt, faThumbtack, faPlus, faEllipsisH, faUserEdit } from "@fortawesome/free-solid-svg-icons";
 
 interface UserProfile {
   id: string;
