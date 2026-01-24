@@ -21,32 +21,34 @@ import rateLimit from "express-rate-limit";
 
 const app = express();
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: "Too many requests from this IP, please try again after 15 minutes",
-});
-
-app.use(limiter);
-
-// Security headers
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-}));
-
+// 1. CORS - MUST BE FIRST for preflight requests
 app.use(cors({
   origin: ["http://localhost:5173", process.env.FRONTEND_URL].filter(Boolean) as string[],
   credentials: true
 }));
 
-// Webhooks need raw body for signature verification - must be before express.json()
+// 2. Webhooks need raw body for signature verification - MUST be before express.json()
 app.use("/webhooks", express.raw({ type: "application/json" }), webhooksRoutes);
 
-// Regular routes use JSON
-app.use(express.json({ limit: "50mb" })); // Increase limit for image uploads
+// 3. Regular JSON parser
+app.use(express.json({ limit: "50mb" }));
+
+// 4. Security Headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+
+// 5. Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many requests from this IP, please try again after 15 minutes",
+});
+app.use(limiter);
+
+// Routes
 app.use("/posts", postsRoutes);
 app.use("/comments", commentsRoutes);
 app.use("/users", usersRoutes);
