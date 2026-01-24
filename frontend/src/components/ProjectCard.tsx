@@ -134,23 +134,27 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
       onClick={handleClick}
       className="fade-in slide-up"
       style={{
-        backgroundColor: "#f5f5f5",
-        padding: "0",
-        borderRadius: "20px",
-        marginBottom: "30px",
+        backgroundColor: "rgba(255, 255, 255, 0.7)",
+        backdropFilter: "blur(10px)",
+        borderRadius: "28px",
+        marginBottom: "20px",
         cursor: "pointer",
-        border: "1px solid #e0e0e0",
+        border: "1px solid rgba(226, 232, 240, 0.8)",
         position: "relative",
-        transition: "transform 0.2s ease, box-shadow 0.2s ease",
-        animationDelay: `${index * 0.1}s`
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        overflow: "hidden",
+        animationDelay: `${index * 0.1}s`,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-2px)";
-        e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.1)";
+        e.currentTarget.style.transform = "translateY(-6px)";
+        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.06)";
+        e.currentTarget.style.borderColor = "#0f172a";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "none";
+        e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.02)";
+        e.currentTarget.style.borderColor = "rgba(226, 232, 240, 0.8)";
       }}
     >
       {project.cover_image && (
