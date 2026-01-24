@@ -88,7 +88,7 @@ export default function Feed() {
             {/* Type Toggle */}
             <div style={{
               display: "flex",
-              backgroundColor: "#f5f5f5",
+              backgroundColor: "#849bff",
               padding: "4px",
               borderRadius: "12px",
               border: "1px solid var(--border-color)"
@@ -100,7 +100,7 @@ export default function Feed() {
                   borderRadius: "8px",
                   border: "none",
                   backgroundColor: feedType === "posts" ? "#fff" : "transparent",
-                  color: feedType === "posts" ? "#000" : "var(--text-secondary)",
+                  color: feedType === "posts" ? "#364182" : "#fff",
                   fontWeight: 700,
                   fontSize: "14px",
                   cursor: "pointer",
@@ -117,7 +117,7 @@ export default function Feed() {
                   borderRadius: "8px",
                   border: "none",
                   backgroundColor: feedType === "projects" ? "#fff" : "transparent",
-                  color: feedType === "projects" ? "#000" : "var(--text-secondary)",
+                  color: feedType === "projects" ? "#364182" : "#fff",
                   fontWeight: 700,
                   fontSize: "14px",
                   cursor: "pointer",
@@ -134,13 +134,13 @@ export default function Feed() {
             <button
               onClick={() => handleFilterChange("all")}
               style={{
-                border: "2px solid #e0e0e0",
+                border: "none",
                 padding: "6px 16px",
                 fontSize: "12px",
                 letterSpacing: "0.1em",
                 fontWeight: 800,
-                backgroundColor: feedFilter === "all" ? "#000" : "transparent",
-                color: feedFilter === "all" ? "#fff" : "var(--text-secondary)",
+                backgroundColor: feedFilter === "all" ? "#364182" : "#849bff",
+                color: feedFilter === "all" ? "#fff" : "#fff",
                 borderRadius: "10px",
                 cursor: "pointer",
                 transition: "all 0.2s ease"
@@ -152,13 +152,13 @@ export default function Feed() {
               <button
                 onClick={() => handleFilterChange("following")}
                 style={{
-                  border: "2px solid #e0e0e0",
+                  border: "none",
                   padding: "6px 16px",
                   fontSize: "12px",
                   letterSpacing: "0.1em",
                   fontWeight: 800,
-                  backgroundColor: feedFilter === "following" ? "#000" : "transparent",
-                  color: feedFilter === "following" ? "#fff" : "var(--text-secondary)",
+                  backgroundColor: feedFilter === "following" ? "#364182" : "#849bff",
+                  color: feedFilter === "following" ? "#fff" : "#fff",
                   borderRadius: "10px",
                   cursor: "pointer",
                   transition: "all 0.2s ease"
@@ -171,13 +171,13 @@ export default function Feed() {
               <button
                 onClick={() => handleFilterChange("contributors")}
                 style={{
-                  border: "2px solid #e0e0e0",
+                  border: "none",
                   padding: "6px 16px",
                   fontSize: "12px",
                   letterSpacing: "0.1em",
                   fontWeight: 800,
-                  backgroundColor: feedFilter === "contributors" ? "#000" : "transparent",
-                  color: feedFilter === "contributors" ? "#fff" : "var(--text-secondary)",
+                  backgroundColor: feedFilter === "contributors" ? "#364182" : "#849bff",
+                  color: feedFilter === "contributors" ? "#fff" : "#fff",
                   borderRadius: "10px",
                   cursor: "pointer",
                   transition: "all 0.2s ease"

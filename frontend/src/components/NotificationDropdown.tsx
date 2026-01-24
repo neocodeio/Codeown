@@ -86,19 +86,19 @@ export default function NotificationDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         style={{
           position: "relative",
-          padding: "10px 9px",
-          backgroundColor: "#000",
+          padding: "9px",
+          backgroundColor: "#fff",
           border: "none",
           cursor: "pointer",
-          borderRadius: "50%",
+          borderRadius: "12px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: "20px",
-          color: "#000",
+          color: "#364182",
         }}
       >
-        <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px", color: "#fefefe" }} />
+        <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px", color: "#364182" }} />
         {unreadCount > 0 && (
           <span
             style={{

@@ -616,7 +616,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 disabled={isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: "#6c757d",
+                  backgroundColor: "#364182",
                   border: "none",
                   color: "#ffffff",
                   borderRadius: "20px",
@@ -645,7 +645,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 disabled={!isLoaded || !title.trim() || !content.trim() || isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#000" : "#e4e7eb",
+                  backgroundColor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#849bff" : "#e4e7eb",
                   border: "none",
                   color: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
                   borderRadius: "20px",

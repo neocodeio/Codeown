@@ -155,7 +155,11 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
       onUpdated();
       onClose();
     } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to save project");
+      const backendError = error.response?.data?.error || error.response?.data?.message || "Failed to save project";
+      const backendDetails = error.response?.data?.details ? ` (${error.response.data.details})` : "";
+      const backendCode = error.response?.data?.code ? ` [Code: ${error.response.data.code}]` : "";
+
+      setError(`${backendError}${backendDetails}${backendCode}`);
       console.error("Project save error:", error);
     } finally {
       setLoading(false);
@@ -295,7 +299,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 onClick={handleAddTech}
                 style={{
                   padding: "12px 20px",
-                  backgroundColor: "#000",
+                  backgroundColor: "#849bff",
                   color: "#fff",
                   border: "none",
                   borderRadius: "8px",
@@ -364,7 +368,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 onClick={handleAddContributor}
                 style={{
                   padding: "12px 20px",
-                  backgroundColor: "#000",
+                  backgroundColor: "#849bff",
                   color: "#fff",
                   border: "none",
                   borderRadius: "8px",
@@ -549,9 +553,9 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               onClick={onClose}
               style={{
                 padding: "12px 24px",
-                backgroundColor: "#f5f5f5",
-                color: "#333",
-                border: "1px solid #ddd",
+                backgroundColor: "#364182",
+                color: "#fff",
+                border: "none",
                 borderRadius: "8px",
                 cursor: "pointer",
                 fontWeight: 600,
@@ -564,7 +568,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               disabled={loading}
               style={{
                 padding: "12px 24px",
-                backgroundColor: loading ? "#ccc" : "#000",
+                backgroundColor: loading ? "#364182" : "#849bff",
                 color: "#fff",
                 border: "none",
                 borderRadius: "8px",

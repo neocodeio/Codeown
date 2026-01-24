@@ -49,7 +49,9 @@ export async function getProjects(req: Request, res: Response) {
       }
       projectsQuery = projectsQuery.in("user_id", followingIds);
     } else if (String(filter).toLowerCase() === "contributors") {
-      projectsQuery = projectsQuery.eq("looking_for_contributors", true);
+      // Temporarily disabled until looking_for_contributors column is added to Supabase
+      // projectsQuery = projectsQuery.eq("looking_for_contributors", true);
+      console.warn("Filter 'contributors' ignored because looking_for_contributors column is missing.");
     }
 
     const { data: projects, error: projectsError, count } = await projectsQuery.range(offset, offset + limitNum - 1);
@@ -254,9 +256,11 @@ export async function getUserProjects(req: Request, res: Response) {
 
 export async function createProject(req: Request, res: Response) {
   try {
+    console.log("Creating project... body:", JSON.stringify(req.body, null, 2));
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
     if (!userId) {
+      console.error("Create Project Error: No User ID in request");
       return res.status(401).json({ error: "Authentication required" });
     }
 
@@ -269,81 +273,112 @@ export async function createProject(req: Request, res: Response) {
       live_demo,
       cover_image,
       project_details,
-      contributors, // Array of usernames
       looking_for_contributors
     } = req.body;
 
+    let { contributors } = req.body;
+
     // Validate required fields
     if (!title || !description || !technologies_used || !status || !project_details) {
-      return res.status(400).json({ error: "Missing required fields" });
+      console.error("Create Project Error: Missing fields", {
+        title: !!title,
+        description: !!description,
+        tech: !!technologies_used,
+        status: !!status,
+        details: !!project_details
+      });
+      return res.status(400).json({ error: "Missing required fields: title, description, technologies_used, status, and project_details are all required." });
     }
 
     // Validate status
     if (!['in_progress', 'completed', 'paused'].includes(status)) {
-      return res.status(400).json({ error: "Invalid status" });
+      return res.status(400).json({ error: "Invalid status. Must be in_progress, completed, or paused." });
     }
 
     // Ensure user exists
-    await ensureUserExists(userId);
-
-    // Create project
-    const { data: project, error: projectError } = await supabase
-      .from("projects")
-      .insert({
-        user_id: userId,
-        title,
-        description,
-        technologies_used,
-        status,
-        github_repo: github_repo || null,
-        live_demo: live_demo || null,
-        cover_image: cover_image || null,
-        project_details,
-        looking_for_contributors: looking_for_contributors || false,
-        like_count: 0,
-        comment_count: 0
-      })
-      .select()
-      .single();
-
-    if (projectError) {
-      console.error("Supabase error in createProject:", projectError);
-      return res.status(500).json({ error: "Failed to create project", details: projectError.message });
+    try {
+      await ensureUserExists(userId);
+    } catch (e: any) {
+      console.error("Warning: ensureUserExists failed, but attempting to continue project creation:", e.message);
     }
 
+    // Create project
+    const now = new Date().toISOString();
+    console.log("Inserting project into Supabase projects table...");
+
+    const projectData: any = {
+      user_id: userId,
+      title: title.trim(),
+      description: description.trim(),
+      technologies_used,
+      status,
+      github_repo: github_repo || null,
+      live_demo: live_demo || null,
+      cover_image: cover_image || null,
+      project_details: project_details.trim(),
+      // looking_for_contributors: !!looking_for_contributors, // Removed: column missing in DB
+      // like_count: 0, // Usually has default in DB
+      // comment_count: 0, // Usually has default in DB
+      created_at: now,
+      updated_at: now
+    };
+
+    const { data: insertedData, error: projectError } = await supabase
+      .from("projects")
+      .insert([projectData])
+      .select();
+
+    if (projectError) {
+      console.error("Supabase projects.insert error:", projectError);
+      return res.status(500).json({
+        error: "Failed to create project in database",
+        details: projectError.message,
+        code: projectError.code,
+        hint: projectError.hint || "Check if all required columns exist in the 'projects' table."
+      });
+    }
+
+    if (!insertedData || insertedData.length === 0) {
+      console.error("Supabase insert succeeded but returned no data.");
+      return res.status(500).json({ error: "Failed to retrieve the created project." });
+    }
+
+    const project = insertedData[0];
+    console.log("Project created successfully with ID:", project.id);
+
     // Fetch user data for response
-    const { data: user, error: userError } = await supabase
+    const { data: user } = await supabase
       .from("users")
       .select("id, name, email, avatar_url, username")
       .eq("id", userId)
       .single();
 
-    if (userError) {
-      console.error("Error fetching user for project:", userError);
-    }
-
     // Handle Contributors
     if (contributors && Array.isArray(contributors) && contributors.length > 0) {
-      // 1. Resolve usernames to IDs
-      const { data: foundUsers } = await supabase
-        .from("users")
-        .select("id, username")
-        .in("username", contributors);
+      console.log("Processing contributors:", contributors);
+      try {
+        // Resolve usernames to IDs
+        const { data: foundUsers } = await supabase
+          .from("users")
+          .select("id, username")
+          .in("username", contributors);
 
-      if (foundUsers && foundUsers.length > 0) {
-        // 2. Insert into project_contributors
-        const contributorsToInsert = foundUsers.map(u => ({
-          project_id: project.id,
-          user_id: u.id
-        }));
+        if (foundUsers && foundUsers.length > 0) {
+          const contributorsToInsert = foundUsers.map(u => ({
+            project_id: project.id,
+            user_id: u.id
+          }));
 
-        const { error: contribError } = await supabase
-          .from("project_contributors")
-          .insert(contributorsToInsert);
+          const { error: contribError } = await supabase
+            .from("project_contributors")
+            .insert(contributorsToInsert);
 
-        if (contribError) {
-          console.error("Error inserting contributors:", contribError);
+          if (contribError) {
+            console.error("Non-fatal error inserting contributors:", contribError);
+          }
         }
+      } catch (err: any) {
+        console.error("Non-fatal catch error handling contributors:", err.message);
       }
     }
 
@@ -351,9 +386,12 @@ export async function createProject(req: Request, res: Response) {
       ...project,
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
     });
-  } catch (error) {
-    console.error("Error in createProject:", error);
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (error: any) {
+    console.error("CRITICAL error in createProject controller:", error);
+    return res.status(500).json({
+      error: "An unexpected server error occurred while creating the project.",
+      message: error.message
+    });
   }
 }
 

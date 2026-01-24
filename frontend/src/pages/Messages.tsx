@@ -312,7 +312,7 @@ export default function Messages() {
                                                 style={{
                                                     padding: "10px 16px",
                                                     borderRadius: isMine ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-                                                    backgroundColor: isMine ? "#000" : "#f1f1f1",
+                                                    backgroundColor: isMine ? "#849bff" : "#f1f1f1",
                                                     color: isMine ? "#fff" : "#000",
                                                     fontSize: "14px",
                                                     lineHeight: "1.4",

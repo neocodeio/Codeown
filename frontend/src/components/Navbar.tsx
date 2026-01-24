@@ -49,7 +49,7 @@ export default function Navbar() {
       top: 0,
       borderRadius: "20px",
       zIndex: 1000,
-      backgroundColor: "#000",
+      backgroundColor: "#849bff",
       transition: "all 0.2s ease",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : "60px", flex: 1 }}>
@@ -59,9 +59,9 @@ export default function Navbar() {
             textDecoration: "none",
             fontWeight: 600,
             cursor: "pointer",
-            border: "2px solid #e0e0e0",
+            backgroundColor: "#364182",
             borderRadius: "12px",
-            padding: "8px 12px",
+            padding: "6px 8px",
             color: "#FFF",
             letterSpacing: "-0.05em",
           }}>
@@ -74,7 +74,7 @@ export default function Navbar() {
             <Link
               to="/"
               className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
-              style={{ color: "#000", backgroundColor: "#fff", padding: "8px 12px", borderRadius: "12px", textDecoration: "none", fontSize: "20px", fontWeight: 600 }}
+              style={{ color: "#fff", backgroundColor: "#364182", padding: "8px 12px", borderRadius: "12px", textDecoration: "none", fontSize: "20px", fontWeight: 600 }}
             >
               Feed
             </Link>
@@ -96,7 +96,7 @@ export default function Navbar() {
                 className="primary"
                 style={{
                   display: "flex",
-                  backgroundColor: "#fff",
+                  backgroundColor: "#364182",
                   border: "none",
                   borderRadius: "12px",
                   fontSize: "14px",
@@ -104,12 +104,23 @@ export default function Navbar() {
                   alignItems: "center",
                 }}
               >
-                <FontAwesomeIcon icon={faPlus} />
-                <span style={{ fontSize: "14px", backgroundColor: "#fff", padding: "4px 8px", borderRadius: "12px", color: "#000", fontWeight: 700 }}>Create Post</span>
+                <FontAwesomeIcon icon={faPlus} style={{ color: "#fff" }} />
+                <span style={{ fontSize: "14px", backgroundColor: "#364182", padding: "6px 8px", borderRadius: "12px", color: "#fff", fontWeight: 700, cursor: "pointer" }}>Create Post</span>
               </button>
             )}
-            <Link to="/messages" style={{ color: "#fff", fontSize: "18px", padding: "6px" }}>
-              <FontAwesomeIcon icon={faEnvelope} />
+            <Link to="/messages" style={{
+                border: "1px solid #fff",
+                backgroundColor: "#fff",
+                padding: "9px",
+                borderRadius: "12px",
+                color: "#000",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "18px",
+                fontWeight: 700, }}>
+              <FontAwesomeIcon icon={faEnvelope} style={{ color: "#364182" }} />
             </Link>
             <NotificationDropdown />
           </>
@@ -121,7 +132,7 @@ export default function Navbar() {
               <div style={{
                 border: "1px solid #fff",
                 backgroundColor: "#fff",
-                padding: "6px",
+                padding: "9px",
                 borderRadius: "12px",
                 color: "#000",
                 textDecoration: "none",
@@ -131,7 +142,7 @@ export default function Navbar() {
                 fontSize: "18px",
                 fontWeight: 700,
               }}>
-                <FontAwesomeIcon icon={faUser} />
+                <FontAwesomeIcon icon={faUser} style={{ color: "#364182" }} />
               </div>
             </Link>
           ) : (
@@ -151,7 +162,7 @@ export default function Navbar() {
               fontSize: "20px",
             }}
           >
-            <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} style={{ color: "#ffffff" }} />
+            <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} style={{ color: "#364182" }} />
           </button>
         )}
       </div>
@@ -166,7 +177,7 @@ export default function Navbar() {
             left: 0,
             right: 0,
             borderRadius: "15px",
-            backgroundColor: "#000",
+            backgroundColor: "#fff",
             borderBottom: "1px solid var(--border-color)",
             padding: "24px",
             display: "flex",
@@ -174,12 +185,12 @@ export default function Navbar() {
             gap: "16px",
           }}
         >
-          <Link to="/" className="nav-link" style={{ fontSize: "16px", color: "#ffffff", textDecoration: "none" }}>Feed</Link>
+          <Link to="/" className="nav-link" style={{ fontSize: "16px", color: "#364182", textDecoration: "none" }}>Feed</Link>
           {isLoaded && isSignedIn && (
             <>
               <SearchBar />
               <button onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }} className="primary" style={{ width: "100%", padding: "6px", borderRadius: "12px", fontWeight: "bold" }}>Create New Post +</button>
-              <Link to="/profile" className="nav-link" style={{ fontSize: "16px", color: "#ffffff", textDecoration: "none" }}>Profile</Link>
+              <Link to="/profile" className="nav-link" style={{ fontSize: "16px", color: "#364182", textDecoration: "none" }}>Profile</Link>
             </>
           )}
           {!isSignedIn && <Link to="/sign-in"><button className="primary" style={{ width: "100%", padding: "12px", border: "none", backgroundColor: "transparent" }}>Login</button></Link>}

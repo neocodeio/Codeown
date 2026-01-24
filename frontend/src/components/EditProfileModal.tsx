@@ -540,7 +540,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                 disabled={isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: "#6c757d",
+                  backgroundColor: "#364182",
                   border: "none",
                   color: "#ffffff",
                   borderRadius: "20px",
@@ -559,7 +559,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                 disabled={!isLoaded || !name.trim() || isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: isLoaded && name.trim() && !isSubmitting ? "#317ff5" : "#e4e7eb",
+                  backgroundColor: isLoaded && name.trim() && !isSubmitting ? "#849bff" : "#e4e7eb",
                   border: "none",
                   color: isLoaded && name.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
                   borderRadius: "20px",
