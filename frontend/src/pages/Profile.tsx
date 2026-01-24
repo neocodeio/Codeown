@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -32,6 +33,8 @@ interface UserProfile {
 
 export default function Profile() {
   const { user, isLoaded, isSignedIn } = useClerkUser();
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
   const { signOut, getToken } = useClerkAuth();
   const navigate = useNavigate();
   const userId = user?.id || null;
@@ -124,23 +127,46 @@ export default function Profile() {
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
       <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-        <section className="fade-in slide-up" style={{ marginBottom: "60px", border: "2px solid #e0e0e0", paddingBottom: "10px", backgroundColor: "#f5f5f5", padding: "30px", borderRadius: "30px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
-            <div style={{ width: "160px", height: "160px", border: "1px solid #ddd", overflow: "hidden", borderRadius: "50%" }}>
+        <section className="fade-in slide-up" style={{
+          marginBottom: isMobile ? "30px" : "60px",
+          border: isMobile ? "none" : "2px solid #e0e0e0",
+          backgroundColor: isMobile ? "transparent" : "#f5f5f5",
+          padding: isMobile ? "10px" : "30px",
+          borderRadius: "30px"
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: isMobile ? "20px" : "40px" }}>
+            <div style={{
+              width: isMobile ? "100px" : "160px",
+              height: isMobile ? "100px" : "160px",
+              border: "1px solid #ddd",
+              overflow: "hidden",
+              borderRadius: "50%"
+            }}>
               <img
                 src={userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${user?.fullName}&background=000000&color=fff&bold=true`}
                 alt="Avatar"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
-            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <button
                 onClick={() => setIsProjectModalOpen(true)}
                 className="btn-primary"
-                style={{ fontSize: "16px", display: "flex", alignItems: "center", gap: "8px", fontWeight: 600, border: "none", padding: "4px", backgroundColor: "#000", borderRadius: "25px", color: "#fff" }}
+                style={{
+                  fontSize: isMobile ? "13px" : "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontWeight: 600,
+                  border: "none",
+                  padding: isMobile ? "8px 12px" : "10px 16px",
+                  backgroundColor: "#000",
+                  borderRadius: "25px",
+                  color: "#fff"
+                }}
               >
-                <FontAwesomeIcon icon={faPlus} size="lg" />
-                <span style={{ fontWeight: 600, border: "none", padding: "4px", backgroundColor: "#000", borderRadius: "25px", color: "#fff" }}>Add Project</span>
+                <FontAwesomeIcon icon={faPlus} />
+                <span>{isMobile ? "Project" : "Add Project"}</span>
               </button>
 
               <div style={{ position: "relative" }}>
@@ -151,21 +177,21 @@ export default function Profile() {
                   }}
                   className="btn-secondary"
                   style={{
-                    width: "36px",
-                    height: "36px",
+                    width: isMobile ? "32px" : "36px",
+                    height: isMobile ? "32px" : "36px",
                     display: "flex",
                     alignItems: "center",
                     fontSize: "16px",
                     fontWeight: 600,
                     border: "none",
                     color: "#000",
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor: isMobile ? "#eee" : "#f5f5f5",
                     justifyContent: "center",
                     padding: 0,
                     borderRadius: "50%"
                   }}
                 >
-                  <FontAwesomeIcon icon={faEllipsisH} size="lg" style={{ border: "none", padding: "5px", borderRadius: "25px", color: "#000" }} />
+                  <FontAwesomeIcon icon={faEllipsisH} style={{ border: "none", borderRadius: "25px", color: "#000" }} />
                 </button>
 
                 {isMenuOpen && (
@@ -239,51 +265,68 @@ export default function Profile() {
             </div>
           </div>
 
-          <header style={{ marginBottom: "40px" }} className="stagger-1 slide-up">
-            <h1 style={{ fontSize: "48px", marginBottom: "8px" }}>{userProfile?.name || user?.fullName}</h1>
-            <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, marginBottom: "24px" }}>
+          <header style={{ marginBottom: isMobile ? "25px" : "40px" }} className="stagger-1 slide-up">
+            <h1 style={{ fontSize: isMobile ? "32px" : "48px", marginBottom: "4px" }}>{userProfile?.name || user?.fullName}</h1>
+            <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, marginBottom: isMobile ? "12px" : "24px" }}>
               @{userProfile?.username || user?.username}
             </p>
             {userProfile?.bio && (
-              <p style={{ fontSize: "18px", lineHeight: "1.6", maxWidth: "600px", color: "var(--text-secondary)" }}>
+              <p style={{ fontSize: isMobile ? "15px" : "18px", lineHeight: "1.6", maxWidth: "600px", color: "var(--text-secondary)" }}>
                 {userProfile.bio}
               </p>
             )}
           </header>
 
-          <div className="stagger-1 slide-up" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "2px solid #e0e0e0", textAlign: "center", backgroundColor: "#f9f9f9", borderRadius: "25px" }}>
+          <div className="stagger-1 slide-up" style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            border: isMobile ? "1px solid #eee" : "2px solid #e0e0e0",
+            textAlign: "center",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "20px",
+            overflow: "hidden"
+          }}>
             <div
               onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
-              style={{ padding: "24px", borderRight: "1px solid #e0e0e0", cursor: "pointer" }}
+              style={{ padding: isMobile ? "15px 5px" : "24px", borderRight: "1px solid #e0e0e0", cursor: "pointer" }}
             >
-              <div style={{ fontSize: "24px", fontWeight: 800 }}>{userProfile?.follower_count || 0}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWERS</div>
+              <div style={{ fontSize: isMobile ? "18px" : "24px", fontWeight: 800 }}>{userProfile?.follower_count || 0}</div>
+              <div style={{ fontSize: isMobile ? "9px" : "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.05em" }}>FOLLOWERS</div>
             </div>
             <div
               onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
-              style={{ padding: "24px", borderRight: "1px solid #e0e0e0", cursor: "pointer" }}
+              style={{ padding: isMobile ? "15px 5px" : "24px", borderRight: "1px solid #e0e0e0", cursor: "pointer" }}
             >
-              <div style={{ fontSize: "24px", fontWeight: 800 }}>{userProfile?.following_count || 0}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWING</div>
+              <div style={{ fontSize: isMobile ? "18px" : "24px", fontWeight: 800 }}>{userProfile?.following_count || 0}</div>
+              <div style={{ fontSize: isMobile ? "9px" : "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.05em" }}>FOLLOWING</div>
             </div>
-            <div style={{ padding: "24px" }}>
-              <div style={{ fontSize: "24px", fontWeight: 800 }}>{userProfile?.total_likes || 0}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>LIKES</div>
+            <div style={{ padding: isMobile ? "15px 5px" : "24px" }}>
+              <div style={{ fontSize: isMobile ? "18px" : "24px", fontWeight: 800 }}>{userProfile?.total_likes || 0}</div>
+              <div style={{ fontSize: isMobile ? "9px" : "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.05em" }}>LIKES</div>
             </div>
           </div>
         </section>
 
-        <nav className="stagger-2 slide-up" style={{ display: "flex", gap: "40px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)" }}>
+        <nav className="stagger-2 slide-up" style={{
+          display: "flex",
+          gap: isMobile ? "15px" : "40px",
+          marginBottom: isMobile ? "20px" : "40px",
+          borderBottom: "1px solid var(--border-light)",
+          justifyContent: isMobile ? "space-between" : "flex-start",
+          padding: isMobile ? "0 5px" : "0"
+        }}>
           <button
             onClick={() => setActiveTab("posts")}
             style={{
-              border: "2px solid #e0e0e0",
               padding: "12px 6px",
-              fontSize: "13px",
+              fontSize: isMobile ? "12px" : "13px",
               fontWeight: 800,
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
               color: activeTab === "posts" ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === "posts" ? "2px solid var(--text-primary)" : "2px solid transparent",
-              borderRadius: "15px"
+              transition: "all 0.2s"
             }}
           >
             POSTS ({posts.length})
@@ -291,13 +334,15 @@ export default function Profile() {
           <button
             onClick={() => setActiveTab("projects")}
             style={{
-              border: "2px solid #e0e0e0",
               padding: "12px 6px",
-              fontSize: "13px",
+              fontSize: isMobile ? "12px" : "13px",
               fontWeight: 800,
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
               color: activeTab === "projects" ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === "projects" ? "2px solid var(--text-primary)" : "2px solid transparent",
-              borderRadius: "15px"
+              transition: "all 0.2s"
             }}
           >
             PROJECTS ({projects.length})
@@ -305,20 +350,22 @@ export default function Profile() {
           <button
             onClick={() => setActiveTab("saved")}
             style={{
-              border: "2px solid #e0e0e0",
               padding: "12px 6px",
-              fontSize: "13px",
+              fontSize: isMobile ? "12px" : "13px",
               fontWeight: 800,
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
               color: activeTab === "saved" ? "var(--text-primary)" : "var(--text-tertiary)",
               borderBottom: activeTab === "saved" ? "2px solid var(--text-primary)" : "2px solid transparent",
-              borderRadius: "15px"
+              transition: "all 0.2s"
             }}
           >
             SAVED ({savedPosts.length})
           </button>
         </nav>
 
-        <div className="stagger-3 slide-up" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+        <div className="stagger-3 slide-up" style={{ display: "flex", flexDirection: "column", gap: isMobile ? "20px" : "40px" }}>
           {activeTab === "posts" ? (
             posts.length === 0 ? (
               <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS YET.</div>
@@ -330,13 +377,21 @@ export default function Profile() {
                     onClick={() => handlePinPost(p.id)}
                     style={{
                       position: "absolute",
-                      top: "5px",
-                      left: "5px",
+                      top: "10px",
+                      right: isMobile ? "10px" : "auto",
+                      left: isMobile ? "auto" : "10px",
                       cursor: "pointer",
                       padding: "8px",
-                      border: "1px solid var(--border-color)",
-                      color: userProfile?.pinned_post_id === p.id ? "#f5f5f5" : "#f5f5f5",
-                      backgroundColor: "var(--bg-card)"
+                      borderRadius: "50%",
+                      width: "35px",
+                      height: "35px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "1px solid #eee",
+                      color: userProfile?.pinned_post_id === p.id ? "var(--primary)" : "#ccc",
+                      backgroundColor: "rgba(255, 255, 255, 0.9)",
+                      zIndex: 5
                     }}
                   >
                     <FontAwesomeIcon icon={faThumbtack} />
@@ -354,10 +409,10 @@ export default function Profile() {
                   style={{
                     marginTop: "20px",
                     padding: "12px 24px",
-                    backgroundColor: "#007bff",
+                    backgroundColor: "#000",
                     color: "#fff",
                     border: "none",
-                    borderRadius: "8px",
+                    borderRadius: "25px",
                     cursor: "pointer",
                     fontWeight: 600,
                   }}
@@ -372,38 +427,36 @@ export default function Profile() {
           ) : (
             <div>
               {/* Sub-tabs for saved content */}
-              <div style={{ display: "flex", gap: "20px", marginBottom: "30px", borderBottom: "2px solid var(--border-color)" }}>
+              <div style={{ display: "flex", gap: "15px", marginBottom: "20px", borderBottom: "1px solid var(--border-light)" }}>
                 <button
                   onClick={() => setSavedSubTab("posts")}
                   style={{
-                    padding: "12px 0",
+                    padding: "10px 0",
                     border: "none",
                     background: "transparent",
-                    fontSize: "14px",
-                    fontWeight: 600,
+                    fontSize: "13px",
+                    fontWeight: 700,
                     color: savedSubTab === "posts" ? "var(--primary)" : "var(--text-secondary)",
                     borderBottom: savedSubTab === "posts" ? "2px solid var(--primary)" : "2px solid transparent",
                     cursor: "pointer",
-                    transition: "all 0.2s ease",
                   }}
                 >
-                  SAVED POSTS ({savedPosts.length})
+                  POSTS ({savedPosts.length})
                 </button>
                 <button
                   onClick={() => setSavedSubTab("projects")}
                   style={{
-                    padding: "12px 0",
+                    padding: "10px 0",
                     border: "none",
                     background: "transparent",
-                    fontSize: "14px",
-                    fontWeight: 600,
+                    fontSize: "13px",
+                    fontWeight: 700,
                     color: savedSubTab === "projects" ? "var(--primary)" : "var(--text-secondary)",
                     borderBottom: savedSubTab === "projects" ? "2px solid var(--primary)" : "2px solid transparent",
                     cursor: "pointer",
-                    transition: "all 0.2s ease",
                   }}
                 >
-                  SAVED PROJECTS ({savedProjects.length})
+                  PROJECTS ({savedProjects.length})
                 </button>
               </div>
 
