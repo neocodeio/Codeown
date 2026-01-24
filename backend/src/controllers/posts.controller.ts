@@ -38,13 +38,13 @@ export async function getPosts(req: Request, res: Response) {
 
     // Get unique user IDs
     const userIds = [...new Set(posts.map((p: any) => p.user_id))];
-    
+
     // Fetch users
     const { data: users, error: usersError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, avatar_url, username")
       .in("id", userIds);
-    
+
     console.log(`Fetched ${users?.length || 0} users from Supabase for ${userIds.length} user IDs`);
     console.log(`User IDs requested:`, userIds);
     console.log(`Users found in Supabase:`, users?.map((u: any) => u.id) || []);
@@ -77,7 +77,7 @@ export async function getPosts(req: Request, res: Response) {
               email: clerkUser.emailAddresses?.[0]?.emailAddress,
               imageUrl: clerkUser.imageUrl,
             });
-            
+
             // Get username - try multiple fields
             let userName: string | null = null;
             if (clerkUser.firstName && clerkUser.lastName) {
@@ -91,21 +91,20 @@ export async function getPosts(req: Request, res: Response) {
             } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
               const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
               if (emailAddress) {
-                userName = emailAddress.split("@")[0];
+                userName = emailAddress.split("@")[0] || null;
               }
             }
-            
+
             // If still no name, use a default
             if (!userName) {
               userName = "User";
             }
-            
-            const userData = {
+
+            const userData: any = {
               name: userName,
-              email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
               avatar_url: clerkUser.imageUrl || null,
             };
-            
+
             console.log(`Setting user data for ${userId}:`, userData);
             clerkUserMap.set(userId, userData);
 
@@ -117,7 +116,7 @@ export async function getPosts(req: Request, res: Response) {
               // Ignore sync errors, we already have the data from Clerk
               console.error(`Could not sync user ${userId} to Supabase:`, syncError?.message);
             }
-            
+
             return { userId, success: true };
           } catch (clerkError: any) {
             console.error(`Error fetching user ${userId} from Clerk:`, clerkError?.message);
@@ -125,7 +124,7 @@ export async function getPosts(req: Request, res: Response) {
             return { userId, success: false, error: clerkError };
           }
         });
-        
+
         await Promise.all(clerkUserPromises);
         console.log(`Fetched ${clerkUserMap.size} users from Clerk`);
       } catch (error: any) {
@@ -153,24 +152,23 @@ export async function getPosts(req: Request, res: Response) {
       let userData;
       if (user) {
         // Handle both Supabase format and Clerk format
-        const userName = user.name || 
-                        (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) ||
-                        user.firstName || 
-                        user.lastName || 
-                        user.username ||
-                        null;
-        
-        const userEmail = user.email || 
-                         (user.emailAddresses?.[0]?.emailAddress) ||
-                         null;
-        
-        const avatarUrl = user.avatar_url || 
-                         user.imageUrl || 
-                         null;
+        const userName = user.name ||
+          (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) ||
+          user.firstName ||
+          user.lastName ||
+          user.username ||
+          null;
+
+        const userEmail = user.email ||
+          (user.emailAddresses?.[0]?.emailAddress) ||
+          null;
+
+        const avatarUrl = user.avatar_url ||
+          user.imageUrl ||
+          null;
 
         userData = {
-          name: userName || (userEmail ? userEmail.split("@")[0] : "User"),
-          email: userEmail,
+          name: userName || "User",
           avatar_url: avatarUrl,
         };
       } else {
@@ -182,15 +180,15 @@ export async function getPosts(req: Request, res: Response) {
           avatar_url: null,
         };
       }
-      
+
       console.log(`Post ${post.id} (user_id: ${post.user_id}): User data:`, userData);
-      
+
       return {
         ...post,
         user: userData
       };
     });
-    
+
     return res.json({
       posts: postsWithUsers,
       total: count || 0,
@@ -200,9 +198,9 @@ export async function getPosts(req: Request, res: Response) {
     });
   } catch (error: any) {
     console.error("Unexpected error in getPosts:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }
@@ -210,7 +208,7 @@ export async function getPosts(req: Request, res: Response) {
 export async function getPostById(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    
+
     if (!id) {
       return res.status(400).json({ error: "Post ID is required" });
     }
@@ -229,7 +227,7 @@ export async function getPostById(req: Request, res: Response) {
     // Get user data for the post author
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, avatar_url, username")
       .eq("id", post.user_id)
       .single();
 
@@ -256,7 +254,6 @@ export async function getPostById(req: Request, res: Response) {
           userData = {
             id: clerkUser.id,
             name: name || "User",
-            email: email,
             avatar_url: clerkUser.imageUrl || null,
             username: clerkUser.username || null,
           };
@@ -269,12 +266,10 @@ export async function getPostById(req: Request, res: Response) {
     // Format user data
     const userInfo = userData ? {
       name: userData.name || "User",
-      email: userData.email || null,
       avatar_url: userData.avatar_url || null,
       username: userData.username || null,
     } : {
       name: "User",
-      email: null,
       avatar_url: null,
       username: null,
     };
@@ -285,8 +280,8 @@ export async function getPostById(req: Request, res: Response) {
     });
   } catch (error) {
     console.error("Unexpected error in getPostById:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
+    return res.status(500).json({
+      error: "Internal server error",
       details: error instanceof Error ? error.message : "Unknown error"
     });
   }
@@ -295,7 +290,7 @@ export async function getPostById(req: Request, res: Response) {
 export async function getPostsByUser(req: Request, res: Response) {
   try {
     const { userId } = req.params;
-    
+
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }
@@ -309,9 +304,9 @@ export async function getPostsByUser(req: Request, res: Response) {
 
     if (postsError) {
       console.error("Supabase error in getPostsByUser:", postsError);
-      return res.status(500).json({ 
-        error: "Failed to fetch posts", 
-        details: postsError.message 
+      return res.status(500).json({
+        error: "Failed to fetch posts",
+        details: postsError.message
       });
     }
 
@@ -322,7 +317,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Get user data for the post author (we already know it's the same user)
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url")
+      .select("id, name, avatar_url")
       .eq("id", userId)
       .single();
 
@@ -332,7 +327,7 @@ export async function getPostsByUser(req: Request, res: Response) {
       try {
         console.log(`User ${userId} not found in Supabase for getPostsByUser, fetching from Clerk`);
         const clerkUser = await clerkClient.users.getUser(userId);
-        
+
         // Extract user name with better fallback logic
         let userName: string | null = null;
         if (clerkUser.firstName && clerkUser.lastName) {
@@ -346,24 +341,23 @@ export async function getPostsByUser(req: Request, res: Response) {
         } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
           const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
           if (emailAddress) {
-            userName = emailAddress.split("@")[0]; // Use email username as fallback
+            userName = (emailAddress?.split("@")[0] as string) || null; // Use email username as fallback
           }
         }
-        
+
         // If still no name, use a default
         if (!userName) {
           userName = "User";
         }
-        
+
         const emailAddress = clerkUser.emailAddresses?.[0]?.emailAddress || null;
-        
+
         userData = {
           id: userId,
           name: userName,
-          email: emailAddress,
           avatar_url: clerkUser.imageUrl || null,
         };
-        
+
         // Sync user to Supabase for future requests
         try {
           await ensureUserExists(userId, clerkUser);
@@ -383,31 +377,27 @@ export async function getPostsByUser(req: Request, res: Response) {
       let userDisplayData;
       if (userData) {
         // Extract name with proper fallback
-        const userName = userData.name || 
-                        (userData.email ? userData.email.split("@")[0] : null) ||
-                        "User";
-        
+        const userName = (userData as any).name || "User";
+
         userDisplayData = {
           name: userName,
-          email: userData.email || null,
-          avatar_url: userData.avatar_url || null,
+          avatar_url: (userData as any).avatar_url || null,
         };
       } else {
         // No user data found
         console.log(`No user data found for user_id: ${userId} in getPostsByUser`);
         userDisplayData = {
           name: "User",
-          email: null,
           avatar_url: null,
         };
       }
-      
+
       return {
         ...post,
         user: userDisplayData
       };
     });
-    
+
     return res.json({
       posts: postsWithUsers,
       total: posts.length,
@@ -417,9 +407,9 @@ export async function getPostsByUser(req: Request, res: Response) {
     });
   } catch (error: any) {
     console.error("Unexpected error in getPostsByUser:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }
@@ -461,7 +451,7 @@ export async function createPost(req: Request, res: Response) {
     const hashtagRegex = /#(\w+)/g;
     const contentHashtags = content.match(hashtagRegex) || [];
     const extractedTags = contentHashtags.map((tag: string) => tag.substring(1).toLowerCase());
-    
+
     // Merge tags from both sources, remove duplicates
     const allTags = [...new Set([...postTags, ...extractedTags])].slice(0, 10);
 
@@ -470,7 +460,7 @@ export async function createPost(req: Request, res: Response) {
 
     // Get user ID - Clerk uses 'sub' for the user ID
     const userId = user?.sub || user?.id || user?.userId;
-    
+
     if (!userId) {
       console.error("No user ID found in user object:", user);
       return res.status(401).json({ error: "User ID not found" });
@@ -478,11 +468,11 @@ export async function createPost(req: Request, res: Response) {
 
     // Ensure user exists in Supabase (creates if doesn't exist)
     // If JWT token doesn't have full user data, fetch from Clerk API
-    let userDataForSync = user;
+    let userDataForSync = user as any;
     if (!user?.email_addresses && !user?.emailAddresses && process.env.CLERK_SECRET_KEY) {
       try {
         console.log("JWT token missing user data, fetching from Clerk API for userId:", userId);
-        const fullUserData = await clerkClient.users.getUser(userId);
+        const fullUserData = await clerkClient.users.getUser(userId as string);
         userDataForSync = fullUserData;
         console.log("Fetched full user data from Clerk:", {
           firstName: fullUserData.firstName,
@@ -494,9 +484,9 @@ export async function createPost(req: Request, res: Response) {
         // Continue with JWT token data
       }
     }
-    
+
     try {
-      const syncedUser = await ensureUserExists(userId, userDataForSync);
+      const syncedUser = await ensureUserExists(userId as string, userDataForSync);
       console.log("User synced to Supabase:", syncedUser?.id || userId);
     } catch (error: any) {
       console.error("Error ensuring user exists:", error?.message || error);
@@ -519,8 +509,8 @@ export async function createPost(req: Request, res: Response) {
 
     if (error) {
       console.error("Supabase error:", error);
-      return res.status(500).json({ 
-        error: "Failed to create post", 
+      return res.status(500).json({
+        error: "Failed to create post",
         details: error.message,
         code: error.code,
         hint: error.hint
@@ -531,9 +521,9 @@ export async function createPost(req: Request, res: Response) {
     return res.status(201).json({ success: true, data });
   } catch (error: any) {
     console.error("Unexpected error in createPost:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }
@@ -545,7 +535,7 @@ export async function updatePost(req: Request, res: Response) {
     const { title, content, images } = req.body;
 
     const userId = user?.sub || user?.id || user?.userId;
-    
+
     if (!userId) {
       return res.status(401).json({ error: "User ID not found" });
     }
@@ -596,18 +586,18 @@ export async function updatePost(req: Request, res: Response) {
 
     if (updateError) {
       console.error("Supabase error:", updateError);
-      return res.status(500).json({ 
-        error: "Failed to update post", 
-        details: updateError.message 
+      return res.status(500).json({
+        error: "Failed to update post",
+        details: updateError.message
       });
     }
 
     return res.json({ success: true, data: updatedPost });
   } catch (error: any) {
     console.error("Unexpected error in updatePost:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }
@@ -618,7 +608,7 @@ export async function deletePost(req: Request, res: Response) {
     const { id } = req.params;
 
     const userId = user?.sub || user?.id || user?.userId;
-    
+
     if (!userId) {
       return res.status(401).json({ error: "User ID not found" });
     }
@@ -646,18 +636,18 @@ export async function deletePost(req: Request, res: Response) {
 
     if (deleteError) {
       console.error("Supabase error:", deleteError);
-      return res.status(500).json({ 
-        error: "Failed to delete post", 
-        details: deleteError.message 
+      return res.status(500).json({
+        error: "Failed to delete post",
+        details: deleteError.message
       });
     }
 
     return res.json({ success: true });
   } catch (error: any) {
     console.error("Unexpected error in deletePost:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }

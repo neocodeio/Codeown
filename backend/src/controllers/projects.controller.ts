@@ -86,7 +86,7 @@ export async function getProjects(req: Request, res: Response) {
     // Fetch users
     const { data: users, error: usersError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, avatar_url, username")
       .in("id", allUserIds);
 
     if (usersError) {
@@ -152,7 +152,7 @@ export async function getProject(req: Request, res: Response) {
     // Fetch user data
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, avatar_url, username")
       .eq("id", project.user_id)
       .single();
 
@@ -195,7 +195,7 @@ export async function getProject(req: Request, res: Response) {
 
     return res.json({
       ...project,
-      user: user || { id: project.user_id, name: "Unknown User", email: null, avatar_url: null, username: null },
+      user: user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null },
       rating: averageRating,
       rating_count: ratingCount,
       user_rating: userRating,
@@ -230,7 +230,7 @@ export async function getUserProjects(req: Request, res: Response) {
     // Fetch user data
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, avatar_url, username")
       .eq("id", userId)
       .single();
 
@@ -242,7 +242,7 @@ export async function getUserProjects(req: Request, res: Response) {
     // Attach user data to projects
     const projectsWithUsers = (projects || []).map((project: any) => ({
       ...project,
-      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+      user: user || { id: userId, name: "Unknown User", avatar_url: null, username: null }
     }));
 
     return res.json(projectsWithUsers || []);
@@ -530,13 +530,13 @@ export async function toggleProjectLike(req: Request, res: Response) {
         .from("project_likes")
         .insert({
           project_id: parseInt(id),
-          user_id: userId
+          user_id: userId as string
         });
       isLiked = true;
 
       // Create notification for project owner (if not the liker)
       if (project.user_id !== userId) {
-        await createProjectNotification(project.user_id, "like", userId, parseInt(id));
+        await createProjectNotification(project.user_id, "like", userId as string, parseInt(id));
       }
     }
 
@@ -642,13 +642,13 @@ export async function toggleProjectSave(req: Request, res: Response) {
         .from("project_saves")
         .insert({
           project_id: parseInt(id),
-          user_id: userId
+          user_id: userId as string
         });
       isSaved = true;
 
       // Create notification for project owner (if not the saver)
       if (project.user_id !== userId) {
-        await createProjectNotification(project.user_id, "save", userId, parseInt(id));
+        await createProjectNotification(project.user_id, "save", userId as string, parseInt(id));
       }
     }
 

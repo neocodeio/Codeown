@@ -167,7 +167,19 @@ export async function sendMessage(req: Request, res: Response) {
             targetConvoId = await getOrCreateConversation(userId, recipientId);
         }
 
-        if (!targetConvoId) {
+        if (targetConvoId) {
+            // Verify participation to prevent IDOR
+            const { data: participation, error: partError } = await supabase
+                .from("conversation_participants")
+                .select("*")
+                .eq("conversation_id", targetConvoId)
+                .eq("user_id", userId)
+                .single();
+
+            if (partError || !participation) {
+                return res.status(403).json({ error: "You are not a participant in this conversation" });
+            }
+        } else {
             return res.status(400).json({ error: "Recipient or Conversation ID required" });
         }
 

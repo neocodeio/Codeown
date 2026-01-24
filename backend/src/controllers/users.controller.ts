@@ -7,7 +7,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
   // Helper function to extract user info from different Clerk data formats
   const getUserInfo = (data: any) => {
     console.log("Extracting user info from:", JSON.stringify(data, null, 2));
-    
+
     // Handle Clerk API format (from clerkClient.users.getUser)
     if (data?.firstName || data?.lastName || data?.emailAddresses) {
       const email = data.emailAddresses?.[0]?.emailAddress || data.email || null;
@@ -23,7 +23,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
       } else if (email) {
         name = email.split("@")[0]; // Use email username as fallback
       }
-      
+
       return {
         email: email,
         name: name || "User",
@@ -31,7 +31,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
         username: data.username || name || null, // Use name as fallback for username
       };
     }
-    
+
     // Handle JWT token format (from verifyToken)
     if (data?.email_addresses || data?.first_name || data?.last_name) {
       const email = data.email_addresses?.[0]?.email_address || data.email || null;
@@ -47,7 +47,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
       } else if (email) {
         name = email.split("@")[0]; // Use email username as fallback
       }
-      
+
       return {
         email: email,
         name: name || "User",
@@ -55,11 +55,11 @@ export async function ensureUserExists(userId: string, userData?: any) {
         username: data.username || name || null, // Use name as fallback for username
       };
     }
-    
+
     // Fallback - try to extract from any available fields
     const email = data?.email || data?.email_address || null;
     const name = data?.username || data?.name || (email ? email.split("@")[0] : null) || "User";
-    
+
     return {
       email: email,
       name: name,
@@ -69,7 +69,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
   };
 
   const userInfo = userData ? getUserInfo(userData) : { email: null, name: "User", avatar_url: null, username: null };
-  
+
   console.log("User info extracted:", userInfo);
 
   // Check if user exists
@@ -96,7 +96,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
           updated_at: new Date().toISOString(),
         })
         .eq("id", userId);
-      
+
       if (updateError) {
         console.error("Error updating user:", updateError);
       } else {
@@ -167,7 +167,7 @@ export async function getUserProfile(req: Request, res: Response) {
           email: clerkUser.emailAddresses?.[0]?.emailAddress,
           imageUrl: clerkUser.imageUrl,
         });
-        
+
         // Extract user name with better fallback logic
         let userName: string | null = null;
         if (clerkUser.firstName && clerkUser.lastName) {
@@ -184,14 +184,14 @@ export async function getUserProfile(req: Request, res: Response) {
             userName = emailAddress.split("@")[0]; // Use email username as fallback
           }
         }
-        
+
         // If still no name, use a default
         if (!userName) {
           userName = "User";
         }
-        
+
         const emailAddress = clerkUser.emailAddresses?.[0]?.emailAddress || null;
-        
+
         userData = {
           id: userId,
           name: userName,
@@ -205,7 +205,7 @@ export async function getUserProfile(req: Request, res: Response) {
           following_count: 0,
           total_likes: 0,
         };
-        
+
         // Sync user to Supabase for future requests
         try {
           await ensureUserExists(userId, clerkUser);
@@ -242,7 +242,7 @@ export async function getUserProfile(req: Request, res: Response) {
       .from("posts")
       .select("id")
       .eq("user_id", userId);
-    
+
     let totalLikes = 0;
     if (userPosts && userPosts.length > 0) {
       const postIds = userPosts.map((p: any) => p.id);
@@ -261,7 +261,7 @@ export async function getUserProfile(req: Request, res: Response) {
         .select("*")
         .eq("id", userData.pinned_post_id)
         .single();
-      
+
       if (post) {
         pinnedPost = {
           ...post,
@@ -278,7 +278,6 @@ export async function getUserProfile(req: Request, res: Response) {
     const responseData: any = {
       id: userData.id,
       name: userData.name,
-      email: userData.email,
       avatar_url: userData.avatar_url,
       bio: userData.bio || null,
       username: userData.username || null,
@@ -296,9 +295,9 @@ export async function getUserProfile(req: Request, res: Response) {
     return res.json(responseData);
   } catch (error: any) {
     console.error("Unexpected error in getUserProfile:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }
@@ -308,7 +307,7 @@ export async function updateUserProfile(req: Request, res: Response) {
   try {
     const user = req.user;
     const authenticatedUserId = user?.sub || user?.id || user?.userId;
-    
+
     if (!authenticatedUserId) {
       return res.status(401).json({ error: "User ID not found" });
     }
@@ -338,11 +337,11 @@ export async function updateUserProfile(req: Request, res: Response) {
       if (currentUser?.username_changed_at) {
         const lastChanged = new Date(currentUser.username_changed_at);
         const daysSinceChange = (Date.now() - lastChanged.getTime()) / (1000 * 60 * 60 * 24);
-        
+
         if (daysSinceChange < 14) {
           const daysRemaining = Math.ceil(14 - daysSinceChange);
-          return res.status(400).json({ 
-            error: `Username can only be changed once every 14 days. You can change it again in ${daysRemaining} day(s).` 
+          return res.status(400).json({
+            error: `Username can only be changed once every 14 days. You can change it again in ${daysRemaining} day(s).`
           });
         }
       }
@@ -356,7 +355,7 @@ export async function updateUserProfile(req: Request, res: Response) {
     if (name !== undefined) updateData.name = name;
     if (bio !== undefined) updateData.bio = bio;
     if (avatar_url !== undefined) updateData.avatar_url = avatar_url;
-    
+
     if (username && username !== currentUser?.username) {
       updateData.username = username;
       updateData.username_changed_at = new Date().toISOString();
@@ -372,9 +371,9 @@ export async function updateUserProfile(req: Request, res: Response) {
 
     if (updateError) {
       console.error("Error updating user:", updateError);
-      return res.status(500).json({ 
-        error: "Failed to update profile", 
-        details: updateError.message 
+      return res.status(500).json({
+        error: "Failed to update profile",
+        details: updateError.message
       });
     }
 
@@ -390,7 +389,7 @@ export async function updateUserProfile(req: Request, res: Response) {
         if (username) {
           updateClerkData.username = username;
         }
-        
+
         if (Object.keys(updateClerkData).length > 0) {
           await clerkClient.users.updateUser(userId, updateClerkData);
         }
@@ -403,9 +402,9 @@ export async function updateUserProfile(req: Request, res: Response) {
     return res.json({ success: true, user: updatedUser });
   } catch (error: any) {
     console.error("Unexpected error in updateUserProfile:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }
@@ -494,7 +493,7 @@ export async function getUserTotalLikes(req: Request, res: Response) {
     }
 
     const postIds = posts.map((p: any) => p.id);
-    
+
     // Count likes on all user's posts
     const { count } = await supabase
       .from("likes")

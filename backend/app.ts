@@ -15,10 +15,30 @@ import projectsRoutes from "./src/routes/projects.routes.js";
 import projectCommentsRoutes from "./src/routes/projectComments.routes.js";
 import messagesRoutes from "./src/routes/messages.routes.js";
 
+import helmet from "helmet";
+
+import rateLimit from "express-rate-limit";
+
 const app = express();
 
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many requests from this IP, please try again after 15 minutes",
+});
+
+app.use(limiter);
+
+// Security headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+
 app.use(cors({
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", process.env.FRONTEND_URL].filter(Boolean) as string[],
   credentials: true
 }));
 

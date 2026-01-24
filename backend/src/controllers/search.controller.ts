@@ -13,7 +13,7 @@ export async function searchUsers(req: Request, res: Response) {
     // Search users by name, username, or email
     const { data: users, error } = await supabase
       .from("users")
-      .select("id, name, username, email, avatar_url")
+      .select("id, name, username, avatar_url")
       .or(`name.ilike.%${query}%,username.ilike.%${query}%,email.ilike.%${query}%`)
       .limit(10);
 
@@ -75,7 +75,7 @@ export async function searchPosts(req: Request, res: Response) {
     const userIds = [...new Set(posts.map((p: any) => p.user_id))];
     const { data: users } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, avatar_url, username")
       .in("id", userIds);
 
     const userMap = new Map((users || []).map((u: any) => [u.id, u]));
@@ -86,12 +86,10 @@ export async function searchPosts(req: Request, res: Response) {
         ...post,
         user: user ? {
           name: user.name || "User",
-          email: user.email || null,
           avatar_url: user.avatar_url || null,
           username: user.username || null,
         } : {
           name: "User",
-          email: null,
           avatar_url: null,
           username: null,
         },
@@ -146,7 +144,7 @@ export async function searchProjects(req: Request, res: Response) {
     const userIds = [...new Set(projects.map((p: any) => p.user_id))];
     const { data: users } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, avatar_url, username")
       .in("id", userIds);
 
     const userMap = new Map((users || []).map((u: any) => [u.id, u]));
@@ -157,12 +155,10 @@ export async function searchProjects(req: Request, res: Response) {
         ...project,
         user: user ? {
           name: user.name || "User",
-          email: user.email || null,
           avatar_url: user.avatar_url || null,
           username: user.username || null,
         } : {
           name: "User",
-          email: null,
           avatar_url: null,
           username: null,
         },
@@ -195,7 +191,7 @@ export async function searchAll(req: Request, res: Response) {
     const [usersResult, postsResult, projectsResult] = await Promise.all([
       supabase
         .from("users")
-        .select("id, name, username, email, avatar_url")
+        .select("id, name, username, avatar_url")
         .or(`name.ilike.%${query}%,username.ilike.%${query}%,email.ilike.%${query}%`)
         .limit(5),
       supabase
