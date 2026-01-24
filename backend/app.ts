@@ -23,7 +23,10 @@ const app = express();
 
 // 1. CORS - MUST BE FIRST for preflight requests
 app.use(cors({
-  origin: ["http://localhost:5173", process.env.FRONTEND_URL].filter(Boolean) as string[],
+  origin: [
+    "http://localhost:5173",
+    "https://codeown.vercel.app"
+  ],
   credentials: true
 }));
 
