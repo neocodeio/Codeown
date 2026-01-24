@@ -14,8 +14,7 @@ import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt, faThumbtack, faPlus, faEllipsisH, faUserEdit, faLink, faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import { faThumbtack, faPlus, faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 
 interface UserProfile {
   id: string;
@@ -51,16 +50,6 @@ export default function Profile() {
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [techStack, setTechStack] = useState<string[]>([]);
-
-  // Extracted tech stack from projects
-  useEffect(() => {
-    if (projects && projects.length > 0) {
-      const allTech = projects.flatMap(p => p.technologies_used || []);
-      const uniqueTech = Array.from(new Set(allTech)).slice(0, 10);
-      setTechStack(uniqueTech);
-    }
-  }, [projects]);
 
   // Close menu when clicking outside
   useEffect(() => {
