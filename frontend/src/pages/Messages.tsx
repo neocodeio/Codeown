@@ -282,16 +282,33 @@ export default function Messages() {
                                         style={{
                                             alignSelf: isMine ? "flex-end" : "flex-start",
                                             maxWidth: "70%",
-                                            padding: "12px 18px",
-                                            borderRadius: isMine ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
-                                            backgroundColor: isMine ? "#000" : "#f1f1f1",
-                                            color: isMine ? "#fff" : "#000",
-                                            fontSize: "15px",
-                                            lineHeight: "1.4",
-                                            boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: isMine ? "flex-end" : "flex-start",
+                                            gap: "4px"
                                         }}
                                     >
-                                        {msg.content}
+                                        <div
+                                            style={{
+                                                padding: "12px 18px",
+                                                borderRadius: isMine ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
+                                                backgroundColor: isMine ? "#000" : "#f1f1f1",
+                                                color: isMine ? "#fff" : "#000",
+                                                fontSize: "15px",
+                                                lineHeight: "1.4",
+                                                boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+                                            }}
+                                        >
+                                            {msg.content}
+                                        </div>
+                                        <span style={{
+                                            fontSize: "10px",
+                                            color: "var(--text-tertiary)",
+                                            fontWeight: 600,
+                                            padding: "0 4px"
+                                        }}>
+                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
                                     </div>
                                 );
                             })}
