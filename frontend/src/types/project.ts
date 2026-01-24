@@ -13,6 +13,7 @@ export interface Project {
   updated_at: string;
   like_count: number;
   comment_count: number;
+  looking_for_contributors?: boolean;
   user?: {
     id: string;
     name: string;
@@ -41,6 +42,7 @@ export interface ProjectFormData {
   cover_image?: string;
   project_details: string;
   contributors?: string[]; // Array of usernames
+  looking_for_contributors?: boolean;
 }
 
 export interface ProjectReaction {

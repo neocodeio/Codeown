@@ -21,7 +21,7 @@ export interface Post {
   isSaved?: boolean;
 }
 
-export type FeedFilter = "all" | "following";
+export type FeedFilter = "all" | "following" | "contributors";
 
 export function usePosts(page: number = 1, limit: number = 20, filter: FeedFilter = "all", getToken?: () => Promise<string | null>) {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -38,7 +38,7 @@ export function usePosts(page: number = 1, limit: number = 20, filter: FeedFilte
       const filterParam = filter === "following" ? "&filter=following" : "";
       const res = await api.get(`/posts?page=${pageNum}&limit=${limit}${filterParam}`, { headers });
       let postsData: Post[] = [];
-      
+
       if (res.data.posts) {
         // Paginated response
         postsData = Array.isArray(res.data.posts) ? res.data.posts : [];
@@ -52,12 +52,12 @@ export function usePosts(page: number = 1, limit: number = 20, filter: FeedFilte
         // Fallback: try to extract posts from response
         postsData = res.data?.data || res.data?.posts || [];
       }
-      
+
       // Ensure postsData is always an array
       if (!Array.isArray(postsData)) {
         postsData = [];
       }
-      
+
       if (append) {
         setPosts((prev) => [...prev, ...postsData]);
       } else {

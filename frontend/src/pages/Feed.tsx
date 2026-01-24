@@ -31,6 +31,10 @@ export default function Feed() {
   // Reset page when switching views
   useEffect(() => {
     setPage(1);
+    // If we switch to posts while on contributors filter, reset to all
+    if (feedType === "posts" && feedFilter === "contributors") {
+      setFeedFilter("all");
+    }
   }, [feedType, feedFilter]);
 
   useEffect(() => {
@@ -163,51 +167,72 @@ export default function Feed() {
                 FOLLOWING
               </button>
             )}
+            {feedType === "projects" && (
+              <button
+                onClick={() => handleFilterChange("contributors")}
+                style={{
+                  border: "2px solid #e0e0e0",
+                  padding: "6px 16px",
+                  fontSize: "12px",
+                  letterSpacing: "0.1em",
+                  fontWeight: 800,
+                  backgroundColor: feedFilter === "contributors" ? "#000" : "transparent",
+                  color: feedFilter === "contributors" ? "#fff" : "var(--text-secondary)",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                CONTRIBUTORS
+              </button>
+            )}
           </div>
         </header>
 
-        {loading && (!currentItems || currentItems.length === 0) ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-            {[...Array(3)].map((_, i) => (
-              <PostCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : !Array.isArray(currentItems) || currentItems.length === 0 ? (
-          <div className="fade-in slide-up" style={{ padding: "80px 0", textAlign: "left" }}>
-            <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>NOTHING HERE.</h2>
-            <p style={{ color: "var(--text-secondary)", fontSize: "16px" }}>
-              The feed is currently empty. Start following people or create a {feedType === 'posts' ? 'post' : 'project'} to see content here.
-            </p>
-          </div>
-        ) : (
-          <div className="stagger-1" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-            {feedType === "posts" ? (
-              // Items are Posts
-              (currentItems as any[]).map((p, i) => (
-                <PostCard key={p.id} post={p} index={i} onUpdated={() => fetchPosts(page, false)} />
-              ))
-            ) : (
-              // Items are Projects
-              (currentItems as any[]).map((p, i) => (
-                <ProjectCard key={p.id} project={p} index={i} onUpdated={() => fetchProjects(page, false)} />
-              ))
-            )}
+        {
+          loading && (!currentItems || currentItems.length === 0) ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+              {[...Array(3)].map((_, i) => (
+                <PostCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : !Array.isArray(currentItems) || currentItems.length === 0 ? (
+            <div className="fade-in slide-up" style={{ padding: "80px 0", textAlign: "left" }}>
+              <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>NOTHING HERE.</h2>
+              <p style={{ color: "var(--text-secondary)", fontSize: "16px" }}>
+                The feed is currently empty. Start following people or create a {feedType === 'posts' ? 'post' : 'project'} to see content here.
+              </p>
+            </div>
+          ) : (
+            <div className="stagger-1" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+              {feedType === "posts" ? (
+                // Items are Posts
+                (currentItems as any[]).map((p, i) => (
+                  <PostCard key={p.id} post={p} index={i} onUpdated={() => fetchPosts(page, false)} />
+                ))
+              ) : (
+                // Items are Projects
+                (currentItems as any[]).map((p, i) => (
+                  <ProjectCard key={p.id} project={p} index={i} onUpdated={() => fetchProjects(page, false)} />
+                ))
+              )}
 
-            {loading && (
-              <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
-                <div style={{
-                  width: "24px",
-                  height: "24px",
-                  border: "2px solid var(--text-tertiary)",
-                  borderTopColor: "var(--text-primary)",
-                  borderRadius: "50%",
-                  animation: "spin 0.6s linear infinite",
-                }} />
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </main>
+              {loading && (
+                <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
+                  <div style={{
+                    width: "24px",
+                    height: "24px",
+                    border: "2px solid var(--text-tertiary)",
+                    borderTopColor: "var(--text-primary)",
+                    borderRadius: "50%",
+                    animation: "spin 0.6s linear infinite",
+                  }} />
+                </div>
+              )}
+            </div>
+          )
+        }
+      </div >
+    </main >
   );
 }

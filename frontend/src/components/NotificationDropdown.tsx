@@ -32,6 +32,8 @@ export default function NotificationDropdown() {
       navigate(`/post/${notification.post_id}`);
     } else if (notification.project_id) {
       navigate(`/project/${notification.project_id}`);
+    } else if (notification.type === "message") {
+      navigate(`/messages?userId=${notification.actor_id}`);
     } else if (notification.actor_id) {
       navigate(`/user/${notification.actor_id}`);
     }
@@ -41,12 +43,14 @@ export default function NotificationDropdown() {
   const getNotificationMessage = (notification: Notification) => {
     const actorName = notification.actor?.name || "Someone";
     switch (notification.type) {
+      case "message":
+        return `${actorName} sent you a message`;
       case "like":
-        return notification.project_id 
+        return notification.project_id
           ? `${actorName} liked your project`
           : `${actorName} liked your post`;
       case "comment":
-        return notification.project_id 
+        return notification.project_id
           ? `${actorName} commented on your project`
           : `${actorName} commented on your post`;
       case "follow":

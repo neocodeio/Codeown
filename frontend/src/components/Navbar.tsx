@@ -6,7 +6,7 @@ import CreatePostModal from "./CreatePostModal";
 import SearchBar from "./SearchBar";
 import NotificationDropdown from "./NotificationDropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes, faPlus, faUser, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -108,6 +108,9 @@ export default function Navbar() {
                 <span style={{ fontSize: "14px", backgroundColor: "#fff", padding: "4px 8px", borderRadius: "12px", color: "#000", fontWeight: 700 }}>Create Post</span>
               </button>
             )}
+            <Link to="/messages" style={{ color: "#fff", fontSize: "18px", padding: "6px" }}>
+              <FontAwesomeIcon icon={faEnvelope} />
+            </Link>
             <NotificationDropdown />
           </>
         )}

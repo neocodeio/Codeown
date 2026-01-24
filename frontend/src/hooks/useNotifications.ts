@@ -4,7 +4,7 @@ import { useClerkAuth } from "./useClerkAuth";
 
 export interface Notification {
   id: number;
-  type: "like" | "comment" | "follow" | "mention" | "reply" | "save";
+  type: "like" | "comment" | "follow" | "mention" | "reply" | "save" | "message";
   actor_id: string;
   post_id?: number | null;
   comment_id?: number | null;
@@ -27,7 +27,7 @@ export function useNotifications() {
 
   const fetchNotifications = useCallback(async () => {
     if (!isSignedIn) return;
-    
+
     setLoading(true);
     try {
       const token = await getToken();
@@ -50,7 +50,7 @@ export function useNotifications() {
 
   const fetchUnreadCount = useCallback(async () => {
     if (!isSignedIn) return;
-    
+
     try {
       const token = await getToken();
       if (!token) return;
@@ -94,7 +94,7 @@ export function useNotifications() {
   useEffect(() => {
     fetchNotifications();
     fetchUnreadCount();
-    
+
     // Poll for new notifications every 30 seconds
     const interval = setInterval(() => {
       fetchUnreadCount();

@@ -9,6 +9,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import Search from "./pages/Search";
 import SignInPage from "./pages/SignIn";
 import SignUpPage from "./pages/SignUp";
+import Messages from "./pages/Messages";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
 
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/sign-in/*" element={<SignInPage />} />
           <Route path="/sign-up/*" element={<SignUpPage />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/messages" element={<Messages />} />
         </Routes>
       </ErrorBoundary>
       <FeedbackButton />

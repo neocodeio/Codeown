@@ -13,6 +13,7 @@ import notificationsRoutes from "./src/routes/notifications.routes.js";
 import feedbackRoutes from "./src/routes/feedback.routes.js";
 import projectsRoutes from "./src/routes/projects.routes.js";
 import projectCommentsRoutes from "./src/routes/projectComments.routes.js";
+import messagesRoutes from "./src/routes/messages.routes.js";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/saved", savedRoutes);
 app.use("/notifications", notificationsRoutes);
 app.use("/feedback", feedbackRoutes);
 app.use("/projects", projectsRoutes);
+app.use("/messages", messagesRoutes);
 app.use("/", projectCommentsRoutes);
 
 export default app;

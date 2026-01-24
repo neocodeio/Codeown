@@ -431,6 +431,23 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               <option value="completed">Completed</option>
               <option value="paused">Paused</option>
             </select>
+
+          </div>
+
+          <div style={{ marginBottom: "20px" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                name="looking_for_contributors"
+                checked={formData.looking_for_contributors || false}
+                onChange={(e) => setFormData(prev => ({ ...prev, looking_for_contributors: e.target.checked }))}
+                style={{ width: "20px", height: "20px" }}
+              />
+              <span style={{ fontWeight: 600 }}>Looking for Contributors</span>
+            </label>
+            <p style={{ fontSize: "14px", color: "var(--text-tertiary)", marginTop: "4px", marginLeft: "30px" }}>
+              Check this if you want to invite others to help with your project.
+            </p>
           </div>
 
           <div style={{ marginBottom: "20px" }}>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import type { Project } from "../types/project";
 
-export type FeedFilter = "all" | "following";
+export type FeedFilter = "all" | "following" | "contributors";
 
 export function useProjects(page: number = 1, limit: number = 20, filter: FeedFilter = "all", getToken?: () => Promise<string | null>) {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -16,7 +16,11 @@ export function useProjects(page: number = 1, limit: number = 20, filter: FeedFi
         try {
             const token = getToken ? await getToken() : null;
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            const filterParam = filter === "following" ? "&filter=following" : "";
+
+            let filterParam = "";
+            if (filter === "following") filterParam = "&filter=following";
+            else if (filter === "contributors") filterParam = "&filter=contributors";
+
             const res = await api.get(`/projects?page=${pageNum}&limit=${limit}${filterParam}`, { headers });
 
             let projectsData: Project[] = [];

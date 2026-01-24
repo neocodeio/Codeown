@@ -243,6 +243,23 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
               <span style={{ fontSize: "10px", color: "#f9a825" }}>({project.rating_count})</span>
             </div>
           ) : null}
+
+          {project.looking_for_contributors && (
+            <div style={{
+              backgroundColor: "#e0f2fe",
+              color: "#0284c7",
+              padding: "4px 10px",
+              borderRadius: "12px",
+              fontSize: "11px",
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              border: "1px solid #7dd3fc",
+              marginLeft: "10px"
+            }}>
+              Contributors Wanted
+            </div>
+          )}
         </div>
 
         {isOwnProject && (
@@ -329,42 +346,42 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
               </span>
             ))}
           </div>
-      )}
+        )}
 
 
-      {project.contributors && project.contributors.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-              <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-tertiary)" }}>CONTRIBUTORS:</span>
-              <div style={{ display: "flex", marginLeft: "4px" }}>
-                {project.contributors.map((contrib, idx) => (
-                  <div
-                    key={contrib.user_id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/user/${contrib.user_id}`);
-                    }}
-                    style={{
-                      width: "28px",
-                      height: "28px",
-                      borderRadius: "50%",
-                      border: "2px solid #fff",
-                      overflow: "hidden",
-                      marginLeft: idx > 0 ? "-8px" : "0",
-                      cursor: "pointer",
-                      zIndex: 10 - idx
-                    }}
-                    title={contrib.username}
-                  >
-                    <img
-                      src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=000000&color=ffffff&bold=true`}
-                      alt={contrib.username}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  </div>
-                ))}
-              </div>
+        {project.contributors && project.contributors.length > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+            <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-tertiary)" }}>CONTRIBUTORS:</span>
+            <div style={{ display: "flex", marginLeft: "4px" }}>
+              {project.contributors.map((contrib, idx) => (
+                <div
+                  key={contrib.user_id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/user/${contrib.user_id}`);
+                  }}
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    borderRadius: "50%",
+                    border: "2px solid #fff",
+                    overflow: "hidden",
+                    marginLeft: idx > 0 ? "-8px" : "0",
+                    cursor: "pointer",
+                    zIndex: 10 - idx
+                  }}
+                  title={contrib.username}
+                >
+                  <img
+                    src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=000000&color=ffffff&bold=true`}
+                    alt={contrib.username}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                </div>
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
         <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
           {

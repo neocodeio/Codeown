@@ -9,7 +9,7 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserPlus, faThumbtack, faUserCheck } from "@fortawesome/free-solid-svg-icons";
+import { faUserPlus, faThumbtack, faUserCheck, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 interface User {
   id: string;
@@ -140,23 +140,46 @@ export default function UserProfile() {
                 style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
               />
             </div>
-            {isSignedIn && (
-              <button
-                onClick={handleFollow}
-                disabled={followLoading}
-                className={isFollowing ? "" : "primary"}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  border: "none",
-                  background: "transparent",
-                }}
-              >
-                <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
-                <span style={{ fontWeight: 600, backgroundColor: isFollowing ? "#2563eb" : "#000", color: "white", padding: "8px 16px", borderRadius: "25px", border: "none" }}>{isFollowing ? "FOLLOWING" : "FOLLOW"}</span>
-              </button>
-            )}
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              {isSignedIn && !isOwnProfile && (
+                <button
+                  onClick={() => navigate(`/messages?userId=${userId}`)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontWeight: 600,
+                    backgroundColor: "#fff",
+                    color: "#000",
+                    padding: "8px 16px",
+                    borderRadius: "25px",
+                    border: "2px solid #e0e0e0",
+                    cursor: "pointer"
+                  }}
+                >
+                  <FontAwesomeIcon icon={faEnvelope} />
+                  <span>MESSAGE</span>
+                </button>
+              )}
+              {isSignedIn && (
+                <button
+                  onClick={handleFollow}
+                  disabled={followLoading}
+                  className={isFollowing ? "" : "primary"}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer"
+                  }}
+                >
+                  <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
+                  <span style={{ fontWeight: 600, backgroundColor: isFollowing ? "#2563eb" : "#000", color: "white", padding: "8px 16px", borderRadius: "25px", border: "none" }}>{isFollowing ? "FOLLOWING" : "FOLLOW"}</span>
+                </button>
+              )}
+            </div>
           </div>
 
           <header style={{ marginBottom: "40px" }}>

@@ -48,6 +48,8 @@ export async function getProjects(req: Request, res: Response) {
         return res.json({ projects: [], total: 0, page: pageNum, limit: limitNum, totalPages: 0 });
       }
       projectsQuery = projectsQuery.in("user_id", followingIds);
+    } else if (String(filter).toLowerCase() === "contributors") {
+      projectsQuery = projectsQuery.eq("looking_for_contributors", true);
     }
 
     const { data: projects, error: projectsError, count } = await projectsQuery.range(offset, offset + limitNum - 1);
@@ -267,7 +269,8 @@ export async function createProject(req: Request, res: Response) {
       live_demo,
       cover_image,
       project_details,
-      contributors // Array of usernames
+      contributors, // Array of usernames
+      looking_for_contributors
     } = req.body;
 
     // Validate required fields
@@ -296,6 +299,7 @@ export async function createProject(req: Request, res: Response) {
         live_demo: live_demo || null,
         cover_image: cover_image || null,
         project_details,
+        looking_for_contributors: looking_for_contributors || false,
         like_count: 0,
         comment_count: 0
       })
@@ -382,7 +386,8 @@ export async function updateProject(req: Request, res: Response) {
       github_repo,
       live_demo,
       cover_image,
-      project_details
+      project_details,
+      looking_for_contributors
     } = req.body;
 
     // Validate required fields
@@ -407,6 +412,7 @@ export async function updateProject(req: Request, res: Response) {
         live_demo: live_demo || null,
         cover_image: cover_image || null,
         project_details,
+        looking_for_contributors: looking_for_contributors || false,
         updated_at: new Date().toISOString()
       })
       .eq("id", id)
