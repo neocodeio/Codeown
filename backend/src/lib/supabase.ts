@@ -14,10 +14,5 @@ if (!supabaseUrl || !supabaseKey) {
 
 export const supabase = createClient(
   supabaseUrl || "",
-  supabaseKey || "",
-  {
-    db: {
-      schema: "api",
-    },
-  }
+  supabaseKey || ""
 );

@@ -173,6 +173,7 @@ export async function getUnreadCount(req: Request, res: Response) {
       .eq("read", false);
 
     if (error) {
+      console.error("DEBUG: Supabase Unread Count Error:", JSON.stringify(error, null, 2));
       console.error("Error getting unread count:", error);
       return res.status(500).json({ error: "Failed to get unread count" });
     }
