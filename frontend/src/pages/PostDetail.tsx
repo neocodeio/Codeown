@@ -8,7 +8,9 @@ import ContentRenderer from "../components/ContentRenderer";
 import MentionInput from "../components/MentionInput";
 import CommentBlock, { type CommentWithMeta } from "../components/CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faHeart as faHeartSolid, faBookmark as faBookmarkSolid, faBookmark as faBookmarkRegular, faShareNodes } from "@fortawesome/free-solid-svg-icons";
+import { useLikes } from "../hooks/useLikes";
+import { useSaved } from "../hooks/useSaved";
 
 interface Post {
   id: number;
@@ -35,6 +37,17 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [commentContent, setCommentContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+
+  const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id));
+  const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id));
+
+  useEffect(() => {
+    if (id) {
+      fetchLikeStatus();
+      fetchSavedStatus();
+    }
+  }, [id]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -97,6 +110,31 @@ export default function PostDetail() {
     await api.post("/comments", { post_id: id, content, parent_id: parentId }, { headers: { Authorization: `Bearer ${token}` } });
     const res = await api.get(`/comments/${id}?sort=${commentSort}`);
     setComments(Array.isArray(res.data) ? res.data : []);
+  };
+
+  const handleShare = async () => {
+    if (!post) return;
+    const shareData = {
+      title: `Codeown - Post by ${post.user?.name || 'User'}`,
+      text: post.title || post.content?.substring(0, 100) || '',
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
   };
 
   function buildTree(list: CommentWithMeta[]): CommentWithMeta[] {
@@ -173,10 +211,104 @@ export default function PostDetail() {
           </div>
 
           {post.images && post.images.length > 0 && (
-            <div style={{ border: "1px solid var(--border-color)" }}>
+            <div style={{ border: "1px solid var(--border-color)", marginBottom: "20px" }}>
               <ImageSlider images={post.images} />
             </div>
           )}
+
+          {/* Actions Bar */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px 20px",
+            backgroundColor: "#e0e0e0",
+            borderRadius: "15px",
+            marginTop: "20px",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <button
+                onClick={toggleLike}
+                disabled={likeLoading}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 16px",
+                  background: isLiked ? "red" : "#fff",
+                  border: "1px solid #dcdcdc",
+                  color: isLiked ? "#fff" : "#364182",
+                  cursor: likeLoading ? "not-allowed" : "pointer",
+                  borderRadius: "12px",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <FontAwesomeIcon icon={faHeartSolid} />
+                <span>{likeCount || 0}</span>
+              </button>
+
+              <button
+                onClick={handleShare}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 16px",
+                  background: "#fff",
+                  border: "1px solid #dcdcdc",
+                  color: shareCopied ? "#10b981" : "#364182",
+                  cursor: "pointer",
+                  borderRadius: "12px",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  transition: "all 0.2s ease",
+                  position: "relative",
+                }}
+              >
+                <FontAwesomeIcon icon={faShareNodes} />
+                <span>{shareCopied ? "COPIED" : "SHARE"}</span>
+                {shareCopied && (
+                  <span style={{
+                    position: "absolute",
+                    bottom: "100%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    backgroundColor: "#10b981",
+                    color: "#fff",
+                    padding: "4px 8px",
+                    borderRadius: "8px",
+                    fontSize: "10px",
+                    whiteSpace: "nowrap",
+                    marginBottom: "8px",
+                    fontWeight: 700,
+                  }}>
+                    LINK COPIED!
+                  </span>
+                )}
+              </button>
+            </div>
+
+            <button
+              onClick={toggleSave}
+              style={{
+                width: "40px",
+                height: "40px",
+                backgroundColor: "#fff",
+                border: "1px solid #dcdcdc",
+                color: isSaved ? "var(--accent)" : "#364182",
+                borderRadius: "12px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} />
+            </button>
+          </div>
         </article>
 
         <section id="comments" style={{ borderTop: "4px solid var(--border-color)", paddingTop: "60px" }}>

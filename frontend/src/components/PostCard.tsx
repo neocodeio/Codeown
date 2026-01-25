@@ -18,6 +18,7 @@ import {
   faBookmark as faBookmarkRegular,
   faTrash,
   faPen,
+  faShareNodes,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface PostCardProps {
@@ -34,6 +35,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
   const [isDeleting, setIsDeleting] = useState(false);
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(post.id);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id);
+  const [shareCopied, setShareCopied] = useState(false);
   //   const { width } = useWindowSize();
   //   const isMobile = width < 768;
 
@@ -68,23 +70,31 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
     navigate(`/post/${post.id}#comments`);
   };
 
-  //   const handleShare = async (e: React.MouseEvent) => {
-  //     e.stopPropagation();
-  //     if (navigator.share) {
-  //       try {
-  //         await navigator.share({
-  //           title: `Post by ${post.user?.name || post.user?.username || 'User'}`,
-  //           text: post.content?.substring(0, 100) || '',
-  //           url: `${window.location.origin}/post/${post.id}`,
-  //         });
-  //       } catch (error) {
-  //         console.log('Error sharing:', error);
-  //       }
-  //     } else {
-  //       // Fallback: copy to clipboard
-  //       navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
-  //     }
-  //   };
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareData = {
+      title: `Codeown - Post by ${post.user?.name || post.user?.username || 'User'}`,
+      text: post.title || post.content?.substring(0, 100) || '',
+      url: `${window.location.origin}/post/${post.id}`,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
+  };
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -392,42 +402,86 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
             </button>
           </div>
 
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-          }}>
-            <button
-              onClick={handleSave}
-              style={{
-                padding: "8px",
-                background: "none",
-                border: "none",
-                color: isSaved ? "var(--accent)" : "var(--text-secondary)",
-                cursor: "pointer",
-                borderRadius: "var(--radius-sm)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isSaved ? "var(--accent)" : "var(--bg-hover)";
-                e.currentTarget.style.color = isSaved ? "var(--text-inverse)" : "var(--text-primary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = isSaved ? "var(--accent)" : "var(--text-secondary)";
-              }}
-            >
-              <FontAwesomeIcon
-                icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
-                style={{ fontSize: "16px" }}
-              />
-            </button>
-          </div>
+          <button
+            onClick={handleShare}
+            style={{
+              padding: "8px",
+              background: "none",
+              border: "none",
+              color: shareCopied ? "var(--success, #10b981)" : "var(--text-secondary)",
+              cursor: "pointer",
+              borderRadius: "var(--radius-sm)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s ease",
+              position: "relative",
+            }}
+            title={shareCopied ? "Link Copied!" : "Share Post"}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+              e.currentTarget.style.color = shareCopied ? "#10b981" : "var(--text-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = shareCopied ? "#10b981" : "var(--text-secondary)";
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faShareNodes}
+              style={{ fontSize: "16px" }}
+            />
+            {shareCopied && (
+              <span style={{
+                position: "absolute",
+                bottom: "100%",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#10b981",
+                color: "#fff",
+                padding: "4px 8px",
+                borderRadius: "8px",
+                fontSize: "10px",
+                whiteSpace: "nowrap",
+                marginBottom: "4px",
+                fontWeight: 600,
+              }}>
+                COPIED!
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={handleSave}
+            style={{
+              padding: "8px",
+              background: "none",
+              border: "none",
+              color: isSaved ? "var(--accent)" : "var(--text-secondary)",
+              cursor: "pointer",
+              borderRadius: "var(--radius-sm)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = isSaved ? "var(--accent)" : "var(--bg-hover)";
+              e.currentTarget.style.color = isSaved ? "var(--text-inverse)" : "var(--text-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = isSaved ? "var(--accent)" : "var(--text-secondary)";
+            }}
+          >
+            <FontAwesomeIcon
+              icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
+              style={{ fontSize: "16px" }}
+            />
+          </button>
         </div>
       </div>
+    </div >
 
       <EditPostModal
         isOpen={isEditModalOpen}

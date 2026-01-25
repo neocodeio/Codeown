@@ -19,7 +19,8 @@ import {
   faPlay,
   faPause,
   faCheck,
-  faStar
+  faStar,
+  faShareNodes
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
@@ -37,6 +38,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
   const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id);
   const { isSaved, toggleSave } = useProjectSaved(project.id);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const isOwnProject = currentUser?.id === project.user_id;
 
@@ -127,6 +129,31 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
       return;
     }
     await toggleSave();
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareData = {
+      title: `Codeown Project - ${project.title}`,
+      text: project.description?.substring(0, 100) || '',
+      url: `${window.location.origin}/project/${project.id}`,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${window.location.origin}/project/${project.id}`);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
   };
 
   return (
@@ -510,6 +537,52 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
         >
           <FontAwesomeIcon icon={faComment} />
           <span>{project.comment_count || 0}</span>
+        </button>
+
+        <button
+          onClick={handleShare}
+          style={{
+            flex: 1,
+            border: "none",
+            borderRight: "1px solid var(--border-color)",
+            padding: "12px",
+            display: "flex",
+            color: shareCopied ? "#10b981" : "var(--text-primary)",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            fontSize: "14px",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            position: "relative",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#f8f9fa";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+        >
+          <FontAwesomeIcon icon={faShareNodes} />
+          <span>{shareCopied ? "COPIED" : "SHARE"}</span>
+          {shareCopied && (
+            <span style={{
+              position: "absolute",
+              bottom: "100%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "#10b981",
+              color: "#fff",
+              padding: "4px 8px",
+              borderRadius: "8px",
+              fontSize: "10px",
+              whiteSpace: "nowrap",
+              marginBottom: "4px",
+              fontWeight: 600,
+            }}>
+              LINK COPIED!
+            </span>
+          )}
         </button>
 
         <button

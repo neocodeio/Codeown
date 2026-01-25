@@ -19,7 +19,8 @@ import {
   faPlay,
   faPause,
   faCheck,
-  faStar
+  faStar,
+  faShareNodes
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub as faGithubBrand } from "@fortawesome/free-brands-svg-icons";
 
@@ -38,6 +39,7 @@ export default function ProjectDetail() {
   const [likeCount, setLikeCount] = useState(0);
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -210,6 +212,31 @@ export default function ProjectDetail() {
       } : null);
     } catch (error) {
       console.error("Error rating project:", error);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!project) return;
+    const shareData = {
+      title: `Codeown Project - ${project.title}`,
+      text: project.description?.substring(0, 100) || '',
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
     }
   };
 
@@ -613,6 +640,48 @@ export default function ProjectDetail() {
           >
             <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} />
             {isSaved ? "Saved" : "Save"}
+          </button>
+
+          <button
+            onClick={handleShare}
+            style={{
+              flex: 1,
+              padding: "16px",
+              border: "none",
+              borderRadius: "8px",
+              backgroundColor: shareCopied ? "#10b981" : "#fff",
+              color: shareCopied ? "#fff" : "var(--text-primary)",
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: "16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              transition: "all 0.2s ease",
+              position: "relative",
+            }}
+          >
+            <FontAwesomeIcon icon={faShareNodes} />
+            {shareCopied ? "Copied" : "Share"}
+            {shareCopied && (
+              <span style={{
+                position: "absolute",
+                bottom: "100%",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#10b981",
+                color: "#fff",
+                padding: "4px 8px",
+                borderRadius: "8px",
+                fontSize: "10px",
+                whiteSpace: "nowrap",
+                marginBottom: "8px",
+                fontWeight: 700,
+              }}>
+                LINK COPIED!
+              </span>
+            )}
           </button>
         </div>
 
