@@ -27,8 +27,12 @@ export async function submitFeedback(req: Request, res: Response) {
     }
 
     if (!host || !user || !pass) {
-      console.error("Feedback: SMTP not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS (or FEEDBACK_*).");
-      return res.status(503).json({ error: "Feedback email is not configured. Please try again later." });
+      console.error("Feedback: SMTP not configured. Missing:", {
+        host: !host,
+        user: !user,
+        pass: !pass
+      });
+      return res.status(503).json({ error: "Feedback email is not configured. Please check environment variables." });
     }
 
     // Basic email validation
@@ -38,10 +42,14 @@ export async function submitFeedback(req: Request, res: Response) {
     }
 
     const transporter = nodemailer.createTransport({
-      host,
-      port,
+      service: host.includes("gmail") ? "gmail" : undefined,
+      host: host.includes("gmail") ? undefined : host,
+      port: host.includes("gmail") ? undefined : port,
       secure: port === 465,
       auth: { user, pass },
+      pool: true, // Use a pool for cloud environments
+      maxConnections: 1,
+      connectionTimeout: 20000, // 20s
     });
 
     const un = typeof username === "string" && username.trim() ? username.trim() : "(not provided)";
@@ -76,7 +84,7 @@ export async function submitFeedback(req: Request, res: Response) {
       return res.status(500).json({ error: "Email rejected by server. Check your SMTP configuration." });
     }
 
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: e?.message || "Failed to send feedback. Please check your SMTP configuration in .env",
       details: process.env.NODE_ENV === "development" ? e?.message : undefined
     });
