@@ -3,6 +3,8 @@ import { Resend } from "resend";
 
 const FEEDBACK_TO = "ameen65022@gmail.com";
 
+// Using Resend for reliable email delivery in production
+
 export async function submitFeedback(req: Request, res: Response) {
   try {
     const { fullName, email, username, message } = req.body;
