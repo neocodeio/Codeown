@@ -188,13 +188,13 @@ export default function Messages() {
                 <div style={{
                     width: isMobile ? "100%" : isTablet ? "300px" : "350px",
                     backgroundColor: "#f5f5f5",
-                    borderRadius: isMobile ? "0" : "20px",
+                    borderRadius: isMobile ? "25px" : "25px",
                     display: "flex",
                     flexDirection: "column",
                     border: "1px solid #e0e0e0",
                     overflow: "hidden"
                 }}>
-                    <div style={{ padding: "20px", borderBottom: "1px solid #e0e0e0" }}>
+                    <div style={{ padding: "20px", borderBottom: "1px solid #e0e0e0"}}>
                         <h2 style={{ fontSize: "20px", fontWeight: 800 }}>Messages</h2>
                     </div>
                     <div style={{ flex: 1, overflowY: "auto" }}>
@@ -247,7 +247,7 @@ export default function Messages() {
                 <div style={{
                     flex: 1,
                     backgroundColor: "#fff",
-                    borderRadius: isMobile ? "0" : "20px",
+                    borderRadius: isMobile ? "25px" : "25px",
                     display: "flex",
                     flexDirection: "column",
                     border: "1px solid #e0e0e0",
