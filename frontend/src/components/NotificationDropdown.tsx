@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useWindowSize } from "../hooks/useWindowSize";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +12,8 @@ export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -125,15 +128,16 @@ export default function NotificationDropdown() {
       {isOpen && (
         <div
           style={{
-            position: "absolute",
-            top: "100%",
-            right: 0,
-            marginTop: "8px",
-            width: "360px",
-            maxHeight: "500px",
+            position: isMobile ? "fixed" : "absolute",
+            top: isMobile ? "70px" : "100%",
+            right: isMobile ? "16px" : 0,
+            left: isMobile ? "16px" : "auto",
+            marginTop: isMobile ? 0 : "8px",
+            width: isMobile ? "auto" : "360px",
+            maxHeight: isMobile ? "calc(100vh - 100px)" : "500px",
             backgroundColor: "#ffffff",
             borderRadius: "16px",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
             border: "1px solid #e4e7eb",
             zIndex: 1000,
             overflow: "hidden",
