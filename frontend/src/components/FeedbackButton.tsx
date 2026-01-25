@@ -191,7 +191,7 @@ export default function FeedbackButton() {
               style={{
                 width: "96%",
                 padding: "12px",
-                backgroundColor: "#000",
+                backgroundColor: "#364182",
                 color: "#fff",
                 border: "none",
                 borderRadius: "15px",
@@ -232,7 +232,7 @@ export default function FeedbackButton() {
         }}
         aria-label="Feedback"
       >
-        <FontAwesomeIcon icon={faComment} style={{ fontSize: "22px", color: "#fff", backgroundColor: "#000", padding: "12px", borderRadius: "25px" }} />
+        <FontAwesomeIcon icon={faComment} style={{ fontSize: "22px", color: "#fff", backgroundColor: "#364182", padding: "12px", borderRadius: "25px" }} />
       </button>
       {modal}
     </>

@@ -121,20 +121,21 @@ export default function Search() {
         </p>
       </header>
 
-      <nav style={{ display: "flex", gap: "40px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)" }}>
+      <nav style={{ display: "flex", gap: "30px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)", paddingBottom: "10px" }}>
         {["all", "people", "posts", "projects"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
             style={{
               border: "none",
-              padding: "12px 0",
-              fontSize: "13px",
-              fontWeight: 800,
+              borderRadius: "10px",
+              padding: "12px",
+              fontSize: "15px",
+              backgroundColor: "#849bff",
+              fontWeight: 600,
               letterSpacing: "0.1em",
-              color: activeTab === tab ? "var(--text-primary)" : "var(--text-tertiary)",
+              color: activeTab === tab ? "#364182" : "#fff",
               borderBottom: activeTab === tab ? "2px solid var(--text-primary)" : "2px solid transparent",
-              borderRadius: 0,
             }}
           >
             {tab}
@@ -150,7 +151,7 @@ export default function Search() {
         <div style={{ display: "flex", flexDirection: "column", gap: "60px" }}>
           {(activeTab === "all" || activeTab === "people") && users.length > 0 && (
             <section>
-              <h2 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", marginBottom: "24px" }}>PEOPLE</h2>
+              <h2 style={{ fontSize: "25px", fontWeight: 600, color: "#849bff", marginBottom: "24px" }}>People</h2>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "24px" }}>
                 {users.map((u) => (
                   <div
@@ -160,16 +161,17 @@ export default function Search() {
                       display: "flex",
                       alignItems: "center",
                       gap: "16px",
-                      padding: "20px",
-                      border: "1px solid var(--border-color)",
+                      padding: "25px",
+                      border: "2px solid #364182",
+                      borderRadius: "15px",
                       cursor: "pointer",
-                      backgroundColor: "var(--bg-card)"
+                      backgroundColor: "#f5f5f5"
                     }}
                   >
                     <img
                       src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=000000&color=ffffff&bold=true`}
                       alt=""
-                      style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)" }}
+                      style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)", borderRadius: "50%" }}
                     />
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontWeight: 800, fontSize: "14px", }}>{u.name}</div>
@@ -183,7 +185,7 @@ export default function Search() {
 
           {(activeTab === "all" || activeTab === "posts") && (
             <section>
-              <h2 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", marginBottom: "24px" }}>POSTS</h2>
+              <h2 style={{ fontSize: "25px", fontWeight: 600, color: "#849bff", marginBottom: "24px" }}>Posts</h2>
               {posts.length === 0 ? (
                 <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS FOUND.</div>
               ) : (
@@ -196,7 +198,7 @@ export default function Search() {
 
           {(activeTab === "all" || activeTab === "projects") && (
             <section>
-              <h2 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", marginBottom: "24px" }}>PROJECTS</h2>
+              <h2 style={{ fontSize: "25px", fontWeight: 600, color: "#849bff", marginBottom: "24px" }}>Projects</h2>
               {projects.length === 0 ? (
                 <div style={{ padding: "40px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PROJECTS FOUND.</div>
               ) : (
