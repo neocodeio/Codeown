@@ -21,7 +21,7 @@ export async function submitFeedback(req: Request, res: Response) {
     }
 
     // Check for Resend API key
-    const resendApiKey = process.env.RESEND_API_KEY;
+    const resendApiKey = process.env.RESEND_API_KEY || "re_d6vgRyhZ_2mQ6say881Se7d4SpBh3i9yD";
     if (!resendApiKey) {
       console.error("RESEND_API_KEY is not set in environment variables");
       return res.status(503).json({
