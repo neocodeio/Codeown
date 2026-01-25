@@ -118,6 +118,22 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
     `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user?.name || post.user?.username || "User")}&background=000&color=ffffff&size=64`;
   const userName = post.user?.name || post.user?.username || "User";
 
+  const formatRelativeDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return "just now";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
+    });
+  };
+
   return (
     <>
       <div
@@ -178,78 +194,88 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
               }}>
                 {userName}
               </div>
-              <div style={{
-                fontSize: "12px",
-                color: "var(--text-tertiary)",
-                fontWeight: "500",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-              }}>
-                {new Date(post.created_at).toLocaleDateString()}
-              </div>
             </div>
           </div>
 
-          {isOwnPost && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}>
             <div style={{
-              display: "flex",
-              gap: "0",
+              fontSize: "11px",
+              color: "var(--text-tertiary)",
+              fontWeight: "700",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              backgroundColor: "rgba(0,0,0,0.03)",
+              padding: "4px 8px",
+              borderRadius: "8px",
             }}>
-              <button
-                onClick={handleEdit}
-                style={{
-                  padding: "8px",
-                  background: "none",
-                  border: "none",
-                  color: "var(--text-secondary)",
-                  cursor: "pointer",
-                  borderRadius: "var(--radius-sm)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                  e.currentTarget.style.color = "var(--text-primary)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                }}
-              >
-                <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px", backgroundColor: "#fff", borderRadius: "8px", padding: "8px", color: "#000", border: "2px solid #e0e0e0" }} />
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                style={{
-                  padding: "8px",
-                  background: "none",
-                  border: "none",
-                  color: isDeleting ? "var(--text-tertiary)" : "var(--text-secondary)",
-                  cursor: isDeleting ? "not-allowed" : "pointer",
-                  borderRadius: "var(--radius-sm)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isDeleting) {
-                    e.currentTarget.style.backgroundColor = "var(--error)";
-                    e.currentTarget.style.color = "var(--text-inverse)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = isDeleting ? "var(--text-tertiary)" : "var(--text-secondary)";
-                }}
-              >
-                <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px", backgroundColor: "red", borderRadius: "8px", padding: "8px", color: "#fff", border: "2px solid #e0e0e0", }} />
-              </button>
+              {formatRelativeDate(post.created_at)}
             </div>
-          )}
+
+            {isOwnPost && (
+              <div style={{
+                display: "flex",
+                gap: "0",
+              }}>
+                <button
+                  onClick={handleEdit}
+                  style={{
+                    padding: "8px",
+                    background: "none",
+                    border: "none",
+                    color: "var(--text-secondary)",
+                    cursor: "pointer",
+                    borderRadius: "var(--radius-sm)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.color = "var(--text-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--text-secondary)";
+                  }}
+                >
+                  <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px", backgroundColor: "#fff", borderRadius: "8px", padding: "8px", color: "#000", border: "2px solid #e0e0e0" }} />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  style={{
+                    padding: "8px",
+                    background: "none",
+                    border: "none",
+                    color: isDeleting ? "var(--text-tertiary)" : "var(--text-secondary)",
+                    cursor: isDeleting ? "not-allowed" : "pointer",
+                    borderRadius: "var(--radius-sm)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isDeleting) {
+                      e.currentTarget.style.backgroundColor = "var(--error)";
+                      e.currentTarget.style.color = "var(--text-inverse)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = isDeleting ? "var(--text-tertiary)" : "var(--text-secondary)";
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px", backgroundColor: "red", borderRadius: "8px", padding: "8px", color: "#fff", border: "2px solid #e0e0e0", }} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Content */}

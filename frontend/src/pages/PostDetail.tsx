@@ -38,7 +38,18 @@ export default function PostDetail() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase();
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return "JUST NOW";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}M AGO`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}H AGO`;
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
+    }).toUpperCase();
   };
 
   useEffect(() => {
@@ -116,12 +127,12 @@ export default function PostDetail() {
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <button 
-          onClick={() => navigate(-1)} 
-          style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "8px", 
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
             marginBottom: "40px",
             border: "2px solid #e0e0e0",
             background: "#f5f5f5",
@@ -137,16 +148,26 @@ export default function PostDetail() {
 
         <article className="fade-in" style={{ background: "#f5f5f5", padding: "20px", borderRadius: "25px", border: "2px solid #e0e0e0" }}>
           <header style={{ marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "20px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-              <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)", borderRadius: "50%" }} />
-              <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)", borderRadius: "50%" }} />
                 <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{userName}</h3>
-                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700 }}>{formatDate(post.created_at)}</span>
               </div>
+              <span style={{
+                fontSize: "11px",
+                color: "var(--text-tertiary)",
+                fontWeight: 700,
+                backgroundColor: "rgba(0,0,0,0.03)",
+                padding: "4px 10px",
+                borderRadius: "10px",
+                letterSpacing: "0.05em"
+              }}>
+                {formatDate(post.created_at)}
+              </span>
             </div>
             <h1 style={{ fontSize: "42px", marginBottom: "4px" }}>{post.title}</h1>
           </header>
-          
+
           <div style={{ fontSize: "18px", lineHeight: "1.7", marginBottom: "20px" }}>
             <ContentRenderer content={post.content} />
           </div>
