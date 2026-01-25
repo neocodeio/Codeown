@@ -165,7 +165,7 @@ export default function PostDetail() {
                 {formatDate(post.created_at)}
               </span>
             </div>
-            <h1 style={{ fontSize: "42px", marginBottom: "4px" }}>{post.title}</h1>
+            <h1 dir="auto" style={{ fontSize: "42px", marginBottom: "4px" }}>{post.title}</h1>
           </header>
 
           <div style={{ fontSize: "18px", lineHeight: "1.7", marginBottom: "20px" }}>

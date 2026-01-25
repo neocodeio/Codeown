@@ -240,6 +240,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
   return (
     <div
       ref={contentRef}
+      dir="auto"
       style={{
         color: "#000",
         marginTop: "20px",
