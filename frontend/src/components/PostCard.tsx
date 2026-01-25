@@ -75,7 +75,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
     const shareData = {
       title: `Codeown - Post by ${post.user?.name || post.user?.username || 'User'}`,
       text: post.title || post.content?.substring(0, 100) || '',
-      url: `${window.location.origin}/post/${post.id}`,
+      url: `https://codeown.vercel.app/post/${post.id}`,
     };
 
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -87,7 +87,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
     } else {
       // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+        await navigator.clipboard.writeText(`https://codeown.vercel.app/post/${post.id}`);
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       } catch (err) {
@@ -157,7 +157,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
           padding: "10px",
           borderRadius: "25px",
           overflow: "hidden",
-          animationDelay: `${index * 0.9}s`
+          animationDelay: `${index * 0.1}s`
         }}
         onClick={handleCardClick}
       >
@@ -402,86 +402,91 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
             </button>
           </div>
 
-          <button
-            onClick={handleShare}
-            style={{
-              padding: "8px",
-              background: "none",
-              border: "none",
-              color: shareCopied ? "var(--success, #10b981)" : "var(--text-secondary)",
-              cursor: "pointer",
-              borderRadius: "var(--radius-sm)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s ease",
-              position: "relative",
-            }}
-            title={shareCopied ? "Link Copied!" : "Share Post"}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-              e.currentTarget.style.color = shareCopied ? "#10b981" : "var(--text-primary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = shareCopied ? "#10b981" : "var(--text-secondary)";
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faShareNodes}
-              style={{ fontSize: "16px" }}
-            />
-            {shareCopied && (
-              <span style={{
-                position: "absolute",
-                bottom: "100%",
-                left: "50%",
-                transform: "translateX(-50%)",
-                backgroundColor: "#10b981",
-                color: "#fff",
-                padding: "4px 8px",
-                borderRadius: "8px",
-                fontSize: "10px",
-                whiteSpace: "nowrap",
-                marginBottom: "4px",
-                fontWeight: 600,
-              }}>
-                COPIED!
-              </span>
-            )}
-          </button>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+          }}>
+            <button
+              onClick={handleShare}
+              style={{
+                padding: "8px",
+                background: "none",
+                border: "none",
+                color: shareCopied ? "var(--success, #10b981)" : "var(--text-secondary)",
+                cursor: "pointer",
+                borderRadius: "var(--radius-sm)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
+                position: "relative",
+              }}
+              title={shareCopied ? "Link Copied!" : "Share Post"}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                e.currentTarget.style.color = shareCopied ? "#10b981" : "var(--text-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = shareCopied ? "#10b981" : "var(--text-secondary)";
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faShareNodes}
+                style={{ fontSize: "16px" }}
+              />
+              {shareCopied && (
+                <span style={{
+                  position: "absolute",
+                  bottom: "100%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#10b981",
+                  color: "#fff",
+                  padding: "4px 8px",
+                  borderRadius: "8px",
+                  fontSize: "10px",
+                  whiteSpace: "nowrap",
+                  marginBottom: "4px",
+                  fontWeight: 600,
+                }}>
+                  COPIED!
+                </span>
+              )}
+            </button>
 
-          <button
-            onClick={handleSave}
-            style={{
-              padding: "8px",
-              background: "none",
-              border: "none",
-              color: isSaved ? "var(--accent)" : "var(--text-secondary)",
-              cursor: "pointer",
-              borderRadius: "var(--radius-sm)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = isSaved ? "var(--accent)" : "var(--bg-hover)";
-              e.currentTarget.style.color = isSaved ? "var(--text-inverse)" : "var(--text-primary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = isSaved ? "var(--accent)" : "var(--text-secondary)";
-            }}
-          >
-            <FontAwesomeIcon
-              icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
-              style={{ fontSize: "16px" }}
-            />
-          </button>
+            <button
+              onClick={handleSave}
+              style={{
+                padding: "8px",
+                background: "none",
+                border: "none",
+                color: isSaved ? "var(--accent)" : "var(--text-secondary)",
+                cursor: "pointer",
+                borderRadius: "var(--radius-sm)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = isSaved ? "var(--accent)" : "var(--bg-hover)";
+                e.currentTarget.style.color = isSaved ? "var(--text-inverse)" : "var(--text-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = isSaved ? "var(--accent)" : "var(--text-secondary)";
+              }}
+            >
+              <FontAwesomeIcon
+                icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
+                style={{ fontSize: "16px" }}
+              />
+            </button>
+          </div>
         </div>
       </div>
-    </div >
 
       <EditPostModal
         isOpen={isEditModalOpen}

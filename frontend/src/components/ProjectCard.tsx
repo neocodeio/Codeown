@@ -133,10 +133,11 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    const shareUrl = `https://codeown.vercel.app/project/${project.id}`;
     const shareData = {
       title: `Codeown Project - ${project.title}`,
       text: project.description?.substring(0, 100) || '',
-      url: `${window.location.origin}/project/${project.id}`,
+      url: shareUrl,
     };
 
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -147,7 +148,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
       }
     } else {
       try {
-        await navigator.clipboard.writeText(`${window.location.origin}/project/${project.id}`);
+        await navigator.clipboard.writeText(shareUrl);
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       } catch (err) {

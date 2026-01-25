@@ -217,10 +217,11 @@ export default function ProjectDetail() {
 
   const handleShare = async () => {
     if (!project) return;
+    const shareUrl = `https://codeown.vercel.app/project/${id}`;
     const shareData = {
       title: `Codeown Project - ${project.title}`,
       text: project.description?.substring(0, 100) || '',
-      url: window.location.href,
+      url: shareUrl,
     };
 
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -231,7 +232,7 @@ export default function ProjectDetail() {
       }
     } else {
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(shareUrl);
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       } catch (err) {

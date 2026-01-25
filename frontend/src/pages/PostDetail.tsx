@@ -114,10 +114,11 @@ export default function PostDetail() {
 
   const handleShare = async () => {
     if (!post) return;
+    const shareUrl = `https://codeown.vercel.app/post/${id}`;
     const shareData = {
       title: `Codeown - Post by ${post.user?.name || 'User'}`,
       text: post.title || post.content?.substring(0, 100) || '',
-      url: window.location.href,
+      url: shareUrl,
     };
 
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -128,7 +129,7 @@ export default function PostDetail() {
       }
     } else {
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(shareUrl);
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       } catch (err) {
