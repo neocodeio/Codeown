@@ -8,7 +8,7 @@ const FEEDBACK_TO = "ameen65022@gmail.com";
 export async function submitFeedback(req: Request, res: Response) {
   try {
     const { fullName, email, username, message } = req.body;
-
+ 
     // Validation
     if (!fullName || typeof fullName !== "string" || !fullName.trim()) {
       return res.status(400).json({ error: "Full name is required." });
