@@ -254,6 +254,17 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
 
         {/* Content */}
         <div style={{ padding: "20px" }}>
+          {post.title && (
+            <h2 style={{
+              fontSize: "20px",
+              fontWeight: "700",
+              color: "var(--text-primary)",
+              marginBottom: "12px",
+              lineHeight: "1.4",
+            }}>
+              {post.title}
+            </h2>
+          )}
           {post.content && (
             <div style={{
               fontSize: "15px",
