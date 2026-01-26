@@ -8,7 +8,7 @@ export function ClerkWrapper({ children }: { children: ReactNode }) {
   if (clerkPublishableKey && clerkPublishableKey.length > 0) {
     try {
       return (
-        <ClerkProvider 
+        <ClerkProvider
           publishableKey={clerkPublishableKey}
           afterSignInUrl="/"
           afterSignUpUrl="/"

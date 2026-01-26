@@ -317,6 +317,49 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
               <ImageSlider images={post.images} />
             </div>
           )}
+
+          {/* Tags */}
+          {post.tags && post.tags.length > 0 && (
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px",
+              marginTop: "12px",
+            }}>
+              {post.tags.map((tag, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    display: "inline-block",
+                    padding: "6px 12px",
+                    backgroundColor: "#364182",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    letterSpacing: "0.02em",
+                    textTransform: "lowercase",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#2d3568";
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#364182";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/search?q=${encodeURIComponent(tag)}`);
+                  }}
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Actions */}

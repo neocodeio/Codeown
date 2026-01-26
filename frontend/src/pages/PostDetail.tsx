@@ -19,6 +19,7 @@ interface Post {
   user_id: string;
   created_at: string;
   images?: string[] | null;
+  tags?: string[] | null;
   user?: {
     name: string;
     email: string | null;
@@ -214,6 +215,46 @@ export default function PostDetail() {
           {post.images && post.images.length > 0 && (
             <div style={{ border: "1px solid var(--border-color)", marginBottom: "20px" }}>
               <ImageSlider images={post.images} />
+            </div>
+          )}
+
+          {/* Tags */}
+          {post.tags && post.tags.length > 0 && (
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "10px",
+              marginBottom: "20px",
+            }}>
+              {post.tags.map((tag, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    display: "inline-block",
+                    padding: "8px 16px",
+                    backgroundColor: "#364182",
+                    color: "#fff",
+                    borderRadius: "10px",
+                    fontSize: "13px",
+                    fontWeight: 700,
+                    letterSpacing: "0.02em",
+                    textTransform: "lowercase",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#2d3568";
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#364182";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                  onClick={() => navigate(`/search?q=${encodeURIComponent(tag)}`)}
+                >
+                  #{tag}
+                </span>
+              ))}
             </div>
           )}
 
