@@ -217,7 +217,7 @@ export default function ProjectDetail() {
 
   const handleShare = async () => {
     if (!project) return;
-    const shareUrl = `https://codeown.vercel.app/project/${id}`;
+    const shareUrl = `https://codeown.space/project/${id}`;
     const shareData = {
       title: `Codeown Project - ${project.title}`,
       text: project.description?.substring(0, 100) || '',

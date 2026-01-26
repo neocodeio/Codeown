@@ -133,7 +133,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const shareUrl = `https://codeown.vercel.app/project/${project.id}`;
+    const shareUrl = `https://codeown.space/project/${project.id}`;
     const shareData = {
       title: `Codeown Project - ${project.title}`,
       text: project.description?.substring(0, 100) || '',

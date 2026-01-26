@@ -75,7 +75,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
     const shareData = {
       title: `Codeown - Post by ${post.user?.name || post.user?.username || 'User'}`,
       text: post.title || post.content?.substring(0, 100) || '',
-      url: `https://codeown.vercel.app/post/${post.id}`,
+      url: `https://codeown.space/post/${post.id}`,
     };
 
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -87,7 +87,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
     } else {
       // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(`https://codeown.vercel.app/post/${post.id}`);
+        await navigator.clipboard.writeText(`https://codeown.space/post/${post.id}`);
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       } catch (err) {
