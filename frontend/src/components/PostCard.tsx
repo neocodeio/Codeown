@@ -151,8 +151,8 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
         style={{
           cursor: "pointer",
           transition: "all 0.3s ease",
-          backgroundColor: "#f5f5f5",
-          border: "2px solid #e0e0e0",
+          backgroundColor: "#fff",
+          border: "1px solid #e0e0e0",
           marginBottom: "30px",
           padding: "10px",
           borderRadius: "25px",
@@ -167,7 +167,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
           alignItems: "center",
           justifyContent: "space-between",
           padding: "15px",
-          borderBottom: "2px solid #e0e0e0",
+          borderBottom: "1px solid #e0e0e0",
         }}>
           <div
             style={{
@@ -325,9 +325,9 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
           alignItems: "center",
           justifyContent: "space-between",
           padding: "16px 20px",
-          backgroundColor: "#e0e0e0",
+          backgroundColor: "#fff",
           borderRadius: "15px",
-          borderTop: "1px solid var(--border-light)",
+          border: "1px solid #e0e0e0",
         }}>
           <div style={{
             display: "flex",
