@@ -11,7 +11,7 @@ import { faBars, faTimes, faPlus, faUser, faEnvelope } from "@fortawesome/free-s
 
 
 export default function Navbar() {
-  const { isLoaded, isSignedIn } = useClerkUser();
+  const { isLoaded, isSignedIn, user } = useClerkUser();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -142,19 +142,37 @@ export default function Navbar() {
           isSignedIn ? (
             <Link to="/profile">
               <div style={{
-                border: "1px solid #fff",
+                border: "none",
                 backgroundColor: "#fff",
-                padding: "9px",
-                borderRadius: "12px",
+                padding: user?.imageUrl ? "0" : "9px",
+                borderRadius: "18px",
                 color: "#000",
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: "18px",
-                fontWeight: 700,
+                fontWeight: 600,
+                overflow: "hidden",
+                width: user?.imageUrl ? "38px" : "auto",
+                height: user?.imageUrl ? "38px" : "auto",
+
               }}>
-                <FontAwesomeIcon icon={faUser} style={{ color: "#364182" }} />
+                {user?.imageUrl ? (
+                  <img
+                    src={user.imageUrl}
+                    alt="Profile"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "0px",
+                      border: "none",
+                    }}
+                  />
+                ) : (
+                  <FontAwesomeIcon icon={faUser} style={{ color: "#364182" }} />
+                )}
               </div>
             </Link>
           ) : (
@@ -256,7 +274,7 @@ export default function Navbar() {
                 Profile
               </Link>
 
-               {/* Create Post Button */}
+              {/* Create Post Button */}
               <button
                 onClick={() => { setIsModalOpen(true); closeMobileMenu(); }}
                 style={{
