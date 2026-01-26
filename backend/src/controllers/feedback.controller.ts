@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { Resend } from "resend";
 
-const FEEDBACK_TO = "asm36915@gmail.com"; // Must match your Resend account email for testing domain
+const FEEDBACK_TO = "asm36915@gmail.com"; // Must match your Resend signup email when using test domain
 
 // Using Resend for reliable email delivery in production
 
@@ -21,7 +21,7 @@ export async function submitFeedback(req: Request, res: Response) {
     }
 
     // Check for Resend API key
-    const resendApiKey = process.env.RESEND_API_KEY || "re_d6vgRyhZ_2mQ6say881Se7d4SpBh3i9yD";
+    const resendApiKey = process.env.RESEND_API_KEY;  
     if (!resendApiKey) {
       console.error("RESEND_API_KEY is not set in environment variables");
       return res.status(503).json({
@@ -37,7 +37,7 @@ export async function submitFeedback(req: Request, res: Response) {
     // Send email using Resend
     console.log("Sending feedback email via Resend...");
     const { data, error } = await resend.emails.send({
-      from: "Codeown Feedback <onboarding@resend.dev>", // Use Resend's default sender for testing
+      from: "Codeown Feedback <onboarding@resend.dev>", // Test domain - works immediately
       to: FEEDBACK_TO,
       subject: `[Codeown Feedback] from ${fullName}`,
       text: `Feedback from Codeown
