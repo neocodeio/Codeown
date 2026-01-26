@@ -63,7 +63,8 @@ export default function Navbar() {
       backgroundColor: "#849bff",
       transition: "all 0.2s ease",
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : isTablet ? "32px" : "60px", flex: 1 }}>
+      {/* Left Section */}
+      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : isTablet ? "32px" : "24px", flex: 1 }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
           <span style={{
             fontSize: "25px",
@@ -81,22 +82,34 @@ export default function Navbar() {
         </Link>
 
         {!isMobile && (
-          <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
-            <Link
-              to="/"
-              className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
-              style={{ color: "#fff", backgroundColor: "#364182", padding: "8px 12px", borderRadius: "12px", textDecoration: "none", fontSize: "20px", fontWeight: 600 }}
-            >
-              Feed
-            </Link>
-            {isLoaded && isSignedIn && (
-              <div style={{ width: isTablet ? "180px" : "240px", border: "2px solid #d9d9daff", borderRadius: "12px", backgroundColor: "#fff" }}>
-                <SearchBar />
-              </div>
-            )}
-          </div>
+          <Link
+            to="/"
+            className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
+            style={{ color: "#fff", backgroundColor: "#364182", padding: "8px 12px", borderRadius: "12px", textDecoration: "none", fontSize: "20px", fontWeight: 600 }}
+          >
+            Feed
+          </Link>
         )}
       </div>
+
+      {/* Center Section - Search Bar */}
+      {!isMobile && isLoaded && isSignedIn && (
+        <div style={{
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: isTablet ? "200px" : "320px",
+          maxWidth: isTablet ? "200px" : "320px",
+          border: "none",
+          borderRadius: "12px",
+          backgroundColor: "#fff",
+          zIndex: 100
+        }}>
+          <SearchBar />
+        </div>
+      )}
+
+      {/* Right Section */}
 
       <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
         {isLoaded && isSignedIn && (
@@ -111,12 +124,13 @@ export default function Navbar() {
                   border: "none",
                   borderRadius: "12px",
                   fontSize: "14px",
-                  padding: "6px 12px",
+                  padding: isTablet ? "9px" : "6px 12px",
                   alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <FontAwesomeIcon icon={faPlus} style={{ color: "#fff" }} />
-                <span style={{ fontSize: "14px", backgroundColor: "#364182", padding: "6px 8px", borderRadius: "12px", color: "#fff", fontWeight: 700, cursor: "pointer" }}>Create Post</span>
+                {!isTablet && <span style={{ fontSize: "14px", backgroundColor: "#364182", padding: "6px 8px", borderRadius: "12px", color: "#fff", fontWeight: 700, cursor: "pointer" }}>Create Post</span>}
               </button>
             )}
             <Link to="/messages" style={{
@@ -243,13 +257,6 @@ export default function Navbar() {
 
           {isLoaded && isSignedIn && (
             <>
-              {/* Search Bar */}
-              <div style={{
-                padding: "4px 0",
-              }}>
-                <SearchBar />
-              </div>
-
               {/* Profile Link */}
               <Link
                 to="/profile"
@@ -273,6 +280,15 @@ export default function Navbar() {
               >
                 Profile
               </Link>
+
+              {/* Search Bar */}
+              <div style={{
+                padding: "4px 0",
+                border: "2px solid #e5e7eb",
+                borderRadius: "12px",
+              }}>
+                <SearchBar />
+              </div>
 
               {/* Create Post Button */}
               <button

@@ -35,19 +35,21 @@ export default function SearchBar() {
   };
 
   return (
-    <div ref={searchRef} style={{ position: "relative", width: "100%" }}>
+    <div ref={searchRef} style={{ position: "relative", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
       <input
         type="text"
         placeholder="SEARCH..."
         value={query}
         onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
         onFocus={() => setIsOpen(true)}
+        onBlur={() => setIsOpen(false)}
         style={{
-          width: "87%",
+          outline: "none",
+          width: "100%",
           padding: "10px 16px",
-          border: "1px solid var(--border-color)",
+          border: "none",
           borderRadius: "12px",
-          backgroundColor: "var(--bg-input)",
+          backgroundColor: "#fff",
           fontSize: "12px",
           fontWeight: 700,
           letterSpacing: "0.05em",
@@ -66,7 +68,7 @@ export default function SearchBar() {
           top: "175%",
           left: 0,
           right: 0,
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#fff",
           border: "2px solid #e0e0e0",
           borderRadius: "15px",
           borderTop: "none",
@@ -90,10 +92,10 @@ export default function SearchBar() {
           )}
           {posts.length > 0 && (
             <div style={{ padding: "8px", borderTop: "1px solid var(--border-color)" }}>
-              <span style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "8px 8px 8px", display: "block" }}>Posts</span>
+              <span style={{ fontSize: "10px", fontWeight: 800, color: "#364182", letterSpacing: "0.1em", textTransform: "uppercase", padding: "8px 8px 8px", display: "block" }}>Posts</span>
               {posts.map((p) => (
                 <div key={p.id} onClick={() => handlePostClick(p.id)} style={{ padding: "8px", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
-                  <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textTransform: "uppercase" }}>{p.title || p.content.slice(0, 40) + "..."}</div>
+                  <div style={{ fontSize: "12px", fontWeight: 700, color: "#364182", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textTransform: "uppercase" }}>{p.title || p.content.slice(0, 40) + "..."}</div>
                 </div>
               ))}
             </div>
