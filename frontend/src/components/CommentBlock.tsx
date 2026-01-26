@@ -149,7 +149,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
           <div style={{ display: "flex", gap: "12px", marginTop: "12px", justifyContent: "flex-end" }}>
             <button
               onClick={() => { setShowReply(false); setReplyContent(""); }}
-              style={{ fontSize: "10px", border: "none", padding: "4px 8px" }}
+              style={{ fontSize: "18px", border: "none", borderRadius: "15px", padding: "5px 8px", backgroundColor: "#364182", color: "#fff" }}
             >
               CANCEL
             </button>
@@ -157,7 +157,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
               onClick={handleReplySubmit}
               disabled={!replyContent.trim() || submitting}
               className="primary"
-              style={{ fontSize: "10px" }}
+              style={{ fontSize: "18px", border: "none", borderRadius: "15px", padding: "5px 8px", backgroundColor: "#849bff", color: "#fff" }}
             >
               {submitting ? "POSTING..." : "POST REPLY"}
             </button>

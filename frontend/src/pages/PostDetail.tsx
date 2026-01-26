@@ -185,7 +185,7 @@ export default function PostDetail() {
           <span style={{ fontWeight: 600, fontSize: "20px", background: "transparent" }}>BACK</span>
         </button>
 
-        <article className="fade-in" style={{ background: "#f5f5f5", padding: "20px", borderRadius: "25px", border: "2px solid #e0e0e0" }}>
+        <article className="fade-in" style={{ background: "#fff", padding: "20px", borderRadius: "25px", border: "1px solid #e0e0e0" }}>
           <header style={{ marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "20px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
@@ -223,7 +223,6 @@ export default function PostDetail() {
             alignItems: "center",
             justifyContent: "space-between",
             padding: "16px 20px",
-            backgroundColor: "#e0e0e0",
             borderRadius: "15px",
             marginTop: "20px",
           }}>
@@ -335,7 +334,7 @@ export default function PostDetail() {
             </div>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "40px", backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "25px", border: "2px solid #e0e0e0" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "40px", backgroundColor: "#fff", padding: "20px", borderRadius: "25px", border: "1px solid #e0e0e0" }}>
             {buildTree(comments).length === 0 ? (
               <div style={{ textAlign: "left", padding: "40px 0", color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 700 }}>NO COMMENTS YET.</div>
             ) : (
