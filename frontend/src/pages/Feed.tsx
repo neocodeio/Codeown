@@ -83,26 +83,26 @@ export default function Feed() {
           paddingBottom: "20px"
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-            <h1 style={{ fontSize: "48px", margin: 0 }}>Feed</h1>
+            {/* <h1 style={{ fontSize: "48px", margin: 0 }}>Feed</h1> */}
 
             {/* Type Toggle */}
             <div style={{
               display: "flex",
               backgroundColor: "#849bff",
-              padding: "4px",
+              padding: "5px 32px",
               borderRadius: "12px",
               border: "1px solid var(--border-color)"
             }}>
               <button
                 onClick={() => setFeedType("posts")}
                 style={{
-                  padding: "8px 16px",
-                  borderRadius: "8px",
+                  padding: "8px 12px",
+                  borderRadius: "12px",
                   border: "none",
                   backgroundColor: feedType === "posts" ? "#fff" : "transparent",
                   color: feedType === "posts" ? "#364182" : "#fff",
-                  fontWeight: 700,
-                  fontSize: "14px",
+                  fontWeight: 600,
+                  fontSize: "15px",
                   cursor: "pointer",
                   boxShadow: feedType === "posts" ? "0 2px 5px rgba(0,0,0,0.05)" : "none",
                   transition: "all 0.2s ease"
@@ -113,13 +113,13 @@ export default function Feed() {
               <button
                 onClick={() => setFeedType("projects")}
                 style={{
-                  padding: "8px 16px",
-                  borderRadius: "8px",
+                  padding: "8px 12px",
+                  borderRadius: "12px",
                   border: "none",
                   backgroundColor: feedType === "projects" ? "#fff" : "transparent",
                   color: feedType === "projects" ? "#364182" : "#fff",
-                  fontWeight: 700,
-                  fontSize: "14px",
+                  fontWeight: 600,
+                  fontSize: "15px",
                   cursor: "pointer",
                   boxShadow: feedType === "projects" ? "0 2px 5px rgba(0,0,0,0.05)" : "none",
                   transition: "all 0.2s ease"
@@ -135,13 +135,13 @@ export default function Feed() {
               onClick={() => handleFilterChange("all")}
               style={{
                 border: "none",
-                padding: "6px 16px",
-                fontSize: "12px",
+                padding: "10px 16px",
+                fontSize: "15px",
                 letterSpacing: "0.1em",
-                fontWeight: 800,
+                fontWeight: 600,
                 backgroundColor: feedFilter === "all" ? "#364182" : "#849bff",
                 color: feedFilter === "all" ? "#fff" : "#fff",
-                borderRadius: "10px",
+                borderRadius: "12px",
                 cursor: "pointer",
                 transition: "all 0.2s ease"
               }}
@@ -153,13 +153,13 @@ export default function Feed() {
                 onClick={() => handleFilterChange("following")}
                 style={{
                   border: "none",
-                  padding: "6px 16px",
-                  fontSize: "12px",
+                  padding: "10px 16px",
+                  fontSize: "15px",
                   letterSpacing: "0.1em",
-                  fontWeight: 800,
+                  fontWeight: 600,
                   backgroundColor: feedFilter === "following" ? "#364182" : "#849bff",
                   color: feedFilter === "following" ? "#fff" : "#fff",
-                  borderRadius: "10px",
+                  borderRadius: "12px",
                   cursor: "pointer",
                   transition: "all 0.2s ease"
                 }}

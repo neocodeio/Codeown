@@ -232,7 +232,7 @@ export default function FeedbackButton() {
         }}
         aria-label="Feedback"
       >
-        <FontAwesomeIcon icon={faComment} style={{ fontSize: "22px", color: "#fff", backgroundColor: "#364182", padding: "12px", borderRadius: "25px" }} />
+        <FontAwesomeIcon icon={faComment} style={{ fontSize: "22px", color: "#fff", backgroundColor: "#fff", padding: "12px", borderRadius: "25px" }} />
       </button>
       {modal}
     </>
