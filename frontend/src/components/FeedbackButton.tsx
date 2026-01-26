@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons"; // faComment
+import { faTimes, faComment } from "@fortawesome/free-solid-svg-icons";
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
@@ -232,7 +232,7 @@ export default function FeedbackButton() {
         }}
         aria-label="Feedback"
       >
-        {/* <FontAwesomeIcon icon={faComment} style={{ fontSize: "22px", color: "#fff", backgroundColor: "#fff", padding: "12px", borderRadius: "25px" }} /> */}
+        <FontAwesomeIcon icon={faComment} style={{ fontSize: "22px", color: "#fff", backgroundColor: "#364182", padding: "12px", borderRadius: "25px" }} />
       </button>
       {modal}
     </>
