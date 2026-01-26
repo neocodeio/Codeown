@@ -37,9 +37,9 @@ export async function submitFeedback(req: Request, res: Response) {
     // Send email using Resend
     console.log("Sending feedback email via Resend...");
     const { data, error } = await resend.emails.send({
-      from: "Codeown Feedback <feedback@codeown.space>", // Your verified domain!
+      from: `${fullName} <feedback@codeown.space>`, // Shows sender name in inbox
       to: FEEDBACK_TO,
-      subject: `[Codeown Feedback] from ${fullName}`,
+      subject: `[Codeown Feedback] ${fullName} (${email})`,
       text: `Feedback from Codeown
 
 Full name: ${fullName}

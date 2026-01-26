@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faComment } from "@fortawesome/free-solid-svg-icons";
+import { useUser } from "@clerk/clerk-react";
+
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
@@ -13,15 +15,17 @@ export default function FeedbackButton() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const { user } = useUser();
 
   const reset = () => {
-    setFullName("");
-    setEmail("");
-    setUsername("");
+    setFullName(user?.fullName || "");
+    setEmail(user?.primaryEmailAddress?.emailAddress || "");
+    setUsername(user?.username || "");
     setMessage("");
     setSent(false);
     setError("");
   };
+
 
   const handleClose = () => {
     setOpen(false);
@@ -212,7 +216,10 @@ export default function FeedbackButton() {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true);
+          reset(); // Pre-fill with user data if available
+        }}
         style={{
           position: "fixed",
           bottom: "24px",
