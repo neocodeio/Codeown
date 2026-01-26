@@ -17,7 +17,14 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+
+  // Function to close mobile menu
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   const handlePostCreated = () => {
     window.dispatchEvent(new CustomEvent("postCreated"));
@@ -25,7 +32,11 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedOutsideMenu = mobileMenuRef.current && !mobileMenuRef.current.contains(target);
+      const clickedOutsideHamburger = hamburgerRef.current && !hamburgerRef.current.contains(target);
+
+      if (clickedOutsideMenu && clickedOutsideHamburger) {
         setIsMobileMenuOpen(false);
       }
     };
@@ -41,7 +52,7 @@ export default function Navbar() {
 
   return (
     <nav style={{
-      padding: isMobile ? "12px 16px" : "16px 40px",
+      padding: isMobile ? "12px 16px" : isTablet ? "14px 24px" : "16px 40px",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -52,7 +63,7 @@ export default function Navbar() {
       backgroundColor: "#849bff",
       transition: "all 0.2s ease",
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : "60px", flex: 1 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : isTablet ? "32px" : "60px", flex: 1 }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
           <span style={{
             fontSize: "25px",
@@ -79,7 +90,7 @@ export default function Navbar() {
               Feed
             </Link>
             {isLoaded && isSignedIn && (
-              <div style={{ width: "240px", border: "2px solid #d9d9daff", borderRadius: "12px", backgroundColor: "#fff" }}>
+              <div style={{ width: isTablet ? "180px" : "240px", border: "2px solid #d9d9daff", borderRadius: "12px", backgroundColor: "#fff" }}>
                 <SearchBar />
               </div>
             )}
@@ -109,17 +120,18 @@ export default function Navbar() {
               </button>
             )}
             <Link to="/messages" style={{
-                border: "1px solid #fff",
-                backgroundColor: "#fff",
-                padding: "9px",
-                borderRadius: "12px",
-                color: "#000",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "18px",
-                fontWeight: 700, }}>
+              border: "1px solid #fff",
+              backgroundColor: "#fff",
+              padding: "9px",
+              borderRadius: "12px",
+              color: "#000",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "18px",
+              fontWeight: 700,
+            }}>
               <FontAwesomeIcon icon={faEnvelope} style={{ color: "#364182" }} />
             </Link>
             <NotificationDropdown />
@@ -154,6 +166,7 @@ export default function Navbar() {
 
         {isMobile && (
           <button
+            ref={hamburgerRef}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             style={{
               padding: "4px",
@@ -173,27 +186,130 @@ export default function Navbar() {
           className="fade-in"
           style={{
             position: "absolute",
-            top: "120%",
-            left: 0,
-            right: 0,
-            borderRadius: "15px",
+            top: "110%",
+            left: "12px",
+            right: "12px",
+            borderRadius: "16px",
             backgroundColor: "#fff",
-            borderBottom: "1px solid var(--border-color)",
-            padding: "24px",
+            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
+            padding: "16px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: "8px",
+            border: "1px solid #e5e7eb",
           }}
         >
-          <Link to="/" className="nav-link" style={{ fontSize: "16px", color: "#364182", textDecoration: "none" }}>Feed</Link>
+          {/* Feed Link */}
+          <Link
+            to="/"
+            onClick={closeMobileMenu}
+            style={{
+              fontSize: "15px",
+              color: "#364182",
+              textDecoration: "none",
+              padding: "12px 14px",
+              borderRadius: "10px",
+              backgroundColor: "#f9fafb",
+              transition: "background-color 0.2s ease",
+              fontWeight: 600,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#f3f4f6";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#f9fafb";
+            }}
+          >
+            Feed
+          </Link>
+
           {isLoaded && isSignedIn && (
             <>
-              <SearchBar />
-              <button onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }} className="primary" style={{ width: "100%", padding: "6px", borderRadius: "12px", fontWeight: "bold" }}>Create New Post +</button>
-              <Link to="/profile" className="nav-link" style={{ fontSize: "16px", color: "#364182", textDecoration: "none" }}>Profile</Link>
+              {/* Search Bar */}
+              <div style={{
+                padding: "4px 0",
+              }}>
+                <SearchBar />
+              </div>
+
+              {/* Profile Link */}
+              <Link
+                to="/profile"
+                onClick={closeMobileMenu}
+                style={{
+                  fontSize: "15px",
+                  color: "#364182",
+                  textDecoration: "none",
+                  padding: "12px 14px",
+                  borderRadius: "10px",
+                  backgroundColor: "#f9fafb",
+                  transition: "background-color 0.2s ease",
+                  fontWeight: 600,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#f3f4f6";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#f9fafb";
+                }}
+              >
+                Profile
+              </Link>
+
+               {/* Create Post Button */}
+              <button
+                onClick={() => { setIsModalOpen(true); closeMobileMenu(); }}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                  fontSize: "15px",
+                  backgroundColor: "#364182",
+                  color: "#fff",
+                  border: "none",
+                  transition: "background-color 0.2s ease",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#2d3568";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#364182";
+                }}
+              >
+                Create Post
+              </button>
             </>
           )}
-          {!isSignedIn && <Link to="/sign-in"><button className="primary" style={{ width: "100%", padding: "12px", border: "none", backgroundColor: "transparent" }}>Login</button></Link>}
+
+          {/* Login Button for non-signed-in users */}
+          {!isSignedIn && (
+            <Link to="/sign-in" onClick={closeMobileMenu} style={{ textDecoration: "none" }}>
+              <button
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                  fontSize: "15px",
+                  backgroundColor: "#364182",
+                  color: "#fff",
+                  border: "none",
+                  transition: "background-color 0.2s ease",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#2d3568";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#364182";
+                }}
+              >
+                Login
+              </button>
+            </Link>
+          )}
         </div>
       )}
 
