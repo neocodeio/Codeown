@@ -1,6 +1,9 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { sendWelcomeEmail } from "../lib/email.js";
+
+
 
 // Ensure user exists in Supabase (create if doesn't exist)
 export async function ensureUserExists(userId: string, userData?: any) {
@@ -57,7 +60,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     }
 
     // Fallback - try to extract from any available fields
-    const email = data?.email || data?.email_address || null;
+    const email = data?.email || data?.email_address || (Array.isArray(data?.email_addresses) ? data.email_addresses[0]?.email_address : null) || null;
     const name = data?.username || data?.name || (email ? email.split("@")[0] : null) || "User";
 
     return {
@@ -128,6 +131,13 @@ export async function ensureUserExists(userId: string, userData?: any) {
   }
 
   console.log("User created successfully:", newUser);
+
+  // Send welcome email if email exists
+  if (userInfo.email) {
+    // We don't await this to avoid delaying the response
+    sendWelcomeEmail(userInfo.email, userInfo.name || "User");
+  }
+
   return newUser;
 }
 

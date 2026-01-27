@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { Webhook } from "svix";
 import { ensureUserExists } from "./users.controller.js";
 
+
 export async function handleClerkWebhook(req: Request, res: Response) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
