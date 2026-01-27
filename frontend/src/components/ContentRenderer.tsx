@@ -172,8 +172,8 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
       let segmentLastIndex = 0;
       let localKey = startKey;
 
-      // Combined regex for inline code and mentions
-      const combinedRegex = /(`[^`]+`)|(@\w+)/g;
+      // Combined regex for inline code, mentions, and URLs
+      const combinedRegex = /(`[^`]+`)|(@\w+)|(https?:\/\/[^\s]+)/g;
       let segmentMatch;
 
       while ((segmentMatch = combinedRegex.exec(segment)) !== null) {
@@ -222,6 +222,28 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
             >
               @{username}
             </span>
+          );
+        } else if (segmentMatch[3]) {
+          // URL
+          const url = segmentMatch[3];
+          segmentElements.push(
+            <a
+              key={`link-${localKey++}`}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                color: "#3b82f6",
+                textDecoration: "none",
+                fontWeight: "600",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+              onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+            >
+              {url.length > 50 ? url.substring(0, 47) + "..." : url}
+            </a>
           );
         }
 

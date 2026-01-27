@@ -19,6 +19,7 @@ import {
   faTrash,
   faPen,
   faShareNodes,
+  faThumbtack,
 } from "@fortawesome/free-solid-svg-icons";
 import { formatRelativeDate } from "../utils/date";
 
@@ -26,9 +27,11 @@ interface PostCardProps {
   post: Post;
   onUpdated?: () => void;
   index?: number;
+  onPin?: () => void;
+  isPinned?: boolean;
 }
 
-export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) {
+export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }: PostCardProps) {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -197,6 +200,25 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
             alignItems: "center",
             gap: "12px",
           }}>
+            {isPinned && (
+              <div style={{
+                fontSize: "10px",
+                color: "#fff",
+                fontWeight: "900",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                backgroundColor: "#0f172a",
+                padding: "4px 8px",
+                borderRadius: "6px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px"
+              }}>
+                <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "9px" }} />
+                <span>Featured</span>
+              </div>
+            )}
+
             <div style={{
               fontSize: "11px",
               color: "var(--text-tertiary)",
@@ -215,6 +237,35 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
                 display: "flex",
                 gap: "0",
               }}>
+                {onPin && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onPin(); }}
+                    style={{
+                      padding: "8px",
+                      background: "none",
+                      border: "none",
+                      color: isPinned ? "#3b82f6" : "var(--text-secondary)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-hover)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faThumbtack}
+                      style={{
+                        fontSize: "14px",
+                        backgroundColor: isPinned ? "#eff6ff" : "#fff",
+                        borderRadius: "8px",
+                        padding: "8px",
+                        border: isPinned ? "2px solid #3b82f6" : "2px solid #e2e8f0"
+                      }}
+                    />
+                  </button>
+                )}
                 <button
                   onClick={handleEdit}
                   style={{
@@ -238,7 +289,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
                     e.currentTarget.style.color = "var(--text-secondary)";
                   }}
                 >
-                  <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px", backgroundColor: "#fff", borderRadius: "8px", padding: "8px", color: "#000", border: "2px solid #e0e0e0" }} />
+                  <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px", backgroundColor: "#fff", borderRadius: "8px", padding: "8px", color: "#000", border: "2px solid #e2e8f0" }} />
                 </button>
                 <button
                   onClick={handleDelete}
@@ -266,7 +317,7 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
                     e.currentTarget.style.color = isDeleting ? "var(--text-tertiary)" : "var(--text-secondary)";
                   }}
                 >
-                  <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px", backgroundColor: "red", borderRadius: "8px", padding: "8px", color: "#fff", border: "2px solid #e0e0e0", }} />
+                  <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px", backgroundColor: "#fff5f5", borderRadius: "8px", padding: "8px", color: "#ef4444", border: "2px solid #fee2e2", }} />
                 </button>
               </div>
             )}

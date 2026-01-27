@@ -8,8 +8,10 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
+import BioRenderer from "../components/BioRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus, faThumbtack, faUserCheck, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 interface User {
   id: string;
@@ -39,6 +41,8 @@ export default function UserProfile() {
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [activeTab, setActiveTab] = useState<"posts" | "projects">("posts");
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   const isOwnProfile = currentUser?.id === userId;
 
@@ -85,7 +89,7 @@ export default function UserProfile() {
 
   const handleFollow = async () => {
     if (!isSignedIn || !userId) {
-      alert("Please sign in to follow users");
+      navigate("/sign-in");
       return;
     }
 
@@ -119,7 +123,7 @@ export default function UserProfile() {
     </div>
   );
 
-  if (!user) return <div style={{ textAlign: "center", padding: "100px" }}>USER NOT FOUND.</div>;
+  if (!user) return <div style={{ textAlign: "center", padding: "100px", fontWeight: 800 }}>USER NOT FOUND.</div>;
 
   if (isOwnProfile) {
     navigate("/profile", { replace: true });
@@ -129,170 +133,279 @@ export default function UserProfile() {
   const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=000000&color=ffffff&bold=true`;
 
   return (
-    <main className="container" style={{ padding: "60px 20px" }}>
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <section className="fade-in" style={{ marginBottom: "60px", borderBottom: "4px solid var(--border-color)", paddingBottom: "60px", backgroundColor: "#f5f5f5", padding: "30px", borderRadius: "25px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
-            <div style={{ width: "160px", height: "160px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
-              <img
-                src={avatarUrl}
-                alt={user.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
-              />
+    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        .profile-btn {
+          padding: 10px 20px;
+          border-radius: 12px;
+          font-size: 14px;
+          font-weight: 700;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: white;
+          color: #0f172a;
+          cursor: pointer;
+        }
+        .profile-btn:hover {
+          background: #f8fafc;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .profile-btn-primary {
+          background: #0f172a;
+          color: white;
+          border-color: #0f172a;
+        }
+        .profile-btn-primary:hover {
+          background: #1e293b;
+        }
+        .profile-btn-following {
+          background: transparent;
+          color: #0f172a;
+          border: 2px solid #0f172a;
+        }
+        .tab-item {
+          padding: 16px 8px;
+          font-size: 14px;
+          font-weight: 800;
+          color: #94a3b8;
+          cursor: pointer;
+          position: relative;
+          transition: all 0.3s ease;
+          border: none;
+          background: none;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+        .tab-item.active {
+          color: #0f172a;
+        }
+        .tab-item.active::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background: #0f172a;
+          border-radius: 2px;
+        }
+        .stat-card {
+          padding: 16px;
+          border-radius: 20px;
+          border: 1px solid #f1f5f9;
+          background: #f8fafc;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .stat-card:hover {
+          background: #fff;
+          border-color: #e2e8f0;
+          transform: translateY(-4px);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        }
+      `}</style>
+
+      {/* Modern Banner */}
+      <div style={{
+        height: isMobile ? "180px" : "120px",
+        background: "linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%)",
+        position: "relative",
+        overflow: "hidden"
+      }}>
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.3,
+          backgroundImage: "radial-gradient(#94a3b8 1px, transparent 1px)",
+          backgroundSize: "24px 24px"
+        }} />
+      </div>
+
+      <div className="container" style={{
+        maxWidth: "1000px",
+        margin: "-80px auto 0",
+        position: "relative",
+        zIndex: 10,
+        padding: isMobile ? "0 20px" : "0"
+      }}>
+        {/* Profile Header Content */}
+        <div style={{
+          backgroundColor: "white",
+          borderRadius: "32px",
+          padding: isMobile ? "24px" : "40px",
+          boxShadow: "0 20px 50px rgba(0,0,0,0.08)",
+          border: "1px solid #f1f5f9"
+        }} className="slide-up">
+          <div style={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: isMobile ? "center" : "flex-end",
+            gap: "24px",
+            marginBottom: "32px",
+            textAlign: isMobile ? "center" : "left"
+          }}>
+            <div style={{
+              width: isMobile ? "120px" : "160px",
+              height: isMobile ? "120px" : "160px",
+              borderRadius: "48px",
+              border: "6px solid white",
+              boxShadow: "0 15px 30px rgba(0,0,0,0.1)",
+              overflow: "hidden",
+              marginTop: isMobile ? "-80px" : "-100px",
+              backgroundColor: "#f8fafc"
+            }}>
+              <img src={avatarUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Avatar" />
             </div>
-            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-              {isSignedIn && !isOwnProfile && (
+
+            <div style={{ flex: 1, paddingBottom: isMobile ? "0" : "8px" }}>
+              <h1 style={{ fontSize: isMobile ? "32px" : "42px", fontWeight: 900, color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.04em" }}>
+                {user.name}
+              </h1>
+              <p style={{ fontSize: "16px", color: "#64748b", fontWeight: 700, letterSpacing: "0.02em" }}>
+                @{user.username || "user"}
+              </p>
+            </div>
+
+            <div style={{ display: "flex", gap: "12px", marginBottom: "8px" }}>
+              {isSignedIn && (
                 <button
                   onClick={() => navigate(`/messages?userId=${userId}`)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    fontWeight: 600,
-                    backgroundColor: "#fff",
-                    color: "#000",
-                    padding: "8px 16px",
-                    borderRadius: "25px",
-                    border: "2px solid #e0e0e0",
-                    cursor: "pointer"
-                  }}
+                  className="profile-btn"
                 >
                   <FontAwesomeIcon icon={faEnvelope} />
-                  <span>MESSAGE</span>
+                  <span>Message</span>
                 </button>
               )}
               {isSignedIn && (
                 <button
                   onClick={handleFollow}
                   disabled={followLoading}
-                  className={isFollowing ? "" : "primary"}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    border: "none",
-                    background: "transparent",
-                    cursor: "pointer"
-                  }}
+                  className={`profile-btn ${isFollowing ? 'profile-btn-following' : 'profile-btn-primary'}`}
                 >
                   <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
-                  <span style={{ fontWeight: 600, backgroundColor: isFollowing ? "#2563eb" : "#000", color: "white", padding: "8px 16px", borderRadius: "25px", border: "none" }}>{isFollowing ? "FOLLOWING" : "FOLLOW"}</span>
+                  <span>{isFollowing ? "Following" : "Follow"}</span>
                 </button>
               )}
             </div>
           </div>
 
-          <header style={{ marginBottom: "40px" }}>
-            <h1 style={{ fontSize: "48px", marginBottom: "8px" }}>{user.name}</h1>
-            <p style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "24px" }}>
-              @{user.username || "USER"}
-            </p>
-            {user.bio && (
-              <p style={{ fontSize: "18px", lineHeight: "1.6", maxWidth: "600px", color: "var(--text-secondary)" }}>
-                {user.bio}
-              </p>
-            )}
-          </header>
+          {user.bio && (
+            <div style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "32px", maxWidth: "800px", margin: isMobile ? "0 auto 32px" : "0 0 32px" }}>
+              <BioRenderer bio={user.bio} />
+            </div>
+          )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "2px solid #e0e0e0", textAlign: "center", backgroundColor: "#f9f9f9", borderRadius: "25px" }}>
-            <div
-              onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
-              style={{ padding: "24px", borderRight: "2px solid #e5e7eb", cursor: "pointer" }}
-            >
-              <div style={{ fontSize: "24px", fontWeight: 800 }}>{user.follower_count}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWERS</div>
+          {/* Minimal Stats */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+            gap: "16px",
+            borderTop: "1px solid #f1f5f9",
+            paddingTop: "32px"
+          }}>
+            <div className="stat-card" onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}>
+              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{user.follower_count}</div>
+              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Followers</div>
             </div>
-            <div
-              onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
-              style={{ padding: "24px", borderRight: "2px solid #e5e7eb", cursor: "pointer" }}
-            >
-              <div style={{ fontSize: "24px", fontWeight: 800 }}>{user.following_count}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>FOLLOWING</div>
+            <div className="stat-card" onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}>
+              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{user.following_count}</div>
+              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Following</div>
             </div>
-            <div style={{ padding: "24px" }}>
-              <div style={{ fontSize: "24px", fontWeight: 800 }}>{user.total_likes}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", letterSpacing: "0.1em" }}>LIKES</div>
+            <div className="stat-card" style={{ cursor: "default" }}>
+              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{user.total_likes}</div>
+              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Likes Recieved</div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <div style={{ marginBottom: "40px" }}>
-          <div style={{ display: "flex", gap: "20px", marginBottom: "30px", borderBottom: "2px solid var(--border-color)" }}>
+        {/* Content Navigation */}
+        <div style={{ marginTop: "48px" }}>
+          <div style={{ display: "flex", gap: "32px", borderBottom: "2px solid #f1f5f9", marginBottom: "32px" }} className="fade-in">
             <button
               onClick={() => setActiveTab("posts")}
-              style={{
-                padding: "12px 0",
-                border: "none",
-                background: "transparent",
-                fontSize: "16px",
-                fontWeight: 600,
-                color: activeTab === "posts" ? "var(--primary)" : "var(--text-secondary)",
-                borderBottom: activeTab === "posts" ? "2px solid var(--primary)" : "2px solid transparent",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
+              className={`tab-item ${activeTab === "posts" ? 'active' : ''}`}
             >
-              POSTS
+              Posts ({posts.length})
             </button>
             <button
               onClick={() => setActiveTab("projects")}
-              style={{
-                padding: "12px 0",
-                border: "none",
-                background: "transparent",
-                fontSize: "16px",
-                fontWeight: 600,
-                color: activeTab === "projects" ? "var(--primary)" : "var(--text-secondary)",
-                borderBottom: activeTab === "projects" ? "2px solid var(--primary)" : "2px solid transparent",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
+              className={`tab-item ${activeTab === "projects" ? 'active' : ''}`}
             >
-              PROJECTS
+              Projects ({projects.length})
             </button>
           </div>
 
-          {activeTab === "posts" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-              {postsLoading ? (
-                <div style={{ padding: "60px 0", color: "var(--text-secondary)", fontWeight: 700 }}>Loading posts...</div>
-              ) : posts.length === 0 ? (
-                <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO POSTS YET.</div>
-              ) : (
-                posts.map((p, i) => (
-                  <div key={p.id} style={{ position: "relative" }}>
-                    <PostCard post={p} index={i} onUpdated={fetchUserPosts} />
-                    {user.pinned_post_id === p.id && (
-                      <div style={{ position: "absolute", top: "24px", right: "24px", color: "var(--accent)" }}>
-                        <FontAwesomeIcon icon={faThumbtack} />
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          )}
+          <div className="slide-up">
+            {activeTab === "posts" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+                {postsLoading ? (
+                  <div style={{ padding: "60px 0", textAlign: "center", color: "#94a3b8" }}>Loading...</div>
+                ) : posts.length === 0 ? (
+                  <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>No posts published yet.</div>
+                ) : (
+                  posts.map((p, i) => (
+                    <div key={p.id} style={{ position: "relative" }}>
+                      <PostCard post={p} index={i} onUpdated={fetchUserPosts} />
+                      {user.pinned_post_id === p.id && (
+                        <div style={{
+                          position: "absolute",
+                          top: "20px",
+                          left: "20px",
+                          background: "#0f172a",
+                          color: "white",
+                          padding: "4px 10px",
+                          borderRadius: "8px",
+                          fontSize: "10px",
+                          fontWeight: 800,
+                          letterSpacing: "0.05em",
+                          textTransform: "uppercase",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          zIndex: 10
+                        }}>
+                          <FontAwesomeIcon icon={faThumbtack} />
+                          Featured
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
 
-          {activeTab === "projects" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-              {projectsLoading ? (
-                <div style={{ padding: "60px 0", color: "var(--text-secondary)", fontWeight: 700 }}>Loading projects...</div>
-              ) : projects.length === 0 ? (
-                <div style={{ padding: "60px 0", color: "var(--text-tertiary)", fontWeight: 700 }}>NO PROJECTS YET.</div>
-              ) : (
-                projects.map((project, i) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    index={i}
-                    onUpdated={fetchUserProjects}
-                  />
-                ))
-              )}
-            </div>
-          )}
+            {activeTab === "projects" && (
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "24px" }}>
+                {projectsLoading ? (
+                  <div style={{ gridColumn: "1 / -1", padding: "60px 0", textAlign: "center", color: "#94a3b8" }}>Loading...</div>
+                ) : projects.length === 0 ? (
+                  <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>No projects launched yet.</div>
+                ) : (
+                  projects.map((project, i) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      index={i}
+                      onUpdated={fetchUserProjects}
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      <div style={{ height: "100px" }} />
 
       {userId && (
         <FollowersModal

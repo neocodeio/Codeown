@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -27,6 +28,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const { getToken, isLoaded } = useClerkAuth();
+  const { width } = useWindowSize();
+  const isMobile = width < 640;
 
   useEffect(() => {
     if (isOpen && currentUser) {
@@ -187,394 +190,191 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const modalContent = (
     <>
       <style>{`
-        @keyframes modalFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-50px) scale(0.96);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        .modal-backdrop {
-          animation: modalFadeIn 0.15s ease-out;
-        }
-        .modal-dialog {
-          animation: modalSlideIn 0.2s ease-out;
+        @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalSlideIn { from { opacity: 0; transform: scale(0.95) translateY(-20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-backdrop { animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .modal-dialog { animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        .modal-input {
+          width: 100%;
+          padding: 14px 20px;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 16px;
+          transition: all 0.2s ease;
+          background: #f8fafc;
+          color: #0f172a;
+          outline: none;
+          box-sizing: border-box;
         }
         @media (max-width: 640px) {
-          .modal-dialog {
-            margin: 16px !important;
-            max-width: calc(100% - 32px) !important;
+          .modal-input {
+            padding: 12px 16px;
+            font-size: 14px;
           }
         }
+        .modal-input:focus {
+          border-color: #0f172a;
+          background: white;
+          box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
+        }
+        .modal-input:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+        .modal-label {
+          display: block;
+          font-size: 13px;
+          font-weight: 800;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 8px;
+          margin-left: 4px;
+        }
+        .modal-btn {
+          padding: 12px 24px;
+          border-radius: 14px;
+          font-size: 15px;
+          font-weight: 700;
+          transition: all 0.2s ease;
+          cursor: pointer;
+        }
+        .modal-btn-primary {
+          background: #0f172a;
+          color: white;
+          border: none;
+        }
+        .modal-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .modal-btn-secondary {
+          background: transparent;
+          color: #64748b;
+          border: 1px solid #e2e8f0;
+        }
+        .modal-btn-secondary:hover { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
       `}</style>
 
       <div
         className="modal-backdrop"
         style={{
           position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          inset: 0,
+          backgroundColor: "rgba(15, 23, 42, 0.6)",
+          backdropFilter: "blur(4px)",
           zIndex: 1000,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          padding: "16px",
-          overflowY: "auto",
+          padding: "20px",
         }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            onClose();
-          }
-        }}
+        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <div
           className="modal-dialog"
           style={{
-            position: "relative",
             width: "100%",
-            maxWidth: "500px",
-            margin: "auto",
+            maxWidth: "520px",
+            maxHeight: "90vh",
+            margin: isMobile ? "16px" : "auto",
+            backgroundColor: "white",
+            borderRadius: isMobile ? "24px" : "32px",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            overflow: "hidden",
             display: "flex",
             flexDirection: "column",
-            maxHeight: "calc(100vh - 32px)",
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div
-            className="modal-content"
-            style={{
-              backgroundColor: "#f5f5f5",
-              borderRadius: "25px",
-              border: "1px solid var(--border-light)",
-              boxShadow: "var(--shadow-xl)",
-              display: "flex",
-              flexDirection: "column",
-              maxHeight: "100%",
-              overflow: "hidden",
-            }}
-          >
-            {/* Modal Header */}
-            <div
-              className="modal-header"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "20px",
-                borderBottom: "1px solid #e4e7eb",
-                flexShrink: 0,
-              }}
-            >
-              <h2
-                className="modal-title"
-                style={{
-                  margin: 0,
-                  fontSize: "20px",
-                  fontWeight: 600,
-                  color: "#1a1a1a",
-                }}
-              >
-                Edit Profile
-              </h2>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{
-                  background: "none",
-                  border: "none",
-                  fontSize: "24px",
-                  fontWeight: 300,
-                  color: "#64748b",
-                  cursor: "pointer",
-                  padding: 0,
+          {/* Header */}
+          <div style={{ padding: isMobile ? "20px 24px 12px" : "32px 32px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h2 style={{ margin: 0, fontSize: isMobile ? "20px" : "24px", fontWeight: 900, color: "#0f172a", letterSpacing: "-0.03em" }}>Edit Profile</h2>
+            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "28px", color: "#94a3b8", cursor: "pointer", display: "flex" }}>&times;</button>
+          </div>
+
+          <div style={{ padding: isMobile ? "0 24px 24px" : "0 32px 32px", overflowY: "auto", display: "flex", flexDirection: "column", gap: isMobile ? "16px" : "24px" }}>
+            {/* Avatar Section */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "16px 0" }}>
+              <label style={{ cursor: "pointer", position: "relative" }}>
+                <div style={{
+                  width: "120px",
+                  height: "120px",
+                  borderRadius: "40px",
+                  overflow: "hidden",
+                  border: "4px solid #f1f5f9",
+                  boxShadow: "0 10px 20px rgba(0,0,0,0.05)"
+                }}>
+                  <img src={avatarPreview || `https://ui-avatars.com/api/?name=${name}&background=0f172a&color=fff`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Preview" />
+                </div>
+                <div style={{
+                  position: "absolute",
+                  bottom: "-6px",
+                  right: "-6px",
+                  background: "#0f172a",
+                  color: "white",
                   width: "32px",
                   height: "32px",
+                  borderRadius: "10px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "4px",
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f5f7fa";
-                  e.currentTarget.style.color = "#1a1a1a";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "#64748b";
-                }}
-              >
-                ×
-              </button>
+                  fontSize: "12px",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.2)"
+                }}>
+                  UP
+                </div>
+                <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
+              </label>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase" }}>Change Avatar</span>
             </div>
 
-            {/* Modal Body */}
-            <div
-              className="modal-body"
-              style={{
-                padding: "20px",
-                overflowY: "auto",
-                flex: "1 1 auto",
-                display: "flex",
-                flexDirection: "column",
-                gap: "20px",
-              }}
-            >
-              {/* Avatar Upload */}
-              <div style={{ textAlign: "center" }}>
-                <label style={{ cursor: "pointer", display: "inline-block" }}>
-                  <img
-                    src={avatarPreview || "https://ui-avatars.com/api/?name=User&background=317ff5&color=ffffff&size=128"}
-                    alt="Avatar"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                      border: "3px solid #e4e7eb",
-                      cursor: "pointer",
-                    }}
-                  />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{ display: "none" }}
-                  />
-                </label>
-                <p style={{ marginTop: "8px", fontSize: "14px", color: "#64748b" }}>
-                  Click to upload profile image
-                </p>
-              </div>
+            {/* Form Fields */}
+            <div>
+              <label className="modal-label">Display Name</label>
+              <input className="modal-input" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full Name" />
+            </div>
 
-              {/* Name */}
-              <div>
-                <label style={{
-                  display: "block",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#1a1a1a",
-                  marginBottom: "8px",
-                }}>
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    border: "1px solid #e4e7eb",
-                    borderRadius: "8px",
-                    fontSize: "16px",
-                    fontFamily: "inherit",
-                    outline: "none",
-                    transition: "all 0.15s",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#317ff5";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e4e7eb";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                />
-              </div>
-
-              {/* Username */}
-              <div>
-                <label style={{
-                  display: "block",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#1a1a1a",
-                  marginBottom: "8px",
-                }}>
-                  Username
-                  {!canChange && (
-                    <span style={{ color: "#f59e0b", marginLeft: "8px", fontSize: "12px" }}>
-                      (Can change in {Math.ceil(14 - ((Date.now() - new Date(currentUser.username_changed_at!).getTime()) / (1000 * 60 * 60 * 24)))} days)
-                    </span>
-                  )}
-                </label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                    setUsernameError(null);
-                  }}
-                  placeholder="username"
-                  disabled={!canChange && username === currentUser.username}
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    border: usernameError ? "1px solid #dc2626" : "1px solid #e4e7eb",
-                    borderRadius: "8px",
-                    fontSize: "16px",
-                    fontFamily: "inherit",
-                    outline: "none",
-                    transition: "all 0.15s",
-                    boxSizing: "border-box",
-                    backgroundColor: !canChange && username === currentUser.username ? "#f5f7fa" : "#ffffff",
-                    cursor: !canChange && username === currentUser.username ? "not-allowed" : "text",
-                  }}
-                  onFocus={(e) => {
-                    if (canChange || username !== currentUser.username) {
-                      e.currentTarget.style.borderColor = "#317ff5";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
-                    }
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = usernameError ? "#dc2626" : "#e4e7eb";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                />
-                {usernameError && (
-                  <p style={{ marginTop: "4px", fontSize: "12px", color: "#dc2626" }}>
-                    {usernameError}
-                  </p>
+            <div>
+              <label className="modal-label">
+                Username
+                {!canChange && (
+                  <span style={{ color: "#f59e0b", float: "right", textTransform: "none" }}>Locked for 14d</span>
                 )}
-              </div>
-
-              {/* Email (Read-only) */}
-              <div>
-                <label style={{
-                  display: "block",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#1a1a1a",
-                  marginBottom: "8px",
-                }}>
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={currentUser.email || ""}
-                  disabled
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    border: "1px solid #e4e7eb",
-                    borderRadius: "8px",
-                    fontSize: "16px",
-                    fontFamily: "inherit",
-                    backgroundColor: "#f5f7fa",
-                    color: "#64748b",
-                    cursor: "not-allowed",
-                    boxSizing: "border-box",
-                  }}
-                />
-                <p style={{ marginTop: "4px", fontSize: "12px", color: "#64748b" }}>
-                  Email cannot be changed
-                </p>
-              </div>
-
-              {/* Bio */}
-              <div>
-                <label style={{
-                  display: "block",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#1a1a1a",
-                  marginBottom: "8px",
-                }}>
-                  Bio
-                </label>
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Tell us about yourself..."
-                  rows={4}
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    border: "1px solid #e4e7eb",
-                    borderRadius: "8px",
-                    fontSize: "16px",
-                    fontFamily: "inherit",
-                    resize: "vertical",
-                    outline: "none",
-                    transition: "all 0.15s",
-                    boxSizing: "border-box",
-                    lineHeight: 1.5,
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#317ff5";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e4e7eb";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                />
-              </div>
+              </label>
+              <input
+                className="modal-input"
+                type="text"
+                value={username}
+                onChange={(e) => { setUsername(e.target.value); setUsernameError(null); }}
+                disabled={!canChange && username === currentUser.username}
+                placeholder="username"
+              />
+              {usernameError && <p style={{ color: "#ef4444", fontSize: "12px", marginTop: "6px", fontWeight: 600 }}>{usernameError}</p>}
             </div>
 
-            {/* Modal Footer */}
-            <div
-              className="modal-footer"
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "8px",
-                padding: "16px 20px",
-                borderTop: "1px solid #e4e7eb",
-                flexShrink: 0,
-              }}
+            <div>
+              <label className="modal-label">Bio</label>
+              <textarea
+                className="modal-input"
+                style={{ resize: "none" }}
+                rows={3}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Tell the community who you are..."
+              />
+            </div>
+          </div>
+
+          {/* Footer Actions */}
+          <div style={{ padding: isMobile ? "16px 24px" : "24px 32px", backgroundColor: "#f8fafc", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+            <button className="modal-btn modal-btn-secondary" style={{ padding: isMobile ? "10px 16px" : "12px 24px" }} onClick={onClose}>Cancel</button>
+            <button
+              className="modal-btn modal-btn-primary"
+              style={{ padding: isMobile ? "10px 16px" : "12px 24px" }}
+              onClick={submit}
+              disabled={isSubmitting || !name.trim()}
             >
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSubmitting}
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: "#364182",
-                  border: "none",
-                  color: "#ffffff",
-                  borderRadius: "20px",
-                  cursor: isSubmitting ? "not-allowed" : "pointer",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  transition: "all 0.15s",
-                  opacity: isSubmitting ? 0.6 : 1,
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={submit}
-                disabled={!isLoaded || !name.trim() || isSubmitting}
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: isLoaded && name.trim() && !isSubmitting ? "#849bff" : "#e4e7eb",
-                  border: "none",
-                  color: isLoaded && name.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
-                  borderRadius: "20px",
-                  cursor: isLoaded && name.trim() && !isSubmitting ? "pointer" : "not-allowed",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  transition: "all 0.15s",
-                }}
-              >
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
+              {isSubmitting ? "Updating..." : "Save Changes"}
+            </button>
           </div>
         </div>
       </div>
