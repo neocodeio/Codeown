@@ -101,7 +101,7 @@ export default function ForgotPassword() {
                         onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                     >
                         <FontAwesomeIcon icon={faArrowLeft} />
-                        Back to Sign In
+                        Back
                     </Link>
                     <h1 style={{ fontSize: "28px", fontWeight: 900, marginBottom: "8px", color: "#0f172a" }}>
                         {step === "email" ? "Reset Password" : "Check Your Email"}
