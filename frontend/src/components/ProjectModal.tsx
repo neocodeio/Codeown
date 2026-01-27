@@ -3,7 +3,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import type { Project, ProjectFormData } from "../types/project";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -181,22 +181,83 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 1000,
-        padding: "20px",
+        zIndex: 2000,
+        padding: "16px",
+        backdropFilter: "blur(4px)",
       }}
       onClick={onClose}
     >
+      <style>{`
+        @keyframes modalEnter {
+          from { opacity: 0; transform: scale(0.95) translateY(10px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-content {
+          animation: modalEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @media (max-width: 640px) {
+          .modal-content {
+            padding: 20px !important;
+            border-radius: 16px !important;
+          }
+          .modal-header-title {
+            font-size: 22px !important;
+            margin-bottom: 20px !important;
+          }
+          .form-item-label {
+            font-size: 14px !important;
+          }
+          .form-input, .form-textarea, .form-select {
+            padding: 10px !important;
+            font-size: 14px !important;
+          }
+          .add-button-text {
+            display: none;
+          }
+          .add-button-icon {
+            display: block !important;
+          }
+          .responsive-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+        }
+        .form-input, .form-textarea, .form-select {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #e2e8f0;
+          borderRadius: 12px;
+          fontSize: 16px;
+          transition: all 0.2s ease;
+          background-color: #f8fafc;
+          box-sizing: border-box;
+          outline: none;
+          font-family: inherit;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+          border-color: #849bff;
+          box-shadow: 0 0 0 4px rgba(132, 155, 255, 0.1);
+          background-color: #fff;
+        }
+        .responsive-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-bottom: 20px;
+        }
+      `}</style>
       <div
         className="modal-content"
         style={{
           backgroundColor: "#fff",
-          borderRadius: "20px",
-          padding: "30px",
+          borderRadius: "24px",
+          padding: "32px",
           width: "100%",
           maxWidth: "600px",
-          maxHeight: "90vh",
+          maxHeight: "calc(100vh - 40px)",
           overflowY: "auto",
           position: "relative",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -204,19 +265,29 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
           onClick={onClose}
           style={{
             position: "absolute",
-            top: "15px",
-            right: "15px",
-            background: "none",
+            top: "16px",
+            right: "16px",
+            background: "#f1f5f9",
             border: "none",
-            fontSize: "24px",
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "20px",
             cursor: "pointer",
-            color: "#666",
+            color: "#64748b",
+            transition: "all 0.2s ease",
+            zIndex: 10,
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e2e8f0")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#f1f5f9")}
         >
           <FontAwesomeIcon icon={faTimes} />
         </button>
 
-        <h2 style={{ marginBottom: "30px", fontSize: "28px", fontWeight: 800 }}>
+        <h2 className="modal-header-title" style={{ marginBottom: "24px", fontSize: "28px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.025em" }}>
           {project ? "Edit Project" : "Add New Project"}
         </h2>
 
@@ -235,7 +306,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
               Project Name *
             </label>
             <input
@@ -243,19 +314,19 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              required
               style={{
-                width: "100%",
-                padding: "12px",
                 border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
+                borderRadius: "10px",
+                fontSize: "13px",
               }}
+              required
+              className="form-input"
+              placeholder="e.g. My Awesome App"
             />
           </div>
 
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
               Project Description *
             </label>
             <textarea
@@ -265,18 +336,17 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               required
               rows={3}
               style={{
-                width: "100%",
-                padding: "12px",
                 border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
-                resize: "vertical",
+                borderRadius: "10px",
+                fontSize: "13px",
               }}
+              className="form-textarea"
+              placeholder="A short punchy intro for your project..."
             />
           </div>
 
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
               Technologies Used *
             </label>
             <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
@@ -285,14 +355,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 value={techInput}
                 onChange={(e) => setTechInput(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
-                placeholder="Add technology and press Enter"
+                placeholder="e.g. React, Node.js"
                 style={{
-                  flex: 1,
-                  padding: "12px",
                   border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  fontSize: "16px",
+                  borderRadius: "10px",
+                  fontSize: "13px",
                 }}
+                className="form-input"
               />
               <button
                 type="button"
@@ -305,9 +374,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                   borderRadius: "8px",
                   cursor: "pointer",
                   fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minWidth: "60px",
                 }}
               >
-                Add
+                <span className="add-button-text">Add</span>
+                <span className="add-button-icon" style={{ display: "none" }}><FontAwesomeIcon icon={faPlus} /></span>
               </button>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
@@ -345,7 +419,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
 
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
               Contributors (Usernames)
             </label>
             <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
@@ -354,13 +428,12 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 value={contributorInput}
                 onChange={(e) => setContributorInput(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddContributor())}
-                placeholder="Enter username and press Add"
+                placeholder="Enter username"
+                className="form-input"
                 style={{
-                  flex: 1,
-                  padding: "12px",
                   border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  fontSize: "16px",
+                  borderRadius: "10px",
+                  fontSize: "13px",
                 }}
               />
               <button
@@ -374,9 +447,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                   borderRadius: "8px",
                   cursor: "pointer",
                   fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minWidth: "60px",
                 }}
               >
-                Add
+                <span className="add-button-text">Add</span>
+                <span className="add-button-icon" style={{ display: "none" }}><FontAwesomeIcon icon={faPlus} /></span>
               </button>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
@@ -415,7 +493,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
           </div>
 
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
               Project Status *
             </label>
             <select
@@ -423,12 +501,11 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               value={formData.status}
               onChange={handleInputChange}
               required
+              className="form-select"
               style={{
-                width: "100%",
-                padding: "12px",
                 border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
+                borderRadius: "10px",
+                fontSize: "13px",
               }}
             >
               <option value="in_progress">In Progress</option>
@@ -454,48 +531,48 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
             </p>
           </div>
 
-          <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
-              GitHub Repository
-            </label>
-            <input
-              type="url"
-              name="github_repo"
-              value={formData.github_repo}
-              onChange={handleInputChange}
-              placeholder="https://github.com/username/repo"
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
-              }}
-            />
+          <div className="responsive-grid">
+            <div>
+              <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                GitHub Repository
+              </label>
+              <input
+                type="url"
+                name="github_repo"
+                value={formData.github_repo}
+                onChange={handleInputChange}
+                placeholder="https://github.com/username/repo"
+                className="form-input"
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "10px",
+                  fontSize: "13px",
+                }}
+              />
+            </div>
+
+            <div>
+              <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                Live Demo
+              </label>
+              <input
+                type="url"
+                name="live_demo"
+                value={formData.live_demo}
+                onChange={handleInputChange}
+                placeholder="https://example.com"
+                className="form-input"
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "10px",
+                  fontSize: "13px",
+                }}
+              />
+            </div>
           </div>
 
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
-              Live Demo
-            </label>
-            <input
-              type="url"
-              name="live_demo"
-              value={formData.live_demo}
-              onChange={handleInputChange}
-              placeholder="https://example.com"
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
               Cover Image
             </label>
             {formData.cover_image && (
@@ -520,13 +597,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 width: "100%",
                 padding: "8px",
                 border: "1px solid #ddd",
-                borderRadius: "8px",
+                borderRadius: "10px",
+                fontSize: "14px",
               }}
             />
           </div>
 
           <div style={{ marginBottom: "30px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
               Project Details *
             </label>
             <textarea
@@ -535,15 +613,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               onChange={handleInputChange}
               required
               rows={6}
-              placeholder="Describe your project in detail..."
+              className="form-textarea"
               style={{
-                width: "100%",
-                padding: "12px",
                 border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
-                resize: "vertical",
+                borderRadius: "10px",
+                fontSize: "13px",
               }}
+              placeholder="Describe your project in detail..."
             />
           </div>
 
