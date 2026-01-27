@@ -1,8 +1,11 @@
 import { type ReactNode } from "react";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 import { clerkPublishableKey } from "./clerk";
 
 export function ClerkWrapper({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
+
   // Always try to use ClerkProvider if we have any key value
   // This handles cases where the key might exist but detection failed
   if (clerkPublishableKey && clerkPublishableKey.length > 0) {
@@ -10,8 +13,10 @@ export function ClerkWrapper({ children }: { children: ReactNode }) {
       return (
         <ClerkProvider
           publishableKey={clerkPublishableKey}
-          afterSignInUrl="/"
-          afterSignUpUrl="/"
+          routerPush={(to) => navigate(to)}
+          routerReplace={(to) => navigate(to, { replace: true })}
+          signInFallbackRedirectUrl="/"
+          signUpFallbackRedirectUrl="/"
         >
           {children}
         </ClerkProvider>
