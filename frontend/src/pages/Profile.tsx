@@ -15,7 +15,7 @@ import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbtack, faPlus, faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 
 interface UserProfile {
   id: string;
