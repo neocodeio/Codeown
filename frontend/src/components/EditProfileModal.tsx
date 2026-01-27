@@ -138,6 +138,9 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
         }
       );
 
+      // Dispatch custom event to notify other components (like Navbar) to refresh user data
+      window.dispatchEvent(new CustomEvent("profileUpdated"));
+
       onUpdated();
       onClose();
     } catch (error) {

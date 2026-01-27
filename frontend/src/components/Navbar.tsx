@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
+import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import CreatePostModal from "./CreatePostModal";
 import SearchBar from "./SearchBar";
 import NotificationDropdown from "./NotificationDropdown";
+import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes, faPlus, faUser, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
@@ -12,9 +14,11 @@ import { faBars, faTimes, faPlus, faUser, faEnvelope } from "@fortawesome/free-s
 
 export default function Navbar() {
   const { isLoaded, isSignedIn, user } = useClerkUser();
+  const { getToken } = useClerkAuth();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
@@ -49,6 +53,51 @@ export default function Navbar() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Fetch user avatar from backend
+  useEffect(() => {
+    const fetchUserAvatar = async () => {
+      if (!user?.id) return;
+      try {
+        const token = await getToken();
+        const res = await api.get(`/users/${user.id}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.data?.avatar_url) {
+          setUserAvatarUrl(res.data.avatar_url);
+        }
+      } catch (error) {
+        console.error("Error fetching user avatar:", error);
+      }
+    };
+
+    if (isLoaded && isSignedIn && user?.id) {
+      fetchUserAvatar();
+    } else if (isLoaded && !isSignedIn) {
+      setUserAvatarUrl(null);
+    }
+  }, [user?.id, isLoaded, isSignedIn, getToken]);
+
+  // Listen for profile updates
+  useEffect(() => {
+    const handleProfileUpdate = async () => {
+      if (!user?.id) return;
+      try {
+        const token = await getToken();
+        const res = await api.get(`/users/${user.id}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.data?.avatar_url) {
+          setUserAvatarUrl(res.data.avatar_url);
+        }
+      } catch (error) {
+        console.error("Error refreshing user avatar:", error);
+      }
+    };
+
+    window.addEventListener("profileUpdated", handleProfileUpdate);
+    return () => window.removeEventListener("profileUpdated", handleProfileUpdate);
+  }, [user?.id, getToken]);
 
   return (
     <nav style={{
@@ -158,7 +207,7 @@ export default function Navbar() {
               <div style={{
                 border: "none",
                 backgroundColor: "#fff",
-                padding: user?.imageUrl ? "0" : "9px",
+                padding: (userAvatarUrl || user?.imageUrl) ? "0" : "9px",
                 borderRadius: "18px",
                 color: "#000",
                 textDecoration: "none",
@@ -168,13 +217,13 @@ export default function Navbar() {
                 fontSize: "18px",
                 fontWeight: 600,
                 overflow: "hidden",
-                width: user?.imageUrl ? "38px" : "auto",
-                height: user?.imageUrl ? "38px" : "auto",
+                width: (userAvatarUrl || user?.imageUrl) ? "38px" : "auto",
+                height: (userAvatarUrl || user?.imageUrl) ? "38px" : "auto",
 
               }}>
-                {user?.imageUrl ? (
+                {(userAvatarUrl || user?.imageUrl) ? (
                   <img
-                    src={user.imageUrl}
+                    src={userAvatarUrl || user?.imageUrl}
                     alt="Profile"
                     style={{
                       width: "100%",
