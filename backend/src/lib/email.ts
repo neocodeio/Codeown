@@ -24,6 +24,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               max-width: 600px;
               margin: 0 auto;
               padding: 40px 20px;
+              color: #1f2937;
               background-color: #ffffff;
             }
             .card {
@@ -54,7 +55,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
             p {
               font-size: 16px;
               line-height: 1.6;
-              color: #4b5563;
+              color: #1f2937;
               margin-bottom: 20px;
             }
             .feature-list {
@@ -66,7 +67,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               display: flex;
               align-items: center;
               margin-bottom: 12px;
-              color: #374151;
+              color: #1f2937;
             }
             .feature-icon {
               margin-right: 12px;
@@ -96,7 +97,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
             }
             .footer-text {
               font-size: 14px;
-              color: #9ca3af;
+              color: #1f2937;
             }
             .social-links {
               margin-top: 15px;
@@ -137,7 +138,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               </div>
 
               <div class="button-container">
-                <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="button">Complete Your Profile</a>
+                <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="button">Check Your Profile</a>
               </div>
               
               <div class="footer">
