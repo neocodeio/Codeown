@@ -282,7 +282,7 @@ export default function Profile() {
             </div>
 
             <div style={{ flex: 1, paddingBottom: isMobile ? "0" : "8px" }}>
-              <h1 style={{ fontSize: isMobile ? "32px" : "42px", fontWeight: 900, color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.04em" }}>
+              <h1 style={{ fontSize: isMobile ? "22px" : "32px", fontWeight: 900, color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.04em" }}>
                 {userProfile?.name || user?.fullName}
               </h1>
               <p style={{ fontSize: "16px", color: "#64748b", fontWeight: 700, letterSpacing: "0.02em" }}>
