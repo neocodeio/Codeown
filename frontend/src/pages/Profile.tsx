@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, Link } from "react-router-dom";
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
 import { useUserProjects } from "../hooks/useUserProjects";
@@ -438,7 +438,26 @@ export default function Profile() {
         </div>
       </div>
 
-      <div style={{ height: "100px" }} />
+      <footer style={{
+        padding: "40px 20px 80px",
+        height: "0px",
+        textAlign: "center",
+        borderTop: "1px solid #f1f5f9",
+        marginTop: "40px"
+      }}>
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "24px",
+          flexWrap: "wrap",
+          marginBottom: "16px"
+        }}>
+          <Link to="/about" style={{ fontSize: "13px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>About Us</Link>
+          <Link to="/privacy" style={{ fontSize: "13px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Privacy Policy</Link>
+          <Link to="/terms" style={{ fontSize: "13px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Terms of Service</Link>
+        </div>
+        <p style={{ fontSize: "12px", color: "#cbd5e1", fontWeight: 600 }}>© {new Date().getFullYear()} Codeown. Built for developers.</p>
+      </footer>
 
       {userProfile && <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onUpdated={handleProfileUpdated} currentUser={userProfile} />}
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => fetchUserProjects()} />

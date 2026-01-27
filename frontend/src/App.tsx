@@ -11,6 +11,9 @@ import SignInPage from "./pages/SignIn";
 import SignUpPage from "./pages/SignUp";
 import Messages from "./pages/Messages";
 import ForgotPassword from "./pages/ForgotPassword";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import AboutUs from "./pages/AboutUs";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
 
@@ -31,6 +34,9 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/messages" element={<Messages />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/about" element={<AboutUs />} />
         </Routes>
       </ErrorBoundary>
       <FeedbackButton />
