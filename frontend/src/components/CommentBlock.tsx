@@ -7,6 +7,8 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faReply } from "@fortawesome/free-solid-svg-icons";
 
+import { formatRelativeDate } from "../utils/date";
+
 export interface CommentWithMeta {
   id: number;
   post_id: number;
@@ -49,11 +51,6 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" }).toUpperCase();
-  };
-
   return (
     <div style={{ marginLeft: depth > 0 ? "24px" : 0, marginBottom: "24px" }} className="fade-in">
       <div
@@ -88,11 +85,11 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                   REPLYING TO <span style={{ color: "var(--accent)" }}>@{comment.parent_author_name.toUpperCase()}</span>
                 </span>
               )}
-              <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700 }}>{formatDate(comment.created_at)}</span>
+              <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700 }}>{formatRelativeDate(comment.created_at).toUpperCase()}</span>
             </div>
           </div>
         </div>
-        
+
         <div style={{ marginBottom: "20px", fontSize: "15px", lineHeight: "1.6" }}>
           <ContentRenderer content={comment.content} />
         </div>

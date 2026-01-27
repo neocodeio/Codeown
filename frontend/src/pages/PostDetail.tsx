@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faHeart as faHeartSolid, faBookmark as faBookmarkSolid, faBookmark as faBookmarkRegular, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
+import { formatRelativeDate } from "../utils/date";
 
 interface Post {
   id: number;
@@ -50,21 +51,6 @@ export default function PostDetail() {
     }
   }, [id]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return "JUST NOW";
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}M AGO`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}H AGO`;
-
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
-    }).toUpperCase();
-  };
 
   useEffect(() => {
     let isMounted = true;
@@ -202,7 +188,7 @@ export default function PostDetail() {
                 borderRadius: "10px",
                 letterSpacing: "0.05em"
               }}>
-                {formatDate(post.created_at)}
+                {formatRelativeDate(post.created_at).toUpperCase()}
               </span>
             </div>
             <h1 dir="auto" style={{ fontSize: "42px", marginBottom: "4px" }}>{post.title}</h1>

@@ -4,6 +4,7 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import type { Project } from "../types/project";
+import { formatRelativeDate } from "../utils/date";
 import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
@@ -80,10 +81,6 @@ export default function ProjectDetail() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase();
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -379,7 +376,7 @@ export default function ProjectDetail() {
                     {userName}
                   </div>
                   <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.1em" }}>
-                    {formatDate(project.created_at)}
+                    {formatRelativeDate(project.created_at).toUpperCase()}
                   </div>
                 </div>
               </div>

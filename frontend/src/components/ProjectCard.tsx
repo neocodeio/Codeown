@@ -23,6 +23,7 @@ import {
   faShareNodes
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { formatRelativeDate } from "../utils/date";
 
 interface ProjectCardProps {
   project: Project;
@@ -47,11 +48,6 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
     if (project.user_id) {
       navigate(`/user/${project.user_id}`);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase();
   };
 
   const getStatusColor = (status: string) => {
@@ -264,7 +260,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                 {userName}
               </div>
               <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.1em" }}>
-                {formatDate(project.created_at)}
+                {formatRelativeDate(project.created_at).toUpperCase()}
               </div>
             </div>
           </div>

@@ -20,6 +20,7 @@ import {
   faPen,
   faShareNodes,
 } from "@fortawesome/free-solid-svg-icons";
+import { formatRelativeDate } from "../utils/date";
 
 interface PostCardProps {
   post: Post;
@@ -127,22 +128,6 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
   const avatarUrl = post.user?.avatar_url ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user?.name || post.user?.username || "User")}&background=000&color=ffffff&size=64`;
   const userName = post.user?.name || post.user?.username || "User";
-
-  const formatRelativeDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return "just now";
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
-    });
-  };
 
   return (
     <>

@@ -5,6 +5,7 @@ import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { formatRelativeDate } from "../utils/date";
 
 export default function NotificationDropdown() {
   const { notifications, unreadCount, markAsRead } = useNotifications();
@@ -69,17 +70,6 @@ export default function NotificationDropdown() {
     }
   };
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return "just now";
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  };
 
   if (!isSignedIn) return null;
 
@@ -218,7 +208,7 @@ export default function NotificationDropdown() {
                         {getNotificationMessage(notification)}
                       </div>
                       <div style={{ fontSize: "12px", color: "#64748b" }}>
-                        {formatTime(notification.created_at)}
+                        {formatRelativeDate(notification.created_at)}
                       </div>
                     </div>
                     {!notification.read && (
