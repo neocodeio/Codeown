@@ -4,11 +4,12 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import CreatePostModal from "./CreatePostModal";
+import ProjectModal from "./ProjectModal";
 import SearchBar from "./SearchBar";
 import NotificationDropdown from "./NotificationDropdown";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faPlus, faUser, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes, faPlus, faUser, faEnvelope, faRocket, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -17,6 +18,8 @@ export default function Navbar() {
   const { getToken } = useClerkAuth();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isCreateDropdownOpen, setIsCreateDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
   const { width } = useWindowSize();
@@ -37,16 +40,21 @@ export default function Navbar() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
+
+      // Handle mobile menu outside click
       const clickedOutsideMenu = mobileMenuRef.current && !mobileMenuRef.current.contains(target);
       const clickedOutsideHamburger = hamburgerRef.current && !hamburgerRef.current.contains(target);
-
       if (clickedOutsideMenu && clickedOutsideHamburger) {
         setIsMobileMenuOpen(false);
       }
+
+      // Handle create dropdown outside click
+      const createBtn = document.getElementById("create-btn-container");
+      if (createBtn && !createBtn.contains(target)) {
+        setIsCreateDropdownOpen(false);
+      }
     };
-    if (isMobileMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
@@ -164,23 +172,107 @@ export default function Navbar() {
         {isLoaded && isSignedIn && (
           <>
             {!isMobile && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="primary"
-                style={{
-                  display: "flex",
-                  backgroundColor: "#364182",
-                  border: "none",
-                  borderRadius: "12px",
-                  fontSize: "14px",
-                  padding: isTablet ? "9px" : "6px 12px",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <FontAwesomeIcon icon={faPlus} style={{ color: "#fff" }} />
-                {!isTablet && <span style={{ fontSize: "14px", backgroundColor: "#364182", padding: "6px 8px", borderRadius: "12px", color: "#fff", fontWeight: 700, cursor: "pointer" }}>Create Post</span>}
-              </button>
+              <div id="create-btn-container" style={{ position: "relative" }}>
+                <button
+                  onClick={() => setIsCreateDropdownOpen(!isCreateDropdownOpen)}
+                  className="primary"
+                  style={{
+                    display: "flex",
+                    background: "#364182",
+                    border: "none",
+                    borderRadius: "14px",
+                    fontSize: "14px",
+                    padding: isTablet ? "10px" : "11px 16px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#fff",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    boxShadow: "0 4px 12px rgba(54, 65, 130, 0.3)",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    gap: "8px",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(54, 65, 130, 0.4)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(54, 65, 130, 0.3)";
+                  }}
+                >
+                  <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: isTablet ? "18px" : "14px" }} />
+                  {!isTablet && <span>Create</span>}
+                </button>
+
+                {isCreateDropdownOpen && (
+                  <div style={{
+                    position: "absolute",
+                    top: "120%",
+                    right: 0,
+                    backgroundColor: "#fff",
+                    borderRadius: "16px",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+                    padding: "10px",
+                    minWidth: "180px",
+                    zIndex: 1000,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                    border: "1px solid #f1f5f9",
+                    animation: "slideUp 0.2s ease-out"
+                  }}>
+                    <button
+                      onClick={() => { setIsModalOpen(true); setIsCreateDropdownOpen(false); }}
+                      style={{
+                        padding: "12px 16px",
+                        backgroundColor: "transparent",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "12px",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        color: "#334155",
+                        fontWeight: 600,
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#364182" }}>
+                        <FontAwesomeIcon icon={faPlus} />
+                      </div>
+                      Post
+                    </button>
+                    <button
+                      onClick={() => { setIsProjectModalOpen(true); setIsCreateDropdownOpen(false); }}
+                      style={{
+                        padding: "12px 16px",
+                        backgroundColor: "transparent",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "12px",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        color: "#334155",
+                        fontWeight: 600,
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#ecfdf5", display: "flex", alignItems: "center", justifyContent: "center", color: "#059669" }}>
+                        <FontAwesomeIcon icon={faRocket} />
+                      </div>
+                      Project
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
             <Link to="/messages" style={{
               border: "1px solid #fff",
@@ -397,6 +489,107 @@ export default function Navbar() {
       )}
 
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={handlePostCreated} />
+      <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => window.dispatchEvent(new CustomEvent("projectCreated"))} />
+
+      {/* Mobile Floating Action Button */}
+      {isMobile && isLoaded && isSignedIn && (
+        <div id="create-btn-container" style={{ position: "fixed", bottom: "30px", right: "20px", zIndex: 999 }}>
+          {isCreateDropdownOpen && (
+            <div style={{
+              position: "absolute",
+              bottom: "70px",
+              right: 0,
+              backgroundColor: "#fff",
+              borderRadius: "20px",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+              padding: "10px",
+              minWidth: "200px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
+              border: "1px solid #e5e7eb",
+              animation: "mobileSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+            }}>
+              <button
+                onClick={() => { setIsModalOpen(true); setIsCreateDropdownOpen(false); }}
+                style={{
+                  padding: "16px",
+                  backgroundColor: "#f8fafc",
+                  border: "none",
+                  borderRadius: "15px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "15px",
+                  color: "#1e293b",
+                  fontWeight: 700,
+                  fontSize: "16px"
+                }}
+              >
+                <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#364182" }}>
+                  <FontAwesomeIcon icon={faPlus} />
+                </div>
+                Create Post
+              </button>
+              <button
+                onClick={() => { setIsProjectModalOpen(true); setIsCreateDropdownOpen(false); }}
+                style={{
+                  padding: "16px",
+                  backgroundColor: "#f8fafc",
+                  border: "none",
+                  borderRadius: "15px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "15px",
+                  color: "#1e293b",
+                  fontWeight: 700,
+                  fontSize: "16px"
+                }}
+              >
+                <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#ecfdf5", display: "flex", alignItems: "center", justifyContent: "center", color: "#059669" }}>
+                  <FontAwesomeIcon icon={faRocket} />
+                </div>
+                Launch Project
+              </button>
+            </div>
+          )}
+          <button
+            onClick={() => setIsCreateDropdownOpen(!isCreateDropdownOpen)}
+            style={{
+              width: "58px",
+              height: "58px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #364182 0%, #4a59b3 100%)",
+              color: "#fff",
+              border: "none",
+              boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "24px",
+              cursor: "pointer",
+              transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              transform: isCreateDropdownOpen ? "rotate(45deg)" : "rotate(0deg)"
+            }}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+
+          <style>{`
+            @keyframes slideUp {
+              from { opacity: 0; transform: translateY(10px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes mobileSlideUp {
+              from { opacity: 0; transform: translateY(20px) scale(0.8); }
+              to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+          `}</style>
+        </div>
+      )}
     </nav>
   );
 }
