@@ -290,6 +290,12 @@ export default function Profile() {
               </p>
             </div>
 
+            {userProfile?.bio && (
+              <div className="slide-up" style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "32px", maxWidth: "800px", margin: isMobile ? "0 auto 32px" : "0 0 32px" }}>
+                <BioRenderer bio={userProfile.bio} />
+              </div>
+            )}
+
             <div style={{ display: "flex", gap: "12px", marginBottom: "8px" }}>
               <button onClick={() => setIsEditModalOpen(true)} className="profile-btn profile-btn-primary">
                 Edit Profile
@@ -299,8 +305,22 @@ export default function Profile() {
                   <FontAwesomeIcon icon={faEllipsisH} />
                 </button>
                 {isMenuOpen && (
-                  <div style={{ position: "absolute", top: "120%", right: 0, backgroundColor: "#fff", border: "1px solid #eee", borderRadius: "16px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", minWidth: "160px", zIndex: 100, padding: "8px" }}>
-                    <button onClick={handleSignOut} style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "8px" }}>
+                  <div style={{ position: "absolute", top: "120%", right: 0, backgroundColor: "#fff", border: "1px solid #f1f5f9", borderRadius: "16px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", minWidth: "180px", zIndex: 100, padding: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <button
+                      onClick={() => navigate("/forgot-password")}
+                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#0f172a", fontWeight: 700, cursor: "pointer", borderRadius: "8px", fontSize: "13px" }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      Reset Password
+                    </button>
+                    <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
+                    <button
+                      onClick={handleSignOut}
+                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "8px", fontSize: "13px" }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
                       Sign Out
                     </button>
                   </div>
@@ -308,12 +328,6 @@ export default function Profile() {
               </div>
             </div>
           </div>
-
-          {userProfile?.bio && (
-            <div className="slide-up" style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "32px", maxWidth: "800px", margin: isMobile ? "0 auto 32px" : "0 0 32px" }}>
-              <BioRenderer bio={userProfile.bio} />
-            </div>
-          )}
 
           {/* Minimal Stats */}
           <div style={{
