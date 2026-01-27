@@ -594,12 +594,18 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
             alignItems: "center",
             justifyContent: "center",
             fontSize: "14px",
-            backgroundColor: isSaved ? "#007bff" : "transparent",
+            backgroundColor: isSaved ? "#6366f1" : "transparent",
             color: isSaved ? "#fff" : "var(--text-primary)",
-            transition: "background-color 0.2s ease",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
-          <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} />
+          <FontAwesomeIcon
+            icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
+            style={{
+              transform: isSaved ? "scale(1.2)" : "scale(1)",
+              transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
+            }}
+          />
         </button>
       </div>
 

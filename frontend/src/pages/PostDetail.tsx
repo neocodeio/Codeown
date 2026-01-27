@@ -322,18 +322,30 @@ export default function PostDetail() {
               style={{
                 width: "40px",
                 height: "40px",
-                backgroundColor: "#fff",
+                backgroundColor: isSaved ? "rgba(99, 102, 241, 0.1)" : "#fff",
                 border: "1px solid #dcdcdc",
-                color: isSaved ? "var(--accent)" : "#364182",
+                color: isSaved ? "#6366f1" : "#364182",
                 borderRadius: "12px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                transition: "all 0.2s ease",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = isSaved ? "rgba(99, 102, 241, 0.2)" : "#f8f9fa";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = isSaved ? "rgba(99, 102, 241, 0.1)" : "#fff";
               }}
             >
-              <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} />
+              <FontAwesomeIcon
+                icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
+                style={{
+                  transform: isSaved ? "scale(1.2)" : "scale(1)",
+                  transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
+                }}
+              />
             </button>
           </div>
         </article>

@@ -488,28 +488,32 @@ export default function PostCard({ post, onUpdated, index = 0 }: PostCardProps) 
               onClick={handleSave}
               style={{
                 padding: "8px",
-                background: "none",
+                background: isSaved ? "rgba(99, 102, 241, 0.1)" : "none",
                 border: "none",
-                color: isSaved ? "var(--accent)" : "var(--text-secondary)",
+                color: isSaved ? "#6366f1" : "var(--text-secondary)",
                 cursor: "pointer",
-                borderRadius: "var(--radius-sm)",
+                borderRadius: "10px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                transition: "all 0.2s ease",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isSaved ? "var(--accent)" : "var(--bg-hover)";
-                e.currentTarget.style.color = isSaved ? "var(--text-inverse)" : "var(--text-primary)";
+                e.currentTarget.style.backgroundColor = isSaved ? "rgba(99, 102, 241, 0.2)" : "var(--bg-hover)";
+                e.currentTarget.style.color = isSaved ? "#6366f1" : "var(--text-primary)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = isSaved ? "var(--accent)" : "var(--text-secondary)";
+                e.currentTarget.style.backgroundColor = isSaved ? "rgba(99, 102, 241, 0.1)" : "transparent";
+                e.currentTarget.style.color = isSaved ? "#6366f1" : "var(--text-secondary)";
               }}
             >
               <FontAwesomeIcon
                 icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
-                style={{ fontSize: "16px" }}
+                style={{
+                  fontSize: "16px",
+                  transform: isSaved ? "scale(1.2)" : "scale(1)",
+                  transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
+                }}
               />
             </button>
           </div>

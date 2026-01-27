@@ -624,7 +624,7 @@ export default function ProjectDetail() {
               padding: "16px",
               border: "none",
               borderRadius: "8px",
-              backgroundColor: isSaved ? "#007bff" : "#fff",
+              backgroundColor: isSaved ? "#6366f1" : "#fff",
               color: isSaved ? "#fff" : "var(--text-primary)",
               cursor: currentUser ? "pointer" : "not-allowed",
               fontWeight: 600,
@@ -633,10 +633,16 @@ export default function ProjectDetail() {
               alignItems: "center",
               justifyContent: "center",
               gap: "8px",
-              transition: "all 0.2s ease",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
-            <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} />
+            <FontAwesomeIcon
+              icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
+              style={{
+                transform: isSaved ? "scale(1.2)" : "scale(1)",
+                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
+              }}
+            />
             {isSaved ? "Saved" : "Save"}
           </button>
 
