@@ -26,7 +26,7 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function getProjects(req: Request, res: Response) {
   try {
-    const { page = "1", limit = "20", filter = "all" } = req.query;
+    const { page = "1", limit = "20", filter = "all", tag } = req.query;
     const pageNum = parseInt(page as string, 10) || 1;
     const limitNum = parseInt(limit as string, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
@@ -35,6 +35,10 @@ export async function getProjects(req: Request, res: Response) {
       .from("projects")
       .select("*", { count: "exact" })
       .order("created_at", { ascending: false });
+
+    if (tag) {
+      projectsQuery = projectsQuery.contains("technologies_used", [tag]);
+    }
 
     if (String(filter).toLowerCase() === "following") {
       const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;

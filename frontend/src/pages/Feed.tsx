@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
@@ -6,11 +6,19 @@ import { useProjects } from "../hooks/useProjects";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisV, faCheck, faTags, faGlobeAmericas, faUserFriends, faLayerGroup, faRocket } from "@fortawesome/free-solid-svg-icons";
+
+const POPULAR_TAGS = ["React", "JavaScript", "TypeScript", "Node.js", "Python", "Next.js", "WebDev", "UI/UX", "Mobile", "AI"];
 
 export default function Feed() {
   const [feedType, setFeedType] = useState<"posts" | "projects">("posts");
   const [page, setPage] = useState(1);
   const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
+  const [selectedTag, setSelectedTag] = useState<string>("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+
   const { getToken } = useClerkAuth();
   const { isSignedIn } = useClerkUser();
 
@@ -18,8 +26,8 @@ export default function Feed() {
   const postsPage = feedType === 'posts' ? page : 1;
   const projectsPage = feedType === 'projects' ? page : 1;
 
-  const { posts, loading: postsLoading, fetchPosts, hasMore: postsHasMore } = usePosts(postsPage, 20, feedFilter, getToken);
-  const { projects, loading: projectsLoading, fetchProjects, hasMore: projectsHasMore } = useProjects(projectsPage, 20, feedFilter, getToken);
+  const { posts, loading: postsLoading, fetchPosts, hasMore: postsHasMore } = usePosts(postsPage, 20, feedFilter, getToken, selectedTag);
+  const { projects, loading: projectsLoading, fetchProjects, hasMore: projectsHasMore } = useProjects(projectsPage, 20, feedFilter, getToken, selectedTag);
 
   const loading = feedType === "posts" ? postsLoading : projectsLoading;
   const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;
@@ -28,14 +36,25 @@ export default function Feed() {
     if (!isSignedIn && feedFilter === "following") setFeedFilter("all");
   }, [isSignedIn, feedFilter]);
 
-  // Reset page when switching views
+  // Handle click outside for filter dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setIsFilterOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Reset page when switching views or tags
   useEffect(() => {
     setPage(1);
     // If we switch to posts while on contributors filter, reset to all
     if (feedType === "posts" && feedFilter === "contributors") {
       setFeedFilter("all");
     }
-  }, [feedType, feedFilter]);
+  }, [feedType, feedFilter, selectedTag]);
 
   useEffect(() => {
     const handlePostCreated = () => {
@@ -44,7 +63,6 @@ export default function Feed() {
         fetchPosts(1, false);
       }
     };
-    // Also listen for project created if we had that event
     window.addEventListener("postCreated", handlePostCreated);
     return () => window.removeEventListener("postCreated", handlePostCreated);
   }, [fetchPosts, feedType]);
@@ -54,7 +72,6 @@ export default function Feed() {
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1000) {
         if (hasMore && !loading) {
           setPage((prev) => prev + 1);
-          // Fetch next page based on current type
           if (feedType === "posts") {
             fetchPosts(page + 1, true);
           } else {
@@ -78,115 +95,218 @@ export default function Feed() {
     <main className="container" style={{ padding: "40px 20px", minHeight: "100vh" }}>
       <div style={{ maxWidth: "640px", margin: "0 auto" }}>
         <header className="fade-in slide-up" style={{
-          marginBottom: "60px",
-          borderBottom: "1px solid var(--border-color)",
-          paddingBottom: "20px"
+          marginBottom: "40px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          position: "relative"
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-            {/* <h1 style={{ fontSize: "48px", margin: 0 }}>Feed</h1> */}
-
-            {/* Type Toggle */}
-            <div style={{
-              display: "flex",
-              backgroundColor: "#849bff",
-              padding: "5px 32px",
-              borderRadius: "12px",
-              border: "1px solid var(--border-color)"
-            }}>
-              <button
-                onClick={() => setFeedType("posts")}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: "12px",
-                  border: "none",
-                  backgroundColor: feedType === "posts" ? "#fff" : "transparent",
-                  color: feedType === "posts" ? "#364182" : "#fff",
-                  fontWeight: 600,
-                  fontSize: "15px",
-                  cursor: "pointer",
-                  boxShadow: feedType === "posts" ? "0 2px 5px rgba(0,0,0,0.05)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                POSTS
-              </button>
-              <button
-                onClick={() => setFeedType("projects")}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: "12px",
-                  border: "none",
-                  backgroundColor: feedType === "projects" ? "#fff" : "transparent",
-                  color: feedType === "projects" ? "#364182" : "#fff",
-                  fontWeight: 600,
-                  fontSize: "15px",
-                  cursor: "pointer",
-                  boxShadow: feedType === "projects" ? "0 2px 5px rgba(0,0,0,0.05)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                PROJECTS
-              </button>
-            </div>
+          <div>
+            <h1 style={{ fontSize: "28px", fontWeight: 800, margin: 0, color: "var(--text-primary)" }}>
+              {selectedTag ? `#${selectedTag}` : feedFilter === "following" ? "Following" : "Discover"}
+            </h1>
+            <p style={{ margin: "4px 0 0 0", color: "var(--text-secondary)", fontSize: "14px" }}>
+              Explore the latest {feedType} {selectedTag ? `tagged with ${selectedTag}` : ""}
+            </p>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div ref={filterRef} style={{ position: "relative" }}>
             <button
-              onClick={() => handleFilterChange("all")}
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
               style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "10px 20px",
+                backgroundColor: "#849bff",
+                color: "#fff",
                 border: "none",
-                padding: "10px 16px",
+                borderRadius: "14px",
+                fontWeight: 700,
                 fontSize: "15px",
-                letterSpacing: "0.1em",
-                fontWeight: 600,
-                backgroundColor: feedFilter === "all" ? "#364182" : "#849bff",
-                color: feedFilter === "all" ? "#fff" : "#fff",
-                borderRadius: "12px",
                 cursor: "pointer",
-                transition: "all 0.2s ease"
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                boxShadow: "0 4px 12px rgba(132, 155, 255, 0.2)"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 6px 16px rgba(132, 155, 255, 0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(132, 155, 255, 0.2)";
               }}
             >
-              LATEST
+              Filter
+              <FontAwesomeIcon icon={faEllipsisV} style={{ fontSize: "14px" }} />
             </button>
-            {isSignedIn && (
-              <button
-                onClick={() => handleFilterChange("following")}
-                style={{
-                  border: "none",
-                  padding: "10px 16px",
-                  fontSize: "15px",
-                  letterSpacing: "0.1em",
-                  fontWeight: 600,
-                  backgroundColor: feedFilter === "following" ? "#364182" : "#849bff",
-                  color: feedFilter === "following" ? "#fff" : "#fff",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                FOLLOWING
-              </button>
-            )}
-            {feedType === "projects" && (
-              <button
-                onClick={() => handleFilterChange("contributors")}
-                style={{
-                  border: "none",
-                  padding: "6px 16px",
-                  fontSize: "12px",
-                  letterSpacing: "0.1em",
-                  fontWeight: 800,
-                  backgroundColor: feedFilter === "contributors" ? "#364182" : "#849bff",
-                  color: feedFilter === "contributors" ? "#fff" : "#fff",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                CONTRIBUTORS
-              </button>
+
+            {isFilterOpen && (
+              <div style={{
+                position: "absolute",
+                top: "120%",
+                right: 0,
+                width: "280px",
+                backgroundColor: "#fff",
+                borderRadius: "20px",
+                boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+                border: "1px solid #f1f5f9",
+                padding: "20px",
+                zIndex: 1000,
+                animation: "filterSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+              }}>
+                <div style={{ marginBottom: "20px" }}>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", marginBottom: "12px", letterSpacing: "0.05em" }}>Content Type</label>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      onClick={() => setFeedType("posts")}
+                      style={{
+                        flex: 1,
+                        padding: "10px",
+                        borderRadius: "12px",
+                        border: feedType === "posts" ? "2px solid #364182" : "2px solid #f1f5f9",
+                        backgroundColor: feedType === "posts" ? "#f8fafc" : "transparent",
+                        color: "#364182",
+                        fontWeight: 700,
+                        fontSize: "13px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faLayerGroup} style={{ fontSize: "12px" }} />
+                      Posts
+                    </button>
+                    <button
+                      onClick={() => setFeedType("projects")}
+                      style={{
+                        flex: 1,
+                        padding: "10px",
+                        borderRadius: "12px",
+                        border: feedType === "projects" ? "2px solid #364182" : "2px solid #f1f5f9",
+                        backgroundColor: feedType === "projects" ? "#f8fafc" : "transparent",
+                        color: "#364182",
+                        fontWeight: 700,
+                        fontSize: "13px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faRocket} style={{ fontSize: "12px" }} />
+                      Projects
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: "20px" }}>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", marginBottom: "12px", letterSpacing: "0.05em" }}>Feed Source</label>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <button
+                      onClick={() => handleFilterChange("all")}
+                      style={{
+                        padding: "10px 14px",
+                        borderRadius: "12px",
+                        border: "none",
+                        backgroundColor: feedFilter === "all" ? "#eef2ff" : "transparent",
+                        color: feedFilter === "all" ? "#364182" : "#64748b",
+                        fontWeight: 600,
+                        fontSize: "14px",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <FontAwesomeIcon icon={faGlobeAmericas} style={{ width: "16px" }} />
+                        Latest
+                      </div>
+                      {feedFilter === "all" && <FontAwesomeIcon icon={faCheck} style={{ fontSize: "10px" }} />}
+                    </button>
+                    {isSignedIn && (
+                      <button
+                        onClick={() => handleFilterChange("following")}
+                        style={{
+                          padding: "10px 14px",
+                          borderRadius: "12px",
+                          border: "none",
+                          backgroundColor: feedFilter === "following" ? "#eef2ff" : "transparent",
+                          color: feedFilter === "following" ? "#364182" : "#64748b",
+                          fontWeight: 600,
+                          fontSize: "14px",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between"
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <FontAwesomeIcon icon={faUserFriends} style={{ width: "16px" }} />
+                          Following
+                        </div>
+                        {feedFilter === "following" && <FontAwesomeIcon icon={faCheck} style={{ fontSize: "10px" }} />}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", marginBottom: "12px", letterSpacing: "0.05em" }}>Filter by Tags</label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                    <button
+                      onClick={() => setSelectedTag("")}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "8px",
+                        backgroundColor: selectedTag === "" ? "#364182" : "#f1f5f9",
+                        color: selectedTag === "" ? "#fff" : "#64748b",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      All
+                    </button>
+                    {POPULAR_TAGS.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => setSelectedTag(tag.toLowerCase())}
+                        style={{
+                          padding: "6px 12px",
+                          borderRadius: "8px",
+                          backgroundColor: selectedTag === tag.toLowerCase() ? "#364182" : "#f1f5f9",
+                          color: selectedTag === tag.toLowerCase() ? "#fff" : "#64748b",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          border: "none",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        #{tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
+
+          <style>{`
+            @keyframes filterSlideUp {
+              from { opacity: 0; transform: translateY(10px) scale(0.95); }
+              to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+          `}</style>
         </header>
 
         {
@@ -198,10 +318,38 @@ export default function Feed() {
             </div>
           ) : !Array.isArray(currentItems) || currentItems.length === 0 ? (
             <div className="fade-in slide-up" style={{ padding: "80px 0", textAlign: "left" }}>
-              <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>NOTHING HERE.</h2>
-              <p style={{ color: "var(--text-secondary)", fontSize: "16px" }}>
-                The feed is currently empty. Start following people or create a {feedType === 'posts' ? 'post' : 'project'} to see content here.
+              <div style={{
+                width: "60px",
+                height: "60px",
+                borderRadius: "20px",
+                backgroundColor: "#f1f5f9",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "24px",
+                color: "#94a3b8"
+              }}>
+                <FontAwesomeIcon icon={faTags} style={{ fontSize: "24px" }} />
+              </div>
+              <h2 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "12px", color: "var(--text-primary)" }}>NOTHING HERE.</h2>
+              <p style={{ color: "var(--text-secondary)", fontSize: "16px", lineHeight: 1.6 }}>
+                We couldn't find any {feedType} matching your current filters. Try selecting different tags or check back later!
               </p>
+              <button
+                onClick={() => { setSelectedTag(""); setFeedFilter("all"); }}
+                style={{
+                  marginTop: "24px",
+                  padding: "10px 20px",
+                  backgroundColor: "transparent",
+                  border: "2px solid #364182",
+                  color: "#364182",
+                  borderRadius: "12px",
+                  fontWeight: 700,
+                  cursor: "pointer"
+                }}
+              >
+                Clear all filters
+              </button>
             </div>
           ) : (
             <div className="stagger-1" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>

@@ -4,7 +4,7 @@ import type { Project } from "../types/project";
 
 export type FeedFilter = "all" | "following" | "contributors";
 
-export function useProjects(page: number = 1, limit: number = 20, filter: FeedFilter = "all", getToken?: () => Promise<string | null>) {
+export function useProjects(page: number = 1, limit: number = 20, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string) {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
@@ -21,7 +21,8 @@ export function useProjects(page: number = 1, limit: number = 20, filter: FeedFi
             if (filter === "following") filterParam = "&filter=following";
             else if (filter === "contributors") filterParam = "&filter=contributors";
 
-            const res = await api.get(`/projects?page=${pageNum}&limit=${limit}${filterParam}`, { headers });
+            const tagParam = tag ? `&tag=${tag}` : "";
+            const res = await api.get(`/projects?page=${pageNum}&limit=${limit}${filterParam}${tagParam}`, { headers });
 
             let projectsData: Project[] = [];
 
@@ -55,7 +56,7 @@ export function useProjects(page: number = 1, limit: number = 20, filter: FeedFi
 
     useEffect(() => {
         fetchProjects(page, false);
-    }, [page, filter]);
+    }, [page, filter, tag]);
 
     return { projects, loading, fetchProjects, total, totalPages, hasMore };
 }

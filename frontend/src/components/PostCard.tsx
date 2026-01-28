@@ -140,7 +140,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           cursor: "pointer",
           transition: "all 0.3s ease",
           backgroundColor: "#fff",
-          border: "1px solid #e0e0e0",
+          border: "2px solid #e0e0e0",
           marginBottom: "30px",
           padding: "10px",
           borderRadius: "25px",
@@ -406,7 +406,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           padding: "16px 20px",
           backgroundColor: "#fff",
           borderRadius: "15px",
-          border: "1px solid #e0e0e0",
+          border: "2px solid #e0e0e0",
         }}>
           <div style={{
             display: "flex",
