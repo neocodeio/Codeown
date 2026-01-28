@@ -35,6 +35,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
   const [isHirable, setIsHirable] = useState(true);
+  const [isOrganization, setIsOrganization] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,6 +54,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setExperienceLevel(currentUser.experience_level || "");
       setSkills(currentUser.skills || []);
       setIsHirable(currentUser.is_hirable ?? true);
+      setIsOrganization(currentUser.is_organization ?? false);
       setAvatarPreview(currentUser.avatar_url);
       setAvatarFile(null);
       setUsernameError(null);
@@ -157,6 +159,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           experience_level: experienceLevel || null,
           skills: skills,
           is_hirable: isHirable,
+          is_organization: isOrganization,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -405,7 +408,49 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
               />
             </div>
 
-            {!currentUser.is_organization && (
+            <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "16px", display: "flex", flexDirection: "column", gap: "12px", border: "1px solid #e2e8f0" }}>
+              <label className="modal-label" style={{ marginBottom: 0 }}>Account Type</label>
+              <div style={{ display: "flex", gap: "12px" }}>
+                <button
+                  type="button"
+                  onClick={() => setIsOrganization(false)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "10px",
+                    border: "2px solid",
+                    borderColor: !isOrganization ? "#0f172a" : "#e2e8f0",
+                    background: !isOrganization ? "#0f172a" : "white",
+                    color: !isOrganization ? "white" : "#64748b",
+                    fontSize: "13px",
+                    fontWeight: 800,
+                    cursor: "pointer"
+                  }}
+                >
+                  DEVELOPER
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsOrganization(true)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "10px",
+                    border: "2px solid",
+                    borderColor: isOrganization ? "#16a34a" : "#e2e8f0",
+                    background: isOrganization ? "#16a34a" : "white",
+                    color: isOrganization ? "white" : "#64748b",
+                    fontSize: "13px",
+                    fontWeight: 800,
+                    cursor: "pointer"
+                  }}
+                >
+                  ORGANIZATION
+                </button>
+              </div>
+            </div>
+
+            {!isOrganization && (
               <div style={{ padding: "16px", backgroundColor: "#f1f5f9", borderRadius: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
                 <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>Developer Settings</h3>
 

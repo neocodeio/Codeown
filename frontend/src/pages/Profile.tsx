@@ -13,7 +13,6 @@ import EditProfileModal from "../components/EditProfileModal";
 import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
-import SkillsRenderer from "../components/SkillsRenderer";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEllipsisH } from "@fortawesome/free-solid-svg-icons";
@@ -31,13 +30,6 @@ interface UserProfile {
   total_likes: number;
   pinned_post_id: number | null;
   pinned_post: any | null;
-  is_organization: boolean;
-  organization_id: string | null;
-  skills: string[] | null;
-  job_title: string | null;
-  location: string | null;
-  experience_level: string | null;
-  is_hirable: boolean;
 }
 
 export default function Profile() {
@@ -227,42 +219,6 @@ export default function Profile() {
           left: 20px;
           z-index: 10;
         }
-        .role-badge {
-          padding: 6px 14px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: 800;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-        }
-        .role-badge-dev {
-          background-color: #f1f5f9;
-          color: #475569;
-          border: 1px solid #e2e8f0;
-        }
-        .role-badge-org {
-          background-color: #f0fdf4;
-          color: #16a34a;
-          border: 1px solid #bbf7d0;
-        }
-        .hirable-badge {
-          background-color: #ecfdf5;
-          color: #059669;
-          border: 1px solid #10b981;
-          border-radius: 20px;
-          padding: 6px 12px;
-          font-size: 12px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-        .hirable-dot {
-          width: 8px;
-          height: 8px;
-          background-color: #10b981;
-          border-radius: 50%;
-        }
       `}</style>
 
       {/* Modern High-End Banner */}
@@ -304,15 +260,6 @@ export default function Profile() {
           boxShadow: "0 20px 50px rgba(0,0,0,0.08)",
           border: "1px solid #f1f5f9"
         }} className="slide-up">
-          <div style={{ position: "absolute", top: "24px", right: "24px", display: "flex", gap: "10px" }}>
-            {userProfile && (
-              userProfile.is_organization ? (
-                <div className="role-badge role-badge-org">Organization</div>
-              ) : (
-                <div className="role-badge role-badge-dev">Developer</div>
-              )
-            )}
-          </div>
           <div style={{
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
@@ -341,54 +288,18 @@ export default function Profile() {
               <p style={{ fontSize: "16px", color: "#64748b", fontWeight: 700, letterSpacing: "0.02em" }}>
                 @{userProfile?.username || user?.username}
               </p>
-              {(userProfile?.job_title || userProfile?.location) && (
-                <div style={{ display: "flex", gap: "16px", marginTop: "8px", color: "#64748b", fontSize: "14px", fontWeight: 600 }}>
-                  {userProfile.job_title && (
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span>💼 {userProfile.job_title}</span>
-                    </div>
-                  )}
-                  {userProfile.location && (
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span>📍 {userProfile.location}</span>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
             {userProfile?.bio && (
-              <div className="slide-up" style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "16px", maxWidth: "800px", margin: isMobile ? "0 auto 16px" : "0 0 16px" }}>
+              <div className="slide-up" style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "32px", maxWidth: "800px", margin: isMobile ? "0 auto 32px" : "0 0 32px" }}>
                 <BioRenderer bio={userProfile.bio} />
               </div>
             )}
 
-            {userProfile?.skills && userProfile.skills.length > 0 && (
-              <div style={{ marginBottom: "32px" }}>
-                <SkillsRenderer skills={userProfile.skills} />
-              </div>
-            )}
-
-            <div style={{ display: "flex", gap: "12px", marginBottom: "8px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: "12px", marginBottom: "8px" }}>
               <button onClick={() => setIsEditModalOpen(true)} className="profile-btn profile-btn-primary">
                 Edit Profile
               </button>
-
-
-
-              {userProfile?.is_organization && (
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 16px", backgroundColor: "#f0fdf4", color: "#16a34a", borderRadius: "12px", border: "1px solid #bbf7d0", fontSize: "13px", fontWeight: 700 }}>
-                  Organization Account
-                </div>
-              )}
-
-              {!userProfile?.is_organization && userProfile?.is_hirable && (
-                <div className="hirable-badge">
-                  <div className="hirable-dot"></div>
-                  Available to hire
-                </div>
-              )}
-
               <div style={{ position: "relative" }}>
                 <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }} className="profile-btn">
                   <FontAwesomeIcon icon={faEllipsisH} />
