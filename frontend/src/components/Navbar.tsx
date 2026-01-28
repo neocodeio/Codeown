@@ -10,6 +10,7 @@ import NotificationDropdown from "./NotificationDropdown";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes, faPlus, faUser, faEnvelope, faRocket, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import logo from "../assets/icon-remove.png";
 
 
 
@@ -123,19 +124,18 @@ export default function Navbar() {
       {/* Left Section */}
       <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : isTablet ? "32px" : "24px", flex: 1 }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-          <span style={{
-            fontSize: "25px",
-            textDecoration: "none",
-            fontWeight: 600,
-            cursor: "pointer",
-            backgroundColor: "#364182",
-            borderRadius: "12px",
-            padding: "6px 8px",
-            color: "#FFF",
-            letterSpacing: "-0.05em",
-          }}>
-            Codeown
-          </span>
+          <img
+            src={logo}
+            alt="Codeown"
+            style={{
+              height: isMobile ? "32px" : "40px",
+              width: "auto",
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              objectFit: "contain",
+              cursor: "pointer",
+            }}
+          />
         </Link>
 
         {!isMobile && (
