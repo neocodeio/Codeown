@@ -14,9 +14,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import AboutUs from "./pages/AboutUs";
-import OrganizationRegistration from "./pages/OrganizationRegistration";
-import Onboarding from "./pages/Onboarding";
-import OnboardingGuard from "./components/OnboardingGuard";
+
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
 
@@ -26,7 +24,6 @@ export default function App() {
     <div style={{ minHeight: "100vh", transition: "background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1)" }}>
       <Navbar />
       <ErrorBoundary>
-        <OnboardingGuard>
           <Routes>
             <Route path="/" element={<Feed />} />
             <Route path="/search" element={<Search />} />
@@ -41,10 +38,7 @@ export default function App() {
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/about" element={<AboutUs />} />
-            <Route path="/register-org" element={<OrganizationRegistration />} />
-            <Route path="/onboarding" element={<Onboarding />} />
           </Routes>
-        </OnboardingGuard>
       </ErrorBoundary>
       <FeedbackButton />
     </div>
