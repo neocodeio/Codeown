@@ -25,6 +25,11 @@ interface User {
   total_likes: number;
   pinned_post_id: number | null;
   pinned_post: any | null;
+  job_title: string | null;
+  location: string | null;
+  experience_level: string | null;
+  skills: string[] | null;
+  is_hirable: boolean;
 }
 
 export default function UserProfile() {
@@ -267,15 +272,22 @@ export default function UserProfile() {
             </div>
 
             <div style={{ flex: 1, paddingBottom: isMobile ? "0" : "8px" }}>
-              <h1 style={{ fontSize: isMobile ? "32px" : "42px", fontWeight: 900, color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.04em" }}>
-                {user.name}
-              </h1>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
+                <h1 style={{ fontSize: isMobile ? "32px" : "42px", fontWeight: 900, color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.04em" }}>
+                  {user.name}
+                </h1>
+                {user.is_hirable && (
+                  <span style={{ padding: "4px 12px", background: "#f0fdf4", color: "#16a34a", borderRadius: "20px", fontSize: "12px", fontWeight: 800, textTransform: "uppercase", border: "1px solid #bbf7d0" }}>
+                    Available for hire
+                  </span>
+                )}
+              </div>
               <p style={{ fontSize: "16px", color: "#64748b", fontWeight: 700, letterSpacing: "0.02em" }}>
-                @{user.username || "user"}
+                @{user.username || "user"} • {user.job_title || "Developer"}
               </p>
             </div>
 
-            <div style={{ display: "flex", gap: "12px", marginBottom: "8px" }}>
+            <div style={{ display: "flex", gap: "12px", marginBottom: "8px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
               {isSignedIn && (
                 <button
                   onClick={() => navigate(`/messages?userId=${userId}`)}
@@ -283,6 +295,16 @@ export default function UserProfile() {
                 >
                   <FontAwesomeIcon icon={faEnvelope} />
                   <span>Message</span>
+                </button>
+              )}
+              {isSignedIn && user.is_hirable && (
+                <button
+                  onClick={() => navigate(`/messages?userId=${userId}&hiring=true`)}
+                  className="profile-btn"
+                  style={{ backgroundColor: "#6366f1", color: "white", borderColor: "#6366f1" }}
+                >
+                  <FontAwesomeIcon icon={faEnvelope} />
+                  <span>Hire Me</span>
                 </button>
               )}
               {isSignedIn && (
@@ -299,8 +321,18 @@ export default function UserProfile() {
           </div>
 
           {user.bio && (
-            <div style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "32px", maxWidth: "800px", margin: isMobile ? "0 auto 32px" : "0 0 32px" }}>
+            <div style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "24px", maxWidth: "800px", margin: isMobile ? "0 auto 24px" : "0 0 24px" }}>
               <BioRenderer bio={user.bio} />
+            </div>
+          )}
+
+          {user.skills && user.skills.length > 0 && (
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "32px", justifyContent: isMobile ? "center" : "flex-start" }}>
+              {user.skills.map(skill => (
+                <span key={skill} style={{ padding: "6px 14px", backgroundColor: "#f1f5f9", color: "#475569", borderRadius: "10px", fontSize: "13px", fontWeight: 700 }}>
+                  {skill}
+                </span>
+              ))}
             </div>
           )}
 

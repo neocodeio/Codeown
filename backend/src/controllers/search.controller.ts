@@ -218,3 +218,54 @@ export async function searchAll(req: Request, res: Response) {
     return res.status(500).json({ error: "Internal server error", details: error?.message });
   }
 }
+
+export async function searchDevelopers(req: Request, res: Response) {
+  try {
+    const { q, skills, location, experience, page = "1", limit = "20" } = req.query;
+    const query = (q as string)?.trim() || "";
+    const pageNum = parseInt(page as string, 10) || 1;
+    const limitNum = parseInt(limit as string, 10) || 20;
+    const offset = (pageNum - 1) * limitNum;
+
+    let devQuery = supabase
+      .from("users")
+      .select("*", { count: "exact" })
+      .eq("is_hirable", true);
+
+    if (query) {
+      devQuery = devQuery.or(`name.ilike.%${query}%,username.ilike.%${query}%,job_title.ilike.%${query}%`);
+    }
+
+    if (skills) {
+      const skillArray = (skills as string).split(",").map(s => s.trim());
+      devQuery = devQuery.contains("skills", skillArray);
+    }
+
+    if (location) {
+      devQuery = devQuery.ilike("location", `%${location}%`);
+    }
+
+    if (experience) {
+      devQuery = devQuery.eq("experience_level", experience);
+    }
+
+    const { data: devs, error, count } = await devQuery
+      .range(offset, offset + limitNum - 1);
+
+    if (error) {
+      console.error("Error searching developers:", error);
+      return res.status(500).json({ error: "Failed to search developers" });
+    }
+
+    return res.json({
+      developers: devs || [],
+      total: count || 0,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil((count || 0) / limitNum),
+    });
+  } catch (error: any) {
+    console.error("Unexpected error in searchDevelopers:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}

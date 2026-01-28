@@ -14,6 +14,7 @@ import feedbackRoutes from "./src/routes/feedback.routes.js";
 import projectsRoutes from "./src/routes/projects.routes.js";
 import projectCommentsRoutes from "./src/routes/projectComments.routes.js";
 import messagesRoutes from "./src/routes/messages.routes.js";
+import organizationsRoutes from "./src/routes/organizations.routes.js";
 
 import helmet from "helmet";
 
@@ -66,6 +67,7 @@ app.use("/notifications", notificationsRoutes);
 app.use("/feedback", feedbackRoutes);
 app.use("/projects", projectsRoutes);
 app.use("/messages", messagesRoutes);
+app.use("/organizations", organizationsRoutes);
 app.use("/", projectCommentsRoutes);
 
 export default app;

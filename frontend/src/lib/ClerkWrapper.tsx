@@ -15,8 +15,8 @@ export function ClerkWrapper({ children }: { children: ReactNode }) {
           publishableKey={clerkPublishableKey}
           routerPush={(to) => navigate(to)}
           routerReplace={(to) => navigate(to, { replace: true })}
-          signInFallbackRedirectUrl="/"
-          signUpFallbackRedirectUrl="/"
+          signInFallbackRedirectUrl="/onboarding"
+          signUpFallbackRedirectUrl="/onboarding"
         >
           {children}
         </ClerkProvider>

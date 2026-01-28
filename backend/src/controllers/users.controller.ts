@@ -119,6 +119,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
       name: userInfo.name,
       avatar_url: userInfo.avatar_url,
       username: userInfo.username,
+      onboarding_completed: false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
@@ -139,6 +140,24 @@ export async function ensureUserExists(userId: string, userData?: any) {
   }
 
   return newUser;
+}
+
+export async function completeOnboarding(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const { error } = await supabase
+      .from("users")
+      .update({ onboarding_completed: true })
+      .eq("id", userId);
+
+    if (error) return res.status(500).json({ error: "Failed to complete onboarding" });
+
+    return res.json({ success: true });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
 
 // Get user profile
@@ -329,7 +348,19 @@ export async function updateUserProfile(req: Request, res: Response) {
     }
 
     const userId = authenticatedUserId;
-    const { name, username, bio, avatar_url } = req.body;
+    const {
+      name,
+      username,
+      bio,
+      avatar_url,
+      location,
+      job_title,
+      skills,
+      is_hirable,
+      experience_level,
+      is_organization,
+      onboarding_completed
+    } = req.body;
 
     // Get current user data
     const { data: currentUser, error: fetchError } = await supabase
@@ -365,6 +396,13 @@ export async function updateUserProfile(req: Request, res: Response) {
     if (name !== undefined) updateData.name = name;
     if (bio !== undefined) updateData.bio = bio;
     if (avatar_url !== undefined) updateData.avatar_url = avatar_url;
+    if (location !== undefined) updateData.location = location;
+    if (job_title !== undefined) updateData.job_title = job_title;
+    if (skills !== undefined) updateData.skills = skills;
+    if (is_hirable !== undefined) updateData.is_hirable = is_hirable;
+    if (experience_level !== undefined) updateData.experience_level = experience_level;
+    if (is_organization !== undefined) updateData.is_organization = is_organization;
+    if (onboarding_completed !== undefined) updateData.onboarding_completed = onboarding_completed;
 
     if (username && username !== currentUser?.username) {
       updateData.username = username;

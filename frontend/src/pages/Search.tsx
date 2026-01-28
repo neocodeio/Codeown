@@ -13,6 +13,10 @@ interface SearchUser {
   username: string | null;
   email: string | null;
   avatar_url: string | null;
+  job_title?: string | null;
+  is_hirable?: boolean;
+  skills?: string[] | null;
+  location?: string | null;
 }
 
 interface SearchPost {
@@ -43,8 +47,9 @@ export default function Search() {
   const [users, setUsers] = useState<SearchUser[]>([]);
   const [posts, setPosts] = useState<SearchPost[]>([]);
   const [projects, setProjects] = useState<SearchProject[]>([]);
+  const [developers, setDevelopers] = useState<SearchUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"all" | "people" | "posts" | "projects">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "people" | "posts" | "projects" | "developers">("all");
 
   useEffect(() => {
     if (!q || q.length < 2) {
@@ -86,15 +91,17 @@ export default function Search() {
             setProjects(prRes.data?.projects || []);
           }
         } else {
-          const [uRes, pRes, prRes] = await Promise.all([
+          const [uRes, pRes, prRes, dRes] = await Promise.all([
             api.get(`/search/users?q=${encodeURIComponent(q)}`),
             api.get(`/search/posts?q=${encodeURIComponent(q)}&limit=20`),
             api.get(`/search/projects?q=${encodeURIComponent(q)}&limit=20`),
+            api.get(`/search/developers?q=${encodeURIComponent(q)}&limit=20`),
           ]);
           if (!cancelled) {
             setUsers(Array.isArray(uRes.data) ? uRes.data : []);
             setPosts(pRes.data?.posts || []);
             setProjects(prRes.data?.projects || []);
+            setDevelopers(dRes.data?.developers || []);
           }
         }
       } catch (e) {
@@ -121,8 +128,8 @@ export default function Search() {
         </p>
       </header>
 
-      <nav style={{ display: "flex", gap: "30px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)", paddingBottom: "10px" }}>
-        {["all", "people", "posts", "projects"].map((tab) => (
+      <nav style={{ display: "flex", gap: "30px", marginBottom: "40px", borderBottom: "1px solid var(--border-light)", paddingBottom: "10px", flexWrap: "wrap" }}>
+        {["all", "people", "posts", "projects", "developers"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
@@ -131,14 +138,16 @@ export default function Search() {
               borderRadius: "10px",
               padding: "12px",
               fontSize: "15px",
-              backgroundColor: "#849bff",
-              fontWeight: 600,
-              letterSpacing: "0.1em",
-              color: activeTab === tab ? "#364182" : "#fff",
-              borderBottom: activeTab === tab ? "2px solid var(--text-primary)" : "2px solid transparent",
+              backgroundColor: tab === "developers" ? "#6366f1" : "#849bff",
+              fontWeight: 700,
+              letterSpacing: "0.05em",
+              color: activeTab === tab ? "white" : "#eee",
+              borderBottom: activeTab === tab ? "3px solid white" : "3px solid transparent",
+              transition: "all 0.2s ease",
+              cursor: "pointer"
             }}
           >
-            {tab}
+            {tab === "developers" ? "FIND TALENT 🚀" : tab.toUpperCase()}
           </button>
         ))}
       </nav>
@@ -206,6 +215,53 @@ export default function Search() {
                   {projects.map((p, i) => <ProjectCard key={p.id} project={p as Project} index={i} onUpdated={() => setProjects(prev => prev.filter(x => x.id !== p.id))} />)}
                 </div>
               )}
+            </section>
+          )}
+
+          {(activeTab === "all" || activeTab === "developers") && developers.length > 0 && (
+            <section>
+              <h2 style={{ fontSize: "25px", fontWeight: 800, color: "#6366f1", marginBottom: "24px" }}>Available Developers</h2>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }}>
+                {developers.map((dev) => (
+                  <div
+                    key={dev.id}
+                    onClick={() => navigate(`/user/${dev.id}`)}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: "20px",
+                      padding: "30px",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "20px",
+                      cursor: "pointer",
+                      backgroundColor: "white",
+                      transition: "all 0.2s ease",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "20px", width: "100%" }}>
+                      <img
+                        src={dev.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(dev.name)}&background=000&color=fff&bold=true`}
+                        alt=""
+                        style={{ width: "80px", height: "80px", borderRadius: "24px", objectFit: "cover" }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
+                          <h3 style={{ fontSize: "20px", fontWeight: 900, margin: 0 }}>{dev.name}</h3>
+                          {dev.is_hirable && <span style={{ fontSize: "12px", background: "#f0fdf4", color: "#16a34a", padding: "2px 8px", borderRadius: "10px", fontWeight: 800 }}>HIRABLE</span>}
+                        </div>
+                        <p style={{ color: "#64748b", fontWeight: 700, marginBottom: "8px" }}>@{dev.username} • {dev.job_title || "Software Developer"}</p>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      {dev.skills?.slice(0, 8).map(skill => (
+                        <span key={skill} style={{ padding: "4px 10px", background: "#f1f5f9", borderRadius: "8px", fontSize: "12px", fontWeight: 600, color: "#475569" }}>{skill}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
           )}
 

@@ -16,6 +16,12 @@ interface EditProfileModalProps {
     avatar_url: string | null;
     bio: string | null;
     username_changed_at: string | null;
+    job_title?: string | null;
+    location?: string | null;
+    experience_level?: string | null;
+    skills?: string[] | null;
+    is_hirable?: boolean;
+    is_organization?: boolean;
   };
 }
 
@@ -23,6 +29,12 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState("");
+  const [skills, setSkills] = useState<string[]>([]);
+  const [skillInput, setSkillInput] = useState("");
+  const [isHirable, setIsHirable] = useState(true);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,6 +48,11 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setName(currentUser.name || "");
       setUsername(currentUser.username || "");
       setBio(currentUser.bio || "");
+      setJobTitle(currentUser.job_title || "");
+      setLocation(currentUser.location || "");
+      setExperienceLevel(currentUser.experience_level || "");
+      setSkills(currentUser.skills || []);
+      setIsHirable(currentUser.is_hirable ?? true);
       setAvatarPreview(currentUser.avatar_url);
       setAvatarFile(null);
       setUsernameError(null);
@@ -135,6 +152,11 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           username: username.trim() || null,
           bio: bio.trim() || null,
           avatar_url: avatarUrl,
+          job_title: jobTitle.trim() || null,
+          location: location.trim() || null,
+          experience_level: experienceLevel || null,
+          skills: skills,
+          is_hirable: isHirable,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -252,6 +274,26 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           border: 1px solid #e2e8f0;
         }
         .modal-btn-secondary:hover { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
+        .skill-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #f1f5f9;
+          color: #0f172a;
+          padding: 6px 10px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          border: 1px solid #e2e8f0;
+        }
+        .skill-remove {
+          cursor: pointer;
+          color: #94a3b8;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+        }
+        .skill-remove:hover { color: #ef4444; }
       `}</style>
 
       <div
@@ -362,6 +404,75 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                 placeholder="Tell the community who you are..."
               />
             </div>
+
+            {!currentUser.is_organization && (
+              <div style={{ padding: "16px", backgroundColor: "#f1f5f9", borderRadius: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>Developer Settings</h3>
+
+                <div>
+                  <label className="modal-label">Job Title</label>
+                  <input className="modal-input" type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Senior Fullstack Developer" />
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                  <div>
+                    <label className="modal-label">Location</label>
+                    <input className="modal-input" type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Remote, NY" />
+                  </div>
+                  <div>
+                    <label className="modal-label">Experience</label>
+                    <select className="modal-input" value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}>
+                      <option value="">Select Level</option>
+                      <option value="junior">Junior</option>
+                      <option value="mid">Mid-level</option>
+                      <option value="senior">Senior</option>
+                      <option value="lead">Lead / Architect</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="modal-label">Skills</label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
+                    {skills.map((skill, index) => (
+                      <div key={index} className="skill-tag">
+                        {skill}
+                        <span className="skill-remove" onClick={() => setSkills(skills.filter((_, i) => i !== index))}>&times;</span>
+                      </div>
+                    ))}
+                  </div>
+                  <input
+                    className="modal-input"
+                    type="text"
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (skillInput.trim()) {
+                          setSkills([...skills, skillInput.trim()]);
+                          setSkillInput("");
+                        }
+                      }
+                    }}
+                    placeholder="Type skill and press Enter..."
+                  />
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
+                  <input
+                    type="checkbox"
+                    id="isHirable"
+                    checked={isHirable}
+                    onChange={(e) => setIsHirable(e.target.checked)}
+                    style={{ width: "18px", height: "18px", cursor: "pointer" }}
+                  />
+                  <label htmlFor="isHirable" style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", cursor: "pointer" }}>
+                    Available for hire / collaboration
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Footer Actions */}

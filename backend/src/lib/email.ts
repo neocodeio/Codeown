@@ -4,17 +4,17 @@ const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function sendWelcomeEmail(email: string, name: string) {
-    if (!resend) {
-        console.warn("Resend is not configured. Skipping welcome email.");
-        return;
-    }
+  if (!resend) {
+    console.warn("Resend is not configured. Skipping welcome email.");
+    return;
+  }
 
-    try {
-        const { data, error } = await resend.emails.send({
-            from: "Codeown <welcome@codeown.space>",
-            to: email,
-            subject: "Welcome to Codeown! 🚀",
-            html: `
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "Codeown <welcome@codeown.space>",
+      to: email,
+      subject: "Welcome to Codeown! 🚀",
+      html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -156,15 +156,63 @@ export async function sendWelcomeEmail(email: string, name: string) {
         </body>
         </html>
       `,
-        });
+    });
 
 
-        if (error) {
-            console.error("Error sending welcome email:", error);
-        } else {
-            console.log("Welcome email sent successfully:", data?.id);
-        }
-    } catch (err) {
-        console.error("Unexpected error sending welcome email:", err);
+    if (error) {
+      console.error("Error sending welcome email:", error);
+    } else {
+      console.log("Welcome email sent successfully:", data?.id);
     }
+  } catch (err) {
+    console.error("Unexpected error sending welcome email:", err);
+  }
+}
+
+export async function sendOrgRegistrationNotification(adminEmail: string, orgData: any) {
+  if (!resend) return;
+  try {
+    await resend.emails.send({
+      from: "Codeown System <system@codeown.space>",
+      to: adminEmail,
+      subject: `New Organization Registration: ${orgData.name}`,
+      html: `
+                <h2>New Organization Request</h2>
+                <p><strong>Name:</strong> ${orgData.name}</p>
+                <p><strong>Website:</strong> ${orgData.website}</p>
+                <p><strong>Domain Email:</strong> ${orgData.domain_email}</p>
+                <p><strong>Industry:</strong> ${orgData.industry}</p>
+                <p><strong>Description:</strong> ${orgData.description}</p>
+                <p>Please review this registration in Supabase and update the status.</p>
+            `
+    });
+  } catch (err) {
+    console.error("Error sending org registration notification:", err);
+  }
+}
+
+export async function sendOrgStatusUpdateEmail(email: string, orgName: string, status: string) {
+  if (!resend) return;
+  const isApproved = status === 'approved';
+  const subject = isApproved ? `Organization Approved: ${orgName} 🎉` : `Update on your Organization Registration: ${orgName}`;
+  const message = isApproved
+    ? `Great news! Your organization ${orgName} has been approved. You can now access organization features.`
+    : `Your registration for ${orgName} has been ${status}. If you have any questions, please reply to this email.`;
+
+  try {
+    await resend.emails.send({
+      from: "Codeown <support@codeown.space>",
+      to: email,
+      subject: subject,
+      html: `
+                <div style="font-family: sans-serif; padding: 20px;">
+                    <h2>Status Update: ${orgName}</h2>
+                    <p>${message}</p>
+                    ${isApproved ? '<a href="https://codeown.space/search" style="padding: 10px 20px; background: #6366f1; color: white; text-decoration: none; border-radius: 5px;">Discover Developers</a>' : ''}
+                </div>
+            `
+    });
+  } catch (err) {
+    console.error("Error sending org status update email:", err);
+  }
 }
