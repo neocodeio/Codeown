@@ -1,11 +1,9 @@
-import { useNavigate } from "react-router-dom";
 
 interface SkillsRendererProps {
     skills: string[];
 }
 
 export default function SkillsRenderer({ skills }: SkillsRendererProps) {
-    const navigate = useNavigate();
 
     if (!skills || skills.length === 0) return null;
 
