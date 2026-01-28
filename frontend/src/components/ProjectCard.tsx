@@ -163,8 +163,8 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
       className="fade-in slide-up"
       style={{
         backgroundColor: "white",
-        borderRadius: isMobile ? "24px" : "32px",
-        marginBottom: isMobile ? "24px" : "32px",
+        borderRadius: isMobile ? "20px" : "24px",
+        marginBottom: isMobile ? "20px" : "24px",
         cursor: "pointer",
         border: "1px solid #f1f5f9",
         position: "relative",
@@ -228,7 +228,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
         </div>
       )}
 
-      <div style={{ padding: "28px" }}>
+      <div style={{ padding: "20px" }}>
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -239,13 +239,13 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
             <div
               onClick={handleUserClick}
               style={{
-                width: "44px",
-                height: "44px",
+                width: "40px",
+                height: "40px",
                 backgroundColor: "#f8fafc",
                 border: "1px solid #f1f5f9",
                 overflow: "hidden",
                 cursor: "pointer",
-                borderRadius: "14px",
+                borderRadius: "12px",
                 transition: "transform 0.2s ease"
               }}
               onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
@@ -261,7 +261,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
               <div
                 onClick={handleUserClick}
                 style={{
-                  fontSize: "15px",
+                  fontSize: "14px",
                   fontWeight: 800,
                   color: "#1e293b",
                   cursor: "pointer",
@@ -269,7 +269,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
               >
                 {userName}
               </div>
-              <div style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 {formatRelativeDate(project.created_at)}
               </div>
             </div>
@@ -345,9 +345,9 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
         )}
 
         <h3 style={{
-          fontSize: "24px",
+          fontSize: "20px",
           fontWeight: 900,
-          marginBottom: "12px",
+          marginBottom: "10px",
           lineHeight: "1.3",
           color: "#1e293b",
           letterSpacing: "-0.03em"
@@ -356,10 +356,10 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
         </h3>
 
         <p style={{
-          fontSize: "15px",
+          fontSize: "14px",
           lineHeight: "1.6",
           color: "#475569",
-          marginBottom: "24px",
+          marginBottom: "20px",
           display: "-webkit-box",
           WebkitLineClamp: "3",
           WebkitBoxOrient: "vertical",
@@ -378,8 +378,8 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                   navigate(`/search?q=${encodeURIComponent(tech)}`);
                 }}
                 style={{
-                  fontSize: "12px",
-                  padding: "6px 12px",
+                  fontSize: "11px",
+                  padding: "4px 10px",
                   backgroundColor: "#f8fafc",
                   color: "#364182",
                   borderRadius: "10px",
@@ -525,7 +525,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
         style={{
           display: "flex",
           borderTop: "1px solid #f1f5f9",
-          padding: "20px 28px 28px",
+          padding: "16px 20px 20px",
           gap: "12px"
         }}
         onClick={(e) => e.stopPropagation()}
@@ -537,13 +537,13 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
             flex: 1,
             border: "1px solid",
             borderColor: isLiked ? "#fecdd3" : "#f1f5f9",
-            padding: "12px",
+            padding: "10px",
             display: "flex",
             alignItems: "center",
             cursor: currentUser ? "pointer" : "not-allowed",
             justifyContent: "center",
             gap: "8px",
-            fontSize: "15px",
+            fontSize: "14px",
             fontWeight: 800,
             borderRadius: "14px",
             backgroundColor: isLiked ? "#fff1f2" : "#f8fafc",
@@ -568,13 +568,13 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
           style={{
             flex: 1,
             border: "1px solid #f1f5f9",
-            padding: "12px",
+            padding: "10px",
             display: "flex",
             color: "#64748b",
             alignItems: "center",
             justifyContent: "center",
             gap: "8px",
-            fontSize: "15px",
+            fontSize: "14px",
             fontWeight: 800,
             borderRadius: "14px",
             backgroundColor: "#f8fafc",
@@ -599,9 +599,9 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
         <button
           onClick={handleShare}
           style={{
-            width: "50px",
+            width: "44px",
             border: "1px solid #f1f5f9",
-            padding: "12px",
+            padding: "10px",
             display: "flex",
             color: shareCopied ? "#10b981" : "#64748b",
             alignItems: "center",
@@ -647,10 +647,10 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
           onClick={handleSave}
           disabled={!currentUser}
           style={{
-            width: "50px",
+            width: "44px",
             border: "1px solid",
             borderColor: isSaved ? "#364182" : "#f1f5f9",
-            padding: "12px",
+            padding: "10px",
             display: "flex",
             cursor: currentUser ? "pointer" : "not-allowed",
             alignItems: "center",

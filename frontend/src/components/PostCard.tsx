@@ -141,9 +141,9 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           backgroundColor: "#fff",
           border: "1px solid #f1f5f9",
-          marginBottom: isMobile ? "24px" : "32px",
+          marginBottom: isMobile ? "20px" : "24px",
           padding: "0",
-          borderRadius: isMobile ? "24px" : "32px",
+          borderRadius: isMobile ? "20px" : "24px",
           overflow: "hidden",
           animationDelay: `${index * 0.1}s`,
           boxShadow: "0 10px 25px rgba(0, 0, 0, 0.03)",
@@ -165,21 +165,21 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: isMobile ? "16px 16px 12px" : "24px 24px 16px",
+          padding: isMobile ? "14px 14px 10px" : "20px 20px 14px",
         }}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "14px",
+              gap: "12px",
               cursor: "pointer",
             }}
             onClick={handleUserClick}
           >
             <div style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "16px",
+              width: "40px",
+              height: "40px",
+              borderRadius: "14px",
               backgroundColor: "#f8fafc",
               border: "1px solid #f1f5f9",
               overflow: "hidden",
@@ -199,15 +199,15 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
             </div>
             <div>
               <div style={{
-                fontSize: "15px",
+                fontSize: "14px",
                 fontWeight: "800",
                 color: "#1e293b",
-                marginBottom: "2px",
+                marginBottom: "0px",
               }}>
                 {userName}
               </div>
               <div style={{
-                fontSize: "12px",
+                fontSize: "11px",
                 color: "#94a3b8",
                 fontWeight: "600",
                 textTransform: "uppercase",
@@ -340,10 +340,10 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
         </div>
 
         {/* Content */}
-        <div style={{ padding: isMobile ? "0 16px 16px" : "0 24px 24px", display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ padding: isMobile ? "0 14px 14px" : "0 20px 20px", display: "flex", flexDirection: "column", gap: "10px" }}>
           {post.title && (
             <h2 dir="auto" style={{
-              fontSize: isMobile ? "16px" : "22px",
+              fontSize: isMobile ? "15px" : "20px",
               fontWeight: "900",
               color: "#1e293b",
               marginBottom: "0", // Changed from 12px to 0 due to gap on parent
@@ -355,10 +355,10 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           )}
           {post.content && (
             <div style={{
-              fontSize: "16px",
+              fontSize: "15px",
               lineHeight: "1.7",
               color: "#475569",
-              marginBottom: "20px",
+              marginBottom: "16px",
             }}>
               <ContentRenderer content={post.content} />
             </div>
@@ -421,7 +421,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "16px 24px 24px",
+          padding: "14px 20px 20px",
           backgroundColor: "#fff",
         }}>
           <div style={{
@@ -436,14 +436,14 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                padding: "10px 18px",
+                padding: "8px 14px",
                 background: isLiked ? "#fff1f2" : "#f8fafc",
                 border: "1px solid",
                 borderColor: isLiked ? "#fecdd3" : "#f1f5f9",
                 color: isLiked ? "#ef4444" : "#64748b",
                 cursor: likeLoading ? "not-allowed" : "pointer",
                 borderRadius: "14px",
-                fontSize: "15px",
+                fontSize: "14px",
                 fontWeight: "800",
                 transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
@@ -475,13 +475,13 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                padding: "10px 18px",
+                padding: "8px 14px",
                 background: "#f8fafc",
                 border: "1px solid #f1f5f9",
                 color: "#64748b",
                 cursor: "pointer",
                 borderRadius: "14px",
-                fontSize: "15px",
+                fontSize: "14px",
                 fontWeight: "800",
                 transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
@@ -509,8 +509,8 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
             <button
               onClick={handleShare}
               style={{
-                width: "44px",
-                height: "44px",
+                width: "40px",
+                height: "40px",
                 background: "#f8fafc",
                 border: "1px solid #f1f5f9",
                 color: shareCopied ? "#10b981" : "#64748b",
@@ -534,7 +534,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
             >
               <FontAwesomeIcon
                 icon={faShareNodes}
-                style={{ fontSize: "18px" }}
+                style={{ fontSize: "16px" }}
               />
               {shareCopied && (
                 <span style={{
@@ -560,8 +560,8 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
             <button
               onClick={handleSave}
               style={{
-                width: "44px",
-                height: "44px",
+                width: "40px",
+                height: "40px",
                 background: isSaved ? "#eef2ff" : "#f8fafc",
                 border: "1px solid",
                 borderColor: isSaved ? "#364182" : "#f1f5f9",
@@ -585,7 +585,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
               <FontAwesomeIcon
                 icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
                 style={{
-                  fontSize: "18px",
+                  fontSize: "16px",
                 }}
               />
             </button>
