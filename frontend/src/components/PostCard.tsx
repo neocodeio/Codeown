@@ -9,7 +9,7 @@ import ImageSlider from "./ImageSlider";
 import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
-// import { useWindowSize } from "../hooks/useWindowSize";
+import { useWindowSize } from "../hooks/useWindowSize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart as faHeartSolid,
@@ -40,8 +40,8 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(post.id);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id);
   const [shareCopied, setShareCopied] = useState(false);
-  //   const { width } = useWindowSize();
-  //   const isMobile = width < 768;
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   const isOwnPost = currentUser?.id === post.user_id;
 
@@ -135,62 +135,85 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
   return (
     <>
       <div
-        className="card fade-in slide-up"
+        className="slide-up"
         style={{
           cursor: "pointer",
-          transition: "all 0.3s ease",
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           backgroundColor: "#fff",
-          border: "2px solid #e0e0e0",
-          marginBottom: "30px",
-          padding: "10px",
-          borderRadius: "25px",
+          border: "1px solid #f1f5f9",
+          marginBottom: isMobile ? "24px" : "32px",
+          padding: "0",
+          borderRadius: isMobile ? "24px" : "32px",
           overflow: "hidden",
-          animationDelay: `${index * 0.1}s`
+          animationDelay: `${index * 0.1}s`,
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.03)",
         }}
         onClick={handleCardClick}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "translateY(-4px)";
+          e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.06)";
+          e.currentTarget.style.borderColor = "#e2e8f0";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.03)";
+          e.currentTarget.style.borderColor = "#f1f5f9";
+        }}
       >
         {/* Header */}
         <div style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "15px",
-          borderBottom: "1px solid #e0e0e0",
+          padding: isMobile ? "16px 16px 12px" : "24px 24px 16px",
         }}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "12px",
+              gap: "14px",
               cursor: "pointer",
             }}
             onClick={handleUserClick}
           >
-            <div className="avatar avatar-md" style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              backgroundColor: "var(--bg-elevated)",
-              border: "1px solid var(--border-color)",
+            <div style={{
+              width: "48px",
+              height: "48px",
+              borderRadius: "16px",
+              backgroundColor: "#f8fafc",
+              border: "1px solid #f1f5f9",
               overflow: "hidden",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-            }}>
+              transition: "transform 0.2s ease",
+            }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+              onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+            >
               <img
                 src={avatarUrl}
                 alt={userName}
-                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
             <div>
               <div style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "var(--text-primary)",
+                fontSize: "15px",
+                fontWeight: "800",
+                color: "#1e293b",
                 marginBottom: "2px",
               }}>
                 {userName}
+              </div>
+              <div style={{
+                fontSize: "12px",
+                color: "#94a3b8",
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: "0.02em",
+              }}>
+                {formatRelativeDate(post.created_at)}
               </div>
             </div>
           </div>
@@ -206,101 +229,93 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 color: "#fff",
                 fontWeight: "900",
                 textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                backgroundColor: "#0f172a",
-                padding: "4px 8px",
-                borderRadius: "6px",
+                letterSpacing: "0.08em",
+                backgroundColor: "#364182",
+                padding: "6px 12px",
+                borderRadius: "10px",
                 display: "flex",
                 alignItems: "center",
-                gap: "4px"
+                gap: "6px",
+                boxShadow: "0 4px 12px rgba(54, 65, 130, 0.2)"
               }}>
-                <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "9px" }} />
+                <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "10px" }} />
                 <span>Featured</span>
               </div>
             )}
 
-            <div style={{
-              fontSize: "11px",
-              color: "var(--text-tertiary)",
-              fontWeight: "700",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              backgroundColor: "rgba(0,0,0,0.03)",
-              padding: "4px 8px",
-              borderRadius: "8px",
-            }}>
-              {formatRelativeDate(post.created_at)}
-            </div>
-
             {isOwnPost && (
               <div style={{
                 display: "flex",
-                gap: "0",
+                gap: "8px",
               }}>
                 {onPin && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onPin(); }}
                     style={{
-                      padding: "8px",
-                      background: "none",
-                      border: "none",
-                      color: isPinned ? "#3b82f6" : "var(--text-secondary)",
+                      width: "38px",
+                      height: "38px",
+                      background: isPinned ? "#eef2ff" : "white",
+                      border: "1px solid",
+                      borderColor: isPinned ? "#364182" : "#f1f5f9",
+                      color: isPinned ? "#364182" : "#64748b",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
+                      borderRadius: "12px",
                       transition: "all 0.2s ease",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-hover)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = isPinned ? "#e0e7ff" : "#f8fafc";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = isPinned ? "#eef2ff" : "white";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
                   >
-                    <FontAwesomeIcon
-                      icon={faThumbtack}
-                      style={{
-                        fontSize: "14px",
-                        backgroundColor: isPinned ? "#eff6ff" : "#fff",
-                        borderRadius: "8px",
-                        padding: "8px",
-                        border: isPinned ? "2px solid #3b82f6" : "2px solid #e2e8f0"
-                      }}
-                    />
+                    <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "14px" }} />
                   </button>
                 )}
                 <button
                   onClick={handleEdit}
                   style={{
-                    padding: "8px",
-                    background: "none",
-                    border: "none",
-                    color: "var(--text-secondary)",
+                    width: "38px",
+                    height: "38px",
+                    background: "white",
+                    border: "1px solid #f1f5f9",
+                    color: "#64748b",
                     cursor: "pointer",
-                    borderRadius: "var(--radius-sm)",
+                    borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                    e.currentTarget.style.color = "var(--text-primary)";
+                    e.currentTarget.style.backgroundColor = "#f8fafc";
+                    e.currentTarget.style.color = "#1e293b";
+                    e.currentTarget.style.transform = "translateY(-2px)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "var(--text-secondary)";
+                    e.currentTarget.style.backgroundColor = "white";
+                    e.currentTarget.style.color = "#64748b";
+                    e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
-                  <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px", backgroundColor: "#fff", borderRadius: "8px", padding: "8px", color: "#000", border: "2px solid #e2e8f0" }} />
+                  <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px" }} />
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={isDeleting}
                   style={{
-                    padding: "8px",
-                    background: "none",
-                    border: "none",
-                    color: isDeleting ? "var(--text-tertiary)" : "var(--text-secondary)",
+                    width: "38px",
+                    height: "38px",
+                    background: "#fff1f2",
+                    border: "1px solid #ffe4e6",
+                    color: "#ef4444",
                     cursor: isDeleting ? "not-allowed" : "pointer",
-                    borderRadius: "var(--radius-sm)",
+                    borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -308,16 +323,16 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                   }}
                   onMouseEnter={(e) => {
                     if (!isDeleting) {
-                      e.currentTarget.style.backgroundColor = "var(--error)";
-                      e.currentTarget.style.color = "var(--text-inverse)";
+                      e.currentTarget.style.backgroundColor = "#ffe4e6";
+                      e.currentTarget.style.transform = "translateY(-2px)";
                     }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = isDeleting ? "var(--text-tertiary)" : "var(--text-secondary)";
+                    e.currentTarget.style.backgroundColor = "#fff1f2";
+                    e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
-                  <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px", backgroundColor: "#fff5f5", borderRadius: "8px", padding: "8px", color: "#ef4444", border: "2px solid #fee2e2", }} />
+                  <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px" }} />
                 </button>
               </div>
             )}
@@ -325,31 +340,32 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
         </div>
 
         {/* Content */}
-        <div style={{ padding: "20px" }}>
+        <div style={{ padding: isMobile ? "0 16px 16px" : "0 24px 24px", display: "flex", flexDirection: "column", gap: "12px" }}>
           {post.title && (
             <h2 dir="auto" style={{
-              fontSize: "20px",
-              fontWeight: "700",
-              color: "var(--text-primary)",
-              marginBottom: "12px",
+              fontSize: isMobile ? "16px" : "22px",
+              fontWeight: "900",
+              color: "#1e293b",
+              marginBottom: "0", // Changed from 12px to 0 due to gap on parent
               lineHeight: "1.4",
+              letterSpacing: "-0.02em"
             }}>
               {post.title}
             </h2>
           )}
           {post.content && (
             <div style={{
-              fontSize: "15px",
-              lineHeight: "1.6",
-              color: "var(--text-primary)",
-              marginBottom: "16px",
+              fontSize: "16px",
+              lineHeight: "1.7",
+              color: "#475569",
+              marginBottom: "20px",
             }}>
               <ContentRenderer content={post.content} />
             </div>
           )}
 
           {post.images && post.images.length > 0 && (
-            <div style={{ marginBottom: "16px" }}>
+            <div style={{ marginBottom: "20px", borderRadius: "20px", overflow: "hidden" }}>
               <ImageSlider images={post.images} />
             </div>
           )}
@@ -360,31 +376,33 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
               display: "flex",
               flexWrap: "wrap",
               gap: "8px",
-              marginTop: "12px",
+              marginTop: "16px",
             }}>
               {post.tags.map((tag, idx) => (
                 <span
                   key={idx}
                   style={{
                     display: "inline-block",
-                    padding: "6px 12px",
-                    backgroundColor: "#364182",
-                    color: "#fff",
-                    borderRadius: "8px",
+                    padding: "6px 14px",
+                    backgroundColor: "#f1f5f9",
+                    color: "#364182",
+                    borderRadius: "10px",
                     fontSize: "12px",
-                    fontWeight: 600,
-                    letterSpacing: "0.02em",
-                    textTransform: "lowercase",
+                    fontWeight: 800,
+                    letterSpacing: "0.01em",
                     cursor: "pointer",
                     transition: "all 0.2s ease",
+                    border: "1px solid #e2e8f0"
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#2d3568";
+                    e.currentTarget.style.backgroundColor = "#eef2ff";
                     e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.borderColor = "#364182";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#364182";
+                    e.currentTarget.style.backgroundColor = "#f1f5f9";
                     e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.borderColor = "#e2e8f0";
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -403,15 +421,13 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "16px 20px",
+          padding: "16px 24px 24px",
           backgroundColor: "#fff",
-          borderRadius: "15px",
-          border: "2px solid #e0e0e0",
         }}>
           <div style={{
             display: "flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "12px",
           }}>
             <button
               onClick={handleLike}
@@ -420,32 +436,34 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                padding: "8px 12px",
-                background: "red",
-                border: "none",
-                color: isLiked ? "var(--error)" : "#fff",
+                padding: "10px 18px",
+                background: isLiked ? "#fff1f2" : "#f8fafc",
+                border: "1px solid",
+                borderColor: isLiked ? "#fecdd3" : "#f1f5f9",
+                color: isLiked ? "#ef4444" : "#64748b",
                 cursor: likeLoading ? "not-allowed" : "pointer",
-                borderRadius: "10px",
-                fontSize: "14px",
-                fontWeight: "500",
-                transition: "all 0.2s ease",
+                borderRadius: "14px",
+                fontSize: "15px",
+                fontWeight: "800",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
               onMouseEnter={(e) => {
                 if (!likeLoading) {
-                  e.currentTarget.style.backgroundColor = isLiked ? "var(--error)" : "var(--bg-hover)";
-                  e.currentTarget.style.color = isLiked ? "var(--text-inverse)" : "var(--text-primary)";
+                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.backgroundColor = isLiked ? "#ffe4e6" : "#f1f5f9";
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = isLiked ? "var(--error)" : "var(--text-secondary)";
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.backgroundColor = isLiked ? "#fff1f2" : "#f8fafc";
               }}
             >
               <FontAwesomeIcon
                 icon={faHeartSolid}
                 style={{
-                  fontSize: "16px",
+                  fontSize: "18px",
                   transition: "transform 0.2s ease",
+                  transform: isLiked ? "scale(1.1)" : "scale(1)"
                 }}
               />
               <span>{likeCount || 0}</span>
@@ -457,26 +475,28 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                padding: "8px 12px",
-                background: "none",
-                border: "none",
-                color: "var(--text-secondary)",
+                padding: "10px 18px",
+                background: "#f8fafc",
+                border: "1px solid #f1f5f9",
+                color: "#64748b",
                 cursor: "pointer",
-                borderRadius: "var(--radius-sm)",
-                fontSize: "14px",
-                fontWeight: "500",
-                transition: "all 0.2s ease",
+                borderRadius: "14px",
+                fontSize: "15px",
+                fontWeight: "800",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                e.currentTarget.style.color = "var(--text-primary)";
+                e.currentTarget.style.transform = "scale(1.05)";
+                e.currentTarget.style.backgroundColor = "#f1f5f9";
+                e.currentTarget.style.color = "#364182";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.backgroundColor = "#f8fafc";
+                e.currentTarget.style.color = "#64748b";
               }}
             >
-              <FontAwesomeIcon icon={faComment} style={{ fontSize: "16px" }} />
+              <FontAwesomeIcon icon={faComment} style={{ fontSize: "18px" }} />
               <span>{post.comment_count || 0}</span>
             </button>
           </div>
@@ -484,17 +504,18 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           <div style={{
             display: "flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "12px",
           }}>
             <button
               onClick={handleShare}
               style={{
-                padding: "8px",
-                background: "none",
-                border: "none",
-                color: shareCopied ? "var(--success, #10b981)" : "var(--text-secondary)",
+                width: "44px",
+                height: "44px",
+                background: "#f8fafc",
+                border: "1px solid #f1f5f9",
+                color: shareCopied ? "#10b981" : "#64748b",
                 cursor: "pointer",
-                borderRadius: "var(--radius-sm)",
+                borderRadius: "14px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -503,17 +524,17 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
               }}
               title={shareCopied ? "Link Copied!" : "Share Post"}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                e.currentTarget.style.color = shareCopied ? "#10b981" : "var(--text-primary)";
+                e.currentTarget.style.transform = "scale(1.05)";
+                e.currentTarget.style.backgroundColor = "#f1f5f9";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = shareCopied ? "#10b981" : "var(--text-secondary)";
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.backgroundColor = "#f8fafc";
               }}
             >
               <FontAwesomeIcon
                 icon={faShareNodes}
-                style={{ fontSize: "16px" }}
+                style={{ fontSize: "18px" }}
               />
               {shareCopied && (
                 <span style={{
@@ -523,12 +544,13 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                   transform: "translateX(-50%)",
                   backgroundColor: "#10b981",
                   color: "#fff",
-                  padding: "4px 8px",
-                  borderRadius: "8px",
+                  padding: "6px 12px",
+                  borderRadius: "10px",
                   fontSize: "10px",
                   whiteSpace: "nowrap",
-                  marginBottom: "4px",
-                  fontWeight: 600,
+                  marginBottom: "8px",
+                  fontWeight: 900,
+                  boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)"
                 }}>
                   COPIED!
                 </span>
@@ -538,32 +560,32 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
             <button
               onClick={handleSave}
               style={{
-                padding: "8px",
-                background: isSaved ? "rgba(99, 102, 241, 0.1)" : "none",
-                border: "none",
-                color: isSaved ? "#6366f1" : "var(--text-secondary)",
+                width: "44px",
+                height: "44px",
+                background: isSaved ? "#eef2ff" : "#f8fafc",
+                border: "1px solid",
+                borderColor: isSaved ? "#364182" : "#f1f5f9",
+                color: isSaved ? "#364182" : "#64748b",
                 cursor: "pointer",
-                borderRadius: "10px",
+                borderRadius: "14px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isSaved ? "rgba(99, 102, 241, 0.2)" : "var(--bg-hover)";
-                e.currentTarget.style.color = isSaved ? "#6366f1" : "var(--text-primary)";
+                e.currentTarget.style.transform = "scale(1.1)";
+                e.currentTarget.style.backgroundColor = isSaved ? "#e0e7ff" : "#f1f5f9";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = isSaved ? "rgba(99, 102, 241, 0.1)" : "transparent";
-                e.currentTarget.style.color = isSaved ? "#6366f1" : "var(--text-secondary)";
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.backgroundColor = isSaved ? "#eef2ff" : "#f8fafc";
               }}
             >
               <FontAwesomeIcon
                 icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
                 style={{
-                  fontSize: "16px",
-                  transform: isSaved ? "scale(1.2)" : "scale(1)",
-                  transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
+                  fontSize: "18px",
                 }}
               />
             </button>

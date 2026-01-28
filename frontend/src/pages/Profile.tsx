@@ -15,7 +15,7 @@ import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEllipsisV, faUserEdit, faSignOutAlt, faKey, faHeart, faUsers, faUserFriends, faLayerGroup, faRocket, faBookmark } from "@fortawesome/free-solid-svg-icons";
 
 interface UserProfile {
   id: string;
@@ -30,6 +30,12 @@ interface UserProfile {
   total_likes: number;
   pinned_post_id: number | null;
   pinned_post: any | null;
+  job_title: string | null;
+  location: string | null;
+  experience_level: string | null;
+  skills: string[] | null;
+  is_hirable: boolean;
+  is_organization: boolean;
 }
 
 export default function Profile() {
@@ -118,52 +124,53 @@ export default function Profile() {
 
   if (!isLoaded) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "var(--primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#364182", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
   if (!isSignedIn) return <Navigate to="/sign-in" replace />;
 
-  const avatarUrl = userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "U")}&background=000&color=fff&bold=true`;
+  const avatarUrl = userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "U")}&background=364182&color=fff&bold=true`;
 
   return (
-    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
         .profile-btn {
           padding: 10px 20px;
-          border-radius: 12px;
+          border-radius: 14px;
           font-size: 14px;
           font-weight: 700;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           border: 1px solid #e2e8f0;
           display: flex;
-          alignItems: center;
+          align-items: center;
           gap: 8px;
           background: white;
-          color: #0f172a;
+          color: #334155;
           cursor: pointer;
         }
         .profile-btn:hover {
-          background: #f8fafc;
+          background: #f1f5f9;
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .profile-btn-primary {
-          background: #0f172a;
+          background: #364182;
           color: white;
-          border-color: #0f172a;
+          border-color: #364182;
         }
         .profile-btn-primary:hover {
-          background: #1e293b;
+          background: #2d3568;
+          border-color: #2d3568;
           color: white;
         }
         .tab-item {
-          padding: 16px 8px;
+          padding: 16px 24px;
           font-size: 14px;
           font-weight: 800;
           color: #94a3b8;
@@ -174,9 +181,12 @@ export default function Profile() {
           background: none;
           letter-spacing: 0.05em;
           text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
         .tab-item.active {
-          color: #0f172a;
+          color: #364182;
         }
         .tab-item.active::after {
           content: "";
@@ -185,142 +195,185 @@ export default function Profile() {
           left: 0;
           width: 100%;
           height: 3px;
-          background: #0f172a;
+          background: #364182;
           border-radius: 2px;
         }
         .stat-card {
-          padding: 16px;
+          padding: 20px;
           border-radius: 20px;
           border: 1px solid #f1f5f9;
-          background: #f8fafc;
+          background: white;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
         }
         .stat-card:hover {
-          background: #fff;
+          transform: translateY(-6px);
+          box-shadow: 0 15px 30px rgba(0,0,0,0.05);
           border-color: #e2e8f0;
-          transform: translateY(-4px);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.03);
         }
-        .pinned-badge {
+        .stat-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
           display: flex;
           align-items: center;
-          gap: 6px;
-          background: #0f172a;
-          color: white;
-          padding: 4px 10px;
-          border-radius: 8px;
-          font-size: 10px;
-          font-weight: 800;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-          position: absolute;
-          top: 20px;
-          left: 20px;
-          z-index: 10;
+          justify-content: center;
+          margin-bottom: 12px;
+          background: #f1f5f9;
+          color: #64748b;
+          transition: all 0.3s ease;
+        }
+        .stat-card:hover .stat-icon {
+          background: #eef2ff;
+          color: #364182;
         }
       `}</style>
 
-      {/* Modern High-End Banner */}
+      {/* Dynamic Banner */}
       <div style={{
-        height: isMobile ? "180px" : "120px",
-        background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+        height: isMobile ? "200px" : "150px",
+        background: "linear-gradient(135deg, #364182 0%, #849bff 100%)",
         position: "relative",
         overflow: "hidden"
       }}>
         <div style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.4,
-          backgroundImage: "radial-gradient(#94a3b8 1px, transparent 1px)",
-          backgroundSize: "24px 24px"
+          opacity: 0.15,
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
         }} />
         <div style={{
           position: "absolute",
-          bottom: "-50px",
-          right: "-50px",
+          top: "10%",
+          left: "5%",
           width: "300px",
           height: "300px",
-          background: "radial-gradient(circle, rgba(132, 155, 255, 0.1) 0%, transparent 70%)"
+          background: "radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)",
+          borderRadius: "50%"
         }} />
       </div>
 
       <div className="container" style={{
         maxWidth: "1000px",
-        margin: "-80px auto 0",
+        margin: isMobile ? "-60px auto 0" : "-100px auto 0",
         position: "relative",
         zIndex: 10,
-        padding: isMobile ? "0 20px" : "0"
+        padding: isMobile ? "0 12px" : "0 20px"
       }}>
-        {/* Profile Header Content */}
+        {/* Profile Card */}
         <div style={{
           backgroundColor: "white",
-          borderRadius: "32px",
-          padding: isMobile ? "24px" : "40px",
-          boxShadow: "0 20px 50px rgba(0,0,0,0.08)",
+          borderRadius: isMobile ? "24px" : "32px",
+          padding: isMobile ? "20px" : "40px",
+          boxShadow: isMobile ? "0 10px 25px rgba(0,0,0,0.05)" : "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
           border: "1px solid #f1f5f9"
         }} className="slide-up">
           <div style={{
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
             alignItems: isMobile ? "center" : "flex-end",
-            gap: "24px",
-            marginBottom: "32px",
+            gap: isMobile ? "16px" : "24px",
+            marginBottom: isMobile ? "24px" : "32px",
             textAlign: isMobile ? "center" : "left"
           }}>
             <div style={{
               width: isMobile ? "120px" : "160px",
               height: isMobile ? "120px" : "160px",
-              borderRadius: "48px",
-              border: "6px solid white",
-              boxShadow: "0 15px 30px rgba(0,0,0,0.1)",
+              minWidth: isMobile ? "120px" : "160px",
+              borderRadius: isMobile ? "36px" : "48px",
+              border: isMobile ? "4px solid white" : "8px solid white",
+              boxShadow: "0 15px 35px rgba(0,0,0,0.1)",
               overflow: "hidden",
               marginTop: isMobile ? "-80px" : "-100px",
-              backgroundColor: "#f8fafc"
+              backgroundColor: "#f8fafc",
+              position: "relative"
             }}>
               <img src={avatarUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Avatar" />
             </div>
 
             <div style={{ flex: 1, paddingBottom: isMobile ? "0" : "8px" }}>
-              <h1 style={{ fontSize: isMobile ? "22px" : "32px", fontWeight: 900, color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.04em" }}>
-                {userProfile?.name || user?.fullName}
-              </h1>
-              <p style={{ fontSize: "16px", color: "#64748b", fontWeight: 700, letterSpacing: "0.02em" }}>
-                @{userProfile?.username || user?.username}
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start", marginBottom: "8px" }}>
+                <h1 style={{ fontSize: isMobile ? "24px" : "36px", fontWeight: 900, color: "#1e293b", marginBottom: "0", letterSpacing: "-0.03em" }}>
+                  {userProfile?.name || user?.fullName}
+                </h1>
+                <span style={{
+                  padding: isMobile ? "3px 10px" : "4px 12px",
+                  background: userProfile?.is_organization ? "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)" : "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+                  color: userProfile?.is_organization ? "#364182" : "#64748b",
+                  borderRadius: "10px",
+                  fontSize: isMobile ? "10px" : "11px",
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  border: "1px solid",
+                  borderColor: userProfile?.is_organization ? "#dbeafe" : "#e2e8f0",
+                }}>
+                  {userProfile?.is_organization ? "Org" : "Dev"}
+                </span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start", marginBottom: "16px", color: "#64748b" }}>
+                <span style={{
+                  fontSize: "14px",
+                  color: "#364182",
+                  fontWeight: 800,
+                }}>
+                  @{userProfile?.username || user?.username}
+                </span>
+              </div>
+
+              {userProfile?.bio && (
+                <div style={{ fontSize: "16px", lineHeight: "1.6", color: "#475569", marginBottom: "20px", maxWidth: "600px" }}>
+                  <BioRenderer bio={userProfile.bio} />
+                </div>
+              )}
             </div>
 
-            {userProfile?.bio && (
-              <div className="slide-up" style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "32px", maxWidth: "800px", margin: isMobile ? "0 auto 32px" : "0 0 32px" }}>
-                <BioRenderer bio={userProfile.bio} />
-              </div>
-            )}
-
-            <div style={{ display: "flex", gap: "12px", marginBottom: "8px" }}>
-              <button onClick={() => setIsEditModalOpen(true)} className="profile-btn profile-btn-primary">
-                Edit Profile
+            <div style={{ display: "flex", gap: "8px", marginBottom: "8px", justifyContent: isMobile ? "center" : "flex-end" }}>
+              <button onClick={() => setIsEditModalOpen(true)} className="profile-btn profile-btn-primary" style={{ padding: isMobile ? "8px 12px" : "10px 20px" }}>
+                <FontAwesomeIcon icon={faUserEdit} />
+                <span style={{ display: isMobile ? "none" : "inline" }}>Edit Profile</span>
               </button>
               <div style={{ position: "relative" }}>
-                <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }} className="profile-btn">
-                  <FontAwesomeIcon icon={faEllipsisH} />
+                <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }} className="profile-btn" style={{ width: "45px", justifyContent: "center", padding: "10px 0" }}>
+                  <FontAwesomeIcon icon={faEllipsisV} />
                 </button>
                 {isMenuOpen && (
-                  <div style={{ position: "absolute", top: "120%", right: 0, backgroundColor: "#fff", border: "1px solid #f1f5f9", borderRadius: "16px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", minWidth: "180px", zIndex: 100, padding: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <div style={{
+                    position: "absolute",
+                    top: "125%",
+                    right: 0,
+                    backgroundColor: "#fff",
+                    border: "1px solid #f1f5f9",
+                    borderRadius: "18px",
+                    boxShadow: "0 15px 35px rgba(0,0,0,0.12)",
+                    minWidth: "200px",
+                    zIndex: 100,
+                    padding: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                    animation: "slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)"
+                  }}>
                     <button
                       onClick={() => navigate("/forgot-password")}
-                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#0f172a", fontWeight: 700, cursor: "pointer", borderRadius: "8px", fontSize: "13px" }}
+                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#1e293b", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                     >
+                      <FontAwesomeIcon icon={faKey} style={{ width: "16px", opacity: 0.6 }} />
                       Reset Password
                     </button>
                     <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
                     <button
                       onClick={handleSignOut}
-                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "8px", fontSize: "13px" }}
+                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                     >
+                      <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px", opacity: 0.8 }} />
                       Sign Out
                     </button>
                   </div>
@@ -329,55 +382,96 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Minimal Stats */}
+          {/* Stats Section */}
           <div style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-            gap: "16px",
+            gap: isMobile ? "12px" : "16px",
             borderTop: "1px solid #f1f5f9",
-            paddingTop: "32px"
+            paddingTop: isMobile ? "24px" : "32px",
+            marginTop: "8px"
           }}>
             <div className="stat-card" onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{userProfile?.follower_count || 0}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Followers</div>
+              <div className="stat-icon"><FontAwesomeIcon icon={faUsers} /></div>
+              <div style={{ fontSize: "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.follower_count || 0}</div>
+              <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Followers</div>
             </div>
             <div className="stat-card" onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{userProfile?.following_count || 0}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Following</div>
+              <div className="stat-icon"><FontAwesomeIcon icon={faUserFriends} /></div>
+              <div style={{ fontSize: "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.following_count || 0}</div>
+              <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Following</div>
             </div>
             <div className="stat-card" style={{ cursor: "default" }}>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{userProfile?.total_likes || 0}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Total Likes</div>
+              <div className="stat-icon"><FontAwesomeIcon icon={faHeart} /></div>
+              <div style={{ fontSize: "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.total_likes || 0}</div>
+              <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Total Likes</div>
             </div>
-            <div className="stat-card" style={{ background: "#0f172a", border: "none" }} onClick={() => setIsProjectModalOpen(true)}>
-              <div style={{ color: "white", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", height: "100%", fontWeight: 800, fontSize: "14px" }}>
-                <FontAwesomeIcon icon={faPlus} />
-                New Project
-              </div>
-            </div>
+            <button className="stat-card" style={{ background: "linear-gradient(135deg, #364182 0%, #4a59b3 100%)", border: "none" }} onClick={() => setIsProjectModalOpen(true)}>
+              <div className="stat-icon" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}><FontAwesomeIcon icon={faPlus} /></div>
+              <div style={{ color: "white", fontWeight: 800, fontSize: "15px", textAlign: "center" }}>New Project</div>
+            </button>
           </div>
         </div>
 
         {/* Content Navigation */}
         <div style={{ marginTop: "48px" }}>
-          <div style={{ display: "flex", gap: "32px", borderBottom: "2px solid #f1f5f9", marginBottom: "32px" }} className="fade-in">
+          <div style={{
+            display: "flex",
+            gap: "4px",
+            marginBottom: isMobile ? "16px" : "32px",
+            backgroundColor: "white",
+            padding: "4px",
+            borderRadius: "18px",
+            width: isMobile ? "100%" : "fit-content",
+            boxShadow: "0 4px 15px rgba(0,0,0,0.03)",
+            border: "1px solid #f1f5f9",
+            overflowX: "auto",
+            scrollbarWidth: "none",
+          }} className="fade-in">
             <button
               onClick={() => setActiveTab("posts")}
               className={`tab-item ${activeTab === "posts" ? 'active' : ''}`}
+              style={{
+                flex: isMobile ? 1 : "initial",
+                justifyContent: "center",
+                padding: isMobile ? "12px 8px" : "16px 24px",
+                borderRadius: "14px",
+                backgroundColor: activeTab === "posts" ? "#f1f5f9" : "transparent"
+              }}
             >
-              Posts ({posts.length})
+              <FontAwesomeIcon icon={faLayerGroup} style={{ fontSize: isMobile ? "12px" : "14px" }} />
+              <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Posts</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "posts" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{posts.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("projects")}
               className={`tab-item ${activeTab === "projects" ? 'active' : ''}`}
+              style={{
+                flex: isMobile ? 1 : "initial",
+                justifyContent: "center",
+                padding: isMobile ? "12px 8px" : "16px 24px",
+                borderRadius: "14px",
+                backgroundColor: activeTab === "projects" ? "#f1f5f9" : "transparent"
+              }}
             >
-              Projects ({projects.length})
+              <FontAwesomeIcon icon={faRocket} style={{ fontSize: isMobile ? "12px" : "14px" }} />
+              <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Projects</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "projects" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{projects.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("saved")}
               className={`tab-item ${activeTab === "saved" ? 'active' : ''}`}
+              style={{
+                flex: isMobile ? 1 : "initial",
+                justifyContent: "center",
+                padding: isMobile ? "12px 8px" : "16px 24px",
+                borderRadius: "14px",
+                backgroundColor: activeTab === "saved" ? "#f1f5f9" : "transparent"
+              }}
             >
-              Saved ({savedPosts.length + savedProjects.length})
+              <FontAwesomeIcon icon={faBookmark} style={{ fontSize: isMobile ? "12px" : "14px" }} />
+              <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Saved</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "saved" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{savedPosts.length + savedProjects.length}</span>
             </button>
           </div>
 
@@ -385,7 +479,10 @@ export default function Profile() {
             {activeTab === "posts" ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
                 {posts.length === 0 ? (
-                  <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>No posts published yet.</div>
+                  <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px" }}>
+                    <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faLayerGroup} /></div>
+                    No posts published yet.
+                  </div>
                 ) : (
                   posts.map((p, i) => (
                     <PostCard
@@ -402,32 +499,53 @@ export default function Profile() {
             ) : activeTab === "projects" ? (
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "24px" }}>
                 {projects.length === 0 ? (
-                  <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>No projects launched yet.</div>
+                  <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px" }}>
+                    <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faRocket} /></div>
+                    No projects launched yet.
+                  </div>
                 ) : (
                   projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} onUpdated={() => fetchUserProjects()} />)
                 )}
               </div>
             ) : (
               <div>
-                <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-                  <button onClick={() => setSavedSubTab("posts")} className={`profile-btn ${savedSubTab === "posts" ? 'profile-btn-primary' : ''}`} style={{ padding: "8px 16px" }}>
+                <div style={{ display: "flex", gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}>
+                  <button
+                    onClick={() => setSavedSubTab("posts")}
+                    className="profile-btn"
+                    style={{
+                      borderRadius: "12px",
+                      backgroundColor: savedSubTab === "posts" ? "#364182" : "white",
+                      color: savedSubTab === "posts" ? "white" : "#334155",
+                      borderColor: savedSubTab === "posts" ? "#364182" : "#e2e8f0"
+                    }}
+                  >
                     Saved Posts ({savedPosts.length})
                   </button>
-                  <button onClick={() => setSavedSubTab("projects")} className={`profile-btn ${savedSubTab === "projects" ? 'profile-btn-primary' : ''}`} style={{ padding: "8px 16px" }}>
+                  <button
+                    onClick={() => setSavedSubTab("projects")}
+                    className="profile-btn"
+                    style={{
+                      borderRadius: "12px",
+                      backgroundColor: savedSubTab === "projects" ? "#364182" : "white",
+                      color: savedSubTab === "projects" ? "white" : "#334155",
+                      borderColor: savedSubTab === "projects" ? "#364182" : "#e2e8f0"
+                    }}
+                  >
                     Saved Projects ({savedProjects.length})
                   </button>
                 </div>
                 {savedSubTab === "posts" ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
                     {savedPostsLoading ? <div style={{ padding: "40px 0", textAlign: "center" }}>Loading...</div> :
-                      savedPosts.length === 0 ? <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>No saved posts.</div> :
+                      savedPosts.length === 0 ? <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px" }}>No saved posts.</div> :
                         savedPosts.map((p, i) => <PostCard key={p.id} post={p} index={i} onUpdated={handleProfileUpdated} />)
                     }
                   </div>
                 ) : (
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "24px" }}>
                     {savedProjectsLoading ? <div style={{ gridColumn: "1 / -1", padding: "40px 0", textAlign: "center" }}>Loading...</div> :
-                      savedProjects.length === 0 ? <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>No saved projects.</div> :
+                      savedProjects.length === 0 ? <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px" }}>No saved projects.</div> :
                         savedProjects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} onUpdated={fetchUserSavedProjects} />)
                     }
                   </div>
@@ -439,29 +557,29 @@ export default function Profile() {
       </div>
 
       <footer style={{
-        padding: "40px 20px 80px",
-        height: "0px",
+        padding: "60px 20px 100px",
         textAlign: "center",
-        borderTop: "1px solid #f1f5f9",
-        marginTop: "40px"
+        marginTop: "100px",
+        background: "white",
+        borderTop: "1px solid #f1f5f9"
       }}>
         <div style={{
           display: "flex",
           justifyContent: "center",
-          gap: "24px",
+          gap: "32px",
           flexWrap: "wrap",
-          marginBottom: "16px"
+          marginBottom: "24px"
         }}>
-          <Link to="/about" style={{ fontSize: "13px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>About Us</Link>
-          <Link to="/privacy" style={{ fontSize: "13px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Privacy Policy</Link>
-          <Link to="/terms" style={{ fontSize: "13px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Terms of Service</Link>
+          <Link to="/about" style={{ fontSize: "14px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>About Us</Link>
+          <Link to="/privacy" style={{ fontSize: "14px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>Privacy Policy</Link>
+          <Link to="/terms" style={{ fontSize: "14px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>Terms of Service</Link>
         </div>
-        <p style={{ fontSize: "12px", color: "#cbd5e1", fontWeight: 600 }}>© {new Date().getFullYear()} Codeown. Built for developers.</p>
+        <p style={{ fontSize: "13px", color: "#94a3b8", fontWeight: 700 }}>© {new Date().getFullYear()} Codeown. Crafted with pasión by developers.</p>
       </footer>
 
       {userProfile && <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onUpdated={handleProfileUpdated} currentUser={userProfile} />}
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => fetchUserProjects()} />
       {userId && <FollowersModal isOpen={followersModalOpen} onClose={() => setFollowersModalOpen(false)} userId={userId} type={followersModalType} title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"} />}
-    </main>
+    </main >
   );
 }

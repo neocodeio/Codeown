@@ -10,7 +10,17 @@ import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserPlus, faThumbtack, faUserCheck, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUserPlus,
+  faThumbtack,
+  faUserCheck,
+  faEnvelope,
+  faUsers,
+  faUserFriends,
+  faRocket,
+  faLayerGroup,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 interface User {
@@ -30,6 +40,7 @@ interface User {
   experience_level: string | null;
   skills: string[] | null;
   is_hirable: boolean;
+  is_organization: boolean;
 }
 
 export default function UserProfile() {
@@ -124,7 +135,7 @@ export default function UserProfile() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "var(--primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#364182", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
@@ -135,19 +146,19 @@ export default function UserProfile() {
     return null;
   }
 
-  const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=000000&color=ffffff&bold=true`;
+  const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=364182&color=ffffff&bold=true`;
 
   return (
-    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
         .profile-btn {
           padding: 10px 20px;
-          border-radius: 12px;
+          border-radius: 14px;
           font-size: 14px;
           font-weight: 700;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -156,29 +167,29 @@ export default function UserProfile() {
           align-items: center;
           gap: 8px;
           background: white;
-          color: #0f172a;
+          color: #334155;
           cursor: pointer;
         }
         .profile-btn:hover {
-          background: #f8fafc;
+          background: #f1f5f9;
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .profile-btn-primary {
-          background: #0f172a;
+          background: #364182;
           color: white;
-          border-color: #0f172a;
+          border-color: #364182;
         }
         .profile-btn-primary:hover {
-          background: #1e293b;
+          background: #2d3568;
         }
         .profile-btn-following {
           background: transparent;
-          color: #0f172a;
-          border: 2px solid #0f172a;
+          color: #364182;
+          border: 2px solid #364182;
         }
         .tab-item {
-          padding: 16px 8px;
+          padding: 16px 24px;
           font-size: 14px;
           font-weight: 800;
           color: #94a3b8;
@@ -189,9 +200,12 @@ export default function UserProfile() {
           background: none;
           letter-spacing: 0.05em;
           text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
         .tab-item.active {
-          color: #0f172a;
+          color: #364182;
         }
         .tab-item.active::after {
           content: "";
@@ -200,111 +214,130 @@ export default function UserProfile() {
           left: 0;
           width: 100%;
           height: 3px;
-          background: #0f172a;
+          background: #364182;
           border-radius: 2px;
         }
         .stat-card {
-          padding: 16px;
+          padding: 20px;
           border-radius: 20px;
           border: 1px solid #f1f5f9;
-          background: #f8fafc;
+          background: white;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
         }
         .stat-card:hover {
-          background: #fff;
+          transform: translateY(-6px);
+          box-shadow: 0 15px 30px rgba(0,0,0,0.05);
           border-color: #e2e8f0;
-          transform: translateY(-4px);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        }
+        .stat-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 12px;
+          background: #f1f5f9;
+          color: #64748b;
+          transition: all 0.3s ease;
+        }
+        .stat-card:hover .stat-icon {
+          background: #eef2ff;
+          color: #364182;
         }
       `}</style>
 
-      {/* Modern Banner */}
+      {/* Dynamic Banner */}
       <div style={{
-        height: isMobile ? "180px" : "120px",
-        background: "linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%)",
+        height: isMobile ? "200px" : "150px",
+        background: "linear-gradient(135deg, #364182 0%, #849bff 100%)",
         position: "relative",
         overflow: "hidden"
       }}>
         <div style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.3,
-          backgroundImage: "radial-gradient(#94a3b8 1px, transparent 1px)",
-          backgroundSize: "24px 24px"
+          opacity: 0.15,
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
         }} />
       </div>
 
       <div className="container" style={{
         maxWidth: "1000px",
-        margin: "-80px auto 0",
+        margin: isMobile ? "-60px auto 0" : "-100px auto 0",
         position: "relative",
         zIndex: 10,
-        padding: isMobile ? "0 20px" : "0"
+        padding: isMobile ? "0 12px" : "0 20px"
       }}>
-        {/* Profile Header Content */}
+        {/* Profile Card */}
         <div style={{
           backgroundColor: "white",
-          borderRadius: "32px",
-          padding: isMobile ? "24px" : "40px",
-          boxShadow: "0 20px 50px rgba(0,0,0,0.08)",
+          borderRadius: isMobile ? "24px" : "32px",
+          padding: isMobile ? "20px" : "40px",
+          boxShadow: isMobile ? "0 10px 25px rgba(0,0,0,0.05)" : "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
           border: "1px solid #f1f5f9"
         }} className="slide-up">
           <div style={{
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
             alignItems: isMobile ? "center" : "flex-end",
-            gap: "24px",
-            marginBottom: "32px",
+            gap: isMobile ? "16px" : "24px",
+            marginBottom: isMobile ? "24px" : "32px",
             textAlign: isMobile ? "center" : "left"
           }}>
             <div style={{
               width: isMobile ? "120px" : "160px",
               height: isMobile ? "120px" : "160px",
-              borderRadius: "48px",
-              border: "6px solid white",
-              boxShadow: "0 15px 30px rgba(0,0,0,0.1)",
+              minWidth: isMobile ? "120px" : "160px",
+              borderRadius: isMobile ? "36px" : "48px",
+              border: isMobile ? "4px solid white" : "8px solid white",
+              boxShadow: "0 15px 35px rgba(0,0,0,0.1)",
               overflow: "hidden",
               marginTop: isMobile ? "-80px" : "-100px",
-              backgroundColor: "#f8fafc"
+              backgroundColor: "#f8fafc",
+              position: "relative"
             }}>
               <img src={avatarUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Avatar" />
             </div>
 
             <div style={{ flex: 1, paddingBottom: isMobile ? "0" : "8px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
-                <h1 style={{ fontSize: isMobile ? "32px" : "42px", fontWeight: 900, color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.04em" }}>
+                <h1 style={{ fontSize: isMobile ? "24px" : "36px", fontWeight: 900, color: "#1e293b", marginBottom: "4px", letterSpacing: "-0.04em" }}>
                   {user.name}
                 </h1>
-                {user.is_hirable && (
-                  <span style={{ padding: "4px 12px", background: "#f0fdf4", color: "#16a34a", borderRadius: "20px", fontSize: "12px", fontWeight: 800, textTransform: "uppercase", border: "1px solid #bbf7d0" }}>
-                    Available for hire
-                  </span>
-                )}
+                <span style={{
+                  padding: isMobile ? "3px 10px" : "6px 14px",
+                  background: user.is_organization ? "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)" : "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+                  color: user.is_organization ? "#364182" : "#64748b",
+                  borderRadius: "14px",
+                  fontSize: isMobile ? "10px" : "12px",
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  border: "1px solid",
+                  borderColor: user.is_organization ? "#dbeafe" : "#e2e8f0",
+                }}>
+                  {user.is_organization ? "Org" : "Dev"}
+                </span>
               </div>
-              <p style={{ fontSize: "16px", color: "#64748b", fontWeight: 700, letterSpacing: "0.02em" }}>
-                @{user.username || "user"} • {user.job_title || "Developer"}
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start", marginTop: "8px", color: "#64748b" }}>
+                <span style={{ fontWeight: 800, color: "#364182" }}>@{user.username || "user"}</span>
+              </div>
             </div>
 
-            <div style={{ display: "flex", gap: "12px", marginBottom: "8px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "8px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-end" }}>
               {isSignedIn && (
                 <button
                   onClick={() => navigate(`/messages?userId=${userId}`)}
                   className="profile-btn"
+                  style={{ padding: isMobile ? "8px 12px" : "10px 20px" }}
                 >
                   <FontAwesomeIcon icon={faEnvelope} />
                   <span>Message</span>
-                </button>
-              )}
-              {isSignedIn && user.is_hirable && (
-                <button
-                  onClick={() => navigate(`/messages?userId=${userId}&hiring=true`)}
-                  className="profile-btn"
-                  style={{ backgroundColor: "#6366f1", color: "white", borderColor: "#6366f1" }}
-                >
-                  <FontAwesomeIcon icon={faEnvelope} />
-                  <span>Hire Me</span>
                 </button>
               )}
               {isSignedIn && (
@@ -312,31 +345,22 @@ export default function UserProfile() {
                   onClick={handleFollow}
                   disabled={followLoading}
                   className={`profile-btn ${isFollowing ? 'profile-btn-following' : 'profile-btn-primary'}`}
+                  style={{ padding: isMobile ? "8px 12px" : "10px 20px" }}
                 >
                   <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
-                  <span>{isFollowing ? "Following" : "Follow"}</span>
+                  <span>{isFollowing ? (isMobile ? "Yes" : "Following") : (isMobile ? "Follow" : "Follow")}</span>
                 </button>
               )}
             </div>
           </div>
 
           {user.bio && (
-            <div style={{ fontSize: "18px", lineHeight: "1.6", color: "#475569", marginBottom: "24px", maxWidth: "800px", margin: isMobile ? "0 auto 24px" : "0 0 24px" }}>
+            <div style={{ fontSize: "17px", lineHeight: "1.7", color: "#475569", marginBottom: "32px", maxWidth: "800px", margin: isMobile ? "0 auto 32px" : "0 0 32px" }}>
               <BioRenderer bio={user.bio} />
             </div>
           )}
 
-          {user.skills && user.skills.length > 0 && (
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "32px", justifyContent: isMobile ? "center" : "flex-start" }}>
-              {user.skills.map(skill => (
-                <span key={skill} style={{ padding: "6px 14px", backgroundColor: "#f1f5f9", color: "#475569", borderRadius: "10px", fontSize: "13px", fontWeight: 700 }}>
-                  {skill}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Minimal Stats */}
+          {/* Stats Section */}
           <div style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
@@ -345,34 +369,66 @@ export default function UserProfile() {
             paddingTop: "32px"
           }}>
             <div className="stat-card" onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{user.follower_count}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Followers</div>
+              <div className="stat-icon"><FontAwesomeIcon icon={faUsers} /></div>
+              <div style={{ fontSize: "24px", fontWeight: 900, color: "#1e293b" }}>{user.follower_count}</div>
+              <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Followers</div>
             </div>
             <div className="stat-card" onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{user.following_count}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Following</div>
+              <div className="stat-icon"><FontAwesomeIcon icon={faUserFriends} /></div>
+              <div style={{ fontSize: "24px", fontWeight: 900, color: "#1e293b" }}>{user.following_count}</div>
+              <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Following</div>
             </div>
             <div className="stat-card" style={{ cursor: "default" }}>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#0f172a" }}>{user.total_likes}</div>
-              <div style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Likes Recieved</div>
+              <div className="stat-icon"><FontAwesomeIcon icon={faHeart} /></div>
+              <div style={{ fontSize: "24px", fontWeight: 900, color: "#1e293b" }}>{user.total_likes}</div>
             </div>
           </div>
         </div>
 
         {/* Content Navigation */}
         <div style={{ marginTop: "48px" }}>
-          <div style={{ display: "flex", gap: "32px", borderBottom: "2px solid #f1f5f9", marginBottom: "32px" }} className="fade-in">
+          <div style={{
+            display: "flex",
+            gap: "4px",
+            marginBottom: isMobile ? "16px" : "32px",
+            backgroundColor: "white",
+            padding: "4px",
+            borderRadius: "18px",
+            width: isMobile ? "100%" : "fit-content",
+            boxShadow: "0 4px 15px rgba(0,0,0,0.03)",
+            border: "1px solid #f1f5f9",
+            overflowX: "auto",
+            scrollbarWidth: "none",
+          }} className="fade-in">
             <button
               onClick={() => setActiveTab("posts")}
               className={`tab-item ${activeTab === "posts" ? 'active' : ''}`}
+              style={{
+                flex: isMobile ? 1 : "initial",
+                justifyContent: "center",
+                padding: isMobile ? "12px 8px" : "16px 24px",
+                borderRadius: "14px",
+                backgroundColor: activeTab === "posts" ? "#f1f5f9" : "transparent"
+              }}
             >
-              Posts ({posts.length})
+              <FontAwesomeIcon icon={faLayerGroup} style={{ fontSize: isMobile ? "12px" : "14px" }} />
+              <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Posts</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "posts" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{posts.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("projects")}
               className={`tab-item ${activeTab === "projects" ? 'active' : ''}`}
+              style={{
+                flex: isMobile ? 1 : "initial",
+                justifyContent: "center",
+                padding: isMobile ? "12px 8px" : "16px 24px",
+                borderRadius: "14px",
+                backgroundColor: activeTab === "projects" ? "#f1f5f9" : "transparent"
+              }}
             >
-              Projects ({projects.length})
+              <FontAwesomeIcon icon={faRocket} style={{ fontSize: isMobile ? "12px" : "14px" }} />
+              <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Projects</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "projects" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{projects.length}</span>
             </button>
           </div>
 
@@ -382,7 +438,10 @@ export default function UserProfile() {
                 {postsLoading ? (
                   <div style={{ padding: "60px 0", textAlign: "center", color: "#94a3b8" }}>Loading...</div>
                 ) : posts.length === 0 ? (
-                  <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>No posts published yet.</div>
+                  <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px" }}>
+                    <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faLayerGroup} /></div>
+                    No posts published yet.
+                  </div>
                 ) : (
                   posts.map((p, i) => (
                     <div key={p.id} style={{ position: "relative" }}>
@@ -392,18 +451,19 @@ export default function UserProfile() {
                           position: "absolute",
                           top: "20px",
                           left: "20px",
-                          background: "#0f172a",
+                          background: "#364182",
                           color: "white",
-                          padding: "4px 10px",
-                          borderRadius: "8px",
-                          fontSize: "10px",
+                          padding: "6px 14px",
+                          borderRadius: "12px",
+                          fontSize: "11px",
                           fontWeight: 800,
                           letterSpacing: "0.05em",
                           textTransform: "uppercase",
                           display: "flex",
                           alignItems: "center",
-                          gap: "6px",
-                          zIndex: 10
+                          gap: "8px",
+                          zIndex: 10,
+                          boxShadow: "0 4px 15px rgba(54, 65, 130, 0.3)"
                         }}>
                           <FontAwesomeIcon icon={faThumbtack} />
                           Featured
@@ -420,7 +480,10 @@ export default function UserProfile() {
                 {projectsLoading ? (
                   <div style={{ gridColumn: "1 / -1", padding: "60px 0", textAlign: "center", color: "#94a3b8" }}>Loading...</div>
                 ) : projects.length === 0 ? (
-                  <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>No projects launched yet.</div>
+                  <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px" }}>
+                    <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faRocket} /></div>
+                    No projects launched yet.
+                  </div>
                 ) : (
                   projects.map((project, i) => (
                     <ProjectCard
@@ -439,15 +502,17 @@ export default function UserProfile() {
 
       <div style={{ height: "100px" }} />
 
-      {userId && (
-        <FollowersModal
-          isOpen={followersModalOpen}
-          onClose={() => setFollowersModalOpen(false)}
-          userId={userId}
-          type={followersModalType}
-          title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
-        />
-      )}
-    </main>
+      {
+        userId && (
+          <FollowersModal
+            isOpen={followersModalOpen}
+            onClose={() => setFollowersModalOpen(false)}
+            userId={userId}
+            type={followersModalType}
+            title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
+          />
+        )
+      }
+    </main >
   );
 }

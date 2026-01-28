@@ -29,12 +29,6 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  const [jobTitle, setJobTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [experienceLevel, setExperienceLevel] = useState("");
-  const [skills, setSkills] = useState<string[]>([]);
-  const [skillInput, setSkillInput] = useState("");
-  const [isHirable, setIsHirable] = useState(true);
   const [isOrganization, setIsOrganization] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -49,11 +43,6 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setName(currentUser.name || "");
       setUsername(currentUser.username || "");
       setBio(currentUser.bio || "");
-      setJobTitle(currentUser.job_title || "");
-      setLocation(currentUser.location || "");
-      setExperienceLevel(currentUser.experience_level || "");
-      setSkills(currentUser.skills || []);
-      setIsHirable(currentUser.is_hirable ?? true);
       setIsOrganization(currentUser.is_organization ?? false);
       setAvatarPreview(currentUser.avatar_url);
       setAvatarFile(null);
@@ -154,11 +143,6 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           username: username.trim() || null,
           bio: bio.trim() || null,
           avatar_url: avatarUrl,
-          job_title: jobTitle.trim() || null,
-          location: location.trim() || null,
-          experience_level: experienceLevel || null,
-          skills: skills,
-          is_hirable: isHirable,
           is_organization: isOrganization,
         },
         {
@@ -408,116 +392,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
               />
             </div>
 
-            <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "16px", display: "flex", flexDirection: "column", gap: "12px", border: "1px solid #e2e8f0" }}>
-              <label className="modal-label" style={{ marginBottom: 0 }}>Account Type</label>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <button
-                  type="button"
-                  onClick={() => setIsOrganization(false)}
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "10px",
-                    border: "2px solid",
-                    borderColor: !isOrganization ? "#0f172a" : "#e2e8f0",
-                    background: !isOrganization ? "#0f172a" : "white",
-                    color: !isOrganization ? "white" : "#64748b",
-                    fontSize: "13px",
-                    fontWeight: 800,
-                    cursor: "pointer"
-                  }}
-                >
-                  DEVELOPER
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsOrganization(true)}
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "10px",
-                    border: "2px solid",
-                    borderColor: isOrganization ? "#16a34a" : "#e2e8f0",
-                    background: isOrganization ? "#16a34a" : "white",
-                    color: isOrganization ? "white" : "#64748b",
-                    fontSize: "13px",
-                    fontWeight: 800,
-                    cursor: "pointer"
-                  }}
-                >
-                  ORGANIZATION
-                </button>
-              </div>
-            </div>
-
-            {!isOrganization && (
-              <div style={{ padding: "16px", backgroundColor: "#f1f5f9", borderRadius: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>Developer Settings</h3>
-
-                <div>
-                  <label className="modal-label">Job Title</label>
-                  <input className="modal-input" type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Senior Fullstack Developer" />
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                  <div>
-                    <label className="modal-label">Location</label>
-                    <input className="modal-input" type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Remote, NY" />
-                  </div>
-                  <div>
-                    <label className="modal-label">Experience</label>
-                    <select className="modal-input" value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}>
-                      <option value="">Select Level</option>
-                      <option value="junior">Junior</option>
-                      <option value="mid">Mid-level</option>
-                      <option value="senior">Senior</option>
-                      <option value="lead">Lead / Architect</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="modal-label">Skills</label>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
-                    {skills.map((skill, index) => (
-                      <div key={index} className="skill-tag">
-                        {skill}
-                        <span className="skill-remove" onClick={() => setSkills(skills.filter((_, i) => i !== index))}>&times;</span>
-                      </div>
-                    ))}
-                  </div>
-                  <input
-                    className="modal-input"
-                    type="text"
-                    value={skillInput}
-                    onChange={(e) => setSkillInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        if (skillInput.trim()) {
-                          setSkills([...skills, skillInput.trim()]);
-                          setSkillInput("");
-                        }
-                      }
-                    }}
-                    placeholder="Type skill and press Enter..."
-                  />
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
-                  <input
-                    type="checkbox"
-                    id="isHirable"
-                    checked={isHirable}
-                    onChange={(e) => setIsHirable(e.target.checked)}
-                    style={{ width: "18px", height: "18px", cursor: "pointer" }}
-                  />
-                  <label htmlFor="isHirable" style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", cursor: "pointer" }}>
-                    Available for hire / collaboration
-                  </label>
-                </div>
-              </div>
-            )}
+            {/* Developer Settings Removed */}
           </div>
 
           {/* Footer Actions */}
@@ -539,4 +414,3 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
   return createPortal(modalContent, document.body);
 }
-
