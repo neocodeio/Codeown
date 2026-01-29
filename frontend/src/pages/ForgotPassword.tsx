@@ -106,10 +106,17 @@ export default function ForgotPassword() {
                     <h1 style={{ fontSize: "28px", fontWeight: 900, marginBottom: "8px", color: "#0f172a" }}>
                         {step === "email" ? "Reset Password" : "Check Your Email"}
                     </h1>
-                    <p style={{ color: "var(--text-secondary)", fontSize: "15px" }}>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "15px", lineHeight: "1.5" }}>
                         {step === "email"
                             ? "No worries, it happens correctly. We'll send you reset instructions."
-                            : `We've sent a 6-digit verification code to ${email}`}
+                            : (
+                                <>
+                                    We've sent a 6-digit verification code to <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{email}</span>.
+                                    <span style={{ display: "block", marginTop: "12px", fontSize: "13px", color: "#6366f1", fontWeight: 700 }}>
+                                        Note: If you don't see the email, please check your junk box.
+                                    </span>
+                                </>
+                            )}
                     </p>
                 </div>
 
