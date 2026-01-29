@@ -1,0 +1,22 @@
+{
+    "name": "Codeown - The Home of Passionate Developers",
+    "short_name": "Codeown",
+    "description": "The premiere platform for developers to share projects and collaborate.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#364182",
+    "icons": [
+        {
+            "src": "/favicon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
