@@ -6,10 +6,34 @@ import { useSearch } from "../hooks/useSearch";
 export default function SearchBar() {
   const { query, setQuery, users, posts, showResults, setShowResults, clearSearch } = useSearch();
   const [isOpen, setIsOpen] = useState(false);
+  const [history, setHistory] = useState<string[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  // const { width } = useWindowSize();
-  // const isMobile = width < 768;
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("codeown_search_history");
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error("Failed to parse search history");
+      }
+    }
+  }, []);
+
+  const addToHistory = (q: string) => {
+    if (!q || q.trim().length < 2) return;
+    const newHistory = [q.trim(), ...history.filter((item) => item !== q.trim())].slice(0, 6);
+    setHistory(newHistory);
+    localStorage.setItem("codeown_search_history", JSON.stringify(newHistory));
+  };
+
+  const removeFromHistory = (e: React.MouseEvent, q: string) => {
+    e.stopPropagation();
+    const newHistory = history.filter((item) => item !== q);
+    setHistory(newHistory);
+    localStorage.setItem("codeown_search_history", JSON.stringify(newHistory));
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -23,14 +47,22 @@ export default function SearchBar() {
   }, [setShowResults]);
 
   const handleUserClick = (userId: string) => {
+    addToHistory(query);
     navigate(`/user/${userId}`);
     clearSearch();
     setIsOpen(false);
   };
 
   const handlePostClick = (postId: number) => {
+    addToHistory(query);
     navigate(`/post/${postId}`);
     clearSearch();
+    setIsOpen(false);
+  };
+
+  const handleHistoryClick = (q: string) => {
+    setQuery(q);
+    navigate(`/search?q=${encodeURIComponent(q)}`);
     setIsOpen(false);
   };
 
@@ -42,62 +74,121 @@ export default function SearchBar() {
         value={query}
         onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
         onFocus={() => setIsOpen(true)}
-        onBlur={() => setIsOpen(false)}
         style={{
           outline: "none",
           width: "100%",
           padding: "10px 16px",
           border: "none",
           borderRadius: "12px",
-          backgroundColor: "#fff",
+          backgroundColor: "#f1f5f9",
           fontSize: "12px",
           fontWeight: 700,
           letterSpacing: "0.05em",
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && query.trim().length >= 2) {
+            addToHistory(query);
             navigate(`/search?q=${encodeURIComponent(query)}`);
             setIsOpen(false);
           }
         }}
       />
 
-      {isOpen && showResults && (users.length > 0 || posts.length > 0) && (
-        <div className="fade-in" style={{
+      {isOpen && (
+        <div className="fade-in scroll-styled" style={{
           position: "absolute",
-          top: "175%",
+          top: "140%",
           left: 0,
           right: 0,
           backgroundColor: "#fff",
-          border: "2px solid #e0e0e0",
-          borderRadius: "15px",
-          borderTop: "none",
+          border: "1px solid #f1f5f9",
+          borderRadius: "20px",
           maxHeight: "360px",
           overflowY: "auto",
           zIndex: 2000,
-          padding: "8px",
+          padding: "12px",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
         }}>
-          {users.length > 0 && (
-            <div style={{ padding: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "0 8px 8px", display: "block" }}>Users</span>
-              {users.map((u) => (
-                <div key={u.id} onClick={() => handleUserClick(u.id)} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px", cursor: "pointer", transition: "all 0.2s", borderRadius: "12px", marginBottom: "6px" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#2563eb"; e.currentTarget.style.color = "white" }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "inherit" }}>
-                  <img src={u.avatar_url || `https://ui-avatars.com/api/?name=${u.name}&background=000000&color=fff&bold=true`} alt="" style={{ width: "24px", height: "24px", border: "1px solid var(--border-color)" }} />
-                  <div>
-                    <div style={{ fontSize: "13px", fontWeight: 700, }}>{u.name}</div>
+          {/* History Section */}
+          {!query && history.length > 0 && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 8px 12px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase" }}>Recent Searches</span>
+              </div>
+              {history.map((h, i) => (
+                <div key={i} onClick={() => handleHistoryClick(h)} style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 14px",
+                  cursor: "pointer",
+                  borderRadius: "14px",
+                  marginBottom: "4px",
+                  transition: "all 0.2s ease",
+                  backgroundColor: "#f8fafc"
+                }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#eef2ff"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#f8fafc"; }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span style={{ fontSize: "13px", fontWeight: 700, color: "#334155" }}>{h}</span>
                   </div>
+                  <button onClick={(e) => removeFromHistory(e, h)} style={{ border: "none", background: "none", padding: "4px 8px", cursor: "pointer", color: "#94a3b8", borderRadius: "8px" }} onMouseEnter={(e) => e.currentTarget.style.color = "#ef4444"}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
                 </div>
               ))}
             </div>
           )}
-          {posts.length > 0 && (
-            <div style={{ padding: "8px", borderTop: "1px solid var(--border-color)" }}>
-              <span style={{ fontSize: "10px", fontWeight: 800, color: "#364182", letterSpacing: "0.1em", textTransform: "uppercase", padding: "8px 8px 8px", display: "block" }}>Posts</span>
-              {posts.map((p) => (
-                <div key={p.id} onClick={() => handlePostClick(p.id)} style={{ padding: "8px", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
-                  <div style={{ fontSize: "12px", fontWeight: 700, color: "#364182", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textTransform: "uppercase" }}>{p.title || p.content.slice(0, 40) + "..."}</div>
+
+          {/* Search Results */}
+          {query && showResults && (
+            <>
+              {users.length > 0 && (
+                <div style={{ padding: "8px 0" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase", padding: "0 10px 12px", display: "block" }}>People</span>
+                  {users.map((u) => (
+                    <div key={u.id} onClick={() => handleUserClick(u.id)} style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      padding: "10px",
+                      cursor: "pointer",
+                      borderRadius: "14px",
+                      marginBottom: "4px",
+                      transition: "all 0.2s ease"
+                    }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f1f5f9"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
+                      <img src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=364182&color=fff&bold=true`} alt="" style={{ width: "28px", height: "28px", borderRadius: "10px", border: "1px solid #f1f5f9" }} />
+                      <div style={{ fontSize: "13px", fontWeight: 700, color: "#1e293b" }}>{u.name}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+              {posts.length > 0 && (
+                <div style={{ padding: "8px 0", borderTop: "1px solid #f1f5f9", marginTop: "8px" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase", padding: "12px 10px", display: "block" }}>Posts</span>
+                  {posts.map((p) => (
+                    <div key={p.id} onClick={() => handlePostClick(p.id)} style={{
+                      padding: "12px",
+                      cursor: "pointer",
+                      borderRadius: "14px",
+                      marginBottom: "4px",
+                      transition: "all 0.2s ease"
+                    }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f1f5f9"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
+                      <div style={{ fontSize: "13px", fontWeight: 700, color: "#1e293b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.title || p.content.slice(0, 40) + "..."}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {users.length === 0 && posts.length === 0 && (
+                <div style={{ padding: "20px", textAlign: "center", color: "#94a3b8", fontSize: "13px", fontWeight: 600 }}>
+                  No results found for "{query}"
+                </div>
+              )}
+            </>
+          )}
+
+          {query && !showResults && (
+            <div style={{ padding: "20px", textAlign: "center", color: "#94a3b8", fontSize: "13px", fontWeight: 600 }}>
+              Searching...
             </div>
           )}
         </div>
