@@ -6,7 +6,7 @@ import { isClerkEnabled, clerkPublishableKey } from "../lib/clerk";
 export default function SignUpPage() {
   const { isSignedIn, isLoaded } = useClerkUser();
 
-  if (isLoaded && isSignedIn) return <Navigate to="/onboarding" replace />;
+  if (isLoaded && isSignedIn) return <Navigate to="/Feed" replace />;
 
   return (
     <div className="fade-in" style={{
