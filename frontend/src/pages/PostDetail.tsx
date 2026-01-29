@@ -8,7 +8,7 @@ import ContentRenderer from "../components/ContentRenderer";
 import MentionInput from "../components/MentionInput";
 import CommentBlock, { type CommentWithMeta } from "../components/CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faHeart as faHeartSolid, faBookmark as faBookmarkSolid, faBookmark as faBookmarkRegular, faShareNodes } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faHeart as faHeartSolid, faBookmark as faBookmarkSolid, faBookmark as faBookmarkRegular, faShareNodes, faEye } from "@fortawesome/free-solid-svg-icons";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { formatRelativeDate } from "../utils/date";
@@ -26,6 +26,7 @@ interface Post {
     email: string | null;
     avatar_url?: string | null;
   };
+  view_count?: number;
 }
 
 export default function PostDetail() {
@@ -179,17 +180,26 @@ export default function PostDetail() {
                 <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)", borderRadius: "50%" }} />
                 <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{userName}</h3>
               </div>
-              <span style={{
-                fontSize: "11px",
-                color: "var(--text-tertiary)",
-                fontWeight: 700,
-                backgroundColor: "rgba(0,0,0,0.03)",
-                padding: "4px 10px",
-                borderRadius: "10px",
-                letterSpacing: "0.05em"
-              }}>
-                {formatRelativeDate(post.created_at).toUpperCase()}
-              </span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-end" }}>
+                <span style={{
+                  fontSize: "11px",
+                  color: "var(--text-tertiary)",
+                  fontWeight: 700,
+                  backgroundColor: "rgba(0,0,0,0.03)",
+                  padding: "4px 10px",
+                  borderRadius: "10px",
+                  letterSpacing: "0.05em",
+                  textAlign: "right"
+                }}>
+                  {formatRelativeDate(post.created_at).toUpperCase()}
+                </span>
+                {post.view_count !== undefined && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700, opacity: 0.8 }}>
+                    <FontAwesomeIcon icon={faEye} style={{ fontSize: "10px" }} />
+                    <span>{post.view_count} VIEWS</span>
+                  </div>
+                )}
+              </div>
             </div>
             <h1 dir="auto" style={{ fontSize: "42px", marginBottom: "4px" }}>{post.title}</h1>
           </header>

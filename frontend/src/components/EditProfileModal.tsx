@@ -22,6 +22,10 @@ interface EditProfileModalProps {
     skills?: string[] | null;
     is_hirable?: boolean;
     is_organization?: boolean;
+    github_url?: string | null;
+    twitter_url?: string | null;
+    linkedin_url?: string | null;
+    website_url?: string | null;
   };
 }
 
@@ -32,6 +36,10 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [isOrganization, setIsOrganization] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [githubUrl, setGithubUrl] = useState("");
+  const [twitterUrl, setTwitterUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const { getToken, isLoaded } = useClerkAuth();
@@ -45,6 +53,10 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setBio(currentUser.bio || "");
       setIsOrganization(currentUser.is_organization ?? false);
       setAvatarPreview(currentUser.avatar_url);
+      setGithubUrl(currentUser.github_url || "");
+      setTwitterUrl(currentUser.twitter_url || "");
+      setLinkedinUrl(currentUser.linkedin_url || "");
+      setWebsiteUrl(currentUser.website_url || "");
       setAvatarFile(null);
       setUsernameError(null);
     }
@@ -144,6 +156,10 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           bio: bio.trim() || null,
           avatar_url: avatarUrl,
           is_organization: isOrganization,
+          github_url: githubUrl.trim() || null,
+          twitter_url: twitterUrl.trim() || null,
+          linkedin_url: linkedinUrl.trim() || null,
+          website_url: websiteUrl.trim() || null,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -390,6 +406,28 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Tell the community who you are..."
               />
+            </div>
+
+            <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "8px" }}>
+              <span className="modal-label" style={{ color: "#0f172a", marginBottom: "16px" }}>Social Links</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div>
+                  <label className="modal-label" style={{ fontSize: "11px" }}>GitHub URL</label>
+                  <input className="modal-input" type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/your-username" />
+                </div>
+                <div>
+                  <label className="modal-label" style={{ fontSize: "11px" }}>Twitter URL</label>
+                  <input className="modal-input" type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://twitter.com/your-username" />
+                </div>
+                <div>
+                  <label className="modal-label" style={{ fontSize: "11px" }}>LinkedIn URL</label>
+                  <input className="modal-input" type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/your-username" />
+                </div>
+                <div>
+                  <label className="modal-label" style={{ fontSize: "11px" }}>Personal Website</label>
+                  <input className="modal-input" type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://your-website.com" />
+                </div>
+              </div>
             </div>
 
             {/* Developer Settings Removed */}

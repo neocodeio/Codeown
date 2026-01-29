@@ -21,7 +21,8 @@ import {
   faPause,
   faCheck,
   faStar,
-  faShareNodes
+  faShareNodes,
+  faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { formatRelativeDate } from "../utils/date";
@@ -403,86 +404,90 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
           </div>
         )}
 
-        {project.contributors && project.contributors.length > 0 && (
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
-            <span style={{ fontSize: "11px", fontWeight: 900, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Contributors</span>
-            <div style={{ display: "flex", marginLeft: "4px" }}>
-              {project.contributors.map((contrib, idx) => (
-                <div
-                  key={contrib.user_id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/user/${contrib.user_id}`);
-                  }}
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "10px",
-                    border: "2px solid #fff",
-                    overflow: "hidden",
-                    marginLeft: idx > 0 ? "-10px" : "0",
-                    cursor: "pointer",
-                    zIndex: 10 - idx,
-                    transition: "all 0.2s ease",
-                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-4px)";
-                    e.currentTarget.style.zIndex = "20";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.zIndex = (10 - idx).toString();
-                  }}
-                  title={contrib.username}
-                >
-                  <img
-                    src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=364182&color=ffffff&bold=true`}
-                    alt={contrib.username}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                </div>
-              ))}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "13px", fontWeight: 600, marginBottom: "24px" }}>
+          <FontAwesomeIcon icon={faEye} style={{ fontSize: "12px", opacity: 0.7 }} />
+          <span>{project.view_count || 0}</span>
+        </div>
+
+        {
+          project.contributors && project.contributors.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
+              <span style={{ fontSize: "11px", fontWeight: 900, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Contributors</span>
+              <div style={{ display: "flex", marginLeft: "4px" }}>
+                {project.contributors.map((contrib, idx) => (
+                  <div
+                    key={contrib.user_id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/user/${contrib.user_id}`);
+                    }}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "10px",
+                      border: "2px solid #fff",
+                      overflow: "hidden",
+                      marginLeft: idx > 0 ? "-10px" : "0",
+                      cursor: "pointer",
+                      zIndex: 10 - idx,
+                      transition: "all 0.2s ease",
+                      boxShadow: "0 4px 8px rgba(0,0,0,0.1)"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.zIndex = "20";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.zIndex = (10 - idx).toString();
+                    }}
+                    title={contrib.username}
+                  >
+                    <img
+                      src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=364182&color=ffffff&bold=true`}
+                      alt={contrib.username}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         <div style={{ display: "flex", gap: "10px", marginBottom: "0" }}>
-          {
-            project.github_repo && (
-              <a
-                href={project.github_repo}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "10px 18px",
-                  backgroundColor: "#0f172a",
-                  color: "#fff",
-                  borderRadius: "14px",
-                  textDecoration: "none",
-                  fontSize: "13px",
-                  fontWeight: 800,
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 8px 16px rgba(15, 23, 42, 0.1)"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 12px 20px rgba(15, 23, 42, 0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(15, 23, 42, 0.1)";
-                }}
-              >
-                <FontAwesomeIcon icon={faGithub} />
-                GitHub
-              </a>
-            )
-          }
+          {project.github_repo && (
+            <a
+              href={project.github_repo}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 18px",
+                backgroundColor: "#0f172a",
+                color: "#fff",
+                borderRadius: "14px",
+                textDecoration: "none",
+                fontSize: "13px",
+                fontWeight: 800,
+                transition: "all 0.2s ease",
+                boxShadow: "0 8px 16px rgba(15, 23, 42, 0.1)"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 12px 20px rgba(15, 23, 42, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 8px 16px rgba(15, 23, 42, 0.1)";
+              }}
+            >
+              <FontAwesomeIcon icon={faGithub} />
+              GitHub
+            </a>
+          )}
           {
             project.live_demo && (
               <a

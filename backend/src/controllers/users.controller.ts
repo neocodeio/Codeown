@@ -233,6 +233,11 @@ export async function getUserProfile(req: Request, res: Response) {
           follower_count: 0,
           following_count: 0,
           total_likes: 0,
+          github_url: null,
+          twitter_url: null,
+          linkedin_url: null,
+          website_url: null,
+          created_at: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString()
         };
 
         // Sync user to Supabase for future requests
@@ -315,10 +320,26 @@ export async function getUserProfile(req: Request, res: Response) {
       total_likes: totalLikes,
       pinned_post_id: userData.pinned_post_id || null,
       pinned_post: pinnedPost,
+      // Professional info
+      location: userData.location || null,
+      job_title: userData.job_title || null,
+      skills: userData.skills || null,
+      experience_level: userData.experience_level || null,
+      is_hirable: userData.is_hirable ?? false,
+      is_organization: userData.is_organization ?? false,
+      // Social links
+      github_url: userData.github_url || null,
+      twitter_url: userData.twitter_url || null,
+      linkedin_url: userData.linkedin_url || null,
+      website_url: userData.website_url || null,
+      // Metadata
+      created_at: userData.created_at || null,
+      updated_at: userData.updated_at || null,
     };
 
     if (currentUserId === userId) {
       responseData.username_changed_at = userData.username_changed_at || null;
+      responseData.onboarding_completed = userData.onboarding_completed || false;
     }
 
     return res.json(responseData);
@@ -359,7 +380,11 @@ export async function updateUserProfile(req: Request, res: Response) {
       is_hirable,
       experience_level,
       is_organization,
-      onboarding_completed
+      onboarding_completed,
+      github_url,
+      twitter_url,
+      linkedin_url,
+      website_url
     } = req.body;
 
     // Get current user data
@@ -403,6 +428,10 @@ export async function updateUserProfile(req: Request, res: Response) {
     if (experience_level !== undefined) updateData.experience_level = experience_level;
     if (is_organization !== undefined) updateData.is_organization = is_organization;
     if (onboarding_completed !== undefined) updateData.onboarding_completed = onboarding_completed;
+    if (github_url !== undefined) updateData.github_url = github_url;
+    if (twitter_url !== undefined) updateData.twitter_url = twitter_url;
+    if (linkedin_url !== undefined) updateData.linkedin_url = linkedin_url;
+    if (website_url !== undefined) updateData.website_url = website_url;
 
     if (username && username !== currentUser?.username) {
       updateData.username = username;

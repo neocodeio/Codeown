@@ -13,6 +13,7 @@ export interface Project {
   updated_at: string;
   like_count: number;
   comment_count: number;
+  view_count?: number;
   looking_for_contributors?: boolean;
   user?: {
     id: string;

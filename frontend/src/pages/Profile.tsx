@@ -13,9 +13,11 @@ import EditProfileModal from "../components/EditProfileModal";
 import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
+import { formatJoinDate } from "../utils/date";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEllipsisV, faUserEdit, faSignOutAlt, faKey, faHeart, faUsers, faUserFriends, faLayerGroup, faRocket, faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEllipsisV, faUserEdit, faSignOutAlt, faKey, faHeart, faUsers, faUserFriends, faLayerGroup, faRocket, faBookmark, faCalendarAlt, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faGithub, faTwitter, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 interface UserProfile {
   id: string;
@@ -36,6 +38,11 @@ interface UserProfile {
   skills: string[] | null;
   is_hirable: boolean;
   is_organization: boolean;
+  github_url: string | null;
+  twitter_url: string | null;
+  linkedin_url: string | null;
+  website_url: string | null;
+  created_at: string | null;
 }
 
 export default function Profile() {
@@ -319,6 +326,47 @@ export default function Profile() {
                   <BioRenderer bio={userProfile.bio} />
                 </div>
               )}
+
+              {/* Joined Date & Social Links */}
+              <div style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: "24px",
+                marginBottom: "20px",
+                padding: "12px 0",
+                justifyContent: isMobile ? "center" : "flex-start"
+              }}>
+                {userProfile?.created_at && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "13px", fontWeight: 700 }}>
+                    <FontAwesomeIcon icon={faCalendarAlt} />
+                    <span>Joined {formatJoinDate(userProfile.created_at)}</span>
+                  </div>
+                )}
+
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  {userProfile?.github_url && (
+                    <a href={userProfile.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0f172a", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                      <FontAwesomeIcon icon={faGithub} />
+                    </a>
+                  )}
+                  {userProfile?.twitter_url && (
+                    <a href={userProfile.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#1da1f2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                      <FontAwesomeIcon icon={faTwitter} />
+                    </a>
+                  )}
+                  {userProfile?.linkedin_url && (
+                    <a href={userProfile.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0a66c2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                      <FontAwesomeIcon icon={faLinkedin} />
+                    </a>
+                  )}
+                  {userProfile?.website_url && (
+                    <a href={userProfile.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#64748b", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                      <FontAwesomeIcon icon={faGlobe} />
+                    </a>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div style={{ display: "flex", gap: "8px", marginBottom: "8px", justifyContent: isMobile ? "center" : "flex-end" }}>

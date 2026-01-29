@@ -21,7 +21,8 @@ import {
   faPause,
   faCheck,
   faStar,
-  faShareNodes
+  faShareNodes,
+  faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub as faGithubBrand } from "@fortawesome/free-brands-svg-icons";
 
@@ -375,8 +376,14 @@ export default function ProjectDetail() {
                   }}>
                     {userName}
                   </div>
-                  <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.1em" }}>
-                    {formatRelativeDate(project.created_at).toUpperCase()}
+                  <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.1em", display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span>{formatRelativeDate(project.created_at).toUpperCase()}</span>
+                    {project.view_count !== undefined && (
+                      <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                        <FontAwesomeIcon icon={faEye} style={{ fontSize: "10px" }} />
+                        <span>{project.view_count} VIEWS</span>
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

@@ -228,6 +228,18 @@ export async function getPostById(req: Request, res: Response) {
       return res.status(404).json({ error: "Post not found" });
     }
 
+    // Increment view count (non-blocking)
+    supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' })
+      .then(({ error }) => {
+        if (error) {
+          // If RPC fails, try standard update as fallback
+          supabase.from("posts")
+            .update({ view_count: (post.view_count || 0) + 1 })
+            .eq("id", id)
+            .then(() => { });
+        }
+      });
+
     // Get user data for the post author
     const { data: user, error: userError } = await supabase
       .from("users")

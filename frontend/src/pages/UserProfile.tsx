@@ -9,6 +9,7 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
+import { formatJoinDate } from "../utils/date";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUserPlus,
@@ -20,7 +21,10 @@ import {
   faRocket,
   faLayerGroup,
   faHeart,
+  faCalendarAlt,
+  faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
+import { faGithub, faTwitter, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 interface User {
@@ -41,6 +45,11 @@ interface User {
   skills: string[] | null;
   is_hirable: boolean;
   is_organization: boolean;
+  github_url: string | null;
+  twitter_url: string | null;
+  linkedin_url: string | null;
+  website_url: string | null;
+  created_at: string | null;
 }
 
 export default function UserProfile() {
@@ -345,10 +354,51 @@ export default function UserProfile() {
           </div>
 
           {user.bio && (
-            <div style={{ fontSize: "17px", lineHeight: "1.7", color: "#475569", marginBottom: "32px", maxWidth: "800px", margin: isMobile ? "0 auto 32px" : "0 0 32px" }}>
+            <div style={{ fontSize: "17px", lineHeight: "1.7", color: "#475569", marginBottom: "20px", maxWidth: "800px", margin: isMobile ? "0 auto 20px" : "0 0 20px" }}>
               <BioRenderer bio={user.bio} />
             </div>
           )}
+
+          {/* Joined Date & Social Links */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "24px",
+            marginBottom: "32px",
+            padding: "12px 0",
+            justifyContent: isMobile ? "center" : "flex-start"
+          }}>
+            {user.created_at && (
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "13px", fontWeight: 700 }}>
+                <FontAwesomeIcon icon={faCalendarAlt} />
+                <span>Joined {formatJoinDate(user.created_at)}</span>
+              </div>
+            )}
+
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              {user.github_url && (
+                <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0f172a", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                  <FontAwesomeIcon icon={faGithub} />
+                </a>
+              )}
+              {user.twitter_url && (
+                <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#1da1f2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                  <FontAwesomeIcon icon={faTwitter} />
+                </a>
+              )}
+              {user.linkedin_url && (
+                <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0a66c2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                  <FontAwesomeIcon icon={faLinkedin} />
+                </a>
+              )}
+              {user.website_url && (
+                <a href={user.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#64748b", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                  <FontAwesomeIcon icon={faGlobe} />
+                </a>
+              )}
+            </div>
+          </div>
 
           {/* Stats Section */}
           <div style={{

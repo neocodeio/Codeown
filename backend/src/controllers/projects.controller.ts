@@ -155,6 +155,18 @@ export async function getProject(req: Request, res: Response) {
       return res.status(404).json({ error: "Project not found" });
     }
 
+    // Increment view count (non-blocking)
+    supabase.rpc('increment_view_count', { row_id: id, table_name: 'projects' })
+      .then(({ error }) => {
+        if (error) {
+          // If RPC fails, try standard update as fallback
+          supabase.from("projects")
+            .update({ view_count: (project.view_count || 0) + 1 })
+            .eq("id", id)
+            .then(() => { });
+        }
+      });
+
     // Fetch user data
     const { data: user, error: userError } = await supabase
       .from("users")
@@ -548,6 +560,10 @@ export async function toggleProjectLike(req: Request, res: Response) {
       return res.status(404).json({ error: "Project not found" });
     }
 
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     // Check if user already liked the project
     const { data: existingLike, error: likeError } = await supabase
       .from("project_likes")
@@ -661,6 +677,21 @@ export async function toggleProjectSave(req: Request, res: Response) {
     }
 
     // Check if user already saved the project
+    // Check if project exists
+    const { data: project, error: projectError } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (projectError || !project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     const { data: existingSave, error: saveError } = await supabase
       .from("project_saves")
       .select("*")

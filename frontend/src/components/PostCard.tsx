@@ -20,6 +20,7 @@ import {
   faPen,
   faShareNodes,
   faThumbtack,
+  faEye,
 } from "@fortawesome/free-solid-svg-icons";
 import { formatRelativeDate } from "../utils/date";
 
@@ -589,6 +590,18 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 }}
               />
             </button>
+          </div>
+
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            color: "#64748b",
+            fontSize: "13px",
+            fontWeight: 600,
+          }}>
+            <FontAwesomeIcon icon={faEye} style={{ fontSize: "12px", opacity: 0.7 }} />
+            <span>{post.view_count || 0}</span>
           </div>
         </div>
       </div>

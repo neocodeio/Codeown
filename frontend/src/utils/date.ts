@@ -25,3 +25,13 @@ export const formatRelativeDate = (dateString: string) => {
         year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
     });
 };
+
+export const formatJoinDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "";
+    return date.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric"
+    });
+};

@@ -19,6 +19,7 @@ export interface Post {
   };
   isLiked?: boolean;
   isSaved?: boolean;
+  view_count?: number;
 }
 
 export type FeedFilter = "all" | "following" | "contributors";
