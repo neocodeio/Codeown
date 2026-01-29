@@ -207,16 +207,6 @@ export default function UserProfile() {
         .tab-item.active {
           color: #364182;
         }
-        .tab-item.active::after {
-          content: "";
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 3px;
-          background: #364182;
-          border-radius: 2px;
-        }
         .stat-card {
           padding: 20px;
           border-radius: 20px;
@@ -310,7 +300,7 @@ export default function UserProfile() {
                 <h1 style={{ fontSize: isMobile ? "24px" : "36px", fontWeight: 900, color: "#1e293b", marginBottom: "4px", letterSpacing: "-0.04em" }}>
                   {user.name}
                 </h1>
-                <span style={{
+                {/* <span style={{
                   padding: isMobile ? "3px 10px" : "6px 14px",
                   background: user.is_organization ? "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)" : "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
                   color: user.is_organization ? "#364182" : "#64748b",
@@ -322,7 +312,7 @@ export default function UserProfile() {
                   borderColor: user.is_organization ? "#dbeafe" : "#e2e8f0",
                 }}>
                   {user.is_organization ? "Org" : "Dev"}
-                </span>
+                </span> */}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start", marginTop: "8px", color: "#64748b" }}>
                 <span style={{ fontWeight: 800, color: "#364182" }}>@{user.username || "user"}</span>

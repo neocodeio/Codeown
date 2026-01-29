@@ -188,16 +188,6 @@ export default function Profile() {
         .tab-item.active {
           color: #364182;
         }
-        .tab-item.active::after {
-          content: "";
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 3px;
-          background: #364182;
-          border-radius: 2px;
-        }
         .stat-card {
           padding: 20px;
           border-radius: 20px;
@@ -300,7 +290,7 @@ export default function Profile() {
                 <h1 style={{ fontSize: isMobile ? "24px" : "36px", fontWeight: 900, color: "#1e293b", marginBottom: "0", letterSpacing: "-0.03em" }}>
                   {userProfile?.name || user?.fullName}
                 </h1>
-                <span style={{
+                {/* <span style={{
                   padding: isMobile ? "3px 10px" : "4px 12px",
                   background: userProfile?.is_organization ? "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)" : "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
                   color: userProfile?.is_organization ? "#364182" : "#64748b",
@@ -312,7 +302,7 @@ export default function Profile() {
                   borderColor: userProfile?.is_organization ? "#dbeafe" : "#e2e8f0",
                 }}>
                   {userProfile?.is_organization ? "Org" : "Dev"}
-                </span>
+                </span> */}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start", marginBottom: "16px", color: "#64748b" }}>
                 <span style={{
@@ -574,7 +564,7 @@ export default function Profile() {
           <Link to="/privacy" style={{ fontSize: "14px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>Privacy Policy</Link>
           <Link to="/terms" style={{ fontSize: "14px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>Terms of Service</Link>
         </div>
-        <p style={{ fontSize: "13px", color: "#94a3b8", fontWeight: 700 }}>© {new Date().getFullYear()} Codeown. Crafted with pasión by developers.</p>
+        <p style={{ fontSize: "13px", color: "#94a3b8", fontWeight: 700 }}>© {new Date().getFullYear()} Codeown. Crafted with passion by developers.</p>
       </footer>
 
       {userProfile && <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onUpdated={handleProfileUpdated} currentUser={userProfile} />}

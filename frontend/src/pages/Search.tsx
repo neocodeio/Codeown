@@ -286,7 +286,7 @@ export default function Search() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "2px" }}>
                           <h3 style={{ fontWeight: 800, fontSize: "16px", color: "#1e293b", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{u.name}</h3>
-                          <span style={{
+                          {/* <span style={{
                             padding: "2px 6px",
                             background: u.is_organization ? "#eef2ff" : "#f1f5f9",
                             color: u.is_organization ? "#364182" : "#64748b",
@@ -294,7 +294,7 @@ export default function Search() {
                             fontSize: "10px",
                             fontWeight: 800,
                             textTransform: "uppercase"
-                          }}>{u.is_organization ? "Org" : "Dev"}</span>
+                          }}>{u.is_organization ? "Org" : "Dev"}</span> */}
                         </div>
                         {u.username && <div style={{ fontSize: "14px", color: "#64748b", fontWeight: 600 }}>@{u.username}</div>}
                       </div>
