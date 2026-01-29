@@ -24,7 +24,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               max-width: 600px;
               margin: 0 auto;
               padding: 40px 20px;
-              color: #1f2937;
+              color: #000;
               background-color: #ffffff;
             }
             .card {
@@ -46,7 +46,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               letter-spacing: -0.5px;
             }
             h1 {
-              color: #1f2937;
+              color: #000;
               font-size: 24px;
               font-weight: 700;
               margin-top: 20px;
@@ -55,7 +55,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
             p {
               font-size: 16px;
               line-height: 1.6;
-              color: #1f2937;
+              color: #000;
               margin-bottom: 20px;
             }
             .feature-list {
@@ -67,7 +67,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               display: flex;
               align-items: center;
               margin-bottom: 12px;
-              color: #1f2937;
+              color: #000;
             }
             .feature-icon {
               margin-right: 12px;
@@ -93,11 +93,11 @@ export async function sendWelcomeEmail(email: string, name: string) {
               text-align: center;
               margin-top: 40px;
               padding-top: 20px;
-              border-top: 1px solid #f3f4f6;
+              border-top: 1px solid #ccc;
             }
             .footer-text {
               font-size: 14px;
-              color: #1f2937;
+              color: #000;
             }
             .social-links {
               margin-top: 15px;
@@ -110,7 +110,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
             }
           </style>
         </head>
-        <body style="background-color: #f9fafb; margin: 0; padding: 0;">
+        <body style="background-color: #f9fafb; margin: 0; padding: 0; color: #000">
           <div class="container">
             <div class="card">
               <div class="header">
