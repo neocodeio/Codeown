@@ -20,12 +20,12 @@ export function ClerkWrapper({ children }: { children: ReactNode }) {
           localization={{
             signUp: {
               emailCode: {
-                subtitle: "Enter the code sent to {{identifier}}. Note: If you can't find it, check your junk box."
+                subtitle: "Enter the code sent to you. Note: If you can't find it, check your junk box."
               }
             },
             signIn: {
               emailCode: {
-                subtitle: "Enter the code sent to {{identifier}}. Note: If you can't find it, check your junk box."
+                subtitle: "Enter the code sent to you. Note: If you can't find it, check your junk box."
               }
             }
           }}
