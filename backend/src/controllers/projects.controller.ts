@@ -677,21 +677,6 @@ export async function toggleProjectSave(req: Request, res: Response) {
     }
 
     // Check if user already saved the project
-    // Check if project exists
-    const { data: project, error: projectError } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (projectError || !project) {
-      return res.status(404).json({ error: "Project not found" });
-    }
-
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
     const { data: existingSave, error: saveError } = await supabase
       .from("project_saves")
       .select("*")
