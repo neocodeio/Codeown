@@ -17,6 +17,19 @@ Sentry.init({
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
+// Add this button component to your app to test Sentry's error tracking
+function ErrorButton() {
+  return (
+    <button
+      onClick={() => {
+        throw new Error('This is your first error!');
+      }}
+    >
+      Break the world
+    </button>
+  );
+}
+
 root.render(
   <Sentry.ErrorBoundary fallback={<p>Something went wrong.</p>}>
     <BrowserRouter>
@@ -26,5 +39,6 @@ root.render(
         <Analytics />
       </ClerkWrapper>
     </BrowserRouter>
+    <ErrorButton />
   </Sentry.ErrorBoundary>
 );
