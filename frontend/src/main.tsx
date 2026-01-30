@@ -1,4 +1,4 @@
-import ReactDOM, { createRoot } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react"
 import App from "./App";
@@ -19,12 +19,12 @@ const root = createRoot(container!);
 
 root.render(
   <Sentry.ErrorBoundary fallback={<p>Something went wrong.</p>}>
-  <BrowserRouter>
-    <ClerkWrapper>
-      <App />
-      <SpeedInsights />
-      <Analytics />
-    </ClerkWrapper>
-  </BrowserRouter>
-</Sentry.ErrorBoundary>
+    <BrowserRouter>
+      <ClerkWrapper>
+        <App />
+        <SpeedInsights />
+        <Analytics />
+      </ClerkWrapper>
+    </BrowserRouter>
+  </Sentry.ErrorBoundary>
 );
