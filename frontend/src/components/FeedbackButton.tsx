@@ -87,124 +87,187 @@ export default function FeedbackButton() {
     >
       <div
         style={{
-          width: "95%",
+          width: "90%",
           maxWidth: "400px",
           maxHeight: "90vh",
-          overflow: "auto",
-          backgroundColor: "#e0e0e0",
-          borderRadius: "25px",
-          boxShadow: "var(--shadow-hover)",
-          border: "1px solid var(--border-color)",
-          padding: "24px",
+          overflowY: "auto",
+          backgroundColor: "#fff",
+          borderRadius: "24px",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+          padding: "32px",
+          position: "relative"
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#000" }}>We value your feedback!</h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+          <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 800, color: "#1e293b" }}>Feedback</h2>
           <button
             type="button"
             onClick={handleClose}
-            style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}
+            style={{
+              background: "#f1f5f9",
+              border: "none",
+              color: "#64748b",
+              cursor: "pointer",
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#e2e8f0"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
           >
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
 
         {sent ? (
-          <p style={{ color: "var(--text-primary)", textAlign: "center", padding: "24px 0" }}>Thanks! Your feedback was sent.</p>
+          <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <div style={{ width: "60px", height: "60px", background: "#dcfce7", color: "#166534", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+              <FontAwesomeIcon icon={faComment} style={{ fontSize: "24px" }} />
+            </div>
+            <h3 style={{ margin: "0 0 8px", color: "#1e293b", fontSize: "18px" }}>Thank You!</h3>
+            <p style={{ margin: 0, color: "#64748b", lineHeight: "1.5" }}>Your feedback helps us improve Codeown.</p>
+          </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)" }}>Full name *</label>
-            <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Your full name"
-              style={{
-                width: "90%",
-                padding: "10px 12px",
-                borderRadius: "15px",
-                border: "1px solid #000",
-                backgroundColor: "var(--bg-input)",
-                color: "var(--text-primary)",
-                marginBottom: "12px",
-                fontSize: "14px",
-              }}
-            />
+            <div style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#475569" }}>Full Name</label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="John Doe"
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#f8fafc",
+                  color: "#1e293b",
+                  fontSize: "14px",
+                  outline: "none",
+                  transition: "border-color 0.2s",
+                  boxSizing: "border-box"
+                }}
+                onFocus={(e) => e.target.style.borderColor = "#364182"}
+                onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
+              />
+            </div>
 
-            <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)" }}>Email *</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              style={{
-                width: "90%",
-                padding: "10px 12px",
-                borderRadius: "15px",
-                border: "1px solid #000",
-                backgroundColor: "var(--bg-input)",
-                color: "var(--text-primary)",
-                marginBottom: "12px",
-                fontSize: "14px",
-              }}
-            />
+            <div style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#475569" }}>Email Address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="john@example.com"
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#f8fafc",
+                  color: "#1e293b",
+                  fontSize: "14px",
+                  outline: "none",
+                  transition: "border-color 0.2s",
+                  boxSizing: "border-box"
+                }}
+                onFocus={(e) => e.target.style.borderColor = "#364182"}
+                onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
+              />
+            </div>
 
-            <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)" }}>Username (optional)</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="@username"
-              style={{
-                width: "90%",
-                padding: "10px 12px",
-                borderRadius: "15px",
-                border: "1px solid #000",
-                backgroundColor: "var(--bg-input)",
-                color: "var(--text-primary)",
-                marginBottom: "12px",
-                fontSize: "14px",
-              }}
-            />
+            <div style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#475569" }}>Username <span style={{ fontWeight: 400, opacity: 0.6 }}>(Optional)</span></label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="@username"
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#f8fafc",
+                  color: "#1e293b",
+                  fontSize: "14px",
+                  outline: "none",
+                  transition: "border-color 0.2s",
+                  boxSizing: "border-box"
+                }}
+                onFocus={(e) => e.target.style.borderColor = "#364182"}
+                onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
+              />
+            </div>
 
-            <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)" }}>Message *</label>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Suggestions, recommendations, or issues..."
-              rows={4}
-              style={{
-                width: "90%",
-                padding: "10px 12px",
-                borderRadius: "15px",
-                border: "1px solid #000",
-                backgroundColor: "var(--bg-input)",
-                color: "var(--text-primary)",
-                marginBottom: "12px",
-                fontSize: "14px",
-                resize: "vertical",
-              }}
-            />
+            <div style={{ marginBottom: "24px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#475569" }}>Message</label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="What's on your mind?"
+                rows={4}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#f8fafc",
+                  color: "#1e293b",
+                  fontSize: "14px",
+                  outline: "none",
+                  resize: "vertical",
+                  minHeight: "100px",
+                  fontFamily: "inherit",
+                  transition: "border-color 0.2s",
+                  boxSizing: "border-box"
+                }}
+                onFocus={(e) => e.target.style.borderColor = "#364182"}
+                onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
+              />
+            </div>
 
-            {error && <p style={{ color: "#dc2626", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}
+            {error && (
+              <div style={{
+                padding: "12px",
+                backgroundColor: "#fee2e2",
+                color: "#ef4444",
+                borderRadius: "8px",
+                fontSize: "13px",
+                marginBottom: "16px",
+                textAlign: "center"
+              }}>
+                {error}
+              </div>
+            )}
 
             <button
               type="submit"
               disabled={sending}
               style={{
-                width: "96%",
-                padding: "12px",
+                width: "100%",
+                padding: "14px",
                 backgroundColor: "#364182",
                 color: "#fff",
                 border: "none",
-                borderRadius: "15px",
-                fontWeight: 600,
-                fontSize: "14px",
+                borderRadius: "12px",
+                fontWeight: 700,
+                fontSize: "15px",
                 cursor: sending ? "not-allowed" : "pointer",
+                transition: "all 0.2s",
+                opacity: sending ? 0.7 : 1,
+                boxSizing: "border-box"
               }}
+              onMouseEnter={(e) => !sending && (e.currentTarget.style.transform = "translateY(-1px)")}
+              onMouseLeave={(e) => !sending && (e.currentTarget.style.transform = "translateY(0)")}
             >
-              {sending ? "Sending..." : "Send"}
+              {sending ? "Sending Feedback..." : "Send Feedback"}
             </button>
           </form>
         )}
