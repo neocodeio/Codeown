@@ -404,10 +404,10 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
           </div>
         )}
 
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "13px", fontWeight: 600, marginBottom: "24px" }}>
+        {/* <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "13px", fontWeight: 600, marginBottom: "24px" }}>
           <FontAwesomeIcon icon={faEye} style={{ fontSize: "12px", opacity: 0.7 }} />
           <span>{project.view_count || 0}</span>
-        </div>
+        </div> */}
 
         {
           project.contributors && project.contributors.length > 0 && (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -43,10 +43,18 @@ export default function ProjectDetail() {
   const [hoverRating, setHoverRating] = useState(0);
   const [shareCopied, setShareCopied] = useState(false);
 
+  const viewLogged = useRef(false);
+
   useEffect(() => {
     if (id) {
       fetchProject();
       fetchReactionStatus();
+
+      // Increment view count
+      if (!viewLogged.current) {
+        viewLogged.current = true;
+        api.post(`/projects/${id}/view`).catch(err => console.error("Failed to record view", err));
+      }
     }
   }, [id]);
 
