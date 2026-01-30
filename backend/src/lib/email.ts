@@ -11,7 +11,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "Codeown <welcome@codeown.space>",
+      from: "Codeown Team <welcome@codeown.space>",
       to: email,
       subject: "Welcome to Codeown! 🚀",
       html: `
