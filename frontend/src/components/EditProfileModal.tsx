@@ -416,8 +416,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   <input className="modal-input" type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/your-username" />
                 </div>
                 <div>
-                  <label className="modal-label" style={{ fontSize: "11px" }}>Twitter URL</label>
-                  <input className="modal-input" type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://twitter.com/your-username" />
+                  <label className="modal-label" style={{ fontSize: "11px" }}>Instagram URL</label>
+                  <input className="modal-input" type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://instagram.com/your-username" />
                 </div>
                 <div>
                   <label className="modal-label" style={{ fontSize: "11px" }}>LinkedIn URL</label>

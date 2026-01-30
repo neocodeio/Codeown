@@ -17,7 +17,7 @@ import { formatJoinDate } from "../utils/date";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEllipsisV, faUserEdit, faSignOutAlt, faKey, faHeart, faUsers, faUserFriends, faLayerGroup, faRocket, faBookmark, faCalendarAlt, faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faTwitter, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 interface UserProfile {
   id: string;
@@ -361,7 +361,7 @@ export default function Profile() {
                   )}
                   {userProfile?.twitter_url && (
                     <a href={userProfile.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#1da1f2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                      <FontAwesomeIcon icon={faTwitter} />
+                      <FontAwesomeIcon icon={faInstagram} />
                     </a>
                   )}
                   {userProfile?.linkedin_url && (
