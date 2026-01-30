@@ -665,7 +665,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                   }
                 }}
               >
-                {isSubmitting ? "Posting..." : "Save changes"}
+                {isSubmitting ? "Posting..." : "Post it"}
               </button>
             </div>
           </div>
