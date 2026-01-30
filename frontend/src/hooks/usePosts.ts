@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../api/axios";
 
 export interface Post {
@@ -31,7 +31,7 @@ export function usePosts(page: number = 1, limit: number = 20, filter: FeedFilte
   const [totalPages, setTotalPages] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchPosts = async (pageNum: number = page, append: boolean = false) => {
+  const fetchPosts = useCallback(async (pageNum: number = page, append: boolean = false) => {
     setLoading(true);
     try {
       const token = getToken ? await getToken() : null;
@@ -71,7 +71,7 @@ export function usePosts(page: number = 1, limit: number = 20, filter: FeedFilte
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit, filter, getToken, tag]);
 
   useEffect(() => {
     fetchPosts(page, false);

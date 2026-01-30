@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useClerkAuth } from "./useClerkAuth";
 import api from "../api/axios";
 import type { Project } from "../types/project";
@@ -8,7 +8,7 @@ export function useUserProjects(userId: string | null) {
   const [loading, setLoading] = useState(true);
   const { getToken } = useClerkAuth();
 
-  const fetchUserProjects = async () => {
+  const fetchUserProjects = useCallback(async () => {
     if (!userId) {
       setProjects([]);
       setLoading(false);
@@ -27,7 +27,7 @@ export function useUserProjects(userId: string | null) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, getToken]);
 
   useEffect(() => {
     fetchUserProjects();

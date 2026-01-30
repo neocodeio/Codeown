@@ -489,7 +489,13 @@ export default function Navbar() {
       )}
 
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={handlePostCreated} />
-      <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => window.dispatchEvent(new CustomEvent("projectCreated"))} />
+      <ProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+        onUpdated={() => {
+          window.dispatchEvent(new CustomEvent("projectCreated"));
+        }}
+      />
 
       {/* Mobile Floating Action Button */}
       {isMobile && isLoaded && isSignedIn && (

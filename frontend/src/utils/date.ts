@@ -1,5 +1,19 @@
 export const formatRelativeDate = (dateString: string) => {
-    const date = new Date(dateString);
+    if (!dateString) return "some time ago";
+
+    // If the string doesn't have timezone info, it's likely UTC from the DB
+    // Append 'Z' to treat it as UTC instead of local time
+    const normalizedString = dateString.includes('Z') || dateString.includes('+')
+        ? dateString
+        : dateString.replace(' ', 'T') + 'Z';
+
+    let date = new Date(normalizedString);
+
+    // Fallback for invalid dates
+    if (isNaN(date.getTime())) {
+        date = new Date(dateString);
+    }
+
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -8,7 +22,7 @@ export const formatRelativeDate = (dateString: string) => {
 
     // If less than an hour
     if (diffInSeconds < 3600) {
-        const minutes = Math.floor(diffInSeconds / 60);
+        const minutes = Math.max(1, Math.floor(diffInSeconds / 60));
         return `${minutes} ${minutes === 1 ? 'min' : 'min'} ago`;
     }
 

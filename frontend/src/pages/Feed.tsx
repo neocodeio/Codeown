@@ -63,9 +63,19 @@ export default function Feed() {
         fetchPosts(1, false);
       }
     };
+    const handleProjectCreated = () => {
+      if (feedType === "projects") {
+        setPage(1);
+        fetchProjects(1, false);
+      }
+    };
     window.addEventListener("postCreated", handlePostCreated);
-    return () => window.removeEventListener("postCreated", handlePostCreated);
-  }, [fetchPosts, feedType]);
+    window.addEventListener("projectCreated", handleProjectCreated);
+    return () => {
+      window.removeEventListener("postCreated", handlePostCreated);
+      window.removeEventListener("projectCreated", handleProjectCreated);
+    };
+  }, [fetchPosts, fetchProjects, feedType]);
 
   useEffect(() => {
     const handleScroll = () => {

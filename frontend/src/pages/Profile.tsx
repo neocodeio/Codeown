@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -65,6 +65,24 @@ export default function Profile() {
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const handleProfileUpdated = useCallback(async () => {
+    if (userId) {
+      try {
+        const token = await getToken();
+        const res = await api.get(`/users/${userId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        setUserProfile(res.data);
+        fetchUserPosts();
+        fetchSavedPosts();
+        fetchUserProjects();
+        fetchUserSavedProjects();
+      } catch (error) {
+        console.error("Error refreshing profile:", error);
+      }
+    }
+  }, [userId, getToken, fetchUserPosts, fetchSavedPosts, fetchUserProjects, fetchUserSavedProjects]);
+
   useEffect(() => {
     const closeMenu = () => setIsMenuOpen(false);
     if (isMenuOpen) {
@@ -72,6 +90,15 @@ export default function Profile() {
     }
     return () => document.removeEventListener("click", closeMenu);
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    window.addEventListener("profileUpdated", handleProfileUpdated);
+    window.addEventListener("projectCreated", fetchUserProjects);
+    return () => {
+      window.removeEventListener("profileUpdated", handleProfileUpdated);
+      window.removeEventListener("projectCreated", fetchUserProjects);
+    };
+  }, [handleProfileUpdated, fetchUserProjects]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -95,24 +122,6 @@ export default function Profile() {
       navigate("/sign-in");
     } catch (error) {
       console.error("Error signing out:", error);
-    }
-  };
-
-  const handleProfileUpdated = async () => {
-    if (userId) {
-      try {
-        const token = await getToken();
-        const res = await api.get(`/users/${userId}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        setUserProfile(res.data);
-        fetchUserPosts();
-        fetchSavedPosts();
-        fetchUserProjects();
-        fetchUserSavedProjects();
-      } catch (error) {
-        console.error("Error refreshing profile:", error);
-      }
     }
   };
 

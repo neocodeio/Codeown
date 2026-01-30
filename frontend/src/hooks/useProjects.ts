@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../api/axios";
 import type { Project } from "../types/project";
 
@@ -11,7 +11,7 @@ export function useProjects(page: number = 1, limit: number = 20, filter: FeedFi
     const [totalPages, setTotalPages] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
-    const fetchProjects = async (pageNum: number = page, append: boolean = false) => {
+    const fetchProjects = useCallback(async (pageNum: number = page, append: boolean = false) => {
         setLoading(true);
         try {
             const token = getToken ? await getToken() : null;
@@ -52,7 +52,7 @@ export function useProjects(page: number = 1, limit: number = 20, filter: FeedFi
         } finally {
             setLoading(false);
         }
-    };
+    }, [page, limit, filter, getToken, tag]);
 
     useEffect(() => {
         fetchProjects(page, false);
