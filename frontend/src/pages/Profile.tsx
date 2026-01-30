@@ -278,152 +278,142 @@ export default function Profile() {
           boxShadow: isMobile ? "0 10px 25px rgba(0,0,0,0.05)" : "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
           border: "1px solid #f1f5f9"
         }} className="slide-up">
+          {/* Redesigned Profile Header */}
           <div style={{
             display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            alignItems: isMobile ? "center" : "flex-start",
-            gap: isMobile ? "16px" : "24px",
-            marginBottom: isMobile ? "24px" : "32px",
-            textAlign: isMobile ? "center" : "left"
+            flexDirection: "column",
+            gap: "16px",
+            marginBottom: "24px",
+            textAlign: "left"
           }}>
+            {/* Top Row: Avatar and Actions */}
             <div style={{
-              width: isMobile ? "120px" : "160px",
-              height: isMobile ? "120px" : "160px",
-              minWidth: isMobile ? "120px" : "160px",
-              borderRadius: isMobile ? "36px" : "48px",
-              border: isMobile ? "4px solid white" : "8px solid white",
-              boxShadow: "0 15px 35px rgba(0,0,0,0.1)",
-              overflow: "hidden",
-              marginTop: isMobile ? "-80px" : "-100px",
-              backgroundColor: "#f8fafc",
-              position: "relative"
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
+              marginBottom: "12px",
+              position: "relative",
+              height: "60px" // Reserve space for avatar overlap
             }}>
-              <img src={avatarUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Avatar" />
+              {/* Avatar Wrapper */}
+              <div style={{
+                position: "absolute",
+                top: isMobile ? "-70px" : "-90px", // Pull up into banner
+                left: 0,
+                width: isMobile ? "110px" : "150px",
+                height: isMobile ? "110px" : "150px",
+                borderRadius: isMobile ? "32px" : "42px",
+                border: "6px solid white",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                backgroundColor: "#f8fafc",
+                overflow: "hidden",
+                zIndex: 10
+              }}>
+                <img src={avatarUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Avatar" />
+              </div>
+
+              {/* Spacer for Avatar */}
+              <div style={{ width: isMobile ? "120px" : "160px" }} />
+
+              {/* Action Buttons */}
+              <div style={{ display: "flex", gap: "10px", paddingBottom: "10px", alignItems: "center" }}>
+                <button onClick={() => setIsEditModalOpen(true)} className="profile-btn profile-btn-primary" style={{ padding: isMobile ? "8px 16px" : "10px 20px" }}>
+                  <FontAwesomeIcon icon={faUserEdit} />
+                  <span>Edit Profile</span>
+                </button>
+                <div style={{ position: "relative" }}>
+                  <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }} className="profile-btn" style={{ width: "45px", justifyContent: "center", padding: "10px 0" }}>
+                    <FontAwesomeIcon icon={faEllipsisV} />
+                  </button>
+                  {isMenuOpen && (
+                    <div style={{
+                      position: "absolute",
+                      top: "125%",
+                      right: 0,
+                      backgroundColor: "#fff",
+                      border: "1px solid #f1f5f9",
+                      borderRadius: "18px",
+                      boxShadow: "0 15px 35px rgba(0,0,0,0.12)",
+                      minWidth: "200px",
+                      zIndex: 100,
+                      padding: "8px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                      animation: "slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)"
+                    }}>
+                      <button
+                        onClick={() => navigate("/forgot-password")}
+                        style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#1e293b", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <FontAwesomeIcon icon={faKey} style={{ width: "16px", opacity: 0.6 }} />
+                        Reset Password
+                      </button>
+                      <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
+                      <button
+                        onClick={handleSignOut}
+                        style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px", opacity: 0.8 }} />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-            <div style={{ flex: 1, paddingBottom: isMobile ? "0" : "8px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start", marginBottom: "8px" }}>
-                <h1 style={{ fontSize: isMobile ? "24px" : "36px", fontWeight: 900, color: "#1e293b", marginBottom: "0", letterSpacing: "-0.03em" }}>
-                  {userProfile?.name || user?.fullName}
-                </h1>
-                {/* <span style={{
-                  padding: isMobile ? "3px 10px" : "4px 12px",
-                  background: userProfile?.is_organization ? "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)" : "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
-                  color: userProfile?.is_organization ? "#364182" : "#64748b",
-                  borderRadius: "10px",
-                  fontSize: isMobile ? "10px" : "11px",
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  border: "1px solid",
-                  borderColor: userProfile?.is_organization ? "#dbeafe" : "#e2e8f0",
-                }}>
-                  {userProfile?.is_organization ? "Org" : "Dev"}
-                </span> */}
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start", marginBottom: "16px", color: "#64748b" }}>
-                <span style={{
-                  fontSize: "14px",
-                  color: "#364182",
-                  fontWeight: 800,
-                }}>
+            {/* Profile Info */}
+            <div>
+              <h1 style={{ fontSize: isMobile ? "24px" : "32px", fontWeight: 900, color: "#1e293b", marginBottom: "4px", letterSpacing: "-0.03em", lineHeight: "1.2" }}>
+                {userProfile?.name || user?.fullName}
+              </h1>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", color: "#64748b" }}>
+                <span style={{ fontWeight: 800, color: "#364182", fontSize: "15px" }}>
                   @{userProfile?.username || user?.username}
                 </span>
+                {userProfile?.created_at && (
+                  <>
+                    <span style={{ color: "#cbd5e1" }}>•</span>
+                    <span style={{ fontSize: "14px", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
+                      <FontAwesomeIcon icon={faCalendarAlt} style={{ fontSize: "12px" }} />
+                      Joined {formatJoinDate(userProfile.created_at)}
+                    </span>
+                  </>
+                )}
               </div>
 
               {userProfile?.bio && (
-                <div style={{ fontSize: "16px", lineHeight: "1.6", color: "#475569", marginBottom: "20px", maxWidth: "600px", wordBreak: "break-word" }}>
+                <div style={{ fontSize: "16px", lineHeight: "1.6", color: "#475569", marginBottom: "24px", maxWidth: "700px", wordBreak: "break-word" }}>
                   <BioRenderer bio={userProfile.bio} />
                 </div>
               )}
 
-              {/* Joined Date & Social Links */}
-              <div style={{
-                display: "flex",
-                flexWrap: "wrap",
-                alignItems: "center",
-                gap: "24px",
-                marginBottom: "20px",
-                padding: "12px 0",
-                justifyContent: isMobile ? "center" : "flex-start"
-              }}>
-                {userProfile?.created_at && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "13px", fontWeight: 700 }}>
-                    <FontAwesomeIcon icon={faCalendarAlt} />
-                    <span>Joined {formatJoinDate(userProfile.created_at)}</span>
-                  </div>
+              {/* Social Links */}
+              <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                {userProfile?.github_url && (
+                  <a href={userProfile.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#000"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                    <FontAwesomeIcon icon={faGithub} />
+                  </a>
                 )}
-
-                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                  {userProfile?.github_url && (
-                    <a href={userProfile.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0f172a", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                      <FontAwesomeIcon icon={faGithub} />
-                    </a>
-                  )}
-                  {userProfile?.twitter_url && (
-                    <a href={userProfile.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#1da1f2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                      <FontAwesomeIcon icon={faInstagram} />
-                    </a>
-                  )}
-                  {userProfile?.linkedin_url && (
-                    <a href={userProfile.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0a66c2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                      <FontAwesomeIcon icon={faLinkedin} />
-                    </a>
-                  )}
-                  {userProfile?.website_url && (
-                    <a href={userProfile.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#64748b", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                      <FontAwesomeIcon icon={faGlobe} />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", gap: "8px", marginBottom: "8px", justifyContent: isMobile ? "center" : "flex-end" }}>
-              <button onClick={() => setIsEditModalOpen(true)} className="profile-btn profile-btn-primary" style={{ padding: isMobile ? "8px 12px" : "10px 20px" }}>
-                <FontAwesomeIcon icon={faUserEdit} />
-                <span style={{ display: isMobile ? "none" : "inline" }}>Edit Profile</span>
-              </button>
-              <div style={{ position: "relative" }}>
-                <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }} className="profile-btn" style={{ width: "45px", justifyContent: "center", padding: "10px 0" }}>
-                  <FontAwesomeIcon icon={faEllipsisV} />
-                </button>
-                {isMenuOpen && (
-                  <div style={{
-                    position: "absolute",
-                    top: "125%",
-                    right: 0,
-                    backgroundColor: "#fff",
-                    border: "1px solid #f1f5f9",
-                    borderRadius: "18px",
-                    boxShadow: "0 15px 35px rgba(0,0,0,0.12)",
-                    minWidth: "200px",
-                    zIndex: 100,
-                    padding: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    animation: "slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)"
-                  }}>
-                    <button
-                      onClick={() => navigate("/forgot-password")}
-                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#1e293b", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    >
-                      <FontAwesomeIcon icon={faKey} style={{ width: "16px", opacity: 0.6 }} />
-                      Reset Password
-                    </button>
-                    <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
-                    <button
-                      onClick={handleSignOut}
-                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    >
-                      <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px", opacity: 0.8 }} />
-                      Sign Out
-                    </button>
-                  </div>
+                {userProfile?.twitter_url && (
+                  <a href={userProfile.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#1da1f2"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                    <FontAwesomeIcon icon={faInstagram} />
+                  </a>
+                )}
+                {userProfile?.linkedin_url && (
+                  <a href={userProfile.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#0a66c2"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                    <FontAwesomeIcon icon={faLinkedin} />
+                  </a>
+                )}
+                {userProfile?.website_url && (
+                  <a href={userProfile.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#364182"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                    <FontAwesomeIcon icon={faGlobe} />
+                  </a>
                 )}
               </div>
             </div>
@@ -438,24 +428,24 @@ export default function Profile() {
             paddingTop: isMobile ? "24px" : "32px",
             marginTop: "8px"
           }}>
-            <div className="stat-card" onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}>
+            <div className="stat-card" onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ padding: isMobile ? "16px" : "20px" }}>
               <div className="stat-icon"><FontAwesomeIcon icon={faUsers} /></div>
-              <div style={{ fontSize: "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.follower_count || 0}</div>
+              <div style={{ fontSize: isMobile ? "18px" : "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.follower_count || 0}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Followers</div>
             </div>
-            <div className="stat-card" onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}>
+            <div className="stat-card" onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ padding: isMobile ? "16px" : "20px" }}>
               <div className="stat-icon"><FontAwesomeIcon icon={faUserFriends} /></div>
-              <div style={{ fontSize: "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.following_count || 0}</div>
+              <div style={{ fontSize: isMobile ? "18px" : "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.following_count || 0}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Following</div>
             </div>
-            <div className="stat-card" style={{ cursor: "default" }}>
+            <div className="stat-card" style={{ cursor: "default", padding: isMobile ? "16px" : "20px" }}>
               <div className="stat-icon"><FontAwesomeIcon icon={faHeart} /></div>
-              <div style={{ fontSize: "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.total_likes || 0}</div>
+              <div style={{ fontSize: isMobile ? "18px" : "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.total_likes || 0}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Total Likes</div>
             </div>
-            <button className="stat-card" style={{ background: "linear-gradient(135deg, #364182 0%, #4a59b3 100%)", border: "none" }} onClick={() => setIsProjectModalOpen(true)}>
+            <button className="stat-card" style={{ background: "linear-gradient(135deg, #364182 0%, #4a59b3 100%)", border: "none", padding: isMobile ? "16px" : "20px" }} onClick={() => setIsProjectModalOpen(true)}>
               <div className="stat-icon" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}><FontAwesomeIcon icon={faPlus} /></div>
-              <div style={{ color: "white", fontWeight: 800, fontSize: "15px", textAlign: "center" }}>New Project</div>
+              <div style={{ color: "white", fontWeight: 800, fontSize: isMobile ? "13px" : "15px", textAlign: "center" }}>New Project</div>
             </button>
           </div>
         </div>
@@ -480,6 +470,7 @@ export default function Profile() {
               className={`tab-item ${activeTab === "posts" ? 'active' : ''}`}
               style={{
                 flex: isMobile ? 1 : "initial",
+                whiteSpace: "nowrap",
                 justifyContent: "center",
                 padding: isMobile ? "12px 8px" : "16px 24px",
                 borderRadius: "14px",

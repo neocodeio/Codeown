@@ -281,122 +281,116 @@ export default function UserProfile() {
           boxShadow: isMobile ? "0 10px 25px rgba(0,0,0,0.05)" : "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
           border: "1px solid #f1f5f9"
         }} className="slide-up">
+          {/* Redesigned Profile Header */}
           <div style={{
             display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            alignItems: isMobile ? "center" : "flex-end",
-            gap: isMobile ? "16px" : "24px",
-            marginBottom: isMobile ? "24px" : "32px",
-            textAlign: isMobile ? "center" : "left"
+            flexDirection: "column",
+            gap: "16px",
+            marginBottom: "24px",
+            textAlign: "left"
           }}>
+            {/* Top Row: Avatar and Actions */}
             <div style={{
-              width: isMobile ? "120px" : "160px",
-              height: isMobile ? "120px" : "160px",
-              minWidth: isMobile ? "120px" : "160px",
-              borderRadius: isMobile ? "36px" : "48px",
-              border: isMobile ? "4px solid white" : "8px solid white",
-              boxShadow: "0 15px 35px rgba(0,0,0,0.1)",
-              overflow: "hidden",
-              marginTop: isMobile ? "-80px" : "-100px",
-              backgroundColor: "#f8fafc",
-              position: "relative"
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
+              marginBottom: "12px",
+              position: "relative",
+              height: "60px" // Reserve space for avatar overlap
             }}>
-              <img src={avatarUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Avatar" />
-            </div>
-
-            <div style={{ flex: 1, paddingBottom: isMobile ? "0" : "8px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
-                <h1 style={{ fontSize: isMobile ? "24px" : "36px", fontWeight: 900, color: "#1e293b", marginBottom: "4px", letterSpacing: "-0.04em" }}>
-                  {user.name}
-                </h1>
-                {/* <span style={{
-                  padding: isMobile ? "3px 10px" : "6px 14px",
-                  background: user.is_organization ? "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)" : "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
-                  color: user.is_organization ? "#364182" : "#64748b",
-                  borderRadius: "14px",
-                  fontSize: isMobile ? "10px" : "12px",
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  border: "1px solid",
-                  borderColor: user.is_organization ? "#dbeafe" : "#e2e8f0",
-                }}>
-                  {user.is_organization ? "Org" : "Dev"}
-                </span> */}
+              {/* Avatar Wrapper */}
+              <div style={{
+                position: "absolute",
+                top: isMobile ? "-70px" : "-90px", // Pull up into banner
+                left: 0,
+                width: isMobile ? "110px" : "150px",
+                height: isMobile ? "110px" : "150px",
+                borderRadius: isMobile ? "32px" : "42px",
+                border: "6px solid white",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                backgroundColor: "#f8fafc",
+                overflow: "hidden",
+                zIndex: 10
+              }}>
+                <img src={avatarUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Avatar" />
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start", marginTop: "8px", color: "#64748b" }}>
-                <span style={{ fontWeight: 800, color: "#364182" }}>@{user.username || "user"}</span>
+
+              {/* Spacer for Avatar */}
+              <div style={{ width: isMobile ? "120px" : "160px" }} />
+
+              {/* Action Buttons */}
+              <div style={{ display: "flex", gap: "10px", paddingBottom: "10px" }}>
+                {isSignedIn && (
+                  <button
+                    onClick={() => navigate(`/messages?userId=${userId}`)}
+                    className="profile-btn"
+                    style={{ padding: isMobile ? "8px 12px" : "10px 20px" }}
+                  >
+                    <FontAwesomeIcon icon={faEnvelope} />
+                    <span style={{ display: isMobile ? "none" : "inline" }}>Message</span>
+                  </button>
+                )}
+                {isSignedIn && (
+                  <button
+                    onClick={handleFollow}
+                    disabled={followLoading}
+                    className={`profile-btn ${isFollowing ? 'profile-btn-following' : 'profile-btn-primary'}`}
+                    style={{ padding: isMobile ? "8px 12px" : "10px 20px" }}
+                  >
+                    <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
+                    <span>{isFollowing ? "Following" : "Follow"}</span>
+                  </button>
+                )}
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: "8px", marginBottom: "8px", flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-end" }}>
-              {isSignedIn && (
-                <button
-                  onClick={() => navigate(`/messages?userId=${userId}`)}
-                  className="profile-btn"
-                  style={{ padding: isMobile ? "8px 12px" : "10px 20px" }}
-                >
-                  <FontAwesomeIcon icon={faEnvelope} />
-                  <span>Message</span>
-                </button>
-              )}
-              {isSignedIn && (
-                <button
-                  onClick={handleFollow}
-                  disabled={followLoading}
-                  className={`profile-btn ${isFollowing ? 'profile-btn-following' : 'profile-btn-primary'}`}
-                  style={{ padding: isMobile ? "8px 12px" : "10px 20px" }}
-                >
-                  <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
-                  <span>{isFollowing ? (isMobile ? "Yes" : "Following") : (isMobile ? "Follow" : "Follow")}</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {user.bio && (
-            <div style={{ fontSize: "17px", lineHeight: "1.7", color: "#475569", marginBottom: "20px", maxWidth: "800px", margin: isMobile ? "0 auto 20px" : "0 0 20px" }}>
-              <BioRenderer bio={user.bio} />
-            </div>
-          )}
-
-          {/* Joined Date & Social Links */}
-          <div style={{
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            gap: "24px",
-            marginBottom: "32px",
-            padding: "12px 0",
-            justifyContent: isMobile ? "center" : "flex-start"
-          }}>
-            {user.created_at && (
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "13px", fontWeight: 700 }}>
-                <FontAwesomeIcon icon={faCalendarAlt} />
-                <span>Joined {formatJoinDate(user.created_at)}</span>
+            {/* Profile Info */}
+            <div>
+              <h1 style={{ fontSize: isMobile ? "24px" : "32px", fontWeight: 900, color: "#1e293b", marginBottom: "4px", letterSpacing: "-0.03em", lineHeight: "1.2" }}>
+                {user.name}
+              </h1>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", color: "#64748b" }}>
+                <span style={{ fontWeight: 800, color: "#364182", fontSize: "15px" }}>@{user.username || "user"}</span>
+                {user.created_at && (
+                  <>
+                    <span style={{ color: "#cbd5e1" }}>•</span>
+                    <span style={{ fontSize: "14px", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
+                      <FontAwesomeIcon icon={faCalendarAlt} style={{ fontSize: "12px" }} />
+                      Joined {formatJoinDate(user.created_at)}
+                    </span>
+                  </>
+                )}
               </div>
-            )}
 
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              {user.github_url && (
-                <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0f172a", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                  <FontAwesomeIcon icon={faGithub} />
-                </a>
+              {user.bio && (
+                <div style={{ fontSize: "16px", lineHeight: "1.6", color: "#475569", marginBottom: "24px", maxWidth: "700px", wordBreak: "break-word" }}>
+                  <BioRenderer bio={user.bio} />
+                </div>
               )}
-              {user.twitter_url && (
-                <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#1da1f2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                  <FontAwesomeIcon icon={faInstagram} />
-                </a>
-              )}
-              {user.linkedin_url && (
-                <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0a66c2", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                  <FontAwesomeIcon icon={faLinkedin} />
-                </a>
-              )}
-              {user.website_url && (
-                <a href={user.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#64748b", fontSize: "18px", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
-                  <FontAwesomeIcon icon={faGlobe} />
-                </a>
-              )}
+
+              {/* Social Links */}
+              <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                {user.github_url && (
+                  <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#000"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                    <FontAwesomeIcon icon={faGithub} />
+                  </a>
+                )}
+                {user.twitter_url && (
+                  <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#1da1f2"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                    <FontAwesomeIcon icon={faInstagram} />
+                  </a>
+                )}
+                {user.linkedin_url && (
+                  <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#0a66c2"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                    <FontAwesomeIcon icon={faLinkedin} />
+                  </a>
+                )}
+                {user.website_url && (
+                  <a href={user.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#364182"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                    <FontAwesomeIcon icon={faGlobe} />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
@@ -404,23 +398,23 @@ export default function UserProfile() {
           <div style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-            gap: "16px",
+            gap: isMobile ? "12px" : "16px",
             borderTop: "1px solid #f1f5f9",
-            paddingTop: "32px"
+            paddingTop: isMobile ? "24px" : "32px",
           }}>
-            <div className="stat-card" onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}>
+            <div className="stat-card" onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ padding: isMobile ? "16px" : "20px" }}>
               <div className="stat-icon"><FontAwesomeIcon icon={faUsers} /></div>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#1e293b" }}>{user.follower_count}</div>
+              <div style={{ fontSize: isMobile ? "18px" : "24px", fontWeight: 900, color: "#1e293b" }}>{user.follower_count}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Followers</div>
             </div>
-            <div className="stat-card" onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}>
+            <div className="stat-card" onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ padding: isMobile ? "16px" : "20px" }}>
               <div className="stat-icon"><FontAwesomeIcon icon={faUserFriends} /></div>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#1e293b" }}>{user.following_count}</div>
+              <div style={{ fontSize: isMobile ? "18px" : "24px", fontWeight: 900, color: "#1e293b" }}>{user.following_count}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Following</div>
             </div>
-            <div className="stat-card" style={{ cursor: "default" }}>
+            <div className="stat-card" style={{ cursor: "default", padding: isMobile ? "16px" : "20px" }}>
               <div className="stat-icon"><FontAwesomeIcon icon={faHeart} /></div>
-              <div style={{ fontSize: "24px", fontWeight: 900, color: "#1e293b" }}>{user.total_likes}</div>
+              <div style={{ fontSize: isMobile ? "18px" : "24px", fontWeight: 900, color: "#1e293b" }}>{user.total_likes}</div>
             </div>
           </div>
         </div>
@@ -445,6 +439,7 @@ export default function UserProfile() {
               className={`tab-item ${activeTab === "posts" ? 'active' : ''}`}
               style={{
                 flex: isMobile ? 1 : "initial",
+                whiteSpace: "nowrap",
                 justifyContent: "center",
                 padding: isMobile ? "12px 8px" : "16px 24px",
                 borderRadius: "14px",
