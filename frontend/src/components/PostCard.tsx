@@ -422,13 +422,13 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "14px 20px 20px",
+          padding: isMobile ? "12px 16px 16px" : "14px 20px 20px",
           backgroundColor: "#fff",
         }}>
           <div style={{
             display: "flex",
             alignItems: "center",
-            gap: "12px",
+            gap: isMobile ? "8px" : "12px",
           }}>
             <button
               onClick={handleLike}
@@ -505,8 +505,21 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           <div style={{
             display: "flex",
             alignItems: "center",
-            gap: "12px",
+            gap: isMobile ? "8px" : "12px",
           }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              color: "#64748b",
+              fontSize: "13px",
+              fontWeight: 700,
+              marginRight: isMobile ? "2px" : "4px",
+            }}>
+              <FontAwesomeIcon icon={faEye} style={{ fontSize: "14px", opacity: 0.7 }} />
+              <span>{post.view_count || 0}</span>
+            </div>
+
             <button
               onClick={handleShare}
               style={{
@@ -590,18 +603,6 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 }}
               />
             </button>
-          </div>
-
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            color: "#64748b",
-            fontSize: "13px",
-            fontWeight: 600,
-          }}>
-            <FontAwesomeIcon icon={faEye} style={{ fontSize: "12px", opacity: 0.7 }} />
-            <span>{post.view_count || 0}</span>
           </div>
         </div>
       </div>
