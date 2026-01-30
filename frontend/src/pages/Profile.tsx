@@ -281,7 +281,7 @@ export default function Profile() {
           <div style={{
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
-            alignItems: isMobile ? "center" : "flex-end",
+            alignItems: isMobile ? "center" : "flex-start",
             gap: isMobile ? "16px" : "24px",
             marginBottom: isMobile ? "24px" : "32px",
             textAlign: isMobile ? "center" : "left"
@@ -331,7 +331,7 @@ export default function Profile() {
               </div>
 
               {userProfile?.bio && (
-                <div style={{ fontSize: "16px", lineHeight: "1.6", color: "#475569", marginBottom: "20px", maxWidth: "600px" }}>
+                <div style={{ fontSize: "16px", lineHeight: "1.6", color: "#475569", marginBottom: "20px", maxWidth: "600px", wordBreak: "break-word" }}>
                   <BioRenderer bio={userProfile.bio} />
                 </div>
               )}
