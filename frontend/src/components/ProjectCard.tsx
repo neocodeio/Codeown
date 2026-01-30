@@ -22,7 +22,7 @@ import {
   faCheck,
   faStar,
   faShareNodes,
-  faEye
+  // faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { formatRelativeDate } from "../utils/date";
