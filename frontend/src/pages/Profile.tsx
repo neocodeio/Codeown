@@ -273,6 +273,7 @@ export default function Profile() {
         {/* Profile Card */}
         <div style={{
           backgroundColor: "white",
+          marginTop: "20px",
           borderRadius: isMobile ? "24px" : "32px",
           padding: isMobile ? "20px" : "40px",
           boxShadow: isMobile ? "0 10px 25px rgba(0,0,0,0.05)" : "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
