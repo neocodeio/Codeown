@@ -141,7 +141,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
           cursor: "pointer",
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           backgroundColor: "#fff",
-          border: "1px solid #f1f5f9",
+          border: "1px solid #e0e0e0",
           marginBottom: isMobile ? "20px" : "24px",
           padding: "0",
           borderRadius: isMobile ? "20px" : "24px",
@@ -158,7 +158,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = "translateY(0)";
           e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.03)";
-          e.currentTarget.style.borderColor = "#f1f5f9";
+          e.currentTarget.style.borderColor = "#e0e0e0";
         }}
       >
         {/* Header */}
