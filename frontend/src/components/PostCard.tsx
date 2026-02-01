@@ -38,8 +38,8 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
   const { getToken } = useClerkAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(post.id);
-  const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id);
+  const { isLiked, likeCount, toggleLike, loading: likeLoading } = useLikes(post.id, post.isLiked, post.like_count);
+  const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id, post.isSaved);
   const [shareCopied, setShareCopied] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -48,7 +48,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
 
   useEffect(() => {
     if (post.id && post.user_id) {
-      fetchLikeStatus();
+      // fetchLikeStatus(); // Handled internally by useLikes hook now
       fetchSavedStatus();
     }
   }, [post.id, post.user_id]);

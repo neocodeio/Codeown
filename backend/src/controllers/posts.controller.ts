@@ -145,17 +145,9 @@ export async function getPosts(req: Request, res: Response) {
       const clerkUser = clerkUserMap.get(post.user_id);
       const user = supabaseUser || clerkUser;
 
-      // Log for debugging
-      if (!user) {
-        console.log(`No user data found for user_id: ${post.user_id}`);
-        console.log(`Available Supabase users:`, Array.from(userMap.keys()));
-        console.log(`Available Clerk users:`, Array.from(clerkUserMap.keys()));
-      }
-
       // Extract user data with better fallback logic
       let userData;
       if (user) {
-        // Handle both Supabase format and Clerk format
         const userName = user.name ||
           (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) ||
           user.firstName ||
@@ -163,21 +155,13 @@ export async function getPosts(req: Request, res: Response) {
           user.username ||
           null;
 
-        const userEmail = user.email ||
-          (user.emailAddresses?.[0]?.emailAddress) ||
-          null;
-
-        const avatarUrl = user.avatar_url ||
-          user.imageUrl ||
-          null;
+        const avatarUrl = user.avatar_url || user.imageUrl || null;
 
         userData = {
           name: userName || "User",
           avatar_url: avatarUrl,
         };
       } else {
-        // No user data found - log for debugging
-        console.log(`No user data found for user_id: ${post.user_id} in getPosts`);
         userData = {
           name: "User",
           email: null,
@@ -185,16 +169,36 @@ export async function getPosts(req: Request, res: Response) {
         };
       }
 
-      console.log(`Post ${post.id} (user_id: ${post.user_id}): User data:`, userData);
-
       return {
         ...post,
         user: userData
       };
     });
 
+    // FETCH LIKE AND SAVE STATUS FOR CURRENT USER
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    let postsWithStats = postsWithUsers;
+
+    if (currentUserId && postsWithUsers.length > 0) {
+      const postIds = postsWithUsers.map(p => p.id);
+
+      const [likesRes, savesRes] = await Promise.all([
+        supabase.from("likes").select("post_id").eq("user_id", currentUserId).in("post_id", postIds),
+        supabase.from("saved_posts").select("post_id").eq("user_id", currentUserId).in("post_id", postIds)
+      ]);
+
+      const likedPostIds = new Set((likesRes.data || []).map(l => l.post_id));
+      const savedPostIds = new Set((savesRes.data || []).map(s => s.post_id));
+
+      postsWithStats = postsWithUsers.map(p => ({
+        ...p,
+        isLiked: likedPostIds.has(p.id),
+        isSaved: savedPostIds.has(p.id)
+      }));
+    }
+
     return res.json({
-      posts: postsWithUsers,
+      posts: postsWithStats,
       total: count || 0,
       page: pageNum,
       limit: limitNum,
@@ -290,9 +294,25 @@ export async function getPostById(req: Request, res: Response) {
       username: null,
     };
 
+    // FETCH LIKE AND SAVE STATUS FOR CURRENT USER
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    let isLiked = false;
+    let isSaved = false;
+
+    if (currentUserId) {
+      const [likeRes, saveRes] = await Promise.all([
+        supabase.from("likes").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle(),
+        supabase.from("saved_posts").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle()
+      ]);
+      isLiked = !!likeRes.data;
+      isSaved = !!saveRes.data;
+    }
+
     return res.json({
       ...post,
-      user: userInfo
+      user: userInfo,
+      isLiked,
+      isSaved
     });
   } catch (error) {
     console.error("Unexpected error in getPostById:", error);
@@ -401,7 +421,6 @@ export async function getPostsByUser(req: Request, res: Response) {
         };
       } else {
         // No user data found
-        console.log(`No user data found for user_id: ${userId} in getPostsByUser`);
         userDisplayData = {
           name: "User",
           avatar_url: null,
@@ -414,8 +433,30 @@ export async function getPostsByUser(req: Request, res: Response) {
       };
     });
 
+    // FETCH LIKE AND SAVE STATUS FOR CURRENT USER
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    let postsWithStats = postsWithUsers;
+
+    if (currentUserId && postsWithUsers.length > 0) {
+      const postIds = postsWithUsers.map(p => p.id);
+
+      const [likesRes, savesRes] = await Promise.all([
+        supabase.from("likes").select("post_id").eq("user_id", currentUserId).in("post_id", postIds),
+        supabase.from("saved_posts").select("post_id").eq("user_id", currentUserId).in("post_id", postIds)
+      ]);
+
+      const likedPostIds = new Set((likesRes.data || []).map(l => l.post_id));
+      const savedPostIds = new Set((savesRes.data || []).map(s => s.post_id));
+
+      postsWithStats = postsWithUsers.map(p => ({
+        ...p,
+        isLiked: likedPostIds.has(p.id),
+        isSaved: savedPostIds.has(p.id)
+      }));
+    }
+
     return res.json({
-      posts: postsWithUsers,
+      posts: postsWithStats,
       total: posts.length,
       page: 1,
       limit: posts.length,

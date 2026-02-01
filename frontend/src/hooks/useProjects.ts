@@ -56,7 +56,7 @@ export function useProjects(page: number = 1, limit: number = 20, filter: FeedFi
 
     useEffect(() => {
         fetchProjects(page, false);
-    }, [page, filter, tag]);
+    }, [page, filter, tag, getToken]);
 
     return { projects, loading, fetchProjects, total, totalPages, hasMore };
 }

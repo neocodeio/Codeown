@@ -75,7 +75,7 @@ export function usePosts(page: number = 1, limit: number = 20, filter: FeedFilte
 
   useEffect(() => {
     fetchPosts(page, false);
-  }, [page, filter, tag]);
+  }, [page, filter, tag, getToken]);
 
   return { posts, loading, fetchPosts, total, totalPages, hasMore };
 }

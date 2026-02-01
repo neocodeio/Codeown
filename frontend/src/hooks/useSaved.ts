@@ -2,14 +2,21 @@ import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 
-export function useSaved(postId: number | null) {
-  const [isSaved, setIsSaved] = useState(false);
+export function useSaved(postId: number | null, initialIsSaved?: boolean) {
+  const [isSaved, setIsSaved] = useState(initialIsSaved ?? false);
   const [loading, setLoading] = useState(false);
-  const { getToken, isLoaded } = useClerkAuth();
+  const { getToken, isLoaded, userId } = useClerkAuth();
+
+  // Sync with initial values if they change
+  useEffect(() => {
+    if (initialIsSaved !== undefined) {
+      setIsSaved(initialIsSaved);
+    }
+  }, [initialIsSaved]);
 
   const fetchSavedStatus = async () => {
-    if (!postId || !isLoaded) return;
-    
+    if (!postId || !userId || !isLoaded) return;
+
     try {
       const token = await getToken();
       if (!token) return;
@@ -17,7 +24,7 @@ export function useSaved(postId: number | null) {
       const res = await api.get(`/saved/${postId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setIsSaved(res.data.saved || false);
+      setIsSaved(res.data.saved || res.data.isSaved || false);
     } catch (error) {
       console.error("Error fetching saved status:", error);
     }
@@ -25,11 +32,11 @@ export function useSaved(postId: number | null) {
 
   useEffect(() => {
     fetchSavedStatus();
-  }, [postId, isLoaded]);
+  }, [postId, userId, isLoaded]);
 
   const toggleSave = async () => {
     if (!postId) return;
-    
+
     setLoading(true);
     try {
       const token = await getToken();
@@ -47,7 +54,7 @@ export function useSaved(postId: number | null) {
         }
       );
 
-      setIsSaved(res.data.saved);
+      setIsSaved(res.data.saved || res.data.isSaved || false);
     } catch (error) {
       console.error("Error toggling save:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to save post";

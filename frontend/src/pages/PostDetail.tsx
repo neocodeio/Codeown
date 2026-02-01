@@ -21,6 +21,9 @@ interface Post {
   created_at: string;
   images?: string[] | null;
   tags?: string[] | null;
+  like_count?: number;
+  isLiked?: boolean;
+  isSaved?: boolean;
   user?: {
     name: string;
     email: string | null;
@@ -42,8 +45,8 @@ export default function PostDetail() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
-  const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id));
-  const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id));
+  const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id), post?.isLiked, post?.like_count);
+  const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id), post?.isSaved);
 
   useEffect(() => {
     if (id) {
@@ -59,23 +62,26 @@ export default function PostDetail() {
       if (!id) return;
       try {
         setLoading(true);
+        const token = await getToken();
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
         const [postRes, commentsRes] = await Promise.all([
-          api.get(`/posts/${id}`),
-          api.get(`/comments/${id}?sort=${commentSort}`)
+          api.get(`/posts/${id}`, { headers }),
+          api.get(`/comments/${id}?sort=${commentSort}`, { headers })
         ]);
         if (isMounted) {
           setPost(postRes.data);
           setComments(Array.isArray(commentsRes.data) ? commentsRes.data : []);
         }
       } catch (e) {
-        console.error(e);
+        console.error("Error fetching post details:", e);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
     fetchData();
     return () => { isMounted = false; };
-  }, [id, commentSort]);
+  }, [id, commentSort, getToken]);
 
   const handleSubmitComment = async () => {
     if (!isSignedIn || !commentContent.trim()) return;
@@ -272,9 +278,10 @@ export default function PostDetail() {
                   alignItems: "center",
                   gap: "8px",
                   padding: "8px 16px",
-                  background: isLiked ? "red" : "#fff",
-                  border: "1px solid #dcdcdc",
-                  color: isLiked ? "#fff" : "#364182",
+                  background: isLiked ? "#fff1f2" : "#fff",
+                  border: "1px solid",
+                  borderColor: isLiked ? "#fecdd3" : "#dcdcdc",
+                  color: isLiked ? "#ef4444" : "#364182",
                   cursor: likeLoading ? "not-allowed" : "pointer",
                   borderRadius: "12px",
                   fontSize: "14px",

@@ -85,7 +85,7 @@ export async function likePost(req: Request, res: Response) {
             post_id: postIdNum,
             read: false,
           });
-          
+
           if (notifError) {
             console.error("Error creating like notification:", notifError);
           } else {
@@ -120,11 +120,16 @@ export async function getPostLikes(req: Request, res: Response) {
       return res.status(400).json({ error: "Post ID is required" });
     }
 
+    const postIdNum = parseInt(postId, 10);
+    if (isNaN(postIdNum)) {
+      return res.status(400).json({ error: "Invalid post ID" });
+    }
+
     // Get like count
     const { count, error: countError } = await supabase
       .from("likes")
       .select("*", { count: "exact", head: true })
-      .eq("post_id", postId);
+      .eq("post_id", postIdNum);
 
     if (countError) {
       console.error("Error getting like count:", countError);
@@ -133,12 +138,16 @@ export async function getPostLikes(req: Request, res: Response) {
 
     // Check if current user liked it
     let isLiked = false;
+
+    // Debug log to trace why likes aren't showing
+    // console.log(`[getPostLikes] Processing for Post ${postIdNum}. User: ${userId ? userId : 'Guest'}`);
+
     if (userId) {
       const { data: userLike, error: likeCheckError } = await supabase
         .from("likes")
         .select("id")
         .eq("user_id", userId)
-        .eq("post_id", postId)
+        .eq("post_id", postIdNum)
         .maybeSingle();
 
       // If error is PGRST116, it means no row found (not liked) - this is expected
@@ -146,7 +155,10 @@ export async function getPostLikes(req: Request, res: Response) {
         console.error("Error checking user like:", likeCheckError);
       } else {
         isLiked = !!userLike;
+        // console.log(`[getPostLikes] DB Check for User ${userId} on Post ${postIdNum}: ${isLiked}`);
       }
+    } else {
+      // console.log(`[getPostLikes] Skipping DB check because no userId. Req User object:`, user);
     }
 
     return res.json({ count: count || 0, isLiked });

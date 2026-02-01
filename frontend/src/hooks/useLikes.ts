@@ -1,43 +1,85 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
+import { useClerkUser } from "./useClerkUser";
 
-export function useLikes(postId: number | null) {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+export function useLikes(postId: number | null, initialIsLiked?: boolean, initialLikeCount?: number) {
+  const [isLiked, setIsLiked] = useState(initialIsLiked ?? false);
+  const [likeCount, setLikeCount] = useState(initialLikeCount ?? 0);
   const [loading, setLoading] = useState(false);
-  const { getToken, isLoaded } = useClerkAuth();
+  const { getToken, isLoaded, userId } = useClerkAuth();
 
-  const fetchLikeStatus = useCallback(async () => {
-    if (!postId || !isLoaded) {
-      setIsLiked(false);
-      setLikeCount(0);
-      return;
+  // Sync with initial values if they change (e.g. from parent props after refresh)
+  useEffect(() => {
+    if (initialIsLiked !== undefined) {
+      setIsLiked(initialIsLiked);
     }
-    
-    try {
-      const token = await getToken();
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      
-      const res = await api.get(`/likes/post/${postId}`, { headers });
-      const likedStatus = res.data.isLiked === true;
-      setIsLiked(likedStatus);
-      setLikeCount(res.data.count || 0);
-      console.log(`Post ${postId} like status:`, { isLiked: likedStatus, count: res.data.count });
-    } catch (error) {
-      console.error("Error fetching like status:", error);
-      setIsLiked(false);
-      setLikeCount(0);
-    }
-  }, [postId, isLoaded, getToken]);
+  }, [initialIsLiked]);
 
   useEffect(() => {
-    fetchLikeStatus();
-  }, [fetchLikeStatus]);
+    if (initialLikeCount !== undefined) {
+      setLikeCount(initialLikeCount);
+    }
+  }, [initialLikeCount]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchStatus = async () => {
+      if (!isLoaded || !postId) return;
+
+      try {
+        let headers = {};
+        if (userId) {
+          const token = await getToken();
+          if (!token) return;
+          headers = { Authorization: `Bearer ${token}` };
+        }
+
+        const res = await api.get(`/likes/post/${postId}`, { headers });
+
+        if (isMounted && res.data) {
+          // Handle both count/likeCount and isLiked/liked property names
+          const newIsLiked = typeof res.data.isLiked === 'boolean' ? res.data.isLiked : res.data.liked;
+          const newCount = typeof res.data.count === 'number' ? res.data.count : res.data.likeCount;
+
+          if (newIsLiked !== undefined) setIsLiked(newIsLiked);
+          if (newCount !== undefined) setLikeCount(newCount);
+        }
+      } catch (error) {
+        console.error("Error fetching like status:", error);
+      }
+    };
+
+    fetchStatus();
+
+    return () => { isMounted = false; };
+  }, [postId, userId, getToken, isLoaded]);
+
+  const fetchLikeStatus = async () => {
+    if (!postId) return;
+    try {
+      let headers = {};
+      if (userId) {
+        const token = await getToken();
+        if (!token) return;
+        headers = { Authorization: `Bearer ${token}` };
+      }
+      const res = await api.get(`/likes/post/${postId}`, { headers });
+      if (res.data) {
+        const newIsLiked = typeof res.data.isLiked === 'boolean' ? res.data.isLiked : res.data.liked;
+        const newCount = typeof res.data.count === 'number' ? res.data.count : res.data.likeCount;
+        if (newIsLiked !== undefined) setIsLiked(newIsLiked);
+        if (newCount !== undefined) setLikeCount(newCount);
+      }
+    } catch (error) {
+      console.error("Error fetching like status:", error);
+    }
+  };
 
   const toggleLike = async () => {
     if (!postId) return;
-    
+
     setLoading(true);
     try {
       const token = await getToken();
@@ -55,27 +97,27 @@ export function useLikes(postId: number | null) {
         }
       );
 
-      // Update state immediately for better UX
-      const newLikedState = res.data.liked === true;
-      console.log(`Post ${postId} toggle result:`, { liked: newLikedState, response: res.data });
+      // Update state immediately from server response
+      const newLikedState = res.data.liked === true || res.data.isLiked === true;
       setIsLiked(newLikedState);
-      
-      // Update count based on new state
-      if (newLikedState) {
-        setLikeCount((prev) => prev + 1);
+
+      // Smart count update
+      const newCount = typeof res.data.likeCount === 'number' ? res.data.likeCount : res.data.count;
+      if (newCount !== undefined) {
+        setLikeCount(newCount);
       } else {
-        setLikeCount((prev) => Math.max(0, prev - 1));
+        // Fallback optimistic update
+        if (newLikedState) {
+          setLikeCount((prev) => prev + 1);
+        } else {
+          setLikeCount((prev) => Math.max(0, prev - 1));
+        }
       }
 
-      // Refresh like status from server to ensure consistency
-      setTimeout(() => {
-        fetchLikeStatus();
-      }, 200);
     } catch (error) {
       console.error("Error toggling like:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to like post";
       alert(`Failed to like post: ${errorMessage}`);
-      // Refresh status on error to get correct state
       await fetchLikeStatus();
     } finally {
       setLoading(false);

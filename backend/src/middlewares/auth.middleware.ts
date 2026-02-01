@@ -38,20 +38,23 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
+    // console.log("OptionalAuth: No auth header");
     return next();
   }
 
   const token = authHeader.split(" ")[1];
   if (!token) {
+    // console.log("OptionalAuth: No token");
     return next();
   }
 
   try {
     const user = await clerkClient.verifyToken(token);
+    // console.log("OptionalAuth: Token verified", user.sub);
     (req as any).user = user;
   } catch (error) {
     // Silently ignore auth errors for optional auth
-    console.log("Optional auth failed, continuing without user");
+    console.log("Optional auth failed:", error instanceof Error ? error.message : "Unknown error");
   }
 
   next();
