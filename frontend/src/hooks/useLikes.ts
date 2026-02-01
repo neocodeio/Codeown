@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
-import { useClerkUser } from "./useClerkUser";
 
 export function useLikes(postId: number | null, initialIsLiked?: boolean, initialLikeCount?: number) {
   const [isLiked, setIsLiked] = useState(initialIsLiked ?? false);
