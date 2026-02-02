@@ -123,7 +123,7 @@ export default function Navbar() {
     }}>
       {/* Left Section */}
       <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : isTablet ? "32px" : "24px", flex: 1 }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: isMobile ? "6px" : "10px", textDecoration: "none" }}>
           <img
             src={logo}
             alt="Codeown"
@@ -136,7 +136,37 @@ export default function Navbar() {
               cursor: "pointer",
             }}
           />
+          <span style={{
+            fontSize: isMobile ? "9px" : isTablet ? "10px" : "11px",
+            fontWeight: 900,
+            color: "#fff",
+            background: "linear-gradient(135deg, #364182 0%, #849bff 100%)",
+            padding: isMobile ? "3px 7px" : "4px 10px",
+            borderRadius: isMobile ? "5px" : "7px",
+            letterSpacing: "0.8px",
+            textTransform: "uppercase",
+            position: "relative",
+            overflow: "hidden"
+          }}>
+            BETA
+            <span style={{
+              position: "absolute",
+              top: 0,
+              left: "-100%",
+              width: "100%",
+              height: "100%",
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+              animation: "betaShine 3s ease-in-out infinite"
+            }} />
+          </span>
         </Link>
+
+        <style>{`
+          @keyframes betaShine {
+            0% { left: -100%; }
+            20%, 100% { left: 100%; }
+          }
+        `}</style>
 
         {!isMobile && (
           <Link
