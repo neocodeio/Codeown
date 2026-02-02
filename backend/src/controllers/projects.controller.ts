@@ -128,8 +128,28 @@ export async function getProjects(req: Request, res: Response) {
       };
     });
 
+    // FETCH LIKE AND SAVE STATUS FOR CURRENT USER
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    let projectsWithStats = projectsWithDetails;
+
+    if (currentUserId && projectsWithDetails.length > 0) {
+      const [likesRes, savesRes] = await Promise.all([
+        supabase.from("project_likes").select("project_id").eq("user_id", currentUserId).in("project_id", projectIds),
+        supabase.from("project_saves").select("project_id").eq("user_id", currentUserId).in("project_id", projectIds)
+      ]);
+
+      const likedProjectIds = new Set((likesRes.data || []).map(l => l.project_id));
+      const savedProjectIds = new Set((savesRes.data || []).map(s => s.project_id));
+
+      projectsWithStats = projectsWithDetails.map(p => ({
+        ...p,
+        isLiked: likedProjectIds.has(p.id),
+        isSaved: savedProjectIds.has(p.id)
+      }));
+    }
+
     return res.json({
-      projects: projectsWithDetails,
+      projects: projectsWithStats,
       total: count || 0,
       page: pageNum,
       limit: limitNum,
@@ -211,13 +231,28 @@ export async function getProject(req: Request, res: Response) {
       contributors = contribUsers || [];
     }
 
+    // FETCH LIKE AND SAVE STATUS FOR CURRENT USER
+    let isLiked = false;
+    let isSaved = false;
+
+    if (userId) {
+      const [likeRes, saveRes] = await Promise.all([
+        supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", id).maybeSingle(),
+        supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", id).maybeSingle()
+      ]);
+      isLiked = !!likeRes.data;
+      isSaved = !!saveRes.data;
+    }
+
     return res.json({
       ...project,
       user: user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null },
       rating: averageRating,
       rating_count: ratingCount,
       user_rating: userRating,
-      contributors: contributors
+      contributors: contributors,
+      isLiked,
+      isSaved
     });
   } catch (error) {
     console.error("Error in getProject:", error);

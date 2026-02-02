@@ -15,6 +15,8 @@ export interface Project {
   comment_count: number;
   view_count?: number;
   looking_for_contributors?: boolean;
+  isLiked?: boolean;
+  isSaved?: boolean;
   user?: {
     id: string;
     name: string;
