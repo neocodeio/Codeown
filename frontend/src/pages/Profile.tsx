@@ -516,10 +516,10 @@ export default function Profile() {
 
           <div className="slide-up">
             {activeTab === "posts" ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "32px", backgroundColor: "#f8fafc" }}>
                 {posts.length === 0 ? (
-                  <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px" }}>
-                    <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faLayerGroup} /></div>
+                  <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "#f8fafc", borderRadius: "24px" }}>
+                    <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3, backgroundColor: "#f8fafc" }}><FontAwesomeIcon icon={faLayerGroup} /></div>
                     No posts published yet.
                   </div>
                 ) : (
@@ -594,27 +594,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-
-      <footer style={{
-        padding: "60px 20px 100px",
-        textAlign: "center",
-        marginTop: "100px",
-        background: "white",
-        borderTop: "1px solid #f1f5f9"
-      }}>
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "32px",
-          flexWrap: "wrap",
-          marginBottom: "24px"
-        }}>
-          <Link to="/about" style={{ fontSize: "14px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>About Us</Link>
-          <Link to="/privacy" style={{ fontSize: "14px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>Privacy Policy</Link>
-          <Link to="/terms" style={{ fontSize: "14px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none" }}>Terms of Service</Link>
-        </div>
-        <p style={{ fontSize: "13px", color: "#94a3b8", fontWeight: 700 }}>© {new Date().getFullYear()} Codeown. Crafted with passion by developers.</p>
-      </footer>
 
       {userProfile && <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onUpdated={handleProfileUpdated} currentUser={userProfile} />}
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => fetchUserProjects()} />

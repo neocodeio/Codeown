@@ -13,17 +13,18 @@ export default function SignInPage() {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      minHeight: "calc(100vh - 120px)",
-      padding: "40px 20px",
+      minHeight: "70vh",
+      padding: "20px 20px",
     }}>
       <div style={{
         width: "100%",
-        maxWidth: "460px",
-        backgroundColor: "var(--bg-card)",
-        borderRadius: "var(--radius-2xl)",
-        padding: "48px",
-        boxShadow: "var(--shadow-xl)",
-        border: "1px solid var(--border-color)",
+        maxWidth: "480px",
+        borderRadius: "24px",
+        padding: "40px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center"
       }}>
         {isClerkEnabled && clerkPublishableKey ? (
           <>
@@ -33,7 +34,7 @@ export default function SignInPage() {
               signUpUrl="/sign-up"
               appearance={{
                 elements: {
-                  rootBox: "w-full",
+                  rootBox: "mx-auto",
                   card: "shadow-none border-0 p-0 m-0",
                   headerTitle: "text-3xl font-bold tracking-tight text-gray-900",
                   headerSubtitle: "text-gray-500 mt-2",

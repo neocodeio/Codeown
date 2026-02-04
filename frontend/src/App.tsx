@@ -17,6 +17,7 @@ import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
+import Footer from "./components/Footer";
 
 export default function App() {
   const location = useLocation();
@@ -44,6 +45,7 @@ export default function App() {
           </Routes>
         </div>
       </ErrorBoundary>
+      <Footer />
       <FeedbackButton />
     </div>
   );
