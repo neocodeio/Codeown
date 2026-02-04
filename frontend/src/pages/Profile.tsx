@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { Navigate, useNavigate, Link } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
 import { useUserProjects } from "../hooks/useUserProjects";
