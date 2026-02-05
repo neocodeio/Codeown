@@ -12,8 +12,8 @@ export default function Footer() {
         }}>
             {/* Product Hunt Badge */}
             <div style={{
-                display: "flex",
-                justifyContent: "center",
+                display: "flex", 
+                justifyContent: "center", 
                 alignItems: "center"
             }}>
                 <a
