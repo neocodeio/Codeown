@@ -1,6 +1,6 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFaceLaughWink, faRocket, faAdd, faPlus, faHeart, } from "@fortawesome/free-solid-svg-icons";
+import { faFaceLaughWink, faRocket, faAdd, faHeart, } from "@fortawesome/free-solid-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 export default function WelcomeCard() {
