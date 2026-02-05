@@ -108,6 +108,20 @@ export default function Navbar() {
     return () => window.removeEventListener("profileUpdated", handleProfileUpdate);
   }, [user?.id, getToken]);
 
+  // Listen for global modal triggers
+  useEffect(() => {
+    const handleOpenPostModal = () => setIsModalOpen(true);
+    const handleOpenProjectModal = () => setIsProjectModalOpen(true);
+
+    window.addEventListener("openPostModal", handleOpenPostModal);
+    window.addEventListener("openProjectModal", handleOpenProjectModal);
+
+    return () => {
+      window.removeEventListener("openPostModal", handleOpenPostModal);
+      window.removeEventListener("openProjectModal", handleOpenProjectModal);
+    };
+  }, []);
+
   return (
     <nav style={{
       padding: isMobile ? "12px 16px" : isTablet ? "14px 24px" : "16px 40px",

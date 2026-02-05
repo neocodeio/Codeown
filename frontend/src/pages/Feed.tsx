@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
+import WelcomeCard from "../components/WelcomeCard";
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -104,6 +105,9 @@ export default function Feed() {
   return (
     <main className="container" style={{ padding: "40px 20px", minHeight: "100vh" }}>
       <div style={{ maxWidth: "640px", margin: "0 auto" }}>
+        {page === 1 && !selectedTag && (feedFilter === "all" || feedFilter === "following") && (
+          <WelcomeCard />
+        )}
         <header className="fade-in slide-up" style={{
           marginBottom: "40px",
           display: "flex",
@@ -365,9 +369,12 @@ export default function Feed() {
             <div className="stagger-1" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {feedType === "posts" ? (
                 // Items are Posts
-                (currentItems as any[]).map((p, i) => (
-                  <PostCard key={p.id} post={p} index={i} onUpdated={() => fetchPosts(page, false)} />
-                ))
+                <>
+
+                  {(currentItems as any[]).map((p, i) => (
+                    <PostCard key={p.id} post={p} index={i} onUpdated={() => fetchPosts(page, false)} />
+                  ))}
+                </>
               ) : (
                 // Items are Projects
                 (currentItems as any[]).map((p, i) => (
