@@ -2,7 +2,173 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { sendWelcomeEmail } from "../lib/email.js";
+import { getOrCreateConversation } from "./messages.controller.js";
 
+
+async function createWelcomeExperienceForNewUser(newUserId: string) {
+  try {
+    console.log(`[Welcome Message] Starting welcome experience for new user: ${newUserId}`);
+    
+    // First, try to find CEO in Supabase by username
+    let ceoId: string | null = null;
+    const { data: ceoUser, error: ceoError } = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", "amin.ceo")
+      .single();
+
+    if (ceoUser && !ceoError) {
+      ceoId = ceoUser.id as string;
+      console.log(`[Welcome Message] Found CEO in Supabase: ${ceoId}`);
+    } else {
+      // CEO not found in Supabase, try multiple methods to find them
+      console.log(`[Welcome Message] CEO not found in Supabase, searching Clerk...`);
+      
+      // Method 1: Check environment variable for CEO Clerk ID (most reliable)
+      const ceoClerkIdFromEnv = process.env.CEO_CLERK_ID;
+      if (ceoClerkIdFromEnv) {
+        ceoId = ceoClerkIdFromEnv;
+        console.log(`[Welcome Message] Using CEO ID from environment variable: ${ceoId}`);
+        
+        // Verify this user exists and has the correct username
+        try {
+          const clerkCeo = await clerkClient.users.getUser(ceoId);
+          if (clerkCeo.username === "amin.ceo") {
+            // Ensure CEO exists in Supabase
+            try {
+              await ensureUserExists(ceoId, clerkCeo);
+              console.log(`[Welcome Message] Synced CEO to Supabase`);
+            } catch (syncError) {
+              console.error(`[Welcome Message] Failed to sync CEO to Supabase:`, syncError);
+            }
+          } else {
+            console.error(`[Welcome Message] CEO_CLERK_ID doesn't match username 'amin.ceo'. Found username: ${clerkCeo.username}`);
+            ceoId = null; // Reset and try other methods
+          }
+        } catch (verifyError: any) {
+          console.error(`[Welcome Message] Error verifying CEO from env var:`, verifyError?.message);
+          ceoId = null; // Reset and try other methods
+        }
+      }
+      
+      // Method 2: Search through Clerk users (if env var didn't work)
+      if (!ceoId && process.env.CLERK_SECRET_KEY) {
+        try {
+          console.log(`[Welcome Message] Searching Clerk users for username 'amin.ceo'...`);
+          
+          // Search through users in batches (Clerk doesn't support username filtering)
+          let foundCeo = null;
+          let offset = 0;
+          const limit = 500;
+          let hasMore = true;
+          
+          while (hasMore && !foundCeo && offset < 5000) { // Limit search to first 5000 users
+            const clerkUsersResponse = await clerkClient.users.getUserList({ 
+              limit,
+              offset,
+            });
+            
+            // Handle both response formats: { data: User[] } or User[]
+            const clerkUsers = Array.isArray(clerkUsersResponse) 
+              ? clerkUsersResponse 
+              : (clerkUsersResponse as any).data || [];
+            
+            if (clerkUsers && clerkUsers.length > 0) {
+              foundCeo = clerkUsers.find((u: any) => u.username === "amin.ceo");
+              if (foundCeo && foundCeo.id) {
+                const foundCeoId = foundCeo.id;
+                ceoId = foundCeoId;
+                console.log(`[Welcome Message] Found CEO in Clerk (offset ${offset}): ${foundCeoId}`);
+                
+                // Ensure CEO exists in Supabase
+                try {
+                  await ensureUserExists(foundCeoId, foundCeo);
+                  console.log(`[Welcome Message] Synced CEO to Supabase`);
+                } catch (syncError) {
+                  console.error(`[Welcome Message] Failed to sync CEO to Supabase:`, syncError);
+                }
+                break;
+              }
+              
+              hasMore = clerkUsers.length === limit;
+              offset += limit;
+            } else {
+              hasMore = false;
+            }
+          }
+          
+          if (!foundCeo) {
+            console.error(`[Welcome Message] CEO user 'amin.ceo' not found in Clerk after searching ${offset} users`);
+          }
+        } catch (clerkError: any) {
+          console.error(`[Welcome Message] Error searching Clerk for CEO:`, clerkError?.message || clerkError);
+        }
+      }
+    }
+
+    if (!ceoId) {
+      console.error(`[Welcome Message] CEO user 'amin.ceo' not found in Supabase or Clerk. Cannot send welcome message.`);
+      return;
+    }
+
+    // Do not send a welcome message to the CEO account itself
+    if (ceoId === newUserId) {
+      console.log(`[Welcome Message] Skipping welcome message - new user is the CEO`);
+      return;
+    }
+
+    console.log(`[Welcome Message] Creating conversation between CEO (${ceoId}) and new user (${newUserId})`);
+    
+    // Ensure there is a conversation between CEO and the new user
+    const conversationId = await getOrCreateConversation(ceoId, newUserId);
+    console.log(`[Welcome Message] Conversation created/found: ${conversationId}`);
+
+    // Send a personal welcome message from the CEO
+    const welcomeMessage =
+      "Hey, welcome to Codeown! I'm Amin, the CEO & Founder (amin.ceo). " +
+      "Great to have you here — if you have any questions or feedback, just reply to this message.";
+
+    console.log(`[Welcome Message] Inserting welcome message into conversation ${conversationId}`);
+    const { data: insertedMessage, error: messageError } = await supabase
+      .from("messages")
+      .insert({
+        conversation_id: conversationId,
+        sender_id: ceoId,
+        content: welcomeMessage,
+      })
+      .select()
+      .single();
+
+    if (messageError) {
+      console.error(`[Welcome Message] Error creating CEO welcome message:`, messageError);
+      return;
+    }
+    
+    console.log(`[Welcome Message] Welcome message created successfully:`, insertedMessage?.id);
+
+    // Create a notification so the new user clearly sees the welcome
+    console.log(`[Welcome Message] Creating notification for new user`);
+    const { error: notifError } = await supabase
+      .from("notifications")
+      .insert({
+        user_id: newUserId,
+        type: "message",
+        actor_id: ceoId,
+        read: false,
+      });
+
+    if (notifError) {
+      console.error(`[Welcome Message] Error creating CEO welcome notification:`, notifError);
+    } else {
+      console.log(`[Welcome Message] Notification created successfully`);
+    }
+    
+    console.log(`[Welcome Message] Welcome experience completed successfully for user ${newUserId}`);
+  } catch (error: any) {
+    console.error(`[Welcome Message] Unexpected error creating welcome experience for new user:`, error?.message || error);
+    console.error(`[Welcome Message] Full error stack:`, error);
+  }
+}
 
 
 // Ensure user exists in Supabase (create if doesn't exist)
@@ -133,6 +299,13 @@ export async function ensureUserExists(userId: string, userData?: any) {
 
   console.log("User created successfully:", newUser);
 
+  // Create a CEO welcome DM + notification for this brand new user
+  try {
+    await createWelcomeExperienceForNewUser(userId);
+  } catch (welcomeError) {
+    console.error("Error during CEO welcome experience:", welcomeError);
+  }
+
   // Send welcome email if email exists
   if (userInfo.email) {
     // We don't await this to avoid delaying the response
@@ -210,7 +383,7 @@ export async function getUserProfile(req: Request, res: Response) {
         } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
           const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
           if (emailAddress) {
-            userName = emailAddress.split("@")[0]; // Use email username as fallback
+            userName = emailAddress.split("@")[0] || null; // Use email username as fallback
           }
         }
 
@@ -455,9 +628,9 @@ export async function updateUserProfile(req: Request, res: Response) {
     }
 
     // Update in Clerk if name or username changed
-    if (process.env.CLERK_SECRET_KEY && (name || username)) {
+    if (process.env.CLERK_SECRET_KEY && userId && (name || username)) {
       try {
-        const updateClerkData: any = {};
+        const updateClerkData: Record<string, string> = {};
         if (name) {
           const nameParts = name.split(" ");
           updateClerkData.firstName = nameParts[0] || "";
@@ -467,8 +640,9 @@ export async function updateUserProfile(req: Request, res: Response) {
           updateClerkData.username = username;
         }
 
-        if (Object.keys(updateClerkData).length > 0) {
-          await clerkClient.users.updateUser(userId, updateClerkData);
+        const hasUpdates = Object.keys(updateClerkData).length > 0;
+        if (hasUpdates && userId) {
+          await clerkClient.users.updateUser(userId, updateClerkData as any);
         }
       } catch (clerkError) {
         console.error("Error updating Clerk user:", clerkError);
@@ -512,6 +686,10 @@ export async function pinPost(req: Request, res: Response) {
       return res.json({ success: true, message: "Post unpinned" });
     }
 
+    if (!postId) {
+      return res.status(400).json({ error: "Post ID is required" });
+    }
+    
     const postIdNum = parseInt(postId, 10);
     if (isNaN(postIdNum)) {
       return res.status(400).json({ error: "Invalid post ID" });

@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 
 // Helper to ensure conversation exists or create one
-async function getOrCreateConversation(user1Id: string, user2Id: string) {
+export async function getOrCreateConversation(user1Id: string, user2Id: string) {
     // 1. Check if conversation already exists between these two
     // logic: find conversation_id where participants = [user1, user2]
     // This is a bit complex in SQL/Supabase client without stored procedures, 

@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
-import WelcomeCard from "../components/WelcomeCard";
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -111,9 +110,6 @@ export default function Feed() {
   return (
     <main className="container" style={{ padding: "40px 20px", minHeight: "100vh" }}>
       <div style={{ maxWidth: "640px", margin: "0 auto" }}>
-        {page === 1 && !selectedTag && (feedFilter === "all" || feedFilter === "following") && (
-          <WelcomeCard />
-        )}
         <header className="fade-in slide-up" style={{
           marginBottom: "40px",
           display: "flex",
