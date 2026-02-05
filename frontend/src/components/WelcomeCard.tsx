@@ -1,6 +1,6 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFaceLaughWink, faRocket, faAdd, faHeart, } from "@fortawesome/free-solid-svg-icons";
+import { faThumbtack, faRocket, faAdd, faHeart, } from "@fortawesome/free-solid-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 export default function WelcomeCard() {
@@ -53,7 +53,7 @@ export default function WelcomeCard() {
                         fontSize: "18px",
                         boxShadow: "0 8px 16px rgba(54, 65, 130, 0.2)"
                     }}>
-                        <FontAwesomeIcon icon={faFaceLaughWink} />
+                        <FontAwesomeIcon icon={faThumbtack} />
                     </div>
                     <div>
                         <h2 style={{

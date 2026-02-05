@@ -132,7 +132,6 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
   const avatarUrl = post.user?.avatar_url ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user?.name || post.user?.username || "User")}&background=000&color=ffffff&size=64`;
   const userName = post.user?.name || post.user?.username || "User";
-
   return (
     <>
       <div

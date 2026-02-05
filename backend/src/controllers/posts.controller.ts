@@ -5,12 +5,22 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function getPosts(req: Request, res: Response) {
   try {
-    const { page = "1", limit = "20", filter = "all", tag } = req.query;
+    const { page = "1", limit = "20", filter = "all", tag, lang } = req.query;
+    console.log("getPosts query params:", { page, limit, filter, tag, lang });
+
     const pageNum = parseInt(page as string, 10) || 1;
     const limitNum = parseInt(limit as string, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
 
     let postsQuery = supabase.from("posts").select("*", { count: "exact" }).order("created_at", { ascending: false });
+
+    if (lang && typeof lang === 'string' && lang.trim().length > 0) {
+      const languageCode = lang.toLowerCase().trim();
+      console.log(`Applying language filter: '${languageCode}'`);
+
+      // Filter strictly by the language column
+      postsQuery = postsQuery.eq("language", languageCode);
+    }
 
     if (tag) {
       postsQuery = postsQuery.contains("tags", [tag]);
@@ -474,7 +484,7 @@ export async function getPostsByUser(req: Request, res: Response) {
 export async function createPost(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { title, content, images, tags } = req.body;
+    const { title, content, images, tags, language } = req.body;
 
     // Validate input
     if (!title || title.trim().length === 0) {
@@ -551,18 +561,28 @@ export async function createPost(req: Request, res: Response) {
       // Continue anyway - user might already exist, or we'll fetch from Clerk when displaying posts
     }
 
-    console.log("Creating post with:", { title, content, userId });
+    // Validate and sanitize language
+    let langCode = "en";
+    if (language) {
+      const rawLang = String(language).toLowerCase().trim();
+      if (rawLang === "ar" || rawLang === "arabic") {
+        langCode = "ar";
+      } else if (rawLang === "en" || rawLang === "english") {
+        langCode = "en";
+      }
+      // If it's neither, keep default "en"
+    }
 
-    // Note: user_id column in Supabase must be TEXT/VARCHAR, not UUID
-    // Clerk user IDs are strings like "user_xxxxx", not UUIDs
-    // images column should be JSONB or TEXT[] type in the database
+    console.log(`[CreatePost] Final language choice: '${langCode}' (Input was: '${language}')`);
+
     const { data, error } = await supabase.from("posts").insert({
       title: title.trim(),
       content: content.trim(),
-      user_id: userId, // This should be TEXT type in the database
-      images: imageUrls.length > 0 ? imageUrls : null, // Store as JSON array
-      tags: allTags.length > 0 ? allTags : null, // Store as TEXT array
-    });
+      user_id: userId,
+      images: imageUrls.length > 0 ? imageUrls : null,
+      tags: allTags.length > 0 ? allTags : null,
+      language: langCode,
+    }).select().single();
 
     if (error) {
       console.error("Supabase error:", error);
@@ -589,7 +609,7 @@ export async function updatePost(req: Request, res: Response) {
   try {
     const user = req.user;
     const { id } = req.params;
-    const { title, content, images } = req.body;
+    const { title, content, images, language } = req.body;
 
     const userId = user?.sub || user?.id || user?.userId;
 
@@ -625,6 +645,12 @@ export async function updatePost(req: Request, res: Response) {
     const updateData: any = {};
     if (title !== undefined) updateData.title = title.trim();
     if (content !== undefined) updateData.content = content.trim();
+    if (language !== undefined) {
+      const rawLang = String(language).toLowerCase().trim();
+      const langCode = (rawLang === "ar" || rawLang === "arabic") ? "ar" : "en";
+      updateData.language = langCode;
+      console.log(`[UpdatePost] Updating language to: '${langCode}' (Input was: '${language}')`);
+    }
     if (images !== undefined) {
       if (Array.isArray(images)) {
         const imageUrls = images.filter((img: any) => typeof img === "string" && img.trim().length > 0);

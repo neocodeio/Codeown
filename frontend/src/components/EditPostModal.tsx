@@ -4,6 +4,7 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { normalizeLanguage } from "../utils/language";
 
 interface EditPostModalProps {
   isOpen: boolean;
@@ -13,14 +14,18 @@ interface EditPostModalProps {
     id: number;
     title: string;
     content: string;
+
     images?: string[] | null;
+    language?: "en" | "ar";
   };
 }
 
 export default function EditPostModal({ isOpen, onClose, onUpdated, post }: EditPostModalProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+
   const [images, setImages] = useState<string[]>([]);
+  const [language, setLanguage] = useState<"en" | "ar">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
 
@@ -28,7 +33,9 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
     if (isOpen && post) {
       setTitle(post.title || "");
       setContent(post.content || "");
+
       setImages(post.images || []);
+      setLanguage(normalizeLanguage(post.language));
     }
   }, [isOpen, post]);
 
@@ -87,17 +94,18 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
         return;
       }
 
-      await api.put(
-        `/posts/${post.id}`,
-        { 
-          title: title.trim(), 
-          content: content.trim(),
-          images: images.length > 0 ? images : null,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const payload = {
+        title: title.trim(),
+        content: content.trim(),
+        images: images.length > 0 ? images : null,
+        language: normalizeLanguage(language),
+      };
+
+      console.log("Submitting edit payload:", payload);
+
+      await api.put(`/posts/${post.id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       onUpdated();
       onClose();
@@ -284,6 +292,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                 }}
                 autoFocus
               />
+
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}

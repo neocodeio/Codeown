@@ -17,6 +17,7 @@ export default function Feed() {
   const [page, setPage] = useState(1);
   const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
   const [selectedTag, setSelectedTag] = useState<string>("");
+  const [selectedLang, setSelectedLang] = useState<"en" | "ar" | "">("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -27,7 +28,7 @@ export default function Feed() {
   const postsPage = feedType === 'posts' ? page : 1;
   const projectsPage = feedType === 'projects' ? page : 1;
 
-  const { posts, loading: postsLoading, fetchPosts, hasMore: postsHasMore } = usePosts(postsPage, 20, feedFilter, getToken, selectedTag);
+  const { posts, loading: postsLoading, fetchPosts, hasMore: postsHasMore } = usePosts(postsPage, 20, feedFilter, getToken, selectedTag, selectedLang || undefined);
   const { projects, loading: projectsLoading, fetchProjects, hasMore: projectsHasMore } = useProjects(projectsPage, 20, feedFilter, getToken, selectedTag);
 
   const loading = feedType === "posts" ? postsLoading : projectsLoading;
@@ -51,11 +52,16 @@ export default function Feed() {
   // Reset page when switching views or tags
   useEffect(() => {
     setPage(1);
+    // Explicitly re-fetch if not triggered by the hook dependencies automatically (safety net)
+    if (feedType === "posts") {
+      // The hook dependency [selectedLang] will trigger the fetch, but we ensure page is 1 first
+    }
+
     // If we switch to posts while on contributors filter, reset to all
     if (feedType === "posts" && feedFilter === "contributors") {
       setFeedFilter("all");
     }
-  }, [feedType, feedFilter, selectedTag]);
+  }, [feedType, feedFilter, selectedTag, selectedLang]);
 
   useEffect(() => {
     const handlePostCreated = () => {
@@ -350,7 +356,7 @@ export default function Feed() {
                 We couldn't find any {feedType} matching your current filters. Try selecting different tags or check back later!
               </p>
               <button
-                onClick={() => { setSelectedTag(""); setFeedFilter("all"); }}
+                onClick={() => { setSelectedTag(""); setFeedFilter("all"); setSelectedLang(""); }}
                 style={{
                   marginTop: "24px",
                   padding: "10px 20px",

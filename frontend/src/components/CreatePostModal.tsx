@@ -5,7 +5,8 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faCode } from "@fortawesome/free-solid-svg-icons";
 import MentionInput from "./MentionInput";
-
+import { normalizeLanguage } from "../utils/language";
+ 
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,6 +19,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   const [images, setImages] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [language, setLanguage] = useState<"en" | "ar">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
 
@@ -27,6 +29,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
       setTitle("");
       setContent("");
       setImages([]);
+      setLanguage("en");
       setIsSubmitting(false);
     }
   }, [isOpen]);
@@ -103,18 +106,19 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
       const contentTags = content.match(hashtagRegex)?.map((tag) => tag.substring(1).toLowerCase()) || [];
       const allTags = [...new Set([...tags, ...contentTags])].slice(0, 10);
 
-      await api.post(
-        "/posts",
-        {
-          title: title.trim(),
-          content: content.trim(),
-          images: images.length > 0 ? images : null,
-          tags: allTags.length > 0 ? allTags : null,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const payload = {
+        title: title.trim(),
+        content: content.trim(),
+        images: images.length > 0 ? images : null,
+        tags: allTags.length > 0 ? allTags : null,
+        language: normalizeLanguage(language),
+      };
+
+      console.log("Submitting post payload:", payload);
+
+      await api.post("/posts", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setTitle("");
       setContent("");
@@ -363,13 +367,14 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 }}
                 autoFocus
               />
+              
               <MentionInput
                 value={content}
                 onChange={setContent}
                 placeholder="What's on your mind? (Use @ to mention users, ``` for code blocks)"
                 minHeight="150px"
               />
-              
+
               {/* Code block helper */}
               <div style={{
                 display: "flex",
