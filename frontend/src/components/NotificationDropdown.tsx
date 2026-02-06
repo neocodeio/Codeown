@@ -75,64 +75,67 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
     }
   };
 
-
-  if (!isSignedIn) return null;
-
   return (
     <div ref={dropdownRef} style={{ position: "relative" }}>
       {props.renderTrigger ? (
-        props.renderTrigger(() => setIsOpen(!isOpen), unreadCount, isOpen)
+        props.renderTrigger(
+          () => setIsOpen(!isOpen),
+          unreadCount || 0,
+          isOpen
+        )
       ) : (
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          style={{
-            position: "relative",
-            padding: "9px",
-            backgroundColor: "#fff",
-            border: "none",
-            cursor: "pointer",
-            borderRadius: "12px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "20px",
-            color: "#364182",
-          }}
-        >
-          <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px", color: "#364182" }} />
-          {unreadCount > 0 && (
-            <span
-              style={{
-                position: "absolute",
-                top: "0",
-                right: "0",
-                backgroundColor: "#dc2626",
-                color: "#ffffff",
-                borderRadius: "50%",
-                width: "18px",
-                height: "18px",
-                fontSize: "11px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: 600,
-              }}
-            >
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </span>
-          )}
-        </button>
+        isSignedIn && (
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            style={{
+              position: "relative",
+              padding: "9px",
+              backgroundColor: "#fff",
+              border: "none",
+              cursor: "pointer",
+              borderRadius: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "20px",
+              color: "#364182",
+            }}
+          >
+            <FontAwesomeIcon icon={faBell} />
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  backgroundColor: "#2563eb",
+                  color: "#fff",
+                  borderRadius: "50%",
+                  width: "18px",
+                  height: "18px",
+                  fontSize: "11px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: 600,
+                }}
+              >
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+        )
       )}
 
       {isOpen && (
         <div
           style={{
             position: isMobile ? "fixed" : "absolute",
-            top: isMobile ? "70px" : (props.align === "right" ? "0" : "100%"), // If right, align top
-            left: isMobile ? "16px" : (props.align === "right" ? "100%" : "auto"), // If right, place to the right
-            right: isMobile ? "16px" : (props.align === "right" ? "auto" : "0"),
-            marginLeft: props.align === "right" ? "12px" : "0",
-            marginTop: isMobile ? 0 : (props.align === "right" ? "0" : "8px"),
+            top: isMobile ? "auto" : (props.align === "bottom" ? "calc(100% + 12px)" : "0"), // Mobile: auto top
+            bottom: isMobile ? "90px" : (props.align === "bottom" ? "auto" : "auto"), // Mobile: above tab bar
+            left: isMobile ? "10px" : (props.align === "right" ? "auto" : "0"),
+            right: isMobile ? "10px" : (props.align === "right" ? "calc(100% + 12px)" : "0"), // Right align logic
+            marginTop: props.align === "bottom" ? "0" : "0",
             width: isMobile ? "auto" : "360px",
             maxHeight: isMobile ? "calc(100vh - 100px)" : "500px",
             backgroundColor: "#ffffff",
@@ -145,40 +148,25 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
             flexDirection: "column",
           }}
         >
-          <div
-            style={{
-              padding: "16px",
-              borderBottom: "1px solid #e4e7eb",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#1a1a1a" }}>
-              Notifications
-            </h3>
+          <div style={{ padding: "16px", borderBottom: "1px solid #e4e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "#1e293b" }}>Notifications</h3>
             {unreadCount > 0 && (
               <button
-                onClick={() => markAsRead("all")}
-                style={{
-                  padding: "4px 12px",
-                  backgroundColor: "transparent",
-                  border: "1px solid #e4e7eb",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                  cursor: "pointer",
-                  color: "#64748b",
+                onClick={(e) => {
+                  e.stopPropagation();
+                  notifications.forEach(n => !n.read && markAsRead(n.id));
                 }}
+                style={{ background: "none", border: "none", color: "#3b82f6", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
               >
-                Mark all read
+                Mark all as read
               </button>
             )}
           </div>
-
           <div style={{ overflowY: "auto", flex: 1 }}>
             {notifications.length === 0 ? (
-              <div style={{ padding: "40px", textAlign: "center", color: "#64748b" }}>
-                No notifications yet
+              <div style={{ padding: "40px 20px", textAlign: "center", color: "#94a3b8" }}>
+                <FontAwesomeIcon icon={faBell} style={{ fontSize: "24px", marginBottom: "12px", opacity: 0.5 }} />
+                <p style={{ margin: 0, fontSize: "14px" }}>No notifications yet</p>
               </div>
             ) : (
               notifications.map((notification) => (
@@ -186,53 +174,54 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
                   style={{
-                    padding: "12px 16px",
-                    borderBottom: "1px solid #f5f7fa",
+                    padding: "16px",
+                    borderBottom: "1px solid #f1f5f9",
                     cursor: "pointer",
-                    backgroundColor: notification.read ? "transparent" : "#f0f7ff",
+                    backgroundColor: notification.read ? "#fff" : "#f8fafc",
                     transition: "background-color 0.2s",
+                    display: "flex",
+                    gap: "12px",
+                    alignItems: "flex-start"
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = notification.read ? "#f5f7fa" : "#e0f2fe";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = notification.read ? "transparent" : "#f0f7ff";
-                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = notification.read ? "#fff" : "#f8fafc"}
                 >
-                  <div style={{ display: "flex", gap: "12px" }}>
+                  <div style={{ position: "relative" }}>
                     <img
-                      src={
-                        notification.actor?.avatar_url ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(notification.actor?.name || "User")}&background=000&color=ffffff&size=64`
-                      }
-                      alt={notification.actor?.name}
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                      }}
+                      src={notification.actor?.avatar_url || "https://via.placeholder.com/40"}
+                      alt=""
+                      style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }}
                     />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: "14px", color: "#1a1a1a", marginBottom: "4px" }}>
-                        {getNotificationMessage(notification)}
-                      </div>
-                      <div style={{ fontSize: "12px", color: "#64748b" }}>
-                        {formatRelativeDate(notification.created_at)}
-                      </div>
+                    {/* Icon Badge based on type */}
+                    <div style={{
+                      position: "absolute",
+                      bottom: "-2px",
+                      right: "-2px",
+                      width: "18px",
+                      height: "18px",
+                      borderRadius: "50%",
+                      backgroundColor: "#3b82f6",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #fff",
+                      fontSize: "10px",
+                      color: "#fff"
+                    }}>
+                      <FontAwesomeIcon icon={faBell} />
                     </div>
-                    {!notification.read && (
-                      <div
-                        style={{
-                          width: "8px",
-                          height: "8px",
-                          borderRadius: "50%",
-                          backgroundColor: "#2563eb",
-                          marginTop: "16px",
-                        }}
-                      />
-                    )}
                   </div>
+                  <div>
+                    <p style={{ margin: "0 0 4px", fontSize: "14px", color: "#1e293b", lineHeight: "1.4" }}>
+                      {getNotificationMessage(notification)}
+                    </p>
+                    <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8" }}>
+                      {formatRelativeDate(notification.created_at)}
+                    </p>
+                  </div>
+                  {!notification.read && (
+                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", marginTop: "6px" }} />
+                  )}
                 </div>
               ))
             )}
