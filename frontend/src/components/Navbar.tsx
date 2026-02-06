@@ -205,74 +205,79 @@ export default function Navbar() {
 
         {/* Profile Card */}
         {isSignedIn && user ? (
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "12px",
-            backgroundColor: "#fff",
-            border: "1px solid #e2e8f0",
-            borderRadius: "16px",
-            position: "relative",
-            boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
-          }}>
-            <img
-              src={userAvatarUrl || user.imageUrl}
-              alt="Profile"
-              style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }}
-            />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {user.fullName || user.username}
-              </div>
-              <div style={{ color: "#64748b", fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                @{user.username}
-              </div>
-            </div>
-
-            {/* 3 Dots Menu */}
-            <div ref={logoutRef} style={{ position: "relative" }}>
-              <button
-                onClick={() => setIsLogoutOpen(!isLogoutOpen)}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: "8px" }}
-              >
-                <HugeiconsIcon icon={MoreHorizontalIcon} />
-              </button>
-
-              {isLogoutOpen && (
-                <div style={{
-                  position: "absolute",
-                  bottom: "100%",
-                  right: 0,
-                  marginBottom: "8px",
-                  backgroundColor: "#fff",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                  padding: "6px",
-                  minWidth: "140px",
-                  zIndex: 100
-                }}>
-                  <button
-                    onClick={() => signOut()}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "10px",
-                      width: "100%", padding: "10px",
-                      background: "none", border: "none",
-                      color: "#ef4444", fontWeight: 600, fontSize: "14px",
-                      cursor: "pointer", borderRadius: "8px",
-                      textAlign: "left"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fef2f2"}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                  >
-                    <HugeiconsIcon icon={Logout01Icon} />
-                    Logout
-                  </button>
+          <>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "12px",
+              backgroundColor: "#fff",
+              border: "1px solid #e2e8f0",
+              borderRadius: "16px",
+              position: "relative",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
+            }}>
+              <img
+                src={userAvatarUrl || user.imageUrl}
+                alt="Profile"
+                style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {user.fullName || user.username}
                 </div>
-              )}
+                <div style={{ color: "#64748b", fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  @{user.username}
+                </div>
+              </div>
+
+              {/* 3 Dots Menu */}
+              <div ref={logoutRef} style={{ position: "relative" }}>
+                <button
+                  onClick={() => setIsLogoutOpen(!isLogoutOpen)}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: "8px" }}
+                >
+                  <HugeiconsIcon icon={MoreHorizontalIcon} />
+                </button>
+
+                {isLogoutOpen && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "100%",
+                    right: 0,
+                    marginBottom: "8px",
+                    backgroundColor: "#fff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                    padding: "6px",
+                    minWidth: "140px",
+                    zIndex: 100
+                  }}>
+                    <button
+                      onClick={() => signOut()}
+                      style={{
+                        display: "flex", alignItems: "center", gap: "10px",
+                        width: "100%", padding: "10px",
+                        background: "none", border: "none",
+                        color: "#ef4444", fontWeight: 600, fontSize: "14px",
+                        cursor: "pointer", borderRadius: "8px",
+                        textAlign: "left"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fef2f2"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <HugeiconsIcon icon={Logout01Icon} />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+            <div style={{ marginTop: "12px", fontSize: "11px", color: "#94a3b8", textAlign: "center" }}>
+              © 2026 Codeown.
+            </div>
+          </>
         ) : (
           <Link to="/sign-in" style={{ textDecoration: "none" }}>
             <button style={{ width: "100%", padding: "12px", backgroundColor: "#364182", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 600, cursor: "pointer" }}>
