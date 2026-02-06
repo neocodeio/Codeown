@@ -7,18 +7,22 @@ import CreatePostModal from "./CreatePostModal";
 import ProjectModal from "./ProjectModal";
 import NotificationDropdown from "./NotificationDropdown";
 import api from "../api/axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  faHome,
-  faSearch,
-  faEnvelope,
-  faRocket,
-  faUser,
-  faEllipsisH,
-  faSignOutAlt,
-  faPlus,
-  faBell
-} from "@fortawesome/free-solid-svg-icons";
+  Home01Icon,
+  Search01Icon,
+  Message01Icon,
+  Rocket01Icon,
+  UserIcon,
+  Notification01Icon,
+  Add01Icon,
+  Logout01Icon,
+  MoreHorizontalIcon,
+  // faEllipsisH,
+  // faSignOutAlt,
+  // faPlus,
+  // faBell
+} from '@hugeicons/core-free-icons';
 import logo from "../assets/icon-remove.png";
 
 export default function Navbar() {
@@ -96,17 +100,17 @@ export default function Navbar() {
       {/* Nav Links */}
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: "4px" }}>
         <Link to="/" style={linkStyle("/")}>
-          <FontAwesomeIcon icon={faHome} style={{ width: "20px" }} />
+          <HugeiconsIcon icon={Home01Icon} style={{ width: "20px" }} />
           Feed
         </Link>
         <Link to="/search" style={linkStyle("/search")}>
-          <FontAwesomeIcon icon={faSearch} style={{ width: "20px" }} />
+          <HugeiconsIcon icon={Search01Icon} style={{ width: "20px" }} />
           Search
         </Link>
         {isSignedIn && (
           <>
             <Link to="/messages" style={linkStyle("/messages")}>
-              <FontAwesomeIcon icon={faEnvelope} style={{ width: "20px" }} />
+              <HugeiconsIcon icon={Message01Icon} style={{ width: "20px" }} />
               Messages
             </Link>
 
@@ -130,7 +134,7 @@ export default function Navbar() {
                   }}
                 >
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <FontAwesomeIcon icon={faBell} style={{ width: "20px" }} />
+                    <HugeiconsIcon icon={Notification01Icon} style={{ width: "20px" }} />
                     {unreadCount > 0 && (
                       <span style={{
                         position: "absolute",
@@ -163,7 +167,7 @@ export default function Navbar() {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
             >
-              <FontAwesomeIcon icon={faPlus} style={{ width: "20px" }} />
+              <HugeiconsIcon icon={Add01Icon} style={{ width: "20px" }} />
               Create Post
             </div>
 
@@ -173,12 +177,12 @@ export default function Navbar() {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
             >
-              <FontAwesomeIcon icon={faRocket} style={{ width: "20px" }} />
+              <HugeiconsIcon icon={Rocket01Icon} style={{ width: "20px" }} />
               Launch Project
             </div>
 
             <Link to="/profile" style={linkStyle("/profile")}>
-              <FontAwesomeIcon icon={faUser} style={{ width: "20px" }} />
+              <HugeiconsIcon icon={UserIcon} style={{ width: "20px" }} />
               Profile
             </Link>
           </>
@@ -232,7 +236,7 @@ export default function Navbar() {
                 onClick={() => setIsLogoutOpen(!isLogoutOpen)}
                 style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: "8px" }}
               >
-                <FontAwesomeIcon icon={faEllipsisH} />
+                <HugeiconsIcon icon={MoreHorizontalIcon} />
               </button>
 
               {isLogoutOpen && (
@@ -262,7 +266,7 @@ export default function Navbar() {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fef2f2"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
-                    <FontAwesomeIcon icon={faSignOutAlt} />
+                    <HugeiconsIcon icon={Logout01Icon} />
                     Logout
                   </button>
                 </div>
@@ -326,11 +330,11 @@ export default function Navbar() {
         boxSizing: "border-box" // Ensure padding is included in width
       }}>
         <Link to="/" style={{ color: location.pathname === "/" ? "#364182" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
-          <FontAwesomeIcon icon={faHome} style={{ fontSize: "20px" }} />
+          <HugeiconsIcon icon={Home01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
         <Link to="/search" style={{ color: location.pathname === "/search" ? "#364182" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
-          <FontAwesomeIcon icon={faSearch} style={{ fontSize: "20px" }} />
+          <HugeiconsIcon icon={Search01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
         <div style={{ position: "relative", flex: 1, display: "flex", justifyContent: "center" }}>
@@ -340,7 +344,7 @@ export default function Navbar() {
             boxShadow: "0 8px 20px rgba(54, 65, 130, 0.4)", cursor: "pointer", position: "absolute", top: 0,
             transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s"
           }}>
-            <FontAwesomeIcon icon={faPlus} style={{ fontSize: "20px" }} />
+            <HugeiconsIcon icon={Add01Icon} style={{ fontSize: "20px" }} />
           </div>
 
           {/* Create Menu - Absolute positioned above button */}
@@ -367,7 +371,7 @@ export default function Navbar() {
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
               >
                 <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#eef2ff", color: "#364182", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <FontAwesomeIcon icon={faPlus} />
+                  <HugeiconsIcon icon={Add01Icon} />
                 </div>
                 Create Post
               </div>
@@ -378,7 +382,7 @@ export default function Navbar() {
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
               >
                 <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#eef2ff", color: "#364182", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <FontAwesomeIcon icon={faRocket} />
+                  <HugeiconsIcon icon={Rocket01Icon} />
                 </div>
                 Launch Project
               </div>
@@ -394,7 +398,7 @@ export default function Navbar() {
             align="bottom"
             renderTrigger={(toggleOpen, unreadCount, isOpen) => (
               <div onClick={toggleOpen} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", color: isOpen ? "#364182" : "#94a3b8" }}>
-                <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px" }} />
+                <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
                 {unreadCount > 0 && (
                   <span style={{ position: "absolute", top: "-2px", right: "-2px", width: "8px", height: "8px", background: "#ef4444", borderRadius: "50%", border: "2px solid #fff" }} />
                 )}
@@ -407,7 +411,7 @@ export default function Navbar() {
           {userAvatarUrl ? (
             <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname === "/profile" ? "2px solid #364182" : "none", objectFit: "cover" }} />
           ) : (
-            <FontAwesomeIcon icon={faUser} style={{ fontSize: "20px" }} />
+            <HugeiconsIcon icon={UserIcon} style={{ fontSize: "20px" }} />
           )}
         </Link>
       </div>

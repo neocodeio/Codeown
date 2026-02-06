@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Notification01Icon } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 
 interface NotificationDropdownProps {
@@ -101,7 +101,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               color: "#364182",
             }}
           >
-            <FontAwesomeIcon icon={faBell} />
+            <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
             {unreadCount > 0 && (
               <span
                 style={{
@@ -165,7 +165,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
           <div style={{ overflowY: "auto", flex: 1 }}>
             {notifications.length === 0 ? (
               <div style={{ padding: "40px 20px", textAlign: "center", color: "#94a3b8" }}>
-                <FontAwesomeIcon icon={faBell} style={{ fontSize: "24px", marginBottom: "12px", opacity: 0.5 }} />
+                <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "24px", marginBottom: "12px", opacity: 0.5 }} />
                 <p style={{ margin: 0, fontSize: "14px" }}>No notifications yet</p>
               </div>
             ) : (
@@ -208,7 +208,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       fontSize: "10px",
                       color: "#fff"
                     }}>
-                      <FontAwesomeIcon icon={faBell} />
+                      <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "10px" }} />
                     </div>
                   </div>
                   <div>
