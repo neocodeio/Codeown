@@ -132,12 +132,12 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
           style={{
             position: isMobile ? "fixed" : "absolute",
             top: isMobile ? "auto" : (props.align === "bottom" ? "calc(100% + 12px)" : "0"), // Mobile: auto top
-            bottom: isMobile ? "90px" : (props.align === "bottom" ? "auto" : "auto"), // Mobile: above tab bar
-            left: isMobile ? "10px" : (props.align === "right" ? "auto" : "0"),
-            right: isMobile ? "10px" : (props.align === "right" ? "calc(100% + 12px)" : "0"), // Right align logic
-            marginTop: props.align === "bottom" ? "0" : "0",
+            bottom: isMobile ? "90px" : "auto", // Mobile: above tab bar, Desktop: auto
+            left: isMobile ? "10px" : (props.align === "right" ? "100%" : "0"), // Desktop Right: Pop to right
+            right: isMobile ? "10px" : "auto", // Desktop: Auto width
+            marginLeft: (!isMobile && props.align === "right") ? "12px" : "0",
             width: isMobile ? "auto" : "360px",
-            maxHeight: isMobile ? "calc(100vh - 100px)" : "500px",
+            maxHeight: isMobile ? "calc(100vh - 200px)" : "min(500px, 80vh)", // Responsive height
             backgroundColor: "#ffffff",
             borderRadius: "16px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
