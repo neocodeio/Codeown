@@ -4,6 +4,7 @@ import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faComment } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@clerk/clerk-react";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 
 export default function FeedbackButton() {
@@ -16,6 +17,9 @@ export default function FeedbackButton() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const { user } = useUser();
+
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   const reset = () => {
     setFullName(user?.fullName || "");
@@ -285,8 +289,8 @@ export default function FeedbackButton() {
         }}
         style={{
           position: "fixed",
-          bottom: "24px",
-          left: "24px",
+          bottom: isMobile ? "90px" : "24px",
+          right: "24px",
           zIndex: 900,
           width: "56px",
           height: "56px",

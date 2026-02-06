@@ -7,7 +7,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { formatRelativeDate } from "../utils/date";
 
-export default function NotificationDropdown() {
+interface NotificationDropdownProps {
+  align?: "right" | "bottom";
+  renderTrigger?: (onClick: () => void, unreadCount: number, isOpen: boolean) => React.ReactNode;
+}
+
+export default function NotificationDropdown(props: NotificationDropdownProps) {
   const { notifications, unreadCount, markAsRead } = useNotifications();
   const { isSignedIn } = useClerkAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -75,54 +80,59 @@ export default function NotificationDropdown() {
 
   return (
     <div ref={dropdownRef} style={{ position: "relative" }}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          position: "relative",
-          padding: "9px",
-          backgroundColor: "#fff",
-          border: "none",
-          cursor: "pointer",
-          borderRadius: "12px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "20px",
-          color: "#364182",
-        }}
-      >
-        <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px", color: "#364182" }} />
-        {unreadCount > 0 && (
-          <span
-            style={{
-              position: "absolute",
-              top: "0",
-              right: "0",
-              backgroundColor: "#dc2626",
-              color: "#ffffff",
-              borderRadius: "50%",
-              width: "18px",
-              height: "18px",
-              fontSize: "11px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 600,
-            }}
-          >
-            {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
-        )}
-      </button>
+      {props.renderTrigger ? (
+        props.renderTrigger(() => setIsOpen(!isOpen), unreadCount, isOpen)
+      ) : (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            position: "relative",
+            padding: "9px",
+            backgroundColor: "#fff",
+            border: "none",
+            cursor: "pointer",
+            borderRadius: "12px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "20px",
+            color: "#364182",
+          }}
+        >
+          <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px", color: "#364182" }} />
+          {unreadCount > 0 && (
+            <span
+              style={{
+                position: "absolute",
+                top: "0",
+                right: "0",
+                backgroundColor: "#dc2626",
+                color: "#ffffff",
+                borderRadius: "50%",
+                width: "18px",
+                height: "18px",
+                fontSize: "11px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 600,
+              }}
+            >
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </button>
+      )}
 
       {isOpen && (
         <div
           style={{
             position: isMobile ? "fixed" : "absolute",
-            top: isMobile ? "70px" : "100%",
-            right: isMobile ? "16px" : 0,
-            left: isMobile ? "16px" : "auto",
-            marginTop: isMobile ? 0 : "8px",
+            top: isMobile ? "70px" : (props.align === "right" ? "0" : "100%"), // If right, align top
+            left: isMobile ? "16px" : (props.align === "right" ? "100%" : "auto"), // If right, place to the right
+            right: isMobile ? "16px" : (props.align === "right" ? "auto" : "0"),
+            marginLeft: props.align === "right" ? "12px" : "0",
+            marginTop: isMobile ? 0 : (props.align === "right" ? "0" : "8px"),
             width: isMobile ? "auto" : "360px",
             maxHeight: isMobile ? "calc(100vh - 100px)" : "500px",
             backgroundColor: "#ffffff",

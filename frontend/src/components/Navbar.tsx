@@ -5,65 +5,50 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import CreatePostModal from "./CreatePostModal";
 import ProjectModal from "./ProjectModal";
-import SearchBar from "./SearchBar";
 import NotificationDropdown from "./NotificationDropdown";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faPlus, faUser, faEnvelope, faRocket, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHome,
+  faSearch,
+  faEnvelope,
+  faRocket,
+  faUser,
+  faEllipsisH,
+  faSignOutAlt,
+  faPlus,
+  faBell
+} from "@fortawesome/free-solid-svg-icons";
 import logo from "../assets/icon-remove.png";
-
-
 
 export default function Navbar() {
   const { isLoaded, isSignedIn, user } = useClerkUser();
-  const { getToken } = useClerkAuth();
+  const { getToken, signOut } = useClerkAuth();
   const location = useLocation();
+  const { width } = useWindowSize();
+  const isMobile = width < 768; // Mobile breakpoint
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [isCreateDropdownOpen, setIsCreateDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+
   const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
-  const isTablet = width >= 768 && width < 1024;
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  // Function to close mobile menu
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
+  const logoutRef = useRef<HTMLDivElement>(null);
 
-  const handlePostCreated = () => {
-    window.dispatchEvent(new CustomEvent("postCreated"));
-  };
-
+  // Click outside handlers
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      // Handle mobile menu outside click
-      const clickedOutsideMenu = mobileMenuRef.current && !mobileMenuRef.current.contains(target);
-      const clickedOutsideHamburger = hamburgerRef.current && !hamburgerRef.current.contains(target);
-      if (clickedOutsideMenu && clickedOutsideHamburger) {
-        setIsMobileMenuOpen(false);
-      }
-
-      // Handle create dropdown outside click
-      const createBtn = document.getElementById("create-btn-container");
-      if (createBtn && !createBtn.contains(target)) {
-        setIsCreateDropdownOpen(false);
+      if (logoutRef.current && !logoutRef.current.contains(event.target as Node)) {
+        setIsLogoutOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isMobileMenuOpen]);
+  }, []);
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  // Fetch user avatar from backend
+  // Fetch avatar
   useEffect(() => {
     const fetchUserAvatar = async () => {
       if (!user?.id) return;
@@ -72,574 +57,366 @@ export default function Navbar() {
         const res = await api.get(`/users/${user.id}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        if (res.data?.avatar_url) {
-          setUserAvatarUrl(res.data.avatar_url);
-        }
+        if (res.data?.avatar_url) setUserAvatarUrl(res.data.avatar_url);
       } catch (error) {
-        console.error("Error fetching user avatar:", error);
+        console.error("Error fetching avatar:", error);
       }
     };
-
-    if (isLoaded && isSignedIn && user?.id) {
-      fetchUserAvatar();
-    } else if (isLoaded && !isSignedIn) {
-      setUserAvatarUrl(null);
-    }
+    if (isLoaded && isSignedIn && user?.id) fetchUserAvatar();
   }, [user?.id, isLoaded, isSignedIn, getToken]);
 
-  // Listen for profile updates
-  useEffect(() => {
-    const handleProfileUpdate = async () => {
-      if (!user?.id) return;
-      try {
-        const token = await getToken();
-        const res = await api.get(`/users/${user.id}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (res.data?.avatar_url) {
-          setUserAvatarUrl(res.data.avatar_url);
-        }
-      } catch (error) {
-        console.error("Error refreshing user avatar:", error);
-      }
-    };
+  // Styles
+  const linkStyle = (path: string) => ({
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "12px 16px",
+    borderRadius: "12px",
+    textDecoration: "none",
+    color: location.pathname === path ? "#364182" : "#64748b",
+    backgroundColor: location.pathname === path ? "#eef2ff" : "transparent",
+    fontWeight: location.pathname === path ? 700 : 500,
+    fontSize: "16px",
+    transition: "all 0.2s ease",
+    marginBottom: "4px"
+  });
 
-    window.addEventListener("profileUpdated", handleProfileUpdate);
-    return () => window.removeEventListener("profileUpdated", handleProfileUpdate);
-  }, [user?.id, getToken]);
-
-  // Listen for global modal triggers
-  useEffect(() => {
-    const handleOpenPostModal = () => setIsModalOpen(true);
-    const handleOpenProjectModal = () => setIsProjectModalOpen(true);
-
-    window.addEventListener("openPostModal", handleOpenPostModal);
-    window.addEventListener("openProjectModal", handleOpenProjectModal);
-
-    return () => {
-      window.removeEventListener("openPostModal", handleOpenPostModal);
-      window.removeEventListener("openProjectModal", handleOpenProjectModal);
-    };
-  }, []);
-
-  return (
-    <nav style={{
-      padding: isMobile ? "12px 16px" : isTablet ? "14px 24px" : "16px 40px",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      position: "sticky",
-      top: 0,
-      borderRadius: "20px",
-      zIndex: 1000,
-      backgroundColor: "#849bff",
-      transition: "all 0.2s ease",
-    }}>
-      {/* Left Section */}
-      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : isTablet ? "32px" : "24px", flex: 1 }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: isMobile ? "6px" : "10px", textDecoration: "none" }}>
-          <img
-            src={logo}
-            alt="Codeown"
-            style={{
-              height: isMobile ? "32px" : "40px",
-              width: "auto",
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              objectFit: "contain",
-              cursor: "pointer",
-            }}
-          />
-          <span style={{
-            fontSize: isMobile ? "9px" : isTablet ? "10px" : "11px",
-            fontWeight: 900,
-            color: "#fff",
-            background: "linear-gradient(135deg, #364182 0%, #849bff 100%)",
-            padding: isMobile ? "3px 7px" : "4px 10px",
-            borderRadius: isMobile ? "5px" : "7px",
-            letterSpacing: "0.8px",
-            textTransform: "uppercase",
-            position: "relative",
-            overflow: "hidden"
-          }}>
-            BETA
-            <span style={{
-              position: "absolute",
-              top: 0,
-              left: "-100%",
-              width: "100%",
-              height: "100%",
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
-              animation: "betaShine 3s ease-in-out infinite"
-            }} />
+  const SidebarContent = () => (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
+      {/* Logo */}
+      <div style={{ padding: "24px 20px 32px 20px" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
+          <img src={logo} alt="Codeown" style={{ height: "40px", width: "auto" }} />
+          <span style={{ fontSize: "20px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
+            Codeown
           </span>
         </Link>
-
-        <style>{`
-          @keyframes betaShine {
-            0% { left: -100%; }
-            20%, 100% { left: 100%; }
-          }
-        `}</style>
-
-        {!isMobile && (
-          <Link
-            to="/"
-            className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
-            style={{ color: "#fff", backgroundColor: "#364182", padding: "8px 12px", borderRadius: "12px", textDecoration: "none", fontSize: "20px", fontWeight: 600 }}
-          >
-            Feed
-          </Link>
-        )}
       </div>
 
-      {/* Center Section - Search Bar */}
-      {!isMobile && isLoaded && isSignedIn && (
-        <div style={{
-          position: "absolute",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: isTablet ? "200px" : "320px",
-          maxWidth: isTablet ? "200px" : "320px",
-          border: "none",
-          borderRadius: "12px",
-          backgroundColor: "#fff",
-          zIndex: 100
-        }}>
-          <SearchBar />
-        </div>
-      )}
-
-      {/* Right Section */}
-
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        {isLoaded && isSignedIn && (
+      {/* Nav Links */}
+      <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: "4px" }}>
+        <Link to="/" style={linkStyle("/")}>
+          <FontAwesomeIcon icon={faHome} style={{ width: "20px" }} />
+          Feed
+        </Link>
+        <Link to="/search" style={linkStyle("/search")}>
+          <FontAwesomeIcon icon={faSearch} style={{ width: "20px" }} />
+          Search
+        </Link>
+        {isSignedIn && (
           <>
-            {!isMobile && (
-              <div id="create-btn-container" style={{ position: "relative" }}>
-                <button
-                  onClick={() => setIsCreateDropdownOpen(!isCreateDropdownOpen)}
-                  className="primary"
+            <Link to="/messages" style={linkStyle("/messages")}>
+              <FontAwesomeIcon icon={faEnvelope} style={{ width: "20px" }} />
+              Messages
+            </Link>
+
+            {/* Notification Item */}
+            <NotificationDropdown
+              align="right"
+              renderTrigger={(toggleOpen, unreadCount, isOpen) => (
+                <div
+                  onClick={toggleOpen}
                   style={{
-                    display: "flex",
-                    background: "#364182",
-                    border: "none",
-                    borderRadius: "14px",
-                    fontSize: "14px",
-                    padding: isTablet ? "10px" : "11px 16px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#fff",
-                    fontWeight: 700,
+                    ...linkStyle(""),
                     cursor: "pointer",
-                    boxShadow: "0 4px 12px rgba(54, 65, 130, 0.3)",
-                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    gap: "8px",
+                    color: isOpen ? "#364182" : "#64748b",
+                    backgroundColor: isOpen ? "#eef2ff" : "transparent",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(54, 65, 130, 0.4)";
+                    if (!isOpen) e.currentTarget.style.backgroundColor = "#f8fafc";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(54, 65, 130, 0.3)";
+                    if (!isOpen) e.currentTarget.style.backgroundColor = "transparent";
                   }}
                 >
-                  <FontAwesomeIcon icon={faPlusCircle} style={{ fontSize: isTablet ? "18px" : "14px" }} />
-                  {!isTablet && <span>Create</span>}
-                </button>
-
-                {isCreateDropdownOpen && (
-                  <div style={{
-                    position: "absolute",
-                    top: "120%",
-                    right: 0,
-                    backgroundColor: "#fff",
-                    borderRadius: "16px",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-                    padding: "10px",
-                    minWidth: "180px",
-                    zIndex: 1000,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    border: "1px solid #f1f5f9",
-                    animation: "slideUp 0.2s ease-out"
-                  }}>
-                    <button
-                      onClick={() => { setIsModalOpen(true); setIsCreateDropdownOpen(false); }}
-                      style={{
-                        padding: "12px 16px",
-                        backgroundColor: "transparent",
-                        border: "1px solid #e5e7eb",
-                        borderRadius: "12px",
-                        textAlign: "left",
-                        cursor: "pointer",
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <FontAwesomeIcon icon={faBell} style={{ width: "20px" }} />
+                    {unreadCount > 0 && (
+                      <span style={{
+                        position: "absolute",
+                        top: "-6px",
+                        right: "-6px",
+                        backgroundColor: "#dc2626",
+                        color: "#fff",
+                        borderRadius: "50%",
+                        width: "14px",
+                        height: "14px",
+                        fontSize: "10px",
                         display: "flex",
                         alignItems: "center",
-                        gap: "12px",
-                        color: "#334155",
-                        fontWeight: 600,
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    >
-                      <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#364182" }}>
-                        <FontAwesomeIcon icon={faPlus} />
-                      </div>
-                      Post
-                    </button>
-                    <button
-                      onClick={() => { setIsProjectModalOpen(true); setIsCreateDropdownOpen(false); }}
-                      style={{
-                        padding: "12px 16px",
-                        backgroundColor: "transparent",
-                        border: "1px solid #e5e7eb",
-                        borderRadius: "12px",
-                        textAlign: "left",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        color: "#334155",
-                        fontWeight: 600,
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    >
-                      <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#ecfdf5", display: "flex", alignItems: "center", justifyContent: "center", color: "#059669" }}>
-                        <FontAwesomeIcon icon={faRocket} />
-                      </div>
-                      Project
-                    </button>
+                        justifyContent: "center",
+                        fontWeight: 700,
+                        border: "2px solid #fff"
+                      }}>
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
                   </div>
-                )}
-              </div>
-            )}
-            <Link to="/messages" style={{
-              border: "1px solid #fff",
-              backgroundColor: "#fff",
-              padding: "9px",
-              borderRadius: "12px",
-              color: "#000",
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "18px",
-              fontWeight: 700,
-            }}>
-              <FontAwesomeIcon icon={faEnvelope} style={{ color: "#364182" }} />
+                  Notifications
+                </div>
+              )}
+            />
+
+            <div
+              onClick={() => setIsModalOpen(true)}
+              style={{ ...linkStyle(""), cursor: "pointer", color: "#64748b" }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+            >
+              <FontAwesomeIcon icon={faPlus} style={{ width: "20px" }} />
+              Create Post
+            </div>
+
+            <div
+              onClick={() => setIsProjectModalOpen(true)}
+              style={{ ...linkStyle(""), cursor: "pointer", color: "#64748b" }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+            >
+              <FontAwesomeIcon icon={faRocket} style={{ width: "20px" }} />
+              Launch Project
+            </div>
+
+            <Link to="/profile" style={linkStyle("/profile")}>
+              <FontAwesomeIcon icon={faUser} style={{ width: "20px" }} />
+              Profile
             </Link>
-            <NotificationDropdown />
           </>
-        )}
-
-        {isLoaded ? (
-          isSignedIn ? (
-            <Link to="/profile">
-              <div style={{
-                border: "none",
-                backgroundColor: "#fff",
-                padding: (userAvatarUrl || user?.imageUrl) ? "0" : "9px",
-                borderRadius: "18px",
-                color: "#000",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "18px",
-                fontWeight: 600,
-                overflow: "hidden",
-                width: (userAvatarUrl || user?.imageUrl) ? "38px" : "auto",
-                height: (userAvatarUrl || user?.imageUrl) ? "38px" : "auto",
-
-              }}>
-                {(userAvatarUrl || user?.imageUrl) ? (
-                  <img
-                    src={userAvatarUrl || user?.imageUrl}
-                    alt="Profile"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      borderRadius: "0px",
-                      border: "none",
-                    }}
-                  />
-                ) : (
-                  <FontAwesomeIcon icon={faUser} style={{ color: "#364182" }} />
-                )}
-              </div>
-            </Link>
-          ) : (
-            <Link to="/sign-in">
-              <button className="primary" style={{ backgroundColor: "#fff", color: "#000", fontSize: "18px", fontWeight: 600, borderRadius: "15px", border: "1px solid #fff", padding: "6px 12px" }}>Login</button>
-            </Link>
-          )
-        ) : null}
-
-        {isMobile && (
-          <button
-            ref={hamburgerRef}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            style={{
-              padding: "4px",
-              border: "none",
-              background: "none",
-              fontSize: "20px",
-            }}
-          >
-            <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} style={{ color: "#364182" }} />
-          </button>
         )}
       </div>
 
-      {isMobile && isMobileMenuOpen && (
-        <div
-          ref={mobileMenuRef}
-          className="fade-in"
-          style={{
-            position: "absolute",
-            top: "110%",
-            left: "12px",
-            right: "12px",
-            borderRadius: "16px",
-            backgroundColor: "#fff",
-            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
-            padding: "16px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            border: "1px solid #e5e7eb",
-          }}
-        >
-          {/* Feed Link */}
-          <Link
-            to="/"
-            onClick={closeMobileMenu}
-            style={{
-              fontSize: "15px",
-              color: "#364182",
-              textDecoration: "none",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              backgroundColor: "#f9fafb",
-              transition: "background-color 0.2s ease",
-              fontWeight: 600,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#f3f4f6";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#f9fafb";
-            }}
-          >
-            Feed
-          </Link>
+      {/* Spacer */}
+      <div style={{ flex: 1 }}></div>
 
-          {isLoaded && isSignedIn && (
-            <>
-              {/* Profile Link */}
-              <Link
-                to="/profile"
-                onClick={closeMobileMenu}
-                style={{
-                  fontSize: "15px",
-                  color: "#364182",
-                  textDecoration: "none",
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  backgroundColor: "#f9fafb",
-                  transition: "background-color 0.2s ease",
-                  fontWeight: 600,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f3f4f6";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f9fafb";
-                }}
-              >
-                Profile
-              </Link>
-
-              {/* Search Bar */}
-              <div style={{
-                padding: "4px 0",
-                border: "2px solid #e5e7eb",
-                borderRadius: "12px",
-              }}>
-                <SearchBar />
-              </div>
-
-              {/* Create Post Button */}
-              <button
-                onClick={() => { setIsModalOpen(true); closeMobileMenu(); }}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "10px",
-                  fontWeight: 600,
-                  fontSize: "15px",
-                  backgroundColor: "#364182",
-                  color: "#fff",
-                  border: "none",
-                  transition: "background-color 0.2s ease",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2d3568";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#364182";
-                }}
-              >
-                Create Post
-              </button>
-            </>
-          )}
-
-          {/* Login Button for non-signed-in users */}
-          {!isSignedIn && (
-            <Link to="/sign-in" onClick={closeMobileMenu} style={{ textDecoration: "none" }}>
-              <button
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "10px",
-                  fontWeight: 600,
-                  fontSize: "15px",
-                  backgroundColor: "#364182",
-                  color: "#fff",
-                  border: "none",
-                  transition: "background-color 0.2s ease",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2d3568";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#364182";
-                }}
-              >
-                Login
-              </button>
-            </Link>
-          )}
+      {/* Footer Links & Profile */}
+      <div style={{ padding: "20px" }}>
+        {/* Footer Links */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", fontSize: "11px", color: "#94a3b8", marginBottom: "20px", padding: "0 4px" }}>
+          <Link to="/privacy" style={{ color: "#94a3b8", textDecoration: "none" }}>Privacy Policy</Link>
+          <span>•</span>
+          <Link to="/terms" style={{ color: "#94a3b8", textDecoration: "none" }}>Terms</Link>
+          <span>•</span>
+          <Link to="/about" style={{ color: "#94a3b8", textDecoration: "none" }}>About Us</Link>
         </div>
-      )}
 
-      <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={handlePostCreated} />
-      <ProjectModal
-        isOpen={isProjectModalOpen}
-        onClose={() => setIsProjectModalOpen(false)}
-        onUpdated={() => {
-          window.dispatchEvent(new CustomEvent("projectCreated"));
-        }}
-      />
+        {/* Profile Card */}
+        {isSignedIn && user ? (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "12px",
+            backgroundColor: "#fff",
+            border: "1px solid #e2e8f0",
+            borderRadius: "16px",
+            position: "relative",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
+          }}>
+            <img
+              src={userAvatarUrl || user.imageUrl}
+              alt="Profile"
+              style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {user.fullName || user.username}
+              </div>
+              <div style={{ color: "#64748b", fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                @{user.username}
+              </div>
+            </div>
 
-      {/* Mobile Floating Action Button */}
-      {isMobile && isLoaded && isSignedIn && (
-        <div id="create-btn-container" style={{ position: "fixed", bottom: "30px", right: "20px", zIndex: 999 }}>
-          {isCreateDropdownOpen && (
+            {/* 3 Dots Menu */}
+            <div ref={logoutRef} style={{ position: "relative" }}>
+              <button
+                onClick={() => setIsLogoutOpen(!isLogoutOpen)}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: "8px" }}
+              >
+                <FontAwesomeIcon icon={faEllipsisH} />
+              </button>
+
+              {isLogoutOpen && (
+                <div style={{
+                  position: "absolute",
+                  bottom: "100%",
+                  right: 0,
+                  marginBottom: "8px",
+                  backgroundColor: "#fff",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                  padding: "6px",
+                  minWidth: "140px",
+                  zIndex: 100
+                }}>
+                  <button
+                    onClick={() => signOut()}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "10px",
+                      width: "100%", padding: "10px",
+                      background: "none", border: "none",
+                      color: "#ef4444", fontWeight: 600, fontSize: "14px",
+                      cursor: "pointer", borderRadius: "8px",
+                      textAlign: "left"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fef2f2"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    <FontAwesomeIcon icon={faSignOutAlt} />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <Link to="/sign-in" style={{ textDecoration: "none" }}>
+            <button style={{ width: "100%", padding: "12px", backgroundColor: "#364182", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 600, cursor: "pointer" }}>
+              Sign In
+            </button>
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+
+  // Desktop Render
+  if (!isMobile) {
+    return (
+      <>
+        <div style={{
+          width: "280px",
+          height: "100vh",
+          position: "sticky",
+          top: 0,
+          borderRight: "1px solid #e2e8f0",
+          backgroundColor: "#fff",
+          zIndex: 50
+        }}>
+          <SidebarContent />
+        </div>
+
+        {/* Modals */}
+        <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
+        <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => window.dispatchEvent(new CustomEvent("projectCreated"))} />
+      </>
+    );
+  }
+
+  // Mobile Render
+  return (
+    <>
+      {/* Mobile Bottom Tab Bar */}
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "#fff",
+        borderTop: "1px solid #e2e8f0",
+        display: "flex", // Ensure flex display
+        flexDirection: "row", // Explicit row direction
+        justifyContent: "space-around",
+        alignItems: "center",
+        padding: "12px 10px 24px 10px", // Extra padding for safe area
+        zIndex: 2000,
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.05)",
+        width: "100%", // Explicit full width
+        maxWidth: "100vw", // Prevent overflow
+        boxSizing: "border-box" // Ensure padding is included in width
+      }}>
+        <Link to="/" style={{ color: location.pathname === "/" ? "#364182" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+          <FontAwesomeIcon icon={faHome} style={{ fontSize: "20px" }} />
+        </Link>
+
+        <Link to="/search" style={{ color: location.pathname === "/search" ? "#364182" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+          <FontAwesomeIcon icon={faSearch} style={{ fontSize: "20px" }} />
+        </Link>
+
+        <div style={{ position: "relative", flex: 1, display: "flex", justifyContent: "center" }}>
+          <div onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)} style={{
+            width: "48px", height: "48px", borderRadius: "50%", background: "#364182", color: "#fff",
+            display: "flex", alignItems: "center", justifyContent: "center", marginTop: "-32px",
+            boxShadow: "0 8px 20px rgba(54, 65, 130, 0.4)", cursor: "pointer", position: "absolute", top: 0,
+            transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s"
+          }}>
+            <FontAwesomeIcon icon={faPlus} style={{ fontSize: "20px" }} />
+          </div>
+
+          {/* Create Menu - Absolute positioned above button */}
+          {isCreateMenuOpen && (
             <div style={{
               position: "absolute",
-              bottom: "70px",
-              right: 0,
+              bottom: "60px",
+              left: "50%",
+              transform: "translateX(-50%)",
               backgroundColor: "#fff",
-              borderRadius: "20px",
-              boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
-              padding: "10px",
-              minWidth: "200px",
+              borderRadius: "16px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+              padding: "8px",
               display: "flex",
               flexDirection: "column",
-              gap: "6px",
-              border: "1px solid #e5e7eb",
-              animation: "mobileSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+              gap: "4px",
+              minWidth: "160px",
+              zIndex: 2001
             }}>
-              <button
-                onClick={() => { setIsModalOpen(true); setIsCreateDropdownOpen(false); }}
-                style={{
-                  padding: "16px",
-                  backgroundColor: "#f8fafc",
-                  border: "none",
-                  borderRadius: "15px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "15px",
-                  color: "#1e293b",
-                  fontWeight: 700,
-                  fontSize: "16px"
-                }}
+              <div
+                onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", borderRadius: "8px", cursor: "pointer", color: "#1e293b", fontWeight: 600, fontSize: "14px" }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
               >
-                <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#364182" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#eef2ff", color: "#364182", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <FontAwesomeIcon icon={faPlus} />
                 </div>
                 Create Post
-              </button>
-              <button
-                onClick={() => { setIsProjectModalOpen(true); setIsCreateDropdownOpen(false); }}
-                style={{
-                  padding: "16px",
-                  backgroundColor: "#f8fafc",
-                  border: "none",
-                  borderRadius: "15px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "15px",
-                  color: "#1e293b",
-                  fontWeight: 700,
-                  fontSize: "16px"
-                }}
+              </div>
+              <div
+                onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", borderRadius: "8px", cursor: "pointer", color: "#1e293b", fontWeight: 600, fontSize: "14px" }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
               >
-                <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#ecfdf5", display: "flex", alignItems: "center", justifyContent: "center", color: "#059669" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#eef2ff", color: "#364182", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <FontAwesomeIcon icon={faRocket} />
                 </div>
                 Launch Project
-              </button>
+              </div>
             </div>
           )}
-          <button
-            onClick={() => setIsCreateDropdownOpen(!isCreateDropdownOpen)}
-            style={{
-              width: "58px",
-              height: "58px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #364182 0%, #4a59b3 100%)",
-              color: "#fff",
-              border: "none",
-              boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "24px",
-              cursor: "pointer",
-              transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-              transform: isCreateDropdownOpen ? "rotate(45deg)" : "rotate(0deg)"
-            }}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
 
-          <style>{`
-            @keyframes slideUp {
-              from { opacity: 0; transform: translateY(10px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes mobileSlideUp {
-              from { opacity: 0; transform: translateY(20px) scale(0.8); }
-              to { opacity: 1; transform: translateY(0) scale(1); }
-            }
-          `}</style>
+          {/* Spacer to hold the space in the flex row */}
+          <div style={{ width: "48px" }} />
         </div>
-      )}
-    </nav>
+
+        <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          <NotificationDropdown
+            align="bottom"
+            renderTrigger={(toggleOpen, unreadCount, isOpen) => (
+              <div onClick={toggleOpen} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", color: isOpen ? "#364182" : "#94a3b8" }}>
+                <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px" }} />
+                {unreadCount > 0 && (
+                  <span style={{ position: "absolute", top: "-2px", right: "-2px", width: "8px", height: "8px", background: "#ef4444", borderRadius: "50%", border: "2px solid #fff" }} />
+                )}
+              </div>
+            )}
+          />
+        </div>
+
+        <Link to="/profile" style={{ color: location.pathname === "/profile" ? "#364182" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+          {userAvatarUrl ? (
+            <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname === "/profile" ? "2px solid #364182" : "none", objectFit: "cover" }} />
+          ) : (
+            <FontAwesomeIcon icon={faUser} style={{ fontSize: "20px" }} />
+          )}
+        </Link>
+      </div>
+
+      <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
+      <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => window.dispatchEvent(new CustomEvent("projectCreated"))} />
+
+      {/* Spacer for bottom tab bar */}
+      <div style={{ height: "80px" }} />
+    </>
   );
 }
