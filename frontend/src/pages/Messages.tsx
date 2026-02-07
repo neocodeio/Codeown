@@ -11,7 +11,6 @@ import {
     ArrowLeft01Icon,
     MailEdit01Icon,
     Search01Icon,
-    NoteEditIcon
 } from "@hugeicons/core-free-icons";
 import NewMessageModal from "../components/NewMessageModal";
 

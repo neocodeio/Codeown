@@ -3,7 +3,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
     Search01Icon,
     Cancel01Icon,
-    UserIcon,
 } from "@hugeicons/core-free-icons";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
