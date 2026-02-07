@@ -18,13 +18,21 @@ import NotFound from "./pages/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
 import ConnectionStatus from "./components/ConnectionStatus";
+import { useWindowSize } from "./hooks/useWindowSize";
 
 
 export default function App() {
   const location = useLocation();
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f8fafc" }}>
+    <div style={{
+      display: "flex",
+      flexDirection: isMobile ? "column" : "row",
+      minHeight: "100vh",
+      backgroundColor: "#f8fafc"
+    }}>
       <Navbar />
       <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
         <ErrorBoundary>
