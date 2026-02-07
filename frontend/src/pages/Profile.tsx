@@ -16,7 +16,7 @@ import BioRenderer from "../components/BioRenderer";
 import { formatJoinDate } from "../utils/date";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEllipsisV, faUserEdit, faSignOutAlt, faKey, faHeart, faUsers, faUserFriends, faLayerGroup, faRocket, faBookmark, faCalendarAlt, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEllipsisV, faUserEdit, faSignOutAlt, faKey, faHeart, faUsers, faUserFriends, faLayerGroup, faRocket, faCalendarAlt, faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import VerifiedBadge from "../components/VerifiedBadge";
 
