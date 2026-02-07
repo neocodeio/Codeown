@@ -291,8 +291,8 @@ export default function FeedbackButton() {
         }}
         style={{
           position: "fixed",
-          bottom: isMobile ? "90px" : "24px",
-          right: "24px",
+          bottom: isMobile ? "70px" : "24px",
+          right: "10px",
           zIndex: 900,
           width: "66px",
           height: "66px",
