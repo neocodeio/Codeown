@@ -18,6 +18,7 @@ import {
   Add01Icon,
   Logout01Icon,
   MoreHorizontalIcon,
+  Login01Icon,
   // faEllipsisH,
   // faSignOutAlt,
   // faPlus,
@@ -281,7 +282,7 @@ export default function Navbar() {
         ) : (
           <Link to="/sign-in" style={{ textDecoration: "none" }}>
             <button style={{ width: "100%", padding: "12px", backgroundColor: "#364182", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 600, cursor: "pointer" }}>
-              Sign In
+              Sign In <HugeiconsIcon icon={Login01Icon} />
             </button>
           </Link>
         )}
