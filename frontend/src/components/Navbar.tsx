@@ -195,8 +195,14 @@ export default function Navbar() {
 
       {/* FoundrList Badge */}
       <div style={{ padding: "0 20px 20px 20px", display: "flex", justifyContent: "center" }}>
-        <a href="https://foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer">
-          <img src="https://foundrlist.com/api/badge/codeown" alt="Live on FoundrList" width="180" height="62" />
+        <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://www.foundrlist.com/api/badge/codeown"
+            alt="Codeown - Live on FoundrList"
+            width="240"
+            height="96"
+            style={{ width: "100%", height: "auto", borderRadius: "12px", display: "block" }}
+          />
         </a>
       </div>
 
@@ -363,6 +369,8 @@ export default function Navbar() {
           <img
             src="https://www.foundrlist.com/api/badge/codeown"
             alt="Codeown - Live on FoundrList"
+            width="240"
+            height="96"
             style={{ height: "36px", width: "auto", borderRadius: "8px" }}
           />
         </a>
