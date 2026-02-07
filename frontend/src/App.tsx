@@ -46,7 +46,7 @@ export default function App() {
             </Routes>
           </div>
         </ErrorBoundary>
-        <FeedbackButton />
+        {location.pathname !== "/messages" && <FeedbackButton />}
       </div>
     </div>
   );
