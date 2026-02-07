@@ -9,6 +9,7 @@ import { faHeart, faReply } from "@fortawesome/free-solid-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 import { formatRelativeDate } from "../utils/date";
+import VerifiedBadge from "./VerifiedBadge";
 
 export interface CommentWithMeta {
   id: number;
@@ -19,7 +20,7 @@ export interface CommentWithMeta {
   parent_id?: number | null;
   parent_author_name?: string | null;
   like_count?: number;
-  user?: { name: string; email: string | null; avatar_url?: string | null };
+  user?: { name: string; username?: string | null; email: string | null; avatar_url?: string | null };
   children?: CommentWithMeta[];
 }
 
@@ -116,9 +117,10 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
             <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
               <span
                 onClick={() => comment.user_id && navigate(`/user/${comment.user_id}`)}
-                style={{ fontSize: isMobile ? "13px" : "14px", fontWeight: 700, color: "#1e293b", cursor: "pointer" }}
+                style={{ fontSize: isMobile ? "13px" : "14px", fontWeight: 700, color: "#1e293b", cursor: "pointer", display: "flex", alignItems: "center" }}
               >
                 {name}
+                <VerifiedBadge username={comment.user?.username} size="14px" />
               </span>
               {comment.parent_author_name && (
                 <span style={{ fontSize: isMobile ? "10px" : "11px", color: "#64748b", fontWeight: 600 }}>

@@ -117,6 +117,7 @@ export async function getPosts(req: Request, res: Response) {
             const userData: any = {
               name: userName,
               avatar_url: clerkUser.imageUrl || null,
+            username: clerkUser.username || null,
             };
 
             console.log(`Setting user data for ${userId}:`, userData);
@@ -170,6 +171,7 @@ export async function getPosts(req: Request, res: Response) {
         userData = {
           name: userName || "User",
           avatar_url: avatarUrl,
+          username: user.username || null,
         };
       } else {
         userData = {
@@ -402,6 +404,7 @@ export async function getPostsByUser(req: Request, res: Response) {
           id: userId,
           name: userName,
           avatar_url: clerkUser.imageUrl || null,
+            username: clerkUser.username || null,
         };
 
         // Sync user to Supabase for future requests
@@ -428,6 +431,7 @@ export async function getPostsByUser(req: Request, res: Response) {
         userDisplayData = {
           name: userName,
           avatar_url: (userData as any).avatar_url || null,
+          username: (userData as any).username || null,
         };
       } else {
         // No user data found

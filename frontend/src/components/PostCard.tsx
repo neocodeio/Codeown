@@ -23,6 +23,7 @@ import {
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
 import { formatRelativeDate } from "../utils/date";
+import VerifiedBadge from "./VerifiedBadge";
 
 interface PostCardProps {
   post: Post;
@@ -203,8 +204,11 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 fontWeight: "800",
                 color: "#1e293b",
                 marginBottom: "0px",
+                display: "flex",
+                alignItems: "center"
               }}>
                 {userName}
+                <VerifiedBadge username={post.user?.username} size="14px" />
               </div>
               <div style={{
                 fontSize: "11px",

@@ -26,6 +26,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { formatRelativeDate } from "../utils/date";
+import VerifiedBadge from "./VerifiedBadge";
 
 interface ProjectCardProps {
   project: Project;
@@ -266,9 +267,12 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                   fontWeight: 800,
                   color: "#1e293b",
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center"
                 }}
               >
                 {userName}
+                <VerifiedBadge username={project.user?.username} size="14px" />
               </div>
               <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 {formatRelativeDate(project.created_at)}

@@ -17,6 +17,7 @@ import type { Post } from "../hooks/usePosts";
 import type { Project } from "../types/project";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
+import VerifiedBadge from "../components/VerifiedBadge";
 
 interface SearchUser {
   id: string;
@@ -357,7 +358,10 @@ export default function Search() {
                       />
                     </div>
 
-                    <h3 style={{ margin: "0 0 4px", fontSize: "18px", fontWeight: 700, color: "#0f172a" }}>{user.name}</h3>
+                    <h3 style={{ margin: "0 0 4px", fontSize: "18px", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center" }}>
+                      {user.name}
+                      <VerifiedBadge username={user.username} size="18px" />
+                    </h3>
                     <p style={{ margin: "0 0 20px", fontSize: "14px", color: "#64748b" }}>@{user.username || "user"}</p>
 
                     <button

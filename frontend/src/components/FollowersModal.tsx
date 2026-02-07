@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import VerifiedBadge from "./VerifiedBadge";
 
 interface User {
   id: string;
@@ -169,8 +170,9 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
                     <img src={user.avatar_url || getAvatarUrl(user.name)} alt={user.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: "16px", fontWeight: 800, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div style={{ fontSize: "16px", fontWeight: 800, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center" }}>
                       {user.name}
+                      <VerifiedBadge username={user.username} size="16px" />
                     </div>
                     {user.username && (
                       <div style={{ fontSize: "13px", fontWeight: 600, color: "#64748b" }}>

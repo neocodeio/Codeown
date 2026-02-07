@@ -6,6 +6,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import VerifiedBadge from "./VerifiedBadge";
 
 interface User {
     id: string;
@@ -200,7 +201,10 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                     style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover" }}
                                 />
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a" }}>{u.name}</div>
+                                    <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a", display: "flex", alignItems: "center" }}>
+                                        {u.name}
+                                        <VerifiedBadge username={u.username} size="14px" />
+                                    </div>
                                     <div style={{ color: "#64748b", fontSize: "13px" }}>@{u.username}</div>
                                 </div>
                             </div>

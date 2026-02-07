@@ -13,6 +13,7 @@ import {
     Search01Icon,
 } from "@hugeicons/core-free-icons";
 import NewMessageModal from "../components/NewMessageModal";
+import VerifiedBadge from "../components/VerifiedBadge";
 
 interface Partner {
     id: string;
@@ -316,7 +317,10 @@ export default function Messages() {
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "4px" }}>
-                                        <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a" }}>{convo.partner.name}</div>
+                                        <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a", display: "flex", alignItems: "center" }}>
+                                            {convo.partner.name}
+                                            <VerifiedBadge username={convo.partner.username} size="14px" />
+                                        </div>
                                         {convo.last_message && (
                                             <div style={{ fontSize: "11px", color: "#94a3b8" }}>
                                                 {new Date(convo.last_message.created_at).toLocaleDateString() === new Date().toLocaleDateString()
@@ -387,10 +391,11 @@ export default function Messages() {
                                 />
                                 <div style={{ minWidth: 0, flex: 1 }}>
                                     <div
-                                        style={{ fontWeight: 700, cursor: "pointer", fontSize: "16px", color: "#0f172a" }}
+                                        style={{ fontWeight: 700, cursor: "pointer", fontSize: "16px", color: "#0f172a", display: "flex", alignItems: "center" }}
                                         onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
                                     >
                                         {activeConvo.partner.name}
+                                        <VerifiedBadge username={activeConvo.partner.username} size="16px" />
                                     </div>
                                     <div style={{ fontSize: "12px", color: "#64748b" }}>@{activeConvo.partner.username}</div>
                                 </div>

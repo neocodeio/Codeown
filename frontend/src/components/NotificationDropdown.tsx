@@ -6,6 +6,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Notification01Icon } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
+import VerifiedBadge from "./VerifiedBadge";
 
 interface NotificationDropdownProps {
   align?: "right" | "bottom";
@@ -51,27 +52,32 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
 
   const getNotificationMessage = (notification: Notification) => {
     const actorName = notification.actor?.name || "Someone";
+    const username = notification.actor?.username;
+
+    const nameWrapper = (
+      <span style={{ fontWeight: 700, display: "inline-flex", alignItems: "center" }}>
+        {actorName}
+        <VerifiedBadge username={username} size="14px" />
+      </span>
+    );
+
     switch (notification.type) {
       case "message":
-        return `${actorName} sent you a message`;
+        return <span>{nameWrapper} sent you a message</span>;
       case "like":
-        return notification.project_id
-          ? `${actorName} liked your project`
-          : `${actorName} liked your post`;
+        return <span>{nameWrapper} {notification.project_id ? "liked your project" : "liked your post"}</span>;
       case "comment":
-        return notification.project_id
-          ? `${actorName} commented on your project`
-          : `${actorName} commented on your post`;
+        return <span>{nameWrapper} {notification.project_id ? "commented on your project" : "commented on your post"}</span>;
       case "follow":
-        return `${actorName} started following you`;
+        return <span>{nameWrapper} started following you</span>;
       case "mention":
-        return `${actorName} mentioned you`;
+        return <span>{nameWrapper} mentioned you</span>;
       case "reply":
-        return `${actorName} replied to your comment`;
+        return <span>{nameWrapper} replied to your comment</span>;
       case "save":
-        return `${actorName} saved your project`;
+        return <span>{nameWrapper} saved your project</span>;
       default:
-        return "New notification";
+        return <span>New notification</span>;
     }
   };
 

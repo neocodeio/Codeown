@@ -25,6 +25,7 @@ import {
   // faBell
 } from '@hugeicons/core-free-icons';
 import logo from "../assets/icon-remove.png";
+import VerifiedBadge from "./VerifiedBadge";
 
 export default function Navbar() {
   const { isLoaded, isSignedIn, user } = useClerkUser();
@@ -237,8 +238,9 @@ export default function Navbar() {
                 style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center" }}>
                   {user.fullName || user.username}
+                  <VerifiedBadge username={user.username} size="14px" />
                 </div>
                 <div style={{ color: "#64748b", fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   @{user.username}

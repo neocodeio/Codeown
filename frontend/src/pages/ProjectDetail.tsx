@@ -25,6 +25,7 @@ import {
   faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub as faGithubBrand } from "@fortawesome/free-brands-svg-icons";
+import VerifiedBadge from "../components/VerifiedBadge";
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -381,8 +382,11 @@ export default function ProjectDetail() {
                     fontWeight: 800,
                     textTransform: "uppercase",
                     letterSpacing: "0.05em",
+                    display: "flex",
+                    alignItems: "center"
                   }}>
                     {userName}
+                    <VerifiedBadge username={project.user?.username} size="16px" />
                   </div>
                   <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.1em", display: "flex", alignItems: "center", gap: "10px" }}>
                     <span>{formatRelativeDate(project.created_at).toUpperCase()}</span>
@@ -464,7 +468,10 @@ export default function ProjectDetail() {
                         alt={contrib.username}
                         style={{ width: "32px", height: "32px", borderRadius: "50%" }}
                       />
-                      <span style={{ fontWeight: 600, fontSize: "14px" }}>{contrib.name || contrib.username}</span>
+                      <span style={{ fontWeight: 600, fontSize: "14px", display: "flex", alignItems: "center" }}>
+                        {contrib.name || contrib.username}
+                        <VerifiedBadge username={contrib.username} size="14px" />
+                      </span>
                     </div>
                   ))}
                 </div>

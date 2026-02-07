@@ -4,6 +4,7 @@ import api from "../api/axios";
 import type { Project, ProjectFormData } from "../types/project";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import VerifiedBadge from "./VerifiedBadge";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -474,6 +475,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                   }}
                 >
                   @{contributor}
+                  <VerifiedBadge username={contributor} size="14px" />
                   <button
                     type="button"
                     onClick={() => handleRemoveContributor(contributor)}

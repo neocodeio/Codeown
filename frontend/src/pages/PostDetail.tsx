@@ -12,6 +12,7 @@ import { faArrowLeft, faHeart as faHeartSolid, faBookmark as faBookmarkSolid, fa
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { formatRelativeDate } from "../utils/date";
+import VerifiedBadge from "../components/VerifiedBadge";
 
 interface Post {
   id: number;
@@ -27,6 +28,7 @@ interface Post {
   user?: {
     name: string;
     email: string | null;
+    username?: string | null;
     avatar_url?: string | null;
   };
   view_count?: number;
@@ -184,7 +186,10 @@ export default function PostDetail() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                 <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)", borderRadius: "50%" }} />
-                <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{userName}</h3>
+                <h3 style={{ fontSize: "14px", fontWeight: 800, display: "flex", alignItems: "center" }}>
+                  {userName}
+                  <VerifiedBadge username={post.user?.username} size="14px" />
+                </h3>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-end" }}>
                 <span style={{
