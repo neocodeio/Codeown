@@ -195,7 +195,7 @@ export default function Navbar() {
       <div style={{ flex: 1 }}></div>
 
       {/* FoundrList Badge */}
-      <div style={{ padding: "0 20px 20px 20px", display: "flex", justifyContent: "center" }}>
+      {/* <div style={{ padding: "0 20px 20px 20px", display: "flex", justifyContent: "center" }}>
         <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer">
           <img
             src="https://www.foundrlist.com/api/badge/codeown"
@@ -205,7 +205,7 @@ export default function Navbar() {
             style={{ width: "100%", height: "auto", borderRadius: "12px", display: "block" }}
           />
         </a>
-      </div>
+      </div> */}
 
       {/* Footer Links & Profile */}
       <div style={{ padding: "0 20px 20px 20px" }}>
@@ -367,7 +367,7 @@ export default function Navbar() {
             Codeown
           </span>
         </Link>
-        <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }}>
+        {/* <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }}>
           <img
             src="https://www.foundrlist.com/api/badge/codeown"
             alt="Codeown - Live on FoundrList"
@@ -375,11 +375,11 @@ export default function Navbar() {
             height="96"
             style={{ height: "36px", width: "auto", borderRadius: "8px" }}
           />
-        </a>
+        </a> */}
       </div>
 
       {/* Spacer for Top Header */}
-      <div style={{ height: "14px", marginBottom: "0px" }} />
+      <div style={{ height: "0px", marginBottom: "0px" }} />
 
       {/* Mobile Bottom Tab Bar */}
       <div style={{
