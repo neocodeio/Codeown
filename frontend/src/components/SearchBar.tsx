@@ -126,7 +126,7 @@ export default function SearchBar() {
                   marginBottom: "4px",
                   transition: "all 0.2s ease",
                   backgroundColor: "#f8fafc"
-                }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#eef2ff"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#f8fafc"; }}>
+                }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f0f0f0"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#f8fafc"; }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     <span style={{ fontSize: "13px", fontWeight: 700, color: "#334155" }}>{h}</span>
@@ -155,8 +155,8 @@ export default function SearchBar() {
                       borderRadius: "14px",
                       marginBottom: "4px",
                       transition: "all 0.2s ease"
-                    }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f1f5f9"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
-                      <img src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=364182&color=fff&bold=true`} alt="" style={{ width: "28px", height: "28px", borderRadius: "10px", border: "1px solid #f1f5f9" }} />
+                    }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f0f0f0"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
+                      <img src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=212121&color=fff&bold=true`} alt="" style={{ width: "28px", height: "28px", borderRadius: "10px", border: "1px solid #f1f5f9" }} />
                       <div style={{ fontSize: "13px", fontWeight: 700, color: "#1e293b" }}>{u.name}</div>
                     </div>
                   ))}

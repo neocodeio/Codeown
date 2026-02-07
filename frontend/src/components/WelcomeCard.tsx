@@ -18,7 +18,7 @@ export default function WelcomeCard() {
                 marginBottom: "40px",
                 position: "relative",
                 overflow: "hidden",
-                boxShadow: "0 20px 40px rgba(54, 65, 130, 0.08)",
+                boxShadow: "0 20px 40px rgba(33, 33, 33, 0.08)",
                 background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
             }}
         >
@@ -45,13 +45,13 @@ export default function WelcomeCard() {
                         width: "44px",
                         height: "44px",
                         borderRadius: "14px",
-                        backgroundColor: "#364182",
+                        backgroundColor: "#212121",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         color: "#fff",
                         fontSize: "18px",
-                        boxShadow: "0 8px 16px rgba(54, 65, 130, 0.2)"
+                        boxShadow: "0 8px 16px rgba(33, 33, 33, 0.2)"
                     }}>
                         <FontAwesomeIcon icon={faThumbtack} />
                     </div>
@@ -68,7 +68,7 @@ export default function WelcomeCard() {
                         <div style={{
                             fontSize: "12px",
                             fontWeight: 800,
-                            color: "#364182",
+                            color: "#212121",
                             textTransform: "uppercase",
                             letterSpacing: "0.05em",
                             marginTop: "2px"
@@ -113,7 +113,7 @@ export default function WelcomeCard() {
                         onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor = "#f8fafc";
                             e.currentTarget.style.transform = "translateY(-2px)";
-                            e.currentTarget.style.borderColor = "#364182";
+                            e.currentTarget.style.borderColor = "#212121";
                         }}
                         onMouseLeave={(e) => {
                             e.currentTarget.style.backgroundColor = "#fff";
@@ -130,7 +130,7 @@ export default function WelcomeCard() {
                         style={{
                             padding: "14px 20px",
                             borderRadius: "14px",
-                            backgroundColor: "#364182",
+                            backgroundColor: "#212121",
                             border: "none",
                             color: "#fff",
                             fontWeight: 700,
@@ -141,17 +141,17 @@ export default function WelcomeCard() {
                             justifyContent: "center",
                             gap: "10px",
                             transition: "all 0.2s ease",
-                            boxShadow: "0 10px 20px rgba(54, 65, 130, 0.2)"
+                            boxShadow: "0 10px 20px rgba(33, 33, 33, 0.2)"
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = "#2d3568";
+                            e.currentTarget.style.backgroundColor = "#444";
                             e.currentTarget.style.transform = "translateY(-2px)";
-                            e.currentTarget.style.boxShadow = "0 12px 24px rgba(54, 65, 130, 0.3)";
+                            e.currentTarget.style.boxShadow = "0 12px 24px rgba(33, 33, 33, 0.3)";
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = "#364182";
+                            e.currentTarget.style.backgroundColor = "#212121";
                             e.currentTarget.style.transform = "translateY(0)";
-                            e.currentTarget.style.boxShadow = "0 10px 20px rgba(54, 65, 130, 0.2)";
+                            e.currentTarget.style.boxShadow = "0 10px 20px rgba(33, 33, 33, 0.2)";
                         }}
                     >
                         <FontAwesomeIcon icon={faRocket} style={{ fontSize: "14px" }} />

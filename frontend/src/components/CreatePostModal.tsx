@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faCode } from "@fortawesome/free-solid-svg-icons";
 import MentionInput from "./MentionInput";
 import { normalizeLanguage } from "../utils/language";
- 
+
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -367,7 +367,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 }}
                 autoFocus
               />
-              
+
               <MentionInput
                 value={content}
                 onChange={setContent}
@@ -621,7 +621,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 disabled={isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: "#364182",
+                  backgroundColor: "#212121",
                   border: "none",
                   color: "#ffffff",
                   borderRadius: "20px",
@@ -633,12 +633,12 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 }}
                 onMouseEnter={(e) => {
                   if (!isSubmitting) {
-                    e.currentTarget.style.backgroundColor = "#5a6268";
+                    e.currentTarget.style.backgroundColor = "#444";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isSubmitting) {
-                    e.currentTarget.style.backgroundColor = "#6c757d";
+                    e.currentTarget.style.backgroundColor = "#212121";
                   }
                 }}
               >
@@ -650,7 +650,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 disabled={!isLoaded || !title.trim() || !content.trim() || isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#849bff" : "#e4e7eb",
+                  backgroundColor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#212121" : "#e4e7eb",
                   border: "none",
                   color: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
                   borderRadius: "20px",
@@ -661,12 +661,12 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 }}
                 onMouseEnter={(e) => {
                   if (isLoaded && title.trim() && content.trim() && !isSubmitting) {
-                    e.currentTarget.style.backgroundColor = "#2563eb";
+                    e.currentTarget.style.backgroundColor = "#444";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (isLoaded && title.trim() && content.trim() && !isSubmitting) {
-                    e.currentTarget.style.backgroundColor = "#000";
+                    e.currentTarget.style.backgroundColor = "#212121";
                   }
                 }}
               >

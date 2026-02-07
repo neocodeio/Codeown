@@ -40,7 +40,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
   const isMobile = width < 768;
 
   const name = comment.user?.name || "User";
-  const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=000000&color=ffffff&bold=true`;
+  const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=212121&color=ffffff&bold=true`;
 
   const handleReplySubmit = async () => {
     if (!replyContent.trim()) return;
@@ -123,7 +123,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
               {comment.parent_author_name && (
                 <span style={{ fontSize: isMobile ? "10px" : "11px", color: "#64748b", fontWeight: 600 }}>
                   <span style={{ margin: "0 2px", opacity: 0.5 }}>•</span>
-                  REPLYING TO <span style={{ color: "#364182" }}>@{comment.parent_author_name}</span>
+                  REPLYING TO <span style={{ color: "#212121" }}>@{comment.parent_author_name}</span>
                 </span>
               )}
             </div>
@@ -178,13 +178,13 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 border: "none",
                 padding: "4px 6px",
                 borderRadius: "6px",
-                color: "#364182",
+                color: "#212121",
                 fontSize: isMobile ? "11px" : "12px",
                 fontWeight: 700,
                 cursor: "pointer",
                 transition: "all 0.2s ease"
               }}
-              onMouseEnter={(e) => !isMobile && (e.currentTarget.style.backgroundColor = "#eef2ff")}
+              onMouseEnter={(e) => !isMobile && (e.currentTarget.style.backgroundColor = "#f0f0f0")}
               onMouseLeave={(e) => !isMobile && (e.currentTarget.style.backgroundColor = "transparent")}
             >
               <FontAwesomeIcon icon={faReply} />
@@ -232,7 +232,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
               disabled={!replyContent.trim() || submitting}
               style={{
                 padding: "6px 14px",
-                backgroundColor: "#364182",
+                backgroundColor: "#212121",
                 color: "#fff",
                 border: "none",
                 borderRadius: "8px",

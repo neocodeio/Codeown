@@ -58,7 +58,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
   }, [isOpen, onClose]);
 
   const getAvatarUrl = (name: string) => {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=000&color=ffffff&size=128&bold=true&font-size=0.5`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=212121&color=ffffff&size=128&bold=true&font-size=0.5`;
   };
 
   const handleUserClick = (targetUserId: string) => {
@@ -87,7 +87,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
         }
         .user-row:hover {
           background: #f8fafc;
-          border-left-color: #0f172a;
+          border-left-color: #212121;
         }
       `}</style>
 
@@ -146,7 +146,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
           <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
             {loading ? (
               <div style={{ display: "flex", justifyContent: "center", padding: "60px" }}>
-                <div style={{ width: "32px", height: "32px", border: "3px solid #f1f5f9", borderTopColor: "#0f172a", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                <div style={{ width: "32px", height: "32px", border: "3px solid #f1f5f9", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               </div>
             ) : users.length === 0 ? (

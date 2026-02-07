@@ -144,7 +144,7 @@ export default function UserProfile() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#364182", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
@@ -155,7 +155,7 @@ export default function UserProfile() {
     return null;
   }
 
-  const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=364182&color=ffffff&bold=true`;
+  const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=212121&color=ffffff&bold=true`;
 
   return (
     <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
@@ -185,17 +185,17 @@ export default function UserProfile() {
           box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .profile-btn-primary {
-          background: #364182;
+          background: #212121;
           color: white;
-          border-color: #364182;
+          border-color: #212121;
         }
         .profile-btn-primary:hover {
-          background: #2d3568;
+          background: #444;
         }
         .profile-btn-following {
           background: transparent;
-          color: #364182;
-          border: 2px solid #364182;
+          color: #212121;
+          border: 2px solid #212121;
         }
         .tab-item {
           padding: 16px 24px;
@@ -214,7 +214,7 @@ export default function UserProfile() {
           gap: 10px;
         }
         .tab-item.active {
-          color: #364182;
+          color: #212121;
         }
         .stat-card {
           padding: 20px;
@@ -246,15 +246,15 @@ export default function UserProfile() {
           transition: all 0.3s ease;
         }
         .stat-card:hover .stat-icon {
-          background: #eef2ff;
-          color: #364182;
+          background: #f0f0f0;
+          color: #212121;
         }
       `}</style>
 
       {/* Dynamic Banner */}
       <div style={{
         height: isMobile ? "200px" : "150px",
-        background: "linear-gradient(135deg, #364182 0%, #849bff 100%)",
+        background: "linear-gradient(135deg, #212121 0%, #444 100%)",
         position: "relative",
         overflow: "hidden"
       }}>
@@ -350,7 +350,7 @@ export default function UserProfile() {
                 {user.name}
               </h1>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", color: "#64748b" }}>
-                <span style={{ fontWeight: 800, color: "#364182", fontSize: "15px" }}>@{user.username || "user"}</span>
+                <span style={{ fontWeight: 800, color: "#212121", fontSize: "15px" }}>@{user.username || "user"}</span>
                 {user.created_at && (
                   <>
                     <span style={{ color: "#cbd5e1" }}>•</span>
@@ -386,7 +386,7 @@ export default function UserProfile() {
                   </a>
                 )}
                 {user.website_url && (
-                  <a href={user.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#364182"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                  <a href={user.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#212121"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
                     <FontAwesomeIcon icon={faGlobe} />
                   </a>
                 )}
@@ -448,7 +448,7 @@ export default function UserProfile() {
             >
               <FontAwesomeIcon icon={faLayerGroup} style={{ fontSize: isMobile ? "12px" : "14px" }} />
               <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Posts</span>
-              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "posts" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{posts.length}</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "posts" ? "#212121" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{posts.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("projects")}
@@ -463,7 +463,7 @@ export default function UserProfile() {
             >
               <FontAwesomeIcon icon={faRocket} style={{ fontSize: isMobile ? "12px" : "14px" }} />
               <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Projects</span>
-              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "projects" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{projects.length}</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "projects" ? "#212121" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{projects.length}</span>
             </button>
           </div>
 
@@ -486,7 +486,7 @@ export default function UserProfile() {
                           position: "absolute",
                           top: "20px",
                           left: "20px",
-                          background: "#364182",
+                          background: "#212121",
                           color: "white",
                           padding: "6px 14px",
                           borderRadius: "12px",
@@ -498,7 +498,7 @@ export default function UserProfile() {
                           alignItems: "center",
                           gap: "8px",
                           zIndex: 10,
-                          boxShadow: "0 4px 15px rgba(54, 65, 130, 0.3)"
+                          boxShadow: "0 4px 15px rgba(33, 33, 33, 0.3)"
                         }}>
                           <FontAwesomeIcon icon={faThumbtack} />
                           Featured

@@ -241,7 +241,7 @@ export default function Search() {
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
-                  backgroundColor: "#1e293b",
+                  backgroundColor: "#212121",
                   color: "#fff",
                   border: "none",
                   borderRadius: "24px",
@@ -285,7 +285,7 @@ export default function Search() {
                         padding: "10px 14px",
                         border: "none",
                         background: activeFilter === opt.id ? "#f1f5f9" : "transparent",
-                        color: activeFilter === opt.id ? "#364182" : "#475569",
+                        color: activeFilter === opt.id ? "#212121" : "#475569",
                         borderRadius: "10px",
                         fontWeight: 600,
                         fontSize: "14px",
@@ -363,7 +363,7 @@ export default function Search() {
                     <button
                       onClick={(e) => handleFollow(e, user.id)}
                       style={{
-                        backgroundColor: currentUserFollowing.includes(user.id) ? "#f1f5f9" : "#1e293b",
+                        backgroundColor: currentUserFollowing.includes(user.id) ? "#f1f5f9" : "#212121",
                         color: currentUserFollowing.includes(user.id) ? "#475569" : "#fff",
                         border: "none",
                         borderRadius: "20px",

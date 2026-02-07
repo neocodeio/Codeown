@@ -255,7 +255,7 @@ export default function ProjectDetail() {
   if (loading) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-        <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "var(--primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+        <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
       </div>
     );
   }
@@ -270,7 +270,7 @@ export default function ProjectDetail() {
 
   const isOwnProject = currentUser?.id === project.user_id;
   const userName = project.user?.name || "User";
-  const avatarUrl = project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "U")}&background=000000&color=ffffff&bold=true`;
+  const avatarUrl = project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "U")}&background=212121&color=ffffff&bold=true`;
 
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
@@ -364,7 +364,7 @@ export default function ProjectDetail() {
                 <div style={{
                   width: "48px",
                   height: "48px",
-                  backgroundColor: "var(--primary)",
+                  backgroundColor: "#212121",
                   border: "1px solid var(--border-color)",
                   overflow: "hidden",
                   borderRadius: "50%",
@@ -426,9 +426,11 @@ export default function ProjectDetail() {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = "#dee2e6";
+                        e.currentTarget.style.color = "#212121";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = "#e9ecef";
+                        e.currentTarget.style.color = "#495057";
                       }}
                     >
                       {tech}
@@ -458,7 +460,7 @@ export default function ProjectDetail() {
                       }}
                     >
                       <img
-                        src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=000000&color=ffffff&bold=true`}
+                        src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=212121&color=ffffff&bold=true`}
                         alt={contrib.username}
                         style={{ width: "32px", height: "32px", borderRadius: "50%" }}
                       />
@@ -507,7 +509,7 @@ export default function ProjectDetail() {
                     alignItems: "center",
                     gap: "8px",
                     padding: "12px 20px",
-                    backgroundColor: "#24292e",
+                    backgroundColor: "#212121",
                     color: "#fff",
                     borderRadius: "8px",
                     textDecoration: "none",
@@ -516,10 +518,10 @@ export default function ProjectDetail() {
                     transition: "background-color 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#0366d6";
+                    e.currentTarget.style.backgroundColor = "#444";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#24292e";
+                    e.currentTarget.style.backgroundColor = "#212121";
                   }}
                 >
                   <FontAwesomeIcon icon={faGithubBrand} />
@@ -565,7 +567,7 @@ export default function ProjectDetail() {
                   onClick={handleEditClick}
                   style={{
                     padding: "12px 20px",
-                    backgroundColor: "#007bff",
+                    backgroundColor: "#212121",
                     color: "#fff",
                     border: "none",
                     borderRadius: "8px",
@@ -639,7 +641,7 @@ export default function ProjectDetail() {
               padding: "16px",
               border: "none",
               borderRadius: "8px",
-              backgroundColor: isSaved ? "#6366f1" : "#fff",
+              backgroundColor: isSaved ? "#212121" : "#fff",
               color: isSaved ? "#fff" : "var(--text-primary)",
               cursor: currentUser ? "pointer" : "not-allowed",
               fontWeight: 600,

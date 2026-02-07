@@ -283,8 +283,8 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                   boxSizing: "border-box",
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "#317ff5";
-                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
+                  e.currentTarget.style.borderColor = "#212121";
+                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(33, 33, 33, 0.1)";
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.borderColor = "#e4e7eb";
@@ -312,8 +312,8 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                   lineHeight: 1.5,
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "#317ff5";
-                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
+                  e.currentTarget.style.borderColor = "#212121";
+                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(33, 33, 33, 0.1)";
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.borderColor = "#e4e7eb";
@@ -345,10 +345,10 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                   style={{
                     display: "inline-block",
                     padding: "10px 16px",
-                    backgroundColor: "#f0f7ff",
-                    border: "2px dashed #317ff5",
+                    backgroundColor: "#f8fafc",
+                    border: "2px dashed #212121",
                     borderRadius: "8px",
-                    color: "#317ff5",
+                    color: "#212121",
                     cursor: "pointer",
                     fontSize: "14px",
                     fontWeight: 500,
@@ -428,7 +428,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                 disabled={isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: "#364182",
+                  backgroundColor: "#212121",
                   border: "none",
                   color: "#ffffff",
                   borderRadius: "20px",
@@ -447,7 +447,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                 disabled={!isLoaded || !title.trim() || !content.trim() || isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#849bff" : "#e4e7eb",
+                  backgroundColor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#212121" : "#e4e7eb",
                   border: "none",
                   color: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
                   borderRadius: "20px",

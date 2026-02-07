@@ -92,7 +92,7 @@ export default function PrivacyPolicy() {
                 <section>
                     <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>8. Contact Us</h2>
                     <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-                    <a href="mailto:codeown.neocode@outlook.com" style={{ color: "#3b82f6", fontWeight: 700, textDecoration: "none" }}>codeown.neocode@outlook.com</a>
+                    <a href="mailto:codeown.neocode@outlook.com" style={{ color: "#212121", fontWeight: 700, textDecoration: "none" }}>codeown.neocode@outlook.com</a>
                 </section>
             </div>
         </div>

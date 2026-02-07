@@ -122,12 +122,12 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   if (loading) {
     return (
       <div style={{ textAlign: "center", padding: "40px" }}>
-        <div style={{ 
-          width: "24px", 
-          height: "24px", 
-          border: "2px solid var(--border-light)", 
-          borderTopColor: "var(--primary)", 
-          borderRadius: "50%", 
+        <div style={{
+          width: "24px",
+          height: "24px",
+          border: "2px solid var(--border-light)",
+          borderTopColor: "#212121",
+          borderRadius: "50%",
           animation: "spin 0.6s linear infinite",
           margin: "0 auto"
         }} />
@@ -148,7 +148,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               flexShrink: 0,
             }}>
               <img
-                src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=000000&color=ffffff&bold=true`}
+                src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=212121&color=ffffff&bold=true`}
                 alt={currentUser.fullName || "User"}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -177,7 +177,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                   disabled={!newComment.trim() || submitting}
                   style={{
                     padding: "10px 20px",
-                    backgroundColor: newComment.trim() && !submitting ? "#000" : "#ccc",
+                    backgroundColor: newComment.trim() && !submitting ? "#212121" : "#ccc",
                     color: "#fff",
                     border: "none",
                     borderRadius: "8px",

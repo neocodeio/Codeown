@@ -148,14 +148,14 @@ export default function PostDetail() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "var(--primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
   if (!post) return <div style={{ textAlign: "center", padding: "100px" }}>Post not found</div>;
 
   const userName = post.user?.name || "User";
-  const avatarUrl = post.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=000000&color=ffffff&bold=true`;
+  const avatarUrl = post.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=212121&color=ffffff&bold=true`;
 
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
@@ -234,7 +234,7 @@ export default function PostDetail() {
                   style={{
                     display: "inline-block",
                     padding: "8px 16px",
-                    backgroundColor: "#364182",
+                    backgroundColor: "#212121",
                     color: "#fff",
                     borderRadius: "10px",
                     fontSize: "13px",
@@ -245,11 +245,11 @@ export default function PostDetail() {
                     transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#2d3568";
+                    e.currentTarget.style.backgroundColor = "#444";
                     e.currentTarget.style.transform = "translateY(-2px)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#364182";
+                    e.currentTarget.style.backgroundColor = "#212121";
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                   onClick={() => navigate(`/search?q=${encodeURIComponent(tag)}`)}
@@ -281,7 +281,7 @@ export default function PostDetail() {
                   background: isLiked ? "#fff1f2" : "#fff",
                   border: "1px solid",
                   borderColor: isLiked ? "#fecdd3" : "#dcdcdc",
-                  color: isLiked ? "#ef4444" : "#364182",
+                  color: isLiked ? "#ef4444" : "#212121",
                   cursor: likeLoading ? "not-allowed" : "pointer",
                   borderRadius: "12px",
                   fontSize: "14px",
@@ -302,7 +302,7 @@ export default function PostDetail() {
                   padding: "8px 16px",
                   background: "#fff",
                   border: "1px solid #dcdcdc",
-                  color: shareCopied ? "#10b981" : "#364182",
+                  color: shareCopied ? "#10b981" : "#212121",
                   cursor: "pointer",
                   borderRadius: "12px",
                   fontSize: "14px",
@@ -339,9 +339,9 @@ export default function PostDetail() {
               style={{
                 width: "40px",
                 height: "40px",
-                backgroundColor: isSaved ? "rgba(99, 102, 241, 0.1)" : "#fff",
+                backgroundColor: isSaved ? "rgba(33, 33, 33, 0.1)" : "#fff",
                 border: "1px solid #dcdcdc",
-                color: isSaved ? "#6366f1" : "#364182",
+                color: isSaved ? "#212121" : "#212121",
                 borderRadius: "12px",
                 cursor: "pointer",
                 display: "flex",
@@ -350,10 +350,10 @@ export default function PostDetail() {
                 transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isSaved ? "rgba(99, 102, 241, 0.2)" : "#f8f9fa";
+                e.currentTarget.style.backgroundColor = isSaved ? "rgba(33, 33, 33, 0.2)" : "#f8f9fa";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = isSaved ? "rgba(99, 102, 241, 0.1)" : "#fff";
+                e.currentTarget.style.backgroundColor = isSaved ? "rgba(33, 33, 33, 0.1)" : "#fff";
               }}
             >
               <FontAwesomeIcon
@@ -382,7 +382,7 @@ export default function PostDetail() {
                   onClick={handleSubmitComment}
                   className="primary"
                   disabled={!commentContent.trim() || isSubmitting}
-                  style={{ padding: "12px 24px", borderRadius: "12px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "14px" }}
+                  style={{ padding: "12px 24px", borderRadius: "12px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: "14px", backgroundColor: "#212121", color: "#fff" }}
                 >
                   {isSubmitting ? "POSTING..." : "POST COMMENT"}
                 </button>

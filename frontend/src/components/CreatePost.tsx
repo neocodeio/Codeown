@@ -95,8 +95,8 @@ export default function CreatePost({ onCreated }: { onCreated: () => void }) {
           backgroundColor: "#ffffff",
         }}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = "#317ff5";
-          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
+          e.currentTarget.style.borderColor = "#212121";
+          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(33, 33, 33, 0.1)";
         }}
         onBlur={(e) => {
           e.currentTarget.style.borderColor = "#e4e7eb";
@@ -123,8 +123,8 @@ export default function CreatePost({ onCreated }: { onCreated: () => void }) {
           backgroundColor: "#ffffff",
         }}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = "#317ff5";
-          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
+          e.currentTarget.style.borderColor = "#212121";
+          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(33, 33, 33, 0.1)";
         }}
         onBlur={(e) => {
           e.currentTarget.style.borderColor = "#e4e7eb";
@@ -137,7 +137,7 @@ export default function CreatePost({ onCreated }: { onCreated: () => void }) {
           disabled={!isLoaded || !title.trim() || !content.trim()}
           style={{
             padding: "12px 24px",
-            backgroundColor: isLoaded && title.trim() && content.trim() ? "#317ff5" : "#e4e7eb",
+            backgroundColor: isLoaded && title.trim() && content.trim() ? "#212121" : "#e4e7eb",
             border: "none",
             color: isLoaded && title.trim() && content.trim() ? "#ffffff" : "#94a3b8",
             borderRadius: "8px",
@@ -145,20 +145,20 @@ export default function CreatePost({ onCreated }: { onCreated: () => void }) {
             fontSize: "15px",
             fontWeight: 600,
             transition: "all 0.2s",
-            boxShadow: isLoaded && title.trim() && content.trim() ? "0 2px 8px rgba(49, 127, 245, 0.3)" : "none",
+            boxShadow: isLoaded && title.trim() && content.trim() ? "0 2px 8px rgba(33, 33, 33, 0.3)" : "none",
           }}
           onMouseEnter={(e) => {
             if (isLoaded && title.trim() && content.trim()) {
-              e.currentTarget.style.backgroundColor = "#2563eb";
+              e.currentTarget.style.backgroundColor = "#444";
               e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(49, 127, 245, 0.4)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(33, 33, 33, 0.4)";
             }
           }}
           onMouseLeave={(e) => {
             if (isLoaded && title.trim() && content.trim()) {
-              e.currentTarget.style.backgroundColor = "#317ff5";
+              e.currentTarget.style.backgroundColor = "#212121";
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 2px 8px rgba(49, 127, 245, 0.3)";
+              e.currentTarget.style.boxShadow = "0 2px 8px rgba(33, 33, 33, 0.3)";
             }
           }}
         >

@@ -26,7 +26,7 @@ export default function NotFound() {
             }}>
                 <div style={{
                     fontSize: "80px",
-                    color: "#364182",
+                    color: "#212121",
                     marginBottom: "24px",
                     opacity: 0.8
                 }}>
@@ -64,7 +64,7 @@ export default function NotFound() {
                         borderRadius: "16px",
                         fontSize: "15px",
                         fontWeight: 800,
-                        backgroundColor: "#364182",
+                        backgroundColor: "#212121",
                         color: "white",
                         border: "none",
                         margin: "0 auto",
@@ -73,7 +73,7 @@ export default function NotFound() {
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.transform = "scale(1.05) translateY(-2px)";
-                        e.currentTarget.style.boxShadow = "0 10px 25px rgba(54, 65, 130, 0.25)";
+                        e.currentTarget.style.boxShadow = "0 10px 25px rgba(33, 33, 33, 0.25)";
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.transform = "scale(1) translateY(0)";

@@ -208,7 +208,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
               key={`mention-${localKey++}`}
               onClick={(e) => handleMentionClick(username, e)}
               style={{
-                color: "#2563eb",
+                color: "#212121",
                 fontWeight: 500,
                 cursor: "pointer",
                 transition: "all 0.15s",
@@ -234,7 +234,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               style={{
-                color: "#3b82f6",
+                color: "#212121",
                 textDecoration: "none",
                 fontWeight: "600",
                 transition: "all 0.2s"

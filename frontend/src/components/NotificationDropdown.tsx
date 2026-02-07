@@ -98,7 +98,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               alignItems: "center",
               justifyContent: "center",
               fontSize: "20px",
-              color: "#364182",
+              color: "#212121",
             }}
           >
             <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
@@ -108,7 +108,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                   position: "absolute",
                   top: "-8px",
                   right: "-8px",
-                  backgroundColor: "#2563eb",
+                  backgroundColor: "#212121",
                   color: "#fff",
                   borderRadius: "50%",
                   width: "18px",
@@ -156,7 +156,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                   e.stopPropagation();
                   notifications.forEach(n => !n.read && markAsRead(n.id));
                 }}
-                style={{ background: "none", border: "none", color: "#3b82f6", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                style={{ background: "none", border: "none", color: "#212121", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
               >
                 Mark all as read
               </button>
@@ -200,7 +200,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       width: "18px",
                       height: "18px",
                       borderRadius: "50%",
-                      backgroundColor: "#3b82f6",
+                      backgroundColor: "#212121",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -220,7 +220,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                     </p>
                   </div>
                   {!notification.read && (
-                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", marginTop: "6px" }} />
+                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#212121", marginTop: "6px" }} />
                   )}
                 </div>
               ))

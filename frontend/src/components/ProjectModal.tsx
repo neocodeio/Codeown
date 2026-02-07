@@ -235,8 +235,8 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
           font-family: inherit;
         }
         .form-input:focus, .form-textarea:focus, .form-select:focus {
-          border-color: #849bff;
-          box-shadow: 0 0 0 4px rgba(132, 155, 255, 0.1);
+          border-color: #212121;
+          box-shadow: 0 0 0 4px rgba(33, 33, 33, 0.1);
           background-color: #fff;
         }
         .responsive-grid {
@@ -368,7 +368,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 onClick={handleAddTech}
                 style={{
                   padding: "12px 20px",
-                  backgroundColor: "#849bff",
+                  backgroundColor: "#212121",
                   color: "#fff",
                   border: "none",
                   borderRadius: "8px",
@@ -441,7 +441,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 onClick={handleAddContributor}
                 style={{
                   padding: "12px 20px",
-                  backgroundColor: "#849bff",
+                  backgroundColor: "#212121",
                   color: "#fff",
                   border: "none",
                   borderRadius: "8px",
@@ -629,7 +629,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               onClick={onClose}
               style={{
                 padding: "12px 24px",
-                backgroundColor: "#364182",
+                backgroundColor: "#212121",
                 color: "#fff",
                 border: "none",
                 borderRadius: "8px",
@@ -644,7 +644,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
               disabled={loading}
               style={{
                 padding: "12px 24px",
-                backgroundColor: loading ? "#364182" : "#849bff",
+                backgroundColor: loading ? "#444" : "#212121",
                 color: "#fff",
                 border: "none",
                 borderRadius: "8px",

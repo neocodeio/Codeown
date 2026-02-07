@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faComment } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@clerk/clerk-react";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { HugeiconsIcon } from '@hugeicons/react';
+import { CommentAdd02Icon } from "@hugeicons/core-free-icons";
 
 
 export default function FeedbackButton() {
@@ -157,7 +159,7 @@ export default function FeedbackButton() {
                   transition: "border-color 0.2s",
                   boxSizing: "border-box"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#364182"}
+                onFocus={(e) => e.target.style.borderColor = "#212121"}
                 onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
               />
             </div>
@@ -181,7 +183,7 @@ export default function FeedbackButton() {
                   transition: "border-color 0.2s",
                   boxSizing: "border-box"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#364182"}
+                onFocus={(e) => e.target.style.borderColor = "#212121"}
                 onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
               />
             </div>
@@ -205,7 +207,7 @@ export default function FeedbackButton() {
                   transition: "border-color 0.2s",
                   boxSizing: "border-box"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#364182"}
+                onFocus={(e) => e.target.style.borderColor = "#212121"}
                 onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
               />
             </div>
@@ -232,7 +234,7 @@ export default function FeedbackButton() {
                   transition: "border-color 0.2s",
                   boxSizing: "border-box"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#364182"}
+                onFocus={(e) => e.target.style.borderColor = "#212121"}
                 onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
               />
             </div>
@@ -257,7 +259,7 @@ export default function FeedbackButton() {
               style={{
                 width: "100%",
                 padding: "14px",
-                backgroundColor: "#364182",
+                backgroundColor: "#212121",
                 color: "#fff",
                 border: "none",
                 borderRadius: "12px",
@@ -292,21 +294,21 @@ export default function FeedbackButton() {
           bottom: isMobile ? "90px" : "24px",
           right: "24px",
           zIndex: 900,
-          width: "56px",
-          height: "56px",
+          width: "66px",
+          height: "66px",
           borderRadius: "50%",
-          backgroundColor: "var(--accent)",
+          backgroundColor: "transparent",
           color: "#fff",
           border: "none",
           cursor: "pointer",
-          boxShadow: "var(--shadow-hover)",
+          fontWeight: "bold",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
         aria-label="Feedback"
       >
-        <FontAwesomeIcon icon={faComment} style={{ fontSize: "22px", color: "#fff", backgroundColor: "#364182", padding: "12px", borderRadius: "25px" }} />
+        <HugeiconsIcon icon={CommentAdd02Icon} style={{ fontSize: "24px", fontWeight: "bold", color: "#fff", backgroundColor: "#212121", padding: "12px", borderRadius: "25px" }} />
       </button>
       {modal}
     </>

@@ -239,9 +239,9 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           }
         }
         .modal-input:focus {
-          border-color: #0f172a;
+          border-color: #212121;
           background: white;
-          box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
+          box-shadow: 0 0 0 4px rgba(33, 33, 33, 0.05);
         }
         .modal-input:disabled {
           opacity: 0.6;
@@ -266,7 +266,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           cursor: pointer;
         }
         .modal-btn-primary {
-          background: #0f172a;
+          background: #212121;
           color: white;
           border: none;
         }
@@ -348,13 +348,13 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   border: "4px solid #f1f5f9",
                   boxShadow: "0 10px 20px rgba(0,0,0,0.05)"
                 }}>
-                  <img src={avatarPreview || `https://ui-avatars.com/api/?name=${name}&background=0f172a&color=fff`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Preview" />
+                  <img src={avatarPreview || `https://ui-avatars.com/api/?name=${name}&background=212121&color=fff`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Preview" />
                 </div>
                 <div style={{
                   position: "absolute",
                   bottom: "-6px",
                   right: "-6px",
-                  background: "#0f172a",
+                  background: "#212121",
                   color: "white",
                   width: "32px",
                   height: "32px",

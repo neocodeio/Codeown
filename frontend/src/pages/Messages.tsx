@@ -177,7 +177,7 @@ export default function Messages() {
 
     if (loading) return (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "80vh" }}>
-            <div style={{ width: "30px", height: "30px", border: "3px solid #eee", borderTopColor: "#364182", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+            <div style={{ width: "30px", height: "30px", border: "3px solid #eee", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
         </div>
     );
 
@@ -224,13 +224,13 @@ export default function Messages() {
                                 style={{
                                     padding: "16px",
                                     cursor: "pointer",
-                                    backgroundColor: activeConvo?.id === convo.id ? "#eef2ff" : "transparent",
+                                    backgroundColor: activeConvo?.id === convo.id ? "#f0f0f0" : "transparent",
                                     borderRadius: "16px",
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "16px",
                                     marginBottom: "4px",
-                                    border: activeConvo?.id === convo.id ? "1px solid #e0e7ff" : "1px solid transparent",
+                                    border: activeConvo?.id === convo.id ? "1px solid #e2e8f0" : "1px solid transparent",
                                     transition: "all 0.2s ease"
                                 }}
                                 onMouseEnter={(e) => {
@@ -356,11 +356,11 @@ export default function Messages() {
                                                 style={{
                                                     padding: "12px 18px",
                                                     borderRadius: isMine ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
-                                                    backgroundColor: isMine ? "#364182" : "#fff",
+                                                    backgroundColor: isMine ? "#212121" : "#fff",
                                                     color: isMine ? "#fff" : "#1e293b",
                                                     fontSize: "15px",
                                                     lineHeight: "1.5",
-                                                    boxShadow: isMine ? "0 4px 12px rgba(54, 65, 130, 0.2)" : "0 2px 4px rgba(0,0,0,0.05)",
+                                                    boxShadow: isMine ? "0 4px 12px rgba(0, 0, 0, 0.1)" : "0 2px 4px rgba(0,0,0,0.05)",
                                                     border: isMine ? "none" : "1px solid #e2e8f0",
                                                     wordWrap: "break-word"
                                                 }}
@@ -428,7 +428,7 @@ export default function Messages() {
                                             height: isMobile ? "44px" : "48px",
                                             borderRadius: "50%",
                                             border: "none",
-                                            backgroundColor: newMessage.trim() ? "#364182" : "#f1f5f9",
+                                            backgroundColor: newMessage.trim() ? "#212121" : "#f1f5f9",
                                             color: newMessage.trim() ? "#fff" : "#94a3b8",
                                             cursor: newMessage.trim() ? "pointer" : "default",
                                             display: "flex",
@@ -445,8 +445,8 @@ export default function Messages() {
                         </>
                     ) : (
                         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b", flexDirection: "column", gap: "16px", backgroundColor: isMobile ? "#fff" : "#fafafa", padding: "20px", textAlign: "center" }}>
-                            <div style={{ width: "96px", height: "96px", borderRadius: "50%", backgroundColor: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <HugeiconsIcon icon={Comment01Icon} style={{ fontSize: "40px", color: "#364182" }} />
+                            <div style={{ width: "96px", height: "96px", borderRadius: "50%", backgroundColor: "#f0f0f0", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <HugeiconsIcon icon={Comment01Icon} style={{ fontSize: "40px", color: "#212121" }} />
                             </div>
                             <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#1e293b", margin: 0 }}>Your Messages</h3>
                             <p style={{ margin: 0, maxWidth: "300px", lineHeight: "1.5" }}>

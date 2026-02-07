@@ -8,18 +8,18 @@
   --bg-hover: #f4f4f5;
   --bg-input: #ffffff;
 
-  --text-primary: #000000;
+  --text-primary: #212121;
   --text-secondary: #52525b;
   --text-tertiary: #a1a1aa;
 
-  --primary: #000000;
+  --primary: #212121;
   --primary-contrast: #ffffff;
   --accent: #1d4ed8;
   /* Electric Blue */
 
-  --border-color: #000000;
+  --border-color: #212121;
   --border-light: #e4e4e7;
-  --border-strong: #000000;
+  --border-strong: #212121;
 
   /* Modernism emphasizes grid and lines, not shadows */
   --shadow: none;

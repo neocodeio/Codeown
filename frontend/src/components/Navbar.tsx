@@ -78,8 +78,8 @@ export default function Navbar() {
     padding: "12px 16px",
     borderRadius: "12px",
     textDecoration: "none",
-    color: location.pathname === path ? "#364182" : "#64748b",
-    backgroundColor: location.pathname === path ? "#eef2ff" : "transparent",
+    color: location.pathname === path ? "#212121" : "#212121",
+    backgroundColor: location.pathname === path ? "#f0f0f0" : "transparent",
     fontWeight: location.pathname === path ? 700 : 500,
     fontSize: "16px",
     transition: "all 0.2s ease",
@@ -124,8 +124,8 @@ export default function Navbar() {
                   style={{
                     ...linkStyle(""),
                     cursor: "pointer",
-                    color: isOpen ? "#364182" : "#64748b",
-                    backgroundColor: isOpen ? "#eef2ff" : "transparent",
+                    color: isOpen ? "#212121" : "#212121",
+                    backgroundColor: isOpen ? "#f0f0f0" : "transparent",
                   }}
                   onMouseEnter={(e) => {
                     if (!isOpen) e.currentTarget.style.backgroundColor = "#f8fafc";
@@ -164,7 +164,7 @@ export default function Navbar() {
 
             <div
               onClick={() => setIsModalOpen(true)}
-              style={{ ...linkStyle(""), cursor: "pointer", color: "#64748b" }}
+              style={{ ...linkStyle(""), cursor: "pointer", color: "#212121" }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
             >
@@ -174,7 +174,7 @@ export default function Navbar() {
 
             <div
               onClick={() => setIsProjectModalOpen(true)}
-              style={{ ...linkStyle(""), cursor: "pointer", color: "#64748b" }}
+              style={{ ...linkStyle(""), cursor: "pointer", color: "#212121" }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
             >
@@ -281,8 +281,22 @@ export default function Navbar() {
           </>
         ) : (
           <Link to="/sign-in" style={{ textDecoration: "none" }}>
-            <button style={{ width: "100%", padding: "12px", backgroundColor: "#364182", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 600, cursor: "pointer" }}>
-              Sign In <HugeiconsIcon icon={Login01Icon} />
+            <button style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#212121",
+              color: "#fff",
+              border: "none",
+              borderRadius: "12px",
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px"
+            }}>
+              <HugeiconsIcon icon={Login01Icon} />
+              Sign In
             </button>
           </Link>
         )}
@@ -335,19 +349,19 @@ export default function Navbar() {
         maxWidth: "100vw", // Prevent overflow
         boxSizing: "border-box" // Ensure padding is included in width
       }}>
-        <Link to="/" style={{ color: location.pathname === "/" ? "#364182" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+        <Link to="/" style={{ color: location.pathname === "/" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
           <HugeiconsIcon icon={Home01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
-        <Link to="/search" style={{ color: location.pathname === "/search" ? "#364182" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+        <Link to="/search" style={{ color: location.pathname === "/search" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
           <HugeiconsIcon icon={Search01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
         <div style={{ position: "relative", flex: 1, display: "flex", justifyContent: "center" }}>
           <div onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)} style={{
-            width: "48px", height: "48px", borderRadius: "50%", background: "#364182", color: "#fff",
+            width: "48px", height: "48px", borderRadius: "50%", background: "#212121", color: "#fff",
             display: "flex", alignItems: "center", justifyContent: "center", marginTop: "-32px",
-            boxShadow: "0 8px 20px rgba(54, 65, 130, 0.4)", cursor: "pointer", position: "absolute", top: 0,
+            boxShadow: "0 8px 20px rgba(33, 33, 33, 0.4)", cursor: "pointer", position: "absolute", top: 0,
             transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s"
           }}>
             <HugeiconsIcon icon={Add01Icon} style={{ fontSize: "20px" }} />
@@ -373,10 +387,10 @@ export default function Navbar() {
               <div
                 onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", borderRadius: "8px", cursor: "pointer", color: "#1e293b", fontWeight: 600, fontSize: "14px" }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
               >
-                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#eef2ff", color: "#364182", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f0f0f0", color: "#212121", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <HugeiconsIcon icon={Add01Icon} />
                 </div>
                 Create Post
@@ -384,10 +398,10 @@ export default function Navbar() {
               <div
                 onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", borderRadius: "8px", cursor: "pointer", color: "#1e293b", fontWeight: 600, fontSize: "14px" }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f0f0f0"}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
               >
-                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#eef2ff", color: "#364182", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#f0f0f0", color: "#212121", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <HugeiconsIcon icon={Rocket01Icon} />
                 </div>
                 Launch Project
@@ -403,7 +417,7 @@ export default function Navbar() {
           <NotificationDropdown
             align="bottom"
             renderTrigger={(toggleOpen, unreadCount, isOpen) => (
-              <div onClick={toggleOpen} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", color: isOpen ? "#364182" : "#94a3b8" }}>
+              <div onClick={toggleOpen} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", color: isOpen ? "#212121" : "#94a3b8" }}>
                 <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
                 {unreadCount > 0 && (
                   <span style={{ position: "absolute", top: "-2px", right: "-2px", width: "8px", height: "8px", background: "#ef4444", borderRadius: "50%", border: "2px solid #fff" }} />
@@ -413,9 +427,9 @@ export default function Navbar() {
           />
         </div>
 
-        <Link to="/profile" style={{ color: location.pathname === "/profile" ? "#364182" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+        <Link to="/profile" style={{ color: location.pathname === "/profile" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
           {userAvatarUrl ? (
-            <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname === "/profile" ? "2px solid #364182" : "none", objectFit: "cover" }} />
+            <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname === "/profile" ? "2px solid #212121" : "none", objectFit: "cover" }} />
           ) : (
             <HugeiconsIcon icon={UserIcon} style={{ fontSize: "20px" }} />
           )}

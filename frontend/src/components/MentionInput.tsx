@@ -67,14 +67,14 @@ export default function MentionInput({
   const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     const cursorPos = e.target.selectionStart || 0;
-    
+
     onChange(newValue);
     setCursorPosition(cursorPos);
 
     // Check for @ mention trigger
     const textBeforeCursor = newValue.slice(0, cursorPos);
     const lastAtIndex = textBeforeCursor.lastIndexOf("@");
-    
+
     if (lastAtIndex !== -1) {
       const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
       // Check if there's a space after @, which would end the mention
@@ -85,7 +85,7 @@ export default function MentionInput({
         return;
       }
     }
-    
+
     setShowSuggestions(false);
     setMentionStart(null);
     setSearchQuery("");
@@ -97,10 +97,10 @@ export default function MentionInput({
     const beforeMention = value.slice(0, mentionStart);
     const afterCursor = value.slice(cursorPosition);
     const mentionText = `@${user.username || user.name.replace(/\s+/g, "")} `;
-    
+
     const newValue = beforeMention + mentionText + afterCursor;
     onChange(newValue);
-    
+
     // Reset state
     setShowSuggestions(false);
     setMentionStart(null);
@@ -149,7 +149,7 @@ export default function MentionInput({
   }, [showSuggestions, suggestions, selectedIndex, insertMention]);
 
   const getAvatarUrl = (name: string) => {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=000&color=ffffff&size=64&bold=true&font-size=0.5`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=212121&color=ffffff&size=64&bold=true&font-size=0.5`;
   };
 
   // Close suggestions when clicking outside
@@ -236,7 +236,7 @@ export default function MentionInput({
                   gap: "12px",
                   padding: "10px 16px",
                   cursor: "pointer",
-                  backgroundColor: index === selectedIndex ? "#f0f7ff" : "transparent",
+                  backgroundColor: index === selectedIndex ? "#f0f0f0" : "transparent",
                   transition: "background-color 0.1s",
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
@@ -269,7 +269,7 @@ export default function MentionInput({
                     <div
                       style={{
                         fontSize: "12px",
-                        color: "#2563eb",
+                        color: "#212121",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",

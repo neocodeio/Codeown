@@ -8,6 +8,8 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV, faCheck, faTags, faGlobeAmericas, faUserFriends, faLayerGroup, faRocket } from "@fortawesome/free-solid-svg-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { UserBlock01Icon } from "@hugeicons/core-free-icons";
 
 const POPULAR_TAGS = ["React", "JavaScript", "TypeScript", "Node.js", "Python", "Next.js", "WebDev", "UI/UX", "Mobile", "AI"];
 
@@ -134,7 +136,7 @@ export default function Feed() {
                 alignItems: "center",
                 gap: "10px",
                 padding: "10px 20px",
-                backgroundColor: "#849bff",
+                backgroundColor: "#212121",
                 color: "#fff",
                 border: "none",
                 borderRadius: "14px",
@@ -142,15 +144,12 @@ export default function Feed() {
                 fontSize: "15px",
                 cursor: "pointer",
                 transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                boxShadow: "0 4px 12px rgba(132, 155, 255, 0.2)"
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 6px 16px rgba(132, 155, 255, 0.3)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(132, 155, 255, 0.2)";
               }}
             >
               Filter
@@ -180,9 +179,9 @@ export default function Feed() {
                         flex: 1,
                         padding: "10px",
                         borderRadius: "12px",
-                        border: feedType === "posts" ? "2px solid #364182" : "2px solid #f1f5f9",
+                        border: feedType === "posts" ? "2px solid #212121" : "2px solid #f1f5f9",
                         backgroundColor: feedType === "posts" ? "#f8fafc" : "transparent",
-                        color: "#364182",
+                        color: "#212121",
                         fontWeight: 700,
                         fontSize: "13px",
                         cursor: "pointer",
@@ -201,9 +200,9 @@ export default function Feed() {
                         flex: 1,
                         padding: "10px",
                         borderRadius: "12px",
-                        border: feedType === "projects" ? "2px solid #364182" : "2px solid #f1f5f9",
+                        border: feedType === "projects" ? "2px solid #212121" : "2px solid #f1f5f9",
                         backgroundColor: feedType === "projects" ? "#f8fafc" : "transparent",
-                        color: "#364182",
+                        color: "#212121",
                         fontWeight: 700,
                         fontSize: "13px",
                         cursor: "pointer",
@@ -228,8 +227,8 @@ export default function Feed() {
                         padding: "10px 14px",
                         borderRadius: "12px",
                         border: "none",
-                        backgroundColor: feedFilter === "all" ? "#eef2ff" : "transparent",
-                        color: feedFilter === "all" ? "#364182" : "#64748b",
+                        backgroundColor: feedFilter === "all" ? "#f0f0f0" : "transparent",
+                        color: feedFilter === "all" ? "#212121" : "#64748b",
                         fontWeight: 600,
                         fontSize: "14px",
                         cursor: "pointer",
@@ -252,8 +251,8 @@ export default function Feed() {
                           padding: "10px 14px",
                           borderRadius: "12px",
                           border: "none",
-                          backgroundColor: feedFilter === "following" ? "#eef2ff" : "transparent",
-                          color: feedFilter === "following" ? "#364182" : "#64748b",
+                          backgroundColor: feedFilter === "following" ? "#f0f0f0" : "transparent",
+                          color: feedFilter === "following" ? "#212121" : "#64748b",
                           fontWeight: 600,
                           fontSize: "14px",
                           cursor: "pointer",
@@ -281,7 +280,7 @@ export default function Feed() {
                       style={{
                         padding: "6px 12px",
                         borderRadius: "8px",
-                        backgroundColor: selectedTag === "" ? "#364182" : "#f1f5f9",
+                        backgroundColor: selectedTag === "" ? "#212121" : "#f1f5f9",
                         color: selectedTag === "" ? "#fff" : "#64748b",
                         fontSize: "12px",
                         fontWeight: 600,
@@ -299,7 +298,7 @@ export default function Feed() {
                         style={{
                           padding: "6px 12px",
                           borderRadius: "8px",
-                          backgroundColor: selectedTag === tag.toLowerCase() ? "#364182" : "#f1f5f9",
+                          backgroundColor: selectedTag === tag.toLowerCase() ? "#212121" : "#f1f5f9",
                           color: selectedTag === tag.toLowerCase() ? "#fff" : "#64748b",
                           fontSize: "12px",
                           fontWeight: 600,
@@ -333,39 +332,85 @@ export default function Feed() {
               ))}
             </div>
           ) : !Array.isArray(currentItems) || currentItems.length === 0 ? (
-            <div className="fade-in slide-up" style={{ padding: "80px 0", textAlign: "left" }}>
-              <div style={{
-                width: "60px",
-                height: "60px",
-                borderRadius: "20px",
-                backgroundColor: "#f1f5f9",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "24px",
-                color: "#94a3b8"
-              }}>
-                <FontAwesomeIcon icon={faTags} style={{ fontSize: "24px" }} />
-              </div>
-              <h2 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "12px", color: "var(--text-primary)" }}>NOTHING HERE.</h2>
-              <p style={{ color: "var(--text-secondary)", fontSize: "16px", lineHeight: 1.6 }}>
-                We couldn't find any {feedType} matching your current filters. Try selecting different tags or check back later!
-              </p>
-              <button
-                onClick={() => { setSelectedTag(""); setFeedFilter("all"); setSelectedLang(""); }}
-                style={{
-                  marginTop: "24px",
-                  padding: "10px 20px",
-                  backgroundColor: "transparent",
-                  border: "2px solid #364182",
-                  color: "#364182",
-                  borderRadius: "12px",
-                  fontWeight: 700,
-                  cursor: "pointer"
-                }}
-              >
-                Clear all filters
-              </button>
+            <div className="fade-in slide-up" style={{ padding: "80px 0", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+              {feedFilter === "following" ? (
+                <>
+                  <div style={{
+                    width: "80px",
+                    height: "80px",
+                    borderRadius: "24px",
+                    backgroundColor: "#f8fafc",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: "24px",
+                    color: "#64748b",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)"
+                  }}>
+                    <HugeiconsIcon icon={UserBlock01Icon} style={{ fontSize: "80%" }} />
+                  </div>
+                  <h2 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "12px", color: "#1e293b" }}>
+                    Follow creators to see their activity
+                  </h2>
+                  <p style={{ color: "#64748b", fontSize: "16px", lineHeight: 1.6, maxWidth: "400px", margin: "0 auto 32px" }}>
+                    It looks like you haven't followed anyone yet. Discover amazing creators and start building your feed!
+                  </p>
+                  <button
+                    onClick={() => { setFeedFilter("all"); }}
+                    style={{
+                      padding: "12px 24px",
+                      backgroundColor: "#212121",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "14px",
+                      fontWeight: 700,
+                      fontSize: "15px",
+                      cursor: "pointer",
+                      boxShadow: "0 4px 12px rgba(54, 65, 130, 0.2)",
+                      transition: "all 0.2s ease"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-1px)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+                  >
+                    Discover Creators
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "20px",
+                    backgroundColor: "#f1f5f9",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: "24px",
+                    color: "#94a3b8"
+                  }}>
+                    <FontAwesomeIcon icon={faTags} style={{ fontSize: "24px" }} />
+                  </div>
+                  <h2 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "12px", color: "var(--text-primary)" }}>NOTHING HERE.</h2>
+                  <p style={{ color: "var(--text-secondary)", fontSize: "16px", lineHeight: 1.6 }}>
+                    We couldn't find any {feedType} matching your current filters. Try selecting different tags or check back later!
+                  </p>
+                  <button
+                    onClick={() => { setSelectedTag(""); setFeedFilter("all"); setSelectedLang(""); }}
+                    style={{
+                      marginTop: "24px",
+                      padding: "10px 20px",
+                      backgroundColor: "transparent",
+                      border: "2px solid #212121",
+                      color: "#212121",
+                      borderRadius: "12px",
+                      fontWeight: 700,
+                      cursor: "pointer"
+                    }}
+                  >
+                    Clear all filters
+                  </button>
+                </>
+              )}
             </div>
           ) : (
             <div className="stagger-1" style={{ display: "flex", flexDirection: "column", gap: "40px" }}>

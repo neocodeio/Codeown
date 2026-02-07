@@ -140,13 +140,13 @@ export default function Profile() {
 
   if (!isLoaded) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#364182", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
   if (!isSignedIn) return <Navigate to="/sign-in" replace />;
 
-  const avatarUrl = userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "U")}&background=364182&color=fff&bold=true`;
+  const avatarUrl = userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "U")}&background=212121&color=fff&bold=true`;
 
   return (
     <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
@@ -176,13 +176,13 @@ export default function Profile() {
           box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .profile-btn-primary {
-          background: #364182;
+          background: #212121;
           color: white;
-          border-color: #364182;
+          border-color: #212121;
         }
         .profile-btn-primary:hover {
-          background: #2d3568;
-          border-color: #2d3568;
+          background: #444;
+          border-color: #444;
           color: white;
         }
         .tab-item {
@@ -202,7 +202,7 @@ export default function Profile() {
           gap: 10px;
         }
         .tab-item.active {
-          color: #364182;
+          color: #212121;
         }
         .stat-card {
           padding: 20px;
@@ -234,15 +234,15 @@ export default function Profile() {
           transition: all 0.3s ease;
         }
         .stat-card:hover .stat-icon {
-          background: #eef2ff;
-          color: #364182;
+          background: #f0f0f0;
+          color: #212121;
         }
       `}</style>
 
       {/* Dynamic Banner */}
       <div style={{
         height: isMobile ? "200px" : "150px",
-        background: "linear-gradient(135deg, #364182 0%, #849bff 100%)",
+        background: "linear-gradient(135deg, #212121 0%, #444 100%)",
         position: "relative",
         overflow: "hidden"
       }}>
@@ -374,7 +374,7 @@ export default function Profile() {
                 {userProfile?.name || user?.fullName}
               </h1>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", color: "#64748b" }}>
-                <span style={{ fontWeight: 800, color: "#364182", fontSize: "15px" }}>
+                <span style={{ fontWeight: 800, color: "#212121", fontSize: "15px" }}>
                   @{userProfile?.username || user?.username}
                 </span>
                 {userProfile?.created_at && (
@@ -412,7 +412,7 @@ export default function Profile() {
                   </a>
                 )}
                 {userProfile?.website_url && (
-                  <a href={userProfile.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#364182"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
+                  <a href={userProfile.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#334155", fontSize: "20px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#212121"} onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}>
                     <FontAwesomeIcon icon={faGlobe} />
                   </a>
                 )}
@@ -444,7 +444,7 @@ export default function Profile() {
               <div style={{ fontSize: isMobile ? "18px" : "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.total_likes || 0}</div>
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Total Likes</div>
             </div>
-            <button className="stat-card" style={{ background: "linear-gradient(135deg, #364182 0%, #4a59b3 100%)", border: "none", padding: isMobile ? "16px" : "20px" }} onClick={() => setIsProjectModalOpen(true)}>
+            <button className="stat-card" style={{ background: "linear-gradient(135deg, #212121 0%, #444 100%)", border: "none", padding: isMobile ? "16px" : "20px" }} onClick={() => setIsProjectModalOpen(true)}>
               <div className="stat-icon" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}><FontAwesomeIcon icon={faPlus} /></div>
               <div style={{ color: "white", fontWeight: 800, fontSize: isMobile ? "13px" : "15px", textAlign: "center" }}>New Project</div>
             </button>
@@ -480,7 +480,7 @@ export default function Profile() {
             >
               <FontAwesomeIcon icon={faLayerGroup} style={{ fontSize: isMobile ? "12px" : "14px" }} />
               <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Posts</span>
-              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "posts" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{posts.length}</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "posts" ? "#212121" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{posts.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("projects")}
@@ -495,7 +495,7 @@ export default function Profile() {
             >
               <FontAwesomeIcon icon={faRocket} style={{ fontSize: isMobile ? "12px" : "14px" }} />
               <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Projects</span>
-              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "projects" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{projects.length}</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "projects" ? "#212121" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{projects.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("saved")}
@@ -510,7 +510,7 @@ export default function Profile() {
             >
               <FontAwesomeIcon icon={faBookmark} style={{ fontSize: isMobile ? "12px" : "14px" }} />
               <span style={{ fontSize: isMobile ? "12px" : "14px" }}>Saved</span>
-              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "saved" ? "#364182" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{savedPosts.length + savedProjects.length}</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, background: activeTab === "saved" ? "#212121" : "#94a3b8", color: "white", padding: "1px 5px", borderRadius: "6px" }}>{savedPosts.length + savedProjects.length}</span>
             </button>
           </div>
 
@@ -554,9 +554,9 @@ export default function Profile() {
                     className="profile-btn"
                     style={{
                       borderRadius: "12px",
-                      backgroundColor: savedSubTab === "posts" ? "#364182" : "white",
+                      backgroundColor: savedSubTab === "posts" ? "#212121" : "white",
                       color: savedSubTab === "posts" ? "white" : "#334155",
-                      borderColor: savedSubTab === "posts" ? "#364182" : "#e2e8f0"
+                      borderColor: savedSubTab === "posts" ? "#212121" : "#e2e8f0"
                     }}
                   >
                     Saved Posts ({savedPosts.length})
@@ -566,9 +566,9 @@ export default function Profile() {
                     className="profile-btn"
                     style={{
                       borderRadius: "12px",
-                      backgroundColor: savedSubTab === "projects" ? "#364182" : "white",
+                      backgroundColor: savedSubTab === "projects" ? "#212121" : "white",
                       color: savedSubTab === "projects" ? "white" : "#334155",
-                      borderColor: savedSubTab === "projects" ? "#364182" : "#e2e8f0"
+                      borderColor: savedSubTab === "projects" ? "#212121" : "#e2e8f0"
                     }}
                   >
                     Saved Projects ({savedProjects.length})

@@ -50,7 +50,7 @@ export default function SignInPage() {
                 to="/forgot-password"
                 style={{
                   fontSize: "14px",
-                  color: "#6366f1",
+                  color: "#212121",
                   fontWeight: 600,
                   textDecoration: "none",
                 }}

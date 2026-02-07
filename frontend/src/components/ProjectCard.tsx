@@ -83,7 +83,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
   };
 
   const userName = project.user?.name || "User";
-  const avatarUrl = project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "U")}&background=000000&color=ffffff&bold=true`;
+  const avatarUrl = project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "U")}&background=212121&color=ffffff&bold=true`;
 
   const handleClick = () => {
     navigate(`/project/${project.id}`);
@@ -310,8 +310,8 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
               style={{
                 padding: "10px 16px",
                 border: "1px solid #eef2ff",
-                backgroundColor: "#eef2ff",
-                color: "#364182",
+                backgroundColor: "#f0f0f0",
+                color: "#212121",
                 borderRadius: "12px",
                 fontSize: "13px",
                 cursor: "pointer",
@@ -382,7 +382,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                   fontSize: "11px",
                   padding: "4px 10px",
                   backgroundColor: "#f8fafc",
-                  color: "#364182",
+                  color: "#212121",
                   borderRadius: "10px",
                   fontWeight: 800,
                   cursor: "pointer",
@@ -390,8 +390,8 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                   transition: "all 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#eef2ff";
-                  e.currentTarget.style.borderColor = "#364182";
+                  e.currentTarget.style.backgroundColor = "#f0f0f0";
+                  e.currentTarget.style.borderColor = "#212121";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "#f8fafc";
@@ -444,7 +444,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                     title={contrib.username}
                   >
                     <img
-                      src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=364182&color=ffffff&bold=true`}
+                      src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=212121&color=ffffff&bold=true`}
                       alt={contrib.username}
                       style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
@@ -466,22 +466,22 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                 alignItems: "center",
                 gap: "8px",
                 padding: "10px 18px",
-                backgroundColor: "#0f172a",
+                backgroundColor: "#212121",
                 color: "#fff",
                 borderRadius: "14px",
                 textDecoration: "none",
                 fontSize: "13px",
                 fontWeight: 800,
                 transition: "all 0.2s ease",
-                boxShadow: "0 8px 16px rgba(15, 23, 42, 0.1)"
+                boxShadow: "0 8px 16px rgba(33, 33, 33, 0.1)"
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 12px 20px rgba(15, 23, 42, 0.2)";
+                e.currentTarget.style.boxShadow = "0 12px 20px rgba(33, 33, 33, 0.2)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 8px 16px rgba(15, 23, 42, 0.1)";
+                e.currentTarget.style.boxShadow = "0 8px 16px rgba(33, 33, 33, 0.1)";
               }}
             >
               <FontAwesomeIcon icon={faGithub} />
@@ -500,22 +500,22 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                   alignItems: "center",
                   gap: "8px",
                   padding: "10px 18px",
-                  backgroundColor: "#364182",
+                  backgroundColor: "#212121",
                   color: "#fff",
                   borderRadius: "14px",
                   textDecoration: "none",
                   fontSize: "13px",
                   fontWeight: 800,
                   transition: "all 0.2s ease",
-                  boxShadow: "0 8px 16px rgba(54, 65, 130, 0.1)"
+                  boxShadow: "0 8px 16px rgba(33, 33, 33, 0.1)"
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 12px 20px rgba(54, 65, 130, 0.2)";
+                  e.currentTarget.style.boxShadow = "0 12px 20px rgba(33, 33, 33, 0.2)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(54, 65, 130, 0.1)";
+                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(33, 33, 33, 0.1)";
                 }}
               >
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
@@ -588,7 +588,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "#f1f5f9";
-            e.currentTarget.style.color = "#364182";
+            e.currentTarget.style.color = "#212121";
             e.currentTarget.style.transform = "scale(1.02)";
           }}
           onMouseLeave={(e) => {
@@ -654,23 +654,23 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
           style={{
             width: "44px",
             border: "1px solid",
-            borderColor: isSaved ? "#364182" : "#f1f5f9",
+            borderColor: isSaved ? "#212121" : "#f1f5f9",
             padding: "10px",
             display: "flex",
             cursor: currentUser ? "pointer" : "not-allowed",
             alignItems: "center",
             justifyContent: "center",
             borderRadius: "14px",
-            backgroundColor: isSaved ? "#eef2ff" : "#f8fafc",
-            color: isSaved ? "#364182" : "#64748b",
+            backgroundColor: isSaved ? "#f0f0f0" : "#f8fafc",
+            color: isSaved ? "#212121" : "#64748b",
             transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = isSaved ? "#e0e7ff" : "#f1f5f9";
+            e.currentTarget.style.backgroundColor = isSaved ? "#f0f0f0" : "#f1f5f9";
             e.currentTarget.style.transform = "scale(1.1)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = isSaved ? "#eef2ff" : "#f8fafc";
+            e.currentTarget.style.backgroundColor = isSaved ? "#f0f0f0" : "#f8fafc";
             e.currentTarget.style.transform = "scale(1)";
           }}
         >

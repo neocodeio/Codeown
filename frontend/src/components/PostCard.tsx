@@ -130,7 +130,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
   };
 
   const avatarUrl = post.user?.avatar_url ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user?.name || post.user?.username || "User")}&background=000&color=ffffff&size=64`;
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user?.name || post.user?.username || "User")}&background=212121&color=ffffff&size=64`;
   const userName = post.user?.name || post.user?.username || "User";
   return (
     <>
@@ -230,13 +230,13 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 fontWeight: "900",
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
-                backgroundColor: "#364182",
+                backgroundColor: "#212121",
                 padding: "6px 12px",
                 borderRadius: "10px",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
-                boxShadow: "0 4px 12px rgba(54, 65, 130, 0.2)"
+                boxShadow: "0 4px 12px rgba(33, 33, 33, 0.2)"
               }}>
                 <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "10px" }} />
                 <span>Featured</span>
@@ -254,10 +254,10 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                     style={{
                       width: "38px",
                       height: "38px",
-                      background: isPinned ? "#eef2ff" : "white",
+                      background: isPinned ? "#f0f0f0" : "white",
                       border: "1px solid",
-                      borderColor: isPinned ? "#364182" : "#f1f5f9",
-                      color: isPinned ? "#364182" : "#64748b",
+                      borderColor: isPinned ? "#212121" : "#f1f5f9",
+                      color: isPinned ? "#212121" : "#64748b",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
@@ -266,11 +266,11 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                       transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = isPinned ? "#e0e7ff" : "#f8fafc";
+                      e.currentTarget.style.backgroundColor = isPinned ? "#e0e0e0" : "#f8fafc";
                       e.currentTarget.style.transform = "translateY(-2px)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = isPinned ? "#eef2ff" : "white";
+                      e.currentTarget.style.backgroundColor = isPinned ? "#f0f0f0" : "white";
                       e.currentTarget.style.transform = "translateY(0)";
                     }}
                   >
@@ -385,7 +385,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                     display: "inline-block",
                     padding: "6px 14px",
                     backgroundColor: "#f1f5f9",
-                    color: "#364182",
+                    color: "#212121",
                     borderRadius: "10px",
                     fontSize: "12px",
                     fontWeight: 800,
@@ -395,9 +395,9 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                     border: "1px solid #e2e8f0"
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#eef2ff";
+                    e.currentTarget.style.backgroundColor = "#f0f0f0";
                     e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.borderColor = "#364182";
+                    e.currentTarget.style.borderColor = "#212121";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = "#f1f5f9";
@@ -488,7 +488,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.05)";
                 e.currentTarget.style.backgroundColor = "#f1f5f9";
-                e.currentTarget.style.color = "#364182";
+                e.currentTarget.style.color = "#212121";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
@@ -575,10 +575,10 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
               style={{
                 width: "40px",
                 height: "40px",
-                background: isSaved ? "#eef2ff" : "#f8fafc",
+                background: isSaved ? "#f0f0f0" : "#f8fafc",
                 border: "1px solid",
-                borderColor: isSaved ? "#364182" : "#f1f5f9",
-                color: isSaved ? "#364182" : "#64748b",
+                borderColor: isSaved ? "#212121" : "#f1f5f9",
+                color: isSaved ? "#212121" : "#64748b",
                 cursor: "pointer",
                 borderRadius: "14px",
                 display: "flex",
@@ -588,11 +588,11 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.1)";
-                e.currentTarget.style.backgroundColor = isSaved ? "#e0e7ff" : "#f1f5f9";
+                e.currentTarget.style.backgroundColor = isSaved ? "#e0e0e0" : "#f1f5f9";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.backgroundColor = isSaved ? "#eef2ff" : "#f8fafc";
+                e.currentTarget.style.backgroundColor = isSaved ? "#f0f0f0" : "#f8fafc";
               }}
             >
               <FontAwesomeIcon

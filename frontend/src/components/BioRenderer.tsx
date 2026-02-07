@@ -35,7 +35,7 @@ export default function BioRenderer({ bio }: BioRendererProps) {
                         key={`mention-${localKey++}`}
                         onClick={(e) => handleMentionClick(username, e)}
                         style={{
-                            color: "#3b82f6",
+                            color: "#212121",
                             fontWeight: 600,
                             cursor: "pointer",
                         }}
@@ -56,7 +56,7 @@ export default function BioRenderer({ bio }: BioRendererProps) {
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                            color: "#3b82f6",
+                            color: "#212121",
                             textDecoration: "none",
                             fontWeight: "600",
                         }}
