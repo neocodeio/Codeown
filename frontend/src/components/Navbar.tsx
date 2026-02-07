@@ -193,8 +193,19 @@ export default function Navbar() {
       {/* Spacer */}
       <div style={{ flex: 1 }}></div>
 
+      {/* FoundrList Badge */}
+      <div style={{ padding: "0 20px 20px 20px", display: "flex", justifyContent: "center" }}>
+        <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", maxWidth: "240px" }}>
+          <img
+            src="https://www.foundrlist.com/api/badge/codeown"
+            alt="Codeown - Live on FoundrList"
+            style={{ width: "100%", height: "auto", borderRadius: "12px" }}
+          />
+        </a>
+      </div>
+
       {/* Footer Links & Profile */}
-      <div style={{ padding: "20px" }}>
+      <div style={{ padding: "0 20px 20px 20px" }}>
         {/* Footer Links */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", fontSize: "11px", color: "#94a3b8", marginBottom: "20px", padding: "0 4px" }}>
           <Link to="/privacy" style={{ color: "#94a3b8", textDecoration: "none" }}>Privacy Policy</Link>
@@ -330,6 +341,40 @@ export default function Navbar() {
   // Mobile Render
   return (
     <>
+      {/* Mobile Top Header */}
+      <div style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "64px",
+        backgroundColor: "#fff",
+        borderBottom: "1px solid #e2e8f0",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 16px",
+        zIndex: 2000,
+        boxShadow: "0 1px 3px rgba(0,0,0,0.02)"
+      }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+          <img src={logo} alt="Codeown" style={{ height: "32px", width: "auto" }} />
+          <span style={{ fontSize: "18px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
+            Codeown
+          </span>
+        </Link>
+        <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }}>
+          <img
+            src="https://www.foundrlist.com/api/badge/codeown"
+            alt="Codeown - Live on FoundrList"
+            style={{ height: "36px", width: "auto", borderRadius: "8px" }}
+          />
+        </a>
+      </div>
+
+      {/* Spacer for Top Header */}
+      <div style={{ height: "64px" }} />
+
       {/* Mobile Bottom Tab Bar */}
       <div style={{
         position: "fixed",
@@ -338,16 +383,16 @@ export default function Navbar() {
         right: 0,
         backgroundColor: "#fff",
         borderTop: "1px solid #e2e8f0",
-        display: "flex", // Ensure flex display
-        flexDirection: "row", // Explicit row direction
+        display: "flex",
+        flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
-        padding: "12px 10px 24px 10px", // Extra padding for safe area
+        padding: "12px 10px 24px 10px",
         zIndex: 2000,
         boxShadow: "0 -4px 20px rgba(0,0,0,0.05)",
-        width: "100%", // Explicit full width
-        maxWidth: "100vw", // Prevent overflow
-        boxSizing: "border-box" // Ensure padding is included in width
+        width: "100%",
+        maxWidth: "100vw",
+        boxSizing: "border-box"
       }}>
         <Link to="/" style={{ color: location.pathname === "/" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
           <HugeiconsIcon icon={Home01Icon} style={{ fontSize: "20px" }} />
