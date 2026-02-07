@@ -199,7 +199,7 @@ export default function Navbar() {
           <img
             src="https://www.foundrlist.com/api/badge/codeown"
             alt="Codeown - Live on FoundrList"
-            style={{ width: "100%", height: "auto", borderRadius: "12px" }}
+            style={{ width: "50%", height: "auto", borderRadius: "12px" }}
           />
         </a>
       </div>
