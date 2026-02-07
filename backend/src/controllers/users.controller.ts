@@ -8,7 +8,7 @@ import { getOrCreateConversation } from "./messages.controller.js";
 async function createWelcomeExperienceForNewUser(newUserId: string) {
   try {
     console.log(`[Welcome Message] Starting welcome experience for new user: ${newUserId}`);
-    
+
     // First, try to find CEO in Supabase by username
     let ceoId: string | null = null;
     const { data: ceoUser, error: ceoError } = await supabase
@@ -23,13 +23,13 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
     } else {
       // CEO not found in Supabase, try multiple methods to find them
       console.log(`[Welcome Message] CEO not found in Supabase, searching Clerk...`);
-      
+
       // Method 1: Check environment variable for CEO Clerk ID (most reliable)
       const ceoClerkIdFromEnv = process.env.CEO_CLERK_ID;
       if (ceoClerkIdFromEnv) {
         ceoId = ceoClerkIdFromEnv;
         console.log(`[Welcome Message] Using CEO ID from environment variable: ${ceoId}`);
-        
+
         // Verify this user exists and has the correct username
         try {
           const clerkCeo = await clerkClient.users.getUser(ceoId);
@@ -50,36 +50,36 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
           ceoId = null; // Reset and try other methods
         }
       }
-      
+
       // Method 2: Search through Clerk users (if env var didn't work)
       if (!ceoId && process.env.CLERK_SECRET_KEY) {
         try {
           console.log(`[Welcome Message] Searching Clerk users for username 'amin.ceo'...`);
-          
+
           // Search through users in batches (Clerk doesn't support username filtering)
           let foundCeo = null;
           let offset = 0;
           const limit = 500;
           let hasMore = true;
-          
+
           while (hasMore && !foundCeo && offset < 5000) { // Limit search to first 5000 users
-            const clerkUsersResponse = await clerkClient.users.getUserList({ 
+            const clerkUsersResponse = await clerkClient.users.getUserList({
               limit,
               offset,
             });
-            
+
             // Handle both response formats: { data: User[] } or User[]
-            const clerkUsers = Array.isArray(clerkUsersResponse) 
-              ? clerkUsersResponse 
+            const clerkUsers = Array.isArray(clerkUsersResponse)
+              ? clerkUsersResponse
               : (clerkUsersResponse as any).data || [];
-            
+
             if (clerkUsers && clerkUsers.length > 0) {
               foundCeo = clerkUsers.find((u: any) => u.username === "amin.ceo");
               if (foundCeo && foundCeo.id) {
                 const foundCeoId = foundCeo.id;
                 ceoId = foundCeoId;
                 console.log(`[Welcome Message] Found CEO in Clerk (offset ${offset}): ${foundCeoId}`);
-                
+
                 // Ensure CEO exists in Supabase
                 try {
                   await ensureUserExists(foundCeoId, foundCeo);
@@ -89,14 +89,14 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
                 }
                 break;
               }
-              
+
               hasMore = clerkUsers.length === limit;
               offset += limit;
             } else {
               hasMore = false;
             }
           }
-          
+
           if (!foundCeo) {
             console.error(`[Welcome Message] CEO user 'amin.ceo' not found in Clerk after searching ${offset} users`);
           }
@@ -118,7 +118,7 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
     }
 
     console.log(`[Welcome Message] Creating conversation between CEO (${ceoId}) and new user (${newUserId})`);
-    
+
     // Ensure there is a conversation between CEO and the new user
     const conversationId = await getOrCreateConversation(ceoId, newUserId);
     console.log(`[Welcome Message] Conversation created/found: ${conversationId}`);
@@ -143,7 +143,7 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
       console.error(`[Welcome Message] Error creating CEO welcome message:`, messageError);
       return;
     }
-    
+
     console.log(`[Welcome Message] Welcome message created successfully:`, insertedMessage?.id);
 
     // Create a notification so the new user clearly sees the welcome
@@ -162,7 +162,7 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
     } else {
       console.log(`[Welcome Message] Notification created successfully`);
     }
-    
+
     console.log(`[Welcome Message] Welcome experience completed successfully for user ${newUserId}`);
   } catch (error: any) {
     console.error(`[Welcome Message] Unexpected error creating welcome experience for new user:`, error?.message || error);
@@ -486,6 +486,7 @@ export async function getUserProfile(req: Request, res: Response) {
       id: userData.id,
       name: userData.name,
       avatar_url: userData.avatar_url,
+      banner_url: userData.banner_url || null,
       bio: userData.bio || null,
       username: userData.username || null,
       follower_count: followerResult.count || 0,
@@ -547,6 +548,7 @@ export async function updateUserProfile(req: Request, res: Response) {
       username,
       bio,
       avatar_url,
+      banner_url,
       location,
       job_title,
       skills,
@@ -594,6 +596,7 @@ export async function updateUserProfile(req: Request, res: Response) {
     if (name !== undefined) updateData.name = name;
     if (bio !== undefined) updateData.bio = bio;
     if (avatar_url !== undefined) updateData.avatar_url = avatar_url;
+    if (banner_url !== undefined) updateData.banner_url = banner_url;
     if (location !== undefined) updateData.location = location;
     if (job_title !== undefined) updateData.job_title = job_title;
     if (skills !== undefined) updateData.skills = skills;
@@ -689,7 +692,7 @@ export async function pinPost(req: Request, res: Response) {
     if (!postId) {
       return res.status(400).json({ error: "Post ID is required" });
     }
-    
+
     const postIdNum = parseInt(postId, 10);
     if (isNaN(postIdNum)) {
       return res.status(400).json({ error: "Invalid post ID" });

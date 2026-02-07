@@ -26,6 +26,7 @@ interface EditProfileModalProps {
     twitter_url?: string | null;
     linkedin_url?: string | null;
     website_url?: string | null;
+    banner_url?: string | null;
   };
 }
 
@@ -42,6 +43,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const { getToken, isLoaded } = useClerkAuth();
@@ -62,6 +65,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setSkills(currentUser.skills || []);
       setSkillInput("");
       setAvatarFile(null);
+      setBannerFile(null);
+      setBannerPreview(currentUser.banner_url || null);
       setUsernameError(null);
     }
   }, [isOpen, currentUser]);
@@ -74,7 +79,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
     return daysSinceChange >= 14;
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
@@ -85,6 +90,22 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert("Banner image size must be less than 10MB");
+        return;
+      }
+      setBannerFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -158,10 +179,17 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       }
 
       let avatarUrl = currentUser.avatar_url;
+      let bannerUrl = currentUser.banner_url;
       if (avatarFile) {
-        const uploadedUrl = await uploadImage(avatarFile);
-        if (uploadedUrl) {
-          avatarUrl = uploadedUrl;
+        const uploadedAvatarUrl = await uploadImage(avatarFile);
+        if (uploadedAvatarUrl) {
+          avatarUrl = uploadedAvatarUrl;
+        }
+      }
+      if (bannerFile) {
+        const uploadedBannerUrl = await uploadImage(bannerFile);
+        if (uploadedBannerUrl) {
+          bannerUrl = uploadedBannerUrl;
         }
       }
 
@@ -172,6 +200,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           username: username.trim() || null,
           bio: bio.trim() || null,
           avatar_url: avatarUrl,
+          banner_url: bannerUrl,
           is_organization: isOrganization,
           github_url: githubUrl.trim() || null,
           twitter_url: twitterUrl.trim() || null,
@@ -385,9 +414,53 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                 }}>
                   UP
                 </div>
-                <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
+                <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: "none" }} />
               </label>
               <span style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase" }}>Change Avatar</span>
+            </div>
+
+            {/* Banner Section */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <label className="modal-label">Profile Banner</label>
+              <label style={{ cursor: "pointer", position: "relative", width: "100%" }}>
+                <div style={{
+                  width: "100%",
+                  height: "120px",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  border: "2px solid #f1f5f9",
+                  backgroundColor: "#f8fafc",
+                  position: "relative"
+                }}>
+                  {bannerPreview ? (
+                    <img src={bannerPreview} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Banner Preview" />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8", fontSize: "14px", fontWeight: 600 }}>
+                      No banner image set
+                    </div>
+                  )}
+                  <div style={{
+                    position: "absolute",
+                    inset: 0,
+                    backgroundColor: "rgba(0,0,0,0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    opacity: 0,
+                    transition: "opacity 0.2s",
+                    color: "white",
+                    fontSize: "13px",
+                    fontWeight: 800
+                  }}
+                    onMouseEnter={(e) => e.currentTarget.style.opacity = "1"}
+                    onMouseLeave={(e) => e.currentTarget.style.opacity = "0"}
+                  >
+                    CHANGE BANNER
+                  </div>
+                </div>
+                <input type="file" accept="image/*" onChange={handleBannerChange} style={{ display: "none" }} />
+              </label>
+              <span style={{ fontSize: "11px", color: "#94a3b8", marginLeft: "4px" }}>Recommended size: 1500x500px</span>
             </div>
 
             {/* Form Fields */}

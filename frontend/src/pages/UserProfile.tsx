@@ -50,6 +50,7 @@ interface User {
   twitter_url: string | null;
   linkedin_url: string | null;
   website_url: string | null;
+  banner_url: string | null;
   created_at: string | null;
 }
 
