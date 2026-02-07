@@ -357,14 +357,27 @@ export default function Navbar() {
           <HugeiconsIcon icon={Search01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
-        <div style={{ position: "relative", flex: 1, display: "flex", justifyContent: "center" }}>
+        <Link to="/messages" style={{ color: location.pathname === "/messages" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+          <HugeiconsIcon icon={Message01Icon} style={{ fontSize: "20px" }} />
+        </Link>
+
+        <div style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative" }}>
           <div onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)} style={{
-            width: "48px", height: "48px", borderRadius: "50%", background: "#212121", color: "#fff",
-            display: "flex", alignItems: "center", justifyContent: "center", marginTop: "-32px",
-            boxShadow: "0 8px 20px rgba(33, 33, 33, 0.4)", cursor: "pointer", position: "absolute", top: 0,
-            transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s"
+            color: isCreateMenuOpen ? "#212121" : "#94a3b8",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            cursor: "pointer",
+            transition: "all 0.2s"
           }}>
-            <HugeiconsIcon icon={Add01Icon} style={{ fontSize: "20px" }} />
+            <HugeiconsIcon
+              icon={Add01Icon}
+              style={{
+                fontSize: "20px",
+                transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)",
+                transition: "transform 0.2s"
+              }}
+            />
           </div>
 
           {/* Create Menu - Absolute positioned above button */}
@@ -409,8 +422,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Spacer to hold the space in the flex row */}
-          <div style={{ width: "48px" }} />
         </div>
 
         <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
