@@ -155,7 +155,7 @@ export default function FeedbackButton() {
                   backgroundColor: "#f8fafc",
                   color: "#1e293b",
                   fontSize: "14px",
-                  outline: "none",
+                  outline: "none", 
                   transition: "border-color 0.2s",
                   boxSizing: "border-box"
                 }}
