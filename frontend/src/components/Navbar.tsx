@@ -11,7 +11,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Home01Icon,
   Search01Icon,
-  Message01Icon,
+  Mail01Icon,
   Rocket01Icon,
   UserIcon,
   Notification01Icon,
@@ -111,8 +111,8 @@ export default function Navbar() {
         {isSignedIn && (
           <>
             <Link to="/messages" style={linkStyle("/messages")}>
-              <HugeiconsIcon icon={Message01Icon} style={{ width: "20px" }} />
-              Messages
+              <HugeiconsIcon icon={Mail01Icon} style={{ width: "20px" }} />
+              Chat
             </Link>
 
             {/* Notification Item */}
@@ -358,7 +358,7 @@ export default function Navbar() {
         </Link>
 
         <Link to="/messages" style={{ color: location.pathname === "/messages" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
-          <HugeiconsIcon icon={Message01Icon} style={{ fontSize: "20px" }} />
+          <HugeiconsIcon icon={Mail01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
         <div style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative" }}>

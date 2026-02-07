@@ -9,8 +9,11 @@ import {
     SentIcon,
     Comment01Icon,
     ArrowLeft01Icon,
-    Message01Icon
+    MailEdit01Icon,
+    Search01Icon,
+    NoteEditIcon
 } from "@hugeicons/core-free-icons";
+import NewMessageModal from "../components/NewMessageModal";
 
 interface Partner {
     id: string;
@@ -47,6 +50,8 @@ export default function Messages() {
     const [activeConvo, setActiveConvo] = useState<Conversation | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -107,6 +112,7 @@ export default function Messages() {
                     last_message: null
                 };
                 setActiveConvo(placeholder);
+                setIsNewMessageModalOpen(false); // Close modal if open
             }
         } catch (error) {
             console.error("Error starting placeholder convo:", error);
@@ -175,6 +181,11 @@ export default function Messages() {
         }
     };
 
+    const filteredConversations = conversations.filter(convo =>
+        convo.partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (convo.partner.username && convo.partner.username.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
     if (loading) return (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "80vh" }}>
             <div style={{ width: "30px", height: "30px", border: "3px solid #eee", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
@@ -206,18 +217,74 @@ export default function Messages() {
                     height: "100%"
                 }}>
                     <div style={{ padding: "24px", borderBottom: "1px solid #f1f5f9", flexShrink: 0 }}>
-                        <h2 style={{ fontSize: "24px", fontWeight: 800, color: "#1e293b", margin: 0 }}>Messages</h2>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                            <h2 style={{ fontSize: "28px", fontWeight: 800, color: "#1e293b", margin: 0 }}>Messages</h2>
+                            <button
+                                onClick={() => setIsNewMessageModalOpen(true)}
+                                style={{
+                                    width: "40px",
+                                    height: "40px",
+                                    borderRadius: "50%",
+                                    border: "1px solid #e2e8f0",
+                                    backgroundColor: "#fff",
+                                    color: "#1e293b",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                                    transition: "all 0.2s"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = "#f8fafc";
+                                    e.currentTarget.style.transform = "translateY(-1px)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = "#fff";
+                                    e.currentTarget.style.transform = "translateY(0)";
+                                }}
+                            >
+                                <HugeiconsIcon icon={MailEdit01Icon} style={{ fontSize: "20px" }} />
+                            </button>
+                        </div>
+
+                        <div style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            padding: "10px 16px",
+                            backgroundColor: "#f8fafc",
+                            borderRadius: "16px",
+                            border: "1px solid #e2e8f0",
+                            transition: "all 0.2s"
+                        }}>
+                            <HugeiconsIcon icon={Search01Icon} style={{ color: "#94a3b8", fontSize: "16px" }} />
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                style={{
+                                    border: "none",
+                                    background: "none",
+                                    flex: 1,
+                                    outline: "none",
+                                    fontSize: "14px",
+                                    color: "#1e293b"
+                                }}
+                            />
+                        </div>
                     </div>
 
                     <div style={{ flex: 1, overflowY: "auto", padding: "12px" }}>
                         {conversations.length === 0 && !targetUserId && (
                             <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
-                                <HugeiconsIcon icon={Message01Icon} style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.2 }} />
+                                <HugeiconsIcon icon={MailEdit01Icon} style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.2 }} />
                                 <p style={{ fontWeight: 500, margin: 0 }}>No conversations yet</p>
                                 <p style={{ fontSize: "14px", marginTop: "8px" }}>Start connecting with people!</p>
                             </div>
                         )}
-                        {conversations.map(convo => (
+                        {filteredConversations.map(convo => (
                             <div
                                 key={convo.id}
                                 onClick={() => setActiveConvo(convo)}
@@ -240,18 +307,29 @@ export default function Messages() {
                                     if (activeConvo?.id !== convo.id) e.currentTarget.style.backgroundColor = "transparent";
                                 }}
                             >
-                                <img
-                                    src={convo.partner.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(convo.partner.name)}&background=random&color=fff`}
-                                    alt=""
-                                    style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff", boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }}
-                                />
+                                <div style={{ position: 'relative' }}>
+                                    <img
+                                        src={convo.partner.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(convo.partner.name)}&background=random&color=fff`}
+                                        alt=""
+                                        style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff", boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }}
+                                    />
+                                    {/* Online indicator could go here if we had that data */}
+                                </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "4px" }}>
                                         <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a" }}>{convo.partner.name}</div>
+                                        {convo.last_message && (
+                                            <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                                                {new Date(convo.last_message.created_at).toLocaleDateString() === new Date().toLocaleDateString()
+                                                    ? new Date(convo.last_message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                                    : new Date(convo.last_message.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })
+                                                }
+                                            </div>
+                                        )}
                                     </div>
                                     <div style={{
                                         fontSize: "13px",
-                                        color: activeConvo?.id === convo.id ? "#4f46e5" : "#64748b",
+                                        color: activeConvo?.id === convo.id ? "#212121" : "#64748b",
                                         whiteSpace: "nowrap",
                                         overflow: "hidden",
                                         textOverflow: "ellipsis",
@@ -456,6 +534,12 @@ export default function Messages() {
                     )}
                 </div>
             )}
+
+            <NewMessageModal
+                isOpen={isNewMessageModalOpen}
+                onClose={() => setIsNewMessageModalOpen(false)}
+                onSelectUser={(user) => startPlaceholderConvo(user.id)}
+            />
         </main>
     );
 }
