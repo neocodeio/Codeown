@@ -391,6 +391,43 @@ export default function UserProfile() {
                   </a>
                 )}
               </div>
+
+              {/* Tech Stack / Skills */}
+              {user.skills && user.skills.length > 0 && (
+                <div style={{ marginTop: "24px" }}>
+                  <div style={{ fontSize: "12px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "12px" }}>Tech Stack</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                    {user.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        style={{
+                          padding: "6px 14px",
+                          backgroundColor: "white",
+                          border: "1px solid #e2e8f0",
+                          borderRadius: "12px",
+                          fontSize: "13px",
+                          fontWeight: 700,
+                          color: "#334155",
+                          transition: "all 0.2s ease",
+                          cursor: "default"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = "#212121";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                          e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.05)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = "#e2e8f0";
+                          e.currentTarget.style.transform = "translateY(0)";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

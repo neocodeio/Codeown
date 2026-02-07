@@ -40,6 +40,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [twitterUrl, setTwitterUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [skills, setSkills] = useState<string[]>([]);
+  const [skillInput, setSkillInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const { getToken, isLoaded } = useClerkAuth();
@@ -57,6 +59,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setTwitterUrl(currentUser.twitter_url || "");
       setLinkedinUrl(currentUser.linkedin_url || "");
       setWebsiteUrl(currentUser.website_url || "");
+      setSkills(currentUser.skills || []);
+      setSkillInput("");
       setAvatarFile(null);
       setUsernameError(null);
     }
@@ -107,6 +111,19 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       console.error("Error uploading image:", error);
       return null;
     }
+  };
+
+  const handleAddSkill = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const trimmed = skillInput.trim();
+    if (trimmed && !skills.includes(trimmed)) {
+      setSkills([...skills, trimmed]);
+      setSkillInput("");
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setSkills(skills.filter(s => s !== skillToRemove));
   };
 
   const submit = async () => {
@@ -160,6 +177,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           twitter_url: twitterUrl.trim() || null,
           linkedin_url: linkedinUrl.trim() || null,
           website_url: websiteUrl.trim() || null,
+          skills: skills.length > 0 ? skills : null,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -427,6 +445,47 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   <label className="modal-label" style={{ fontSize: "11px" }}>Personal Website</label>
                   <input className="modal-input" type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://your-website.com" />
                 </div>
+              </div>
+            </div>
+
+            <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "24px" }}>
+              <label className="modal-label">Tech Stack & Skills</label>
+              <form onSubmit={handleAddSkill} style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
+                <input
+                  className="modal-input"
+                  style={{ flex: 1 }}
+                  type="text"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  placeholder="Add a skill (e.g. React, Node.js)"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAddSkill()}
+                  className="modal-btn modal-btn-secondary"
+                  style={{ padding: "0 20px" }}
+                >
+                  Add
+                </button>
+              </form>
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {skills.map((skill) => (
+                  <div key={skill} className="skill-tag">
+                    {skill}
+                    <span
+                      className="skill-remove"
+                      onClick={() => handleRemoveSkill(skill)}
+                    >
+                      &times;
+                    </span>
+                  </div>
+                ))}
+                {skills.length === 0 && (
+                  <div style={{ fontSize: "14px", color: "#94a3b8", fontStyle: "italic", padding: "4px" }}>
+                    No skills added yet. Add your tech stack to stand out!
+                  </div>
+                )}
               </div>
             </div>
 
