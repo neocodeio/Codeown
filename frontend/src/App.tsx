@@ -17,6 +17,7 @@ import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
+import ConnectionStatus from "./components/ConnectionStatus";
 
 
 export default function App() {
@@ -47,6 +48,7 @@ export default function App() {
           </div>
         </ErrorBoundary>
         {location.pathname !== "/messages" && <FeedbackButton />}
+        <ConnectionStatus />
       </div>
     </div>
   );
