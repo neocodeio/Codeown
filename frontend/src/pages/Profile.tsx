@@ -373,7 +373,7 @@ export default function Profile() {
             <div>
               <h1 style={{ fontSize: isMobile ? "24px" : "32px", fontWeight: 900, color: "#1e293b", marginBottom: "4px", letterSpacing: "-0.03em", lineHeight: "1.2", display: "flex", alignItems: "center" }}>
                 {userProfile?.name || user?.fullName}
-                <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "20px" : "28px"} />
+                <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "24px" : "32px"} />
               </h1>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", color: "#64748b" }}>
                 <span style={{ fontWeight: 800, color: "#212121", fontSize: "15px" }}>

@@ -386,7 +386,7 @@ export default function ProjectDetail() {
                     alignItems: "center"
                   }}>
                     {userName}
-                    <VerifiedBadge username={project.user?.username} size="16px" />
+                    <VerifiedBadge username={project.user?.username} size="18px" />
                   </div>
                   <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.1em", display: "flex", alignItems: "center", gap: "10px" }}>
                     <span>{formatRelativeDate(project.created_at).toUpperCase()}</span>

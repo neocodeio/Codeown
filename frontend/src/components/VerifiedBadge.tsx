@@ -7,15 +7,19 @@ interface VerifiedBadgeProps {
 }
 
 export default function VerifiedBadge({ username, size = "16px" }: VerifiedBadgeProps) {
-    if (username === "amin.ceo") {
+    if (username?.toLowerCase() === "amin.ceo") {
         return (
             <FontAwesomeIcon
                 icon={faCheckCircle}
+                title="Verified Official Account"
                 style={{
                     fontSize: size,
-                    color: "#2B7FFF", // Modern blue color
-                    marginLeft: "4px",
-                    verticalAlign: "middle"
+                    color: "#2B7FFF", // High-visibility premium blue
+                    marginLeft: "6px",
+                    verticalAlign: "middle",
+                    flexShrink: 0,
+                    transition: "transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                    cursor: "help"
                 }}
             />
         );

@@ -120,7 +120,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 style={{ fontSize: isMobile ? "13px" : "14px", fontWeight: 700, color: "#1e293b", cursor: "pointer", display: "flex", alignItems: "center" }}
               >
                 {name}
-                <VerifiedBadge username={comment.user?.username} size="14px" />
+                <VerifiedBadge username={comment.user?.username} size="16px" />
               </span>
               {comment.parent_author_name && (
                 <span style={{ fontSize: isMobile ? "10px" : "11px", color: "#64748b", fontWeight: 600 }}>
