@@ -307,112 +307,116 @@ export default function Profile() {
         <div style={{ padding: "0 10px" }}>
           <div style={{
             display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            marginBottom: "8px",
-            flexWrap: "wrap"
-          }}>
-            <h1 style={{
-              fontSize: isMobile ? "28px" : "42px",
-              fontWeight: 900,
-              color: "#000",
-              margin: 0,
-              textTransform: "uppercase",
-              letterSpacing: "-0.04em",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}>
-              {userProfile?.name || user?.fullName}
-              <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "24px" : "32px"} />
-            </h1>
-
-            <button
-              onClick={() => setIsEditModalOpen(true)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px 18px",
-                borderRadius: "100px",
-                border: "1px solid #e2e8f0",
-                backgroundColor: "white",
-                color: "#1e293b",
-                fontSize: "14px",
-                fontWeight: 700,
-                cursor: "pointer",
-                transition: "all 0.2s",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "white"}
-            >
-              <FontAwesomeIcon icon={faUserEdit} style={{ fontSize: "14px" }} />
-              Edit Profile
-            </button>
-
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#94a3b8",
-                  cursor: "pointer",
-                  padding: "8px",
-                  fontSize: "18px"
-                }}
-              >
-                <FontAwesomeIcon icon={faEllipsisV} />
-              </button>
-              {isMenuOpen && (
-                <div style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  backgroundColor: "#fff",
-                  border: "1px solid #f1f5f9",
-                  borderRadius: "18px",
-                  boxShadow: "0 15px 35px rgba(0,0,0,0.12)",
-                  minWidth: "200px",
-                  zIndex: 100,
-                  padding: "8px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "4px",
-                  animation: "slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)"
-                }}>
-                  <button
-                    onClick={() => navigate("/forgot-password")}
-                    style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#1e293b", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                  >
-                    <FontAwesomeIcon icon={faKey} style={{ width: "16px", opacity: 0.6 }} />
-                    Reset Password
-                  </button>
-                  <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
-                  <button
-                    onClick={handleSignOut}
-                    style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                  >
-                    <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px", opacity: 0.8 }} />
-                    Sign Out
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div style={{
-            fontSize: "18px",
-            color: "#64748b",
-            fontWeight: 500,
+            alignItems: isMobile ? "flex-start" : "center",
+            justifyContent: "space-between",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? "12px" : "16px",
             marginBottom: "16px"
           }}>
-            @{userProfile?.username || user?.username}
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <h1 style={{
+                fontSize: isMobile ? "28px" : "42px",
+                fontWeight: 900,
+                color: "#000",
+                margin: 0,
+                textTransform: "uppercase",
+                letterSpacing: "-0.04em",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px"
+              }}>
+                {userProfile?.name || user?.fullName}
+                <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "24px" : "32px"} />
+              </h1>
+              <div style={{
+                fontSize: "18px",
+                color: "#64748b",
+                fontWeight: 500
+              }}>
+                @{userProfile?.username || user?.username}
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <button
+                onClick={() => setIsEditModalOpen(true)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 18px",
+                  borderRadius: "100px",
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "white",
+                  color: "#1e293b",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "white"}
+              >
+                <FontAwesomeIcon icon={faUserEdit} style={{ fontSize: "14px" }} />
+                Edit Profile
+              </button>
+
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#94a3b8",
+                    cursor: "pointer",
+                    padding: "8px",
+                    fontSize: "18px"
+                  }}
+                >
+                  <FontAwesomeIcon icon={faEllipsisV} />
+                </button>
+                {isMenuOpen && (
+                  <div style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: isMobile ? "auto" : 0,
+                    right: isMobile ? 0 : "auto",
+                    backgroundColor: "#fff",
+                    border: "1px solid #f1f5f9",
+                    borderRadius: "18px",
+                    boxShadow: "0 15px 35px rgba(0,0,0,0.12)",
+                    minWidth: "200px",
+                    zIndex: 100,
+                    padding: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                    animation: "slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)"
+                  }}>
+                    <button
+                      onClick={() => navigate("/forgot-password")}
+                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#1e293b", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <FontAwesomeIcon icon={faKey} style={{ width: "16px", opacity: 0.6 }} />
+                      Reset Password
+                    </button>
+                    <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
+                    <button
+                      onClick={handleSignOut}
+                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px", opacity: 0.8 }} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {userProfile?.bio && (

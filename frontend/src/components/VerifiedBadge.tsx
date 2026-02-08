@@ -6,7 +6,7 @@ interface VerifiedBadgeProps {
     size?: string;
 }
 
-export default function VerifiedBadge({ username, size = "16px" }: VerifiedBadgeProps) {
+export default function VerifiedBadge({ username, size = "6px" }: VerifiedBadgeProps) {
     if (username?.toLowerCase() === "amin.ceo") {
         return (
             <FontAwesomeIcon

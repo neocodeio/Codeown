@@ -266,25 +266,35 @@ export default function UserProfile() {
         <div style={{ padding: "0 10px" }}>
           <div style={{
             display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            marginBottom: "8px",
-            flexWrap: "wrap"
+            alignItems: isMobile ? "flex-start" : "center",
+            justifyContent: "space-between",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? "12px" : "16px",
+            marginBottom: "16px"
           }}>
-            <h1 style={{
-              fontSize: isMobile ? "28px" : "42px",
-              fontWeight: 900,
-              color: "#000",
-              margin: 0,
-              textTransform: "uppercase",
-              letterSpacing: "-0.04em",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}>
-              {user.name}
-              <VerifiedBadge username={user.username} size={isMobile ? "24px" : "32px"} />
-            </h1>
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <h1 style={{
+                fontSize: isMobile ? "28px" : "42px",
+                fontWeight: 900,
+                color: "#000",
+                margin: 0,
+                textTransform: "uppercase",
+                letterSpacing: "-0.04em",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px"
+              }}>
+                {user.name}
+                <VerifiedBadge username={user.username} size={isMobile ? "24px" : "32px"} />
+              </h1>
+              <div style={{
+                fontSize: "18px",
+                color: "#64748b",
+                fontWeight: 500
+              }}>
+                @{user.username}
+              </div>
+            </div>
 
             {/* Action Buttons */}
             <div style={{ display: "flex", gap: "10px" }}>
@@ -308,15 +318,6 @@ export default function UserProfile() {
                 </button>
               )}
             </div>
-          </div>
-
-          <div style={{
-            fontSize: "18px",
-            color: "#64748b",
-            fontWeight: 500,
-            marginBottom: "16px"
-          }}>
-            @{user.username}
           </div>
 
           {user.bio && (
