@@ -165,39 +165,77 @@ export default function UserProfile() {
         .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
         .profile-btn {
-          padding: 10px 20px;
-          border-radius: 14px;
+          padding: 10px 24px;
+          border-radius: 100px;
           font-size: 14px;
-          font-weight: 700;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          font-weight: 600;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           border: 1px solid #e2e8f0;
           display: flex;
           align-items: center;
-          gap: 8px;
-          background: white;
+          gap: 10px;
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(8px);
           color: #334155;
           cursor: pointer;
         }
         .profile-btn:hover {
-          background: #f1f5f9;
+          background: #fff;
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+          border-color: #cbd5e1;
         }
         .profile-btn-primary {
-          background: #212121;
+          background: #1e293b;
           color: white;
-          border-color: #212121;
+          border-color: #1e293b;
         }
         .profile-btn-primary:hover {
-          background: #444;
-          border-color: #444;
+          background: #0f172a;
           color: white;
         }
         .profile-btn-following {
-          background: transparent;
-          color: #212121;
-          border: 2px solid #212121;
+          background: white;
+          color: #1e293b;
+          border: 2px solid #1e293b;
         }
+        
+        .tab-btn {
+          padding: 12px 24px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #64748b;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
+          background: transparent;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          border-radius: 12px;
+        }
+        .tab-btn:hover {
+          color: #1e293b;
+          background: rgba(241, 245, 249, 0.6);
+        }
+        .tab-btn.active {
+          color: #1e293b;
+          background: #fff;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        
+        .stat-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 0 20px;
+          border-right: 1px solid #f1f5f9;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
+        .stat-item:last-child { border-right: none; }
+        .stat-item:hover { transform: translateY(-2px); }
+        .stat-value { font-size: 20px; font-weight: 800; color: #1e293b; }
+        .stat-label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
       `}</style>
 
       <div style={{
@@ -208,103 +246,115 @@ export default function UserProfile() {
         {/* Banner Section */}
         <div style={{
           width: "100%",
-          height: isMobile ? "180px" : "280px",
+          height: isMobile ? "200px" : "320px",
           borderRadius: "32px",
-          backgroundColor: "#f8fafc",
+          backgroundColor: "#fff",
           border: "1px solid #e2e8f0",
-          overflow: "hidden",
+          overflow: "visible", // Allow avatar to overlap
           position: "relative",
-          marginBottom: "24px"
+          marginBottom: isMobile ? "60px" : "80px",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
         }}>
           {user.banner_url ? (
             <img
               src={user.banner_url}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "32px" }}
               alt="Banner"
             />
           ) : (
             <div style={{
               width: "100%",
               height: "100%",
-              background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+              backgroundColor: "#fff",
+              borderRadius: "32px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#cbd5e1",
+              color: "#e2e8f0",
               fontSize: isMobile ? "24px" : "48px",
-              fontWeight: 900
+              fontWeight: 900,
+              letterSpacing: "0.1em"
             }}>
               CODEOWN
             </div>
           )}
 
-          {/* Avatar overlapped bottom left */}
+          {/* Avatar overlapped bottom */}
           <div style={{
             position: "absolute",
-            bottom: "20px",
-            left: "20px",
-            width: isMobile ? "60px" : "80px",
-            height: isMobile ? "60px" : "80px",
-            borderRadius: "16px",
-            border: "4px solid white",
-            boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+            bottom: isMobile ? "-40px" : "-60px",
+            left: isMobile ? "50%" : "40px",
+            transform: isMobile ? "translateX(-50%)" : "none",
+            width: isMobile ? "100px" : "150px",
+            height: isMobile ? "100px" : "150px",
+            borderRadius: "32px",
+            border: "6px solid white",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
             backgroundColor: "white",
             overflow: "hidden",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
+            zIndex: 10
           }}>
             <img
               src={avatarUrl}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              alt="Logo"
+              alt="Profile"
             />
           </div>
         </div>
 
         {/* User Info Section */}
-        <div style={{ padding: "0 10px" }}>
+        <div style={{
+          padding: isMobile ? "0 4px" : "0 10px",
+          textAlign: isMobile ? "center" : "left",
+          display: "flex",
+          flexDirection: "column",
+          gap: "24px"
+        }}>
           <div style={{
             display: "flex",
-            alignItems: isMobile ? "flex-start" : "center",
+            alignItems: isMobile ? "center" : "flex-end",
             justifyContent: "space-between",
             flexDirection: isMobile ? "column" : "row",
-            gap: isMobile ? "12px" : "16px",
-            marginBottom: "16px"
+            gap: "20px"
           }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <h1 style={{
-                fontSize: isMobile ? "28px" : "42px",
-                fontWeight: 900,
-                color: "#000",
+                fontSize: isMobile ? "28px" : "36px",
+                fontWeight: 800,
+                color: "#0f172a",
                 margin: 0,
-                textTransform: "uppercase",
-                letterSpacing: "-0.04em",
+                letterSpacing: "-0.03em",
                 display: "flex",
                 alignItems: "center",
-                gap: "8px"
+                justifyContent: isMobile ? "center" : "flex-start",
+                gap: "10px"
               }}>
                 {user.name}
-                <VerifiedBadge username={user.username} size={isMobile ? "24px" : "16px"} />
+                <VerifiedBadge username={user.username} size={isMobile ? "22px" : "26px"} />
               </h1>
               <div style={{
                 fontSize: "18px",
                 color: "#64748b",
-                fontWeight: 500
+                fontWeight: 500,
+                letterSpacing: "0.01em"
               }}>
                 @{user.username}
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: "flex", gap: "10px" }}>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
               {isSignedIn && (
                 <button
                   onClick={() => navigate(`/messages?userId=${userId}`)}
                   className="profile-btn"
+                  title="Message"
+                  style={{ width: "44px", height: "44px", padding: 0, justifyContent: "center" }}
                 >
-                  <FontAwesomeIcon icon={faEnvelope} />
-                  Message
+                  <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: "16px" }} />
                 </button>
               )}
               {isSignedIn && (
@@ -312,6 +362,7 @@ export default function UserProfile() {
                   onClick={handleFollow}
                   disabled={followLoading}
                   className={`profile-btn ${isFollowing ? 'profile-btn-following' : 'profile-btn-primary'}`}
+                  style={{ minWidth: isMobile ? "120px" : "140px", justifyContent: "center" }}
                 >
                   <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
                   <span>{isFollowing ? "Following" : "Follow"}</span>
@@ -332,35 +383,36 @@ export default function UserProfile() {
             </div>
           )}
 
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "24px",
-            color: "#64748b",
-            fontSize: "14px",
-            fontWeight: 600,
-            marginBottom: "24px",
-            flexWrap: "wrap"
-          }}>
-            <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
+            <span style={{ display: "flex", alignItems: "center", justifyContent: isMobile ? "center" : "flex-start", gap: "6px", color: "#64748b", fontSize: "14px", fontWeight: 600 }}>
               <FontAwesomeIcon icon={faCalendarAlt} />
               Joined {formatJoinDate(user.created_at || "")}
             </span>
-            <span
-              onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
-              style={{ cursor: "pointer", color: "#1e293b" }}
-            >
-              <strong style={{ fontWeight: 800 }}>{user.follower_count || 0}</strong> followers
-            </span>
-            <span
-              onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
-              style={{ cursor: "pointer", color: "#1e293b" }}
-            >
-              <strong style={{ fontWeight: 800 }}>{user.following_count || 0}</strong> following
-            </span>
-            <span style={{ color: "#1e293b" }}>
-              <strong style={{ fontWeight: 800 }}>{user.total_likes || 0}</strong> likes
-            </span>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: isMobile ? "center" : "flex-start",
+              gap: "24px",
+              color: "#64748b",
+              fontSize: "14px",
+              fontWeight: 600
+            }}>
+              <span
+                onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
+                style={{ cursor: "pointer", color: "#1e293b" }}
+              >
+                <strong style={{ fontWeight: 800 }}>{user.follower_count || 0}</strong> followers
+              </span>
+              <span
+                onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
+                style={{ cursor: "pointer", color: "#1e293b" }}
+              >
+                <strong style={{ fontWeight: 800 }}>{user.following_count || 0}</strong> following
+              </span>
+              <span style={{ color: "#1e293b" }}>
+                <strong style={{ fontWeight: 800 }}>{user.total_likes || 0}</strong> likes
+              </span>
+            </div>
           </div>
 
           {/* Social Icons */}
@@ -428,40 +480,24 @@ export default function UserProfile() {
         {/* Tab Selection */}
         <div style={{
           display: "flex",
-          gap: "32px",
-          borderBottom: "1px solid #e2e8f0",
+          justifyContent: isMobile ? "center" : "flex-start",
+          padding: "6px",
+          backgroundColor: "#f1f5f9",
+          borderRadius: "18px",
+          width: "fit-content",
           marginBottom: "32px",
-          marginTop: "48px"
+          marginTop: "40px",
+          margin: isMobile ? "40px auto 32px" : "40px 0 32px"
         }}>
           <button
             onClick={() => setActiveTab("posts")}
-            style={{
-              padding: "16px 4px",
-              border: "none",
-              background: "none",
-              fontSize: "14px",
-              fontWeight: 800,
-              color: activeTab === "posts" ? "#000" : "#94a3b8",
-              borderBottom: activeTab === "posts" ? "2px solid #000" : "2px solid transparent",
-              cursor: "pointer",
-              transition: "all 0.2s"
-            }}
+            className={`tab-btn ${activeTab === "posts" ? "active" : ""}`}
           >
             POSTS
           </button>
           <button
             onClick={() => setActiveTab("projects")}
-            style={{
-              padding: "16px 4px",
-              border: "none",
-              background: "none",
-              fontSize: "14px",
-              fontWeight: 800,
-              color: activeTab === "projects" ? "#000" : "#94a3b8",
-              borderBottom: activeTab === "projects" ? "2px solid #000" : "2px solid transparent",
-              cursor: "pointer",
-              transition: "all 0.2s"
-            }}
+            className={`tab-btn ${activeTab === "projects" ? "active" : ""}`}
           >
             PROJECTS
           </button>

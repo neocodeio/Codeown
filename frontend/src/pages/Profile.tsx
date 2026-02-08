@@ -251,56 +251,60 @@ export default function Profile() {
         {/* Banner Section */}
         <div style={{
           width: "100%",
-          height: isMobile ? "180px" : "280px",
+          height: isMobile ? "200px" : "320px",
           borderRadius: "32px",
-          backgroundColor: "#f8fafc",
+          backgroundColor: "#fff",
           border: "1px solid #e2e8f0",
-          overflow: "hidden",
+          overflow: "visible", // Allow avatar to overlap
           position: "relative",
-          marginBottom: "24px"
+          marginBottom: isMobile ? "60px" : "80px"
         }}>
           {userProfile?.banner_url ? (
             <img
               src={userProfile.banner_url}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "32px" }}
               alt="Banner"
             />
           ) : (
             <div style={{
               width: "100%",
               height: "100%",
-              background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+              backgroundColor: "#fff",
+              borderRadius: "32px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#cbd5e1",
+              color: "#e2e8f0",
               fontSize: isMobile ? "24px" : "48px",
-              fontWeight: 900
+              fontWeight: 900,
+              letterSpacing: "0.1em"
             }}>
               CODEOWN
             </div>
           )}
 
-          {/* Avatar overlapped bottom left */}
+          {/* Avatar overlapped bottom */}
           <div style={{
             position: "absolute",
-            bottom: "20px",
-            left: "20px",
-            width: isMobile ? "60px" : "80px",
-            height: isMobile ? "60px" : "80px",
-            borderRadius: "16px",
-            border: "4px solid white",
-            boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+            bottom: isMobile ? "-40px" : "-60px",
+            left: isMobile ? "50%" : "40px",
+            transform: isMobile ? "translateX(-50%)" : "none",
+            width: isMobile ? "100px" : "150px",
+            height: isMobile ? "100px" : "150px",
+            borderRadius: "32px",
+            border: "6px solid white",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
             backgroundColor: "white",
             overflow: "hidden",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
+            zIndex: 10
           }}>
             <img
               src={avatarUrl}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              alt="Logo"
+              alt="Profile"
             />
           </div>
         </div>
@@ -460,34 +464,35 @@ export default function Profile() {
             </div>
           )}
 
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "24px",
-            color: "#64748b",
-            fontSize: "14px",
-            fontWeight: 600,
-            marginBottom: "24px"
-          }}>
-            <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "14px", fontWeight: 600 }}>
               <FontAwesomeIcon icon={faCalendarAlt} />
               Joined {formatJoinDate(userProfile?.created_at || "")}
             </span>
-            <span
-              onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
-              style={{ cursor: "pointer", color: "#1e293b" }}
-            >
-              <strong style={{ fontWeight: 800 }}>{userProfile?.follower_count || 0}</strong> followers
-            </span>
-            <span
-              onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
-              style={{ cursor: "pointer", color: "#1e293b" }}
-            >
-              <strong style={{ fontWeight: 800 }}>{userProfile?.following_count || 0}</strong> following
-            </span>
-            <span style={{ color: "#1e293b" }}>
-              <strong style={{ fontWeight: 800 }}>{userProfile?.total_likes || 0}</strong> likes
-            </span>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "24px",
+              color: "#64748b",
+              fontSize: "14px",
+              fontWeight: 600
+            }}>
+              <span
+                onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
+                style={{ cursor: "pointer", color: "#1e293b" }}
+              >
+                <strong style={{ fontWeight: 800 }}>{userProfile?.follower_count || 0}</strong> followers
+              </span>
+              <span
+                onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
+                style={{ cursor: "pointer", color: "#1e293b" }}
+              >
+                <strong style={{ fontWeight: 800 }}>{userProfile?.following_count || 0}</strong> following
+              </span>
+              <span style={{ color: "#1e293b" }}>
+                <strong style={{ fontWeight: 800 }}>{userProfile?.total_likes || 0}</strong> likes
+              </span>
+            </div>
           </div>
 
           {/* Social Icons */}
