@@ -155,8 +155,10 @@ export default function Profile() {
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .slide-up-mobile { animation: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
         .profile-btn {
           padding: 10px 20px;
@@ -377,43 +379,70 @@ export default function Profile() {
                   <FontAwesomeIcon icon={faEllipsisV} />
                 </button>
                 {isMenuOpen && (
-                  <div style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: isMobile ? "auto" : 0,
-                    right: isMobile ? 0 : "auto",
-                    backgroundColor: "#fff",
-                    border: "1px solid #f1f5f9",
-                    borderRadius: "18px",
-                    boxShadow: "0 15px 35px rgba(0,0,0,0.12)",
-                    minWidth: "200px",
-                    zIndex: 100,
-                    padding: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    animation: "slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)"
-                  }}>
-                    <button
-                      onClick={() => navigate("/forgot-password")}
-                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#1e293b", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    >
-                      <FontAwesomeIcon icon={faKey} style={{ width: "16px", opacity: 0.6 }} />
-                      Reset Password
-                    </button>
-                    <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
-                    <button
-                      onClick={handleSignOut}
-                      style={{ width: "100%", textAlign: "left", padding: "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: "14px", display: "flex", alignItems: "center", gap: "10px" }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    >
-                      <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px", opacity: 0.8 }} />
-                      Sign Out
-                    </button>
-                  </div>
+                  <>
+                    {/* Backdrop */}
+                    <div
+                      onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
+                      style={{
+                        position: "fixed",
+                        inset: 0,
+                        backgroundColor: isMobile ? "rgba(15, 23, 42, 0.5)" : "transparent",
+                        backdropFilter: isMobile ? "blur(4px)" : "none",
+                        zIndex: 90,
+                        cursor: "pointer",
+                        animation: isMobile ? "fadeIn 0.3s ease-out" : "none"
+                      }}
+                    />
+                    <div style={{
+                      position: isMobile ? "fixed" : "absolute",
+                      top: isMobile ? "auto" : "100%",
+                      bottom: isMobile ? "0" : "auto",
+                      left: isMobile ? "0" : "auto",
+                      right: isMobile ? "0" : "0",
+                      backgroundColor: "#fff",
+                      border: isMobile ? "none" : "1px solid #f1f5f9",
+                      borderRadius: isMobile ? "32px 32px 0 0" : "18px",
+                      boxShadow: isMobile ? "0 -10px 40px rgba(0,0,0,0.15)" : "0 15px 35px rgba(0,0,0,0.12)",
+                      minWidth: isMobile ? "100%" : "200px",
+                      zIndex: 100,
+                      padding: isMobile ? "32px 24px" : "8px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                      animation: isMobile ? "slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)"
+                    }} onClick={(e) => e.stopPropagation()}>
+                      {isMobile && (
+                        <div style={{ width: "40px", height: "4px", backgroundColor: "#e2e8f0", borderRadius: "2px", margin: "0 auto 20px" }} />
+                      )}
+                      <button
+                        onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }}
+                        style={{ width: "100%", textAlign: "left", padding: isMobile ? "16px" : "12px 16px", border: "none", background: "none", color: "#1e293b", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: isMobile ? "16px" : "14px", display: "flex", alignItems: "center", gap: "12px" }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <FontAwesomeIcon icon={faKey} style={{ width: "16px", opacity: 0.6 }} />
+                        Reset Password
+                      </button>
+                      <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
+                      <button
+                        onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
+                        style={{ width: "100%", textAlign: "left", padding: isMobile ? "16px" : "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: isMobile ? "16px" : "14px", display: "flex", alignItems: "center", gap: "12px" }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px", opacity: 0.8 }} />
+                        Sign Out
+                      </button>
+                      {isMobile && (
+                        <button
+                          onClick={() => setIsMenuOpen(false)}
+                          style={{ marginTop: "12px", width: "100%", padding: "16px", border: "none", background: "#f1f5f9", color: "#64748b", fontWeight: 800, borderRadius: "12px", fontSize: "14px" }}
+                        >
+                          CLOSE
+                        </button>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </div>

@@ -49,7 +49,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const { getToken, isLoaded } = useClerkAuth();
   const { width } = useWindowSize();
-  const isMobile = width < 640;
+  const isMobile = width < 768;
 
   useEffect(() => {
     if (isOpen && currentUser) {
