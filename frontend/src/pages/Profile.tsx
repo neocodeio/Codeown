@@ -16,7 +16,7 @@ import BioRenderer from "../components/BioRenderer";
 import { formatJoinDate } from "../utils/date";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEllipsisV, faUserEdit, faSignOutAlt, faKey, faHeart, faUsers, faUserFriends, faLayerGroup, faRocket, faCalendarAlt, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faUserEdit, faSignOutAlt, faKey, faLayerGroup, faRocket, faCalendarAlt, faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import VerifiedBadge from "../components/VerifiedBadge";
 
@@ -514,37 +514,6 @@ export default function Profile() {
               </div>
             </div>
           )}
-        </div>
-
-        {/* Stats Section */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-          gap: isMobile ? "12px" : "16px",
-          borderTop: "1px solid #f1f5f9",
-          paddingTop: isMobile ? "24px" : "32px",
-          marginTop: "32px",
-          marginBottom: "48px"
-        }}>
-          <div className="stat-card" onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ padding: isMobile ? "16px" : "20px" }}>
-            <div className="stat-icon"><FontAwesomeIcon icon={faUsers} /></div>
-            <div style={{ fontSize: isMobile ? "18px" : "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.follower_count || 0}</div>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Followers</div>
-          </div>
-          <div className="stat-card" onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ padding: isMobile ? "16px" : "20px" }}>
-            <div className="stat-icon"><FontAwesomeIcon icon={faUserFriends} /></div>
-            <div style={{ fontSize: isMobile ? "18px" : "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.following_count || 0}</div>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Following</div>
-          </div>
-          <div className="stat-card" style={{ cursor: "default", padding: isMobile ? "16px" : "20px" }}>
-            <div className="stat-icon"><FontAwesomeIcon icon={faHeart} /></div>
-            <div style={{ fontSize: isMobile ? "18px" : "22px", fontWeight: 900, color: "#1e293b" }}>{userProfile?.total_likes || 0}</div>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "4px" }}>Total Likes</div>
-          </div>
-          <button className="stat-card" style={{ background: "linear-gradient(135deg, #212121 0%, #444 100%)", border: "none", padding: isMobile ? "16px" : "20px" }} onClick={() => setIsProjectModalOpen(true)}>
-            <div className="stat-icon" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}><FontAwesomeIcon icon={faPlus} /></div>
-            <div style={{ color: "white", fontWeight: 800, fontSize: isMobile ? "13px" : "15px", textAlign: "center" }}>New Project</div>
-          </button>
         </div>
 
         {/* Tab Selection */}
