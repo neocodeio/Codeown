@@ -12,6 +12,8 @@ import {
   faLayerGroup,
   faRocket,
   faChevronDown,
+  faClock,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import type { Post } from "../hooks/usePosts";
 import type { Project } from "../types/project";
@@ -67,6 +69,7 @@ export default function Search() {
   const [posts, setPosts] = useState<SearchPost[]>([]);
   const [projects, setProjects] = useState<SearchProject[]>([]);
   const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState<string[]>([]);
   const [currentUserFollowing, setCurrentUserFollowing] = useState<string[]>([]);
 
   const filterRef = useRef<HTMLDivElement>(null);
@@ -91,7 +94,7 @@ export default function Search() {
   // 1. Fetch search results
   useEffect(() => {
     const fetchResults = async () => {
-      if (!query || query.length < 1) {
+      if (!query || query.trim().length < 1) {
         setUsers([]);
         setPosts([]);
         setProjects([]);
@@ -102,6 +105,22 @@ export default function Search() {
       let cancelled = false;
 
       try {
+        // Save to history if query is significant
+        if (query.trim().length >= 2) {
+          const savedHistory = localStorage.getItem("codeown_search_history");
+          let currentHistory: string[] = [];
+          if (savedHistory) {
+            try {
+              currentHistory = JSON.parse(savedHistory);
+            } catch (e) {
+              console.error("Failed to parse search history");
+            }
+          }
+          const newHistory = [query.trim(), ...currentHistory.filter((item) => item !== query.trim())].slice(0, 6);
+          setHistory(newHistory);
+          localStorage.setItem("codeown_search_history", JSON.stringify(newHistory));
+        }
+
         // Re-use logic for search type
         const isTag = query.startsWith("#");
         const isMention = query.startsWith("@");
@@ -143,7 +162,7 @@ export default function Search() {
     return () => clearTimeout(timeoutId);
   }, [query, getToken]);
 
-  // 2. Fetch following list for current user
+  // 2. Fetch following list for current user and initialize history
   useEffect(() => {
     if (isLoaded && clerkUser?.id) {
       api.get(`/follows/${clerkUser.id}/following`)
@@ -154,13 +173,34 @@ export default function Search() {
         })
         .catch(console.error);
     }
+
+    const savedHistory = localStorage.getItem("codeown_search_history");
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error("Failed to parse search history");
+      }
+    }
   }, [isLoaded, clerkUser?.id]);
 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setQuery(val);
-    setSearchParams({ q: val });
+    setSearchParams(val ? { q: val } : {});
+  };
+
+  const removeFromHistory = (e: React.MouseEvent, q: string) => {
+    e.stopPropagation();
+    const newHistory = history.filter((item) => item !== q);
+    setHistory(newHistory);
+    localStorage.setItem("codeown_search_history", JSON.stringify(newHistory));
+  };
+
+  const handleHistoryClick = (q: string) => {
+    setQuery(q);
+    setSearchParams({ q });
   };
 
   const handleFollow = async (e: React.MouseEvent, targetId: string) => {
@@ -313,12 +353,80 @@ export default function Search() {
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             {[...Array(3)].map((_, i) => <PostCardSkeleton key={i} />)}
           </div>
+        ) : !query ? (
+          <div className="fade-in">
+            {history.length > 0 ? (
+              <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", color: "#94a3b8" }}>
+                  <FontAwesomeIcon icon={faClock} style={{ fontSize: "14px" }} />
+                  <span style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>Recent Searches</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {history.map((h, i) => (
+                    <div
+                      key={i}
+                      onClick={() => handleHistoryClick(h)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "16px 20px",
+                        backgroundColor: "#f8fafc",
+                        borderRadius: "16px",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                        border: "1px solid transparent"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#fff";
+                        e.currentTarget.style.borderColor = "#e2e8f0";
+                        e.currentTarget.style.transform = "translateX(4px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "#f8fafc";
+                        e.currentTarget.style.borderColor = "transparent";
+                        e.currentTarget.style.transform = "translateX(0)";
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                        <FontAwesomeIcon icon={faSearch} style={{ color: "#cbd5e1", fontSize: "14px" }} />
+                        <span style={{ fontSize: "15px", fontWeight: 600, color: "#334155" }}>{h}</span>
+                      </div>
+                      <button
+                        onClick={(e) => removeFromHistory(e, h)}
+                        style={{
+                          border: "none",
+                          background: "none",
+                          padding: "8px",
+                          cursor: "pointer",
+                          color: "#cbd5e1",
+                          borderRadius: "8px",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = "#ef4444"}
+                        onMouseLeave={(e) => e.currentTarget.style.color = "#cbd5e1"}
+                      >
+                        <FontAwesomeIcon icon={faTimes} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div style={{ textAlign: "center", padding: "80px 40px", color: "#94a3b8" }}>
+                <FontAwesomeIcon icon={faSearch} style={{ fontSize: "48px", opacity: 0.1, marginBottom: "20px" }} />
+                <div style={{ fontSize: "18px", fontWeight: 700, color: "#64748b", marginBottom: "8px" }}>Search Codeown</div>
+                <p style={{ margin: 0, fontSize: "14px" }}>Find people, posts, and projects from the community</p>
+              </div>
+            )}
+          </div>
         ) : !loading && !users.length && !posts.length && !projects.length ? (
           <div style={{ textAlign: "center", padding: "40px", color: "#94a3b8" }}>
-            <div style={{ fontSize: "16px", fontWeight: 600 }}>No results found</div>
+            <div style={{ fontSize: "16px", fontWeight: 600 }}>No results found for "{query}"</div>
           </div>
         ) : (
           <div className="fade-in">
+            {/* ... rest of the component remains same ... */}
 
             {activeFilter === "people" && (
               <div style={{
