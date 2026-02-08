@@ -16,11 +16,8 @@ import {
   faThumbtack,
   faUserCheck,
   faEnvelope,
-  faUsers,
-  faUserFriends,
   faRocket,
   faLayerGroup,
-  faHeart,
   faCalendarAlt,
   faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
