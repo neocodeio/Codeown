@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
@@ -14,11 +15,31 @@ import { UserBlock01Icon } from "@hugeicons/core-free-icons";
 const POPULAR_TAGS = ["React", "JavaScript", "TypeScript", "Node.js", "Python", "Next.js", "WebDev", "UI/UX", "Mobile", "AI"];
 
 export default function Feed() {
-  const [feedType, setFeedType] = useState<"posts" | "projects">("posts");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Sync state with URL params
+  const feedType = (searchParams.get("type") as "posts" | "projects") || "posts";
+  const feedFilter = (searchParams.get("filter") as FeedFilter) || "all";
+  const selectedTag = searchParams.get("tag") || "";
+  const selectedLang = (searchParams.get("lang") as "en" | "ar" | "") || "";
   const [page, setPage] = useState(1);
-  const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
-  const [selectedTag, setSelectedTag] = useState<string>("");
-  const [selectedLang, setSelectedLang] = useState<"en" | "ar" | "">("");
+
+  // Helper to update search params
+  const updateParams = (newParams: Record<string, string | null>) => {
+    setSearchParams(prev => {
+      Object.entries(newParams).forEach(([key, value]) => {
+        if (value === null || value === "") prev.delete(key);
+        else prev.set(key, value);
+      });
+      return prev;
+    }, { replace: true });
+    setPage(1); // Reset page on any filter change
+  };
+
+  const setFeedType = (type: "posts" | "projects") => updateParams({ type });
+  const setFeedFilter = (filter: FeedFilter) => updateParams({ filter });
+  const setSelectedTag = (tag: string) => updateParams({ tag });
+  const setSelectedLang = (lang: "en" | "ar" | "") => updateParams({ lang });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
