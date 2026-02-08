@@ -208,7 +208,7 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 alignItems: "center"
               }}>
                 {userName}
-                <VerifiedBadge username={post.user?.username} size="18px" />
+                <VerifiedBadge username={post.user?.username} size="14px" />
               </div>
               <div style={{
                 fontSize: "11px",

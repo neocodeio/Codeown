@@ -272,7 +272,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                 }}
               >
                 {userName}
-                <VerifiedBadge username={project.user?.username} size="18px" />
+                <VerifiedBadge username={project.user?.username} size="14px" />
               </div>
               <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 {formatRelativeDate(project.created_at)}

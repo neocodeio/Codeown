@@ -172,7 +172,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "16px", fontWeight: 800, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center" }}>
                       {user.name}
-                      <VerifiedBadge username={user.username} size="16px" />
+                      <VerifiedBadge username={user.username} size="14px" />
                     </div>
                     {user.username && (
                       <div style={{ fontSize: "13px", fontWeight: 600, color: "#64748b" }}>

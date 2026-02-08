@@ -285,7 +285,7 @@ export default function UserProfile() {
                 gap: "8px"
               }}>
                 {user.name}
-                <VerifiedBadge username={user.username} size={isMobile ? "24px" : "32px"} />
+                <VerifiedBadge username={user.username} size={isMobile ? "24px" : "16px"} />
               </h1>
               <div style={{
                 fontSize: "18px",

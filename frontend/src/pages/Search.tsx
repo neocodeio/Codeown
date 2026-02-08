@@ -360,7 +360,7 @@ export default function Search() {
 
                     <h3 style={{ margin: "0 0 4px", fontSize: "18px", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center" }}>
                       {user.name}
-                      <VerifiedBadge username={user.username} size="18px" />
+                      <VerifiedBadge username={user.username} size="14px" />
                     </h3>
                     <p style={{ margin: "0 0 20px", fontSize: "14px", color: "#64748b" }}>@{user.username || "user"}</p>
 

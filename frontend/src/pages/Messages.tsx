@@ -395,7 +395,7 @@ export default function Messages() {
                                         onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
                                     >
                                         {activeConvo.partner.name}
-                                        <VerifiedBadge username={activeConvo.partner.username} size="16px" />
+                                        <VerifiedBadge username={activeConvo.partner.username} size="14px" />
                                     </div>
                                     <div style={{ fontSize: "12px", color: "#64748b" }}>@{activeConvo.partner.username}</div>
                                 </div>

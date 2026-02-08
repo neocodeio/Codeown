@@ -188,7 +188,7 @@ export default function PostDetail() {
                 <img src={avatarUrl} alt={userName} style={{ width: "48px", height: "48px", border: "1px solid var(--border-color)", borderRadius: "50%" }} />
                 <h3 style={{ fontSize: "14px", fontWeight: 800, display: "flex", alignItems: "center" }}>
                   {userName}
-                  <VerifiedBadge username={post.user?.username} size="18px" />
+                  <VerifiedBadge username={post.user?.username} size="14px" />
                 </h3>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-end" }}>
