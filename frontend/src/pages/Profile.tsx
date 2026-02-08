@@ -452,6 +452,9 @@ export default function Profile() {
             >
               <strong style={{ fontWeight: 800 }}>{userProfile?.following_count || 0}</strong> following
             </span>
+            <span style={{ color: "#1e293b" }}>
+              <strong style={{ fontWeight: 800 }}>{userProfile?.total_likes || 0}</strong> likes
+            </span>
           </div>
 
           {/* Social Icons */}
