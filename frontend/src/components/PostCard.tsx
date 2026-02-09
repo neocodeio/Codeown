@@ -10,6 +10,7 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { getAvatarUrl } from "../hooks/useAvatar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart as faHeartSolid,
@@ -130,9 +131,8 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
     navigate(`/post/${post.id}`);
   };
 
-  const avatarUrl = post.user?.avatar_url ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user?.name || post.user?.username || "User")}&background=212121&color=ffffff&size=64`;
   const userName = post.user?.name || post.user?.username || "User";
+  const avatarUrl = getAvatarUrl(post.user?.avatar_url, undefined, userName);
   return (
     <>
       <div

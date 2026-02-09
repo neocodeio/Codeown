@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { updateAvatarCache } from "../hooks/useAvatar";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -212,6 +213,9 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      // Update the avatar cache to ensure immediate visibility across all components
+      updateAvatarCache(currentUser.id, avatarUrl);
 
       // Dispatch custom event to notify other components (like Navbar) to refresh user data
       window.dispatchEvent(new CustomEvent("profileUpdated"));

@@ -3,10 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { useAvatar } from "../hooks/useAvatar";
 import CreatePostModal from "./CreatePostModal";
 import ProjectModal from "./ProjectModal";
 import NotificationDropdown from "./NotificationDropdown";
-import api from "../api/axios";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Home01Icon,
@@ -28,8 +28,8 @@ import logo from "../assets/icon-remove.png";
 import VerifiedBadge from "./VerifiedBadge";
 
 export default function Navbar() {
-  const { isLoaded, isSignedIn, user } = useClerkUser();
-  const { getToken, signOut } = useClerkAuth();
+  const { isSignedIn, user } = useClerkUser();
+  const { signOut } = useClerkAuth();
   const location = useLocation();
   const { width } = useWindowSize();
   const isMobile = width < 768; // Mobile breakpoint
@@ -39,11 +39,16 @@ export default function Navbar() {
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
-  const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
+  // Use the centralized avatar hook
+  const { avatarUrl: userAvatarUrl } = useAvatar(
+    user?.id,
+    user?.imageUrl,
+    user?.fullName || user?.username
+  );
 
   const logoutRef = useRef<HTMLDivElement>(null);
 
-  // Click outside handlers
+  // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (logoutRef.current && !logoutRef.current.contains(event.target as Node)) {
@@ -53,23 +58,6 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  // Fetch avatar
-  useEffect(() => {
-    const fetchUserAvatar = async () => {
-      if (!user?.id) return;
-      try {
-        const token = await getToken();
-        const res = await api.get(`/users/${user.id}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (res.data?.avatar_url) setUserAvatarUrl(res.data.avatar_url);
-      } catch (error) {
-        console.error("Error fetching avatar:", error);
-      }
-    };
-    if (isLoaded && isSignedIn && user?.id) fetchUserAvatar();
-  }, [user?.id, isLoaded, isSignedIn, getToken]);
 
   // Styles
   const linkStyle = (path: string) => ({
