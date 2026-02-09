@@ -43,7 +43,7 @@ export default function Navbar() {
   const { avatarUrl: userAvatarUrl } = useAvatar(
     user?.id,
     user?.imageUrl,
-    user?.fullName || user?.username
+    // user?.fullName || user?.username
   );
 
   const logoutRef = useRef<HTMLDivElement>(null);
