@@ -372,7 +372,11 @@ export default function Profile() {
 
               <button
                 onClick={() => {
-                  const shareUrl = `${window.location.origin}/user/${user?.id}`;
+                  const username = userProfile?.username || user?.username;
+                  const shareUrl = username
+                    ? `${window.location.origin}/${username}`
+                    : `${window.location.origin}/user/${user?.id}`;
+
                   if (navigator.share) {
                     navigator.share({
                       title: `${userProfile?.name || user?.fullName} on Codeown`,

@@ -44,6 +44,8 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
       navigate(`/project/${notification.project_id}`);
     } else if (notification.type === "message") {
       navigate(`/messages?userId=${notification.actor_id}`);
+    } else if (notification.actor?.username) {
+      navigate(`/${notification.actor.username}`);
     } else if (notification.actor_id) {
       navigate(`/user/${notification.actor_id}`);
     }

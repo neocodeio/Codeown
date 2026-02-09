@@ -436,7 +436,7 @@ export default function Search() {
               }}>
                 {users.map((user) => (
                   <div key={user.id}
-                    onClick={() => navigate(`/user/${user.id}`)}
+                    onClick={() => navigate(user.username ? `/${user.username}` : `/user/${user.id}`)}
                     style={{
                       border: "1px solid #e2e8f0",
                       borderRadius: "24px",

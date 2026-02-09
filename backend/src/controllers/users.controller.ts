@@ -344,11 +344,15 @@ export async function getUserProfile(req: Request, res: Response) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
+    // Determine query field
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    const field = isUuid ? "id" : "username";
+
     // Fetch user from Supabase
     const { data: user, error: userError } = await supabase
       .from("users")
       .select("*")
-      .eq("id", userId)
+      .eq(field, userId)
       .single();
 
     if (userError && userError.code !== "PGRST116") {
@@ -356,9 +360,15 @@ export async function getUserProfile(req: Request, res: Response) {
       return res.status(500).json({ error: "Failed to fetch user", details: userError.message });
     }
 
-    // If user not in Supabase, try Clerk
+    // If user not in Supabase, try Clerk (ONLY if searching by ID)
     let userData = user;
     if (!user && process.env.CLERK_SECRET_KEY) {
+      if (!isUuid) {
+        // If searched by username and not found in Supabase, we stop here.
+        // We assume usage of username means user is already in our system.
+        return res.status(404).json({ error: "User not found" });
+      }
+
       try {
         console.log(`User ${userId} not found in Supabase, fetching from Clerk`);
         const clerkUser = await clerkClient.users.getUser(userId);
@@ -432,23 +442,26 @@ export async function getUserProfile(req: Request, res: Response) {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // For other queries, we need the UUID
+    const targetUserId = userData.id;
+
     // Get accurate follow counts
     const [followerResult, followingResult] = await Promise.all([
       supabase
         .from("follows")
         .select("*", { count: "exact", head: true })
-        .eq("following_id", userId),
+        .eq("following_id", targetUserId),
       supabase
         .from("follows")
         .select("*", { count: "exact", head: true })
-        .eq("follower_id", userId),
+        .eq("follower_id", targetUserId),
     ]);
 
     // Get total likes on user's posts
     const { data: userPosts } = await supabase
       .from("posts")
       .select("id")
-      .eq("user_id", userId);
+      .eq("user_id", targetUserId);
 
     let totalLikes = 0;
     if (userPosts && userPosts.length > 0) {
@@ -511,7 +524,7 @@ export async function getUserProfile(req: Request, res: Response) {
       updated_at: userData.updated_at || null,
     };
 
-    if (currentUserId === userId) {
+    if (currentUserId === targetUserId) {
       responseData.username_changed_at = userData.username_changed_at || null;
       responseData.onboarding_completed = userData.onboarding_completed || false;
     }

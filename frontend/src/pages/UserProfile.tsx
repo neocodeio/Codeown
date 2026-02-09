@@ -54,7 +54,7 @@ interface User {
 }
 
 export default function UserProfile() {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId, username } = useParams<{ userId?: string; username?: string }>();
   const navigate = useNavigate();
   const { user: currentUser, isSignedIn } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -62,19 +62,24 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
-  const { posts, fetchUserPosts } = useUserPosts(userId || null);
-  const { projects, fetchUserProjects } = useUserProjects(userId || null);
+
+  // Hooks depend on user ID. If we use username route, we need to wait for user fetch to get ID.
+  // We pass user?.id which will update once user is fetched.
+  const { posts, fetchUserPosts } = useUserPosts(user?.id || userId || null);
+  const { projects, fetchUserProjects } = useUserProjects(user?.id || userId || null);
+
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [activeTab, setActiveTab] = useState<"posts" | "projects">("posts");
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
-  const isOwnProfile = currentUser?.id === userId;
+  const isOwnProfile = currentUser?.id === (user?.id || userId);
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!userId) {
+      const param = userId || username;
+      if (!param) {
         setLoading(false);
         return;
       }
@@ -82,7 +87,10 @@ export default function UserProfile() {
       try {
         setLoading(true);
         const token = await getToken();
-        const userRes = await api.get(`/users/${userId}`, {
+        // Assuming backend works with both ID and Username at this endpoint, 
+        // or frontend needs to query different endpoints.
+        // For now, let's try the generic endpoint.
+        const userRes = await api.get(`/users/${param}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
@@ -92,9 +100,9 @@ export default function UserProfile() {
           setUser(null);
         }
 
-        if (isSignedIn && !isOwnProfile) {
+        if (isSignedIn && userRes.data && currentUser?.id !== userRes.data.id) {
           try {
-            const followRes = await api.get(`/follows/${userId}/status`, {
+            const followRes = await api.get(`/follows/${userRes.data.id}/status`, {
               headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             setIsFollowing(followRes.data.isFollowing || false);
@@ -111,10 +119,11 @@ export default function UserProfile() {
     };
 
     fetchUser();
-  }, [userId, isSignedIn, isOwnProfile, getToken]);
+  }, [userId, username, isSignedIn, currentUser?.id, getToken]);
 
   const handleFollow = async () => {
-    if (!isSignedIn || !userId) {
+    const targetId = user?.id || userId;
+    if (!isSignedIn || !targetId) {
       navigate("/sign-in");
       return;
     }
@@ -124,7 +133,7 @@ export default function UserProfile() {
       const token = await getToken();
       if (!token) return;
 
-      const res = await api.post(`/follows/${userId}`, {}, {
+      const res = await api.post(`/follows/${targetId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -164,7 +173,7 @@ export default function UserProfile() {
         title={`${user.name} (@${user.username})`}
         description={user.bio || `Check out ${user.name}'s developer profile on Codeown.`}
         image={avatarUrl}
-        url={window.location.href}
+        url={user.username ? `${window.location.origin}/${user.username}` : window.location.href}
         type="profile"
       />
       <style>{`
@@ -358,7 +367,7 @@ export default function UserProfile() {
             <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
               {isSignedIn && (
                 <button
-                  onClick={() => navigate(`/messages?userId=${userId}`)}
+                  onClick={() => navigate(`/messages?userId=${user.id}`)}
                   className="profile-btn"
                   title="Message"
                   style={{ width: "44px", height: "44px", padding: 0, justifyContent: "center" }}
@@ -379,7 +388,10 @@ export default function UserProfile() {
               )}
               <button
                 onClick={() => {
-                  const shareUrl = window.location.href;
+                  const shareUrl = user.username
+                    ? `${window.location.origin}/${user.username}`
+                    : window.location.href;
+
                   if (navigator.share) {
                     navigator.share({
                       title: `${user.name} on Codeown`,
@@ -589,11 +601,11 @@ export default function UserProfile() {
 
       <div style={{ height: "100px" }} />
 
-      {userId && (
+      {user.id && (
         <FollowersModal
           isOpen={followersModalOpen}
           onClose={() => setFollowersModalOpen(false)}
-          userId={userId}
+          userId={user.id}
           type={followersModalType}
           title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
         />

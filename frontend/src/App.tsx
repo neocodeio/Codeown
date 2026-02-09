@@ -51,6 +51,7 @@ export default function App() {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/about" element={<AboutUs />} />
+              <Route path="/:username" element={<UserProfile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

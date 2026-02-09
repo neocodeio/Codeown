@@ -102,7 +102,10 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
           <img
             src={avatarUrl}
             alt={name}
-            onClick={() => comment.user_id && navigate(`/user/${comment.user_id}`)}
+            onClick={() => {
+              if (comment.user?.username) navigate(`/${comment.user.username}`);
+              else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+            }}
             style={{
               width: isMobile ? "28px" : "32px",
               height: isMobile ? "28px" : "32px",
@@ -116,7 +119,10 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
               <span
-                onClick={() => comment.user_id && navigate(`/user/${comment.user_id}`)}
+                onClick={() => {
+                  if (comment.user?.username) navigate(`/${comment.user.username}`);
+                  else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+                }}
                 style={{ fontSize: isMobile ? "13px" : "14px", fontWeight: 700, color: "#1e293b", cursor: "pointer", display: "flex", alignItems: "center" }}
               >
                 {name}

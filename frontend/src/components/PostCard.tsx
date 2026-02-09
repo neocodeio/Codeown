@@ -57,7 +57,9 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
 
   const handleUserClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (post.user_id) {
+    if (post.user?.username) {
+      navigate(`/${post.user.username}`);
+    } else if (post.user_id) {
       navigate(`/user/${post.user_id}`);
     }
   };

@@ -51,7 +51,9 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
 
   const handleUserClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (project.user_id) {
+    if (project.user?.username) {
+      navigate(`/${project.user.username}`);
+    } else if (project.user_id) {
       navigate(`/user/${project.user_id}`);
     }
   };
@@ -423,7 +425,8 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
                     key={contrib.user_id}
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/user/${contrib.user_id}`);
+                      if (contrib.username) navigate(`/${contrib.username}`);
+                      else navigate(`/user/${contrib.user_id}`);
                     }}
                     style={{
                       width: "32px",
