@@ -371,7 +371,6 @@ export default function Profile() {
               fontWeight: 900,
               letterSpacing: "0.1em"
             }}>
-              CODEOWN
             </div>
           )}
 

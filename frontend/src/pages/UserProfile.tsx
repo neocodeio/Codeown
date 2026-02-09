@@ -389,7 +389,6 @@ export default function UserProfile() {
               fontWeight: 900,
               letterSpacing: "0.1em"
             }}>
-              CODEOWN
             </div>
           )}
 
