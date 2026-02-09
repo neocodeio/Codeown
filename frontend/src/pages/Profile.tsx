@@ -142,9 +142,99 @@ export default function Profile() {
   };
 
   if (!isLoaded) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
-    </div>
+    <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+      <div style={{
+        maxWidth: "1000px",
+        margin: "0 auto",
+        padding: isMobile ? "20px 16px" : "40px 20px"
+      }}>
+        {/* Banner Skeleton */}
+        <div style={{
+          width: "100%",
+          height: isMobile ? "200px" : "320px",
+          borderRadius: "32px",
+          backgroundColor: "#e2e8f0",
+          position: "relative",
+          marginBottom: isMobile ? "60px" : "80px",
+          animation: "pulse 1.5s infinite ease-in-out"
+        }}>
+          {/* Avatar Skeleton */}
+          <div style={{
+            position: "absolute",
+            bottom: isMobile ? "-40px" : "-60px",
+            left: isMobile ? "50%" : "40px",
+            transform: isMobile ? "translateX(-50%)" : "none",
+            width: isMobile ? "100px" : "150px",
+            height: isMobile ? "100px" : "150px",
+            borderRadius: "100%",
+            border: "4px solid white",
+            backgroundColor: "#cbd5e1",
+            zIndex: 10
+          }} />
+        </div>
+
+        {/* User Info Skeleton */}
+        <div style={{
+          padding: isMobile ? "0 4px" : "0 10px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "24px"
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: isMobile ? "center" : "flex-end",
+            justifyContent: "space-between",
+            flexDirection: isMobile ? "column" : "row",
+            gap: "20px"
+          }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", alignItems: isMobile ? "center" : "flex-start" }}>
+              <div style={{ width: "60%", height: "40px", backgroundColor: "#e2e8f0", borderRadius: "8px", animation: "pulse 1.5s infinite ease-in-out" }} />
+              <div style={{ width: "30%", height: "24px", backgroundColor: "#f1f5f9", borderRadius: "6px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            </div>
+
+            <div style={{ display: "flex", gap: "12px" }}>
+              <div style={{ width: "44px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
+              <div style={{ width: "140px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
+              <div style={{ width: "44px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
+            </div>
+          </div>
+
+          <div style={{ width: "100%", maxWidth: "600px", display: "flex", flexDirection: "column", gap: "8px", alignItems: isMobile ? "center" : "flex-start" }}>
+            <div style={{ width: "100%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "90%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "80%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
+          </div>
+
+          <div style={{ display: "flex", gap: "24px", justifyContent: isMobile ? "center" : "flex-start" }}>
+            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
+          </div>
+        </div>
+
+        {/* Content Skeleton (mimics tabs and posts) */}
+        <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "32px", alignItems: isMobile ? "center" : "flex-start" }}>
+          {/* Tabs */}
+          <div style={{ display: "flex", gap: "12px" }}>
+            <div style={{ width: "100px", height: "40px", backgroundColor: "#e2e8f0", borderRadius: "12px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "100px", height: "40px", backgroundColor: "#f1f5f9", borderRadius: "12px", animation: "pulse 1.5s infinite ease-in-out" }} />
+          </div>
+
+          {/* Content Grid */}
+          <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div style={{ width: "100%", height: "200px", backgroundColor: "#fff", borderRadius: "24px", border: "1px solid #e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "100%", height: "200px", backgroundColor: "#fff", borderRadius: "24px", border: "1px solid #e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
+          </div>
+        </div>
+      </div>
+      <style>{`
+        @keyframes pulse {
+          0% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(0.995); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+    </main>
   );
 
   if (!isSignedIn) return <Navigate to="/sign-in" replace />;
