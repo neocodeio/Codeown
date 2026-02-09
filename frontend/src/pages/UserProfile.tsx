@@ -96,6 +96,12 @@ export default function UserProfile() {
 
         if (userRes.data) {
           setUser(userRes.data);
+
+          // If we accessed via ID but user has a username, update the URL
+          if (userId && userRes.data.username) {
+            const newPath = `/${userRes.data.username}`;
+            window.history.replaceState(null, "", newPath);
+          }
         } else {
           setUser(null);
         }
