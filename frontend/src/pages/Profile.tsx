@@ -16,9 +16,10 @@ import BioRenderer from "../components/BioRenderer";
 import { formatJoinDate } from "../utils/date";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV, faUserEdit, faSignOutAlt, faKey, faLayerGroup, faRocket, faCalendarAlt, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faUserEdit, faSignOutAlt, faKey, faLayerGroup, faRocket, faCalendarAlt, faGlobe, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import VerifiedBadge from "../components/VerifiedBadge";
+import { SEO } from "../components/SEO";
 
 interface UserProfile {
   id: string;
@@ -152,6 +153,7 @@ export default function Profile() {
 
   return (
     <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+      <SEO title="My Profile" description="Manage your Codeown profile and settings." />
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -291,8 +293,8 @@ export default function Profile() {
             transform: isMobile ? "translateX(-50%)" : "none",
             width: isMobile ? "100px" : "150px",
             height: isMobile ? "100px" : "150px",
-            borderRadius: "32px",
-            border: "6px solid white",
+            borderRadius: "100%",
+            border: "1px solid white",
             boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
             backgroundColor: "white",
             overflow: "hidden",
@@ -366,6 +368,42 @@ export default function Profile() {
               >
                 <FontAwesomeIcon icon={faUserEdit} style={{ fontSize: "14px" }} />
                 Edit Profile
+              </button>
+
+              <button
+                onClick={() => {
+                  const shareUrl = `${window.location.origin}/user/${user?.id}`;
+                  if (navigator.share) {
+                    navigator.share({
+                      title: `${userProfile?.name || user?.fullName} on Codeown`,
+                      text: userProfile?.bio || `Check out my profile on Codeown!`,
+                      url: shareUrl,
+                    }).catch(console.error);
+                  } else {
+                    navigator.clipboard.writeText(shareUrl);
+                    alert("Profile link copied to clipboard!");
+                  }
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "white",
+                  color: "#1e293b",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "white"}
+                title="Share Profile"
+              >
+                <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "14px" }} />
               </button>
 
               <div style={{ position: "relative" }}>

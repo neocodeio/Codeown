@@ -26,6 +26,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub as faGithubBrand } from "@fortawesome/free-brands-svg-icons";
 import VerifiedBadge from "../components/VerifiedBadge";
+import { SEO } from "../components/SEO";
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -275,6 +276,15 @@ export default function ProjectDetail() {
 
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
+      <SEO
+        title={`${project.title} by ${userName}`}
+        description={project.description || `Check out ${project.title} on Codeown.`}
+        image={project.cover_image || avatarUrl}
+        url={window.location.href}
+        type="article"
+        author={userName}
+        publishedTime={project.created_at}
+      />
       <div style={{ maxWidth: "900px", margin: "0 auto" }}>
         <button
           onClick={() => navigate(-1)}

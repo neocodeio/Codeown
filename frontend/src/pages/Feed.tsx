@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV, faCheck, faTags, faGlobeAmericas, faUserFriends, faLayerGroup, faRocket } from "@fortawesome/free-solid-svg-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { UserBlock01Icon } from "@hugeicons/core-free-icons";
+import { SEO } from "../components/SEO";
 
 const POPULAR_TAGS = ["React", "JavaScript", "TypeScript", "Node.js", "Python", "Next.js", "WebDev", "UI/UX", "Mobile", "AI"];
 
@@ -132,6 +133,10 @@ export default function Feed() {
 
   return (
     <main className="container" style={{ padding: "40px 20px", minHeight: "100vh" }}>
+      <SEO
+        title="Home"
+        description="Share your projects, discover amazing code, and connect with developers worldwide on Codeown."
+      />
       <div style={{ maxWidth: "640px", margin: "0 auto" }}>
         <header className="fade-in slide-up" style={{
           marginBottom: "40px",

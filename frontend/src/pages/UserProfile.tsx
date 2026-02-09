@@ -20,10 +20,12 @@ import {
   faLayerGroup,
   faCalendarAlt,
   faGlobe,
+  faShareNodes,
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
+import { SEO } from "../components/SEO";
 
 interface User {
   id: string;
@@ -158,6 +160,13 @@ export default function UserProfile() {
 
   return (
     <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+      <SEO
+        title={`${user.name} (@${user.username})`}
+        description={user.bio || `Check out ${user.name}'s developer profile on Codeown.`}
+        image={avatarUrl}
+        url={window.location.href}
+        type="profile"
+      />
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -287,8 +296,8 @@ export default function UserProfile() {
             transform: isMobile ? "translateX(-50%)" : "none",
             width: isMobile ? "100px" : "150px",
             height: isMobile ? "100px" : "150px",
-            borderRadius: "32px",
-            border: "6px solid white",
+            borderRadius: "100%",
+            border: "1px solid white",
             boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
             backgroundColor: "white",
             overflow: "hidden",
@@ -368,6 +377,26 @@ export default function UserProfile() {
                   <span>{isFollowing ? "Following" : "Follow"}</span>
                 </button>
               )}
+              <button
+                onClick={() => {
+                  const shareUrl = window.location.href;
+                  if (navigator.share) {
+                    navigator.share({
+                      title: `${user.name} on Codeown`,
+                      text: user.bio || `Check out ${user.name}'s profile on Codeown!`,
+                      url: shareUrl,
+                    }).catch(console.error);
+                  } else {
+                    navigator.clipboard.writeText(shareUrl);
+                    alert("Profile link copied to clipboard!");
+                  }
+                }}
+                className="profile-btn"
+                title="Share Profile"
+                style={{ width: "44px", height: "44px", padding: 0, justifyContent: "center" }}
+              >
+                <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "16px" }} />
+              </button>
             </div>
           </div>
 

@@ -13,6 +13,7 @@ import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
+import { SEO } from "../components/SEO";
 
 interface Post {
   id: number;
@@ -161,6 +162,15 @@ export default function PostDetail() {
 
   return (
     <main className="container" style={{ padding: "60px 20px" }}>
+      <SEO
+        title={post.title}
+        description={post.content.substring(0, 150) + "..."}
+        image={post.images && post.images.length > 0 ? post.images[0] : avatarUrl}
+        url={window.location.href}
+        type="article"
+        author={userName}
+        publishedTime={post.created_at}
+      />
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
         <button
           onClick={() => navigate(-1)}
