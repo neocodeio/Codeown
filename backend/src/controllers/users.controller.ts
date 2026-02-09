@@ -345,8 +345,9 @@ export async function getUserProfile(req: Request, res: Response) {
     }
 
     // Determine query field
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
-    const field = isUuid ? "id" : "username";
+    // Check if it's a standard UUID or a Clerk ID (starts with "user_")
+    const isId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId) || userId.startsWith("user_");
+    const field = isId ? "id" : "username";
 
     // Fetch user from Supabase
     const { data: user, error: userError } = await supabase
@@ -366,7 +367,7 @@ export async function getUserProfile(req: Request, res: Response) {
       try {
         let clerkUser;
 
-        if (isUuid) {
+        if (isId) {
           console.log(`User ${userId} not found in Supabase, fetching from Clerk by ID`);
           clerkUser = await clerkClient.users.getUser(userId);
         } else {
