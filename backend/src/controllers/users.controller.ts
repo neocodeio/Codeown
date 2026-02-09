@@ -360,81 +360,84 @@ export async function getUserProfile(req: Request, res: Response) {
       return res.status(500).json({ error: "Failed to fetch user", details: userError.message });
     }
 
-    // If user not in Supabase, try Clerk (ONLY if searching by ID)
+    // If user not in Supabase, try Clerk
     let userData = user;
     if (!user && process.env.CLERK_SECRET_KEY) {
-      if (!isUuid) {
-        // If searched by username and not found in Supabase, we stop here.
-        // We assume usage of username means user is already in our system.
-        return res.status(404).json({ error: "User not found" });
-      }
-
       try {
-        console.log(`User ${userId} not found in Supabase, fetching from Clerk`);
-        const clerkUser = await clerkClient.users.getUser(userId);
-        console.log(`Clerk user data for ${userId}:`, {
-          firstName: clerkUser.firstName,
-          lastName: clerkUser.lastName,
-          username: clerkUser.username,
-          email: clerkUser.emailAddresses?.[0]?.emailAddress,
-          imageUrl: clerkUser.imageUrl,
-        });
+        let clerkUser;
 
-        // Extract user name with better fallback logic
-        let userName: string | null = null;
-        if (clerkUser.firstName && clerkUser.lastName) {
-          userName = `${clerkUser.firstName} ${clerkUser.lastName}`.trim();
-        } else if (clerkUser.firstName) {
-          userName = clerkUser.firstName;
-        } else if (clerkUser.lastName) {
-          userName = clerkUser.lastName;
-        } else if (clerkUser.username) {
-          userName = clerkUser.username;
-        } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
-          const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
-          if (emailAddress) {
-            userName = emailAddress.split("@")[0] || null; // Use email username as fallback
+        if (isUuid) {
+          console.log(`User ${userId} not found in Supabase, fetching from Clerk by ID`);
+          clerkUser = await clerkClient.users.getUser(userId);
+        } else {
+          console.log(`User ${userId} not found in Supabase, scouting Clerk by username`);
+          const clerkUsers = await clerkClient.users.getUserList({ username: [userId], limit: 1 });
+          // Handle both array/object return types from Clerk SDK
+          const usersList = Array.isArray(clerkUsers) ? clerkUsers : (clerkUsers as any).data;
+          clerkUser = usersList && usersList.length > 0 ? usersList[0] : null;
+        }
+
+        if (clerkUser) {
+          console.log(`Clerk user data for ${userId}:`, {
+            id: clerkUser.id,
+            firstName: clerkUser.firstName,
+            lastName: clerkUser.lastName,
+            username: clerkUser.username,
+            imageUrl: clerkUser.imageUrl,
+          });
+
+          // Extract user name with better fallback logic
+          let userName: string | null = null;
+          if (clerkUser.firstName && clerkUser.lastName) {
+            userName = `${clerkUser.firstName} ${clerkUser.lastName}`.trim();
+          } else if (clerkUser.firstName) {
+            userName = clerkUser.firstName;
+          } else if (clerkUser.lastName) {
+            userName = clerkUser.lastName;
+          } else if (clerkUser.username) {
+            userName = clerkUser.username;
+          } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
+            const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
+            if (emailAddress) {
+              userName = emailAddress.split("@")[0] || null;
+            }
           }
-        }
 
-        // If still no name, use a default
-        if (!userName) {
-          userName = "User";
-        }
+          if (!userName) userName = "User";
 
-        const emailAddress = clerkUser.emailAddresses?.[0]?.emailAddress || null;
+          const emailAddress = clerkUser.emailAddresses?.[0]?.emailAddress || null;
 
-        userData = {
-          id: userId,
-          name: userName,
-          email: emailAddress,
-          avatar_url: clerkUser.imageUrl || null,
-          bio: null,
-          username: clerkUser.username || null,
-          username_changed_at: null,
-          pinned_post_id: null,
-          follower_count: 0,
-          following_count: 0,
-          total_likes: 0,
-          github_url: null,
-          twitter_url: null,
-          linkedin_url: null,
-          website_url: null,
-          created_at: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString()
-        };
+          userData = {
+            id: clerkUser.id, // Ensure we use the actual UUID from Clerk
+            name: userName,
+            email: emailAddress,
+            avatar_url: clerkUser.imageUrl || null,
+            bio: null,
+            username: clerkUser.username || null,
+            username_changed_at: null,
+            pinned_post_id: null,
+            follower_count: 0,
+            following_count: 0,
+            total_likes: 0,
+            github_url: null,
+            twitter_url: null,
+            linkedin_url: null,
+            website_url: null,
+            created_at: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString()
+          };
 
-        // Sync user to Supabase for future requests
-        try {
-          await ensureUserExists(userId, clerkUser);
-          console.log(`User ${userId} synced to Supabase`);
-        } catch (syncError: any) {
-          console.error(`Could not sync user ${userId} to Supabase:`, syncError?.message);
-          // Continue anyway - we have the data from Clerk
+          // Sync user to Supabase for future requests
+          try {
+            await ensureUserExists(clerkUser.id, clerkUser);
+            console.log(`User ${clerkUser.id} synced to Supabase`);
+          } catch (syncError: any) {
+            console.error(`Could not sync user ${clerkUser.id} to Supabase:`, syncError?.message);
+          }
         }
       } catch (clerkError: any) {
         console.error("Error fetching user from Clerk:", clerkError?.message || clerkError);
         console.error("Full Clerk error:", clerkError);
-        return res.status(404).json({ error: "User not found" });
+        // Fallback to 404
       }
     }
 
