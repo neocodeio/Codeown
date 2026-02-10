@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -240,11 +241,52 @@ export default function Profile() {
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes tabContentEnter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .tab-content-enter { animation: tabContentEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .tab-content-enter { animation: tabContentEnter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         .slide-up-mobile { animation: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .tab-content-enter { animation: tabContentEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        
+        .menu-item {
+          width: 100%;
+          text-align: left;
+          padding: 12px 16px;
+          border: none;
+          background: none;
+          color: #1e293b;
+          font-weight: 700;
+          cursor: pointer;
+          border-radius: 16px;
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          text-decoration: none;
+        }
+        .menu-item:active {
+          background-color: #f1f5f9;
+          transform: scale(0.98);
+        }
+        .menu-item-danger {
+          color: #ef4444;
+        }
+        .menu-item-danger:active {
+          background-color: #fff1f2;
+        }
+        .menu-icon-box {
+          width: 44px;
+          height: 44px;
+          border-radius: 14px;
+          background-color: #f1f5f9;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+          flex-shrink: 0;
+        }
+        .menu-item:active .menu-icon-box {
+          transform: scale(0.9);
+        }
         
         .profile-btn {
           padding: 10px 20px;
@@ -531,13 +573,13 @@ export default function Profile() {
                     border: "none",
                     color: "#94a3b8",
                     cursor: "pointer",
-                    padding: "8px",
-                    fontSize: "18px"
+                    padding: "10px",
+                    fontSize: isMobile ? "22px" : "18px"
                   }}
                 >
                   <FontAwesomeIcon icon={faEllipsisV} />
                 </button>
-                {isMenuOpen && (
+                {isMenuOpen && createPortal(
                   <>
                     {/* Backdrop */}
                     <div
@@ -545,63 +587,97 @@ export default function Profile() {
                       style={{
                         position: "fixed",
                         inset: 0,
-                        backgroundColor: isMobile ? "rgba(15, 23, 42, 0.5)" : "transparent",
-                        backdropFilter: isMobile ? "blur(4px)" : "none",
-                        zIndex: 90,
+                        backgroundColor: "rgba(15, 23, 42, 0.6)",
+                        backdropFilter: "blur(8px)",
+                        zIndex: 10000,
                         cursor: "pointer",
-                        animation: isMobile ? "fadeIn 0.3s ease-out" : "none"
+                        animation: "fadeIn 0.3s ease-out"
                       }}
                     />
                     <div style={{
-                      position: isMobile ? "fixed" : "absolute",
-                      top: isMobile ? "auto" : "100%",
+                      position: "fixed",
                       bottom: isMobile ? "0" : "auto",
-                      left: isMobile ? "0" : "auto",
-                      right: isMobile ? "0" : "0",
+                      left: isMobile ? "0" : "50%",
+                      right: isMobile ? "0" : "auto",
+                      transform: isMobile ? "none" : "translate(-50%, -50%)",
+                      top: isMobile ? "auto" : "50%",
                       backgroundColor: "#fff",
-                      border: isMobile ? "none" : "1px solid #f1f5f9",
-                      borderRadius: isMobile ? "32px 32px 0 0" : "18px",
-                      boxShadow: isMobile ? "0 -10px 40px rgba(0,0,0,0.15)" : "0 15px 35px rgba(0,0,0,0.12)",
-                      minWidth: isMobile ? "100%" : "200px",
-                      zIndex: 100,
-                      padding: isMobile ? "32px 24px" : "8px",
+                      borderRadius: isMobile ? "32px 32px 0 0" : "28px",
+                      boxShadow: isMobile ? "0 -10px 40px rgba(0,0,0,0.3)" : "0 20px 60px rgba(0,0,0,0.2)",
+                      width: isMobile ? "100%" : "380px",
+                      zIndex: 10001,
+                      padding: isMobile ? "16px 20px calc(24px + env(safe-area-inset-bottom))" : "24px",
                       display: "flex",
                       flexDirection: "column",
                       gap: "4px",
-                      animation: isMobile ? "slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)"
+                      animation: isMobile ? "slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "fadeIn 0.3s ease-out"
                     }} onClick={(e) => e.stopPropagation()}>
                       {isMobile && (
-                        <div style={{ width: "40px", height: "4px", backgroundColor: "#e2e8f0", borderRadius: "2px", margin: "0 auto 20px" }} />
+                        <div style={{
+                          width: "40px",
+                          height: "4px",
+                          backgroundColor: "#e2e8f0",
+                          borderRadius: "2px",
+                          margin: "0 auto 12px",
+                          flexShrink: 0
+                        }} />
                       )}
+
+                      <div style={{ padding: "8px 16px", marginBottom: "4px" }}>
+                        <h3 style={{ margin: 0, fontSize: "13px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em" }}>Settings & Account</h3>
+                      </div>
+
                       <button
+                        className="menu-item"
                         onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }}
-                        style={{ width: "100%", textAlign: "left", padding: isMobile ? "16px" : "12px 16px", border: "none", background: "none", color: "#1e293b", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: isMobile ? "16px" : "14px", display: "flex", alignItems: "center", gap: "12px" }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                       >
-                        <FontAwesomeIcon icon={faKey} style={{ width: "16px", opacity: 0.6 }} />
-                        Reset Password
+                        <div className="menu-icon-box">
+                          <FontAwesomeIcon icon={faKey} style={{ fontSize: "18px" }} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                          <span style={{ fontSize: "16px", fontWeight: 800 }}>Reset Password</span>
+                          <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>Update your security credentials</span>
+                        </div>
                       </button>
-                      <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "4px 8px" }} />
+
+                      <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "8px 16px" }} />
+
                       <button
+                        className="menu-item menu-item-danger"
                         onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
-                        style={{ width: "100%", textAlign: "left", padding: isMobile ? "16px" : "12px 16px", border: "none", background: "none", color: "#ef4444", fontWeight: 700, cursor: "pointer", borderRadius: "12px", fontSize: isMobile ? "16px" : "14px", display: "flex", alignItems: "center", gap: "12px" }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                       >
-                        <FontAwesomeIcon icon={faSignOutAlt} style={{ width: "16px", opacity: 0.8 }} />
-                        Sign Out
+                        <div className="menu-icon-box" style={{ backgroundColor: "#fff1f2", color: "#ef4444" }}>
+                          <FontAwesomeIcon icon={faSignOutAlt} style={{ fontSize: "18px" }} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                          <span style={{ fontSize: "16px", fontWeight: 800 }}>Sign Out</span>
+                          <span style={{ fontSize: "12px", color: "#fca5a5", fontWeight: 500 }}>Exit from your account session</span>
+                        </div>
                       </button>
+
                       {isMobile && (
                         <button
                           onClick={() => setIsMenuOpen(false)}
-                          style={{ marginTop: "12px", width: "100%", padding: "16px", border: "none", background: "#f1f5f9", color: "#64748b", fontWeight: 800, borderRadius: "12px", fontSize: "14px" }}
+                          style={{
+                            marginTop: "16px",
+                            width: "100%",
+                            padding: "16px",
+                            border: "none",
+                            background: "#f1f5f9",
+                            color: "#64748b",
+                            fontWeight: 800,
+                            borderRadius: "18px",
+                            fontSize: "14px",
+                            cursor: "pointer",
+                            transition: "all 0.2s"
+                          }}
                         >
-                          CLOSE
+                          CANCEL
                         </button>
                       )}
                     </div>
-                  </>
+                  </>,
+                  document.body
                 )}
               </div>
             </div>

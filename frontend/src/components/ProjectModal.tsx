@@ -178,13 +178,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(15, 23, 42, 0.6)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 5000,
+        zIndex: 10000,
         padding: "0",
-        backdropFilter: "blur(4px)",
+        backdropFilter: "blur(8px)",
       }}
       onClick={onClose}
     >

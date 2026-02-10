@@ -93,6 +93,10 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
           background: #f8fafc;
           border-left-color: #212121;
         }
+        .user-row:active {
+          background: #f1f5f9;
+          transform: scale(0.98);
+        }
       `}</style>
 
       <div
@@ -102,7 +106,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
           inset: 0,
           backgroundColor: "rgba(15, 23, 42, 0.6)",
           backdropFilter: "blur(8px)",
-          zIndex: 5000,
+          zIndex: 10000,
           display: "flex",
           justifyContent: "center",
           alignItems: isMobile ? "flex-end" : "center",
