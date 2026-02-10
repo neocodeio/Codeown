@@ -9,27 +9,27 @@ export default function WelcomeCard() {
 
     return (
         <div
-            className="fade-in slide-up"
+            className="fade-in slide-up welcome-card-minimal"
             style={{
                 backgroundColor: "#fff",
-                border: "1px solid #e0e0e0",
-                borderRadius: isMobile ? "24px" : "32px",
-                padding: isMobile ? "24px" : "32px",
-                marginBottom: "40px",
+                borderRadius: isMobile ? "32px" : "40px",
+                padding: isMobile ? "28px" : "40px",
+                marginBottom: "48px",
                 position: "relative",
                 overflow: "hidden",
-                boxShadow: "0 20px 40px rgba(33, 33, 33, 0.08)",
-                background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.02), 0 10px 40px rgba(0, 0, 0, 0.03)",
+                border: "1px solid rgba(226, 232, 240, 0.5)",
+                background: "#fff",
             }}
         >
-            {/* Decorative gradient blob */}
+            {/* Decorative subtle gradient blob */}
             <div style={{
                 position: "absolute",
-                top: "-50px",
-                right: "-50px",
-                width: "150px",
-                height: "150px",
-                background: "radial-gradient(circle, rgba(132, 155, 255, 0.15) 0%, transparent 70%)",
+                top: "-40px",
+                right: "-40px",
+                width: "200px",
+                height: "200px",
+                background: "radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)",
                 borderRadius: "50%",
                 zIndex: 0
             }} />
@@ -37,141 +37,139 @@ export default function WelcomeCard() {
             <div style={{ position: "relative", zIndex: 1 }}>
                 <div style={{
                     display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    marginBottom: "16px"
+                    flexDirection: "column",
+                    gap: "24px",
                 }}>
-                    <div style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "14px",
-                        backgroundColor: "#212121",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#fff",
-                        fontSize: "18px",
-                        boxShadow: "0 8px 16px rgba(33, 33, 33, 0.2)"
-                    }}>
-                        <FontAwesomeIcon icon={faThumbtack} />
-                    </div>
-                    <div>
-                        <h2 style={{
-                            fontSize: isMobile ? "20px" : "24px",
-                            fontWeight: 900,
-                            color: "#1e293b",
-                            margin: 0,
-                            letterSpacing: "-0.02em"
-                        }}>
-                            Welcome to Codeown! 🚀
-                        </h2>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <div style={{
-                            fontSize: "12px",
+                            padding: "6px 14px",
+                            backgroundColor: "#f8fafc",
+                            color: "#64748b",
+                            borderRadius: "100px",
+                            fontSize: "11px",
                             fontWeight: 800,
-                            color: "#212121",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                            marginTop: "2px"
+                            letterSpacing: "0.08em",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            border: "1px solid #f1f5f9"
                         }}>
-                            Pinned Announcement
+                            <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "10px" }} />
+                            <span>ANNOUNCEMENT</span>
                         </div>
                     </div>
-                </div>
 
-                <p style={{
-                    fontSize: "16px",
-                    lineHeight: "1.7",
-                    color: "#475569",
-                    marginBottom: "24px",
-                    fontWeight: 500
-                }}>
-                    A social network built exclusively for developers. Showcase your side-projects, share coding insights, and connect with other builders. We're glad to have you here!
-                </p>
+                    <div>
+                        <h2 style={{
+                            fontSize: isMobile ? "28px" : "36px",
+                            fontWeight: 800,
+                            color: "#0f172a",
+                            margin: 0,
+                            letterSpacing: "-0.04em",
+                            lineHeight: "1.2"
+                        }}>
+                            Welcome to Codeown <span style={{ color: "#6366f1" }}>🚀</span>
+                        </h2>
+                        <p style={{
+                            fontSize: "17px",
+                            lineHeight: "1.7",
+                            color: "#475569",
+                            marginTop: "16px",
+                            marginBottom: 0,
+                            fontWeight: 500,
+                            maxWidth: "600px"
+                        }}>
+                            The social home for developers. Showcase your projects, share coding insights, and connect with builders shaping the future.
+                        </p>
+                    </div>
 
-                <div style={{
-                    display: "grid",
-                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-                    gap: "12px"
-                }}>
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent("openPostModal"))}
-                        style={{
-                            padding: "14px 20px",
-                            borderRadius: "14px",
-                            backgroundColor: "#fff",
-                            border: "1px solid #e2e8f0",
-                            color: "#1e293b",
-                            fontWeight: 700,
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "10px",
-                            transition: "all 0.2s ease"
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = "#f8fafc";
-                            e.currentTarget.style.transform = "translateY(-2px)";
-                            e.currentTarget.style.borderColor = "#212121";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = "#fff";
-                            e.currentTarget.style.transform = "translateY(0)";
-                            e.currentTarget.style.borderColor = "#e2e8f0";
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faAdd} style={{ fontSize: "14px", opacity: 0.7 }} />
-                        Post First Thought
-                    </button>
+                    <div style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "16px",
+                        marginTop: "8px"
+                    }}>
+                        <button
+                            onClick={() => window.dispatchEvent(new CustomEvent("openProjectModal"))}
+                            style={{
+                                padding: "14px 28px",
+                                borderRadius: "100px",
+                                backgroundColor: "#0f172a",
+                                border: "none",
+                                color: "#fff",
+                                fontWeight: 700,
+                                fontSize: "15px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "10px",
+                                transition: "all 0.3s ease",
+                                boxShadow: "0 10px 20px rgba(15, 23, 42, 0.15)"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-3px)";
+                                e.currentTarget.style.backgroundColor = "#1e293b";
+                                e.currentTarget.style.boxShadow = "0 15px 30px rgba(15, 23, 42, 0.25)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.backgroundColor = "#0f172a";
+                                e.currentTarget.style.boxShadow = "0 10px 20px rgba(15, 23, 42, 0.15)";
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faRocket} style={{ fontSize: "14px" }} />
+                            Launch a Project
+                        </button>
 
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent("openProjectModal"))}
-                        style={{
-                            padding: "14px 20px",
-                            borderRadius: "14px",
-                            backgroundColor: "#212121",
-                            border: "none",
-                            color: "#fff",
-                            fontWeight: 700,
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "10px",
-                            transition: "all 0.2s ease",
-                            boxShadow: "0 10px 20px rgba(33, 33, 33, 0.2)"
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = "#444";
-                            e.currentTarget.style.transform = "translateY(-2px)";
-                            e.currentTarget.style.boxShadow = "0 12px 24px rgba(33, 33, 33, 0.3)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = "#212121";
-                            e.currentTarget.style.transform = "translateY(0)";
-                            e.currentTarget.style.boxShadow = "0 10px 20px rgba(33, 33, 33, 0.2)";
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faRocket} style={{ fontSize: "14px" }} />
-                        Launch First Project
-                    </button>
-                </div>
+                        <button
+                            onClick={() => window.dispatchEvent(new CustomEvent("openPostModal"))}
+                            style={{
+                                padding: "14px 28px",
+                                borderRadius: "100px",
+                                backgroundColor: "#fff",
+                                border: "1px solid #e2e8f0",
+                                color: "#475569",
+                                fontWeight: 700,
+                                fontSize: "15px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "10px",
+                                transition: "all 0.3s ease"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-3px)";
+                                e.currentTarget.style.backgroundColor = "#f8fafc";
+                                e.currentTarget.style.borderColor = "#0f172a";
+                                e.currentTarget.style.color = "#0f172a";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.backgroundColor = "#fff";
+                                e.currentTarget.style.borderColor = "#e2e8f0";
+                                e.currentTarget.style.color = "#475569";
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faAdd} style={{ fontSize: "14px", opacity: 0.7 }} />
+                            Share a Thought
+                        </button>
+                    </div>
 
-                <div style={{
-                    marginTop: "24px",
-                    paddingTop: "20px",
-                    borderTop: "1px solid #f1f5f9",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "8px",
-                    color: "#94a3b8",
-                    fontSize: "13px",
-                    fontWeight: 600
-                }}>
-                    Built with <FontAwesomeIcon icon={faHeart} style={{ color: "#ef4444" }} /> for the developer community
+                    <div style={{
+                        marginTop: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        color: "#94a3b8",
+                        fontSize: "13px",
+                        fontWeight: 600
+                    }}>
+                        <span>Made with</span>
+                        <FontAwesomeIcon icon={faHeart} style={{ color: "#ef4444", fontSize: "12px" }} />
+                        <span>for builders</span>
+                    </div>
                 </div>
             </div>
         </div>

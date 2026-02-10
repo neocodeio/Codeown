@@ -17,6 +17,7 @@ interface MentionInputProps {
   style?: React.CSSProperties;
   onFocus?: () => void;
   onBlur?: () => void;
+  transparent?: boolean;
 }
 
 export default function MentionInput({
@@ -27,6 +28,7 @@ export default function MentionInput({
   style = {},
   onFocus,
   onBlur,
+  transparent = false,
 }: MentionInputProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<User[]>([]);
@@ -182,18 +184,19 @@ export default function MentionInput({
         style={{
           width: "100%",
           minHeight,
-          padding: "12px 16px",
-          border: "1px solid #e4e7eb",
-          borderRadius: "25px",
-          fontSize: "16px",
+          padding: transparent ? "0" : "12px 16px",
+          border: transparent ? "none" : "1px solid #e4e7eb",
+          borderRadius: transparent ? "0" : "25px",
+          fontSize: transparent ? "20px" : "16px",
           fontFamily: "inherit",
-          resize: "vertical",
+          resize: "none",
           outline: "none",
           transition: "all 0.15s",
-          color: "#1a1a1a",
-          backgroundColor: "#ffffff",
+          color: "#0f172a",
+          backgroundColor: transparent ? "transparent" : "#ffffff",
           boxSizing: "border-box",
           lineHeight: 1.5,
+          fontWeight: transparent ? 500 : 400,
           ...style,
         }}
       />

@@ -164,542 +164,308 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
   return (
     <article
       onClick={handleClick}
-      className="fade-in slide-up"
+      className="fade-in project-card-x-style"
       style={{
-        backgroundColor: "white",
-        borderRadius: isMobile ? "20px" : "24px",
-        marginBottom: isMobile ? "20px" : "24px",
         cursor: "pointer",
-        border: "1px solid #f1f5f9",
+        transition: "background-color 0.2s ease",
+        backgroundColor: "#fff",
+        padding: isMobile ? "16px" : "20px 24px",
         position: "relative",
-        transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-        overflow: "hidden",
-        animationDelay: `${index * 0.1}s`,
-        boxShadow: "0 10px 30px rgba(0,0,0,0.03)"
+        display: "flex",
+        gap: "12px",
+        borderBottom: "1px solid #eff3f4",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-8px)";
-        e.currentTarget.style.boxShadow = "0 30px 60px rgba(0,0,0,0.08)";
-        e.currentTarget.style.borderColor = "#e2e8f0";
+        e.currentTarget.style.backgroundColor = "#f7f7f7";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.03)";
-        e.currentTarget.style.borderColor = "#f1f5f9";
+        e.currentTarget.style.backgroundColor = "#fff";
       }}
     >
-      {project.cover_image && (
-        <div style={{
-          width: "100%",
-          height: "220px",
-          overflow: "hidden",
-          position: "relative"
-        }}>
+      {/* Left Column: Avatar */}
+      <div style={{ flexShrink: 0 }}>
+        <div
+          onClick={handleUserClick}
+          style={{
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            overflow: "hidden",
+            transition: "opacity 0.2s ease",
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+        >
           <img
-            src={project.cover_image}
-            alt={project.title}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              transition: "transform 0.5s ease"
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+            src={avatarUrl}
+            alt={userName}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
-          <div style={{
-            position: "absolute",
-            top: "16px",
-            right: "16px",
-            backgroundColor: getStatusColor(project.status),
-            color: "white",
-            padding: "8px 16px",
-            borderRadius: "14px",
-            fontSize: "11px",
-            fontWeight: 900,
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            boxShadow: "0 8px 16px rgba(0,0,0,0.2)",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em"
-          }}>
-            {getStatusIcon(project.status) && (
-              <FontAwesomeIcon icon={getStatusIcon(project.status)} style={{ fontSize: "10px" }} />
-            )}
-            {getStatusText(project.status)}
-          </div>
         </div>
-      )}
+      </div>
 
-      <div style={{ padding: "20px" }}>
+      {/* Right Column: Content */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {/* Header Row: Name, Handle, Time, Actions */}
         <div style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: "24px",
+          marginBottom: "4px",
+          flexWrap: "wrap",
+          gap: "4px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-            <div
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
+            <span
               onClick={handleUserClick}
               style={{
-                width: "40px",
-                height: "40px",
-                backgroundColor: "#f8fafc",
-                border: "1px solid #f1f5f9",
-                overflow: "hidden",
+                fontSize: "15px",
+                fontWeight: "700",
+                color: "#0f172a",
                 cursor: "pointer",
-                borderRadius: "12px",
-                transition: "transform 0.2s ease"
+                display: "flex",
+                alignItems: "center",
+                gap: "2px"
               }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
-              onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+              onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+              onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
             >
-              <img
-                src={avatarUrl}
-                alt={userName}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-            <div>
-              <div
-                onClick={handleUserClick}
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 800,
-                  color: "#1e293b",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center"
-                }}
+              {userName.toUpperCase()}
+              <VerifiedBadge username={project.user?.username} size="14px" />
+            </span>
+            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "400" }}>
+              @{project.user?.username || 'user'}
+            </span>
+            <span style={{ fontSize: "14px", color: "#64748b" }}>•</span>
+            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "400" }}>
+              {formatRelativeDate(project.created_at)}
+            </span>
+            <div style={{
+              marginLeft: "4px",
+              backgroundColor: getStatusColor(project.status),
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%"
+            }} title={getStatusText(project.status)} />
+          </div>
+
+          {/* Own Actions */}
+          {isOwnProject && (
+            <div style={{ display: "flex", gap: "10px", opacity: 0.5 }}>
+              <button
+                onClick={handleEditClick}
+                style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", padding: "4px" }}
               >
-                {userName}
-                <VerifiedBadge username={project.user?.username} size="14px" />
-              </div>
-              <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                {formatRelativeDate(project.created_at)}
-              </div>
+                <FontAwesomeIcon icon={faPen} style={{ fontSize: "12px" }} />
+              </button>
+              <button
+                onClick={handleDeleteClick}
+                style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "4px" }}
+              >
+                <FontAwesomeIcon icon={faTrash} style={{ fontSize: "12px" }} />
+              </button>
             </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            {project.rating ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "#fff9c4", padding: "6px 12px", borderRadius: "12px", border: "1px solid #f9a825", boxShadow: "0 4px 10px rgba(249, 168, 37, 0.1)" }}>
-                <FontAwesomeIcon icon={faStar} style={{ color: "#f9a825", fontSize: "12px" }} />
-                <span style={{ fontSize: "12px", fontWeight: 900, color: "#f57f17" }}>{project.rating.toFixed(1)}</span>
-              </div>
-            ) : null}
-
-            {project.looking_for_contributors && (
-              <div style={{
-                backgroundColor: "#e0f2fe",
-                color: "#0369a1",
-                padding: "6px 12px",
-                borderRadius: "12px",
-                fontSize: "10px",
-                fontWeight: 900,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                border: "1px solid #bae6fd",
-                boxShadow: "0 4px 10px rgba(3, 105, 161, 0.05)"
-              }}>
-                Hiring
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
-        {isOwnProject && (
-          <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }} onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={handleEditClick}
-              style={{
-                padding: "10px 16px",
-                border: "1px solid #eef2ff",
-                backgroundColor: "#f0f0f0",
-                color: "#212121",
-                borderRadius: "12px",
-                fontSize: "13px",
-                cursor: "pointer",
-                fontWeight: 800,
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#e0e7ff"}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#eef2ff"}
-            >
-              <FontAwesomeIcon icon={faPen} style={{ marginRight: "8px" }} /> Edit
-            </button>
-            <button
-              onClick={handleDeleteClick}
-              disabled={isDeleting}
-              style={{
-                padding: "10px 16px",
-                border: "1px solid #fff1f2",
-                backgroundColor: "#fff1f2",
-                color: "#ef4444",
-                borderRadius: "12px",
-                fontSize: "13px",
-                cursor: isDeleting ? "not-allowed" : "pointer",
-                fontWeight: 800,
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#ffe4e6"}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#fff1f2"}
-            >
-              <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px" }} /> Delete
-            </button>
+        {/* Project Title & Description */}
+        <div style={{ marginBottom: "12px" }}>
+          <h3 style={{
+            fontSize: "15px",
+            fontWeight: "800",
+            color: "#0f172a",
+            margin: "0 0 4px 0",
+            lineHeight: "1.4"
+          }}>
+            {project.title}
+          </h3>
+          <p style={{
+            fontSize: "15px",
+            lineHeight: "1.5",
+            color: "#0f172a",
+            wordBreak: "break-word",
+            display: "-webkit-box",
+            WebkitLineClamp: "3",
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}>
+            {project.description}
+          </p>
+        </div>
+
+        {/* Cover Image */}
+        {project.cover_image && (
+          <div style={{
+            marginTop: "8px",
+            marginBottom: "12px",
+            borderRadius: "16px",
+            overflow: "hidden",
+            border: "1px solid #eff3f4",
+            aspectRatio: "16/9"
+          }}>
+            <img
+              src={project.cover_image}
+              alt={project.title}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
           </div>
         )}
 
-        <h3 style={{
-          fontSize: "20px",
-          fontWeight: 900,
-          marginBottom: "10px",
-          lineHeight: "1.3",
-          color: "#1e293b",
-          letterSpacing: "-0.03em"
-        }}>
-          {project.title}
-        </h3>
-
-        <p style={{
-          fontSize: "14px",
-          lineHeight: "1.6",
-          color: "#475569",
-          marginBottom: "20px",
-          display: "-webkit-box",
-          WebkitLineClamp: "3",
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden"
-        }}>
-          {project.description}
-        </p>
-
+        {/* Technologies */}
         {project.technologies_used && project.technologies_used.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "24px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
             {project.technologies_used.map((tech, idx) => (
               <span
                 key={idx}
+                style={{ color: "#6366f1", fontSize: "14px", fontWeight: 500 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate(`/search?q=${encodeURIComponent(tech)}`);
                 }}
-                style={{
-                  fontSize: "11px",
-                  padding: "4px 10px",
-                  backgroundColor: "#f8fafc",
-                  color: "#212121",
-                  borderRadius: "10px",
-                  fontWeight: 800,
-                  cursor: "pointer",
-                  border: "1px solid #f1f5f9",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f0f0f0";
-                  e.currentTarget.style.borderColor = "#212121";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f8fafc";
-                  e.currentTarget.style.borderColor = "#f1f5f9";
-                }}
+                onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+                onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
               >
-                {tech}
+                #{tech.replace(/\s+/g, "")}
               </span>
             ))}
           </div>
         )}
 
-        {/* <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "13px", fontWeight: 600, marginBottom: "24px" }}>
-          <FontAwesomeIcon icon={faEye} style={{ fontSize: "12px", opacity: 0.7 }} />
-          <span>{project.view_count || 0}</span>
-        </div> */}
-
-        {
-          project.contributors && project.contributors.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 900, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Contributors</span>
-              <div style={{ display: "flex", marginLeft: "4px" }}>
-                {project.contributors.map((contrib, idx) => (
-                  <div
-                    key={contrib.user_id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (contrib.username) navigate(`/${contrib.username}`);
-                      else navigate(`/user/${contrib.user_id}`);
-                    }}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "10px",
-                      border: "2px solid #fff",
-                      overflow: "hidden",
-                      marginLeft: idx > 0 ? "-10px" : "0",
-                      cursor: "pointer",
-                      zIndex: 10 - idx,
-                      transition: "all 0.2s ease",
-                      boxShadow: "0 4px 8px rgba(0,0,0,0.1)"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-4px)";
-                      e.currentTarget.style.zIndex = "20";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.zIndex = (10 - idx).toString();
-                    }}
-                    title={contrib.username}
-                  >
-                    <img
-                      src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=212121&color=ffffff&bold=true`}
-                      alt={contrib.username}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-        <div style={{ display: "flex", gap: "10px", marginBottom: "0" }}>
-          {project.github_repo && (
-            <a
-              href={project.github_repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "10px 18px",
-                backgroundColor: "#212121",
-                color: "#fff",
-                borderRadius: "14px",
-                textDecoration: "none",
-                fontSize: "13px",
-                fontWeight: 800,
-                transition: "all 0.2s ease",
-                boxShadow: "0 8px 16px rgba(33, 33, 33, 0.1)"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 12px 20px rgba(33, 33, 33, 0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 8px 16px rgba(33, 33, 33, 0.1)";
-              }}
-            >
-              <FontAwesomeIcon icon={faGithub} />
-              GitHub
-            </a>
-          )}
-          {
-            project.live_demo && (
-              <a
-                href={project.live_demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "10px 18px",
-                  backgroundColor: "#212121",
-                  color: "#fff",
-                  borderRadius: "14px",
-                  textDecoration: "none",
-                  fontSize: "13px",
-                  fontWeight: 800,
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 8px 16px rgba(33, 33, 33, 0.1)"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 12px 20px rgba(33, 33, 33, 0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(33, 33, 33, 0.1)";
-                }}
-              >
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
-                Live Demo
-              </a>
-            )
-          }
-        </div >
-      </div >
-
-      <div
-        style={{
+        {/* Footer Actions */}
+        <div style={{
           display: "flex",
-          borderTop: "1px solid #f1f5f9",
-          padding: "16px 20px 20px",
-          gap: "12px"
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={handleLike}
-          disabled={!currentUser}
-          style={{
-            flex: 1,
-            border: "1px solid",
-            borderColor: isLiked ? "#fecdd3" : "#f1f5f9",
-            padding: "10px",
-            display: "flex",
-            alignItems: "center",
-            cursor: currentUser ? "pointer" : "not-allowed",
-            justifyContent: "center",
-            gap: "8px",
-            fontSize: "14px",
-            fontWeight: 800,
-            borderRadius: "14px",
-            backgroundColor: isLiked ? "#fff1f2" : "#f8fafc",
-            color: isLiked ? "#ef4444" : "#64748b",
-            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = isLiked ? "#ffe4e6" : "#f1f5f9";
-            e.currentTarget.style.transform = "scale(1.02)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = isLiked ? "#fff1f2" : "#f8fafc";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          <FontAwesomeIcon icon={faHeartSolid} />
-          <span>{likeCount || 0}</span>
-        </button>
+          alignItems: "center",
+          justifyContent: "space-between",
+          maxWidth: "425px",
+          marginTop: "4px"
+        }}>
+          {/* Comment */}
+          <button
+            onClick={(e) => { e.stopPropagation(); navigate(`/project/${project.id}`); }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "none",
+              border: "none",
+              color: "#64748b",
+              cursor: "pointer",
+              fontSize: "13px",
+              padding: "8px 0",
+              transition: "color 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "#6366f1";
+              const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
+              if (icon) icon.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "#64748b";
+              const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
+              if (icon) icon.style.backgroundColor = "transparent";
+            }}
+          >
+            <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
+              <FontAwesomeIcon icon={faComment} style={{ fontSize: "18px" }} />
+            </div>
+            <span>{project.comment_count || 0}</span>
+          </button>
 
-        <button
-          onClick={() => navigate(`/project/${project.id}`)}
-          style={{
-            flex: 1,
-            border: "1px solid #f1f5f9",
-            padding: "10px",
-            display: "flex",
-            color: "#64748b",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            fontSize: "14px",
-            fontWeight: 800,
-            borderRadius: "14px",
-            backgroundColor: "#f8fafc",
-            cursor: "pointer",
-            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#f1f5f9";
-            e.currentTarget.style.color = "#212121";
-            e.currentTarget.style.transform = "scale(1.02)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "#f8fafc";
-            e.currentTarget.style.color = "#64748b";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          <FontAwesomeIcon icon={faComment} />
-          <span>{project.comment_count || 0}</span>
-        </button>
+          {/* Like */}
+          <button
+            onClick={handleLike}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "none",
+              border: "none",
+              color: isLiked ? "#f91880" : "#64748b",
+              cursor: "pointer",
+              fontSize: "13px",
+              padding: "8px 0",
+              transition: "color 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              if (!isLiked) e.currentTarget.style.color = "#f91880";
+              const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
+              if (icon) icon.style.backgroundColor = "rgba(249, 24, 128, 0.1)";
+            }}
+            onMouseLeave={(e) => {
+              if (!isLiked) e.currentTarget.style.color = "#64748b";
+              const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
+              if (icon) icon.style.backgroundColor = "transparent";
+            }}
+          >
+            <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
+              <FontAwesomeIcon icon={faHeartSolid} style={{ fontSize: "18px" }} />
+            </div>
+            <span style={{ fontWeight: isLiked ? "700" : "400" }}>{likeCount || 0}</span>
+          </button>
 
-        <button
-          onClick={handleShare}
-          style={{
-            width: "44px",
-            border: "1px solid #f1f5f9",
-            padding: "10px",
-            display: "flex",
-            color: shareCopied ? "#10b981" : "#64748b",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "14px",
-            backgroundColor: "#f8fafc",
-            cursor: "pointer",
-            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            position: "relative",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#f1f5f9";
-            e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "#f8fafc";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          <FontAwesomeIcon icon={faShareNodes} />
-          {shareCopied && (
-            <span style={{
-              position: "absolute",
-              bottom: "100%",
-              left: "50%",
-              transform: "translateX(-50%)",
-              backgroundColor: "#10b981",
-              color: "#fff",
-              padding: "6px 12px",
-              borderRadius: "10px",
-              fontSize: "10px",
-              whiteSpace: "nowrap",
-              marginBottom: "12px",
-              fontWeight: 900,
-              boxShadow: "0 8px 16px rgba(16, 185, 129, 0.2)"
-            }}>
-              COPIED!
-            </span>
-          )}
-        </button>
+          {/* Share */}
+          <button
+            onClick={handleShare}
+            style={{
+              display: "flex",
+              background: "none",
+              border: "none",
+              color: shareCopied ? "#00ba7c" : "#64748b",
+              cursor: "pointer",
+              padding: "8px",
+              borderRadius: "50%",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.1)";
+              e.currentTarget.style.color = "#00ba7c";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              if (!shareCopied) e.currentTarget.style.color = "#64748b";
+            }}
+          >
+            <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "18px" }} />
+          </button>
 
-        <button
-          onClick={handleSave}
-          disabled={!currentUser}
-          style={{
-            width: "44px",
-            border: "1px solid",
-            borderColor: isSaved ? "#212121" : "#f1f5f9",
-            padding: "10px",
-            display: "flex",
-            cursor: currentUser ? "pointer" : "not-allowed",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "14px",
-            backgroundColor: isSaved ? "#f0f0f0" : "#f8fafc",
-            color: isSaved ? "#212121" : "#64748b",
-            transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = isSaved ? "#f0f0f0" : "#f1f5f9";
-            e.currentTarget.style.transform = "scale(1.1)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = isSaved ? "#f0f0f0" : "#f8fafc";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          <FontAwesomeIcon
-            icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
-          />
-        </button>
+          {/* Save */}
+          <button
+            onClick={handleSave}
+            style={{
+              display: "flex",
+              background: "none",
+              border: "none",
+              color: isSaved ? "#6366f1" : "#64748b",
+              cursor: "pointer",
+              padding: "8px",
+              borderRadius: "50%",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
+              e.currentTarget.style.color = "#6366f1";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              if (!isSaved) e.currentTarget.style.color = "#64748b";
+            }}
+          >
+            <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} style={{ fontSize: "18px" }} />
+          </button>
+        </div>
       </div>
 
-      {
-        showEditModal && (
-          <ProjectModal
-            isOpen={showEditModal}
-            onClose={() => setShowEditModal(false)}
-            onUpdated={() => {
-              setShowEditModal(false);
-              if (onUpdated) onUpdated();
-            }}
-            project={project}
-          />
-        )
-      }
-    </article >
+      {showEditModal && (
+        <ProjectModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onUpdated={() => {
+            setShowEditModal(false);
+            if (onUpdated) onUpdated();
+          }}
+          project={project}
+        />
+      )}
+    </article>
   );
 }

@@ -21,7 +21,6 @@ import {
   faPen,
   faShareNodes,
   faThumbtack,
-  faEye,
 } from "@fortawesome/free-solid-svg-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -138,303 +137,209 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
   return (
     <>
       <div
-        className="slide-up"
+        className="fade-in post-card-x-style"
         style={{
           cursor: "pointer",
-          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: "background-color 0.2s ease",
           backgroundColor: "#fff",
-          border: "1px solid #e0e0e0",
-          marginBottom: isMobile ? "20px" : "24px",
-          padding: "0",
-          borderRadius: isMobile ? "20px" : "24px",
-          overflow: "hidden",
-          animationDelay: `${index * 0.1}s`,
-          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.03)",
+          padding: isMobile ? "16px" : "20px 24px",
+          position: "relative",
+          display: "flex",
+          gap: "12px",
+          borderBottom: "1px solid #eff3f4",
         }}
         onClick={handleCardClick}
         onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "translateY(-4px)";
-          e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.06)";
-          e.currentTarget.style.borderColor = "#e2e8f0";
+          e.currentTarget.style.backgroundColor = "#f7f7f7";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.03)";
-          e.currentTarget.style.borderColor = "#e0e0e0";
+          e.currentTarget.style.backgroundColor = "#fff";
         }}
       >
-        {/* Header */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: isMobile ? "14px 14px 10px" : "20px 20px 14px",
-        }}>
+        {/* Left Column: Avatar */}
+        <div style={{ flexShrink: 0 }}>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              cursor: "pointer",
-            }}
-            onClick={handleUserClick}
-          >
-            <div style={{
               width: "40px",
               height: "40px",
-              borderRadius: "14px",
-              backgroundColor: "#f8fafc",
-              border: "1px solid #f1f5f9",
+              borderRadius: "50%",
               overflow: "hidden",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "transform 0.2s ease",
+              transition: "opacity 0.2s ease",
             }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-              onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-            >
-              <img
-                src={avatarUrl}
-                alt={userName}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-            <div>
-              <div style={{
-                fontSize: "14px",
-                fontWeight: "800",
-                color: "#1e293b",
-                marginBottom: "0px",
-                display: "flex",
-                alignItems: "center"
-              }}>
-                {userName}
-                <VerifiedBadge username={post.user?.username} size="14px" />
-              </div>
-              <div style={{
-                fontSize: "11px",
-                color: "#94a3b8",
-                fontWeight: "600",
-                textTransform: "uppercase",
-                letterSpacing: "0.02em",
-              }}>
-                {formatRelativeDate(post.created_at)}
-              </div>
-            </div>
-          </div>
-
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}>
-            {isPinned && (
-              <div style={{
-                fontSize: "10px",
-                color: "#fff",
-                fontWeight: "900",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                backgroundColor: "#212121",
-                padding: "6px 12px",
-                borderRadius: "10px",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                boxShadow: "0 4px 12px rgba(33, 33, 33, 0.2)"
-              }}>
-                <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "10px" }} />
-                <span>Featured</span>
-              </div>
-            )}
-
-            {isOwnPost && (
-              <div style={{
-                display: "flex",
-                gap: "8px",
-              }}>
-                {onPin && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onPin(); }}
-                    style={{
-                      width: "38px",
-                      height: "38px",
-                      background: isPinned ? "#f0f0f0" : "white",
-                      border: "1px solid",
-                      borderColor: isPinned ? "#212121" : "#f1f5f9",
-                      color: isPinned ? "#212121" : "#64748b",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: "12px",
-                      transition: "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = isPinned ? "#e0e0e0" : "#f8fafc";
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = isPinned ? "#f0f0f0" : "white";
-                      e.currentTarget.style.transform = "translateY(0)";
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "14px" }} />
-                  </button>
-                )}
-                <button
-                  onClick={handleEdit}
-                  style={{
-                    width: "38px",
-                    height: "38px",
-                    background: "white",
-                    border: "1px solid #f1f5f9",
-                    color: "#64748b",
-                    cursor: "pointer",
-                    borderRadius: "12px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f8fafc";
-                    e.currentTarget.style.color = "#1e293b";
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "white";
-                    e.currentTarget.style.color = "#64748b";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  <FontAwesomeIcon icon={faPen} style={{ fontSize: "14px" }} />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  style={{
-                    width: "38px",
-                    height: "38px",
-                    background: "#fff1f2",
-                    border: "1px solid #ffe4e6",
-                    color: "#ef4444",
-                    cursor: isDeleting ? "not-allowed" : "pointer",
-                    borderRadius: "12px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isDeleting) {
-                      e.currentTarget.style.backgroundColor = "#ffe4e6";
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#fff1f2";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  <FontAwesomeIcon icon={faTrash} style={{ fontSize: "14px" }} />
-                </button>
-              </div>
-            )}
+            onClick={handleUserClick}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+          >
+            <img
+              src={avatarUrl}
+              alt={userName}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
           </div>
         </div>
 
-        {/* Content */}
-        <div style={{ padding: isMobile ? "0 14px 14px" : "0 20px 20px", display: "flex", flexDirection: "column", gap: "10px" }}>
-          {post.title && (
+        {/* Right Column: Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Header Row: Name, Handle, Time, Actions */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "4px",
+            flexWrap: "wrap",
+            gap: "4px"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
+              <span
+                onClick={handleUserClick}
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "700",
+                  color: "#0f172a",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "2px"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+                onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+              >
+                {userName.toUpperCase()}
+                <VerifiedBadge username={post.user?.username} size="14px" />
+              </span>
+              <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "400" }}>
+                @{post.user?.username || 'user'}
+              </span>
+              <span style={{ fontSize: "14px", color: "#64748b" }}>•</span>
+              <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "400" }}>
+                {formatRelativeDate(post.created_at)}
+              </span>
+              {isPinned && (
+                <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "11px", color: "#64748b", marginLeft: "4px" }} />
+              )}
+            </div>
+
+            {/* Menu Dropdown Placeholder / Own Actions */}
+            {isOwnPost && (
+              <div style={{ display: "flex", gap: "10px", opacity: 0.5 }}>
+                <button
+                  onClick={handleEdit}
+                  style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", padding: "4px", transition: "color 0.2s" }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "#0f172a"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "#64748b"}
+                >
+                  <FontAwesomeIcon icon={faPen} style={{ fontSize: "12px" }} />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "4px", transition: "opacity 0.2s" }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = "0.7"}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                >
+                  <FontAwesomeIcon icon={faTrash} style={{ fontSize: "12px" }} />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Title - Optional in X style but we keep it */}
+          {post.title && post.title !== post.content && (
             <h2 dir="auto" style={{
-              fontSize: isMobile ? "15px" : "20px",
-              fontWeight: "900",
-              color: "#1e293b",
-              marginBottom: "0", // Changed from 12px to 0 due to gap on parent
-              lineHeight: "1.4",
-              letterSpacing: "-0.02em"
+              fontSize: "15px",
+              fontWeight: "800",
+              color: "#0f172a",
+              margin: "0 0 4px 0",
+              lineHeight: "1.4"
             }}>
               {post.title}
             </h2>
           )}
-          {post.content && (
-            <div style={{
-              fontSize: "15px",
-              lineHeight: "1.7",
-              color: "#475569",
-              marginBottom: "16px",
-            }}>
-              <ContentRenderer content={post.content} />
-            </div>
-          )}
 
+          {/* Content */}
+          <div dir="auto" style={{
+            fontSize: "15px",
+            lineHeight: "1.5",
+            color: "#0f172a",
+            wordBreak: "break-word",
+            marginBottom: "12px"
+          }}>
+            <ContentRenderer content={post.content} />
+          </div>
+
+          {/* Images */}
           {post.images && post.images.length > 0 && (
-            <div style={{ marginBottom: "20px", borderRadius: "20px", overflow: "hidden" }}>
+            <div style={{
+              marginTop: "8px",
+              marginBottom: "12px",
+              borderRadius: "16px",
+              overflow: "hidden",
+              border: "1px solid #eff3f4"
+            }}>
               <ImageSlider images={post.images} />
             </div>
           )}
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
-            <div style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px",
-              marginTop: "16px",
-            }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
               {post.tags.map((tag, idx) => (
                 <span
                   key={idx}
-                  style={{
-                    display: "inline-block",
-                    padding: "6px 14px",
-                    backgroundColor: "#f1f5f9",
-                    color: "#212121",
-                    borderRadius: "10px",
-                    fontSize: "12px",
-                    fontWeight: 800,
-                    letterSpacing: "0.01em",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    border: "1px solid #e2e8f0"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f0f0f0";
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.borderColor = "#212121";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f1f5f9";
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                  }}
+                  style={{ color: "#6366f1", fontSize: "14px", fontWeight: 500 }}
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/search?q=${encodeURIComponent(tag)}`);
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+                  onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
                 >
                   #{tag}
                 </span>
               ))}
             </div>
           )}
-        </div>
 
-        {/* Actions */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: isMobile ? "12px 16px 16px" : "14px 20px 20px",
-          backgroundColor: "#fff",
-        }}>
+          {/* Footer Actions */}
           <div style={{
             display: "flex",
             alignItems: "center",
-            gap: isMobile ? "8px" : "12px",
+            justifyContent: "space-between",
+            maxWidth: "425px",
+            marginTop: "4px"
           }}>
+            {/* Comment */}
+            <button
+              onClick={handleComment}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                background: "none",
+                border: "none",
+                color: "#64748b",
+                cursor: "pointer",
+                fontSize: "13px",
+                padding: "8px 0",
+                transition: "color 0.2s"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "#6366f1";
+                const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
+                if (icon) icon.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#64748b";
+                const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
+                if (icon) icon.style.backgroundColor = "transparent";
+              }}
+            >
+              <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
+                <FontAwesomeIcon icon={faComment} style={{ fontSize: "18px" }} />
+              </div>
+              <span>{post.comment_count || 0}</span>
+            </button>
+
+            {/* Like */}
             <button
               onClick={handleLike}
               disabled={likeLoading}
@@ -442,171 +347,79 @@ export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                padding: "8px 14px",
-                background: isLiked ? "#fff1f2" : "#f8fafc",
-                border: "1px solid",
-                borderColor: isLiked ? "#fecdd3" : "#f1f5f9",
-                color: isLiked ? "#ef4444" : "#64748b",
-                cursor: likeLoading ? "not-allowed" : "pointer",
-                borderRadius: "14px",
-                fontSize: "14px",
-                fontWeight: "800",
-                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-              }}
-              onMouseEnter={(e) => {
-                if (!likeLoading) {
-                  e.currentTarget.style.transform = "scale(1.05)";
-                  e.currentTarget.style.backgroundColor = isLiked ? "#ffe4e6" : "#f1f5f9";
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.backgroundColor = isLiked ? "#fff1f2" : "#f8fafc";
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faHeartSolid}
-                style={{
-                  fontSize: "18px",
-                  transition: "transform 0.2s ease",
-                  transform: isLiked ? "scale(1.1)" : "scale(1)"
-                }}
-              />
-              <span>{likeCount || 0}</span>
-            </button>
-
-            <button
-              onClick={handleComment}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px 14px",
-                background: "#f8fafc",
-                border: "1px solid #f1f5f9",
-                color: "#64748b",
+                background: "none",
+                border: "none",
+                color: isLiked ? "#f91880" : "#64748b",
                 cursor: "pointer",
-                borderRadius: "14px",
-                fontSize: "14px",
-                fontWeight: "800",
-                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                fontSize: "13px",
+                padding: "8px 0",
+                transition: "color 0.2s"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.backgroundColor = "#f1f5f9";
-                e.currentTarget.style.color = "#212121";
+                if (!isLiked) e.currentTarget.style.color = "#f91880";
+                const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
+                if (icon) icon.style.backgroundColor = "rgba(249, 24, 128, 0.1)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.backgroundColor = "#f8fafc";
-                e.currentTarget.style.color = "#64748b";
+                if (!isLiked) e.currentTarget.style.color = "#64748b";
+                const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
+                if (icon) icon.style.backgroundColor = "transparent";
               }}
             >
-              <FontAwesomeIcon icon={faComment} style={{ fontSize: "18px" }} />
-              <span>{post.comment_count || 0}</span>
+              <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
+                <FontAwesomeIcon icon={faHeartSolid} style={{ fontSize: "18px" }} />
+              </div>
+              <span style={{ fontWeight: isLiked ? "700" : "400" }}>{likeCount || 0}</span>
             </button>
-          </div>
 
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: isMobile ? "8px" : "12px",
-          }}>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              color: "#64748b",
-              fontSize: "13px",
-              fontWeight: 700,
-              marginRight: isMobile ? "2px" : "4px",
-            }}>
-              <FontAwesomeIcon icon={faEye} style={{ fontSize: "14px", opacity: 0.7 }} />
-              <span>{post.view_count || 0}</span>
-            </div>
-
+            {/* Share */}
             <button
               onClick={handleShare}
               style={{
-                width: "40px",
-                height: "40px",
-                background: "#f8fafc",
-                border: "1px solid #f1f5f9",
-                color: shareCopied ? "#10b981" : "#64748b",
-                cursor: "pointer",
-                borderRadius: "14px",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s ease",
-                position: "relative",
+                background: "none",
+                border: "none",
+                color: shareCopied ? "#00ba7c" : "#64748b",
+                cursor: "pointer",
+                padding: "8px",
+                borderRadius: "50%",
+                transition: "all 0.2s"
               }}
-              title={shareCopied ? "Link Copied!" : "Share Post"}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.backgroundColor = "#f1f5f9";
+                e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.1)";
+                e.currentTarget.style.color = "#00ba7c";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.backgroundColor = "#f8fafc";
+                e.currentTarget.style.backgroundColor = "transparent";
+                if (!shareCopied) e.currentTarget.style.color = "#64748b";
               }}
             >
-              <FontAwesomeIcon
-                icon={faShareNodes}
-                style={{ fontSize: "16px" }}
-              />
-              {shareCopied && (
-                <span style={{
-                  position: "absolute",
-                  bottom: "100%",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  backgroundColor: "#10b981",
-                  color: "#fff",
-                  padding: "6px 12px",
-                  borderRadius: "10px",
-                  fontSize: "10px",
-                  whiteSpace: "nowrap",
-                  marginBottom: "8px",
-                  fontWeight: 900,
-                  boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)"
-                }}>
-                  COPIED!
-                </span>
-              )}
+              <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "18px" }} />
             </button>
 
+            {/* Save */}
             <button
               onClick={handleSave}
               style={{
-                width: "40px",
-                height: "40px",
-                background: isSaved ? "#f0f0f0" : "#f8fafc",
-                border: "1px solid",
-                borderColor: isSaved ? "#212121" : "#f1f5f9",
-                color: isSaved ? "#212121" : "#64748b",
-                cursor: "pointer",
-                borderRadius: "14px",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                background: "none",
+                border: "none",
+                color: isSaved ? "#6366f1" : "#64748b",
+                cursor: "pointer",
+                padding: "8px",
+                borderRadius: "50%",
+                transition: "all 0.2s"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.1)";
-                e.currentTarget.style.backgroundColor = isSaved ? "#e0e0e0" : "#f1f5f9";
+                e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
+                e.currentTarget.style.color = "#6366f1";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.backgroundColor = isSaved ? "#f0f0f0" : "#f8fafc";
+                e.currentTarget.style.backgroundColor = "transparent";
+                if (!isSaved) e.currentTarget.style.color = "#64748b";
               }}
             >
-              <FontAwesomeIcon
-                icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
-                style={{
-                  fontSize: "16px",
-                }}
-              />
+              <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} style={{ fontSize: "18px" }} />
             </button>
           </div>
         </div>
