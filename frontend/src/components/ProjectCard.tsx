@@ -16,29 +16,23 @@ import {
   faBookmark as faBookmarkRegular,
   faTrash,
   faPen,
-  faExternalLinkAlt,
-  faPlay,
-  faPause,
-  faCheck,
-  faStar,
   faShareNodes,
   // faEye
 } from "@fortawesome/free-solid-svg-icons";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
+// import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 
 interface ProjectCardProps {
   project: Project;
   onUpdated?: () => void;
-  index?: number;
 }
 
-export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCardProps) {
+export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [, setIsDeleting] = useState(false);
   const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id, project.isLiked, project.like_count);
   const { isSaved, toggleSave } = useProjectSaved(project.id);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -67,14 +61,7 @@ export default function ProjectCard({ project, onUpdated, index = 0 }: ProjectCa
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return faCheck;
-      case 'in_progress': return faPlay;
-      case 'paused': return faPause;
-      default: return faCheck;
-    }
-  };
+
 
   const getStatusText = (status: string) => {
     switch (status) {

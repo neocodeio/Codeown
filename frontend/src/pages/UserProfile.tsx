@@ -661,9 +661,9 @@ export default function UserProfile() {
                   No posts published yet.
                 </div>
               ) : (
-                posts.map((p, i) => (
+                posts.map((p) => (
                   <div key={p.id} style={{ position: "relative" }}>
-                    <PostCard post={p} index={i} onUpdated={fetchUserPosts} />
+                    <PostCard post={p} onUpdated={fetchUserPosts} />
                     {user.pinned_post_id === p.id && (
                       <div style={{
                         position: "absolute",
@@ -699,7 +699,7 @@ export default function UserProfile() {
                   No projects launched yet.
                 </div>
               ) : (
-                projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} onUpdated={fetchUserProjects} />)
+                projects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
               )}
             </div>
           )}

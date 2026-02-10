@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
@@ -247,13 +247,13 @@ export default function Feed() {
             <div className="feed-stream" style={{ display: "flex", flexDirection: "column" }}>
               {feedType === "posts" ? (
                 // Items are Posts
-                (currentItems as any[]).map((p, i) => (
-                  <PostCard key={p.id} post={p} index={i} onUpdated={() => fetchPosts(page, false)} />
+                (currentItems as any[]).map((p) => (
+                  <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(page, false)} />
                 ))
               ) : (
                 // Items are Projects
-                (currentItems as any[]).map((p, i) => (
-                  <ProjectCard key={p.id} project={p} index={i} onUpdated={() => fetchProjects(page, false)} />
+                (currentItems as any[]).map((p) => (
+                  <ProjectCard key={p.id} project={p} onUpdated={() => fetchProjects(page, false)} />
                 ))
               )}
 

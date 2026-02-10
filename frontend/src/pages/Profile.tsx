@@ -766,11 +766,10 @@ export default function Profile() {
                   No posts published yet.
                 </div>
               ) : (
-                posts.map((p, i) => (
+                posts.map((p) => (
                   <PostCard
                     key={p.id}
                     post={p}
-                    index={i}
                     onUpdated={handleProfileUpdated}
                     onPin={() => handlePinPost(p.id)}
                     isPinned={userProfile?.pinned_post_id === p.id}
@@ -786,7 +785,7 @@ export default function Profile() {
                   No projects launched yet.
                 </div>
               ) : (
-                projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} onUpdated={() => fetchUserProjects()} />)
+                projects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={() => fetchUserProjects()} />)
               )}
             </div>
           ) : (
@@ -827,14 +826,14 @@ export default function Profile() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                   {savedPostsLoading ? <div style={{ padding: "40px 0", textAlign: "center" }}>Loading...</div> :
                     savedPosts.length === 0 ? <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px", border: "1px solid #f1f5f9" }}>No saved posts.</div> :
-                      savedPosts.map((p, i) => <PostCard key={p.id} post={p} index={i} onUpdated={handleProfileUpdated} />)
+                      savedPosts.map((p) => <PostCard key={p.id} post={p} onUpdated={handleProfileUpdated} />)
                   }
                 </div>
               ) : (
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
                   {savedProjectsLoading ? <div style={{ gridColumn: "1 / -1", padding: "40px 0", textAlign: "center" }}>Loading...</div> :
                     savedProjects.length === 0 ? <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px", border: "1px solid #f1f5f9" }}>No saved projects.</div> :
-                      savedProjects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} onUpdated={fetchUserSavedProjects} />)
+                      savedProjects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />)
                   }
                 </div>
               )}

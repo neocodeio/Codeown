@@ -496,8 +496,8 @@ export default function Search() {
 
             {activeFilter === "posts" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                {posts.map((post, i) => (
-                  <PostCard key={post.id} post={post as Post} index={i} />
+                {posts.map((post) => (
+                  <PostCard key={post.id} post={post as Post} />
                 ))}
                 {posts.length === 0 && <EmptyState type="Posts" />}
               </div>
@@ -505,8 +505,8 @@ export default function Search() {
 
             {activeFilter === "projects" && (
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "20px" }}>
-                {projects.map((project, i) => (
-                  <ProjectCard key={project.id} project={project as Project} index={i} />
+                {projects.map((project) => (
+                  <ProjectCard key={project.id} project={project as Project} />
                 ))}
                 {projects.length === 0 && <EmptyState type="Projects" />}
               </div>

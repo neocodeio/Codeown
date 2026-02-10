@@ -28,17 +28,16 @@ import VerifiedBadge from "./VerifiedBadge";
 interface PostCardProps {
   post: Post;
   onUpdated?: () => void;
-  index?: number;
   onPin?: () => void;
   isPinned?: boolean;
 }
 
-export default function PostCard({ post, onUpdated, index = 0, onPin, isPinned }: PostCardProps) {
+export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [, setIsDeleting] = useState(false);
   const { isLiked, likeCount, toggleLike, loading: likeLoading } = useLikes(post.id, post.isLiked, post.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id, post.isSaved);
   const [shareCopied, setShareCopied] = useState(false);
