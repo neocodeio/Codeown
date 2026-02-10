@@ -234,7 +234,7 @@ export default function Search() {
       {/* Top Search Bar Configuration */}
       <div style={{
         position: "sticky",
-        top: 0,
+        top: isMobile ? "64px" : 0,
         backgroundColor: "#fff",
         zIndex: 100,
         borderBottom: "1px solid #f1f5f9",

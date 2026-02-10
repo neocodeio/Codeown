@@ -59,6 +59,7 @@ export default function App() {
         {location.pathname !== "/messages" && <FeedbackButton />}
         <ConnectionStatus />
       </div>
+      {isMobile && <div style={{ height: "80px" }} />}
     </div>
   );
 }

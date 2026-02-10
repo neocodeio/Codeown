@@ -367,7 +367,7 @@ export default function Navbar() {
       </div>
 
       {/* Spacer for Top Header */}
-      <div style={{ height: "0px", marginBottom: "0px" }} />
+      <div style={{ height: "64px" }} />
 
       {/* Mobile Bottom Tab Bar */}
       <div style={{
@@ -489,8 +489,7 @@ export default function Navbar() {
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => window.dispatchEvent(new CustomEvent("projectCreated"))} />
 
-      {/* Spacer for bottom tab bar */}
-      <div style={{ height: "80px" }} />
+
     </>
   );
 }

@@ -174,7 +174,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     paddingTop: "12px",
                     borderTop: (content.length > 0 || images.length > 0) ? "1px solid #eff3f4" : "none"
                 }}>
-                    <div style={{ display: "flex", gap: "10px", color: "#6366f1" }}>
+                    <div style={{ display: "flex", gap: "10px", color: "#212121" }}>
                         <input
                             type="file"
                             multiple
@@ -194,8 +194,6 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 borderRadius: "50%",
                                 transition: "background 0.2s"
                             }}
-                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.1)"}
-                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
                         >
                             <FontAwesomeIcon icon={faImage} style={{ fontSize: "18px" }} />
                         </button>
