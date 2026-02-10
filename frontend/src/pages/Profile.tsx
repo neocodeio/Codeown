@@ -248,9 +248,12 @@ export default function Profile() {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes tabContentEnter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .tab-content-enter { animation: tabContentEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         .slide-up-mobile { animation: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .tab-content-enter { animation: tabContentEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         
         .profile-btn {
           padding: 10px 20px;
@@ -361,17 +364,13 @@ export default function Profile() {
             <div style={{
               width: "100%",
               height: "100%",
-              backgroundColor: "#fff",
+              // Dynamic gradient based on username length to give some variety
+              background: `linear-gradient(135deg, hsl(${(userProfile?.username?.length || 5) * 40}, 80%, 96%) 0%, hsl(${(userProfile?.username?.length || 5) * 40 + 40}, 80%, 96%) 100%)`,
               borderRadius: "32px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#e2e8f0",
-              fontSize: isMobile ? "24px" : "48px",
-              fontWeight: 900,
-              letterSpacing: "0.1em"
-            }}>
-            </div>
+            }} />
           )}
 
           {/* Avatar overlapped bottom */}
@@ -746,7 +745,7 @@ export default function Profile() {
         </div>
 
         {/* Tab Content */}
-        <div className="slide-up">
+        <div key={activeTab} className="tab-content-enter">
           {activeTab === "posts" ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {posts.length === 0 ? (
