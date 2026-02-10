@@ -13,6 +13,7 @@ import EditProfileModal from "../components/EditProfileModal";
 import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
+import Lightbox from "../components/Lightbox";
 import { formatJoinDate } from "../utils/date";
 import api from "../api/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -67,6 +68,8 @@ export default function Profile() {
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
 
   const handleProfileUpdated = useCallback(async () => {
     if (userId) {
@@ -336,6 +339,29 @@ export default function Profile() {
           background: #f0f0f0;
           color: #212121;
         }
+
+        .tab-btn {
+          padding: 12px 24px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #64748b;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
+          background: transparent;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          border-radius: 12px;
+        }
+        .tab-btn:hover {
+          color: #1e293b;
+          background: rgba(241, 245, 249, 0.6);
+        }
+        .tab-btn.active {
+          color: #1e293b;
+          background: #fff;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
       `}</style>
 
       <div style={{
@@ -352,7 +378,8 @@ export default function Profile() {
           border: "1px solid #e2e8f0",
           overflow: "visible", // Allow avatar to overlap
           position: "relative",
-          marginBottom: isMobile ? "60px" : "80px"
+          marginBottom: isMobile ? "60px" : "80px",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
         }}>
           {userProfile?.banner_url ? (
             <img
@@ -389,7 +416,11 @@ export default function Profile() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 10
+            zIndex: 10,
+            cursor: "pointer"
+          }} onClick={() => {
+            setLightboxImage(avatarUrl);
+            setLightboxOpen(true);
           }}>
             <img
               src={avatarUrl}
@@ -398,6 +429,12 @@ export default function Profile() {
             />
           </div>
         </div>
+
+        <Lightbox
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          imageSrc={lightboxImage}
+        />
 
         {/* User Info Section */}
         <div style={{ padding: "0 10px" }}>
@@ -690,55 +727,30 @@ export default function Profile() {
         {/* Tab Selection */}
         <div style={{
           display: "flex",
-          gap: "32px",
-          borderBottom: "1px solid #e2e8f0",
-          marginBottom: "32px"
+          justifyContent: isMobile ? "center" : "flex-start",
+          padding: "6px",
+          backgroundColor: "#f1f5f9",
+          borderRadius: "18px",
+          width: "fit-content",
+          marginBottom: "32px",
+          marginTop: "40px",
+          margin: isMobile ? "40px auto 32px" : "40px 0 32px"
         }}>
           <button
             onClick={() => setActiveTab("posts")}
-            style={{
-              padding: "16px 4px",
-              border: "none",
-              background: "none",
-              fontSize: "14px",
-              fontWeight: 800,
-              color: activeTab === "posts" ? "#000" : "#94a3b8",
-              borderBottom: activeTab === "posts" ? "2px solid #000" : "2px solid transparent",
-              cursor: "pointer",
-              transition: "all 0.2s"
-            }}
+            className={`tab-btn ${activeTab === "posts" ? "active" : ""}`}
           >
             POSTS
           </button>
           <button
             onClick={() => setActiveTab("projects")}
-            style={{
-              padding: "16px 4px",
-              border: "none",
-              background: "none",
-              fontSize: "14px",
-              fontWeight: 800,
-              color: activeTab === "projects" ? "#000" : "#94a3b8",
-              borderBottom: activeTab === "projects" ? "2px solid #000" : "2px solid transparent",
-              cursor: "pointer",
-              transition: "all 0.2s"
-            }}
+            className={`tab-btn ${activeTab === "projects" ? "active" : ""}`}
           >
             PROJECTS
           </button>
           <button
             onClick={() => setActiveTab("saved")}
-            style={{
-              padding: "16px 4px",
-              border: "none",
-              background: "none",
-              fontSize: "14px",
-              fontWeight: 800,
-              color: activeTab === "saved" ? "#000" : "#94a3b8",
-              borderBottom: activeTab === "saved" ? "2px solid #000" : "2px solid transparent",
-              cursor: "pointer",
-              transition: "all 0.2s"
-            }}
+            className={`tab-btn ${activeTab === "saved" ? "active" : ""}`}
           >
             SAVED
           </button>

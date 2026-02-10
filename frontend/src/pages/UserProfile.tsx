@@ -26,6 +26,8 @@ import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
+import { toast } from "react-toastify";
+import Lightbox from "../components/Lightbox";
 
 interface User {
   id: string;
@@ -73,6 +75,8 @@ export default function UserProfile() {
   const [activeTab, setActiveTab] = useState<"posts" | "projects">("posts");
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
 
   const isOwnProfile = currentUser?.id === (user?.id || userId);
 
@@ -406,7 +410,11 @@ export default function UserProfile() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 10
+            zIndex: 10,
+            cursor: "pointer"
+          }} onClick={() => {
+            setLightboxImage(avatarUrl);
+            setLightboxOpen(true);
           }}>
             <img
               src={avatarUrl}
@@ -415,6 +423,12 @@ export default function UserProfile() {
             />
           </div>
         </div>
+
+        <Lightbox
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          imageSrc={lightboxImage}
+        />
 
         {/* User Info Section */}
         <div style={{
@@ -493,7 +507,7 @@ export default function UserProfile() {
                     }).catch(console.error);
                   } else {
                     navigator.clipboard.writeText(shareUrl);
-                    alert("Profile link copied to clipboard!");
+                    toast.success("Profile link copied to clipboard!");
                   }
                 }}
                 className="profile-btn"
