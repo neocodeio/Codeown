@@ -131,18 +131,6 @@ export default function Profile() {
     }
   };
 
-  const handlePinPost = async (postId: number) => {
-    try {
-      const token = await getToken();
-      if (!token) return;
-      const endpoint = userProfile?.pinned_post_id === postId ? "/users/pin/unpin" : `/users/pin/${postId}`;
-      await api.post(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
-      const res = await api.get(`/users/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
-      setUserProfile(res.data);
-    } catch (error) {
-      console.error("Error pinning post:", error);
-    }
-  };
 
   if (!isLoaded) return (
     <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
@@ -771,7 +759,6 @@ export default function Profile() {
                     key={p.id}
                     post={p}
                     onUpdated={handleProfileUpdated}
-                    onPin={() => handlePinPost(p.id)}
                     isPinned={userProfile?.pinned_post_id === p.id}
                   />
                 ))

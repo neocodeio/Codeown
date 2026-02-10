@@ -32,7 +32,6 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
-  const [, setIsDeleting] = useState(false);
   const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id, project.isLiked, project.like_count);
   const { isSaved, toggleSave } = useProjectSaved(project.id);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -88,7 +87,6 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
     e.stopPropagation();
     if (!confirm("Delete this project? This action cannot be undone.")) return;
 
-    setIsDeleting(true);
     try {
       const token = await getToken();
       if (!token) return;
@@ -99,8 +97,6 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
     } catch (error) {
       console.error("Error deleting project:", error);
       alert("Failed to delete project");
-    } finally {
-      setIsDeleting(false);
     }
   };
 

@@ -28,7 +28,6 @@ import VerifiedBadge from "./VerifiedBadge";
 interface PostCardProps {
   post: Post;
   onUpdated?: () => void;
-  onPin?: () => void;
   isPinned?: boolean;
 }
 
@@ -37,7 +36,6 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [, setIsDeleting] = useState(false);
   const { isLiked, likeCount, toggleLike, loading: likeLoading } = useLikes(post.id, post.isLiked, post.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id, post.isSaved);
   const [shareCopied, setShareCopied] = useState(false);
@@ -111,7 +109,6 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this post?')) {
-      setIsDeleting(true);
       try {
         const token = await getToken();
         await api.delete(`/posts/${post.id}`, {
@@ -121,8 +118,6 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
       } catch (error) {
         console.error('Error deleting post:', error);
         alert('Failed to delete post');
-      } finally {
-        setIsDeleting(false);
       }
     }
   };
