@@ -357,11 +357,11 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           inset: 0,
           backgroundColor: "rgba(15, 23, 42, 0.6)",
           backdropFilter: "blur(4px)",
-          zIndex: 1000,
+          zIndex: 5000,
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
+          alignItems: isMobile ? "flex-end" : "center",
+          padding: isMobile ? "0" : "20px",
         }}
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
@@ -369,12 +369,12 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           className="modal-dialog"
           style={{
             width: "100%",
-            maxWidth: "520px",
-            maxHeight: "90vh",
-            margin: isMobile ? "16px" : "auto",
+            maxWidth: isMobile ? "100%" : "520px",
+            maxHeight: isMobile ? "92vh" : "90vh",
+            margin: 0,
             backgroundColor: "white",
-            borderRadius: isMobile ? "24px" : "32px",
-            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            borderRadius: isMobile ? "24px 24px 0 0" : "32px",
+            boxShadow: "0 -10px 25px rgba(0,0,0,0.1), 0 25px 50px -12px rgba(0, 0, 0, 0.25)",
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
@@ -382,12 +382,12 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div style={{ padding: isMobile ? "20px 24px 12px" : "32px 32px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ padding: isMobile ? "24px 20px 12px" : "32px 32px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: isMobile ? "1px solid #f1f5f9" : "none", marginBottom: isMobile ? "12px" : "0" }}>
             <h2 style={{ margin: 0, fontSize: isMobile ? "20px" : "24px", fontWeight: 900, color: "#0f172a", letterSpacing: "-0.03em" }}>Edit Profile</h2>
             <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "28px", color: "#94a3b8", cursor: "pointer", display: "flex" }}>&times;</button>
           </div>
 
-          <div style={{ padding: isMobile ? "0 24px 24px" : "0 32px 32px", overflowY: "auto", display: "flex", flexDirection: "column", gap: isMobile ? "16px" : "24px" }}>
+          <div style={{ padding: isMobile ? "0 20px 24px" : "0 32px 32px", overflowY: "auto", display: "flex", flexDirection: "column", gap: isMobile ? "16px" : "24px" }}>
             {/* Avatar Section */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "16px 0" }}>
               <label style={{ cursor: "pointer", position: "relative" }}>
@@ -570,11 +570,24 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           </div>
 
           {/* Footer Actions */}
-          <div style={{ padding: isMobile ? "16px 24px" : "24px 32px", backgroundColor: "#f8fafc", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-            <button className="modal-btn modal-btn-secondary" style={{ padding: isMobile ? "10px 16px" : "12px 24px" }} onClick={onClose}>Cancel</button>
+          <div style={{
+            padding: isMobile ? "16px 20px 32px" : "24px 32px",
+            backgroundColor: "#f8fafc",
+            display: "flex",
+            justifyContent: isMobile ? "stretch" : "flex-end",
+            gap: "12px",
+            borderTop: "1px solid #f1f5f9"
+          }}>
+            <button
+              className="modal-btn modal-btn-secondary"
+              style={{ padding: isMobile ? "14px" : "12px 24px", flex: isMobile ? 1 : "initial" }}
+              onClick={onClose}
+            >
+              Cancel
+            </button>
             <button
               className="modal-btn modal-btn-primary"
-              style={{ padding: isMobile ? "10px 16px" : "12px 24px" }}
+              style={{ padding: isMobile ? "14px" : "12px 24px", flex: isMobile ? 2 : "initial" }}
               onClick={submit}
               disabled={isSubmitting || !name.trim()}
             >

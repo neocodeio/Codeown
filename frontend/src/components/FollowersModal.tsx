@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import VerifiedBadge from "./VerifiedBadge";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 interface User {
   id: string;
@@ -25,6 +26,8 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     if (!isOpen || !userId) return;
@@ -73,7 +76,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
     <>
       <style>{`
         @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes modalSlideIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes modalSlideIn { from { opacity: 0; transform: ${isMobile ? 'translateY(20px)' : 'scale(0.95)'}; } to { opacity: 1; transform: ${isMobile ? 'translateY(0)' : 'scale(1)'}; } }
         .modal-backdrop { animation: modalFadeIn 0.3s ease; }
         .modal-dialog { animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
@@ -81,7 +84,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
           display: flex;
           align-items: center;
           gap: 16px;
-          padding: 16px 24px;
+          padding: ${isMobile ? '12px 16px' : '16px 24px'};
           cursor: pointer;
           transition: all 0.2s ease;
           border-left: 4px solid transparent;
@@ -99,11 +102,11 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
           inset: 0,
           backgroundColor: "rgba(15, 23, 42, 0.6)",
           backdropFilter: "blur(8px)",
-          zIndex: 1000,
+          zIndex: 5000,
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
+          alignItems: isMobile ? "flex-end" : "center",
+          padding: isMobile ? "0" : "20px",
         }}
         onClick={onClose}
       >
@@ -111,32 +114,51 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
           className="modal-dialog"
           style={{
             backgroundColor: "#ffffff",
-            borderRadius: "32px",
+            borderRadius: isMobile ? "24px 24px 0 0" : "32px",
             width: "100%",
-            maxWidth: "440px",
-            maxHeight: "80vh",
+            maxWidth: isMobile ? "100%" : "440px",
+            maxHeight: isMobile ? "92vh" : "80vh",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            boxShadow: "0 30px 60px rgba(0, 0, 0, 0.2)",
+            boxShadow: isMobile ? "0 -10px 40px rgba(0,0,0,0.3)" : "0 30px 60px rgba(0, 0, 0, 0.2)",
+            paddingBottom: isMobile ? "env(safe-area-inset-bottom)" : "0"
           }}
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Bottom Sheet Handle for mobile */}
+          {isMobile && (
+            <div style={{
+              width: "40px",
+              height: "4px",
+              backgroundColor: "#e2e8f0",
+              borderRadius: "2px",
+              margin: "12px auto 0",
+              flexShrink: 0
+            }} />
+          )}
+
           {/* Header */}
-          <div style={{ padding: "24px 32px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 900, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <div style={{ padding: isMobile ? "16px 20px" : "24px 32px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h2 style={{ margin: 0, fontSize: isMobile ? "17px" : "20px", fontWeight: 900, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {title}
             </h2>
             <button
               onClick={onClose}
               style={{
-                background: "none",
+                background: "#f1f5f9",
                 border: "none",
-                fontSize: "24px",
-                color: "#94a3b8",
+                fontSize: isMobile ? "20px" : "24px",
+                color: "#64748b",
                 cursor: "pointer",
-                padding: "4px",
-                display: "flex"
+                padding: "0",
+                width: isMobile ? "28px" : "32px",
+                height: isMobile ? "28px" : "32px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                lineHeight: 1
               }}
             >
               &times;
