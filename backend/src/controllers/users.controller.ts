@@ -255,15 +255,23 @@ export async function ensureUserExists(userId: string, userData?: any) {
   if (existingUser) {
     // User exists, optionally update their data
     if (userData) {
+      // Build update object, but only include avatar_url if it's currently null or if the new one isn't a fallback
+      const updatePayload: any = {
+        email: userInfo.email,
+        name: userInfo.name,
+        username: userInfo.username,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Only update avatar if current one is missing OR if we have a specific reason to trust the new one
+      // This prevents Clerk's default/old avatar from overwriting a custom one in Supabase
+      if (!existingUser.avatar_url && userInfo.avatar_url) {
+        updatePayload.avatar_url = userInfo.avatar_url;
+      }
+
       const { error: updateError } = await supabase
         .from("users")
-        .update({
-          email: userInfo.email,
-          name: userInfo.name,
-          avatar_url: userInfo.avatar_url,
-          username: userInfo.username,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq("id", userId);
 
       if (updateError) {
