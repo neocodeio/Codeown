@@ -31,9 +31,15 @@ export async function getProjects(req: Request, res: Response) {
     const limitNum = parseInt(limit as string, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
 
+    // Use nested joins to fetch creator, ratings, and basic contributor info in one go
     let projectsQuery = supabase
       .from("projects")
-      .select("*", { count: "exact" })
+      .select(`
+        *,
+        user:users(id, name, avatar_url, username),
+        ratings:project_ratings(rating),
+        contributors_list:project_contributors(user:users(id, name, avatar_url, username))
+      `, { count: "exact" })
       .order("created_at", { ascending: false });
 
     if (tag) {
@@ -52,10 +58,6 @@ export async function getProjects(req: Request, res: Response) {
         return res.json({ projects: [], total: 0, page: pageNum, limit: limitNum, totalPages: 0 });
       }
       projectsQuery = projectsQuery.in("user_id", followingIds);
-    } else if (String(filter).toLowerCase() === "contributors") {
-      // Temporarily disabled until looking_for_contributors column is added to Supabase
-      // projectsQuery = projectsQuery.eq("looking_for_contributors", true);
-      console.warn("Filter 'contributors' ignored because looking_for_contributors column is missing.");
     }
 
     const { data: projects, error: projectsError, count } = await projectsQuery.range(offset, offset + limitNum - 1);
@@ -69,70 +71,38 @@ export async function getProjects(req: Request, res: Response) {
       return res.json({ projects: [], total: count || 0, page: pageNum, limit: limitNum, totalPages: Math.ceil((count || 0) / limitNum) });
     }
 
-    // Get project IDs
-    const projectIds = projects.map((p: any) => p.id);
-
-    // Fetch Ratings
-    const { data: ratingsData } = await supabase
-      .from("project_ratings")
-      .select("project_id, rating")
-      .in("project_id", projectIds);
-
-    // Fetch Contributors
-    const { data: contributorsData } = await supabase
-      .from("project_contributors")
-      .select("project_id, user_id")
-      .in("project_id", projectIds);
-
-    // Collect all user IDs (creators + contributors)
-    const creatorIds = projects.map((p: any) => p.user_id);
-    const contributorUserIds = contributorsData?.map((c: any) => c.user_id) || [];
-    const allUserIds = [...new Set([...creatorIds, ...contributorUserIds])];
-
-    // Fetch users
-    const { data: users, error: usersError } = await supabase
-      .from("users")
-      .select("id, name, avatar_url, username")
-      .in("id", allUserIds);
-
-    if (usersError) {
-      console.error("Error fetching users for projects:", usersError);
-      return res.status(500).json({ error: "Failed to fetch user data" });
-    }
-
-    // Attach data to projects
+    // Process projects and attach stats
     const projectsWithDetails = projects.map((project: any) => {
-      const user = users?.find((u: any) => u.id === project.user_id);
+      // Creator fallback
+      const creator = Array.isArray(project.user) ? project.user[0] : project.user;
 
-      // Calculate ratings
-      const projectRatings = ratingsData?.filter((r: any) => r.project_id === project.id) || [];
-      const ratingCount = projectRatings.length;
-      const ratingSum = projectRatings.reduce((sum: number, r: any) => sum + r.rating, 0);
-      const averageRating = ratingCount > 0 ? ratingSum / ratingCount : 0;
+      // Calculate average rating
+      const ratings = project.ratings || [];
+      const ratingCount = ratings.length;
+      const averageRating = ratingCount > 0
+        ? ratings.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / ratingCount
+        : 0;
 
-      // Attach contributors
-      const projectContributors = contributorsData
-        ?.filter((c: any) => c.project_id === project.id)
-        .map((c: any) => {
-          const u = users?.find((user: any) => user.id === c.user_id);
-          return u ? { user_id: u.id, username: u.username, avatar_url: u.avatar_url, name: u.name } : null;
-        })
-        .filter(Boolean) || [];
+      // Format contributors
+      const contributors = (project.contributors_list || [])
+        .map((c: any) => c.user)
+        .filter(Boolean);
 
       return {
         ...project,
-        user: user || { id: project.user_id, name: "Unknown User", email: null, avatar_url: null, username: null },
+        user: creator || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null },
         rating: averageRating,
         rating_count: ratingCount,
-        contributors: projectContributors
+        contributors: contributors
       };
     });
 
-    // FETCH LIKE AND SAVE STATUS FOR CURRENT USER
+    // FETCH LIKE AND SAVE STATUS FOR CURRENT USER IN PARALLEL
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
-    let projectsWithStats = projectsWithDetails;
+    let finalProjects = projectsWithDetails;
 
     if (currentUserId && projectsWithDetails.length > 0) {
+      const projectIds = projectsWithDetails.map(p => p.id);
       const [likesRes, savesRes] = await Promise.all([
         supabase.from("project_likes").select("project_id").eq("user_id", currentUserId).in("project_id", projectIds),
         supabase.from("project_saves").select("project_id").eq("user_id", currentUserId).in("project_id", projectIds)
@@ -141,7 +111,7 @@ export async function getProjects(req: Request, res: Response) {
       const likedProjectIds = new Set((likesRes.data || []).map(l => l.project_id));
       const savedProjectIds = new Set((savesRes.data || []).map(s => s.project_id));
 
-      projectsWithStats = projectsWithDetails.map(p => ({
+      finalProjects = projectsWithDetails.map(p => ({
         ...p,
         isLiked: likedProjectIds.has(p.id),
         isSaved: savedProjectIds.has(p.id)
@@ -149,12 +119,13 @@ export async function getProjects(req: Request, res: Response) {
     }
 
     return res.json({
-      projects: projectsWithStats,
+      projects: finalProjects,
       total: count || 0,
       page: pageNum,
       limit: limitNum,
       totalPages: Math.ceil((count || 0) / limitNum)
     });
+
   } catch (error) {
     console.error("Error in getProjects:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -165,9 +136,15 @@ export async function getProject(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
+    // Use nested joins for faster data retrieval
     const { data: project, error: projectError } = await supabase
       .from("projects")
-      .select("*")
+      .select(`
+        *,
+        user:users(id, name, avatar_url, username),
+        ratings:project_ratings(rating, user_id),
+        contributors_list:project_contributors(user:users(id, name, avatar_url, username))
+      `)
       .eq("id", id)
       .single();
 
@@ -175,78 +152,44 @@ export async function getProject(req: Request, res: Response) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    // Increment view count (non-blocking)
-    supabase.rpc('increment_view_count', { row_id: id, table_name: 'projects' })
-      .then(({ error }) => {
-        if (error) {
-          // If RPC fails, try standard update as fallback
-          supabase.from("projects")
-            .update({ view_count: (project.view_count || 0) + 1 })
-            .eq("id", id)
-            .then(() => { });
-        }
-      });
-
-    // Fetch user data
-    const { data: user, error: userError } = await supabase
-      .from("users")
-      .select("id, name, avatar_url, username")
-      .eq("id", project.user_id)
-      .single();
-
-    if (userError) {
-      console.error("Error fetching user for project:", userError);
-      return res.status(500).json({ error: "Failed to fetch user data" });
-    }
-
-    // Fetch Ratings
-    const { data: ratingsData } = await supabase
-      .from("project_ratings")
-      .select("rating, user_id")
-      .eq("project_id", id);
-
-    // Calculate ratings
-    const ratingCount = ratingsData?.length || 0;
-    const ratingSum = ratingsData?.reduce((sum, r) => sum + r.rating, 0) || 0;
-    const averageRating = ratingCount > 0 ? ratingSum / ratingCount : 0;
-
-    // Get current user's rating if applicable
+    // Parallelize non-blocking view increment and personalized status fetching
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
-    const userRating = userId ? ratingsData?.find(r => r.user_id === userId)?.rating : undefined;
 
-    // Fetch Contributors
-    const { data: contributorsData } = await supabase
-      .from("project_contributors")
-      .select("user_id")
-      .eq("project_id", id);
+    const [viewResult, stats] = await Promise.all([
+      (async () => {
+        try {
+          const { error } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'projects' });
+          if (error) throw error;
+        } catch (e) {
+          await supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", id);
+        }
+      })(),
 
-    // Fetch Contributor User Infos
-    let contributors: any[] = [];
-    if (contributorsData && contributorsData.length > 0) {
-      const contributorIds = contributorsData.map(c => c.user_id);
-      const { data: contribUsers } = await supabase
-        .from("users")
-        .select("id, name, username, avatar_url")
-        .in("id", contributorIds);
-      contributors = contribUsers || [];
-    }
-
-    // FETCH LIKE AND SAVE STATUS FOR CURRENT USER
-    let isLiked = false;
-    let isSaved = false;
-
-    if (userId) {
-      const [likeRes, saveRes] = await Promise.all([
+      userId ? Promise.all([
         supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", id).maybeSingle(),
         supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", id).maybeSingle()
-      ]);
-      isLiked = !!likeRes.data;
-      isSaved = !!saveRes.data;
-    }
+      ]) : Promise.resolve([null, null])
+    ]);
+
+    const items = stats as any;
+    const isLiked = !!(items[0]?.data);
+    const isSaved = !!(items[1]?.data);
+
+    // Calculate ratings
+    const ratings = project.ratings || [];
+    const ratingCount = ratings.length;
+    const ratingSum = ratings.reduce((sum: number, r: any) => sum + (r.rating || 0), 0);
+    const averageRating = ratingCount > 0 ? ratingSum / ratingCount : 0;
+    const userRating = userId ? ratings.find((r: any) => r.user_id === userId)?.rating : undefined;
+
+    // Format contributors
+    const contributors = (project.contributors_list || [])
+      .map((c: any) => c.user)
+      .filter(Boolean);
 
     return res.json({
       ...project,
-      user: user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null },
+      user: project.user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null },
       rating: averageRating,
       rating_count: ratingCount,
       user_rating: userRating,
@@ -254,6 +197,7 @@ export async function getProject(req: Request, res: Response) {
       isLiked,
       isSaved
     });
+
   } catch (error) {
     console.error("Error in getProject:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -631,6 +575,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
       if (project.user_id !== userId) {
         await createProjectNotification(project.user_id, "like", userId as string, parseInt(id));
       }
+
     }
 
     // Update like count
@@ -743,6 +688,7 @@ export async function toggleProjectSave(req: Request, res: Response) {
       if (project.user_id !== userId) {
         await createProjectNotification(project.user_id, "save", userId as string, parseInt(id));
       }
+
     }
 
     return res.json({ isSaved });
@@ -806,7 +752,7 @@ export async function rateProject(req: Request, res: Response) {
       .from("project_ratings")
       .upsert({
         project_id: parseInt(id),
-        user_id: userId,
+        user_id: userId as string,
         rating: rating,
         created_at: new Date().toISOString()
       }, { onConflict: "project_id,user_id" });

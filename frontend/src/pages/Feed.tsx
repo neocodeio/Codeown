@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
@@ -21,7 +21,6 @@ export default function Feed() {
   const feedFilter = (searchParams.get("filter") as FeedFilter) || "all";
   const selectedTag = searchParams.get("tag") || "";
   const selectedLang = (searchParams.get("lang") as "en" | "ar" | "") || "";
-  const [page, setPage] = useState(1);
 
   // Helper to update search params
   const updateParams = (newParams: Record<string, string | null>) => {
@@ -32,7 +31,6 @@ export default function Feed() {
       });
       return prev;
     }, { replace: true });
-    setPage(1); // Reset page on any filter change
   };
 
   const setFeedFilter = (filter: FeedFilter) => updateParams({ filter });
@@ -40,15 +38,26 @@ export default function Feed() {
   const { getToken } = useClerkAuth();
   const { isSignedIn } = useClerkUser();
 
-  // Hooks - only pagination for the active tab; inactive tab stays at page 1
-  const postsPage = feedType === 'posts' ? page : 1;
-  const projectsPage = feedType === 'projects' ? page : 1;
+  // Hooks using TanStack Query
+  const {
+    posts,
+    loading: postsLoading,
+    fetchPosts,
+    hasMore: postsHasMore,
+    isRefetching: postsRefetching
+  } = usePosts(20, feedFilter, getToken, selectedTag, selectedLang || undefined);
 
-  const { posts, loading: postsLoading, fetchPosts, hasMore: postsHasMore } = usePosts(postsPage, 20, feedFilter, getToken, selectedTag, selectedLang || undefined);
-  const { projects, loading: projectsLoading, fetchProjects, hasMore: projectsHasMore } = useProjects(projectsPage, 20, feedFilter, getToken, selectedTag);
+  const {
+    projects,
+    loading: projectsLoading,
+    fetchProjects,
+    hasMore: projectsHasMore,
+    isRefetching: projectsRefetching
+  } = useProjects(20, feedFilter, getToken, selectedTag);
 
   const loading = feedType === "posts" ? postsLoading : projectsLoading;
   const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;
+  const isRefetching = feedType === "posts" ? postsRefetching : projectsRefetching;
 
   useEffect(() => {
     if (!isSignedIn && feedFilter === "following") setFeedFilter("all");
@@ -58,36 +67,32 @@ export default function Feed() {
     const handleScroll = () => {
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1000) {
         if (hasMore && !loading) {
-          setPage((prev) => prev + 1);
           if (feedType === "posts") {
-            fetchPosts(page + 1, true);
+            fetchPosts(undefined, true);
           } else {
-            fetchProjects(page + 1, true);
+            fetchProjects(undefined, true);
           }
         }
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMore, loading, page, fetchPosts, fetchProjects, feedType]);
+  }, [hasMore, loading, fetchPosts, fetchProjects, feedType]);
 
   const handleFilterChange = (f: FeedFilter) => {
     setFeedFilter(f);
-    setPage(1);
   };
 
   const currentItems = feedType === "posts" ? posts : projects;
 
-  // Handle click outside for filter dropdown
-  const handlePostCreated = () => {
-    setPage(1);
-    fetchPosts(1, false);
-  };
+  const handlePostCreated = useCallback(() => {
+    fetchPosts(undefined, false);
+  }, [fetchPosts]);
 
   useEffect(() => {
     window.addEventListener("postCreated", handlePostCreated);
     return () => window.removeEventListener("postCreated", handlePostCreated);
-  }, []);
+  }, [handlePostCreated]);
 
   return (
     <main style={{ padding: 0, minHeight: "100vh", backgroundColor: "#fff" }}>
@@ -194,11 +199,11 @@ export default function Feed() {
 
         {/* Composer */}
         {feedType === "posts" && (
-          <FeedPostComposer onCreated={() => { setPage(1); fetchPosts(1, false); }} />
+          <FeedPostComposer onCreated={handlePostCreated} />
         )}
 
         {
-          loading && (!currentItems || currentItems.length === 0) ? (
+          (isRefetching && currentItems.length === 0) ? (
             <div style={{ display: "flex", flexDirection: "column" }}>
               {[...Array(5)].map((_, i) => (
                 <div key={i} style={{ padding: "20px", borderBottom: "1px solid #eff3f4" }}>
@@ -206,7 +211,7 @@ export default function Feed() {
                 </div>
               ))}
             </div>
-          ) : !Array.isArray(currentItems) || currentItems.length === 0 ? (
+          ) : currentItems.length === 0 && !loading ? (
             <div className="fade-in" style={{ padding: "80px 20px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
               {feedFilter === "following" ? (
                 <>
@@ -248,12 +253,12 @@ export default function Feed() {
               {feedType === "posts" ? (
                 // Items are Posts
                 (currentItems as any[]).map((p) => (
-                  <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(page, false)} />
+                  <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(undefined, false)} />
                 ))
               ) : (
                 // Items are Projects
                 (currentItems as any[]).map((p) => (
-                  <ProjectCard key={p.id} project={p} onUpdated={() => fetchProjects(page, false)} />
+                  <ProjectCard key={p.id} project={p} onUpdated={() => fetchProjects(undefined, false)} />
                 ))
               )}
 
