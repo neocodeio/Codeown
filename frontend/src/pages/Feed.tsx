@@ -138,7 +138,7 @@ export default function Feed() {
           >
             For You
             {feedFilter === "all" && (
-              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "56px", height: "4px", backgroundColor: "#10633b", borderRadius: "0px" }} />
+              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "56px", height: "4px", backgroundColor: "#212121", borderRadius: "0px" }} />
             )}
           </div>
           <div
@@ -159,7 +159,7 @@ export default function Feed() {
           >
             Following
             {feedFilter === "following" && (
-              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "70px", height: "4px", backgroundColor: "#10633b", borderRadius: "0px" }} />
+              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "70px", height: "4px", backgroundColor: "#212121", borderRadius: "0px" }} />
             )}
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function Feed() {
               padding: "6px 14px",
               borderRadius: "12px",
               border: "1px solid #eff3f4",
-              backgroundColor: feedType === "posts" ? "#10633b" : "#fff",
+              backgroundColor: feedType === "posts" ? "#212121" : "#fff",
               color: feedType === "posts" ? "#fff" : "#64748b",
               fontSize: "13px",
               fontWeight: 700,
@@ -194,7 +194,7 @@ export default function Feed() {
               padding: "6px 14px",
               borderRadius: "12px",
               border: "1px solid #eff3f4",
-              backgroundColor: feedType === "projects" ? "#10633b" : "#fff",
+              backgroundColor: feedType === "projects" ? "#212121" : "#fff",
               color: feedType === "projects" ? "#fff" : "#64748b",
               fontSize: "13px",
               fontWeight: 700,
@@ -234,7 +234,7 @@ export default function Feed() {
                     onClick={() => handleFilterChange("all")}
                     style={{
                       padding: "12px 24px",
-                      backgroundColor: "#10633b",
+                      backgroundColor: "#21221",
                       color: "#fff",
                       border: "none",
                       borderRadius: "100px",
