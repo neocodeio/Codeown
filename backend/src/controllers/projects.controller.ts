@@ -36,9 +36,9 @@ export async function getProjects(req: Request, res: Response) {
       .from("projects")
       .select(`
         *,
-        user:users(id, name, avatar_url, username),
+        user:users!projects_user_id_fkey(id, name, avatar_url, username),
         ratings:project_ratings(rating),
-        contributors_list:project_contributors(user:users(id, name, avatar_url, username))
+        contributors_list:project_contributors(user:users!project_contributors_user_id_fkey(id, name, avatar_url, username))
       `, { count: "exact" })
       .order("created_at", { ascending: false });
 
@@ -64,7 +64,13 @@ export async function getProjects(req: Request, res: Response) {
 
     if (projectsError) {
       console.error("Supabase error in getProjects:", projectsError);
-      return res.status(500).json({ error: "Failed to fetch projects", details: projectsError.message });
+      return res.status(500).json({
+        error: "Failed to fetch projects",
+        details: projectsError.message,
+        code: projectsError.code,
+        hint: projectsError.hint,
+        query: { filter, page, limit, tag }
+      });
     }
 
     if (!projects || projects.length === 0) {
@@ -126,9 +132,13 @@ export async function getProjects(req: Request, res: Response) {
       totalPages: Math.ceil((count || 0) / limitNum)
     });
 
-  } catch (error) {
-    console.error("Error in getProjects:", error);
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (error: any) {
+    console.error("Unexpected error in getProjects:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+      message: error?.message,
+      stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+    });
   }
 }
 
@@ -141,9 +151,9 @@ export async function getProject(req: Request, res: Response) {
       .from("projects")
       .select(`
         *,
-        user:users(id, name, avatar_url, username),
+        user:users!projects_user_id_fkey(id, name, avatar_url, username),
         ratings:project_ratings(rating, user_id),
-        contributors_list:project_contributors(user:users(id, name, avatar_url, username))
+        contributors_list:project_contributors(user:users!project_contributors_user_id_fkey(id, name, avatar_url, username))
       `)
       .eq("id", id)
       .single();
@@ -562,12 +572,11 @@ export async function toggleProjectLike(req: Request, res: Response) {
         .eq("user_id", userId);
       isLiked = false;
     } else {
-      // Add like
       await supabase
         .from("project_likes")
         .insert({
           project_id: parseInt(id),
-          user_id: userId as string
+          user_id: String(userId)
         });
       isLiked = true;
 
@@ -675,12 +684,11 @@ export async function toggleProjectSave(req: Request, res: Response) {
         .eq("user_id", userId);
       isSaved = false;
     } else {
-      // Add save
       await supabase
         .from("project_saves")
         .insert({
           project_id: parseInt(id),
-          user_id: userId as string
+          user_id: String(userId)
         });
       isSaved = true;
 
@@ -752,7 +760,7 @@ export async function rateProject(req: Request, res: Response) {
       .from("project_ratings")
       .upsert({
         project_id: parseInt(id),
-        user_id: userId as string,
+        user_id: String(userId),
         rating: rating,
         created_at: new Date().toISOString()
       }, { onConflict: "project_id,user_id" });
