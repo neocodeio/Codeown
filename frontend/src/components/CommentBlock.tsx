@@ -41,7 +41,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
   const isMobile = width < 768;
 
   const name = comment.user?.name || "User";
-  const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=212121&color=ffffff&bold=true`;
+  const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=10633b&color=ffffff&bold=true`;
 
   const handleReplySubmit = async () => {
     if (!replyContent.trim()) return;
@@ -55,11 +55,10 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
     }
   };
 
-  // Calculate responsive margin to prevent deep threads from becoming too narrow on mobile
   const getMarginLeft = () => {
     if (depth === 0) return 0;
-    const baseMargin = isMobile ? 12 : 36;
-    const maxDepth = isMobile ? 3 : 10; // Cap indentation depth on mobile
+    const baseMargin = isMobile ? 12 : 32;
+    const maxDepth = isMobile ? 3 : 8;
     return Math.min(depth, maxDepth) * baseMargin;
   };
 
@@ -68,61 +67,56 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
       style={{
         marginLeft: getMarginLeft(),
         marginBottom: isMobile ? "12px" : "16px",
-        position: "relative"
+        position: "relative",
+        animation: "slideIn 0.4s cubic-bezier(0, 0, 0.2, 1) forwards"
       }}
-      className="fade-in"
     >
-      {/* Curved Connector for Replies */}
-      {depth > 0 && (!isMobile || depth <= 4) && (
+      {/* Thread Connector Line */}
+      {depth > 0 && (
         <div style={{
           position: "absolute",
           left: isMobile ? "-10px" : "-20px",
           top: "-12px",
-          height: "32px",
+          height: "36px",
           width: isMobile ? "10px" : "20px",
           borderLeft: "2px solid #e2e8f0",
           borderBottom: "2px solid #e2e8f0",
-          borderBottomLeftRadius: "10px",
-          zIndex: 0
+          borderBottomLeftRadius: "12px",
+          zIndex: 0,
+          opacity: 0.6
         }} />
       )}
 
       <div
         style={{
-          padding: isMobile ? "16px" : "24px",
+          padding: isMobile ? "16px" : "20px 24px",
           backgroundColor: "#fff",
-          borderRadius: isMobile ? "24px" : "32px",
-          border: "1px solid rgba(226, 232, 240, 0.5)",
-          boxShadow: depth === 0 ? "0 4px 20px rgba(0, 0, 0, 0.02), 0 10px 40px rgba(0, 0, 0, 0.03)" : "none",
+          borderRadius: isMobile ? "20px" : "24px",
+          border: "1px solid rgba(226, 232, 240, 0.8)",
+          boxShadow: depth === 0 ? "0 4px 12px rgba(0, 0, 0, 0.03)" : "none",
           position: "relative",
           zIndex: 1,
-          transition: "all 0.3s ease"
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
         }}
-        onMouseEnter={(e) => {
-          if (depth === 0) e.currentTarget.style.borderColor = "rgba(226, 232, 240, 1)";
-        }}
-        onMouseLeave={(e) => {
-          if (depth === 0) e.currentTarget.style.borderColor = "rgba(226, 232, 240, 0.5)";
-        }}
+        className="comment-card"
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
           <div
             style={{
-              width: isMobile ? "32px" : "36px",
-              height: isMobile ? "32px" : "36px",
-              borderRadius: "100%",
+              width: isMobile ? "32px" : "40px",
+              height: isMobile ? "32px" : "40px",
+              borderRadius: "12px",
               overflow: "hidden",
-              border: "1px solid #fff",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              border: "2px solid #fff",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.06)",
               cursor: "pointer",
-              transition: "transform 0.2s ease"
+              transition: "all 0.2s ease",
+              flexShrink: 0
             }}
             onClick={() => {
               if (comment.user?.username) navigate(`/${comment.user.username}`);
               else if (comment.user_id) navigate(`/user/${comment.user_id}`);
             }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
-            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
             <img
               src={avatarUrl}
@@ -131,27 +125,40 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
             />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-              <span
-                onClick={() => {
-                  if (comment.user?.username) navigate(`/${comment.user.username}`);
-                  else if (comment.user_id) navigate(`/user/${comment.user_id}`);
-                }}
-                style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
-              >
-                {name}
-                <VerifiedBadge username={comment.user?.username} size="13px" />
-              </span>
-              {comment.parent_author_name && (
-                <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600 }}>
-                  <span style={{ margin: "0 2px", opacity: 0.5 }}>•</span>
-                  REPLY TO <span style={{ color: "#475569" }}>@{comment.parent_author_name}</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                <span
+                  onClick={() => {
+                    if (comment.user?.username) navigate(`/${comment.user.username}`);
+                    else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+                  }}
+                  style={{ fontSize: "15px", fontWeight: 700, color: "#0f172a", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
+                >
+                  {name}
+                  <VerifiedBadge username={comment.user?.username} size="14px" />
                 </span>
-              )}
+                <span style={{ fontSize: "12px", color: "#94a3b8", fontWeight: 500 }}>
+                  • {formatRelativeDate(comment.created_at)}
+                </span>
+              </div>
             </div>
-            <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 500 }}>
-              {formatRelativeDate(comment.created_at)}
-            </div>
+
+            {comment.parent_author_name && (
+              <div style={{
+                fontSize: "11px",
+                color: "#10633b",
+                fontWeight: 700,
+                backgroundColor: "rgba(16, 99, 59, 0.05)",
+                display: "inline-block",
+                padding: "1px 8px",
+                borderRadius: "4px",
+                marginTop: "2px",
+                textTransform: "uppercase",
+                letterSpacing: "0.02em"
+              }}>
+                Replying to <span style={{ opacity: 0.8 }}>@{comment.parent_author_name}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -159,13 +166,20 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
           marginBottom: "16px",
           fontSize: "15px",
           lineHeight: "1.6",
-          color: "#475569",
-          wordBreak: "break-word"
+          color: "#334155",
+          wordBreak: "break-word",
+          paddingLeft: isMobile ? "0px" : "0px",
         }}>
           <ContentRenderer content={comment.content} />
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          borderTop: depth === 0 ? "1px solid rgba(226, 232, 240, 0.4)" : "none",
+          paddingTop: depth === 0 ? "12px" : "0"
+        }}>
           <button
             onClick={toggleLike}
             disabled={!isSignedIn || likeLoading}
@@ -173,26 +187,26 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              background: "none",
+              background: isLiked ? "rgba(239, 68, 68, 0.08)" : "rgba(241, 245, 249, 0.6)",
               border: "none",
-              padding: 0,
-              color: isLiked ? "#ef4444" : "#cbd5e1",
+              padding: "6px 12px",
+              borderRadius: "100px",
+              color: isLiked ? "#ef4444" : "#64748b",
               fontSize: "13px",
               fontWeight: 700,
               cursor: "pointer",
-              transition: "all 0.2s ease"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "scale(1.1)";
-              if (!isLiked) e.currentTarget.style.color = "#94a3b8";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "scale(1)";
-              if (!isLiked) e.currentTarget.style.color = "#cbd5e1";
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
             }}
           >
-            <FontAwesomeIcon icon={faHeart} style={{ fontSize: "16px" }} />
-            <span style={{ color: isLiked ? "#ef4444" : "#94a3b8" }}>{likeCount ?? 0}</span>
+            <FontAwesomeIcon
+              icon={faHeart}
+              style={{
+                fontSize: "15px",
+                transform: isLiked ? "scale(1.1)" : "scale(1)",
+                opacity: isLiked ? 1 : 0.6
+              }}
+            />
+            <span>{likeCount ?? 0}</span>
           </button>
 
           {isSignedIn && (
@@ -202,26 +216,19 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
-                background: "none",
+                background: showReply ? "rgba(16, 99, 59, 0.08)" : "rgba(241, 245, 249, 0.6)",
                 border: "none",
-                padding: 0,
-                color: "#cbd5e1",
+                padding: "6px 12px",
+                borderRadius: "100px",
+                color: showReply ? "#10633b" : "#64748b",
                 fontSize: "13px",
                 fontWeight: 700,
                 cursor: "pointer",
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.color = "#94a3b8";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.color = "#cbd5e1";
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
               }}
             >
-              <FontAwesomeIcon icon={faReply} style={{ fontSize: "14px" }} />
-              <span style={{ color: "#94a3b8" }}>REPLY</span>
+              <FontAwesomeIcon icon={faReply} style={{ fontSize: "13px" }} />
+              <span>Reply</span>
             </button>
           )}
         </div>
@@ -231,27 +238,29 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
         <div
           style={{
             marginTop: "12px",
-            border: "1px solid rgba(226, 232, 240, 0.5)",
-            padding: "20px",
-            borderRadius: "24px",
+            border: "2px solid #10633b",
+            padding: "16px",
+            borderRadius: "20px",
             backgroundColor: "#fff",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.02)"
+            boxShadow: "0 10px 25px rgba(16, 99, 59, 0.08)",
+            animation: "fadeIn 0.3s ease",
+            zIndex: 10,
+            position: "relative"
           }}
-          className="fade-in"
         >
           <MentionInput
             value={replyContent}
             onChange={setReplyContent}
             placeholder={`Reply to ${name}...`}
-            minHeight={isMobile ? "50px" : "60px"}
+            minHeight={isMobile ? "40px" : "50px"}
           />
-          <div style={{ display: "flex", gap: "12px", marginTop: "14px", justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end" }}>
             <button
               onClick={() => { setShowReply(false); setReplyContent(""); }}
               style={{
                 padding: "8px 16px",
                 backgroundColor: "transparent",
-                color: "#94a3b8",
+                color: "#64748b",
                 border: "1px solid #e2e8f0",
                 borderRadius: "100px",
                 fontWeight: 600,
@@ -259,8 +268,6 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 fontSize: "12px",
                 transition: "all 0.2s"
               }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = "#0f172a"}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = "#e2e8f0"}
             >
               Cancel
             </button>
@@ -269,22 +276,15 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
               disabled={!replyContent.trim() || submitting}
               style={{
                 padding: "8px 20px",
-                backgroundColor: "#0f172a",
+                backgroundColor: "#10633b",
                 color: "#fff",
                 border: "none",
                 borderRadius: "100px",
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: submitting ? "not-allowed" : "pointer",
                 fontSize: "12px",
                 transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.backgroundColor = "#1e293b";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.backgroundColor = "#0f172a";
+                boxShadow: "0 4px 12px rgba(16, 99, 59, 0.2)"
               }}
             >
               {submitting ? "Posting..." : "Post Reply"}
@@ -295,18 +295,16 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
 
       {comment.children && comment.children.length > 0 && (
         <div style={{ marginTop: "12px", position: "relative" }}>
-          {/* Vertical Main Thread Line - Hide if depth is very deep on mobile */}
-          {(!isMobile || depth < 4) && (
-            <div style={{
-              position: "absolute",
-              left: isMobile ? "14px" : "16px",
-              top: "-12px",
-              bottom: "16px",
-              width: "2px",
-              backgroundColor: "#e2e8f0",
-              zIndex: 0
-            }} />
-          )}
+          <div style={{
+            position: "absolute",
+            left: isMobile ? "14px" : "18px",
+            top: "-12px",
+            bottom: "20px",
+            width: "2px",
+            backgroundColor: "#e2e8f0",
+            zIndex: 0,
+            opacity: 0.6
+          }} />
 
           {comment.children.map((c) => (
             <CommentBlock
@@ -318,6 +316,18 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
           ))}
         </div>
       )}
+
+      <style>{`
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .comment-card:hover {
+          border-color: rgba(16, 99, 59, 0.2) !important;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important;
+        }
+      `}</style>
     </div>
   );
 }

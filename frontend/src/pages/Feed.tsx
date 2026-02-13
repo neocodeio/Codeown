@@ -167,7 +167,7 @@ export default function Feed() {
             onClick={() => updateParams({ type: "posts" })}
             style={{
               padding: "6px 14px",
-              borderRadius: "100px",
+              borderRadius: "12px",
               border: "1px solid #eff3f4",
               backgroundColor: feedType === "posts" ? "#0f172a" : "#fff",
               color: feedType === "posts" ? "#fff" : "#64748b",
@@ -183,7 +183,7 @@ export default function Feed() {
             onClick={() => updateParams({ type: "projects" })}
             style={{
               padding: "6px 14px",
-              borderRadius: "100px",
+              borderRadius: "12px",
               border: "1px solid #eff3f4",
               backgroundColor: feedType === "projects" ? "#0f172a" : "#fff",
               color: feedType === "projects" ? "#fff" : "#64748b",
