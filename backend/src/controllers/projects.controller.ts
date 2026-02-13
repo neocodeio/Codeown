@@ -581,8 +581,8 @@ export async function toggleProjectLike(req: Request, res: Response) {
       isLiked = true;
 
       // Create notification for project owner (if not the liker)
-      if (project.user_id !== userId) {
-        await createProjectNotification(project.user_id, "like", userId as string, parseInt(id));
+      if (project.user_id !== userId && userId) {
+        await createProjectNotification(project.user_id, "like", String(userId), parseInt(id));
       }
 
     }
@@ -693,8 +693,8 @@ export async function toggleProjectSave(req: Request, res: Response) {
       isSaved = true;
 
       // Create notification for project owner (if not the saver)
-      if (project.user_id !== userId) {
-        await createProjectNotification(project.user_id, "save", userId as string, parseInt(id));
+      if (project.user_id !== userId && userId) {
+        await createProjectNotification(project.user_id, "save", String(userId), parseInt(id));
       }
 
     }
