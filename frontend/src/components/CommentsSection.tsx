@@ -129,8 +129,8 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         <div className="loading-spinner" style={{
           width: "32px",
           height: "32px",
-          border: "3px solid rgba(16, 99, 59, 0.1)",
-          borderTopColor: "#10633b",
+          border: "3px solid rgba(33, 33, 33, 0.1)",
+          borderTopColor: "#212121",
           borderRadius: "50%",
           animation: "spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite",
           margin: "0 auto"
@@ -180,8 +180,8 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           backgroundColor: "#fff",
           borderRadius: "24px",
           padding: isFocused ? "20px" : "12px",
-          border: isFocused ? "2px solid #10633b" : "1px solid #e2e8f0",
-          boxShadow: isFocused ? "0 10px 25px rgba(16, 99, 59, 0.08)" : "0 2px 8px rgba(0,0,0,0.02)",
+          border: isFocused ? "2px solid #212121" : "1px solid #e2e8f0",
+          boxShadow: isFocused ? "0 10px 25px rgba(33, 33, 33, 0.08)" : "0 2px 8px rgba(0,0,0,0.02)",
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           position: "relative"
         }}>
@@ -196,7 +196,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               transition: "all 0.3s ease",
             }}>
               <img
-                src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=10633b&color=ffffff&bold=true`}
+                src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=212121&color=ffffff&bold=true`}
                 alt={currentUser.fullName || "User"}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -255,7 +255,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     disabled={!newComment.trim() || submitting}
                     style={{
                       padding: "10px 24px",
-                      backgroundColor: newComment.trim() && !submitting ? "#10633b" : "#e2e8f0",
+                      backgroundColor: newComment.trim() && !submitting ? "#212121" : "#e2e8f0",
                       color: "#fff",
                       border: "none",
                       borderRadius: "100px",
@@ -267,7 +267,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                       gap: "8px",
                       transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       transform: isFocused ? "translateY(0)" : "translateY(5px)",
-                      boxShadow: newComment.trim() && !submitting ? "0 4px 12px rgba(16, 99, 59, 0.2)" : "none"
+                      boxShadow: newComment.trim() && !submitting ? "0 4px 12px rgba(33, 33, 33, 0.2)" : "none"
                     }}
                   >
                     {submitting ? "Posting..." : <>
@@ -301,7 +301,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               justifyContent: "center",
               margin: "0 auto 20px",
               boxShadow: "0 10px 20px rgba(0,0,0,0.03)",
-              color: "#10633b"
+              color: "#212121"
             }}>
               <FontAwesomeIcon icon={faComment} style={{ fontSize: "28px" }} />
             </div>

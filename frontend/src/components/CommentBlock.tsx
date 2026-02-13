@@ -41,7 +41,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
   const isMobile = width < 768;
 
   const name = comment.user?.name || "User";
-  const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=10633b&color=ffffff&bold=true`;
+  const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=212121&color=ffffff&bold=true`;
 
   const handleReplySubmit = async () => {
     if (!replyContent.trim()) return;
@@ -146,9 +146,9 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
             {comment.parent_author_name && (
               <div style={{
                 fontSize: "11px",
-                color: "#10633b",
+                color: "#0f172a",
                 fontWeight: 700,
-                backgroundColor: "rgba(16, 99, 59, 0.05)",
+                backgroundColor: "rgba(15, 23, 42, 0.05)",
                 display: "inline-block",
                 padding: "1px 8px",
                 borderRadius: "4px",
@@ -216,11 +216,11 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
-                background: showReply ? "rgba(16, 99, 59, 0.08)" : "rgba(241, 245, 249, 0.6)",
+                background: showReply ? "rgba(33, 33, 33, 0.08)" : "rgba(241, 245, 249, 0.6)",
                 border: "none",
                 padding: "6px 12px",
                 borderRadius: "100px",
-                color: showReply ? "#10633b" : "#64748b",
+                color: showReply ? "#212121" : "#64748b",
                 fontSize: "13px",
                 fontWeight: 700,
                 cursor: "pointer",
@@ -238,11 +238,11 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
         <div
           style={{
             marginTop: "12px",
-            border: "2px solid #10633b",
+            border: "2px solid #212121",
             padding: "16px",
             borderRadius: "20px",
             backgroundColor: "#fff",
-            boxShadow: "0 10px 25px rgba(16, 99, 59, 0.08)",
+            boxShadow: "0 10px 25px rgba(33, 33, 33, 0.08)",
             animation: "fadeIn 0.3s ease",
             zIndex: 10,
             position: "relative"
@@ -276,7 +276,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
               disabled={!replyContent.trim() || submitting}
               style={{
                 padding: "8px 20px",
-                backgroundColor: "#10633b",
+                backgroundColor: "#212121",
                 color: "#fff",
                 border: "none",
                 borderRadius: "100px",
@@ -284,7 +284,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 cursor: submitting ? "not-allowed" : "pointer",
                 fontSize: "12px",
                 transition: "all 0.3s ease",
-                boxShadow: "0 4px 12px rgba(16, 99, 59, 0.2)"
+                boxShadow: "0 4px 12px rgba(33, 33, 33, 0.2)"
               }}
             >
               {submitting ? "Posting..." : "Post Reply"}
@@ -323,7 +323,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
           to { opacity: 1; transform: translateY(0); }
         }
         .comment-card:hover {
-          border-color: rgba(16, 99, 59, 0.2) !important;
+          border-color: rgba(33, 33, 33, 0.2) !important;
           transform: translateY(-2px);
           box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important;
         }
