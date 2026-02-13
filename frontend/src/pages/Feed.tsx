@@ -25,6 +25,12 @@ export default function Feed() {
   // Helper to update search params
   const updateParams = (newParams: Record<string, string | null>) => {
     setSearchParams(prev => {
+      // If switching type, clear potential incompatible filters
+      if (newParams.type && newParams.type !== feedType) {
+        prev.delete("tag");
+        prev.delete("lang");
+      }
+
       Object.entries(newParams).forEach(([key, value]) => {
         if (value === null || value === "") prev.delete(key);
         else prev.set(key, value);
@@ -94,6 +100,9 @@ export default function Feed() {
     return () => window.removeEventListener("postCreated", handlePostCreated);
   }, [handlePostCreated]);
 
+  const isInitialLoading = (feedType === "posts" && postsLoading && posts.length === 0) ||
+    (feedType === "projects" && projectsLoading && projects.length === 0);
+
   return (
     <main style={{ padding: 0, minHeight: "100vh", backgroundColor: "#fff" }}>
       <SEO
@@ -129,7 +138,7 @@ export default function Feed() {
           >
             For You
             {feedFilter === "all" && (
-              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "56px", height: "4px", backgroundColor: "#212121", borderRadius: "0px" }} />
+              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "56px", height: "4px", backgroundColor: "#10633b", borderRadius: "0px" }} />
             )}
           </div>
           <div
@@ -150,7 +159,7 @@ export default function Feed() {
           >
             Following
             {feedFilter === "following" && (
-              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "70px", height: "4px", backgroundColor: "#212121", borderRadius: "0px" }} />
+              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "70px", height: "4px", backgroundColor: "#10633b", borderRadius: "0px" }} />
             )}
           </div>
         </div>
@@ -169,7 +178,7 @@ export default function Feed() {
               padding: "6px 14px",
               borderRadius: "12px",
               border: "1px solid #eff3f4",
-              backgroundColor: feedType === "posts" ? "#0f172a" : "#fff",
+              backgroundColor: feedType === "posts" ? "#10633b" : "#fff",
               color: feedType === "posts" ? "#fff" : "#64748b",
               fontSize: "13px",
               fontWeight: 700,
@@ -185,7 +194,7 @@ export default function Feed() {
               padding: "6px 14px",
               borderRadius: "12px",
               border: "1px solid #eff3f4",
-              backgroundColor: feedType === "projects" ? "#0f172a" : "#fff",
+              backgroundColor: feedType === "projects" ? "#10633b" : "#fff",
               color: feedType === "projects" ? "#fff" : "#64748b",
               fontSize: "13px",
               fontWeight: 700,
@@ -203,7 +212,7 @@ export default function Feed() {
         )}
 
         {
-          (isRefetching && currentItems.length === 0) ? (
+          isInitialLoading ? (
             <div style={{ display: "flex", flexDirection: "column" }}>
               {[...Array(5)].map((_, i) => (
                 <div key={i} style={{ padding: "20px", borderBottom: "1px solid #eff3f4" }}>
@@ -225,7 +234,7 @@ export default function Feed() {
                     onClick={() => handleFilterChange("all")}
                     style={{
                       padding: "12px 24px",
-                      backgroundColor: "#0f172a",
+                      backgroundColor: "#10633b",
                       color: "#fff",
                       border: "none",
                       borderRadius: "100px",
@@ -270,7 +279,7 @@ export default function Feed() {
             </div>
           )
         }
-      </div >
-    </main >
+      </div>
+    </main>
   );
 }

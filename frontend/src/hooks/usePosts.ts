@@ -78,6 +78,6 @@ export function usePosts(limit: number = 20, filter: FeedFilter = "all", getToke
     total: data?.pages[0]?.total || 0,
     totalPages: data?.pages[0]?.totalPages || 0,
     hasMore: hasNextPage,
-    isRefetching: isLoading && !isFetchingNextPage
+    isRefetching: !isLoading && isFetchingNextPage
   };
 }
