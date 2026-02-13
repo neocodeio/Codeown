@@ -31,14 +31,13 @@ export async function getProjects(req: Request, res: Response) {
     const limitNum = parseInt(limit as string, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
 
-    // Use nested joins to fetch creator, ratings, and basic contributor info in one go
+    // Simplified query to ensure reliability in production
     let projectsQuery = supabase
       .from("projects")
       .select(`
         *,
-        user:users!projects_user_id_fkey(id, name, avatar_url, username),
-        ratings:project_ratings(rating),
-        contributors_list:project_contributors(user:users!project_contributors_user_id_fkey(id, name, avatar_url, username))
+        user:user_id(id, name, avatar_url, username),
+        ratings:project_ratings(rating)
       `, { count: "exact" })
       .order("created_at", { ascending: false });
 
@@ -89,10 +88,8 @@ export async function getProjects(req: Request, res: Response) {
         ? ratings.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / ratingCount
         : 0;
 
-      // Format contributors
-      const contributors = (project.contributors_list || [])
-        .map((c: any) => c.user)
-        .filter(Boolean);
+      // Format contributors (not fetched in main feed for speed/reliability)
+      const contributors: any[] = [];
 
       return {
         ...project,
@@ -146,14 +143,13 @@ export async function getProject(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
-    // Use nested joins for faster data retrieval
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select(`
         *,
-        user:users!projects_user_id_fkey(id, name, avatar_url, username),
+        user:user_id(id, name, avatar_url, username),
         ratings:project_ratings(rating, user_id),
-        contributors_list:project_contributors(user:users!project_contributors_user_id_fkey(id, name, avatar_url, username))
+        contributors_list:project_contributors(user:user_id(id, name, avatar_url, username))
       `)
       .eq("id", id)
       .single();
@@ -581,7 +577,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
       isLiked = true;
 
       // Create notification for project owner (if not the liker)
-      if (project.user_id !== userId && userId) {
+      if (project.user_id !== String(userId)) {
         await createProjectNotification(project.user_id, "like", String(userId), parseInt(id));
       }
 
@@ -693,7 +689,7 @@ export async function toggleProjectSave(req: Request, res: Response) {
       isSaved = true;
 
       // Create notification for project owner (if not the saver)
-      if (project.user_id !== userId && userId) {
+      if (project.user_id !== String(userId)) {
         await createProjectNotification(project.user_id, "save", String(userId), parseInt(id));
       }
 
