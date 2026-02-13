@@ -49,21 +49,18 @@ export default function Feed() {
     posts,
     loading: postsLoading,
     fetchPosts,
-    hasMore: postsHasMore,
-    isRefetching: postsRefetching
+    hasMore: postsHasMore
   } = usePosts(20, feedFilter, getToken, selectedTag, selectedLang || undefined);
 
   const {
     projects,
     loading: projectsLoading,
     fetchProjects,
-    hasMore: projectsHasMore,
-    isRefetching: projectsRefetching
+    hasMore: projectsHasMore
   } = useProjects(20, feedFilter, getToken, selectedTag);
 
   const loading = feedType === "posts" ? postsLoading : projectsLoading;
   const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;
-  const isRefetching = feedType === "posts" ? postsRefetching : projectsRefetching;
 
   useEffect(() => {
     if (!isSignedIn && feedFilter === "following") setFeedFilter("all");
@@ -234,7 +231,7 @@ export default function Feed() {
                     onClick={() => handleFilterChange("all")}
                     style={{
                       padding: "12px 24px",
-                      backgroundColor: "#21221",
+                      backgroundColor: "#212121",
                       color: "#fff",
                       border: "none",
                       borderRadius: "100px",
