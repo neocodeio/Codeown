@@ -118,7 +118,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     <MentionInput
                         value={content}
                         onChange={setContent}
-                        placeholder="What's happening?"
+                        placeholder="What are you building today?"
                         minHeight="60px"
                         transparent={true}
                     />
