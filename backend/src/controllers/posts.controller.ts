@@ -57,6 +57,7 @@ export async function getPosts(req: Request, res: Response) {
         name: "User",
         avatar_url: null,
         username: null,
+        is_hirable: false
       };
 
       // Remove the original user object if it was returned as an array (sometimes happens with Supabase joins depending on schema)
@@ -206,7 +207,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Get user data for the post author (we already know it's the same user)
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, avatar_url")
+      .select("id, name, avatar_url, username, is_hirable")
       .eq("id", userId)
       .single();
 
@@ -246,6 +247,7 @@ export async function getPostsByUser(req: Request, res: Response) {
           name: userName,
           avatar_url: clerkUser.imageUrl || null,
           username: clerkUser.username || null,
+          is_hirable: false
         };
 
         // Sync user to Supabase for future requests

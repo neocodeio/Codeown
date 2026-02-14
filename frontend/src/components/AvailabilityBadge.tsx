@@ -16,25 +16,22 @@ export default function AvailabilityBadge({
     size = 40,
     isOpenToOpportunities = false,
     tooltipText = "Open to opportunities",
-    ringColor = "#3b82f6" // Subtle blue
+    ringColor = "#3b82f6"
 }: AvailabilityBadgeProps) {
-    const containerSize = size;
-    // Scale briefcase size proportionally: 28% of avatar size, minimum 20px for better visibility
-    const briefcaseBgSize = Math.max(20, Math.round(size * 0.28));
-    // Icon is 58% of the background circle for better visibility
-    const briefcaseIconSize = Math.round(briefcaseBgSize * 0.58);
+    // scale icon bg size: 35% of avatar size
+    const briefcaseBgSize = Math.max(14, Math.round(size * 0.25));
+    const briefcaseIconSize = Math.max(8, Math.round(briefcaseBgSize * 0.45));
 
     return (
         <div
             className="availability-badge-container"
             title={isOpenToOpportunities ? tooltipText : undefined}
             style={{
-                position: "absolute",
-                width: `${containerSize}px`,
-                height: `${containerSize}px`,
+                position: "relative",
+                width: size,
+                height: size,
                 display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
+                flexShrink: 0,
             }}
         >
             <div
@@ -42,13 +39,16 @@ export default function AvailabilityBadge({
                     width: "100%",
                     height: "100%",
                     borderRadius: "50%",
-                    padding: isOpenToOpportunities ? "2px" : "0",
-                    border: isOpenToOpportunities ? `2px solid ${ringColor}` : "none",
-                    boxSizing: "border-box",
+                    position: "relative",
+                    overflow: "hidden",
+                    backgroundColor: "#f1f5f9",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    transition: "all 0.3s ease",
+                    // The ring is now part of the border to ensure it's visible and doesn't shrink content
+                    border: isOpenToOpportunities ? `2.5px solid ${ringColor}` : "1px solid rgba(0,0,0,0.08)",
+                    boxSizing: "border-box",
+                    zIndex: 1
                 }}
             >
                 <img
@@ -57,9 +57,8 @@ export default function AvailabilityBadge({
                     style={{
                         width: "100%",
                         height: "100%",
-                        borderRadius: "50%",
                         objectFit: "cover",
-                        backgroundColor: "#f1f5f9"
+                        display: "block",
                     }}
                 />
             </div>
@@ -68,25 +67,24 @@ export default function AvailabilityBadge({
                 <div
                     style={{
                         position: "absolute",
-                        bottom: "-5%",
-                        right: "10%",
-                        width: `${briefcaseBgSize}px`,
-                        height: `${briefcaseBgSize}px`,
+                        bottom: "-2px",
+                        right: "-2px",
+                        width: briefcaseBgSize,
+                        height: briefcaseBgSize,
                         backgroundColor: "#fff",
                         borderRadius: "50%",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.15), 0 0 0 2.5px #ffffff",
-                        zIndex: 2,
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.2), 0 0 0 1.5px #fff",
+                        zIndex: 10,
                     }}
                 >
                     <FontAwesomeIcon
                         icon={faBriefcase}
                         style={{
-                            fontSize: `${briefcaseIconSize}px`,
+                            fontSize: briefcaseIconSize,
                             color: ringColor,
-                            position: "absolute",
                         }}
                     />
                 </div>

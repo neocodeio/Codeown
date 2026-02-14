@@ -443,7 +443,6 @@ export default function Profile() {
             border: "1px solid white",
             boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
             backgroundColor: "white",
-            overflow: "hidden",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
