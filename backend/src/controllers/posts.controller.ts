@@ -67,7 +67,8 @@ export async function getPosts(req: Request, res: Response) {
         user: {
           name: user?.name || "User",
           avatar_url: user?.avatar_url || null,
-          username: user?.username || null
+          username: user?.username || null,
+          is_hirable: user?.is_hirable || false
         }
       };
     });

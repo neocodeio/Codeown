@@ -86,7 +86,7 @@ export default function AvailabilityBadge({
                         style={{
                             fontSize: `${briefcaseIconSize}px`,
                             color: ringColor,
-                            position: "fixed",
+                            position: "absolute",
                         }}
                     />
                 </div>

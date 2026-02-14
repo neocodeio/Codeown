@@ -93,7 +93,7 @@ export async function getProjects(req: Request, res: Response) {
 
       return {
         ...project,
-        user: creator || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null },
+        user: creator || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null, is_hirable: false },
         rating: averageRating,
         rating_count: ratingCount,
         contributors: contributors
@@ -195,7 +195,7 @@ export async function getProject(req: Request, res: Response) {
 
     return res.json({
       ...project,
-      user: project.user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null },
+      user: project.user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null, is_hirable: false },
       rating: averageRating,
       rating_count: ratingCount,
       user_rating: userRating,
@@ -233,7 +233,7 @@ export async function getUserProjects(req: Request, res: Response) {
     // Fetch user data
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, avatar_url, username")
+      .select("id, name, avatar_url, username, is_hirable")
       .eq("id", userId)
       .single();
 
@@ -245,7 +245,7 @@ export async function getUserProjects(req: Request, res: Response) {
     // Attach user data to projects
     const projectsWithUsers = (projects || []).map((project: any) => ({
       ...project,
-      user: user || { id: userId, name: "Unknown User", avatar_url: null, username: null }
+      user: user || { id: userId, name: "Unknown User", avatar_url: null, username: null, is_hirable: false }
     }));
 
     return res.json(projectsWithUsers || []);
