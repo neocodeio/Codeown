@@ -123,14 +123,13 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
 
     // Split text into lines to handle block-level elements like headings and lists
     const lines = text.split("\n");
-    let inList = false;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
       // Code block detector (simple version for line-by-line processing)
       if (line.startsWith("```")) {
-        let codeBlockLines = [];
+        let codeBlockLines: string[] = [];
         const language = line.slice(3).trim() || "plaintext";
         i++;
         while (i < lines.length && !lines[i].startsWith("```")) {
