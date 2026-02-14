@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import api from "../api/axios";
 import { useDebounce } from "../hooks/useDebounce";
 
@@ -20,7 +20,7 @@ interface MentionInputProps {
   transparent?: boolean;
 }
 
-export default function MentionInput({
+const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function MentionInput({
   value,
   onChange,
   placeholder = "What's on your mind?",
@@ -29,7 +29,7 @@ export default function MentionInput({
   onFocus,
   onBlur,
   transparent = false,
-}: MentionInputProps) {
+}: MentionInputProps, ref) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,6 +39,8 @@ export default function MentionInput({
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  useImperativeHandle(ref, () => textareaRef.current!);
 
   const debouncedQuery = useDebounce(searchQuery, 300);
 
@@ -289,4 +291,6 @@ export default function MentionInput({
       )}
     </div>
   );
-}
+});
+
+export default MentionInput;

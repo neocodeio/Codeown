@@ -32,7 +32,6 @@ interface ContentRendererProps {
   fontSize?: string;
 }
 
-
 const CodeBlock = ({ language, code }: { language: string; code: string }) => {
   const [copied, setCopied] = useState(false);
 
@@ -106,7 +105,6 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
 
   useEffect(() => {
     if (!contentRef.current) return;
-
     try {
       Prism.highlightAllUnder(contentRef.current);
     } catch (err) {
@@ -114,10 +112,8 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
     }
   }, [content]);
 
-
   const handleMentionClick = (username: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    // Navigate to user search or profile
     navigate(`/search?q=@${username}`);
   };
 
@@ -125,148 +121,195 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
     const elements: (string | React.JSX.Element)[] = [];
     let key = 0;
 
-    // Regex to match code blocks: ```language\ncode\n``` or ```code```
-    const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
+    // Split text into lines to handle block-level elements like headings and lists
+    const lines = text.split("\n");
+    let inList = false;
 
-    // First, extract code blocks
-    const codeBlocks: { start: number; end: number; element: React.JSX.Element }[] = [];
-    let match;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
 
-    while ((match = codeBlockRegex.exec(text)) !== null) {
-      const language = match[1] || "plaintext";
-      const code = match[2].trim();
-      codeBlocks.push({
-        start: match.index,
-        end: match.index + match[0].length,
-        element: (
-          <CodeBlock key={`code-block-${key++}`} language={language} code={code} />
-        ),
-      });
-    }
-
-    // Sort blocks by start position (should already be sorted, but just in case)
-    codeBlocks.sort((a, b) => a.start - b.start);
-
-    // Process text outside code blocks
-    let currentPos = 0;
-    for (const block of codeBlocks) {
-      if (currentPos < block.start) {
-        const textSegment = text.slice(currentPos, block.start);
-        elements.push(...parseTextSegment(textSegment, key));
-        key += 100; // Leave room for keys
+      // Code block detector (simple version for line-by-line processing)
+      if (line.startsWith("```")) {
+        let codeBlockLines = [];
+        const language = line.slice(3).trim() || "plaintext";
+        i++;
+        while (i < lines.length && !lines[i].startsWith("```")) {
+          codeBlockLines.push(lines[i]);
+          i++;
+        }
+        elements.push(<CodeBlock key={`cb-${key++}`} language={language} code={codeBlockLines.join("\n")} />);
+        continue;
       }
-      elements.push(block.element);
-      currentPos = block.end;
-    }
 
-    // Process remaining text after last code block
-    if (currentPos < text.length) {
-      const textSegment = text.slice(currentPos);
-      elements.push(...parseTextSegment(textSegment, key));
+      // Headings
+      if (line.startsWith("# ")) {
+        elements.push(<h1 key={`h1-${key++}`} style={{ fontSize: "1.5em", margin: "16px 0 8px 0", fontWeight: 700 }}>{parseInline(line.slice(2))}</h1>);
+        continue;
+      }
+      if (line.startsWith("## ")) {
+        elements.push(<h2 key={`h2-${key++}`} style={{ fontSize: "1.3em", margin: "14px 0 6px 0", fontWeight: 700 }}>{parseInline(line.slice(3))}</h2>);
+        continue;
+      }
+      if (line.startsWith("### ")) {
+        elements.push(<h3 key={`h3-${key++}`} style={{ fontSize: "1.1em", margin: "12px 0 4px 0", fontWeight: 700 }}>{parseInline(line.slice(4))}</h3>);
+        continue;
+      }
+
+      // Quote
+      if (line.startsWith("> ")) {
+        elements.push(
+          <blockquote key={`q-${key++}`} style={{ borderLeft: "4px solid #e2e8f0", paddingLeft: "16px", color: "#64748b", fontStyle: "italic", margin: "12px 0" }}>
+            {parseInline(line.slice(2))}
+          </blockquote>
+        );
+        continue;
+      }
+
+      // List item
+      if (line.startsWith("- ") || line.startsWith("* ")) {
+        elements.push(
+          <div key={`li-${key++}`} style={{ display: "flex", gap: "8px", margin: "4px 0 4px 12px" }}>
+            <span>•</span>
+            <div>{parseInline(line.slice(2))}</div>
+          </div>
+        );
+        continue;
+      }
+
+      // Normal paragraph (with inline parsing)
+      if (line.trim() === "") {
+        elements.push(<br key={`br-${key++}`} />);
+      } else {
+        elements.push(<div key={`p-${key++}`} style={{ marginBottom: "8px" }}>{parseInline(line)}</div>);
+      }
     }
 
     return elements;
 
-    function parseTextSegment(segment: string, startKey: number): (string | React.JSX.Element)[] {
-      const segmentElements: (string | React.JSX.Element)[] = [];
-      let segmentLastIndex = 0;
-      let localKey = startKey;
+    function parseInline(inlineText: string) {
+      let parts: (string | React.JSX.Element)[] = [inlineText];
 
-      // Combined regex for inline code, mentions, and URLs
-      const combinedRegex = /(`[^`]+`)|(@\w+)|(https?:\/\/[^\s]+)/g;
-      let segmentMatch;
-
-      while ((segmentMatch = combinedRegex.exec(segment)) !== null) {
-        // Add text before match
-        if (segmentMatch.index > segmentLastIndex) {
-          segmentElements.push(segment.slice(segmentLastIndex, segmentMatch.index));
+      // Bold (**text**)
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        const regex = /\*\*([^*]+)\*\*/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          res.push(<strong key={`b-${key++}`}>{match[1]}</strong>);
+          lastIdx = match.index + match[0].length;
         }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
 
-        if (segmentMatch[1]) {
-          // Inline code
-          const inlineCode = segmentMatch[1].slice(1, -1); // Remove backticks
-          segmentElements.push(
-            <code
-              key={`inline-${localKey++}`}
-              style={{
-                backgroundColor: "#f1f5f9",
-                color: "#e11d48",
-                padding: "2px 6px",
-                borderRadius: "4px",
-                fontSize: "0.9em",
-                fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace",
-              }}
-            >
-              {inlineCode}
+      // Italic (*text*)
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        const regex = /\*([^*]+)\*/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          res.push(<em key={`i-${key++}`}>{match[1]}</em>);
+          lastIdx = match.index + match[0].length;
+        }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
+
+      // Inline Code (`text`)
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        const regex = /`([^`]+)`/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          res.push(
+            <code key={`ic-${key++}`} style={{ backgroundColor: "#f1f5f9", padding: "2px 4px", borderRadius: "4px", color: "#e11d48", fontSize: "0.9em" }}>
+              {match[1]}
             </code>
           );
-        } else if (segmentMatch[2]) {
-          // Mention
-          const username = segmentMatch[2].slice(1); // Remove @
-          segmentElements.push(
-            <span
-              key={`mention-${localKey++}`}
-              onClick={(e) => handleMentionClick(username, e)}
-              style={{
-                color: "#212121",
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.textDecoration = "underline";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.textDecoration = "none";
-              }}
-            >
-              @{username}
+          lastIdx = match.index + match[0].length;
+        }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
+
+      // Mentions (@username)
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        const regex = /@(\w+)/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          res.push(
+            <span key={`m-${key++}`} onClick={(e) => handleMentionClick(match![1], e)} style={{ color: "#2563eb", cursor: "pointer", fontWeight: 500 }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+              @{match[1]}
             </span>
           );
-        } else if (segmentMatch[3]) {
-          // URL
-          const url = segmentMatch[3];
-          segmentElements.push(
-            <a
-              key={`link-${localKey++}`}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                color: "#212121",
-                textDecoration: "none",
-                fontWeight: "600",
-                transition: "all 0.2s"
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
-              onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
-            >
-              {url.length > 50 ? url.substring(0, 47) + "..." : url}
+          lastIdx = match.index + match[0].length;
+        }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
+
+      // Links ([text](url))
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        const regex = /\[([^\]]+)\]\(([^)]+)\)/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          res.push(
+            <a key={`l-${key++}`} href={match[2]} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+              {match[1]}
             </a>
           );
+          lastIdx = match.index + match[0].length;
         }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
 
-        segmentLastIndex = segmentMatch.index + segmentMatch[0].length;
-      }
+      // Bare URLs (https?://...)
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        const regex = /(https?:\/\/[^\s]+)/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          res.push(
+            <a key={`lu-${key++}`} href={match[1]} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+              {match[1].length > 40 ? match[1].substring(0, 37) + "..." : match[1]}
+            </a>
+          );
+          lastIdx = match.index + match[0].length;
+        }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
 
-      // Add remaining text
-      if (segmentLastIndex < segment.length) {
-        segmentElements.push(segment.slice(segmentLastIndex));
-      }
-
-      return segmentElements;
+      return parts;
     }
   };
 
   return (
     <div
       ref={contentRef}
-      dir="auto"
       style={{
-        color: "#000",
-        marginTop: "20px",
-        marginBottom: "5px",
+        color: "#0f172a",
         fontSize,
         lineHeight: 1.6,
         whiteSpace: "pre-wrap",

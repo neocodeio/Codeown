@@ -1,10 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage, faCode } from "@fortawesome/free-solid-svg-icons";
+import {
+  faImage,
+  faCode,
+  faBold,
+  faItalic,
+  faHeading,
+  faQuoteRight,
+  faListUl,
+  faLink,
+  faEye,
+  faEdit
+} from "@fortawesome/free-solid-svg-icons";
 import MentionInput from "./MentionInput";
+import ContentRenderer from "./ContentRenderer";
 import { normalizeLanguage } from "../utils/language";
 
 interface CreatePostModalProps {
@@ -21,7 +33,9 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   const [tagInput, setTagInput] = useState("");
   const [language, setLanguage] = useState<"en" | "ar">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const { getToken, isLoaded } = useClerkAuth();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Reset form when modal closes
   useEffect(() => {
@@ -31,41 +45,101 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
       setImages([]);
       setLanguage("en");
       setIsSubmitting(false);
+      setActiveTab("write");
     }
   }, [isOpen]);
 
-  // Close on Escape key
+  // Handle keyboard shortcuts
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
+    const handleShortcuts = (e: KeyboardEvent) => {
+      if (!isOpen || activeTab !== "write") return;
+
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 'b':
+            e.preventDefault();
+            insertMarkdown("**", "**");
+            break;
+          case 'i':
+            e.preventDefault();
+            insertMarkdown("*", "*");
+            break;
+          case 'k':
+            e.preventDefault();
+            insertMarkdown("[", "](url)");
+            break;
+        }
       }
     };
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
+    window.addEventListener("keydown", handleShortcuts);
+    return () => window.removeEventListener("keydown", handleShortcuts);
+  }, [isOpen, activeTab, content]);
+
+  const insertMarkdown = (before: string, after: string = "", placeholder: string = "text") => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = content.substring(start, end);
+    const textToInsert = selectedText || placeholder;
+
+    const newContent =
+      content.substring(0, start) +
+      before + textToInsert + after +
+      content.substring(end);
+
+    setContent(newContent);
+
+    // Reposition cursor
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorStart = start + before.length;
+      const newCursorEnd = start + before.length + textToInsert.length;
+      textarea.setSelectionRange(newCursorStart, newCursorEnd);
+    }, 0);
+  };
+
+  const insertBlockMarkdown = (prefix: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+
+    // Find the start of the current line
+    const lastNewline = content.lastIndexOf("\n", start - 1);
+    const lineStart = lastNewline === -1 ? 0 : lastNewline + 1;
+
+    const newContent =
+      content.substring(0, lineStart) +
+      prefix +
+      content.substring(lineStart);
+
+    setContent(newContent);
+
+    setTimeout(() => {
+      textarea.focus();
+      const newPos = start + prefix.length;
+      textarea.setSelectionRange(newPos, newPos);
+    }, 0);
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-
-    const maxImages = 10; // Limit to 10 images
-
+    const maxImages = 10;
     if (images.length + files.length > maxImages) {
       alert(`You can upload a maximum of ${maxImages} images`);
       return;
     }
-
     Array.from(files).forEach((file) => {
       if (file.size > 5 * 1024 * 1024) {
         alert(`Image ${file.name} is too large. Maximum size is 5MB.`);
         return;
       }
-
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setImages((prev) => [...prev, base64String]);
+        setImages((prev) => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(file);
     });
@@ -76,36 +150,14 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   };
 
   const submit = async () => {
-    if (!isLoaded) {
-      alert("Please sign in to create a post");
-      return;
-    }
-
-    if (!title.trim()) {
-      alert("Please enter a title for your post");
-      return;
-    }
-
-    if (!content.trim()) {
-      alert("Please enter content for your post");
-      return;
-    }
-
+    if (!isLoaded || !title.trim() || !content.trim()) return;
     setIsSubmitting(true);
-
     try {
       const token = await getToken();
-      if (!token) {
-        alert("Please sign in to create a post");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Extract tags from content and combine with manually added tags
+      if (!token) return;
       const hashtagRegex = /#(\w+)/g;
       const contentTags = content.match(hashtagRegex)?.map((tag) => tag.substring(1).toLowerCase()) || [];
       const allTags = [...new Set([...tags, ...contentTags])].slice(0, 10);
-
       const payload = {
         title: title.trim(),
         content: content.trim(),
@@ -113,573 +165,311 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
         tags: allTags.length > 0 ? allTags : null,
         language: normalizeLanguage(language),
       };
-
-      console.log("Submitting post payload:", payload);
-
       await api.post("/posts", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      setTitle("");
-      setContent("");
-      setImages([]);
-      setTags([]);
-      setTagInput("");
-      // Dispatch custom event to refresh posts
       window.dispatchEvent(new CustomEvent("postCreated"));
       onCreated();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating post:", error);
-      let errorMessage = "Failed to create post";
-
-      if (error && typeof error === "object" && "response" in error) {
-        const axiosError = error as { response?: { data?: { error?: string; details?: string; message?: string } } };
-        const errorData = axiosError.response?.data;
-
-        if (errorData) {
-          if (errorData.details) {
-            errorMessage = `${errorData.error || "Failed to create post"}: ${errorData.details}`;
-          } else if (errorData.error) {
-            errorMessage = errorData.error;
-          } else if (errorData.message) {
-            errorMessage = errorData.message;
-          }
-        }
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      alert(`Failed to create post: ${errorMessage}`);
+      alert(`Failed to create post: ${error.response?.data?.error || error.message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const [mounted, setMounted] = useState(false);
+  if (!isOpen) return null;
 
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
-
-  if (!isOpen || !mounted) return null;
-
-  const modalContent = (
-    <>
-      <style>{`
-        @keyframes modalFadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-50px) scale(0.96);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        
-        .modal-backdrop {
-          animation: modalFadeIn 0.15s ease-out;
-        }
-        
-        .modal-dialog {
-          animation: modalSlideIn 0.2s ease-out;
-        }
-        
-        @media (max-width: 640px) {
-          .modal-dialog {
-            margin: 16px !important;
-            max-width: calc(100% - 32px) !important;
-          }
-          .modal-header {
-            padding: 16px !important;
-          }
-          .modal-body {
-            padding: 16px !important;
-          }
-          .modal-footer {
-            padding: 12px 16px !important;
-            flex-direction: column-reverse !important;
-            gap: 8px !important;
-          }
-          .modal-footer button {
-            width: 100% !important;
-          }
-          .modal-title {
-            font-size: 18px !important;
-          }
-        }
-      `}</style>
-
+  return createPortal(
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        backgroundColor: "rgba(15, 23, 42, 0.6)",
+        zIndex: 10000,
+        backdropFilter: "blur(8px)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "16px",
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div
-        className="modal-backdrop"
+        className="modal-content-wrapper"
         style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(15, 23, 42, 0.6)",
-          zIndex: 10000,
-          backdropFilter: "blur(8px)",
+          backgroundColor: "#ffffff",
+          borderRadius: "24px",
+          width: "100%",
+          maxWidth: "600px",
+          maxHeight: "90vh",
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "16px",
-          overflowY: "auto",
+          flexDirection: "column",
+          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+          overflow: "hidden",
+          animation: "modalSlideIn 0.3s ease-out",
         }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            onClose();
-          }
-        }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className="modal-dialog"
-          style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: "500px",
-            margin: "auto",
-            display: "flex",
-            flexDirection: "column",
-            maxHeight: "calc(100vh - 32px)",
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div
-            className="modal-content"
+        <style>{`
+          @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+          }
+          .toolbar-btn:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
+          }
+          .tab-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+          }
+          .tab-btn.active {
+            color: #212121;
+            border-bottom-color: #212121;
+          }
+          
+          @media (max-width: 640px) {
+            .modal-content-wrapper {
+              max-height: 100vh !important;
+              max-width: 100vw !important;
+              height: 100% !important;
+              width: 100% !important;
+              border-radius: 25px !important;
+              margin: 0 !important;
+            }
+            .modal-header {
+              padding: 16px !important;
+            }
+            .modal-body {
+              padding: 16px !important;
+            }
+            .modal-footer {
+              padding: 12px 16px !important;
+              flex-direction: column-reverse !important;
+              gap: 8px !important;
+            }
+            .modal-footer button {
+              width: 100% !important;
+              padding: 12px !important;
+            }
+            .title-input {
+              font-size: 20px !important;
+            }
+            .toolbar-container {
+              gap: 2px !important;
+              padding: 2px !important;
+            }
+            .toolbar-btn {
+              width: 30px !important;
+              height: 30px !important;
+            }
+            .divider {
+              height: 16px !important;
+              margin: 7px 2px !important;
+            }
+            .tags-label {
+              font-size: 13px !important;
+            }
+            .tag-input {
+              padding: 12px 14px !important;
+              font-size: 13px !important;
+            }
+          }
+        `}</style>
+
+        {/* Header */}
+        <div className="modal-header" style={{ padding: "20px 24px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 700, color: "#0f172a" }}>Create Post</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "24px", color: "#94a3b8", cursor: "pointer" }}>&times;</button>
+        </div>
+
+        {/* Body */}
+        <div className="modal-body" style={{ padding: "24px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
+          {/* Title Input */}
+          <input
+            type="text"
+            className="title-input"
+            placeholder="Give your post a title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             style={{
-              backgroundColor: "#f5f5f5",
-              borderRadius: "25px",
-              border: "1px solid var(--border-light)",
-              boxShadow: "var(--shadow-xl)",
-              display: "flex",
-              flexDirection: "column",
-              maxHeight: "100%",
-              overflow: "hidden",
+              width: "100%",
+              fontSize: "24px",
+              fontWeight: 800,
+              border: "none",
+              outline: "none",
+              padding: "0",
+              color: "#0f172a",
+              backgroundColor: "transparent",
             }}
-          >
-            {/* Modal Header */}
-            <div
-              className="modal-header"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "20px",
-                borderBottom: "1px solid #e4e7eb",
-                flexShrink: 0,
-              }}
-            >
-              <h2
-                className="modal-title"
-                style={{
-                  margin: 0,
-                  fontSize: "20px",
-                  fontWeight: 600,
-                  color: "#1a1a1a",
-                  lineHeight: 1.5,
-                }}
-              >
-                Create Post
-              </h2>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{
-                  background: "none",
-                  border: "none",
-                  fontSize: "24px",
-                  fontWeight: 300,
-                  color: "#64748b",
-                  cursor: "pointer",
-                  padding: 0,
-                  width: "32px",
-                  height: "32px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "4px",
-                  transition: "all 0.15s",
-                  lineHeight: 1,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f5f7fa";
-                  e.currentTarget.style.color = "#1a1a1a";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "#64748b";
-                }}
-              >
-                ×
-              </button>
-            </div>
+          />
 
-            {/* Modal Body */}
-            <div
-              className="modal-body"
-              style={{
-                padding: "20px",
-                overflowY: "auto",
-                flex: "1 1 auto",
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-              }}
-            >
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Post Title"
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  border: "1px solid #e4e7eb",
-                  borderRadius: "25px",
-                  fontSize: "18px",
-                  fontWeight: 600,
-                  fontFamily: "inherit",
-                  outline: "none",
-                  transition: "all 0.15s",
-                  color: "#1a1a1a",
-                  backgroundColor: "#ffffff",
-                  boxSizing: "border-box",
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "#000";
-                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "#e4e7eb";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-                autoFocus
-              />
+          {/* Tabs */}
+          <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid #f1f5f9" }}>
+            <button className={`tab-btn ${activeTab === "write" ? "active" : ""}`} onClick={() => setActiveTab("write")}>
+              <FontAwesomeIcon icon={faEdit} style={{ marginRight: "6px" }} /> Write
+            </button>
+            <button className={`tab-btn ${activeTab === "preview" ? "active" : ""}`} onClick={() => setActiveTab("preview")}>
+              <FontAwesomeIcon icon={faEye} style={{ marginRight: "6px" }} /> Preview
+            </button>
+          </div>
 
+          {activeTab === "write" ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {/* Toolbar */}
+              <div className="toolbar-container" style={{ display: "flex", gap: "4px", padding: "4px", backgroundColor: "#f8fafc", borderRadius: "12px", flexWrap: "wrap", alignItems: "center" }}>
+                <button className="toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><FontAwesomeIcon icon={faBold} /></button>
+                <button className="toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><FontAwesomeIcon icon={faItalic} /></button>
+                <button className="toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><FontAwesomeIcon icon={faHeading} /></button>
+                <div className="divider" style={{ width: "1px", height: "20px", backgroundColor: "#e2e8f0", margin: "0 4px" }} />
+                <button className="toolbar-btn" title="Quote" onClick={() => insertBlockMarkdown("> ")}><FontAwesomeIcon icon={faQuoteRight} /></button>
+                <button className="toolbar-btn" title="Bullet List" onClick={() => insertBlockMarkdown("- ")}><FontAwesomeIcon icon={faListUl} /></button>
+                <div className="divider" style={{ width: "1px", height: "20px", backgroundColor: "#e2e8f0", margin: "0 4px" }} />
+                <button className="toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><FontAwesomeIcon icon={faLink} /></button>
+                <button className="toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><FontAwesomeIcon icon={faCode} /></button>
+                <button className="toolbar-btn" title="Code Block" onClick={() => insertMarkdown("\n```javascript\n", "\n```\n")}><FontAwesomeIcon icon={faCode} style={{ fontSize: "12px" }} /></button>
+              </div>
+
+              {/* Textarea */}
               <MentionInput
+                ref={textareaRef}
                 value={content}
                 onChange={setContent}
-                placeholder="What's on your mind? (Use @ to mention users, ``` for code blocks)"
-                minHeight="150px"
+                placeholder="Share your thoughts, code, or ideas... (Markdown supported)"
+                minHeight="200px"
               />
+            </div>
+          ) : (
+            <div style={{ minHeight: "200px", padding: "16px", backgroundColor: "#f8fafc", borderRadius: "16px", border: "1px solid #f1f5f9", overflowY: "auto" }}>
+              {content ? (
+                <ContentRenderer content={content} />
+              ) : (
+                <div style={{ color: "#94a3b8", textAlign: "center", marginTop: "40px" }}>Nothing to preview yet...</div>
+              )}
+            </div>
+          )}
 
-              {/* Code block helper */}
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                marginTop: "-8px",
-                marginBottom: "8px",
-              }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const codeTemplate = "\n```javascript\n// Your code here\n```\n";
-                    setContent(content + codeTemplate);
-                  }}
+          {/* Images */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+            {images.map((img, idx) => (
+              <div key={idx} style={{ position: "relative", width: "80px", height: "80px" }}>
+                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px", border: "1px solid #e2e8f0" }} />
+                <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "10px", backgroundColor: "#ef4444", color: "#fff", border: "none", fontSize: "12px", cursor: "pointer" }}>&times;</button>
+              </div>
+            ))}
+            <label style={{ width: "80px", height: "80px", borderRadius: "12px", border: "2px dashed #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#64748b" }}>
+              <FontAwesomeIcon icon={faImage} />
+              <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
+            </label>
+          </div>
+
+          {/* Tags Section */}
+          <div className="tags-section" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "4px" }}>
+            <label className="tags-label" style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a" }}>Tags / Hashtags (Optional)</label>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {tags.map((tag, idx) => (
+                <span
+                  key={idx}
                   style={{
+                    backgroundColor: "#f1f5f9",
+                    color: "#2563eb",
+                    padding: "4px 12px",
+                    borderRadius: "12px",
+                    fontSize: "13px",
+                    fontWeight: 600,
                     display: "flex",
                     alignItems: "center",
-                    gap: "6px",
-                    padding: "6px 12px",
-                    backgroundColor: "#f5f7fa",
-                    border: "1px solid #e4e7eb",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    fontSize: "12px",
-                    color: "#64748b",
-                    transition: "all 0.15s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#e4e7eb";
-                    e.currentTarget.style.color = "#1a1a1a";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f5f7fa";
-                    e.currentTarget.style.color = "#64748b";
+                    gap: "6px"
                   }}
                 >
-                  <FontAwesomeIcon icon={faCode} />
-                  Add Code Block
-                </button>
-                <span style={{ fontSize: "11px", color: "#94a3b8" }}>
-                  Tip: Use ```language for syntax highlighting (js, python, etc.)
+                  #{tag}
+                  <button
+                    onClick={() => setTags(tags.filter((_, i) => i !== idx))}
+                    style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: "16px", padding: 0, lineHeight: 1 }}
+                  >
+                    &times;
+                  </button>
                 </span>
-              </div>
-
-              {/* Image Upload Section */}
-              <div>
-                <label style={{
-                  display: "block",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#1a1a1a",
-                  marginBottom: "8px",
-                }}>
-                  Images (Optional)
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                  style={{ display: "none" }}
-                  id="image-upload"
-                />
-                <label
-                  htmlFor="image-upload"
-                  style={{
-                    display: "inline-block",
-                    padding: "10px 16px",
-                    backgroundColor: "#f0f7ff",
-                    border: "2px dashed #000",
-                    borderRadius: "8px",
-                    color: "#000",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    transition: "all 0.15s",
-                    textAlign: "center",
-                    width: "100%",
-                    boxSizing: "border-box",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#e0f2fe";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f0f7ff";
-                  }}
-                >
-                  <FontAwesomeIcon icon={faImage} style={{ marginRight: "8px" }} />
-                  Upload Images
-                </label>
-                {images.length > 0 && (
-                  <div style={{
-                    marginTop: "12px",
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
-                    gap: "8px",
-                  }}>
-                    {images.map((img, index) => (
-                      <div key={index} style={{ position: "relative" }}>
-                        <img
-                          src={img}
-                          alt={`Preview ${index + 1}`}
-                          style={{
-                            width: "100%",
-                            height: "100px",
-                            objectFit: "cover",
-                            borderRadius: "8px",
-                            border: "1px solid #e4e7eb",
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          style={{
-                            position: "absolute",
-                            top: "4px",
-                            right: "4px",
-                            width: "24px",
-                            height: "24px",
-                            borderRadius: "50%",
-                            backgroundColor: "rgba(220, 38, 38, 0.9)",
-                            border: "none",
-                            color: "#ffffff",
-                            cursor: "pointer",
-                            fontSize: "14px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            lineHeight: 1,
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Tags Section */}
-              <div>
-                <label style={{
-                  display: "block",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#1a1a1a",
-                  marginBottom: "8px",
-                }}>
-                  Tags / Hashtags (Optional)
-                </label>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
-                  {tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        padding: "4px 10px",
-                        backgroundColor: "#f0f7ff",
-                        color: "#2563eb",
-                        borderRadius: "12px",
-                        fontSize: "13px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      #{tag}
-                      <button
-                        type="button"
-                        onClick={() => setTags(tags.filter((_, i) => i !== idx))}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "#2563eb",
-                          cursor: "pointer",
-                          padding: 0,
-                          fontSize: "16px",
-                          lineHeight: 1,
-                        }}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === ",") {
-                      e.preventDefault();
-                      const tag = tagInput.trim().toLowerCase().replace(/^#/, "");
-                      if (tag && tag.length > 0 && tag.length <= 50 && !tags.includes(tag) && tags.length < 10) {
-                        setTags([...tags, tag]);
-                        setTagInput("");
-                      }
-                    }
-                  }}
-                  placeholder="Add tags (press Enter or comma)"
-                  style={{
-                    width: "100%",
-                    padding: "10px 16px",
-                    border: "1px solid #e4e7eb",
-                    borderRadius: "25px",
-                    fontSize: "14px",
-                    fontFamily: "inherit",
-                    outline: "none",
-                    transition: "all 0.15s",
-                    color: "#1a1a1a",
-                    backgroundColor: "#ffffff",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#000";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(49, 127, 245, 0.1)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e4e7eb";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                />
-                <div style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
-                  {tags.length}/10 tags. Tags starting with # in content are automatically added.
-                </div>
-              </div>
+              ))}
             </div>
 
-            {/* Modal Footer */}
-            <div
-              className="modal-footer"
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "8px",
-                padding: "16px 20px",
-                borderTop: "1px solid #e4e7eb",
-                flexShrink: 0,
+            <input
+              type="text"
+              className="tag-input"
+              placeholder="Add tags... (Enter or comma)"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === ",") {
+                  e.preventDefault();
+                  const tag = tagInput.trim().toLowerCase().replace(/^#/, "");
+                  if (tag && !tags.includes(tag) && tags.length < 10) {
+                    setTags([...tags, tag]);
+                    setTagInput("");
+                  }
+                }
               }}
-            >
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSubmitting}
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: "#212121",
-                  border: "none",
-                  color: "#ffffff",
-                  borderRadius: "20px",
-                  cursor: isSubmitting ? "not-allowed" : "pointer",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  transition: "all 0.15s",
-                  opacity: isSubmitting ? 0.6 : 1,
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSubmitting) {
-                    e.currentTarget.style.backgroundColor = "#444";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSubmitting) {
-                    e.currentTarget.style.backgroundColor = "#212121";
-                  }
-                }}
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={submit}
-                disabled={!isLoaded || !title.trim() || !content.trim() || isSubmitting}
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#212121" : "#e4e7eb",
-                  border: "none",
-                  color: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
-                  borderRadius: "20px",
-                  cursor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "pointer" : "not-allowed",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  if (isLoaded && title.trim() && content.trim() && !isSubmitting) {
-                    e.currentTarget.style.backgroundColor = "#444";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (isLoaded && title.trim() && content.trim() && !isSubmitting) {
-                    e.currentTarget.style.backgroundColor = "#212121";
-                  }
-                }}
-              >
-                {isSubmitting ? "Posting..." : "Post it"}
-              </button>
+              style={{
+                width: "94%",
+                padding: "10px 16px",
+                borderRadius: "12px",
+                border: "1px solid #e2e8f0",
+                fontSize: "14px",
+                outline: "none",
+                backgroundColor: "#f8fafc"
+              }}
+            />
+            <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+              {tags.length}/10 tags. Use #hashtag in your post to add them automatically.
             </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="modal-footer" style={{ padding: "20px 24px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+          <button onClick={onClose} style={{ padding: "10px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", background: "white", color: "#64748b", fontWeight: 600, cursor: "pointer" }}>Cancel</button>
+          <button
+            onClick={submit}
+            disabled={!title.trim() || !content.trim() || isSubmitting}
+            style={{
+              padding: "10px 24px",
+              borderRadius: "12px",
+              border: "none",
+              background: "#212121",
+              color: "white",
+              fontWeight: 700,
+              cursor: (!title.trim() || !content.trim() || isSubmitting) ? "not-allowed" : "pointer",
+              opacity: (!title.trim() || !content.trim() || isSubmitting) ? 0.5 : 1
+            }}
+          >
+            {isSubmitting ? "Posting..." : "Post it"}
+          </button>
+        </div>
       </div>
-    </>
+    </div>,
+    document.body
   );
-
-  return createPortal(modalContent, document.body);
 }
-
