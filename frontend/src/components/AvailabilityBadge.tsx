@@ -29,7 +29,7 @@ export default function AvailabilityBadge({
             className="availability-badge-container"
             title={isOpenToOpportunities ? tooltipText : undefined}
             style={{
-                position: "relative",
+                position: "absolute",
                 width: `${containerSize}px`,
                 height: `${containerSize}px`,
                 display: "inline-flex",
@@ -68,8 +68,8 @@ export default function AvailabilityBadge({
                 <div
                     style={{
                         position: "absolute",
-                        bottom: "2%",
-                        right: "2%",
+                        bottom: "-5%",
+                        right: "10%",
                         width: `${briefcaseBgSize}px`,
                         height: `${briefcaseBgSize}px`,
                         backgroundColor: "#fff",
@@ -86,7 +86,7 @@ export default function AvailabilityBadge({
                         style={{
                             fontSize: `${briefcaseIconSize}px`,
                             color: ringColor,
-                            top: "2px",
+                            position: "fixed",
                         }}
                     />
                 </div>
