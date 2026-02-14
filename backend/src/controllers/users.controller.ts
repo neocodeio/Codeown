@@ -255,29 +255,32 @@ export async function ensureUserExists(userId: string, userData?: any) {
   if (existingUser) {
     // User exists, optionally update their data
     if (userData) {
-      // Build update object, but only include avatar_url if it's currently null or if the new one isn't a fallback
+      // Build update object - ONLY update fields that are currently null or empty in Supabase
+      // This protects custom uploads and changes from being overwritten by Clerk defaults
       const updatePayload: any = {
-        email: userInfo.email,
-        name: userInfo.name,
-        username: userInfo.username,
         updated_at: new Date().toISOString(),
       };
 
-      // Only update avatar if current one is missing OR if we have a specific reason to trust the new one
-      // This prevents Clerk's default/old avatar from overwriting a custom one in Supabase
-      if (!existingUser.avatar_url && userInfo.avatar_url) {
-        updatePayload.avatar_url = userInfo.avatar_url;
-      }
+      if (!existingUser.email && userInfo.email) updatePayload.email = userInfo.email;
+      if (!existingUser.name && userInfo.name) updatePayload.name = userInfo.name;
+      if (!existingUser.username && userInfo.username) updatePayload.username = userInfo.username;
+      if (!existingUser.avatar_url && userInfo.avatar_url) updatePayload.avatar_url = userInfo.avatar_url;
 
-      const { error: updateError } = await supabase
-        .from("users")
-        .update(updatePayload)
-        .eq("id", userId);
+      // Only perform update if there are fields to change
+      if (Object.keys(updatePayload).length > 1) {
+        const { data: updatedUser, error: updateError } = await supabase
+          .from("users")
+          .update(updatePayload)
+          .eq("id", userId)
+          .select()
+          .single();
 
-      if (updateError) {
-        console.error("Error updating user:", updateError);
-      } else {
-        console.log("User updated successfully");
+        if (updateError) {
+          console.error("Error updating user during sync:", updateError);
+        } else {
+          console.log("User updated successfully during sync");
+          return updatedUser;
+        }
       }
     }
     return existingUser;
@@ -437,8 +440,11 @@ export async function getUserProfile(req: Request, res: Response) {
 
           // Sync user to Supabase for future requests
           try {
-            await ensureUserExists(clerkUser.id, clerkUser);
-            console.log(`User ${clerkUser.id} synced to Supabase`);
+            const syncedUser = await ensureUserExists(clerkUser.id, clerkUser);
+            if (syncedUser) {
+              userData = syncedUser;
+              console.log(`User ${clerkUser.id} synced and loaded from Supabase`);
+            }
           } catch (syncError: any) {
             console.error(`Could not sync user ${clerkUser.id} to Supabase:`, syncError?.message);
           }
