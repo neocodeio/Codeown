@@ -10,7 +10,6 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { getAvatarUrl } from "../hooks/useAvatar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart as faHeartSolid,
@@ -24,6 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
+import AvailabilityBadge from "./AvailabilityBadge";
 
 interface PostCardProps {
   post: Post;
@@ -127,7 +127,6 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   };
 
   const userName = post.user?.name || post.user?.username || "User";
-  const avatarUrl = getAvatarUrl(post.user?.avatar_url, undefined, userName);
   return (
     <>
       <div
@@ -153,21 +152,19 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
         {/* Left Column: Avatar */}
         <div style={{ flexShrink: 0 }}>
           <div
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              overflow: "hidden",
-              transition: "opacity 0.2s ease",
-            }}
             onClick={handleUserClick}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+            style={{
+              cursor: "pointer",
+              transition: "transform 0.2s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
-            <img
-              src={avatarUrl}
-              alt={userName}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            <AvailabilityBadge
+              avatarUrl={post.user?.avatar_url || null}
+              name={userName}
+              size={40}
+              isOpenToOpportunities={post.user?.is_hirable}
             />
           </div>
         </div>

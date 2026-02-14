@@ -36,7 +36,7 @@ export async function getProjects(req: Request, res: Response) {
       .from("projects")
       .select(`
         *,
-        user:user_id(id, name, avatar_url, username),
+        user:user_id(id, name, avatar_url, username, is_hirable),
         ratings:project_ratings(rating)
       `, { count: "exact" })
       .order("created_at", { ascending: false });
@@ -147,9 +147,9 @@ export async function getProject(req: Request, res: Response) {
       .from("projects")
       .select(`
         *,
-        user:user_id(id, name, avatar_url, username),
+        user:user_id(id, name, avatar_url, username, is_hirable),
         ratings:project_ratings(rating, user_id),
-        contributors_list:project_contributors(user:user_id(id, name, avatar_url, username))
+        contributors_list:project_contributors(user:user_id(id, name, avatar_url, username, is_hirable))
       `)
       .eq("id", id)
       .single();

@@ -29,9 +29,10 @@ interface EditProfileModalProps {
     website_url?: string | null;
     banner_url?: string | null;
   };
+  projectCount?: number;
 }
 
-export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUser }: EditProfileModalProps) {
+export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUser, projectCount = 0 }: EditProfileModalProps) {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
@@ -48,6 +49,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [isHirable, setIsHirable] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -69,6 +71,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setBannerFile(null);
       setBannerPreview(currentUser.banner_url || null);
       setUsernameError(null);
+      setIsHirable(currentUser.is_hirable ?? false);
     }
   }, [isOpen, currentUser]);
 
@@ -208,6 +211,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           linkedin_url: linkedinUrl.trim() || null,
           website_url: websiteUrl.trim() || null,
           skills: skills.length > 0 ? skills : null,
+          is_hirable: isHirable,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -566,7 +570,66 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
               </div>
             </div>
 
-            {/* Developer Settings Removed */}
+            {/* Developer Settings */}
+            <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "24px", marginBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
+                <div style={{ flex: 1 }}>
+                  <label className="modal-label" style={{ color: "#0f172a", marginBottom: "4px" }}>Open to Opportunities</label>
+                  <p style={{ margin: 0, fontSize: "13px", color: "#64748b", lineHeight: "1.5" }}>
+                    Show a badge on your profile indicating you're looking for work.
+                  </p>
+                </div>
+                <div
+                  onClick={() => {
+                    if (projectCount > 0 && skills.length > 0 && bio.trim().length > 0) {
+                      setIsHirable(!isHirable);
+                    }
+                  }}
+                  style={{
+                    width: "48px",
+                    height: "26px",
+                    backgroundColor: isHirable ? "#3b82f6" : "#e2e8f0",
+                    borderRadius: "20px",
+                    position: "relative",
+                    cursor: (projectCount > 0 && skills.length > 0 && bio.trim().length > 0) ? "pointer" : "not-allowed",
+                    transition: "background-color 0.3s ease",
+                    flexShrink: 0,
+                    opacity: (projectCount > 0 && skills.length > 0 && bio.trim().length > 0) ? 1 : 0.5
+                  }}
+                >
+                  <div style={{
+                    position: "absolute",
+                    top: "3px",
+                    left: isHirable ? "25px" : "3px",
+                    width: "20px",
+                    height: "20px",
+                    backgroundColor: "white",
+                    borderRadius: "50%",
+                    transition: "left 0.3s ease",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                  }} />
+                </div>
+              </div>
+
+              {(projectCount === 0 || skills.length === 0 || bio.trim().length === 0) && (
+                <div style={{
+                  marginTop: "12px",
+                  padding: "12px",
+                  backgroundColor: "#fffbeb",
+                  border: "1px solid #fde68a",
+                  borderRadius: "12px",
+                  fontSize: "12px",
+                  color: "#92400e"
+                }}>
+                  <strong style={{ display: "block", marginBottom: "4px" }}>Activation Criteria:</strong>
+                  <ul style={{ margin: 0, paddingLeft: "18px" }}>
+                    <li style={{ color: bio.trim().length > 0 ? "#3b82f6" : "inherit" }}>Filled bio {bio.trim().length > 0 && "✓"}</li>
+                    <li style={{ color: skills.length > 0 ? "#3b82f6" : "inherit" }}>At least 1 skill {skills.length > 0 && "✓"}</li>
+                    <li style={{ color: projectCount > 0 ? "#3b82f6" : "inherit" }}>At least 1 published project {projectCount > 0 && "✓"}</li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Footer Actions */}

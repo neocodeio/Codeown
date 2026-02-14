@@ -13,7 +13,7 @@ export async function searchUsers(req: Request, res: Response) {
     // Search users by name, username, or email
     const { data: users, error } = await supabase
       .from("users")
-      .select("id, name, username, avatar_url")
+      .select("id, name, username, avatar_url, is_hirable")
       .or(`name.ilike.%${query}%,username.ilike.%${query}%,email.ilike.%${query}%`)
       .limit(10);
 
@@ -75,7 +75,7 @@ export async function searchPosts(req: Request, res: Response) {
     const userIds = [...new Set(posts.map((p: any) => p.user_id))];
     const { data: users } = await supabase
       .from("users")
-      .select("id, name, avatar_url, username")
+      .select("id, name, avatar_url, username, is_hirable")
       .in("id", userIds);
 
     const userMap = new Map((users || []).map((u: any) => [u.id, u]));
@@ -88,10 +88,12 @@ export async function searchPosts(req: Request, res: Response) {
           name: user.name || "User",
           avatar_url: user.avatar_url || null,
           username: user.username || null,
+          is_hirable: user.is_hirable || false,
         } : {
           name: "User",
           avatar_url: null,
           username: null,
+          is_hirable: false,
         },
       };
     });
@@ -144,7 +146,7 @@ export async function searchProjects(req: Request, res: Response) {
     const userIds = [...new Set(projects.map((p: any) => p.user_id))];
     const { data: users } = await supabase
       .from("users")
-      .select("id, name, avatar_url, username")
+      .select("id, name, avatar_url, username, is_hirable")
       .in("id", userIds);
 
     const userMap = new Map((users || []).map((u: any) => [u.id, u]));
@@ -157,10 +159,12 @@ export async function searchProjects(req: Request, res: Response) {
           name: user.name || "User",
           avatar_url: user.avatar_url || null,
           username: user.username || null,
+          is_hirable: user.is_hirable || false,
         } : {
           name: "User",
           avatar_url: null,
           username: null,
+          is_hirable: false,
         },
       };
     });
@@ -191,7 +195,7 @@ export async function searchAll(req: Request, res: Response) {
     const [usersResult, postsResult, projectsResult] = await Promise.all([
       supabase
         .from("users")
-        .select("id, name, username, avatar_url")
+        .select("id, name, username, avatar_url, is_hirable")
         .or(`name.ilike.%${query}%,username.ilike.%${query}%,email.ilike.%${query}%`)
         .limit(5),
       supabase

@@ -23,6 +23,7 @@ export interface Project {
     username: string | null;
     avatar_url: string | null;
     email: string | null;
+    is_hirable?: boolean;
   };
   rating?: number;
   rating_count?: number;

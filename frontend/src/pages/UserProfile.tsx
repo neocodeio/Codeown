@@ -25,6 +25,7 @@ import {
 import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
+import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
@@ -356,6 +357,18 @@ export default function UserProfile() {
         .stat-item:hover { transform: translateY(-2px); }
         .stat-value { font-size: 20px; font-weight: 800; color: #1e293b; }
         .stat-label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        @keyframes pulse-blue {
+          0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        .pulse-hirable {
+          animation: pulse-blue 2s infinite;
+          background: #3b82f6 !important;
+          color: white !important;
+          border-color: #3b82f6 !important;
+        }
       `}</style>
 
       <div style={{
@@ -416,10 +429,12 @@ export default function UserProfile() {
             setLightboxImage(avatarUrl);
             setLightboxOpen(true);
           }}>
-            <img
-              src={avatarUrl}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              alt="Profile"
+            <AvailabilityBadge
+              avatarUrl={avatarUrl}
+              name={user.name || "User"}
+              size={isMobile ? 100 : 150}
+              isOpenToOpportunities={user.is_hirable}
+              ringColor="#3b82f6"
             />
           </div>
         </div>
@@ -464,9 +479,26 @@ export default function UserProfile() {
                 fontSize: "18px",
                 color: "#64748b",
                 fontWeight: 500,
-                letterSpacing: "0.01em"
+                letterSpacing: "0.01em",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px"
               }}>
-                @{user.username}
+                <div>@{user.username}</div>
+                {user.is_hirable && (
+                  <div style={{
+                    fontSize: "14px",
+                    color: "#3b82f6",
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: isMobile ? "center" : "flex-start",
+                    gap: "6px"
+                  }}>
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", display: "inline-block" }}></span>
+                    OPEN TO OPPORTUNITIES
+                  </div>
+                )}
               </div>
             </div>
 
@@ -475,7 +507,7 @@ export default function UserProfile() {
               {isSignedIn && (
                 <button
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
-                  className="profile-btn"
+                  className={`profile-btn ${user.is_hirable ? 'pulse-hirable' : ''}`}
                   title="Message"
                   style={{ width: "44px", height: "44px", padding: 0, justifyContent: "center" }}
                 >

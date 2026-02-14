@@ -16,6 +16,7 @@ export interface Post {
     email: string | null;
     avatar_url?: string | null;
     username?: string | null;
+    is_hirable?: boolean;
   };
   isLiked?: boolean;
   isSaved?: boolean;

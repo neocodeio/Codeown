@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV, faUserEdit, faSignOutAlt, faKey, faLayerGroup, faRocket, faCalendarAlt, faGlobe, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import VerifiedBadge from "../components/VerifiedBadge";
+import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 
 interface UserProfile {
@@ -452,10 +453,12 @@ export default function Profile() {
             setLightboxImage(avatarUrl);
             setLightboxOpen(true);
           }}>
-            <img
-              src={avatarUrl}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              alt="Profile"
+            <AvailabilityBadge
+              avatarUrl={avatarUrl}
+              name={userProfile?.name || user?.fullName || "User"}
+              size={isMobile ? 100 : 150}
+              isOpenToOpportunities={userProfile?.is_hirable}
+              ringColor="#3b82f6"
             />
           </div>
         </div>
@@ -494,9 +497,25 @@ export default function Profile() {
               <div style={{
                 fontSize: "18px",
                 color: "#64748b",
-                fontWeight: 500
+                fontWeight: 500,
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px"
               }}>
-                @{userProfile?.username || user?.username}
+                <div>@{userProfile?.username || user?.username}</div>
+                {userProfile?.is_hirable && (
+                  <div style={{
+                    fontSize: "14px",
+                    color: "#3b82f6",
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}>
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", display: "inline-block" }}></span>
+                    OPEN TO OPPORTUNITIES
+                  </div>
+                )}
               </div>
             </div>
 
@@ -905,7 +924,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {userProfile && <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onUpdated={handleProfileUpdated} currentUser={userProfile} />}
+      {userProfile && <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onUpdated={handleProfileUpdated} currentUser={userProfile} projectCount={projects.length} />}
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => fetchUserProjects()} />
       {userId && <FollowersModal isOpen={followersModalOpen} onClose={() => setFollowersModalOpen(false)} userId={userId} type={followersModalType} title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"} />}
     </main>

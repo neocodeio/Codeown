@@ -22,6 +22,7 @@ import {
 // import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
+import AvailabilityBadge from "./AvailabilityBadge";
 
 interface ProjectCardProps {
   project: Project;
@@ -72,7 +73,6 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   };
 
   const userName = project.user?.name || "User";
-  const avatarUrl = project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "U")}&background=212121&color=ffffff&bold=true`;
 
   const handleClick = () => {
     navigate(`/project/${project.id}`);
@@ -170,19 +170,17 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         <div
           onClick={handleUserClick}
           style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            overflow: "hidden",
-            transition: "opacity 0.2s ease",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
           }}
-          onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
-          onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
         >
-          <img
-            src={avatarUrl}
-            alt={userName}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          <AvailabilityBadge
+            avatarUrl={project.user?.avatar_url || null}
+            name={userName}
+            size={40}
+            isOpenToOpportunities={project.user?.is_hirable}
           />
         </div>
       </div>

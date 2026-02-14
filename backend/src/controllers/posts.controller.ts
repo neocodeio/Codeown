@@ -15,7 +15,7 @@ export async function getPosts(req: Request, res: Response) {
     // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username)", { count: "exact" })
+      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable)", { count: "exact" })
       .order("created_at", { ascending: false });
 
     if (lang && typeof lang === 'string' && lang.trim().length > 0) {

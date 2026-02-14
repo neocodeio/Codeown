@@ -20,6 +20,7 @@ import type { Project } from "../types/project";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import VerifiedBadge from "../components/VerifiedBadge";
+import AvailabilityBadge from "../components/AvailabilityBadge";
 
 interface SearchUser {
   id: string;
@@ -28,6 +29,7 @@ interface SearchUser {
   email: string | null;
   avatar_url: string | null;
   is_organization?: boolean;
+  is_hirable?: boolean;
 }
 
 interface SearchPost {
@@ -71,6 +73,7 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [currentUserFollowing, setCurrentUserFollowing] = useState<string[]>([]);
+  const [showOnlyHirable, setShowOnlyHirable] = useState(false);
 
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -344,6 +347,40 @@ export default function Search() {
               )}
             </div>
           </div>
+
+          {/* Hiring Filter Toggle (only show for people filter) */}
+          {activeFilter === "people" && (
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "12px",
+              marginTop: "12px"
+            }}>
+              <label style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: 600,
+                color: "#64748b"
+              }}>
+                <input
+                  type="checkbox"
+                  checked={showOnlyHirable}
+                  onChange={(e) => setShowOnlyHirable(e.target.checked)}
+                  style={{
+                    width: "18px",
+                    height: "18px",
+                    cursor: "pointer",
+                    accentColor: "#3b82f6"
+                  }}
+                />
+                <span>Show only users open to opportunities</span>
+              </label>
+            </div>
+          )}
         </div>
       </div>
 
@@ -434,7 +471,7 @@ export default function Search() {
                 gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
                 gap: "20px"
               }}>
-                {users.map((user) => (
+                {users.filter(user => !showOnlyHirable || user.is_hirable).map((user) => (
                   <div key={user.id}
                     onClick={() => navigate(user.username ? `/${user.username}` : `/user/${user.id}`)}
                     style={{
@@ -459,10 +496,12 @@ export default function Search() {
                     }}
                   >
                     <div style={{ position: "relative", marginBottom: "16px" }}>
-                      <img
-                        src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
-                        alt={user.name}
-                        style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover" }}
+                      <AvailabilityBadge
+                        avatarUrl={user.avatar_url}
+                        name={user.name}
+                        size={80}
+                        isOpenToOpportunities={user.is_hirable}
+                        ringColor="#3b82f6"
                       />
                     </div>
 
