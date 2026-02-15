@@ -7,6 +7,8 @@ import { useAvatar } from "../hooks/useAvatar";
 import CreatePostModal from "./CreatePostModal";
 import ProjectModal from "./ProjectModal";
 import NotificationDropdown from "./NotificationDropdown";
+import StreakBadge from "./StreakBadge";
+import api from "../api/axios";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Home01Icon,
@@ -38,6 +40,8 @@ export default function Navbar() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [streakCount, setStreakCount] = useState<number>(0);
+  const { getToken } = useClerkAuth();
 
   // Use the centralized avatar hook
   const { avatarUrl: userAvatarUrl } = useAvatar(
@@ -58,6 +62,27 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Streak update logic
+  useEffect(() => {
+    const handleStreakUpdate = async () => {
+      if (isSignedIn) {
+        try {
+          const token = await getToken();
+          const response = await api.post("/users/streak/update", {}, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (response.data && typeof response.data.streak_count === 'number') {
+            setStreakCount(response.data.streak_count);
+          }
+        } catch (error) {
+          console.error("Failed to update streak:", error);
+        }
+      }
+    };
+
+    handleStreakUpdate();
+  }, [isSignedIn, getToken]);
 
   // Styles
   const linkStyle = (path: string) => ({
@@ -323,6 +348,18 @@ export default function Navbar() {
           <SidebarContent />
         </div>
 
+        {/* Desktop Fixed Streak Badge */}
+        {isSignedIn && (
+          <div style={{
+            position: "fixed",
+            top: "20px",
+            right: "24px",
+            zIndex: 9999
+          }}>
+            <StreakBadge count={streakCount} />
+          </div>
+        )}
+
         {/* Modals */}
         <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
         <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => window.dispatchEvent(new CustomEvent("projectCreated"))} />
@@ -355,6 +392,7 @@ export default function Navbar() {
             Codeown
           </span>
         </Link>
+        {isSignedIn && <StreakBadge count={streakCount} />}
         {/* <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }}>
           <img
             src="https://www.foundrlist.com/api/badge/codeown"

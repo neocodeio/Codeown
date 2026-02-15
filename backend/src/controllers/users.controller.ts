@@ -4,6 +4,77 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import { sendWelcomeEmail } from "../lib/email.js";
 import { getOrCreateConversation } from "./messages.controller.js";
 
+export async function updateStreak(req: Request, res: Response) {
+  try {
+    const user = req.user;
+    const userId = user?.sub || user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // Get current user streak info
+    const { data: userData, error: fetchError } = await supabase
+      .from("users")
+      .select("streak_count, last_active_at")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching user for streak:", fetchError);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    const now = new Date();
+    const lastActive = userData.last_active_at ? new Date(userData.last_active_at) : null;
+    let newStreak = userData.streak_count || 0;
+
+    if (!lastActive) {
+      // First time ever
+      newStreak = 1;
+    } else {
+      const diffInMs = now.getTime() - lastActive.getTime();
+      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+      // Reset dates to start of day for comparison
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const lastActiveDay = new Date(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate());
+      const dayDiff = Math.floor((today.getTime() - lastActiveDay.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (dayDiff === 0) {
+        // Already active today, don't increment
+        return res.json({ streak_count: newStreak });
+      } else if (dayDiff === 1) {
+        // Last active yesterday, increment streak
+        newStreak += 1;
+      } else {
+        // More than one day missed, reset streak
+        newStreak = 1;
+      }
+    }
+
+    const { data: updatedUser, error: updateError } = await supabase
+      .from("users")
+      .update({
+        streak_count: newStreak,
+        last_active_at: now.toISOString(),
+      })
+      .eq("id", userId)
+      .select("streak_count")
+      .single();
+
+    if (updateError) {
+      console.error("Error updating streak:", updateError);
+      return res.status(500).json({ error: "Failed to update streak" });
+    }
+
+    return res.json({ streak_count: updatedUser.streak_count });
+  } catch (error: any) {
+    console.error("Unexpected error in updateStreak:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 
 async function createWelcomeExperienceForNewUser(newUserId: string) {
   try {
@@ -537,6 +608,7 @@ export async function getUserProfile(req: Request, res: Response) {
       twitter_url: userData.twitter_url || null,
       linkedin_url: userData.linkedin_url || null,
       website_url: userData.website_url || null,
+      streak_count: userData.streak_count || 0,
       // Metadata
       created_at: userData.created_at || null,
       updated_at: userData.updated_at || null,

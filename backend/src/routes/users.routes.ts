@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUserProfile, updateUserProfile, pinPost, getUserTotalLikes, completeOnboarding } from "../controllers/users.controller.js";
+import { getUserProfile, updateUserProfile, pinPost, getUserTotalLikes, completeOnboarding, updateStreak } from "../controllers/users.controller.js";
 import { recordProfileView } from "../controllers/profileViews.controller.js";
 import { getUserProjects } from "../controllers/projects.controller.js";
 import { getUserSavedProjects } from "../controllers/userSavedProjects.controller.js";
@@ -11,6 +11,7 @@ router.get("/:userId", getUserProfile);
 router.put("/:userId", requireAuth, updateUserProfile);
 router.post("/pin/:postId", requireAuth, pinPost);
 router.post("/onboarding/complete", requireAuth, completeOnboarding);
+router.post("/streak/update", requireAuth, updateStreak);
 router.get("/:userId/likes", getUserTotalLikes);
 router.get("/:userId/projects", getUserProjects);
 router.get("/:userId/saved-projects", getUserSavedProjects);
