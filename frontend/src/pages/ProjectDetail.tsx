@@ -284,6 +284,20 @@ export default function ProjectDetail() {
         type="article"
         author={userName}
         publishedTime={project.created_at}
+        keywords={project.technologies_used || ["project", "software", "code"]}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareSourceCode",
+          "name": project.title,
+          "description": project.description,
+          "programmingLanguage": project.technologies_used?.[0] || "Code",
+          "author": {
+            "@type": "Person",
+            "name": userName
+          },
+          "codeRepository": project.github_repo || "",
+          "runtimePlatform": project.technologies_used?.join(", ") || ""
+        }}
       />
       <div style={{ maxWidth: "900px", margin: "0 auto" }}>
         <button

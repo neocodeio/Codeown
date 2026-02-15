@@ -282,6 +282,22 @@ export default function UserProfile() {
         image={avatarUrl}
         url={user.username ? `${window.location.origin}/${user.username}` : window.location.href}
         type="profile"
+        author={user.name}
+        keywords={[user.name, user.username || "", "developer", "portfolio", "coding"]}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": user.name,
+          "description": user.bio,
+          "image": avatarUrl,
+          "url": window.location.href,
+          "sameAs": [
+            user.github_url,
+            user.twitter_url,
+            user.linkedin_url,
+            user.website_url
+          ].filter(Boolean)
+        }}
       />
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

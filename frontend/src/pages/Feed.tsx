@@ -105,6 +105,17 @@ export default function Feed() {
       <SEO
         title="Home"
         description="Share your projects, discover amazing code, and connect with developers worldwide on Codeown."
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Codeown",
+          "url": window.location.origin,
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": `${window.location.origin}/search?q={search_term_string}`,
+            "query-input": "required name=search_term_string"
+          }
+        }}
       />
       <div style={{ maxWidth: "600px", margin: "0 auto", backgroundColor: "#fff", borderLeft: "1px solid #eff3f4", borderRight: "1px solid #eff3f4", minHeight: "100vh" }}>
         {/* Top Tabs */}

@@ -8,6 +8,8 @@ interface SEOProps {
     type?: 'website' | 'article' | 'profile';
     author?: string;
     publishedTime?: string;
+    keywords?: string[];
+    schema?: object;
 }
 
 export const SEO = ({
@@ -17,7 +19,9 @@ export const SEO = ({
     url = window.location.href,
     type = 'website',
     author,
-    publishedTime
+    publishedTime,
+    keywords = ["coding", "programming", "developer", "portfolio", "showcase", "collaboration"],
+    schema
 }: SEOProps) => {
     const siteTitle = 'Codeown';
     const fullTitle = `${title} | ${siteTitle}`;
@@ -28,6 +32,7 @@ export const SEO = ({
             {/* Standard Metadata */}
             <title>{fullTitle}</title>
             <meta name="description" content={description} />
+            <meta name="keywords" content={keywords.join(", ")} />
             <link rel="canonical" href={url} />
 
             {/* Open Graph / Facebook */}
@@ -48,6 +53,13 @@ export const SEO = ({
             {/* Article Specific */}
             {publishedTime && <meta property="article:published_time" content={publishedTime} />}
             {author && <meta name="author" content={author} />}
+
+            {/* Structured Data (JSON-LD) */}
+            {schema && (
+                <script type="application/ld+json">
+                    {JSON.stringify(schema)}
+                </script>
+            )}
         </Helmet>
     );
 };

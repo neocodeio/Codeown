@@ -163,13 +163,27 @@ export default function PostDetail() {
   return (
     <main style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
       <SEO
-        title={post.title}
-        description={post.content.substring(0, 150) + "..."}
+        title={post.title || "Post"}
+        description={post.content.substring(0, 160) + "..."}
         image={post.images && post.images.length > 0 ? post.images[0] : avatarUrl}
         url={window.location.href}
         type="article"
         author={userName}
         publishedTime={post.created_at}
+        keywords={post.tags || ["post", "developer", "coding"]}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": post.title || post.content.substring(0, 60),
+          "image": post.images && post.images.length > 0 ? post.images : [avatarUrl],
+          "datePublished": post.created_at,
+          "author": [{
+            "@type": "Person",
+            "name": userName,
+            "url": `${window.location.origin}/user/${post.user?.username || post.user_id}`
+          }],
+          "description": post.content.substring(0, 160)
+        }}
       />
 
       <div style={{

@@ -1,8 +1,10 @@
 User-agent: *
 Allow: /
-Disallow: /messages
-Disallow: /settings
+
+# Sitemaps (once you have a dynamic one generated)
+# Sitemap: https://codeown.space/sitemap.xml
+
+# Prevent indexing of sign-in and sign-up pages
 Disallow: /sign-in
 Disallow: /sign-up
-
-Sitemap: https://codeown.space/sitemap.xml
+Disallow: /forgot-password
