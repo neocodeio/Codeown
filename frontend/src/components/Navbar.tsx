@@ -349,7 +349,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Fixed Streak Badge */}
-        {isSignedIn && (
+        {isSignedIn && location.pathname !== "/messages" && (
           <div style={{
             position: "fixed",
             top: "20px",
@@ -392,7 +392,7 @@ export default function Navbar() {
             Codeown
           </span>
         </Link>
-        {isSignedIn && <StreakBadge count={streakCount} />}
+        {isSignedIn && location.pathname !== "/messages" && <StreakBadge count={streakCount} />}
         {/* <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }}>
           <img
             src="https://www.foundrlist.com/api/badge/codeown"
