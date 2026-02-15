@@ -113,12 +113,18 @@ export default function UserProfile() {
 
         if (isSignedIn && userRes.data && currentUser?.id !== userRes.data.id) {
           try {
+            // Check follow status
             const followRes = await api.get(`/follows/${userRes.data.id}/status`, {
               headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             setIsFollowing(followRes.data.isFollowing || false);
+
+            // Record profile view
+            await api.post(`/users/${userRes.data.id}/view`, {}, {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
           } catch (error) {
-            console.error("Error checking follow status:", error);
+            console.error("Error in profile secondary actions:", error);
           }
         }
       } catch (error) {

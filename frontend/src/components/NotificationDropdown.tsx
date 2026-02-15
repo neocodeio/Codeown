@@ -4,8 +4,8 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Notification01Icon } from "@hugeicons/core-free-icons";
-import { formatRelativeDate } from "../utils/date";
+import { Notification01Icon, ViewIcon } from "@hugeicons/core-free-icons";
+import { formatCompactRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 
 interface NotificationDropdownProps {
@@ -58,7 +58,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
 
     const nameWrapper = (
       <span style={{ fontWeight: 700, display: "inline-flex", alignItems: "center" }}>
-        {actorName}
+        {username ? `@${username}` : actorName}
         <VerifiedBadge username={username} size="14px" />
       </span>
     );
@@ -78,6 +78,8 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
         return <span>{nameWrapper} replied to your comment</span>;
       case "save":
         return <span>{nameWrapper} saved your project</span>;
+      case "profile_view":
+        return <span>{nameWrapper} viewed your profile</span>;
       default:
         return <span>New notification</span>;
     }
@@ -216,7 +218,10 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       fontSize: "10px",
                       color: "#fff"
                     }}>
-                      <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "10px" }} />
+                      <HugeiconsIcon
+                        icon={notification.type === "profile_view" ? ViewIcon : Notification01Icon}
+                        style={{ fontSize: "10px" }}
+                      />
                     </div>
                   </div>
                   <div>
@@ -224,7 +229,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       {getNotificationMessage(notification)}
                     </p>
                     <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8" }}>
-                      {formatRelativeDate(notification.created_at)}
+                      {formatCompactRelativeDate(notification.created_at)}
                     </p>
                   </div>
                   {!notification.read && (

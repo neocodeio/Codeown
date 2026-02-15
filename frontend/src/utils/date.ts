@@ -49,3 +49,34 @@ export const formatJoinDate = (dateString: string | null | undefined) => {
         year: "numeric"
     });
 };
+
+export const formatCompactRelativeDate = (dateString: string) => {
+    if (!dateString) return "";
+
+    const normalizedString = dateString.includes('Z') || dateString.includes('+')
+        ? dateString
+        : dateString.replace(' ', 'T') + 'Z';
+
+    let date = new Date(normalizedString);
+    if (isNaN(date.getTime())) {
+        date = new Date(dateString);
+    }
+
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return "just now";
+    if (diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        return `${minutes} min`;
+    }
+    if (diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        return `${hours} h`;
+    }
+
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric"
+    });
+};
