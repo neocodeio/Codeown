@@ -4,10 +4,11 @@ import { supabase } from "../lib/supabase.js";
 export async function recordProfileView(req: Request, res: Response) {
     try {
         const user = req.user;
-        const actorId = user?.sub || user?.id || user?.userId;
+        const actorId = user?.sub || user?.id; // Clerk verified tokens use 'sub' for userId
         const { userId: targetUserId } = req.params;
 
         if (!actorId) {
+            console.warn("Profile View Attempt: No actorId found in request");
             return res.status(401).json({ error: "User ID not found" });
         }
 
