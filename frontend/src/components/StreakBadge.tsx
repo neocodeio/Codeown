@@ -1,5 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { FireIcon } from "@hugeicons/core-free-icons";
+import flameGif from "../assets/flame.gif";
 
 interface StreakBadgeProps {
     count: number;
@@ -15,28 +16,43 @@ export default function StreakBadge({ count }: StreakBadgeProps) {
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
-                padding: "4px 12px",
+                padding: "2px 12px 2px 8px", // Adjusted padding for the GIF
                 backgroundColor: isActive ? "rgba(255, 126, 0, 0.1)" : "rgba(148, 163, 184, 0.1)",
                 borderRadius: "20px",
                 border: isActive ? "1px solid rgba(255, 126, 0, 0.2)" : "1px solid rgba(148, 163, 184, 0.2)",
                 transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                 cursor: "pointer",
-                userSelect: "none"
+                userSelect: "none",
+                minHeight: "32px"
             }}
         >
             <div style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                animation: isActive ? "streak-bounce 2s infinite" : "none"
+                width: "24px",
+                height: "24px",
+                position: "relative"
             }}>
-                <HugeiconsIcon
-                    icon={FireIcon}
-                    style={{
-                        fontSize: "18px",
-                        color: isActive ? "#ff7e00" : "#94a3b8"
-                    }}
-                />
+                {isActive ? (
+                    <img
+                        src={flameGif}
+                        alt="Streak active"
+                        style={{
+                            width: "32px",
+                            height: "32px",
+                            marginTop: "-2px" // Minor adjustment for center alignment
+                        }}
+                    />
+                ) : (
+                    <HugeiconsIcon
+                        icon={FireIcon}
+                        style={{
+                            fontSize: "18px",
+                            color: "#94a3b8"
+                        }}
+                    />
+                )}
             </div>
             <span style={{
                 fontSize: "15px",
