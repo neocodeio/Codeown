@@ -4,7 +4,17 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Notification01Icon, ViewIcon } from "@hugeicons/core-free-icons";
+import {
+  Notification01Icon,
+  ViewIcon,
+  FavouriteIcon,
+  Comment01Icon,
+  UserAdd01Icon,
+  AtIcon,
+  Bookmark01Icon,
+  Mail01Icon,
+  Tick01Icon
+} from "@hugeicons/core-free-icons";
 import { formatCompactRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 
@@ -52,12 +62,34 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
     setIsOpen(false);
   };
 
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "like":
+        return { icon: FavouriteIcon, color: "#ef4444", bg: "#fee2e2" };
+      case "comment":
+      case "reply":
+        return { icon: Comment01Icon, color: "#3b82f6", bg: "#dbeafe" };
+      case "follow":
+        return { icon: UserAdd01Icon, color: "#8b5cf6", bg: "#ede9fe" };
+      case "mention":
+        return { icon: AtIcon, color: "#06b6d4", bg: "#cffafe" };
+      case "save":
+        return { icon: Bookmark01Icon, color: "#f59e0b", bg: "#fef3c7" };
+      case "message":
+        return { icon: Mail01Icon, color: "#10b981", bg: "#d1fae5" };
+      case "profile_view":
+        return { icon: ViewIcon, color: "#6366f1", bg: "#e0e7ff" };
+      default:
+        return { icon: Notification01Icon, color: "#64748b", bg: "#f1f5f9" };
+    }
+  };
+
   const getNotificationMessage = (notification: Notification) => {
     const actorName = notification.actor?.name || "Someone";
     const username = notification.actor?.username;
 
     const nameWrapper = (
-      <span style={{ fontWeight: 700, display: "inline-flex", alignItems: "center" }}>
+      <span style={{ fontWeight: 700, display: "inline-flex", alignItems: "center", color: "#0f172a" }}>
         {username ? `@${username}` : actorName}
         <VerifiedBadge username={username} size="14px" />
       </span>
@@ -138,108 +170,198 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
       )}
 
       {isOpen && (
-        <div
-          style={{
-            position: isMobile ? "fixed" : "absolute",
-            top: isMobile ? "auto" : (props.align === "bottom" ? "calc(100% + 12px)" : "0"), // Mobile: auto top
-            bottom: isMobile ? "90px" : "auto", // Mobile: above tab bar, Desktop: auto
-            left: isMobile ? "10px" : (props.align === "right" ? "100%" : "0"), // Desktop Right: Pop to right
-            right: isMobile ? "10px" : "auto", // Desktop: Auto width
-            marginLeft: (!isMobile && props.align === "right") ? "12px" : "0",
-            width: isMobile ? "auto" : "360px",
-            maxHeight: isMobile ? "calc(100vh - 200px)" : "min(500px, 80vh)", // Responsive height
-            backgroundColor: "#ffffff",
-            borderRadius: "16px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
-            border: "1px solid #e4e7eb",
-            zIndex: 1000,
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div style={{ padding: "16px", borderBottom: "1px solid #e4e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "#1e293b" }}>Notifications</h3>
-            {unreadCount > 0 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  notifications.forEach(n => !n.read && markAsRead(n.id));
-                }}
-                style={{ background: "none", border: "none", color: "#212121", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
-              >
-                Mark all as read
-              </button>
-            )}
-          </div>
-          <div style={{ overflowY: "auto", flex: 1 }}>
-            {notifications.length === 0 ? (
-              <div style={{ padding: "40px 20px", textAlign: "center", color: "#94a3b8" }}>
-                <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "24px", marginBottom: "12px", opacity: 0.5 }} />
-                <p style={{ margin: 0, fontSize: "14px" }}>No notifications yet</p>
+        <>
+          <style>{`
+            @keyframes dropdownShow {
+              from { opacity: 0; transform: translateY(10px) scale(0.95); }
+              to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            .notification-item:hover {
+              background-color: #f8fafc !important;
+            }
+            .notification-dropdown {
+              animation: dropdownShow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+          `}</style>
+          <div
+            className="notification-dropdown"
+            style={{
+              position: isMobile ? "fixed" : "absolute",
+              top: isMobile ? "0" : (props.align === "bottom" ? "calc(100% + 12px)" : "0"),
+              bottom: isMobile ? "0" : "auto",
+              left: isMobile ? "0" : (props.align === "right" ? "100%" : "0"),
+              right: isMobile ? "0" : "auto",
+              marginLeft: (!isMobile && props.align === "right") ? "12px" : "0",
+              width: isMobile ? "100%" : "380px",
+              height: isMobile ? "100%" : "auto",
+              maxHeight: isMobile ? "100vh" : "min(600px, 85vh)",
+              backgroundColor: "#ffffff",
+              borderRadius: isMobile ? "0" : "24px",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.12)",
+              border: isMobile ? "none" : "1px solid rgba(226, 232, 240, 0.8)",
+              zIndex: 9999,
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              padding: "20px 24px",
+              borderBottom: "1px solid #f1f5f9",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              background: "#fff",
+              position: "sticky",
+              top: 0,
+              zIndex: 10
+            }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>Notifications</h3>
+                <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
+                  You have {unreadCount} unread
+                </p>
               </div>
-            ) : (
-              notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  onClick={() => handleNotificationClick(notification)}
-                  style={{
-                    padding: "16px",
-                    borderBottom: "1px solid #f1f5f9",
-                    cursor: "pointer",
-                    backgroundColor: notification.read ? "#fff" : "#f8fafc",
-                    transition: "background-color 0.2s",
-                    display: "flex",
-                    gap: "12px",
-                    alignItems: "flex-start"
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = notification.read ? "#fff" : "#f8fafc"}
-                >
-                  <div style={{ position: "relative" }}>
-                    <img
-                      src={notification.actor?.avatar_url || "https://via.placeholder.com/40"}
-                      alt=""
-                      style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }}
-                    />
-                    {/* Icon Badge based on type */}
-                    <div style={{
-                      position: "absolute",
-                      bottom: "-2px",
-                      right: "-2px",
-                      width: "18px",
-                      height: "18px",
-                      borderRadius: "50%",
-                      backgroundColor: "#212121",
+              <div style={{ display: "flex", gap: "8px" }}>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      markAsRead("all");
+                    }}
+                    style={{
+                      background: "rgba(16, 185, 129, 0.1)",
+                      border: "none",
+                      color: "#10b981",
+                      padding: "8px 12px",
+                      borderRadius: "10px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      border: "2px solid #fff",
-                      fontSize: "10px",
-                      color: "#fff"
-                    }}>
-                      <HugeiconsIcon
-                        icon={notification.type === "profile_view" ? ViewIcon : Notification01Icon}
-                        style={{ fontSize: "10px" }}
-                      />
-                    </div>
+                      gap: "6px",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "rgba(16, 185, 129, 0.1)"}
+                  >
+                    <HugeiconsIcon icon={Tick01Icon} style={{ fontSize: "14px" }} />
+                    Mark all
+                  </button>
+                )}
+                {isMobile && (
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    style={{ background: "#f1f5f9", border: "none", padding: "8px 12px", borderRadius: "10px", fontWeight: 700, fontSize: "12px" }}
+                  >
+                    Close
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Content List */}
+            <div style={{ overflowY: "auto", flex: 1, padding: "8px" }}>
+              {notifications.length === 0 ? (
+                <div style={{ padding: "80px 40px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <div style={{
+                    width: "64px",
+                    height: "64px",
+                    borderRadius: "20px",
+                    backgroundColor: "#f8fafc",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: "16px",
+                    color: "#94a3b8"
+                  }}>
+                    <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "32px", opacity: 0.5 }} />
                   </div>
-                  <div>
-                    <p style={{ margin: "0 0 4px", fontSize: "14px", color: "#1e293b", lineHeight: "1.4" }}>
-                      {getNotificationMessage(notification)}
-                    </p>
-                    <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8" }}>
-                      {formatCompactRelativeDate(notification.created_at)}
-                    </p>
-                  </div>
-                  {!notification.read && (
-                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#212121", marginTop: "6px" }} />
-                  )}
+                  <h4 style={{ margin: "0 0 8px", fontSize: "16px", fontWeight: 700, color: "#1e293b" }}>All quiet for now</h4>
+                  <p style={{ margin: 0, fontSize: "14px", color: "#64748b", lineHeight: "1.5" }}>
+                    When you get notifications, they'll show up here.
+                  </p>
                 </div>
-              ))
-            )}
+              ) : (
+                notifications.map((notification) => {
+                  const itemIcon = getNotificationIcon(notification.type);
+                  return (
+                    <div
+                      key={notification.id}
+                      className="notification-item"
+                      onClick={() => handleNotificationClick(notification)}
+                      style={{
+                        padding: "16px",
+                        margin: "4px 0",
+                        borderRadius: "16px",
+                        cursor: "pointer",
+                        backgroundColor: notification.read ? "#fff" : "#f0f7ff",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        display: "flex",
+                        gap: "14px",
+                        alignItems: "flex-start",
+                        position: "relative",
+                        border: notification.read ? "1px solid transparent" : "1px solid #e0f2fe"
+                      }}
+                    >
+                      <div style={{ position: "relative", flexShrink: 0 }}>
+                        <img
+                          src={notification.actor?.avatar_url || "https://via.placeholder.com/44"}
+                          alt=""
+                          style={{ width: "44px", height: "44px", borderRadius: "14px", objectFit: "cover", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+                        />
+                        <div style={{
+                          position: "absolute",
+                          bottom: "-6px",
+                          right: "-6px",
+                          width: "22px",
+                          height: "22px",
+                          borderRadius: "8px",
+                          backgroundColor: itemIcon.bg,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "2px solid #fff",
+                          color: itemIcon.color,
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+                        }}>
+                          <HugeiconsIcon icon={itemIcon.icon} style={{ fontSize: "12px" }} />
+                        </div>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{
+                          margin: "0 0 4px",
+                          fontSize: "14px",
+                          color: "#1e293b",
+                          lineHeight: "1.5",
+                          fontWeight: notification.read ? 500 : 600
+                        }}>
+                          {getNotificationMessage(notification)}
+                        </p>
+                        <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8", fontWeight: 500, display: "flex", alignItems: "center", gap: "4px" }}>
+                          <span style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "#cbd5e1" }} />
+                          {formatCompactRelativeDate(notification.created_at)}
+                        </p>
+                      </div>
+                      {!notification.read && (
+                        <div style={{
+                          width: "8px",
+                          height: "8px",
+                          borderRadius: "50%",
+                          backgroundColor: "#3b82f6",
+                          marginTop: "6px",
+                          boxShadow: "0 0 0 4px rgba(59, 130, 246, 0.1)"
+                        }} />
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
