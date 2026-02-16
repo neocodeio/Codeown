@@ -367,10 +367,10 @@ export default function Navbar() {
     );
   }
 
-  // Mobile Render
+  // Mobile/Tablet Render
   return (
     <>
-      {/* Mobile Top Header */}
+      {/* Mobile/Tablet Top Header */}
       <div style={{
         position: "fixed",
         top: 0,
@@ -382,7 +382,7 @@ export default function Navbar() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 16px",
+        padding: "0 20px",
         zIndex: 2000,
         boxShadow: "0 1px 3px rgba(0,0,0,0.02)"
       }}>
@@ -392,7 +392,11 @@ export default function Navbar() {
             Codeown
           </span>
         </Link>
-        {isSignedIn && location.pathname !== "/messages" && <StreakBadge count={streakCount} />}
+        {isSignedIn && location.pathname !== "/messages" && (
+          <div style={{ marginLeft: "auto" }}>
+            <StreakBadge count={streakCount} />
+          </div>
+        )}
         {/* <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }}>
           <img
             src="https://www.foundrlist.com/api/badge/codeown"
