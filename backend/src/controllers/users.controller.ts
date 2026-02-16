@@ -867,3 +867,48 @@ export async function getUserTotalLikes(req: Request, res: Response) {
     return res.status(500).json({ error: "Internal server error", details: error?.message });
   }
 }
+
+export async function getRecommendedUsers(req: Request, res: Response) {
+  try {
+    const { limit = 8 } = req.query;
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id;
+
+    // Fetch users with highest streaks
+    // We filter out some fields for safety, though these are public profiles
+    let usersQuery = supabase
+      .from("users")
+      .select("id, name, username, avatar_url, streak_count")
+      .order("streak_count", { ascending: false })
+      .limit(Number(limit));
+
+    const { data: users, error: fetchError } = await usersQuery;
+
+    if (fetchError) {
+      console.error("Error fetching recommended users:", fetchError);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    // If signed in, check follow status
+    let usersWithFollowStatus = users.map((u: any) => ({ ...u, isFollowing: false }));
+
+    if (currentUserId && users.length > 0) {
+      const userIds = users.map((u: any) => u.id);
+      const { data: followRows } = await supabase
+        .from("follows")
+        .select("following_id")
+        .eq("follower_id", currentUserId)
+        .in("following_id", userIds);
+
+      const followingIds = new Set((followRows || []).map((r: any) => r.following_id));
+      usersWithFollowStatus = users.map((u: any) => ({
+        ...u,
+        isFollowing: followingIds.has(u.id)
+      }));
+    }
+
+    return res.json(usersWithFollowStatus);
+  } catch (error: any) {
+    console.error("Unexpected error in getRecommendedUsers:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}

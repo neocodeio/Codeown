@@ -1,12 +1,13 @@
 import { Router } from "express";
-import { getUserProfile, updateUserProfile, pinPost, getUserTotalLikes, completeOnboarding, updateStreak } from "../controllers/users.controller.js";
+import { getUserProfile, updateUserProfile, pinPost, getUserTotalLikes, completeOnboarding, updateStreak, getRecommendedUsers } from "../controllers/users.controller.js";
 import { recordProfileView } from "../controllers/profileViews.controller.js";
 import { getUserProjects } from "../controllers/projects.controller.js";
 import { getUserSavedProjects } from "../controllers/userSavedProjects.controller.js";
-import { requireAuth } from "../middlewares/auth.middleware.js";
+import { requireAuth, optionalAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
+router.get("/recommended", optionalAuth, getRecommendedUsers);
 router.get("/:userId", getUserProfile);
 router.put("/:userId", requireAuth, updateUserProfile);
 router.post("/pin/:postId", requireAuth, pinPost);
