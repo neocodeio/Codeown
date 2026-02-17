@@ -229,6 +229,8 @@ export default function Navbar() {
           <Link to="/terms" style={{ color: "#94a3b8", textDecoration: "none" }}>Terms</Link>
           <span>•</span>
           <Link to="/about" style={{ color: "#94a3b8", textDecoration: "none" }}>About Us</Link>
+          <span>•</span>
+          <Link to="/founder-story" style={{ color: "#94a3b8", textDecoration: "none" }}>Founder</Link>
         </div>
 
         {/* Profile Card */}

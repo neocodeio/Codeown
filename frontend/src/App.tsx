@@ -14,6 +14,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import AboutUs from "./pages/AboutUs";
+import FounderStory from "./pages/FounderStory";
 import NotFound from "./pages/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
@@ -51,6 +52,7 @@ export default function App() {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/about" element={<AboutUs />} />
+              <Route path="/founder-story" element={<FounderStory />} />
               <Route path="/:username" element={<UserProfile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
