@@ -272,7 +272,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px", marginTop: "12%" }}>
               {post.tags.map((tag, idx) => (
                 <span
                   key={idx}
@@ -296,7 +296,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
             alignItems: "center",
             justifyContent: "space-between",
             maxWidth: "425px",
-            marginTop: "4px"
+            // marginTop: "10%"
           }}>
             {/* Comment */}
             <button
