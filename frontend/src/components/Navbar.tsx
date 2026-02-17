@@ -222,17 +222,6 @@ export default function Navbar() {
 
       {/* Footer Links & Profile */}
       <div style={{ padding: "0 20px 20px 20px" }}>
-        {/* Footer Links */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", fontSize: "11px", color: "#94a3b8", marginBottom: "20px", padding: "0 4px" }}>
-          <Link to="/privacy" style={{ color: "#94a3b8", textDecoration: "none" }}>Privacy Policy</Link>
-          <span>•</span>
-          <Link to="/terms" style={{ color: "#94a3b8", textDecoration: "none" }}>Terms</Link>
-          <span>•</span>
-          <Link to="/about" style={{ color: "#94a3b8", textDecoration: "none" }}>About Us</Link>
-          <span>•</span>
-          <Link to="/founder-story" style={{ color: "#94a3b8", textDecoration: "none" }}>Founder</Link>
-        </div>
-
         {/* Profile Card */}
         {isSignedIn && user ? (
           <>
@@ -305,7 +294,19 @@ export default function Navbar() {
                 )}
               </div>
             </div>
-            <div style={{ marginTop: "12px", fontSize: "11px", color: "#94a3b8", textAlign: "center" }}>
+
+            {/* Footer Links */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", fontSize: "10px", color: "#94a3b8", marginBottom: "10px", marginTop: "10px", padding: "0 4px" }}>
+              <Link to="/privacy" style={{ color: "#94a3b8", textDecoration: "none" }}>Privacy Policy</Link>
+              <span>•</span>
+              <Link to="/terms" style={{ color: "#94a3b8", textDecoration: "none" }}>Terms</Link>
+              <span>•</span>
+              <Link to="/about" style={{ color: "#94a3b8", textDecoration: "none" }}>About Us</Link>
+              <span>•</span>
+              <Link to="/founder-story" style={{ color: "#94a3b8", textDecoration: "none" }}>Founder</Link>
+            </div>
+
+            <div style={{ fontSize: "11px", color: "#94a3b8", textAlign: "center" }}>
               © 2026 Codeown.
             </div>
           </>
