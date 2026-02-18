@@ -8,18 +8,17 @@ import api from "../api/axios";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  faHeart as faHeartSolid,
-  faComment,
-  faBookmark as faBookmarkSolid,
-  faBookmark as faBookmarkRegular,
-  faTrash,
-  faPen,
-  faShareNodes,
-  // faEye
-} from "@fortawesome/free-solid-svg-icons";
-// import { faGithub } from "@fortawesome/free-brands-svg-icons";
+  Share01Icon,
+  FavouriteIcon,
+  Comment02Icon,
+  Bookmark01Icon,
+  Bookmark02Icon,
+  Delete01Icon,
+  Pen01Icon,
+} from '@hugeicons/core-free-icons';
+
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -237,13 +236,13 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                 onClick={handleEditClick}
                 style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", padding: "4px" }}
               >
-                <FontAwesomeIcon icon={faPen} style={{ fontSize: "12px" }} />
+                <HugeiconsIcon icon={Pen01Icon} style={{ fontSize: "12px" }} />
               </button>
               <button
                 onClick={handleDeleteClick}
                 style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "4px" }}
               >
-                <FontAwesomeIcon icon={faTrash} style={{ fontSize: "12px" }} />
+                <HugeiconsIcon icon={Delete01Icon} style={{ fontSize: "12px" }} />
               </button>
             </div>
           )}
@@ -318,7 +317,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           alignItems: "center",
           justifyContent: "space-between",
           maxWidth: "425px",
-          marginTop: "4px"
+          marginTop: "9%"
         }}>
           {/* Comment */}
           <button
@@ -326,7 +325,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
+              gap: "2px",
               background: "none",
               border: "none",
               color: "#64748b",
@@ -347,7 +346,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             }}
           >
             <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
-              <FontAwesomeIcon icon={faComment} style={{ fontSize: "18px" }} />
+              <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "14px" }} />
             </div>
             <span>{project.comment_count || 0}</span>
           </button>
@@ -358,7 +357,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
+              gap: "2px",
               background: "none",
               border: "none",
               color: isLiked ? "#f91880" : "#64748b",
@@ -379,7 +378,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             }}
           >
             <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
-              <FontAwesomeIcon icon={faHeartSolid} style={{ fontSize: "18px" }} />
+              <HugeiconsIcon icon={FavouriteIcon} style={{ fontSize: "14px" }} />
             </div>
             <span style={{ fontWeight: isLiked ? "700" : "400" }}>{likeCount || 0}</span>
           </button>
@@ -406,7 +405,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               if (!shareCopied) e.currentTarget.style.color = "#64748b";
             }}
           >
-            <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "18px" }} />
+            <HugeiconsIcon icon={Share01Icon} style={{ fontSize: "14px" }} />
           </button>
 
           {/* Save */}
@@ -431,7 +430,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               if (!isSaved) e.currentTarget.style.color = "#64748b";
             }}
           >
-            <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} style={{ fontSize: "18px" }} />
+            <HugeiconsIcon icon={isSaved ? Bookmark01Icon : Bookmark02Icon} style={{ fontSize: "14px" }} />
           </button>
         </div>
       </div>

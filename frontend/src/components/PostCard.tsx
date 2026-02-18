@@ -10,17 +10,17 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  faHeart as faHeartSolid,
-  faComment,
-  faBookmark as faBookmarkSolid,
-  faBookmark as faBookmarkRegular,
-  faTrash,
-  faPen,
-  faShareNodes,
-  faThumbtack,
-} from "@fortawesome/free-solid-svg-icons";
+  Share01Icon,
+  FavouriteIcon,
+  Comment02Icon,
+  Bookmark01Icon,
+  Bookmark02Icon,
+  Delete01Icon,
+  Pen01Icon,
+  PinIcon,
+} from '@hugeicons/core-free-icons';
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -206,7 +206,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                 {formatRelativeDate(post.created_at)}
               </span>
               {isPinned && (
-                <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "11px", color: "#64748b", marginLeft: "4px" }} />
+                <HugeiconsIcon icon={PinIcon} style={{ fontSize: "11px", color: "#64748b", marginLeft: "4px" }} />
               )}
             </div>
 
@@ -219,7 +219,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                   onMouseEnter={(e) => e.currentTarget.style.color = "#0f172a"}
                   onMouseLeave={(e) => e.currentTarget.style.color = "#64748b"}
                 >
-                  <FontAwesomeIcon icon={faPen} style={{ fontSize: "12px" }} />
+                  <HugeiconsIcon icon={Pen01Icon} style={{ fontSize: "12px" }} />
                 </button>
                 <button
                   onClick={handleDelete}
@@ -227,7 +227,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                   onMouseEnter={(e) => e.currentTarget.style.opacity = "0.7"}
                   onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                 >
-                  <FontAwesomeIcon icon={faTrash} style={{ fontSize: "12px" }} />
+                  <HugeiconsIcon icon={Delete01Icon} style={{ fontSize: "12px" }} />
                 </button>
               </div>
             )}
@@ -296,7 +296,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
             alignItems: "center",
             justifyContent: "space-between",
             maxWidth: "425px",
-            // marginTop: "10%"
+            marginTop: "9%"
           }}>
             {/* Comment */}
             <button
@@ -304,7 +304,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
+                gap: "2px",
                 background: "none",
                 border: "none",
                 color: "#64748b",
@@ -325,7 +325,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
               }}
             >
               <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
-                <FontAwesomeIcon icon={faComment} style={{ fontSize: "18px" }} />
+                <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "14px" }} />
               </div>
               <span>{post.comment_count || 0}</span>
             </button>
@@ -337,7 +337,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
+                gap: "2px",
                 background: "none",
                 border: "none",
                 color: isLiked ? "#f91880" : "#64748b",
@@ -358,7 +358,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
               }}
             >
               <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
-                <FontAwesomeIcon icon={faHeartSolid} style={{ fontSize: "18px" }} />
+                <HugeiconsIcon icon={FavouriteIcon} style={{ fontSize: "14px" }} />
               </div>
               <span style={{ fontWeight: isLiked ? "700" : "400" }}>{likeCount || 0}</span>
             </button>
@@ -385,7 +385,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                 if (!shareCopied) e.currentTarget.style.color = "#64748b";
               }}
             >
-              <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "18px" }} />
+              <HugeiconsIcon icon={Share01Icon} style={{ fontSize: "14px" }} />
             </button>
 
             {/* Save */}
@@ -410,7 +410,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                 if (!isSaved) e.currentTarget.style.color = "#64748b";
               }}
             >
-              <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} style={{ fontSize: "18px" }} />
+              <HugeiconsIcon icon={isSaved ? Bookmark01Icon : Bookmark02Icon} style={{ fontSize: "14px" }} />
             </button>
           </div>
         </div>

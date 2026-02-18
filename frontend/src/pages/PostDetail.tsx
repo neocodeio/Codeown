@@ -7,14 +7,24 @@ import ImageSlider from "../components/ImageSlider";
 import ContentRenderer from "../components/ContentRenderer";
 import MentionInput from "../components/MentionInput";
 import CommentBlock, { type CommentWithMeta } from "../components/CommentBlock";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faHeart as faHeartSolid, faBookmark as faBookmarkSolid, faBookmark as faBookmarkRegular, faShareNodes, faComment } from "@fortawesome/free-solid-svg-icons";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { HugeiconsIcon } from '@hugeicons/react';
+import {
+  Share01Icon,
+  FavouriteIcon,
+  Comment02Icon,
+  Bookmark01Icon,
+  Bookmark02Icon,
+  // Delete01Icon,
+  // Pen01Icon,
+  ArrowLeftIcon,
+  // PinIcon,
+} from '@hugeicons/core-free-icons';
 
 interface Post {
   id: number;
@@ -224,7 +234,7 @@ export default function PostDetail() {
               cursor: "pointer",
             }}
           >
-            <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: "16px", color: "#1a1a1a" }} />
+            <HugeiconsIcon icon={ArrowLeftIcon} style={{ fontSize: "16px", color: "#1a1a1a" }} />
           </button>
           <span style={{ marginLeft: "20px", fontSize: "18px", fontWeight: 700, color: "#1a1a1a" }}>Post</span>
         </div>
@@ -290,7 +300,7 @@ export default function PostDetail() {
               alignItems: "center",
               justifyContent: "space-between",
               maxWidth: "400px",
-              marginTop: "16px",
+              marginTop: "9%",
               borderTop: "1px solid #f1f5f9",
               paddingTop: "12px"
             }}>
@@ -302,7 +312,7 @@ export default function PostDetail() {
                 }}
                 style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#666", cursor: "pointer", fontSize: "13px" }}
               >
-                <FontAwesomeIcon icon={faComment} style={{ fontSize: "16px" }} />
+                <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "414px" }} />
                 <span>{comments.length || 0}</span>
               </button>
 
@@ -312,7 +322,7 @@ export default function PostDetail() {
                 disabled={likeLoading}
                 style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "#ef4444" : "#666", cursor: "pointer", fontSize: "13px" }}
               >
-                <FontAwesomeIcon icon={isLiked ? faHeartSolid : faHeartSolid} style={{ fontSize: "16px", opacity: isLiked ? 1 : 0.6 }} />
+                <HugeiconsIcon icon={isLiked ? FavouriteIcon : FavouriteIcon} style={{ fontSize: "12px", opacity: isLiked ? 1 : 0.6 }} />
                 <span>{likeCount || 0}</span>
               </button>
 
@@ -321,7 +331,7 @@ export default function PostDetail() {
                 onClick={handleShare}
                 style={{ background: "none", border: "none", color: shareCopied ? "#10b981" : "#666", cursor: "pointer", padding: "4px" }}
               >
-                <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "16px" }} />
+                <HugeiconsIcon icon={Share01Icon} style={{ fontSize: "12px" }} />
               </button>
 
               {/* Save */}
@@ -329,7 +339,7 @@ export default function PostDetail() {
                 onClick={toggleSave}
                 style={{ background: "none", border: "none", color: isSaved ? "#1a1a1a" : "#666", cursor: "pointer", padding: "4px" }}
               >
-                <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} style={{ fontSize: "16px" }} />
+                <HugeiconsIcon icon={isSaved ? Bookmark01Icon : Bookmark02Icon} style={{ fontSize: "12px" }} />
               </button>
             </div>
           </div>
