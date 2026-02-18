@@ -5,7 +5,8 @@ import MentionInput from "./MentionInput";
 import { useCommentLikes } from "../hooks/useCommentLikes";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faReply } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 import { formatRelativeDate } from "../utils/date";
@@ -55,279 +56,187 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
     }
   };
 
-  const getMarginLeft = () => {
-    if (depth === 0) return 0;
-    const baseMargin = isMobile ? 12 : 32;
-    const maxDepth = isMobile ? 3 : 8;
-    return Math.min(depth, maxDepth) * baseMargin;
+  const getIndentStyle = () => {
+    if (depth === 0) return { paddingLeft: 0, borderLeft: "none" };
+    // Limit nesting depth on mobile to 2 levels, on desktop to 4 levels to prevent squishing
+    const maxDepth = isMobile ? 2 : 4;
+    const effectiveDepth = Math.min(depth, maxDepth);
+    const basePadding = isMobile ? 12 : 24;
+
+    return {
+      paddingLeft: basePadding,
+      borderLeft: effectiveDepth > 0 ? "1px solid #f1f5f9" : "none"
+    };
   };
+
+  const indentStyle = getIndentStyle();
 
   return (
     <div
       style={{
-        marginLeft: getMarginLeft(),
-        marginBottom: isMobile ? "12px" : "16px",
+        ...indentStyle,
+        paddingTop: "16px",
+        paddingBottom: "16px",
         position: "relative",
-        animation: "slideIn 0.4s cubic-bezier(0, 0, 0.2, 1) forwards"
       }}
     >
-      {/* Thread Connector Line */}
-      {depth > 0 && (
-        <div style={{
-          position: "absolute",
-          left: isMobile ? "-10px" : "-20px",
-          top: "-12px",
-          height: "36px",
-          width: isMobile ? "10px" : "20px",
-          borderLeft: "2px solid #e2e8f0",
-          borderBottom: "2px solid #e2e8f0",
-          borderBottomLeftRadius: "12px",
-          zIndex: 0,
-          opacity: 0.6
-        }} />
-      )}
-
-      <div
-        style={{
-          padding: isMobile ? "16px" : "20px 24px",
-          backgroundColor: "#fff",
-          borderRadius: isMobile ? "20px" : "24px",
-          border: "1px solid rgba(226, 232, 240, 0.8)",
-          boxShadow: depth === 0 ? "0 4px 12px rgba(0, 0, 0, 0.03)" : "none",
-          position: "relative",
-          zIndex: 1,
-          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-        }}
-        className="comment-card"
-      >
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
-          <div
-            style={{
-              width: isMobile ? "32px" : "40px",
-              height: isMobile ? "32px" : "40px",
-              borderRadius: "12px",
-              overflow: "hidden",
-              border: "2px solid #fff",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.06)",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              flexShrink: 0
-            }}
-            onClick={() => {
-              if (comment.user?.username) navigate(`/${comment.user.username}`);
-              else if (comment.user_id) navigate(`/user/${comment.user_id}`);
-            }}
-          >
-            <img
-              src={avatarUrl}
-              alt={name}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                <span
-                  onClick={() => {
-                    if (comment.user?.username) navigate(`/${comment.user.username}`);
-                    else if (comment.user_id) navigate(`/user/${comment.user_id}`);
-                  }}
-                  style={{ fontSize: "15px", fontWeight: 700, color: "#0f172a", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
-                >
-                  {name}
-                  <VerifiedBadge username={comment.user?.username} size="14px" />
-                </span>
-                <span style={{ fontSize: "12px", color: "#94a3b8", fontWeight: 500 }}>
-                  • {formatRelativeDate(comment.created_at)}
-                </span>
-              </div>
-            </div>
-
-            {comment.parent_author_name && (
-              <div style={{
-                fontSize: "11px",
-                color: "#0f172a",
-                fontWeight: 700,
-                backgroundColor: "rgba(15, 23, 42, 0.05)",
-                display: "inline-block",
-                padding: "1px 8px",
-                borderRadius: "4px",
-                marginTop: "2px",
-                textTransform: "uppercase",
-                letterSpacing: "0.02em"
-              }}>
-                Replying to <span style={{ opacity: 0.8 }}>@{comment.parent_author_name}</span>
-              </div>
-            )}
-          </div>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+        {/* Avatar */}
+        <div
+          style={{
+            width: isMobile ? "32px" : "36px",
+            height: isMobile ? "32px" : "36px",
+            borderRadius: "50%",
+            overflow: "hidden",
+            cursor: "pointer",
+            flexShrink: 0
+          }}
+          onClick={() => {
+            if (comment.user?.username) navigate(`/${comment.user.username}`);
+            else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+          }}
+        >
+          <img
+            src={avatarUrl}
+            alt={name}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
         </div>
 
-        <div style={{
-          marginBottom: "16px",
-          fontSize: "15px",
-          lineHeight: "1.6",
-          color: "#334155",
-          wordBreak: "break-word",
-          paddingLeft: isMobile ? "0px" : "0px",
-        }}>
-          <ContentRenderer content={comment.content} />
-        </div>
-
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          borderTop: depth === 0 ? "1px solid rgba(226, 232, 240, 0.4)" : "none",
-          paddingTop: depth === 0 ? "12px" : "0"
-        }}>
-          <button
-            onClick={toggleLike}
-            disabled={!isSignedIn || likeLoading}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              background: isLiked ? "rgba(239, 68, 68, 0.08)" : "rgba(241, 245, 249, 0.6)",
-              border: "none",
-              padding: "6px 12px",
-              borderRadius: "100px",
-              color: isLiked ? "#ef4444" : "#64748b",
-              fontSize: "13px",
-              fontWeight: 700,
-              cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faHeart}
-              style={{
-                fontSize: "15px",
-                transform: isLiked ? "scale(1.1)" : "scale(1)",
-                opacity: isLiked ? 1 : 0.6
+        {/* Content Area */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+            <span
+              onClick={() => {
+                if (comment.user?.username) navigate(`/${comment.user.username}`);
+                else if (comment.user_id) navigate(`/user/${comment.user_id}`);
               }}
-            />
-            <span>{likeCount ?? 0}</span>
-          </button>
+              style={{ fontSize: "14px", fontWeight: 700, color: "#1a1a1a", cursor: "pointer", display: "flex", alignItems: "center", gap: "2px" }}
+            >
+              {name}
+              <VerifiedBadge username={comment.user?.username} size="12px" />
+            </span>
+            <span style={{ fontSize: "12px", color: "#666" }}>
+              • {formatRelativeDate(comment.created_at)}
+            </span>
+          </div>
 
-          {isSignedIn && (
+          {/* Comment Text */}
+          <div style={{
+            fontSize: "15px",
+            lineHeight: "1.5",
+            color: "#333",
+            wordBreak: "break-word",
+            marginBottom: "8px"
+          }}>
+            <ContentRenderer content={comment.content} />
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <button
-              onClick={() => setShowReply((s) => !s)}
+              onClick={toggleLike}
+              disabled={!isSignedIn || likeLoading}
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
-                background: showReply ? "rgba(33, 33, 33, 0.08)" : "rgba(241, 245, 249, 0.6)",
+                gap: "4px",
+                background: "none",
                 border: "none",
-                padding: "6px 12px",
-                borderRadius: "100px",
-                color: showReply ? "#212121" : "#64748b",
+                padding: 0,
+                color: isLiked ? "#ef4444" : "#666",
                 fontSize: "13px",
-                fontWeight: 700,
-                cursor: "pointer",
-                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+                fontWeight: 500,
+                cursor: "pointer"
               }}
             >
-              <FontAwesomeIcon icon={faReply} style={{ fontSize: "13px" }} />
-              <span>Reply</span>
+              <FontAwesomeIcon
+                icon={isLiked ? faHeartSolid : faHeartRegular}
+                style={{ fontSize: "14px" }}
+              />
+              {likeCount > 0 && <span>{likeCount}</span>}
             </button>
+
+            {isSignedIn && (
+              <button
+                onClick={() => setShowReply((s) => !s)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  color: "#666",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: "pointer"
+                }}
+              >
+                Reply
+              </button>
+            )}
+          </div>
+
+          {/* Reply Composer Inline */}
+          {showReply && isSignedIn && (
+            <div style={{ marginTop: "12px" }}>
+              <MentionInput
+                value={replyContent}
+                onChange={setReplyContent}
+                placeholder={`Reply to ${name}...`}
+                minHeight="40px"
+                transparent={true}
+              />
+              <div style={{ display: "flex", gap: "8px", marginTop: "8px", justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => { setShowReply(false); setReplyContent(""); }}
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: "transparent",
+                    color: "#666",
+                    border: "none",
+                    borderRadius: "4px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    fontSize: "13px"
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleReplySubmit}
+                  disabled={!replyContent.trim() || submitting}
+                  style={{
+                    padding: "6px 16px",
+                    backgroundColor: "#1a1a1a",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    fontWeight: 600,
+                    cursor: submitting ? "not-allowed" : "pointer",
+                    fontSize: "13px"
+                  }}
+                >
+                  {submitting ? "..." : "Reply"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Nested Replies */}
+          {comment.children && comment.children.length > 0 && (
+            <div style={{ marginTop: "8px" }}>
+              {comment.children.map((c) => (
+                <CommentBlock
+                  key={c.id}
+                  comment={c}
+                  depth={depth + 1}
+                  onReply={onReply}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>
-
-      {showReply && isSignedIn && (
-        <div
-          style={{
-            marginTop: "12px",
-            border: "2px solid #212121",
-            padding: "16px",
-            borderRadius: "20px",
-            backgroundColor: "#fff",
-            boxShadow: "0 10px 25px rgba(33, 33, 33, 0.08)",
-            animation: "fadeIn 0.3s ease",
-            zIndex: 10,
-            position: "relative"
-          }}
-        >
-          <MentionInput
-            value={replyContent}
-            onChange={setReplyContent}
-            placeholder={`Reply to ${name}...`}
-            minHeight={isMobile ? "40px" : "50px"}
-          />
-          <div style={{ display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end" }}>
-            <button
-              onClick={() => { setShowReply(false); setReplyContent(""); }}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "transparent",
-                color: "#64748b",
-                border: "1px solid #e2e8f0",
-                borderRadius: "100px",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontSize: "12px",
-                transition: "all 0.2s"
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleReplySubmit}
-              disabled={!replyContent.trim() || submitting}
-              style={{
-                padding: "8px 20px",
-                backgroundColor: "#212121",
-                color: "#fff",
-                border: "none",
-                borderRadius: "100px",
-                fontWeight: 700,
-                cursor: submitting ? "not-allowed" : "pointer",
-                fontSize: "12px",
-                transition: "all 0.3s ease",
-                boxShadow: "0 4px 12px rgba(33, 33, 33, 0.2)"
-              }}
-            >
-              {submitting ? "Posting..." : "Post Reply"}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {comment.children && comment.children.length > 0 && (
-        <div style={{ marginTop: "12px", position: "relative" }}>
-          <div style={{
-            position: "absolute",
-            left: isMobile ? "14px" : "18px",
-            top: "-12px",
-            bottom: "20px",
-            width: "2px",
-            backgroundColor: "#e2e8f0",
-            zIndex: 0,
-            opacity: 0.6
-          }} />
-
-          {comment.children.map((c) => (
-            <CommentBlock
-              key={c.id}
-              comment={c}
-              depth={depth + 1}
-              onReply={onReply}
-            />
-          ))}
-        </div>
-      )}
-
-      <style>{`
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(15px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .comment-card:hover {
-          border-color: rgba(33, 33, 33, 0.2) !important;
-          transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important;
-        }
-      `}</style>
     </div>
   );
 }

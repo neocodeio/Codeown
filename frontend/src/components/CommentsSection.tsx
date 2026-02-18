@@ -4,8 +4,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import CommentBlock, { type CommentWithMeta } from "./CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import { useWindowSize } from "../hooks/useWindowSize";
+import { faComment } from "@fortawesome/free-solid-svg-icons";
 
 interface CommentsSectionProps {
   resourceId: number;
@@ -21,8 +20,6 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
 
   useEffect(() => {
     fetchComments();
@@ -140,143 +137,103 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   }
 
   return (
-    <div style={{ padding: isMobile ? "0 10px" : "0" }}>
-      {/* Premium Header */}
+    <div style={{ padding: "0" }}>
+      {/* Simple Header */}
       <div style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: "24px",
-        paddingBottom: "16px",
-        borderBottom: "1px solid rgba(0,0,0,0.04)"
+        marginBottom: "20px",
+        paddingBottom: "12px",
+        borderBottom: "1px solid #f1f5f9"
       }}>
         <h3 style={{
-          fontSize: "18px",
-          fontWeight: 800,
-          color: "#0f172a",
+          fontSize: "16px",
+          fontWeight: 700,
+          color: "#1a1a1a",
           margin: 0,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px"
         }}>
-          Comments
-          <span style={{
-            fontSize: "14px",
-            fontWeight: 500,
-            color: "#64748b",
-            backgroundColor: "#f1f5f9",
-            padding: "2px 10px",
-            borderRadius: "100px"
-          }}>
-            {comments.length}
-          </span>
+          Comments ({comments.length})
         </h3>
       </div>
 
-      {/* Modern Composer */}
+      {/* integrated Composer */}
       {currentUser && (
         <div style={{
-          marginBottom: "40px",
-          backgroundColor: "#fff",
-          borderRadius: "24px",
-          padding: isFocused ? "20px" : "12px",
-          border: isFocused ? "2px solid #212121" : "1px solid #e2e8f0",
-          boxShadow: isFocused ? "0 10px 25px rgba(33, 33, 33, 0.08)" : "0 2px 8px rgba(0,0,0,0.02)",
-          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          position: "relative"
+          marginBottom: "32px",
+          display: "flex",
+          gap: "12px",
+          alignItems: "flex-start"
         }}>
-          <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-            <div style={{
-              width: isFocused ? "44px" : "40px",
-              height: isFocused ? "44px" : "40px",
-              borderRadius: "14px",
-              overflow: "hidden",
-              flexShrink: 0,
-              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-              transition: "all 0.3s ease",
-            }}>
-              <img
-                src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=212121&color=ffffff&bold=true`}
-                alt={currentUser.fullName || "User"}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => !newComment && setIsFocused(false)}
-                onKeyPress={handleKeyPress}
-                placeholder="Share your thoughts..."
-                disabled={submitting}
-                style={{
-                  width: "100%",
-                  minHeight: isFocused ? "100px" : "40px",
-                  padding: isFocused ? "8px 0" : "10px 0",
-                  border: "none",
-                  outline: "none",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  resize: "none",
-                  fontFamily: "inherit",
-                  color: "#0f172a",
-                  transition: "all 0.3s ease",
-                  backgroundColor: "transparent"
-                }}
-              />
+          <img
+            src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=212121&color=ffffff&bold=true`}
+            alt={currentUser.fullName || "User"}
+            style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }}
+          />
+          <div style={{ flex: 1 }}>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onKeyPress={handleKeyPress}
+              placeholder="Share your thoughts..."
+              disabled={submitting}
+              style={{
+                width: "100%",
+                minHeight: isFocused ? "80px" : "40px",
+                padding: "8px 0",
+                border: "none",
+                outline: "none",
+                fontSize: "15px",
+                fontWeight: 500,
+                resize: "none",
+                fontFamily: "inherit",
+                color: "#1a1a1a",
+                backgroundColor: "transparent",
+                borderBottom: isFocused ? "1px solid #1a1a1a" : "1px solid #f1f5f9",
+                transition: "border-color 0.2s"
+              }}
+            />
 
-              {isFocused && (
-                <div style={{
-                  marginTop: "16px",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "12px",
-                  animation: "fadeIn 0.2s ease"
-                }}>
-                  <button
-                    onClick={() => { setIsFocused(false); setNewComment(""); }}
-                    style={{
-                      padding: "10px 20px",
-                      backgroundColor: "transparent",
-                      color: "#64748b",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: "100px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSubmitComment}
-                    disabled={!newComment.trim() || submitting}
-                    style={{
-                      padding: "10px 24px",
-                      backgroundColor: newComment.trim() && !submitting ? "#212121" : "#e2e8f0",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "100px",
-                      cursor: newComment.trim() && !submitting ? "pointer" : "not-allowed",
-                      fontWeight: 700,
-                      fontSize: "14px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                      transform: isFocused ? "translateY(0)" : "translateY(5px)",
-                      boxShadow: newComment.trim() && !submitting ? "0 4px 12px rgba(33, 33, 33, 0.2)" : "none"
-                    }}
-                  >
-                    {submitting ? "Posting..." : <>
-                      Post <FontAwesomeIcon icon={faPaperPlane} style={{ fontSize: "12px" }} />
-                    </>}
-                  </button>
-                </div>
-              )}
-            </div>
+            {isFocused && (
+              <div style={{
+                marginTop: "12px",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "8px"
+              }}>
+                <button
+                  onClick={() => { setIsFocused(false); setNewComment(""); }}
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: "transparent",
+                    color: "#666",
+                    border: "none",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    fontSize: "13px"
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitComment}
+                  disabled={!newComment.trim() || submitting}
+                  style={{
+                    padding: "6px 20px",
+                    backgroundColor: newComment.trim() && !submitting ? "#1a1a1a" : "#ccc",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: newComment.trim() && !submitting ? "pointer" : "not-allowed",
+                    fontWeight: 600,
+                    fontSize: "13px"
+                  }}
+                >
+                  {submitting ? "..." : "Post"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

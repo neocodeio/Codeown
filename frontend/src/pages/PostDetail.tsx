@@ -14,6 +14,7 @@ import { useSaved } from "../hooks/useSaved";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 interface Post {
   id: number;
@@ -149,6 +150,9 @@ export default function PostDetail() {
     return roots;
   }
 
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
       <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
@@ -190,8 +194,8 @@ export default function PostDetail() {
         maxWidth: "600px",
         margin: "0 auto",
         backgroundColor: "#fff",
-        borderLeft: "1px solid #eff3f4",
-        borderRight: "1px solid #eff3f4",
+        borderLeft: isMobile ? "none" : "1px solid #f1f5f9",
+        borderRight: isMobile ? "none" : "1px solid #f1f5f9",
         minHeight: "100vh"
       }}>
         {/* Header: Back Button */}
@@ -202,10 +206,9 @@ export default function PostDetail() {
           padding: "0 16px",
           position: "sticky",
           top: 0,
-          backgroundColor: "rgba(255, 255, 255, 0.85)",
-          backdropFilter: "blur(12px)",
+          backgroundColor: "#ffffff",
           zIndex: 10,
-          borderBottom: "1px solid transparent"
+          borderBottom: "1px solid #f1f5f9"
         }}>
           <button
             onClick={() => navigate(-1)}
@@ -219,53 +222,55 @@ export default function PostDetail() {
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
-              transition: "background-color 0.2s"
             }}
-            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#eff3f4"}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
           >
-            <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: "16px", color: "#0f172a" }} />
+            <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: "16px", color: "#1a1a1a" }} />
           </button>
-          <span style={{ marginLeft: "32px", fontSize: "20px", fontWeight: 700, color: "#0f172a" }}>Post</span>
+          <span style={{ marginLeft: "20px", fontSize: "18px", fontWeight: 700, color: "#1a1a1a" }}>Post</span>
         </div>
 
         {/* Post Content */}
-        <article style={{ padding: "16px", display: "flex", gap: "12px" }}>
+        <article style={{ padding: isMobile ? "16px" : "24px", display: "flex", gap: "12px" }}>
           {/* Left Column: Avatar */}
-          <div style={{ flexShrink: 0 }}>
-            <img
-              src={avatarUrl}
-              alt={userName}
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                display: "block"
-              }}
-            />
-          </div>
+          {!isMobile && (
+            <div style={{ flexShrink: 0 }}>
+              <img
+                src={avatarUrl}
+                alt={userName}
+                style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover" }}
+              />
+            </div>
+          )}
 
           {/* Right Column: Content */}
           <div style={{ flex: 1, minWidth: 0 }}>
             {/* User Info Line */}
-            <div style={{ marginBottom: "12px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                <span style={{ fontSize: "15px", fontWeight: 700, color: "#0f172a" }}>
-                  {userName.toUpperCase()}
-                </span>
-                <VerifiedBadge username={post.user?.username} size="14px" />
-              </div>
-              <div style={{ fontSize: "15px", color: "#64748b" }}>
-                @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}
+            <div style={{ marginBottom: "16px", display: "flex", gap: "12px", alignItems: "center" }}>
+              {isMobile && (
+                <img
+                  src={avatarUrl}
+                  alt={userName}
+                  style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }}
+                />
+              )}
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <span style={{ fontSize: "14px", fontWeight: 700, color: "#1a1a1a" }}>
+                    {userName.toUpperCase()}
+                  </span>
+                  <VerifiedBadge username={post.user?.username} size="12px" />
+                </div>
+                <div style={{ fontSize: "13px", color: "#666" }}>
+                  @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}
+                </div>
               </div>
             </div>
 
             {/* Content Text */}
             <div dir="auto" style={{
-              fontSize: "15px",
+              fontSize: isMobile ? "15px" : "16px",
               lineHeight: "1.5",
-              color: "#0f172a",
+              color: "#1a1a1a",
               wordBreak: "break-word",
               marginBottom: "16px"
             }}>
@@ -274,28 +279,20 @@ export default function PostDetail() {
 
             {/* Media/Images */}
             {post.images && post.images.length > 0 && (
-              <div style={{
-                marginBottom: "16px",
-                borderRadius: "16px",
-                overflow: "hidden",
-                border: "1px solid #eff3f4"
-              }}>
+              <div style={{ marginBottom: "16px", borderRadius: "8px", overflow: "hidden" }}>
                 <ImageSlider images={post.images} />
               </div>
             )}
-
-            {/* Links/Tags Placeholder - In your image there is a card below text */}
-            {/* If we had link previews, they would go here. For now we just use ContentRenderer links */}
 
             {/* Actions Row */}
             <div style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              maxWidth: "425px",
-              marginTop: "12px",
-              borderTop: "1px solid #eff3f4",
-              paddingTop: "4px"
+              maxWidth: "400px",
+              marginTop: "16px",
+              borderTop: "1px solid #f1f5f9",
+              paddingTop: "12px"
             }}>
               {/* Comment */}
               <button
@@ -303,32 +300,9 @@ export default function PostDetail() {
                   const replyBox = document.querySelector('textarea');
                   if (replyBox) replyBox.focus();
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  background: "none",
-                  border: "none",
-                  color: "#64748b",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  padding: "8px 0",
-                  transition: "color 0.2s"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "#6366f1";
-                  const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-                  if (icon) icon.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "#64748b";
-                  const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-                  if (icon) icon.style.backgroundColor = "transparent";
-                }}
+                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#666", cursor: "pointer", fontSize: "13px" }}
               >
-                <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
-                  <FontAwesomeIcon icon={faComment} style={{ fontSize: "18px" }} />
-                </div>
+                <FontAwesomeIcon icon={faComment} style={{ fontSize: "16px" }} />
                 <span>{comments.length || 0}</span>
               </button>
 
@@ -336,101 +310,43 @@ export default function PostDetail() {
               <button
                 onClick={toggleLike}
                 disabled={likeLoading}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  background: "none",
-                  border: "none",
-                  color: isLiked ? "#f91880" : "#64748b",
-                  cursor: likeLoading ? "not-allowed" : "pointer",
-                  fontSize: "14px",
-                  padding: "8px 0",
-                  transition: "color 0.2s"
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLiked) e.currentTarget.style.color = "#f91880";
-                  const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-                  if (icon) icon.style.backgroundColor = "rgba(249, 24, 128, 0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isLiked) e.currentTarget.style.color = "#64748b";
-                  const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-                  if (icon) icon.style.backgroundColor = "transparent";
-                }}
+                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "#ef4444" : "#666", cursor: "pointer", fontSize: "13px" }}
               >
-                <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
-                  <FontAwesomeIcon icon={faHeartSolid} style={{ fontSize: "18px" }} />
-                </div>
-                <span style={{ fontWeight: isLiked ? "700" : "400" }}>{likeCount || 0}</span>
+                <FontAwesomeIcon icon={isLiked ? faHeartSolid : faHeartSolid} style={{ fontSize: "16px", opacity: isLiked ? 1 : 0.6 }} />
+                <span>{likeCount || 0}</span>
               </button>
 
               {/* Share */}
               <button
                 onClick={handleShare}
-                style={{
-                  display: "flex",
-                  background: "none",
-                  border: "none",
-                  color: shareCopied ? "#00ba7c" : "#64748b",
-                  cursor: "pointer",
-                  padding: "8px",
-                  borderRadius: "50%",
-                  transition: "all 0.2s"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.1)";
-                  e.currentTarget.style.color = "#00ba7c";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  if (!shareCopied) e.currentTarget.style.color = "#64748b";
-                }}
+                style={{ background: "none", border: "none", color: shareCopied ? "#10b981" : "#666", cursor: "pointer", padding: "4px" }}
               >
-                <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "18px" }} />
+                <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "16px" }} />
               </button>
 
               {/* Save */}
               <button
                 onClick={toggleSave}
-                style={{
-                  display: "flex",
-                  background: "none",
-                  border: "none",
-                  color: isSaved ? "#6366f1" : "#64748b",
-                  cursor: "pointer",
-                  padding: "8px",
-                  borderRadius: "50%",
-                  transition: "all 0.2s"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
-                  e.currentTarget.style.color = "#6366f1";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  if (!isSaved) e.currentTarget.style.color = "#64748b";
-                }}
+                style={{ background: "none", border: "none", color: isSaved ? "#1a1a1a" : "#666", cursor: "pointer", padding: "4px" }}
               >
-                <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} style={{ fontSize: "18px" }} />
+                <FontAwesomeIcon icon={isSaved ? faBookmarkSolid : faBookmarkRegular} style={{ fontSize: "16px" }} />
               </button>
             </div>
           </div>
         </article>
 
-        {/* Reply Composer */}
+        {/* Comment Composer */}
         {isSignedIn && (
           <div style={{
-            padding: "16px",
-            borderTop: "1px solid #eff3f4",
-            borderBottom: "1px solid #eff3f4",
+            padding: isMobile ? "12px 16px" : "24px",
+            borderBottom: "1px solid #f1f5f9",
             display: "flex",
             gap: "12px"
           }}>
             <img
               src={user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "User")}&background=212121&color=ffffff&bold=true`}
               alt="My Avatar"
-              style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }}
+              style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
             />
             <div style={{ flex: 1 }}>
               <MentionInput
@@ -445,25 +361,25 @@ export default function PostDetail() {
                   onClick={handleSubmitComment}
                   disabled={!commentContent.trim() || isSubmitting}
                   style={{
-                    padding: "8px 20px",
-                    backgroundColor: commentContent.trim() && !isSubmitting ? "#0f172a" : "#cbd5e1",
+                    padding: "6px 20px",
+                    backgroundColor: commentContent.trim() && !isSubmitting ? "#1a1a1a" : "#ccc",
                     color: "#fff",
                     border: "none",
-                    borderRadius: "100px",
-                    fontWeight: 700,
-                    fontSize: "15px",
+                    borderRadius: "4px",
+                    fontWeight: 600,
+                    fontSize: "13px",
                     cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
                   }}
                 >
-                  {isSubmitting ? "Reply..." : "Reply"}
+                  Reply
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Comments Section */}
-        <section style={{ backgroundColor: "#fff" }}>
+        {/* Comments Section Container */}
+        <section style={{ padding: isMobile ? "0 12px" : "0 16px" }}>
           {comments.length === 0 ? (
             <div style={{
               padding: "40px 20px",
