@@ -17,7 +17,7 @@ interface RecommendedUser {
 
 export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
-    const isDesktop = width >= 1024;
+    const isDesktop = width >= 1280;
     const [users, setUsers] = useState<RecommendedUser[]>([]);
     const [loading, setLoading] = useState(true);
     const { getToken } = useClerkAuth();
@@ -71,7 +71,7 @@ export default function RecommendedUsersSidebar() {
 
     // Desktop: Show as sidebar (1024px+)
     // Mobile/Tablet: Show below streak badge as horizontal scroll
-    const isMobile = width < 1024;
+    const isMobile = width < 1280;
 
     if (!isMobile) {
         // Desktop sidebar view

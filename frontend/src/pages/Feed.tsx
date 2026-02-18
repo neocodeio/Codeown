@@ -4,7 +4,6 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
-import PopularUsersHorizontal from "../components/PopularUsersHorizontal";
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -123,7 +122,7 @@ export default function Feed() {
       <div style={{
         display: "flex",
         justifyContent: "center",
-        gap: width >= 1024 ? "64px" : "0",
+        gap: width >= 1280 ? "64px" : "0",
         maxWidth: width >= 1400 ? "1400px" : "100%",
         margin: "0 auto",
         width: "100%",
@@ -193,8 +192,8 @@ export default function Feed() {
             </div>
           </div>
 
-          {/* Popular Users - Mobile/Tablet Only */}
-          {width < 1024 && <PopularUsersHorizontal />}
+          {/* Popular Users - Mobile/Tablet Only - Hidden by request */}
+          {/* {width < 1024 && <PopularUsersHorizontal />} */}
 
           {/* Content Type Selector */}
           <div style={{
