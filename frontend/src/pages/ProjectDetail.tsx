@@ -10,9 +10,6 @@ import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHeart as faHeartSolid,
-  faBookmark as faBookmarkSolid,
-  faBookmark as faBookmarkRegular,
   faTrash,
   faPen,
   faExternalLinkAlt,
@@ -21,10 +18,16 @@ import {
   faPause,
   faCheck,
   faStar,
-  faShareNodes,
   faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub as faGithubBrand } from "@fortawesome/free-brands-svg-icons";
+import { HugeiconsIcon } from '@hugeicons/react';
+import {
+  Share01Icon,
+  FavouriteIcon,
+  Bookmark01Icon,
+  Bookmark02Icon,
+} from '@hugeicons/core-free-icons';
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 
@@ -660,7 +663,7 @@ export default function ProjectDetail() {
               transition: "all 0.2s ease",
             }}
           >
-            <FontAwesomeIcon icon={faHeartSolid} />
+            <HugeiconsIcon icon={FavouriteIcon} />
             {likeCount || 0} Likes
           </button>
 
@@ -684,8 +687,8 @@ export default function ProjectDetail() {
               transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
-            <FontAwesomeIcon
-              icon={isSaved ? faBookmarkSolid : faBookmarkRegular}
+            <HugeiconsIcon
+              icon={isSaved ? Bookmark01Icon : Bookmark02Icon}
               style={{
                 transform: isSaved ? "scale(1.2)" : "scale(1)",
                 transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
@@ -714,7 +717,7 @@ export default function ProjectDetail() {
               position: "relative",
             }}
           >
-            <FontAwesomeIcon icon={faShareNodes} />
+            <HugeiconsIcon icon={Share01Icon} />
             {shareCopied ? "Copied" : "Share"}
             {shareCopied && (
               <span style={{
