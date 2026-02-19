@@ -109,7 +109,7 @@ export default function RecommendedUsersSidebar() {
                             letterSpacing: "-0.04em",
                             lineHeight: 1.1
                         }}>
-                            Popular users
+                            Who to follow
                         </h3>
                     </div>
 
