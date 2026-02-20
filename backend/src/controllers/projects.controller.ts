@@ -148,7 +148,6 @@ export async function getProject(req: Request, res: Response) {
     console.log(`[getProject] Fetching project details for ID: ${resolvedId}`);
 
     // 1. FETCH MAIN PROJECT DATA
-    // Basic fetch to avoid complex production join issues
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select(`
@@ -175,35 +174,39 @@ export async function getProject(req: Request, res: Response) {
     // 2. FETCH RELATED DATA INDEPENDENTLY (Extremely Defensive)
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
-    // We execute these in parallel with catch handlers
-    const [ratingsRes, contribsRes, likesRes, savesRes] = await Promise.all([
-      supabase.from("project_ratings").select("rating, user_id").eq("project_id", project.id).catch(() => ({ data: [] })),
-      // We fetch IDs ONLY to avoid join relationship errors
-      supabase.from("project_contributors").select("user_id").eq("project_id", project.id).catch(() => ({ data: [] })),
+    // We execute these in parallel. We remove .catch() because query builders are thenables, not full promises.
+    //supabase-js returns objects that only implement .then()
+    const [ratingsRes, contribsRes, likesRes, savesRes]: any[] = await Promise.all([
+      supabase.from("project_ratings").select("rating, user_id").eq("project_id", project.id),
+      supabase.from("project_contributors").select("user_id").eq("project_id", project.id),
       userId ? supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null }),
       userId ? supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null })
     ]);
 
     // Handle Contributors details manually (Resolved PGRST200 join error)
     let contributors: any[] = [];
-    try {
-      if (contribsRes && contribsRes.data && contribsRes.data.length > 0) {
-        const contributorIds = (contribsRes.data as any[]).map(c => c.user_id);
+    if (contribsRes && contribsRes.data && contribsRes.data.length > 0) {
+      try {
+        const contributorIds = contribsRes.data.map((c: any) => c.user_id);
         const { data: userData } = await supabase
           .from("users")
           .select("id, name, avatar_url, username, is_hirable")
           .in("id", contributorIds);
         contributors = userData || [];
+      } catch (cErr) {
+        console.error("[getProject] Contributor details fetch failure:", cErr);
       }
-    } catch (cErr) {
-      console.error("[getProject] Contributor details fetch failure:", cErr);
     }
 
     // 3. ASYNC VIEW INCREMENT
+    // Using simple .then() for compatibility
     supabase.rpc('increment_view_count', { row_id: project.id, table_name: 'projects' })
-      .catch(() => {
-        supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id).then(() => { });
-      });
+      .then(
+        () => { },
+        () => {
+          supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id).then(() => { });
+        }
+      );
 
     // 4. PROCESS RATINGS
     const ratings = (ratingsRes && ratingsRes.data) ? (ratingsRes.data as any[]) : [];
@@ -224,7 +227,6 @@ export async function getProject(req: Request, res: Response) {
       isLiked: !!likesRes?.data,
       isSaved: !!savesRes?.data
     });
-
   } catch (error: any) {
     console.error("[getProject] CRITICAL UNEXPECTED ERROR:", error);
     return res.status(500).json({
