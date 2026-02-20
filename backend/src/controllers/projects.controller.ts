@@ -142,74 +142,59 @@ export async function getProjects(req: Request, res: Response) {
 export async function getProject(req: Request, res: Response) {
   try {
     const { id } = req.params;
-
-    // Log the request for debugging in production
-    console.log(`[getProject] Fetching project with ID: ${id}`);
-
-    // Ensure id is a number if the DB expects it
     const numericId = parseInt(id, 10);
+    const resolvedId = isNaN(numericId) ? id : numericId;
 
+    console.log(`[getProject] Fetching project details for ID: ${resolvedId}`);
+
+    // FETCH MAIN PROJECT DATA
+    // We reduce join complexity to avoid 500 errors in production due to potential schema/relationship mismatches
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select(`
         *,
-        user:user_id(id, name, avatar_url, username, is_hirable),
-        ratings:project_ratings(rating, user_id),
-        contributors_list:project_contributors(user:user_id(id, name, avatar_url, username, is_hirable))
+        user:user_id(id, name, avatar_url, username, is_hirable)
       `)
-      .eq("id", isNaN(numericId) ? id : numericId)
+      .eq("id", resolvedId)
       .maybeSingle();
 
     if (projectError) {
-      console.error("[getProject] Supabase error:", projectError);
+      console.error("[getProject] Supabase main query error:", projectError);
       return res.status(500).json({
-        error: "Database error",
+        error: "Database error fetching project",
         details: projectError.message,
         code: projectError.code
       });
     }
 
     if (!project) {
-      console.log(`[getProject] Project with ID ${id} not found`);
+      console.log(`[getProject] Project ${resolvedId} not found`);
       return res.status(404).json({ error: "Project not found" });
     }
 
-    // Parallelize non-blocking view increment and personalized status fetching
+    // FETCH RELATED DATA IN PARALLEL
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
-    const [viewResult, stats] = await Promise.all([
-      (async () => {
-        try {
-          const { error } = await supabase.rpc('increment_view_count', { row_id: project.id, table_name: 'projects' });
-          if (error) throw error;
-        } catch (e) {
-          try {
-            await supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id);
-          } catch (updateErr) {
-            console.error("Failed to manual update view count:", updateErr);
-          }
-        }
-      })(),
-
-      userId ? Promise.all([
-        supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle(),
-        supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle()
-      ]) : Promise.resolve([null, null])
+    const [ratingsRes, contributorsRes, likesRes, savesRes] = await Promise.all([
+      supabase.from("project_ratings").select("rating, user_id").eq("project_id", project.id),
+      supabase.from("project_contributors")
+        .select("user:user_id(id, name, avatar_url, username, is_hirable)")
+        .eq("project_id", project.id),
+      userId ? supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null }),
+      userId ? supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null })
     ]);
 
-    const items = stats as any;
-    const isLiked = !!(items[0]?.data);
-    const isSaved = !!(items[1]?.data);
+    // INCREMENT VIEW COUNT (Non-blocking)
+    supabase.rpc('increment_view_count', { row_id: project.id, table_name: 'projects' })
+      .catch(() => supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id));
 
-    // Calculate ratings
-    const ratings = project.ratings || [];
+    // PROCESS DATA
+    const ratings = ratingsRes.data || [];
     const ratingCount = ratings.length;
-    const ratingSum = ratings.reduce((sum: number, r: any) => sum + (r.rating || 0), 0);
-    const averageRating = ratingCount > 0 ? ratingSum / ratingCount : 0;
+    const averageRating = ratingCount > 0 ? ratings.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / ratingCount : 0;
     const userRating = userId ? ratings.find((r: any) => r.user_id === userId)?.rating : undefined;
 
-    // Format contributors
-    const contributors = (project.contributors_list || [])
+    const contributors = (contributorsRes.data || [])
       .map((c: any) => c.user)
       .filter(Boolean);
 
@@ -220,13 +205,16 @@ export async function getProject(req: Request, res: Response) {
       rating_count: ratingCount,
       user_rating: userRating,
       contributors: contributors,
-      isLiked,
-      isSaved
+      isLiked: !!likesRes?.data,
+      isSaved: !!savesRes?.data
     });
 
   } catch (error: any) {
     console.error("[getProject] Unexpected error:", error);
-    return res.status(500).json({ error: "Internal server error", message: error.message });
+    return res.status(500).json({
+      error: "Internal server error",
+      message: error.message
+    });
   }
 }
 
