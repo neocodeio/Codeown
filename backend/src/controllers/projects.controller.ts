@@ -147,8 +147,8 @@ export async function getProject(req: Request, res: Response) {
 
     console.log(`[getProject] Fetching project details for ID: ${resolvedId}`);
 
-    // FETCH MAIN PROJECT DATA
-    // We reduce join complexity to avoid 500 errors in production due to potential schema/relationship mismatches
+    // 1. FETCH MAIN PROJECT DATA
+    // Basic fetch to avoid complex production join issues
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select(`
@@ -172,32 +172,48 @@ export async function getProject(req: Request, res: Response) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    // FETCH RELATED DATA IN PARALLEL
+    // 2. FETCH RELATED DATA INDEPENDENTLY (Extremely Defensive)
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
-    const [ratingsRes, contributorsRes, likesRes, savesRes] = await Promise.all([
-      supabase.from("project_ratings").select("rating, user_id").eq("project_id", project.id),
-      supabase.from("project_contributors")
-        .select("user:user_id(id, name, avatar_url, username, is_hirable)")
-        .eq("project_id", project.id),
+    // We execute these in parallel with catch handlers
+    const [ratingsRes, contribsRes, likesRes, savesRes] = await Promise.all([
+      supabase.from("project_ratings").select("rating, user_id").eq("project_id", project.id).catch(() => ({ data: [] })),
+      // We fetch IDs ONLY to avoid join relationship errors
+      supabase.from("project_contributors").select("user_id").eq("project_id", project.id).catch(() => ({ data: [] })),
       userId ? supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null }),
       userId ? supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null })
     ]);
 
-    // INCREMENT VIEW COUNT (Non-blocking)
+    // Handle Contributors details manually (Resolved PGRST200 join error)
+    let contributors: any[] = [];
+    try {
+      if (contribsRes && contribsRes.data && contribsRes.data.length > 0) {
+        const contributorIds = (contribsRes.data as any[]).map(c => c.user_id);
+        const { data: userData } = await supabase
+          .from("users")
+          .select("id, name, avatar_url, username, is_hirable")
+          .in("id", contributorIds);
+        contributors = userData || [];
+      }
+    } catch (cErr) {
+      console.error("[getProject] Contributor details fetch failure:", cErr);
+    }
+
+    // 3. ASYNC VIEW INCREMENT
     supabase.rpc('increment_view_count', { row_id: project.id, table_name: 'projects' })
-      .catch(() => supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id));
+      .catch(() => {
+        supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id).then(() => { });
+      });
 
-    // PROCESS DATA
-    const ratings = ratingsRes.data || [];
+    // 4. PROCESS RATINGS
+    const ratings = (ratingsRes && ratingsRes.data) ? (ratingsRes.data as any[]) : [];
     const ratingCount = ratings.length;
-    const averageRating = ratingCount > 0 ? ratings.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / ratingCount : 0;
-    const userRating = userId ? ratings.find((r: any) => r.user_id === userId)?.rating : undefined;
+    const averageRating = ratingCount > 0
+      ? ratings.reduce((sum, r) => sum + (r.rating || 0), 0) / ratingCount
+      : 0;
+    const userRating = userId ? ratings.find(r => r.user_id === userId)?.rating : undefined;
 
-    const contributors = (contributorsRes.data || [])
-      .map((c: any) => c.user)
-      .filter(Boolean);
-
+    // 5. RETURN COMBINED DATA
     return res.json({
       ...project,
       user: project.user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null, is_hirable: false },
@@ -210,7 +226,7 @@ export async function getProject(req: Request, res: Response) {
     });
 
   } catch (error: any) {
-    console.error("[getProject] Unexpected error:", error);
+    console.error("[getProject] CRITICAL UNEXPECTED ERROR:", error);
     return res.status(500).json({
       error: "Internal server error",
       message: error.message
@@ -784,7 +800,7 @@ export async function rateProject(req: Request, res: Response) {
     let total = 0;
     if (ratings) {
       total = ratings.length;
-      const sum = ratings.reduce((acc: number, r: any) => acc + r.rating, 0);
+      const sum = (ratings as any[]).reduce((acc: number, r: any) => acc + r.rating, 0);
       average = total > 0 ? sum / total : 0;
     }
 
