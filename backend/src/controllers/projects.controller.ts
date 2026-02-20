@@ -143,6 +143,12 @@ export async function getProject(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
+    // Log the request for debugging in production
+    console.log(`[getProject] Fetching project with ID: ${id}`);
+
+    // Ensure id is a number if the DB expects it
+    const numericId = parseInt(id, 10);
+
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select(`
@@ -151,10 +157,20 @@ export async function getProject(req: Request, res: Response) {
         ratings:project_ratings(rating, user_id),
         contributors_list:project_contributors(user:user_id(id, name, avatar_url, username, is_hirable))
       `)
-      .eq("id", id)
-      .single();
+      .eq("id", isNaN(numericId) ? id : numericId)
+      .maybeSingle();
 
-    if (projectError || !project) {
+    if (projectError) {
+      console.error("[getProject] Supabase error:", projectError);
+      return res.status(500).json({
+        error: "Database error",
+        details: projectError.message,
+        code: projectError.code
+      });
+    }
+
+    if (!project) {
+      console.log(`[getProject] Project with ID ${id} not found`);
       return res.status(404).json({ error: "Project not found" });
     }
 
@@ -164,16 +180,20 @@ export async function getProject(req: Request, res: Response) {
     const [viewResult, stats] = await Promise.all([
       (async () => {
         try {
-          const { error } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'projects' });
+          const { error } = await supabase.rpc('increment_view_count', { row_id: project.id, table_name: 'projects' });
           if (error) throw error;
         } catch (e) {
-          await supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", id);
+          try {
+            await supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id);
+          } catch (updateErr) {
+            console.error("Failed to manual update view count:", updateErr);
+          }
         }
       })(),
 
       userId ? Promise.all([
-        supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", id).maybeSingle(),
-        supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", id).maybeSingle()
+        supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle(),
+        supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle()
       ]) : Promise.resolve([null, null])
     ]);
 
@@ -204,9 +224,9 @@ export async function getProject(req: Request, res: Response) {
       isSaved
     });
 
-  } catch (error) {
-    console.error("Error in getProject:", error);
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (error: any) {
+    console.error("[getProject] Unexpected error:", error);
+    return res.status(500).json({ error: "Internal server error", message: error.message });
   }
 }
 

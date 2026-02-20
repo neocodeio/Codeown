@@ -29,6 +29,9 @@ router.delete("/:id", requireAuth, deleteProject);
 router.post("/:id/like", requireAuth, toggleProjectLike);
 router.get("/:id/like", requireAuth, getProjectLikeStatus);
 
+// View routes
+router.post("/:id/view", (req, res) => res.json({ success: true }));
+
 // Save routes
 router.post("/:id/save", requireAuth, toggleProjectSave);
 router.get("/:id/save", requireAuth, getProjectSaveStatus);
