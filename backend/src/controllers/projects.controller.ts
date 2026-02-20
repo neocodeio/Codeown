@@ -515,39 +515,62 @@ export async function deleteProject(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
+    const numericId = parseInt(id, 10);
+    const resolvedId = isNaN(numericId) ? id : numericId;
 
     if (!userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
+    console.log(`[deleteProject] Attempting to delete project ${resolvedId} for user ${userId}`);
+
     // Check if project exists and user owns it
     const { data: existingProject, error: fetchError } = await supabase
       .from("projects")
       .select("*")
-      .eq("id", id)
+      .eq("id", resolvedId)
       .eq("user_id", userId)
       .single();
 
     if (fetchError || !existingProject) {
+      console.log(`[deleteProject] Project not found or access denied for ID: ${resolvedId}`);
       return res.status(404).json({ error: "Project not found or access denied" });
     }
 
-    // Delete project (cascade will delete related records)
+    // MANUALLY DELETE DEPENDENCIES
+    // Sometimes cascading deletes are not set up correctly in production environments
+    console.log(`[deleteProject] Cleaning up dependencies for project ${resolvedId}`);
+    await Promise.all([
+      supabase.from("project_likes").delete().eq("project_id", resolvedId),
+      supabase.from("project_saves").delete().eq("project_id", resolvedId),
+      supabase.from("project_ratings").delete().eq("project_id", resolvedId),
+      supabase.from("project_contributors").delete().eq("project_id", resolvedId),
+      supabase.from("project_comments").delete().eq("project_id", resolvedId),
+      supabase.from("notifications").delete().eq("project_id", resolvedId)
+    ]);
+
+    // Delete project
+    console.log(`[deleteProject] Final project deletion for ID: ${resolvedId}`);
     const { error: deleteError } = await supabase
       .from("projects")
       .delete()
-      .eq("id", id)
+      .eq("id", resolvedId)
       .eq("user_id", userId);
 
     if (deleteError) {
       console.error("Supabase error in deleteProject:", deleteError);
-      return res.status(500).json({ error: "Failed to delete project", details: deleteError.message });
+      return res.status(500).json({
+        error: "Failed to delete project",
+        details: deleteError.message,
+        code: deleteError.code
+      });
     }
 
+    console.log(`[deleteProject] Successfully deleted project ${resolvedId}`);
     return res.json({ message: "Project deleted successfully" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in deleteProject:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error", message: error.message });
   }
 }
 
