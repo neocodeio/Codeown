@@ -153,6 +153,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         });
       }
 
+      window.dispatchEvent(new CustomEvent("projectCreated"));
       onUpdated();
       onClose();
     } catch (error: any) {

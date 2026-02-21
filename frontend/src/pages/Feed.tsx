@@ -93,10 +93,18 @@ export default function Feed() {
     fetchPosts(undefined, false);
   }, [fetchPosts]);
 
+  const handleProjectCreated = useCallback(() => {
+    fetchProjects(undefined, false);
+  }, [fetchProjects]);
+
   useEffect(() => {
     window.addEventListener("postCreated", handlePostCreated);
-    return () => window.removeEventListener("postCreated", handlePostCreated);
-  }, [handlePostCreated]);
+    window.addEventListener("projectCreated", handleProjectCreated);
+    return () => {
+      window.removeEventListener("postCreated", handlePostCreated);
+      window.removeEventListener("projectCreated", handleProjectCreated);
+    };
+  }, [handlePostCreated, handleProjectCreated]);
 
   const isInitialLoading = (feedType === "posts" && postsLoading && posts.length === 0) ||
     (feedType === "projects" && projectsLoading && projects.length === 0);

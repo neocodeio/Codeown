@@ -912,3 +912,62 @@ export async function getRecommendedUsers(req: Request, res: Response) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+
+// --- ACTIVE SESSION TRACKER (REAL-TIME) ---
+const activeSessions = new Map<string, number>();
+
+/**
+ * Registers a heartbeat from a client.
+ * Tracks both authenticated users and anonymous guests.
+ */
+export function trackActiveSession(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user?.sub || (req as any).user?.id;
+    const ip = req.ip || req.headers["x-forwarded-for"] || "unknown";
+
+    // Create a unique key: use userId if logged in, otherwise use IP
+    const sessionKey = userId ? `u:${userId}` : `g:${ip}`;
+
+    // Update or set last seen timestamp
+    activeSessions.set(sessionKey, Date.now());
+
+    // Periodically prune stale sessions (older than 60s)
+    if (Math.random() < 0.1) { // 10% chance to prune on ping
+      const now = Date.now();
+      for (const [key, timestamp] of activeSessions.entries()) {
+        if (now - timestamp > 60000) {
+          activeSessions.delete(key);
+        }
+      }
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("[trackActiveSession] Error:", error);
+    return res.status(500).json({ error: "Failed to track session" });
+  }
+}
+
+/**
+ * Returns the current active session count.
+ */
+export function getActiveCount(req: Request, res: Response) {
+  try {
+    const now = Date.now();
+    let count = 0;
+
+    for (const [key, timestamp] of activeSessions.entries()) {
+      if (now - timestamp <= 60000) {
+        count++;
+      } else {
+        activeSessions.delete(key);
+      }
+    }
+
+    // Return realistic count (ensure at least 1 if the current user is checking)
+    return res.json({ count: Math.max(count, 1) });
+  } catch (error) {
+    console.error("[getActiveCount] Error:", error);
+    return res.status(200).json({ count: 1 }); // Fallback
+  }
+}

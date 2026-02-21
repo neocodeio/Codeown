@@ -41,6 +41,7 @@ export default function Navbar() {
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [streakCount, setStreakCount] = useState<number>(0);
+  const [activeUsers, setActiveUsers] = useState<number>(0);
   const { getToken } = useClerkAuth();
 
   // Use the centralized avatar hook
@@ -83,6 +84,40 @@ export default function Navbar() {
 
     handleStreakUpdate();
   }, [isSignedIn, getToken]);
+
+  // Real-time Active Session Tracking
+  useEffect(() => {
+    const ping = async () => {
+      try {
+        const token = await getToken();
+        await api.post("/users/active/ping", {}, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+      } catch (e) { /* silent fail */ }
+    };
+
+    const fetchCount = async () => {
+      try {
+        const res = await api.get("/users/active/count");
+        if (res.data && typeof res.data.count === 'number') {
+          setActiveUsers(res.data.count);
+        }
+      } catch (e) { /* silent fail */ }
+    };
+
+    // Initial calls
+    ping();
+    fetchCount();
+
+    // Set intervals
+    const pingInterval = setInterval(ping, 30000);   // Heartbeat every 30s
+    const fetchInterval = setInterval(fetchCount, 40000); // Refresh count every 40s
+
+    return () => {
+      clearInterval(pingInterval);
+      clearInterval(fetchInterval);
+    };
+  }, [getToken]);
 
   // Styles
   const linkStyle = (path: string) => ({
@@ -200,6 +235,39 @@ export default function Navbar() {
               <HugeiconsIcon icon={UserIcon} style={{ width: "20px" }} />
               Profile
             </Link>
+
+            {/* Real-time Status Badge */}
+            <div style={{
+              marginTop: "12px",
+              padding: "10px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              color: "#3b82f6",
+              fontSize: "13px",
+              fontWeight: 700,
+              letterSpacing: "0.02em",
+              backgroundColor: "rgba(59, 130, 246, 0.05)",
+              borderRadius: "12px",
+              margin: "8px 16px"
+            }}>
+              <div style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                backgroundColor: "#3b82f6",
+                boxShadow: "0 0 8px rgba(59, 130, 246, 0.5)",
+                animation: "pulseActive 2s infinite"
+              }} />
+              {activeUsers} DEVELOPERS ONLINE
+              <style>{`
+                @keyframes pulseActive {
+                  0% { opacity: 1; transform: scale(1); }
+                  50% { opacity: 0.5; transform: scale(1.2); }
+                  100% { opacity: 1; transform: scale(1); }
+                }
+              `}</style>
+            </div>
           </>
         )}
       </div>
@@ -365,7 +433,7 @@ export default function Navbar() {
 
         {/* Modals */}
         <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
-        <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => window.dispatchEvent(new CustomEvent("projectCreated"))} />
+        <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
       </>
     );
   }
@@ -532,7 +600,7 @@ export default function Navbar() {
       </div>
 
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
-      <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => window.dispatchEvent(new CustomEvent("projectCreated"))} />
+      <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
 
 
     </>
