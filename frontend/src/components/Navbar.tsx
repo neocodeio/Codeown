@@ -40,8 +40,8 @@ export default function Navbar() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
-  const [streakCount, setStreakCount] = useState<number>(0);
-  const [activeUsers, setActiveUsers] = useState<number>(0);
+  const [streakCount, setStreakCount] = useState(0);
+  const [activeCount, setActiveCount] = useState(0);
   const { getToken } = useClerkAuth();
 
   // Use the centralized avatar hook
@@ -98,9 +98,9 @@ export default function Navbar() {
 
     const fetchCount = async () => {
       try {
-        const res = await api.get("/users/active/count");
-        if (res.data && typeof res.data.count === 'number') {
-          setActiveUsers(res.data.count);
+        const { data } = await api.get("/users/active/count");
+        if (data && typeof data.count === "number") {
+          setActiveCount(data.count);
         }
       } catch (e) { /* silent fail */ }
     };
@@ -240,7 +240,6 @@ export default function Navbar() {
             <div style={{
               marginTop: "12px",
               padding: "10px 16px",
-              display: "flex",
               alignItems: "center",
               gap: "10px",
               color: "#3b82f6",
@@ -249,17 +248,13 @@ export default function Navbar() {
               letterSpacing: "0.02em",
               backgroundColor: "rgba(59, 130, 246, 0.05)",
               borderRadius: "12px",
-              margin: "8px 16px"
+              margin: "8px 16px",
+              display: "none" // Hidden by request
             }}>
-              <div style={{
-                width: "8px",
-                height: "8px",
-                borderRadius: "50%",
-                backgroundColor: "#3b82f6",
-                boxShadow: "0 0 8px rgba(59, 130, 246, 0.5)",
-                animation: "pulseActive 2s infinite"
-              }} />
-              {activeUsers} DEVELOPERS ONLINE
+              <div style={{ color: "#3b82f6", fontWeight: 800 }}>
+                {activeCount} {activeCount === 1 ? "DEVELOPER" : "DEVELOPERS"} ONLINE
+              </div>
+
               <style>{`
                 @keyframes pulseActive {
                   0% { opacity: 1; transform: scale(1); }

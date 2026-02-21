@@ -141,8 +141,8 @@ export async function getProjects(req: Request, res: Response) {
 
 export async function getProject(req: Request, res: Response) {
   try {
-    const { id } = req.params;
-    const numericId = parseInt(id, 10);
+    const id = req.params.id as string;
+    const numericId = parseInt(id as string, 10);
     const resolvedId = isNaN(numericId) ? id : numericId;
 
     console.log(`[getProject] Fetching project details for ID: ${resolvedId}`);

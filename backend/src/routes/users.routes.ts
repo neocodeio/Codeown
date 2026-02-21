@@ -31,4 +31,3 @@ router.get("/active/count", getActiveCount);
 router.post("/:userId/view", requireAuth, recordProfileView);
 
 export default router;
-
