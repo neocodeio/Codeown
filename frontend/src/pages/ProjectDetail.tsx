@@ -420,7 +420,7 @@ export default function ProjectDetail() {
                     {project.view_count !== undefined && (
                       <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                         <FontAwesomeIcon icon={faEye} style={{ fontSize: "10px" }} />
-                        <span>{project.view_count} VIEWS</span>
+                        {/* <span>{project.view_count} VIEWS</span> */}
                       </span>
                     )}
                   </div>
