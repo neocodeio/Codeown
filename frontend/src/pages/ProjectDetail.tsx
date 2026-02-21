@@ -18,7 +18,7 @@ import {
   faPause,
   faCheck,
   faStar,
-  faEye
+  // faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub as faGithubBrand } from "@fortawesome/free-brands-svg-icons";
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -419,7 +419,7 @@ export default function ProjectDetail() {
                     <span>{formatRelativeDate(project.created_at).toUpperCase()}</span>
                     {project.view_count !== undefined && (
                       <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                        <FontAwesomeIcon icon={faEye} style={{ fontSize: "10px" }} />
+                        {/* <FontAwesomeIcon icon={faEye} style={{ fontSize: "10px" }} /> */}
                         {/* <span>{project.view_count} VIEWS</span> */}
                       </span>
                     )}
