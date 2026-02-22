@@ -18,137 +18,148 @@ export async function sendWelcomeEmail(email: string, name: string) {
         <!DOCTYPE html>
         <html>
         <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
-            .container {
-              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 40px 20px;
-              color: #000;
+            body {
               background-color: #ffffff;
+              margin: 0;
+              padding: 0;
+              -webkit-font-smoothing: antialiased;
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             }
-            .card {
-              background: linear-gradient(145deg, #ffffff, #f5f7ff);
-              border-radius: 20px;
-              padding: 40px;
-              box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
-              border: 1px solid rgba(99, 102, 241, 0.1);
+            .wrapper {
+              width: 100%;
+              background-color: #ffffff;
+              padding: 64px 24px;
             }
-            .header {
-              text-align: center;
-              margin-bottom: 30px;
+            .container {
+              max-width: 520px;
+              margin: 0 auto;
             }
             .logo {
-              font-size: 28px;
+              text-align: left;
+              margin-bottom: 64px;
+            }
+            .logo-text {
+              font-size: 22px;
               font-weight: 800;
-              color: #6366f1;
-              text-decoration: none;
+              color: #000000;
               letter-spacing: -0.5px;
+              text-decoration: none;
+            }
+            .content {
+              margin-bottom: 64px;
             }
             h1 {
-              color: #000;
-              font-size: 24px;
-              font-weight: 700;
-              margin-top: 20px;
-              text-align: center;
+              font-size: 36px;
+              font-weight: 800;
+              color: #000000;
+              margin: 0 0 24px 0;
+              letter-spacing: -1.2px;
+              line-height: 1.1;
             }
             p {
               font-size: 16px;
               line-height: 1.6;
-              color: #000;
+              color: #4b5563;
+              margin: 0 0 32px 0;
+              font-weight: 400;
+            }
+            .features {
+              margin-bottom: 40px;
+            }
+            .feature-row {
               margin-bottom: 20px;
             }
-            .feature-list {
-              list-style: none;
-              padding: 0;
-              margin: 25px 0;
-            }
-            .feature-item {
-              display: flex;
-              align-items: center;
-              margin-bottom: 12px;
-              color: #000;
-            }
             .feature-icon {
-              margin-right: 12px;
-              color: #6366f1;
+              font-size: 20px;
+              margin-bottom: 4px;
             }
-            .button-container {
-              text-align: center;
-              margin-top: 35px;
+            .feature-text {
+              font-size: 15px;
+              color: #1f2937;
+              line-height: 1.5;
             }
-            .button {
-              background-color: #6366f1;
+            .btn-container {
+              margin-top: 48px;
+            }
+            .btn {
+              background-color: #212121;
               color: #ffffff !important;
-              padding: 14px 32px;
+              padding: 18px 36px;
               text-decoration: none;
-              border-radius: 12px;
-              font-weight: 600;
+              border-radius: 14px;
+              font-weight: 700;
               font-size: 16px;
               display: inline-block;
-              transition: transform 0.2s ease;
-              box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+              text-align: center;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             }
             .footer {
+              border-top: 1px solid #f3f4f6;
+              padding-top: 48px;
+              margin-top: 64px;
               text-align: center;
-              margin-top: 40px;
-              padding-top: 20px;
-              border-top: 1px solid #ccc;
             }
             .footer-text {
-              font-size: 14px;
-              color: #000;
+              font-size: 13px;
+              color: #9ca3af;
+              margin-bottom: 12px;
             }
-            .social-links {
-              margin-top: 15px;
-            }
-            .social-link {
-              color: #6366f1;
+            .footer-links a {
+              color: #6b7280;
               text-decoration: none;
               margin: 0 10px;
-              font-weight: 500;
+              font-weight: 600;
+              font-size: 13px;
+            }
+            @media (max-width: 600px) {
+              h1 { font-size: 32px; }
+              .wrapper { padding: 48px 20px; }
+              .btn { width: 100%; box-sizing: border-box; }
             }
           </style>
         </head>
-        <body style="background-color: #f9fafb; margin: 0; padding: 0; color: #000">
-          <div class="container">
-            <div class="card">
-              <div class="header">
-                <div class="logo">Codeown</div>
-                <h1>Welcome aboard, ${name}! 🚀</h1>
+        <body>
+          <div class="wrapper">
+            <div class="container">
+              <div class="logo">
+                <span class="logo-text">Codeown</span>
               </div>
               
-              <p>We're absolutely thrilled to have you join Codeown. You've just joined a vibrant community of creators, developers, and innovators building the future of code.</p>
-              
-              <p>Codeown is designed to help you showcase your work, collaborate with others, and find inspiration for your next big project.</p>
-              
-              <div class="feature-list">
-                <div class="feature-item">
-                  <span class="feature-icon">✨</span>
-                  <span><strong>Build your portfolio:</strong> Showcase your best work with beautiful project pages.</span>
+              <div class="content">
+                <h1>Welcome, ${name}.</h1>
+                <p>You've officially joined the platform built for those who love to create. We're glad to have you building with us.</p>
+                
+                <div class="features">
+                  <div class="feature-row">
+                    <div class="feature-icon">🚀</div>
+                    <div class="feature-text"><strong>Launch project showcases</strong> that highlight your technical depth.</div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature-icon">🌎</div>
+                    <div class="feature-text"><strong>Find your collaborators</strong> among a global community of developers.</div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature-icon">✨</div>
+                    <div class="feature-text"><strong>Build your developer OS</strong> and claim your unique username.</div>
+                  </div>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">🤝</span>
-                  <span><strong>Collaborate:</strong> Get feedback and insights from fellow developers.</span>
-                </div>
-                <div class="feature-item">
-                  <span class="feature-icon">🔍</span>
-                  <span><strong>Discover:</strong> Explore a huge library of open-source projects.</span>
-                </div>
-              </div>
 
-              <div class="button-container">
-                <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="button">Check Your Profile</a>
+                <div class="btn-container">
+                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="btn">Get Started &rarr;</a>
+                </div>
               </div>
               
               <div class="footer">
-                <p class="footer-text">Questions? We're here to help. Just reply to this email.</p>
-                <div class="social-links">
-                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/about" class="social-link">About Us</a>
-                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/privacy" class="social-link">Privacy Policy</a>
+                <p class="footer-text">Codeown &bull; The Developer Operating System</p>
+                <div class="footer-links">
+                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/about">About</a>
+                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/privacy">Privacy</a>
                 </div>
-                <p class="footer-text" style="margin-top: 20px; font-size: 12px;">
-                  &copy; ${new Date().getFullYear()} Codeown. All rights reserved.
+                <p class="footer-text" style="margin-top: 32px; opacity: 0.6;">
+                  &copy; ${new Date().getFullYear()} Codeown
                 </p>
               </div>
             </div>
