@@ -21,144 +21,196 @@ export async function sendWelcomeEmail(email: string, name: string) {
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+            
             body {
-              background-color: #ffffff;
+              background-color: #f8fafc;
               margin: 0;
               padding: 0;
               -webkit-font-smoothing: antialiased;
-              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              font-family: 'Inter', system-ui, -apple-system, sans-serif;
             }
             .wrapper {
               width: 100%;
-              background-color: #ffffff;
-              padding: 64px 24px;
+              background-color: #f8fafc;
+              padding: 48px 16px;
             }
-            .container {
-              max-width: 520px;
+            .card {
+              max-width: 560px;
               margin: 0 auto;
+              background-color: #ffffff;
+              border-radius: 24px;
+              overflow: hidden;
+              box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+              border: 1px solid #e2e8f0;
             }
-            .logo {
-              text-align: left;
-              margin-bottom: 64px;
+            .header-banner {
+              background-color: #10633b;
+              height: 8px;
+              width: 100%;
             }
-            .logo-text {
-              font-size: 22px;
-              font-weight: 800;
-              color: #000000;
-              letter-spacing: -0.5px;
-              text-decoration: none;
+            .inner-padding {
+              padding: 48px;
             }
-            .content {
-              margin-bottom: 64px;
+            .logo-section {
+              margin-bottom: 40px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            .logo-label {
+              font-family: 'JetBrains Mono', monospace;
+              font-size: 12px;
+              font-weight: 500;
+              color: #10633b;
+              background: #e7f5ed;
+              padding: 4px 8px;
+              border-radius: 6px;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
             }
             h1 {
-              font-size: 36px;
+              font-size: 32px;
               font-weight: 800;
-              color: #000000;
-              margin: 0 0 24px 0;
-              letter-spacing: -1.2px;
+              color: #0f172a;
+              margin: 0 0 16px 0;
+              letter-spacing: -0.04em;
               line-height: 1.1;
             }
-            p {
+            .intro-text {
               font-size: 16px;
               line-height: 1.6;
-              color: #4b5563;
-              margin: 0 0 32px 0;
-              font-weight: 400;
-            }
-            .features {
+              color: #475569;
               margin-bottom: 40px;
             }
-            .feature-row {
-              margin-bottom: 20px;
+            .steps-container {
+              position: relative;
+              margin-bottom: 48px;
             }
-            .feature-icon {
-              font-size: 20px;
+            .step {
+              position: relative;
+              padding-left: 32px;
+              margin-bottom: 24px;
+            }
+            .step-line {
+              position: absolute;
+              left: 11px;
+              top: 24px;
+              bottom: -12px;
+              width: 2px;
+              background-color: #f1f5f9;
+            }
+            .step:last-child .step-line {
+              display: none;
+            }
+            .step-dot {
+              position: absolute;
+              left: 0;
+              top: 4px;
+              width: 24px;
+              height: 24px;
+              background: #ffffff;
+              border: 2px solid #10633b;
+              border-radius: 50%;
+              box-sizing: border-box;
+            }
+            .step-title {
+              font-size: 15px;
+              font-weight: 700;
+              color: #0f172a;
               margin-bottom: 4px;
             }
-            .feature-text {
-              font-size: 15px;
-              color: #1f2937;
+            .step-desc {
+              font-size: 14px;
+              color: #64748b;
               line-height: 1.5;
             }
-            .btn-container {
+            .cta-container {
               margin-top: 48px;
             }
             .btn {
-              background-color: #212121;
+              background-color: #10633b;
               color: #ffffff !important;
-              padding: 18px 36px;
+              padding: 16px 32px;
               text-decoration: none;
-              border-radius: 14px;
+              border-radius: 12px;
               font-weight: 700;
-              font-size: 16px;
+              font-size: 15px;
               display: inline-block;
-              text-align: center;
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+              transition: all 0.2s ease;
             }
             .footer {
-              border-top: 1px solid #f3f4f6;
-              padding-top: 48px;
-              margin-top: 64px;
+              padding: 32px 48px 48px;
+              background-color: #f8fafc;
               text-align: center;
+              border-top: 1px solid #e2e8f0;
             }
             .footer-text {
-              font-size: 13px;
-              color: #9ca3af;
-              margin-bottom: 12px;
+              font-size: 12px;
+              color: #94a3b8;
+              margin-bottom: 16px;
+              font-weight: 500;
             }
             .footer-links a {
-              color: #6b7280;
+              color: #64748b;
               text-decoration: none;
-              margin: 0 10px;
+              margin: 0 12px;
               font-weight: 600;
-              font-size: 13px;
+              font-size: 12px;
             }
             @media (max-width: 600px) {
-              h1 { font-size: 32px; }
-              .wrapper { padding: 48px 20px; }
-              .btn { width: 100%; box-sizing: border-box; }
+              .inner-padding { padding: 32px 24px; }
+              .footer { padding: 32px 24px 40px; }
+              h1 { font-size: 28px; }
+              .btn { width: 100%; text-align: center; box-sizing: border-box; }
             }
           </style>
         </head>
         <body>
           <div class="wrapper">
-            <div class="container">
-              <div class="logo">
-                <span class="logo-text">Codeown</span>
-              </div>
-              
-              <div class="content">
-                <h1>Welcome, ${name}.</h1>
-                <p>You've officially joined the platform built for those who love to create. We're glad to have you building with us.</p>
+            <div class="card">
+              <div class="header-banner"></div>
+              <div class="inner-padding">
+                <div class="logo-section">
+                  <span class="logo-label">Codeown.v1.0</span>
+                </div>
                 
-                <div class="features">
-                  <div class="feature-row">
-                    <div class="feature-icon">🚀</div>
-                    <div class="feature-text"><strong>Launch project showcases</strong> that highlight your technical depth.</div>
+                <h1>Your journey begins here.</h1>
+                <p class="intro-text">Welcome, ${name}. You're now connected to the Developer Operating System. Here's what's next on your roadmap:</p>
+                
+                <div class="steps-container">
+                  <div class="step">
+                    <div class="step-line"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-title">Claim Your Identity</div>
+                    <div class="step-desc">Complete your profile to secure your unique handle and showcase your stack.</div>
                   </div>
-                  <div class="feature-row">
-                    <div class="feature-icon">🌎</div>
-                    <div class="feature-text"><strong>Find your collaborators</strong> among a global community of developers.</div>
+                  <div class="step">
+                    <div class="step-line"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-title">Ship Your First Project</div>
+                    <div class="step-desc">Turn your repositories into beautiful showcases that capture the attention of the community.</div>
                   </div>
-                  <div class="feature-row">
-                    <div class="feature-icon">✨</div>
-                    <div class="feature-text"><strong>Build your developer OS</strong> and claim your unique username.</div>
+                  <div class="step">
+                    <div class="step-dot"></div>
+                    <div class="step-title">Connect & Grow</div>
+                    <div class="step-desc">Follow other creators, share insights, and collaborate on the next big thing.</div>
                   </div>
                 </div>
 
-                <div class="btn-container">
-                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="btn">Get Started &rarr;</a>
+                <div class="cta-container">
+                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="btn">Enter the OS &rarr;</a>
                 </div>
               </div>
               
               <div class="footer">
-                <p class="footer-text">Codeown &bull; The Developer Operating System</p>
+                <p class="footer-text">Built for the next generation of developers.</p>
                 <div class="footer-links">
                   <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/about">About</a>
                   <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/privacy">Privacy</a>
+                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/terms">Terms</a>
                 </div>
-                <p class="footer-text" style="margin-top: 32px; opacity: 0.6;">
+                <p class="footer-text" style="margin-top: 24px; opacity: 0.5;">
                   &copy; ${new Date().getFullYear()} Codeown
                 </p>
               </div>
