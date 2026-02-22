@@ -300,7 +300,8 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                 style={{ color: "#6366f1", fontSize: "14px", fontWeight: 500 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/search?q=${encodeURIComponent(tech)}`);
+                  // Navigate to projects feed with this tag
+                  navigate(`/?type=projects&tag=${encodeURIComponent(tech)}`);
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
                 onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}

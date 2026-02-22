@@ -206,43 +206,95 @@ export default function Feed() {
                     {/* Content Type Selector */}
                     <div style={{
                         display: "flex",
-                        gap: "8px",
-                        padding: "12px 16px",
+                        flexDirection: "column",
                         borderBottom: "1px solid #eff3f4",
                         backgroundColor: "#fff"
                     }}>
-                        <button
-                            onClick={() => updateParams({ type: "posts" })}
-                            style={{
-                                padding: "6px 14px",
-                                borderRadius: "12px",
-                                border: "1px solid #eff3f4",
-                                backgroundColor: feedType === "posts" ? "#212121" : "#fff",
-                                color: feedType === "posts" ? "#fff" : "#64748b",
-                                fontSize: "13px",
-                                fontWeight: 700,
-                                cursor: "pointer",
-                                transition: "all 0.2s"
-                            }}
-                        >
-                            Posts
-                        </button>
-                        <button
-                            onClick={() => updateParams({ type: "projects" })}
-                            style={{
-                                padding: "6px 14px",
-                                borderRadius: "12px",
-                                border: "1px solid #eff3f4",
-                                backgroundColor: feedType === "projects" ? "#212121" : "#fff",
-                                color: feedType === "projects" ? "#fff" : "#64748b",
-                                fontSize: "13px",
-                                fontWeight: 700,
-                                cursor: "pointer",
-                                transition: "all 0.2s"
-                            }}
-                        >
-                            Projects
-                        </button>
+                        <div style={{
+                            display: "flex",
+                            gap: "8px",
+                            padding: "12px 16px",
+                            borderBottom: feedType === "projects" ? "1px solid #f8fafc" : "none"
+                        }}>
+                            <button
+                                onClick={() => updateParams({ type: "posts" })}
+                                style={{
+                                    padding: "6px 14px",
+                                    borderRadius: "12px",
+                                    border: "1px solid #eff3f4",
+                                    backgroundColor: feedType === "posts" ? "#212121" : "#fff",
+                                    color: feedType === "posts" ? "#fff" : "#64748b",
+                                    fontSize: "13px",
+                                    fontWeight: 700,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s"
+                                }}
+                            >
+                                Posts
+                            </button>
+                            <button
+                                onClick={() => updateParams({ type: "projects" })}
+                                style={{
+                                    padding: "6px 14px",
+                                    borderRadius: "12px",
+                                    border: "1px solid #eff3f4",
+                                    backgroundColor: feedType === "projects" ? "#212121" : "#fff",
+                                    color: feedType === "projects" ? "#fff" : "#64748b",
+                                    fontSize: "13px",
+                                    fontWeight: 700,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s"
+                                }}
+                            >
+                                Projects
+                            </button>
+                        </div>
+
+                        {/* Tech Stack Tags - Only for Projects */}
+                        {feedType === "projects" && (
+                            <div style={{
+                                display: "flex",
+                                gap: "8px",
+                                padding: "8px 16px 12px",
+                                overflowX: "auto",
+                                WebkitOverflowScrolling: "touch",
+                                scrollbarWidth: "none",
+                                msOverflowStyle: "none"
+                            }} className="no-scrollbar">
+                                <style>{`
+                                    .no-scrollbar::-webkit-scrollbar { display: none; }
+                                `}</style>
+                                {["All", "React", "TypeScript", "Next.js", "Node.js", "Python", "Tailwind", "Flutter", "Rust", "Go", "Supabase", "AI"].map((tag) => {
+                                    const isSelected = (tag === "All" && !selectedTag) || (selectedTag === tag);
+                                    return (
+                                        <button
+                                            key={tag}
+                                            onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
+                                            style={{
+                                                padding: "5px 12px",
+                                                borderRadius: "20px",
+                                                border: isSelected ? "1px solid #212121" : "1px solid #eff3f4",
+                                                backgroundColor: isSelected ? "#f8fafc" : "#fff",
+                                                color: isSelected ? "#212121" : "#64748b",
+                                                fontSize: "12px",
+                                                fontWeight: isSelected ? 800 : 500,
+                                                cursor: "pointer",
+                                                whiteSpace: "nowrap",
+                                                transition: "all 0.2s ease"
+                                            }}
+                                            onMouseEnter={e => {
+                                                if (!isSelected) e.currentTarget.style.backgroundColor = "#f8fafc";
+                                            }}
+                                            onMouseLeave={e => {
+                                                if (!isSelected) e.currentTarget.style.backgroundColor = "#fff";
+                                            }}
+                                        >
+                                            {tag === "All" ? tag : `#${tag}`}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     {/* Composer */}
