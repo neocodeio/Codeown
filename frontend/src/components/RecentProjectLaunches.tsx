@@ -63,7 +63,8 @@ export default function RecentProjectLaunches() {
         }}>
             <style>{`
                 .project-launch-item:hover .project-launch-title {
-                    color: #10633b !important;
+                    color: #0f172a !important;
+                    text-decoration: underline;
                 }
             `}</style>
             <h3 style={{
