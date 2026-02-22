@@ -5,6 +5,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "./VerifiedBadge";
+import RecentProjectLaunches from "./RecentProjectLaunches";
 
 interface RecommendedUser {
     id: string;
@@ -213,6 +214,7 @@ export default function RecommendedUsersSidebar() {
                     )}
                 </div>
 
+                <RecentProjectLaunches />
             </div>
         );
     }
