@@ -11,8 +11,8 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { SEO } from "../components/SEO";
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Configuration01Icon } from '@hugeicons/core-free-icons';
+// import { HugeiconsIcon } from '@hugeicons/react';
+// import { Configuration01Icon } from '@hugeicons/core-free-icons';
 
 export default function Feed() {
     const { width } = useWindowSize();
