@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -17,6 +17,7 @@ import {
   Bookmark02Icon,
   Delete01Icon,
   Pen01Icon,
+  MoreHorizontalIcon,
 } from '@hugeicons/core-free-icons';
 
 import { formatRelativeDate } from "../utils/date";
@@ -36,11 +37,27 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const { isSaved, toggleSave } = useProjectSaved(project.id);
   const [showEditModal, setShowEditModal] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
-
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
   const isOwnProject = currentUser?.id === project.user_id;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const handleUserClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -74,7 +91,16 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const userName = project.user?.name || "User";
 
   const handleClick = () => {
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+      return;
+    }
     navigate(`/project/${project.id}`);
+  };
+
+  const toggleMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -149,16 +175,16 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       className="fade-in project-card-x-style"
       style={{
         cursor: "pointer",
-        transition: "background-color 0.2s ease",
+        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         backgroundColor: "#fff",
-        padding: isMobile ? "16px" : "20px 24px",
+        padding: isMobile ? "16px" : "24px",
         position: "relative",
         display: "flex",
         gap: "12px",
-        borderBottom: "1px solid #eff3f4",
+        borderBottom: "1px solid rgba(0, 0, 0, 0.04)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "#f7f7f7";
+        e.currentTarget.style.backgroundColor = "#fcfcfc";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = "#fff";
@@ -178,7 +204,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           <AvailabilityBadge
             avatarUrl={project.user?.avatar_url || null}
             name={userName}
-            size={40}
+            size={isMobile ? 40 : 44}
             isOpenToOpportunities={project.user?.is_hirable}
           />
         </div>
@@ -195,33 +221,34 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           flexWrap: "wrap",
           gap: "4px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", minWidth: 0 }}>
             <span
               onClick={handleUserClick}
               style={{
                 fontSize: "15px",
-                fontWeight: "700",
+                fontWeight: "800",
                 color: "#0f172a",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "2px"
+                gap: "3px",
+                letterSpacing: "-0.01em"
               }}
               onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
               onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
             >
-              {userName.toUpperCase()}
+              {userName}
               <VerifiedBadge username={project.user?.username} size="14px" />
             </span>
-            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "400" }}>
+            <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "400" }}>
               @{project.user?.username || 'user'}
             </span>
-            <span style={{ fontSize: "14px", color: "#64748b" }}>•</span>
-            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "400" }}>
+            <span style={{ fontSize: "14px", color: "#e2e8f0" }}>•</span>
+            <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "400" }}>
               {formatRelativeDate(project.created_at)}
             </span>
             <div style={{
-              marginLeft: "4px",
+              marginLeft: "2px",
               backgroundColor: getStatusColor(project.status),
               width: "8px",
               height: "8px",
@@ -229,21 +256,109 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             }} title={getStatusText(project.status)} />
           </div>
 
-          {/* Own Actions */}
+          {/* Actions Menu */}
           {isOwnProject && (
-            <div style={{ display: "flex", gap: "10px", opacity: 0.5 }}>
+            <div style={{ position: "relative" }} ref={menuRef}>
               <button
-                onClick={handleEditClick}
-                style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", padding: "4px" }}
+                onClick={toggleMenu}
+                style={{
+                  background: "none",
+                  color: "#94a3b8",
+                  cursor: "pointer",
+                  padding: "6px",
+                  borderRadius: "30px",
+                  border: "1px solid #e0e0e0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s",
+                  backgroundColor: isMenuOpen ? "#f1f5f9" : "transparent"
+                }}
+                onMouseEnter={(e) => {
+                  if (!isMenuOpen) e.currentTarget.style.backgroundColor = "#f1f5f9";
+                  e.currentTarget.style.color = "#0f172a";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isMenuOpen) e.currentTarget.style.backgroundColor = "transparent";
+                  if (!isMenuOpen) e.currentTarget.style.color = "#94a3b8";
+                }}
               >
-                <HugeiconsIcon icon={Pen01Icon} style={{ fontSize: "12px" }} />
+                <HugeiconsIcon icon={MoreHorizontalIcon} style={{ fontSize: "16px" }} />
               </button>
-              <button
-                onClick={handleDeleteClick}
-                style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "4px" }}
-              >
-                <HugeiconsIcon icon={Delete01Icon} style={{ fontSize: "12px" }} />
-              </button>
+
+              {isMenuOpen && (
+                <div
+                  className="fade-in"
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    border: "1px solid #e0e0e0",
+                    marginTop: "6px",
+                    width: "140px",
+                    backgroundColor: "#fff",
+                    borderRadius: "12px",
+                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+                    zIndex: 100,
+                    padding: "4px",
+                    overflow: "hidden"
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={(e) => {
+                      handleEditClick(e);
+                      setIsMenuOpen(false);
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "8px 10px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      border: "none",
+                      background: "none",
+                      cursor: "pointer",
+                      borderRadius: "8px",
+                      transition: "all 0.2s",
+                      color: "#0f172a",
+                      fontSize: "13px",
+                      fontWeight: 600
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    <HugeiconsIcon icon={Pen01Icon} style={{ fontSize: "14px" }} />
+                    Edit
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      handleDeleteClick(e);
+                      setIsMenuOpen(false);
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "8px 10px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      border: "none",
+                      background: "none",
+                      cursor: "pointer",
+                      borderRadius: "8px",
+                      transition: "all 0.2s",
+                      color: "#ef4444",
+                      fontSize: "13px",
+                      fontWeight: 600
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fef2f2"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    <HugeiconsIcon icon={Delete01Icon} style={{ fontSize: "14px" }} />
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -261,13 +376,14 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           </h3>
           <p style={{
             fontSize: "15px",
-            lineHeight: "1.5",
+            lineHeight: "1.6",
             color: "#0f172a",
             wordBreak: "break-word",
             display: "-webkit-box",
             WebkitLineClamp: "3",
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
+            letterSpacing: "-0.01em"
           }}>
             {project.description}
           </p>
@@ -276,12 +392,13 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         {/* Cover Image */}
         {project.cover_image && (
           <div style={{
-            marginTop: "8px",
-            marginBottom: "12px",
-            borderRadius: "16px",
+            marginTop: "12px",
+            marginBottom: "16px",
+            borderRadius: "20px",
             overflow: "hidden",
-            border: "1px solid #eff3f4",
-            aspectRatio: "16/9"
+            border: "1px solid rgba(0, 0, 0, 0.04)",
+            aspectRatio: "16/9",
+            transition: "border-color 0.2s"
           }}>
             <img
               src={project.cover_image}
@@ -293,18 +410,30 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
 
         {/* Technologies */}
         {project.technologies_used && project.technologies_used.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "16px" }}>
             {project.technologies_used.map((tech, idx) => (
               <span
                 key={idx}
-                style={{ color: "#6366f1", fontSize: "14px", fontWeight: 500 }}
+                style={{
+                  color: "#3b82f6",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  letterSpacing: "-0.01em",
+                  cursor: "pointer",
+                  padding: "2px 6px",
+                  borderRadius: "6px",
+                  transition: "all 0.2s"
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Navigate to projects feed with this tag
                   navigate(`/?type=projects&tag=${encodeURIComponent(tech)}`);
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
-                onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.08)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
               >
                 #{tech.replace(/\s+/g, "")}
               </span>
@@ -318,7 +447,8 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           alignItems: "center",
           justifyContent: "space-between",
           maxWidth: "425px",
-          marginTop: "9%"
+          marginTop: "16px",
+          marginLeft: "-8px"
         }}>
           {/* Comment */}
           <button
@@ -326,30 +456,36 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "2px",
+              gap: "4px",
               background: "none",
               border: "none",
               color: "#64748b",
               cursor: "pointer",
               fontSize: "13px",
-              padding: "8px 0",
-              transition: "color 0.2s"
+              padding: "4px 0",
+              transition: "all 0.2s"
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#6366f1";
+              e.currentTarget.style.color = "#3b82f6";
               const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-              if (icon) icon.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
+              if (icon) {
+                icon.style.backgroundColor = "rgba(59, 130, 246, 0.1)";
+                icon.style.transform = "scale(1.1)";
+              }
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = "#64748b";
               const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-              if (icon) icon.style.backgroundColor = "transparent";
+              if (icon) {
+                icon.style.backgroundColor = "transparent";
+                icon.style.transform = "scale(1)";
+              }
             }}
           >
-            <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
-              <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "14px" }} />
+            <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}>
+              <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "16px" }} />
             </div>
-            <span>{project.comment_count || 0}</span>
+            <span style={{ fontWeight: 500 }}>{project.comment_count || 0}</span>
           </button>
 
           {/* Like */}
@@ -358,30 +494,36 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "2px",
+              gap: "4px",
               background: "none",
               border: "none",
               color: isLiked ? "#f91880" : "#64748b",
               cursor: "pointer",
               fontSize: "13px",
-              padding: "8px 0",
-              transition: "color 0.2s"
+              padding: "4px 0",
+              transition: "all 0.2s"
             }}
             onMouseEnter={(e) => {
               if (!isLiked) e.currentTarget.style.color = "#f91880";
               const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-              if (icon) icon.style.backgroundColor = "rgba(249, 24, 128, 0.1)";
+              if (icon) {
+                icon.style.backgroundColor = "rgba(249, 24, 128, 0.1)";
+                icon.style.transform = "scale(1.1)";
+              }
             }}
             onMouseLeave={(e) => {
               if (!isLiked) e.currentTarget.style.color = "#64748b";
               const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-              if (icon) icon.style.backgroundColor = "transparent";
+              if (icon) {
+                icon.style.backgroundColor = "transparent";
+                icon.style.transform = "scale(1)";
+              }
             }}
           >
-            <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s" }}>
-              <HugeiconsIcon icon={FavouriteIcon} style={{ fontSize: "14px" }} />
+            <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}>
+              <HugeiconsIcon icon={FavouriteIcon} style={{ fontSize: "16px", fill: isLiked ? "currentColor" : "none" }} />
             </div>
-            <span style={{ fontWeight: isLiked ? "700" : "400" }}>{likeCount || 0}</span>
+            <span style={{ fontWeight: isLiked ? "700" : "500" }}>{likeCount || 0}</span>
           </button>
 
           {/* Share */}
@@ -400,13 +542,15 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.1)";
               e.currentTarget.style.color = "#00ba7c";
+              e.currentTarget.style.transform = "scale(1.1)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
               if (!shareCopied) e.currentTarget.style.color = "#64748b";
+              e.currentTarget.style.transform = "scale(1)";
             }}
           >
-            <HugeiconsIcon icon={Share01Icon} style={{ fontSize: "14px" }} />
+            <HugeiconsIcon icon={Share01Icon} style={{ fontSize: "16px" }} />
           </button>
 
           {/* Save */}
@@ -416,22 +560,24 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               display: "flex",
               background: "none",
               border: "none",
-              color: isSaved ? "#6366f1" : "#64748b",
+              color: isSaved ? "#3b82f6" : "#64748b",
               cursor: "pointer",
               padding: "8px",
               borderRadius: "50%",
               transition: "all 0.2s"
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(99, 102, 241, 0.1)";
-              e.currentTarget.style.color = "#6366f1";
+              e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.1)";
+              e.currentTarget.style.color = "#3b82f6";
+              e.currentTarget.style.transform = "scale(1.1)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
               if (!isSaved) e.currentTarget.style.color = "#64748b";
+              e.currentTarget.style.transform = "scale(1)";
             }}
           >
-            <HugeiconsIcon icon={isSaved ? Bookmark01Icon : Bookmark02Icon} style={{ fontSize: "14px" }} />
+            <HugeiconsIcon icon={isSaved ? Bookmark01Icon : Bookmark02Icon} style={{ fontSize: "16px" }} />
           </button>
         </div>
       </div>
