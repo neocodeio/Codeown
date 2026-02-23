@@ -11,6 +11,8 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { SEO } from "../components/SEO";
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Configuration01Icon } from '@hugeicons/core-free-icons';
 
 export default function Feed() {
     const { width } = useWindowSize();
@@ -295,6 +297,55 @@ export default function Feed() {
                                 })}
                             </div>
                         )}
+                    </div>
+
+                    {/* Maintenance Disclaimer */}
+                    <div style={{
+                        padding: "24px",
+                        backgroundColor: "#fff",
+                        borderBottom: "1px solid #eff3f4",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "12px"
+                    }}>
+                        <div style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            color: "#0f172a"
+                        }}>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "32px",
+                                height: "32px",
+                                backgroundColor: "rgba(59, 130, 246, 0.05)",
+                                borderRadius: "8px",
+                                color: "#3b82f6"
+                            }}>
+                                <HugeiconsIcon icon={Configuration01Icon} style={{ width: "18px", height: "18px" }} />
+                            </div>
+                            <h2 style={{
+                                fontSize: "16px",
+                                fontWeight: 800,
+                                margin: 0,
+                                letterSpacing: "-0.02em",
+                                textTransform: "none"
+                            }}>
+                                Temporary Service Interruption
+                            </h2>
+                        </div>
+                        <p style={{
+                            fontSize: "14px",
+                            color: "#64748b",
+                            lineHeight: 1.6,
+                            margin: 0,
+                            fontWeight: 500
+                        }}>
+                            Codeown is currently undergoing scheduled infrastructure migration. Consequently, some features may be temporarily unavailable as we transition to a more robust hosting environment.
+                            Our team is working to restore full service as soon as possible. We apologize for the inconvenience.
+                        </p>
                     </div>
 
                     {/* Composer */}
