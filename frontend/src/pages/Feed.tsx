@@ -300,7 +300,7 @@ export default function Feed() {
                     </div>
 
                     {/* Maintenance Disclaimer */}
-                    <div style={{
+                    {/* <div style={{
                         padding: "24px",
                         backgroundColor: "#fff",
                         borderBottom: "1px solid #eff3f4",
@@ -346,7 +346,7 @@ export default function Feed() {
                             Codeown is currently undergoing scheduled infrastructure migration. Consequently, some features may be temporarily unavailable as we transition to a more robust hosting environment.
                             Our team is working to restore full service as soon as possible. We apologize for the inconvenience.
                         </p>
-                    </div>
+                    </div> */}
 
                     {/* Composer */}
                     {feedType === "posts" && (
