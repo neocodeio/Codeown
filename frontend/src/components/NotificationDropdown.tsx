@@ -65,22 +65,22 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "like":
-        return { icon: FavouriteIcon, color: "#ef4444", bg: "#fee2e2" };
+        return { icon: FavouriteIcon, color: "#f91880", bg: "rgba(249, 24, 128, 0.05)" };
       case "comment":
       case "reply":
-        return { icon: Comment01Icon, color: "#3b82f6", bg: "#dbeafe" };
+        return { icon: Comment01Icon, color: "#3b82f6", bg: "rgba(59, 130, 246, 0.05)" };
       case "follow":
-        return { icon: UserAdd01Icon, color: "#8b5cf6", bg: "#ede9fe" };
+        return { icon: UserAdd01Icon, color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.05)" };
       case "mention":
-        return { icon: AtIcon, color: "#06b6d4", bg: "#cffafe" };
+        return { icon: AtIcon, color: "#06b6d4", bg: "rgba(6, 182, 212, 0.05)" };
       case "save":
-        return { icon: Bookmark01Icon, color: "#f59e0b", bg: "#fef3c7" };
+        return { icon: Bookmark01Icon, color: "#f59e0b", bg: "rgba(245, 158, 11, 0.05)" };
       case "message":
-        return { icon: Mail01Icon, color: "#10b981", bg: "#d1fae5" };
+        return { icon: Mail01Icon, color: "#00ba7c", bg: "rgba(0, 186, 124, 0.05)" };
       case "profile_view":
-        return { icon: ViewIcon, color: "#6366f1", bg: "#e0e7ff" };
+        return { icon: ViewIcon, color: "#6366f1", bg: "rgba(99, 102, 241, 0.05)" };
       default:
-        return { icon: Notification01Icon, color: "#64748b", bg: "#f1f5f9" };
+        return { icon: Notification01Icon, color: "#94a3b8", bg: "#f8fafc" };
     }
   };
 
@@ -177,10 +177,23 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               to { opacity: 1; transform: translateY(0) scale(1); }
             }
             .notification-item:hover {
-              background-color: #f8fafc !important;
+              background-color: #fcfcfc !important;
             }
             .notification-dropdown {
               animation: dropdownShow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .notification-dropdown-list::-webkit-scrollbar {
+              width: 5px;
+            }
+            .notification-dropdown-list::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .notification-dropdown-list::-webkit-scrollbar-thumb {
+              background: #e2e8f0;
+              borderRadius: 10px;
+            }
+            .notification-dropdown-list::-webkit-scrollbar-thumb:hover {
+              background: #cbd5e1;
             }
           `}</style>
           <div
@@ -192,13 +205,13 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               left: isMobile ? "0" : (props.align === "right" ? "100%" : "0"),
               right: isMobile ? "0" : "auto",
               marginLeft: (!isMobile && props.align === "right") ? "12px" : "0",
-              width: isMobile ? "100%" : "380px",
+              width: isMobile ? "100%" : "400px",
               height: isMobile ? "100%" : "auto",
-              maxHeight: isMobile ? "100vh" : "min(600px, 85vh)",
+              maxHeight: isMobile ? "100vh" : "600px",
               backgroundColor: "#ffffff",
               borderRadius: isMobile ? "0" : "24px",
-              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.12)",
-              border: isMobile ? "none" : "1px solid rgba(226, 232, 240, 0.8)",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
+              border: isMobile ? "none" : "1px solid #f1f5f9",
               zIndex: 9999,
               overflow: "hidden",
               display: "flex",
@@ -207,8 +220,8 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
           >
             {/* Header */}
             <div style={{
-              padding: "20px 24px",
-              borderBottom: "1px solid #f1f5f9",
+              padding: "24px",
+              borderBottom: "1px solid rgba(0, 0, 0, 0.04)",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -218,9 +231,9 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               zIndex: 10
             }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>Notifications</h3>
-                <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
-                  You have {unreadCount} unread
+                <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: "#0f172a", letterSpacing: "-0.02em" }}>Notifications</h3>
+                <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#94a3b8", fontWeight: "600" }}>
+                  {unreadCount > 0 ? `You have ${unreadCount} unread` : "You're all caught up"}
                 </p>
               </div>
               <div style={{ display: "flex", gap: "8px" }}>
@@ -231,21 +244,25 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       markAsRead("all");
                     }}
                     style={{
-                      background: "rgba(16, 185, 129, 0.1)",
-                      border: "none",
-                      color: "#10b981",
-                      padding: "8px 12px",
-                      borderRadius: "10px",
+                      background: "none",
+                      border: "1px solid #e2e8f0",
+                      color: "#0f172a",
+                      padding: "8px 14px",
+                      borderRadius: "12px",
                       fontSize: "12px",
-                      fontWeight: 700,
+                      fontWeight: "700",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
                       gap: "6px",
                       transition: "all 0.2s"
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "rgba(16, 185, 129, 0.1)"}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.backgroundColor = "#f8fafc";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
                   >
                     <HugeiconsIcon icon={Tick01Icon} style={{ fontSize: "14px" }} />
                     Mark all
@@ -254,7 +271,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                 {isMobile && (
                   <button
                     onClick={() => setIsOpen(false)}
-                    style={{ background: "#f1f5f9", border: "none", padding: "8px 12px", borderRadius: "10px", fontWeight: 700, fontSize: "12px" }}
+                    style={{ background: "#0f172a", border: "none", color: "#fff", padding: "8px 14px", borderRadius: "12px", fontWeight: "700", fontSize: "12px" }}
                   >
                     Close
                   </button>
@@ -263,7 +280,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
             </div>
 
             {/* Content List */}
-            <div style={{ overflowY: "auto", flex: 1, padding: "8px" }}>
+            <div className="notification-dropdown-list" style={{ overflowY: "auto", flex: 1, padding: "8px" }}>
               {notifications.length === 0 ? (
                 <div style={{ padding: "80px 40px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
                   <div style={{
@@ -293,66 +310,65 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       className="notification-item"
                       onClick={() => handleNotificationClick(notification)}
                       style={{
-                        padding: "16px",
-                        margin: "4px 0",
-                        borderRadius: "16px",
+                        padding: "16px 20px",
+                        margin: "2px 0",
+                        borderRadius: "14px",
                         cursor: "pointer",
-                        backgroundColor: notification.read ? "#fff" : "#f0f7ff",
+                        backgroundColor: notification.read ? "#fff" : "rgba(59, 130, 246, 0.02)",
                         transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                         display: "flex",
                         gap: "14px",
-                        alignItems: "flex-start",
+                        alignItems: "center",
                         position: "relative",
-                        border: notification.read ? "1px solid transparent" : "1px solid #e0f2fe"
+                        borderBottom: "1px solid rgba(0, 0, 0, 0.02)"
                       }}
                     >
                       <div style={{ position: "relative", flexShrink: 0 }}>
                         <img
-                          src={notification.actor?.avatar_url || "https://via.placeholder.com/44"}
+                          src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
                           alt=""
-                          style={{ width: "44px", height: "44px", borderRadius: "14px", objectFit: "cover", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+                          style={{ width: "42px", height: "42px", borderRadius: "12px", objectFit: "cover", backgroundColor: "#f1f5f9" }}
                         />
                         <div style={{
                           position: "absolute",
-                          bottom: "-6px",
-                          right: "-6px",
-                          width: "22px",
-                          height: "22px",
-                          borderRadius: "8px",
-                          backgroundColor: itemIcon.bg,
+                          bottom: "-4px",
+                          right: "-4px",
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "6px",
+                          backgroundColor: "#fff",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          border: "2px solid #fff",
+                          border: "1px solid #f1f5f9",
                           color: itemIcon.color,
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
                         }}>
-                          <HugeiconsIcon icon={itemIcon.icon} style={{ fontSize: "12px" }} />
+                          <HugeiconsIcon icon={itemIcon.icon} style={{ fontSize: "11px" }} />
                         </div>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{
-                          margin: "0 0 4px",
+                          margin: "0 0 2px",
                           fontSize: "14px",
                           color: "#1e293b",
-                          lineHeight: "1.5",
-                          fontWeight: notification.read ? 500 : 600
+                          lineHeight: "1.4",
+                          fontWeight: notification.read ? 600 : 800,
+                          letterSpacing: "-0.01em"
                         }}>
                           {getNotificationMessage(notification)}
                         </p>
-                        <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8", fontWeight: 500, display: "flex", alignItems: "center", gap: "4px" }}>
-                          <span style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "#cbd5e1" }} />
+                        <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8", fontWeight: "600" }}>
                           {formatCompactRelativeDate(notification.created_at)}
                         </p>
                       </div>
                       {!notification.read && (
                         <div style={{
-                          width: "8px",
-                          height: "8px",
+                          width: "6px",
+                          height: "6px",
                           borderRadius: "50%",
                           backgroundColor: "#3b82f6",
-                          marginTop: "6px",
-                          boxShadow: "0 0 0 4px rgba(59, 130, 246, 0.1)"
+                          flexShrink: 0
                         }} />
                       )}
                     </div>

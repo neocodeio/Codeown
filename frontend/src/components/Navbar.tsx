@@ -6,7 +6,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { useAvatar } from "../hooks/useAvatar";
 import CreatePostModal from "./CreatePostModal";
 import ProjectModal from "./ProjectModal";
-import NotificationDropdown from "./NotificationDropdown";
+import { useNotifications } from "../hooks/useNotifications";
 import StreakBadge from "./StreakBadge";
 import api from "../api/axios";
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -42,6 +42,7 @@ export default function Navbar() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [streakCount, setStreakCount] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
+  const { unreadCount } = useNotifications();
   const { getToken } = useClerkAuth();
 
   // Use the centralized avatar hook
@@ -165,51 +166,44 @@ export default function Navbar() {
             </Link>
 
             {/* Notification Item */}
-            <NotificationDropdown
-              align="right"
-              renderTrigger={(toggleOpen, unreadCount, isOpen) => (
-                <div
-                  onClick={toggleOpen}
-                  style={{
-                    ...linkStyle(""),
-                    cursor: "pointer",
-                    color: isOpen ? "#212121" : "#212121",
-                    backgroundColor: isOpen ? "#f0f0f0" : "transparent",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isOpen) e.currentTarget.style.backgroundColor = "#f8fafc";
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isOpen) e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <HugeiconsIcon icon={Notification01Icon} style={{ width: "20px" }} />
-                    {unreadCount > 0 && (
-                      <span style={{
-                        position: "absolute",
-                        top: "-6px",
-                        right: "-6px",
-                        backgroundColor: "#dc2626",
-                        color: "#fff",
-                        borderRadius: "50%",
-                        width: "14px",
-                        height: "14px",
-                        fontSize: "10px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 700,
-                        border: "2px solid #fff"
-                      }}>
-                        {unreadCount > 9 ? "9+" : unreadCount}
-                      </span>
-                    )}
-                  </div>
-                  Notifications
-                </div>
-              )}
-            />
+            <Link
+              to="/notifications"
+              style={{
+                ...linkStyle("/notifications"),
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                if (location.pathname !== "/notifications") e.currentTarget.style.backgroundColor = "#f8fafc";
+              }}
+              onMouseLeave={(e) => {
+                if (location.pathname !== "/notifications") e.currentTarget.style.backgroundColor = "transparent";
+              }}
+            >
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <HugeiconsIcon icon={Notification01Icon} style={{ width: "20px" }} />
+                {unreadCount > 0 && (
+                  <span style={{
+                    position: "absolute",
+                    top: "-6px",
+                    right: "-6px",
+                    backgroundColor: "#dc2626",
+                    color: "#fff",
+                    borderRadius: "50%",
+                    width: "14px",
+                    height: "14px",
+                    fontSize: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 700,
+                    border: "2px solid #fff"
+                  }}>
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </div>
+              Notifications
+            </Link>
 
             <div
               onClick={() => setIsModalOpen(true)}
@@ -572,17 +566,15 @@ export default function Navbar() {
         </div>
 
         <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-          <NotificationDropdown
-            align="bottom"
-            renderTrigger={(toggleOpen, unreadCount, isOpen) => (
-              <div onClick={toggleOpen} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", color: isOpen ? "#212121" : "#94a3b8" }}>
-                <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
-                {unreadCount > 0 && (
-                  <span style={{ position: "absolute", top: "-2px", right: "-2px", width: "8px", height: "8px", background: "#ef4444", borderRadius: "50%", border: "2px solid #fff" }} />
-                )}
-              </div>
+          <Link
+            to="/notifications"
+            style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", color: location.pathname === "/notifications" ? "#212121" : "#94a3b8" }}
+          >
+            <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
+            {unreadCount > 0 && (
+              <span style={{ position: "absolute", top: "-2px", right: "-2px", width: "8px", height: "8px", background: "#ef4444", borderRadius: "50%", border: "2px solid #fff" }} />
             )}
-          />
+          </Link>
         </div>
 
         <Link to="/profile" style={{ color: location.pathname === "/profile" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
