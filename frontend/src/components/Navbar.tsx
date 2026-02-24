@@ -7,6 +7,7 @@ import { useAvatar } from "../hooks/useAvatar";
 import CreatePostModal from "./CreatePostModal";
 import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
+import { useFaviconNotification } from "../hooks/useFaviconNotification";
 import StreakBadge from "./StreakBadge";
 import api from "../api/axios";
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -43,6 +44,7 @@ export default function Navbar() {
   const [streakCount, setStreakCount] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
   const { unreadCount } = useNotifications();
+  useFaviconNotification(unreadCount);
   const { getToken } = useClerkAuth();
 
   // Use the centralized avatar hook
