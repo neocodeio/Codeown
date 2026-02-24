@@ -203,13 +203,12 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
           {/* Header Row: Name, Handle, Time, Actions */}
           <div style={{
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             justifyContent: "space-between",
             marginBottom: "4px",
-            flexWrap: "wrap",
-            gap: "4px"
+            gap: "8px"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", minWidth: 0, flex: 1 }}>
               <span
                 onClick={handleUserClick}
                 style={{
