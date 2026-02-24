@@ -11,7 +11,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Share01Icon,
-  FavouriteIcon,
+  CircleArrowUp01Icon,
   Comment02Icon,
   Bookmark01Icon,
   Bookmark02Icon,
@@ -487,42 +487,62 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             <span style={{ fontWeight: 500 }}>{project.comment_count || 0}</span>
           </button>
 
-          {/* Like */}
+          {/* Upvote */}
           <button
             onClick={handleLike}
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "4px",
-              background: "none",
+              gap: "2px",
+              background: isLiked ? "rgba(0, 186, 124, 0.1)" : "none",
               border: "none",
-              color: isLiked ? "#f91880" : "#64748b",
+              color: isLiked ? "#00ba7c" : "#64748b",
               cursor: "pointer",
               fontSize: "13px",
-              padding: "4px 0",
-              transition: "all 0.2s"
+              padding: "2px 10px 2px 2px",
+              borderRadius: "100px",
+              transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             }}
             onMouseEnter={(e) => {
-              if (!isLiked) e.currentTarget.style.color = "#f91880";
+              if (!isLiked) {
+                e.currentTarget.style.color = "#00ba7c";
+                e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.05)";
+              }
               const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
               if (icon) {
-                icon.style.backgroundColor = "rgba(249, 24, 128, 0.1)";
-                icon.style.transform = "scale(1.1)";
+                icon.style.transform = "scale(1.15) translateY(-1px)";
               }
             }}
             onMouseLeave={(e) => {
-              if (!isLiked) e.currentTarget.style.color = "#64748b";
+              if (!isLiked) {
+                e.currentTarget.style.color = "#64748b";
+                e.currentTarget.style.backgroundColor = "transparent";
+              } else {
+                e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.1)";
+              }
               const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
               if (icon) {
-                icon.style.backgroundColor = "transparent";
-                icon.style.transform = "scale(1)";
+                icon.style.transform = "scale(1) translateY(0)";
               }
             }}
+            onMouseDown={(e) => e.currentTarget.style.transform = "scale(0.95)"}
+            onMouseUp={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
-            <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}>
-              <HugeiconsIcon icon={FavouriteIcon} style={{ fontSize: "16px", fill: isLiked ? "currentColor" : "none" }} />
+            <div className="footer-icon" style={{
+              padding: "6px",
+              borderRadius: "50%",
+              display: "flex",
+              transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+            }}>
+              <HugeiconsIcon
+                icon={CircleArrowUp01Icon}
+                style={{
+                  fontSize: "18px",
+                  fill: isLiked ? "rgba(0, 186, 124, 0.2)" : "none",
+                }}
+              />
             </div>
-            <span style={{ fontWeight: isLiked ? "700" : "500" }}>{likeCount || 0}</span>
+            <span style={{ fontWeight: isLiked ? "800" : "600" }}>{likeCount || 0}</span>
           </button>
 
           {/* Share */}

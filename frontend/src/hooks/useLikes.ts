@@ -79,14 +79,26 @@ export function useLikes(postId: number | null, initialIsLiked?: boolean, initia
   const toggleLike = async () => {
     if (!postId) return;
 
+    if (!userId) {
+      alert("Please sign in to like posts");
+      return;
+    }
+
+    // Save previous state for rollback
+    const previousIsLiked = isLiked;
+    const previousLikeCount = likeCount;
+
+    // Optimistically update UI
+    const newIsLiked = !isLiked;
+    const newCount = newIsLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
+
+    setIsLiked(newIsLiked);
+    setLikeCount(newCount);
+
     setLoading(true);
     try {
       const token = await getToken();
-      if (!token) {
-        alert("Please sign in to like posts");
-        setLoading(false);
-        return;
-      }
+      if (!token) throw new Error("No token");
 
       const res = await api.post(
         `/likes/post/${postId}`,
@@ -96,28 +108,18 @@ export function useLikes(postId: number | null, initialIsLiked?: boolean, initia
         }
       );
 
-      // Update state immediately from server response
-      const newLikedState = res.data.liked === true || res.data.isLiked === true;
-      setIsLiked(newLikedState);
-
-      // Smart count update
-      const newCount = typeof res.data.likeCount === 'number' ? res.data.likeCount : res.data.count;
-      if (newCount !== undefined) {
-        setLikeCount(newCount);
-      } else {
-        // Fallback optimistic update
-        if (newLikedState) {
-          setLikeCount((prev) => prev + 1);
-        } else {
-          setLikeCount((prev) => Math.max(0, prev - 1));
-        }
+      // Verify with server response
+      if (res.data) {
+        const serverIsLiked = res.data.liked === true || res.data.isLiked === true;
+        const serverCount = typeof res.data.likeCount === 'number' ? res.data.likeCount : res.data.count;
+        if (serverIsLiked !== undefined) setIsLiked(serverIsLiked);
+        if (serverCount !== undefined) setLikeCount(serverCount);
       }
-
     } catch (error) {
       console.error("Error toggling like:", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to like post";
-      alert(`Failed to like post: ${errorMessage}`);
-      await fetchLikeStatus();
+      // Rollback on error
+      setIsLiked(previousIsLiked);
+      setLikeCount(previousLikeCount);
     } finally {
       setLoading(false);
     }

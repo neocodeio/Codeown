@@ -5,7 +5,6 @@ import api from "../api/axios";
 export function useProjectLikes(projectId: number, initialIsLiked?: boolean, initialLikeCount?: number) {
   const [isLiked, setIsLiked] = useState(initialIsLiked ?? false);
   const [likeCount, setLikeCount] = useState(initialLikeCount ?? 0);
-  const [loading, setLoading] = useState(false);
   const { getToken, userId, isLoaded } = useClerkAuth();
 
   // Sync with initial values if they change
@@ -41,14 +40,24 @@ export function useProjectLikes(projectId: number, initialIsLiked?: boolean, ini
 
   const toggleLike = async () => {
     if (!userId) {
-      alert("Please sign in to like projects");
+      alert("Please sign in to upvote projects");
       return;
     }
 
-    setLoading(true);
+    // Save previous state for rollback
+    const previousIsLiked = isLiked;
+    const previousLikeCount = likeCount;
+
+    // Optimistically update UI
+    const newIsLiked = !isLiked;
+    const newLikeCount = newIsLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
+
+    setIsLiked(newIsLiked);
+    setLikeCount(newLikeCount);
+
     try {
       const token = await getToken();
-      if (!token) return;
+      if (!token) throw new Error("No token");
 
       const response = await api.post(
         `/projects/${projectId}/like`,
@@ -56,13 +65,16 @@ export function useProjectLikes(projectId: number, initialIsLiked?: boolean, ini
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setIsLiked(response.data.isLiked);
-      setLikeCount(response.data.likeCount);
+      // Verify with server response just in case
+      if (response.data) {
+        setIsLiked(response.data.isLiked);
+        setLikeCount(response.data.likeCount);
+      }
     } catch (error) {
       console.error("Error toggling like:", error);
-      await fetchLikeStatus();
-    } finally {
-      setLoading(false);
+      // Rollback on error
+      setIsLiked(previousIsLiked);
+      setLikeCount(previousLikeCount);
     }
   };
 
@@ -72,5 +84,5 @@ export function useProjectLikes(projectId: number, initialIsLiked?: boolean, ini
     }
   }, [projectId, userId, isLoaded]);
 
-  return { isLiked, likeCount, loading, toggleLike, fetchLikeStatus };
+  return { isLiked, likeCount, toggleLike, fetchLikeStatus };
 }
