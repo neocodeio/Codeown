@@ -106,20 +106,38 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const { compressImage, base64ToFile } = await import("../utils/image");
-
-        let fileToUpload = file;
-        try {
-            const compressedBase64 = await compressImage(file, 1280, 1280, 0.8);
-            fileToUpload = base64ToFile(compressedBase64, file.name || "cover.jpg");
-        } catch (error) {
-            console.error("Compression failed, using original:", error);
-        }
-
-        const formDataUpload = new FormData();
-        formDataUpload.append("image", fileToUpload);
+        // Show loading state
+        setLoading(true);
+        setError("");
 
         try {
+            // Dynamic import to avoid SSR issues
+            const { compressImageSimple, needsCompression } = await import("../utils/imageCompression");
+
+            let fileToUpload = file;
+
+            // Check if compression is needed (only if file > 200KB)
+            if (needsCompression(file, 200)) {
+                console.log(`Compressing image from ${(file.size / 1024 / 1024).toFixed(2)}MB...`);
+                
+                try {
+                    // Use simple compression utility
+                    fileToUpload = await compressImageSimple(file, {
+                        maxSizeKB: 200,
+                        maxWidth: 1280,
+                        maxHeight: 1280,
+                        quality: 0.8,
+                    });
+                } catch (compressionError) {
+                    console.error("Compression failed, using original:", compressionError);
+                }
+            } else {
+                console.log("Image is already under 200KB, no compression needed");
+            }
+
+            const formDataUpload = new FormData();
+            formDataUpload.append("image", fileToUpload);
+
             const token = await getToken();
             const response = await api.post("/upload/image", formDataUpload, {
                 headers: {
@@ -134,6 +152,8 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         } catch (error) {
             setError("Failed to upload image");
             console.error("Upload error:", error);
+        } finally {
+            setLoading(false);
         }
     };
 

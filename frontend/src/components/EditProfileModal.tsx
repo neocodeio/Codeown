@@ -120,18 +120,40 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       const token = await getToken();
       if (!token) return null;
 
-      // Convert file to base64
-      const reader = new FileReader();
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+      console.log(`Processing avatar: ${(file.size / 1024).toFixed(2)}KB`);
+
+      // Dynamic import to avoid SSR issues
+      const { compressImageSimple, needsCompression } = await import("../utils/imageCompression");
+
+      let fileToUpload = file;
+
+      // Check if compression is needed (only if file > 200KB)
+      if (needsCompression(file, 200)) {
+        console.log(`Compressing avatar from ${(file.size / 1024 / 1024).toFixed(2)}MB...`);
+
+        try {
+          // Use simple compression utility
+          fileToUpload = await compressImageSimple(file, {
+            maxSizeKB: 200,
+            maxWidth: 800, // Smaller for avatars
+            maxHeight: 800,
+            quality: 0.8,
+          });
+        } catch (compressionError) {
+          console.error("Compression failed, using original:", compressionError);
+        }
+      } else {
+        console.log("Avatar is already under 200KB, no compression needed");
+      }
+
+      const formData = new FormData();
+      formData.append("image", fileToUpload);
+
+      const response = await api.post("/upload/image", formData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Upload to backend (you'll need to implement image upload endpoint)
-      // For now, we'll use a simple approach - convert to data URL
-      // In production, upload to Supabase Storage or similar
-      return base64;
+      return response.data.url;
     } catch (error) {
       console.error("Error uploading image:", error);
       return null;
@@ -269,108 +291,19 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
   const modalContent = (
     <>
-      <style>{`
-        @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes modalSlideIn { from { opacity: 0; transform: scale(0.95) translateY(-20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .modal-backdrop { animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .modal-dialog { animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        
-        .modal-input {
-          width: 100%;
-          padding: 14px 20px;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          font-size: 16px;
-          transition: all 0.2s ease;
-          background: #f8fafc;
-          color: #0f172a;
-          outline: none;
-          box-sizing: border-box;
-        }
-        @media (max-width: 640px) {
-          .modal-input {
-            padding: 12px 16px;
-            font-size: 14px;
-          }
-        }
-        .modal-input:focus {
-          border-color: #212121;
-          background: white;
-          box-shadow: 0 0 0 4px rgba(33, 33, 33, 0.05);
-        }
-        .modal-input:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-        .modal-label {
-          display: block;
-          font-size: 13px;
-          font-weight: 800;
-          color: #64748b;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-bottom: 8px;
-          margin-left: 4px;
-        }
-        .modal-btn {
-          padding: 12px 24px;
-          border-radius: 14px;
-          font-size: 15px;
-          font-weight: 700;
-          transition: all 0.2s ease;
-          cursor: pointer;
-        }
-        .modal-btn-primary {
-          background: #212121;
-          color: white;
-          border: none;
-        }
-        .modal-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .modal-btn-secondary {
-          background: transparent;
-          color: #64748b;
-          border: 1px solid #e2e8f0;
-        }
-        .modal-btn-secondary:hover { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
-        .skill-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: #f1f5f9;
-          color: #0f172a;
-          padding: 6px 10px;
-          border-radius: 8px;
-          font-size: 13px;
-          font-weight: 600;
-          border: 1px solid #e2e8f0;
-        }
-        .skill-remove {
-          cursor: pointer;
-          color: #94a3b8;
-          font-size: 14px;
-          display: flex;
-          align-items: center;
-        }
-        .skill-remove:hover { color: #ef4444; }
-      `}</style>
-
-      <div
-        className="modal-backdrop"
-        style={{
-          position: "fixed",
-          inset: 0,
-          backgroundColor: "rgba(15, 23, 42, 0.6)",
-          backdropFilter: "blur(8px)",
-          zIndex: 10000,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: isMobile ? "flex-end" : "center",
-          padding: isMobile ? "0" : "20px",
-        }}
-        onClick={(e) => e.target === e.currentTarget && onClose()}
-      >
+      <div style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}>
         <div
-          className="modal-dialog"
           style={{
             width: "100%",
             maxWidth: isMobile ? "100%" : "520px",
@@ -385,7 +318,6 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
           <div style={{ padding: isMobile ? "24px 20px 12px" : "32px 32px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: isMobile ? "1px solid #f1f5f9" : "none", marginBottom: isMobile ? "12px" : "0" }}>
             <h2 style={{ margin: 0, fontSize: isMobile ? "20px" : "24px", fontWeight: 900, color: "#0f172a", letterSpacing: "-0.03em" }}>Edit Profile</h2>
             <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "28px", color: "#94a3b8", cursor: "pointer", display: "flex" }}>&times;</button>
@@ -429,7 +361,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
             {/* Banner Section */}
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <label className="modal-label">Profile Banner</label>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>Profile Banner</label>
               <label style={{ cursor: "pointer", position: "relative", width: "100%" }}>
                 <div style={{
                   width: "100%",
@@ -473,19 +405,19 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
             {/* Form Fields */}
             <div>
-              <label className="modal-label">Display Name</label>
-              <input className="modal-input" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full Name" />
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>Display Name</label>
+              <input style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }} type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full Name" />
             </div>
 
             <div>
-              <label className="modal-label">
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>
                 Username
                 {!canChange && (
                   <span style={{ color: "#f59e0b", float: "right", textTransform: "none" }}>Locked for 14d</span>
                 )}
               </label>
               <input
-                className="modal-input"
+                style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }}
                 type="text"
                 value={username}
                 onChange={(e) => { setUsername(e.target.value); setUsernameError(null); }}
@@ -496,10 +428,9 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
             </div>
 
             <div>
-              <label className="modal-label">Bio</label>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>Bio</label>
               <textarea
-                className="modal-input"
-                style={{ resize: "none" }}
+                style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box", resize: "none" }}
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
@@ -508,33 +439,32 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
             </div>
 
             <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "8px" }}>
-              <span className="modal-label" style={{ color: "#0f172a", marginBottom: "16px" }}>Social Links</span>
+              <span style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#0f172a", marginBottom: "16px" }}>Social Links</span>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 <div>
-                  <label className="modal-label" style={{ fontSize: "11px" }}>GitHub URL</label>
-                  <input className="modal-input" type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/your-username" />
+                  <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>GitHub URL</label>
+                  <input style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }} type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/your-username" />
                 </div>
                 <div>
-                  <label className="modal-label" style={{ fontSize: "11px" }}>Instagram URL</label>
-                  <input className="modal-input" type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://instagram.com/your-username" />
+                  <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>Instagram URL</label>
+                  <input style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }} type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://instagram.com/your-username" />
                 </div>
                 <div>
-                  <label className="modal-label" style={{ fontSize: "11px" }}>LinkedIn URL</label>
-                  <input className="modal-input" type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/your-username" />
+                  <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>LinkedIn URL</label>
+                  <input style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }} type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/your-username" />
                 </div>
                 <div>
-                  <label className="modal-label" style={{ fontSize: "11px" }}>Personal Website</label>
-                  <input className="modal-input" type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://your-website.com" />
+                  <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>Personal Website</label>
+                  <input style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }} type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://your-website.com" />
                 </div>
               </div>
             </div>
 
             <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "24px" }}>
-              <label className="modal-label">Tech Stack & Skills</label>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#0f172a", marginBottom: "16px" }}>Tech Stack & Skills</label>
               <form onSubmit={handleAddSkill} style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
                 <input
-                  className="modal-input"
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }}
                   type="text"
                   value={skillInput}
                   onChange={(e) => setSkillInput(e.target.value)}
@@ -543,8 +473,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                 <button
                   type="button"
                   onClick={() => handleAddSkill()}
-                  className="modal-btn modal-btn-secondary"
-                  style={{ padding: "0 20px" }}
+                  style={{ padding: "0 20px", borderRadius: "14px", fontSize: "15px", fontWeight: 700, transition: "all 0.2s ease", cursor: "pointer", background: "transparent", color: "#64748b", border: "1px solid #e2e8f0" }}
                 >
                   Add
                 </button>
@@ -552,10 +481,10 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {skills.map((skill) => (
-                  <div key={skill} className="skill-tag">
+                  <div key={skill} style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#f1f5f9", color: "#0f172a", padding: "6px 10px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "1px solid #e2e8f0", cursor: "pointer" }}>
                     {skill}
                     <span
-                      className="skill-remove"
+                      style={{ cursor: "pointer" }}
                       onClick={() => handleRemoveSkill(skill)}
                     >
                       &times;
@@ -574,9 +503,9 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
             <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "24px", marginBottom: "16px" }}>
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
                 <div style={{ flex: 1 }}>
-                  <label className="modal-label" style={{ color: "#0f172a", marginBottom: "4px" }}>Open to Opportunities</label>
+                  <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#0f172a", marginBottom: "4px" }}>Open to Opportunities</label>
                   <p style={{ margin: 0, fontSize: "13px", color: "#64748b", lineHeight: "1.5" }}>
-                    Show a badge on your profile indicating you're looking for work.
+                    Show a badge on your profile indicating you are looking for work.
                   </p>
                 </div>
                 <div
@@ -587,75 +516,41 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   }}
                   style={{
                     width: "48px",
-                    height: "26px",
-                    backgroundColor: isHirable ? "#3b82f6" : "#e2e8f0",
-                    borderRadius: "20px",
-                    position: "relative",
-                    cursor: (projectCount > 0 && skills.length > 0 && bio.trim().length > 0) ? "pointer" : "not-allowed",
-                    transition: "background-color 0.3s ease",
-                    flexShrink: 0,
-                    opacity: (projectCount > 0 && skills.length > 0 && bio.trim().length > 0) ? 1 : 0.5
+                    height: "48px",
+                    borderRadius: "12px",
+                    border: isHirable ? "2px solid #10b981" : "2px solid #e2e8f0",
+                    backgroundColor: isHirable ? "#10b981" : "white",
+                    color: isHirable ? "white" : "#64748b",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
                   }}
                 >
-                  <div style={{
-                    position: "absolute",
-                    top: "3px",
-                    left: isHirable ? "25px" : "3px",
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "white",
-                    borderRadius: "50%",
-                    transition: "left 0.3s ease",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-                  }} />
+                  {isHirable ? "✓" : "○"}
                 </div>
               </div>
-
-              {(projectCount === 0 || skills.length === 0 || bio.trim().length === 0) && (
-                <div style={{
-                  marginTop: "12px",
-                  padding: "12px",
-                  backgroundColor: "#fffbeb",
-                  border: "1px solid #fde68a",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                  color: "#92400e"
-                }}>
-                  <strong style={{ display: "block", marginBottom: "4px" }}>Activation Criteria:</strong>
-                  <ul style={{ margin: 0, paddingLeft: "18px" }}>
-                    <li style={{ color: bio.trim().length > 0 ? "#3b82f6" : "inherit" }}>Filled bio {bio.trim().length > 0 && "✓"}</li>
-                    <li style={{ color: skills.length > 0 ? "#3b82f6" : "inherit" }}>At least 1 skill {skills.length > 0 && "✓"}</li>
-                    <li style={{ color: projectCount > 0 ? "#3b82f6" : "inherit" }}>At least 1 published project {projectCount > 0 && "✓"}</li>
-                  </ul>
-                </div>
-              )}
             </div>
-          </div>
 
-          {/* Footer Actions */}
-          <div style={{
-            padding: isMobile ? "16px 20px 32px" : "24px 32px",
-            backgroundColor: "#f8fafc",
-            display: "flex",
-            justifyContent: isMobile ? "stretch" : "flex-end",
-            gap: "12px",
-            borderTop: "1px solid #f1f5f9"
-          }}>
-            <button
-              className="modal-btn modal-btn-secondary"
-              style={{ padding: isMobile ? "14px" : "12px 24px", flex: isMobile ? 1 : "initial" }}
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              className="modal-btn modal-btn-primary"
-              style={{ padding: isMobile ? "14px" : "12px 24px", flex: isMobile ? 2 : "initial" }}
-              onClick={submit}
-              disabled={isSubmitting || !name.trim()}
-            >
-              {isSubmitting ? "Updating..." : "Save Changes"}
-            </button>
+            {/* Action Buttons */}
+            <div style={{ display: "flex", justifyContent: isMobile ? "stretch" : "flex-end", gap: "12px", borderTop: "1px solid #f1f5f9", paddingTop: "24px" }}>
+              <button
+                onClick={onClose}
+                style={{ padding: "12px 24px", borderRadius: "14px", fontSize: "15px", fontWeight: 700, transition: "all 0.2s ease", cursor: "pointer", background: "transparent", color: "#64748b", border: "1px solid #e2e8f0" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submit}
+                disabled={isSubmitting}
+                style={{ padding: "12px 24px", borderRadius: "14px", fontSize: "15px", fontWeight: 700, transition: "all 0.2s ease", cursor: "pointer", background: "#212121", color: "white", border: "none", opacity: isSubmitting ? 0.5 : 1 }}
+              >
+                {isSubmitting ? "Updating..." : "Save Changes"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
