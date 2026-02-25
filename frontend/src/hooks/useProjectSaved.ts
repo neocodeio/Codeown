@@ -3,23 +3,30 @@ import { useClerkAuth } from "./useClerkAuth";
 import { useClerkUser } from "./useClerkUser";
 import api from "../api/axios";
 
-export function useProjectSaved(projectId: number) {
-  const [isSaved, setIsSaved] = useState(false);
+export function useProjectSaved(projectId: number, initialIsSaved?: boolean) {
+  const [isSaved, setIsSaved] = useState(initialIsSaved ?? false);
   const [loading, setLoading] = useState(false);
   const { getToken } = useClerkAuth();
   const { user } = useClerkUser();
 
+  // Sync with initial values if they change
+  useEffect(() => {
+    if (initialIsSaved !== undefined) {
+      setIsSaved(initialIsSaved);
+    }
+  }, [initialIsSaved]);
+
   const fetchSavedStatus = async () => {
     if (!user || !projectId) return;
-    
+
     try {
       const token = await getToken();
       if (!token) return;
-      
+
       const response = await api.get(`/projects/${projectId}/save`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       setIsSaved(response.data.isSaved);
     } catch (error) {
       console.error("Error fetching saved status:", error);
@@ -52,10 +59,13 @@ export function useProjectSaved(projectId: number) {
   };
 
   useEffect(() => {
+    // If initial value is provided, don't fetch redundantly
+    if (initialIsSaved !== undefined) return;
+
     if (projectId && user) {
       fetchSavedStatus();
     }
-  }, [projectId, user]);
+  }, [projectId, user, initialIsSaved]);
 
   return { isSaved, loading, toggleSave, fetchSavedStatus };
 }

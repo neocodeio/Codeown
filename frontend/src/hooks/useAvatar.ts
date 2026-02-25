@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import api from '../api/axios';
 
 interface AvatarCache {
@@ -9,58 +9,50 @@ interface AvatarCache {
 const avatarCache: AvatarCache = {};
 
 /**
- * Custom hook to get and cache user avatars
- * This ensures consistent avatar display across the entire app
+ * Custom hook to get and cache user avatars using React Query
+ * This ensures consistent avatar display across the entire app with proper caching
  * 
  * @param userId - The user's ID
  * @param fallbackUrl - Optional fallback URL (e.g., Clerk's imageUrl)
  * @param userName - User's name for generating placeholder avatar
  * @returns The avatar URL to use
  */
-export function useAvatar(userId: string | undefined, fallbackUrl?: string | null | undefined, userName?: string) {
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+export function useAvatar(userId: string | undefined, fallbackUrl?: string | null, userName?: string) {
+    // Use React Query for avatar fetching with proper caching
+    const { data: avatarUrl, isLoading } = useQuery({
+        queryKey: ["avatar", userId],
+        queryFn: async () => {
+            if (!userId) return null;
+            
+            // Check cache first
+            if (avatarCache[userId] !== undefined) {
+                return avatarCache[userId];
+            }
 
-    useEffect(() => {
-        if (!userId) {
-            setLoading(false);
-            return;
-        }
-
-        // Check cache first
-        if (avatarCache[userId] !== undefined) {
-            setAvatarUrl(avatarCache[userId]);
-            setLoading(false);
-            return;
-        }
-
-        // Fetch from API
-        const fetchAvatar = async () => {
             try {
                 const res = await api.get(`/users/${userId}`);
                 const dbAvatarUrl = res.data?.avatar_url || null;
 
                 // Cache the result
                 avatarCache[userId] = dbAvatarUrl;
-                setAvatarUrl(dbAvatarUrl);
+                return dbAvatarUrl;
             } catch (error) {
                 console.error('Error fetching avatar:', error);
                 // Cache null to avoid repeated failed requests
                 avatarCache[userId] = null;
-                setAvatarUrl(null);
-            } finally {
-                setLoading(false);
+                return null;
             }
-        };
-
-        fetchAvatar();
-    }, [userId]);
+        },
+        enabled: !!userId,
+        staleTime: 10 * 60 * 1000, // 10 minutes cache
+        refetchOnWindowFocus: false,
+    });
 
     // Return priority: DB avatar > fallback > generated placeholder
     const finalUrl = avatarUrl || fallbackUrl ||
         `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || 'User')}&background=212121&color=ffffff&bold=true`;
 
-    return { avatarUrl: finalUrl, loading };
+    return { avatarUrl: finalUrl, loading: isLoading };
 }
 
 /**

@@ -106,13 +106,18 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-            setError("Image size should be less than 5MB");
-            return;
+        const { compressImage, base64ToFile } = await import("../utils/image");
+
+        let fileToUpload = file;
+        try {
+            const compressedBase64 = await compressImage(file, 1280, 1280, 0.8);
+            fileToUpload = base64ToFile(compressedBase64, file.name || "cover.jpg");
+        } catch (error) {
+            console.error("Compression failed, using original:", error);
         }
 
         const formDataUpload = new FormData();
-        formDataUpload.append("image", file);
+        formDataUpload.append("image", fileToUpload);
 
         try {
             const token = await getToken();

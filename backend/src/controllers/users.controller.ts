@@ -308,10 +308,10 @@ export async function ensureUserExists(userId: string, userData?: any) {
 
     console.log("User info extracted:", userInfo);
 
-    // Check if user exists
+    // Check if user exists - select only safe columns
     const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("*")
+        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url")
         .eq("id", userId)
         .single();
 
@@ -427,10 +427,10 @@ export async function getUserProfile(req: Request, res: Response) {
         const isId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId) || userId.startsWith("user_");
         const field = isId ? "id" : "username";
 
-        // Fetch user from Supabase
+        // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("*")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url")
             .eq(field, userId)
             .single();
 
@@ -563,7 +563,7 @@ export async function getUserProfile(req: Request, res: Response) {
         if (userData.pinned_post_id) {
             const { data: post } = await supabase
                 .from("posts")
-                .select("*")
+                .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language")
                 .eq("id", userData.pinned_post_id)
                 .single();
 

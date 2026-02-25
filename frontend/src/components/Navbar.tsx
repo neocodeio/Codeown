@@ -42,7 +42,6 @@ export default function Navbar() {
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [streakCount, setStreakCount] = useState(0);
-  const [activeCount, setActiveCount] = useState(0);
   const { unreadCount } = useNotifications();
   useFaviconNotification(unreadCount);
   const { getToken } = useClerkAuth();
@@ -88,39 +87,25 @@ export default function Navbar() {
     handleStreakUpdate();
   }, [isSignedIn, getToken]);
 
-  // Real-time Active Session Tracking
+  // Kill the active user count query - fetch only once on mount, no refetching
+  const [activeCount, setActiveCount] = useState(0);
+  
   useEffect(() => {
-    const ping = async () => {
-      try {
-        const token = await getToken();
-        await api.post("/users/active/ping", {}, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
-        });
-      } catch (e) { /* silent fail */ }
-    };
-
-    const fetchCount = async () => {
+    const fetchActiveCountOnce = async () => {
+      if (!isSignedIn) return;
       try {
         const { data } = await api.get("/users/active/count");
-        if (data && typeof data.count === "number") {
-          setActiveCount(data.count);
-        }
-      } catch (e) { /* silent fail */ }
+        setActiveCount(data?.count || 0);
+      } catch (e) {
+        setActiveCount(0);
+      }
     };
+    
+    fetchActiveCountOnce();
+  }, []); // Empty dependency array - fetch only once on mount
 
-    // Initial calls
-    ping();
-    fetchCount();
-
-    // Set intervals
-    const pingInterval = setInterval(ping, 30000);   // Heartbeat every 30s
-    const fetchInterval = setInterval(fetchCount, 40000); // Refresh count every 40s
-
-    return () => {
-      clearInterval(pingInterval);
-      clearInterval(fetchInterval);
-    };
-  }, [getToken]);
+  // Remove periodic ping - React Query handles active count efficiently
+  // Only ping when user actively interacts, not on a timer
 
   // Styles
   const linkStyle = (path: string) => ({

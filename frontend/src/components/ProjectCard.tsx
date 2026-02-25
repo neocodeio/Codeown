@@ -23,6 +23,7 @@ import {
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
+import { getOptimizedImageUrl, handleImageError } from "../utils/image";
 
 interface ProjectCardProps {
   project: Project;
@@ -34,7 +35,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
   const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id, project.isLiked, project.like_count);
-  const { isSaved, toggleSave } = useProjectSaved(project.id);
+  const { isSaved, toggleSave } = useProjectSaved(project.id, project.isSaved);
   const [showEditModal, setShowEditModal] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -400,9 +401,11 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             transition: "border-color 0.2s"
           }}>
             <img
-              src={project.cover_image}
+              src={getOptimizedImageUrl(project.cover_image, 600)}
               alt={project.title}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              loading="lazy"
+              onError={(e) => handleImageError(e.currentTarget)}
             />
           </div>
         )}

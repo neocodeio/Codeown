@@ -1,49 +1,33 @@
-import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "./VerifiedBadge";
 import RecentProjectLaunches from "./RecentProjectLaunches";
 
-interface RecommendedUser {
-    id: string;
-    name: string;
-    username: string;
-    avatar_url: string;
-    streak_count: number;
-    isFollowing: boolean;
-}
-
 export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
     const isDesktop = width >= 1280;
-    const [users, setUsers] = useState<RecommendedUser[]>([]);
-    const [loading, setLoading] = useState(true);
     const { getToken } = useClerkAuth();
     const { isSignedIn } = useClerkUser();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const token = await getToken();
-                // Even if not signed in, we can fetch, but passing token allows "isFollowing" check
-                const headers = token ? { Authorization: `Bearer ${token}` } : {};
-                const response = await api.get("/users/recommended?limit=5", { headers });
-                setUsers(response.data);
-            } catch (error) {
-                console.error("Failed to fetch recommended users", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (isDesktop) {
-            fetchUsers();
-        }
-    }, [isDesktop, getToken, isSignedIn]);
+    // Use React Query for recommended users with proper caching
+    const { data: users = [], isLoading: loading } = useQuery({
+        queryKey: ["recommendedUsers"],
+        queryFn: async () => {
+            const token = await getToken();
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const response = await api.get("/users/recommended?limit=5", { headers });
+            return response.data;
+        },
+        enabled: isDesktop, // Only fetch on desktop
+        staleTime: 10 * 60 * 1000, // 10 minutes cache
+        refetchOnWindowFocus: false,
+    });
 
     const handleFollow = async (targetId: string, currentStatus: boolean) => {
         if (!isSignedIn) {
@@ -51,10 +35,12 @@ export default function RecommendedUsersSidebar() {
             return;
         }
 
-        // Optimistic update
-        setUsers(prev => prev.map(u =>
-            u.id === targetId ? { ...u, isFollowing: !currentStatus } : u
-        ));
+        // Optimistic update using query client
+        queryClient.setQueryData(["recommendedUsers"], (old: any[] = []) => 
+            old.map(u => 
+                u.id === targetId ? { ...u, isFollowing: !currentStatus } : u
+            )
+        );
 
         try {
             const token = await getToken();
@@ -64,9 +50,11 @@ export default function RecommendedUsersSidebar() {
         } catch (error) {
             console.error("Failed to follow user", error);
             // Revert on error
-            setUsers(prev => prev.map(u =>
-                u.id === targetId ? { ...u, isFollowing: currentStatus } : u
-            ));
+            queryClient.setQueryData(["recommendedUsers"], (old: any[] = []) => 
+                old.map(u => 
+                    u.id === targetId ? { ...u, isFollowing: currentStatus } : u
+                )
+            );
         }
     };
 

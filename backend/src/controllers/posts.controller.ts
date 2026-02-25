@@ -5,17 +5,17 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function getPosts(req: Request, res: Response) {
   try {
-    const { page = "1", limit = "20", filter = "all", tag, lang } = req.query;
+    const { page = "1", limit = "10", filter = "all", tag, lang } = req.query;
     console.log("getPosts query params:", { page, limit, filter, tag, lang });
 
     const pageNum = parseInt(page as string, 10) || 1;
-    const limitNum = parseInt(limit as string, 10) || 20;
+    const limitNum = parseInt(limit as string, 10) || 10;
     const offset = (pageNum - 1) * limitNum;
 
     // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable)", { count: "exact" })
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable)", { count: "exact" })
       .order("created_at", { ascending: false });
 
     if (lang && typeof lang === 'string' && lang.trim().length > 0) {
@@ -185,10 +185,10 @@ export async function getPostsByUser(req: Request, res: Response) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    // Fetch posts for the user
+    // Fetch posts for the user with specific columns only
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("*")
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 

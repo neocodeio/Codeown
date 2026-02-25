@@ -79,10 +79,13 @@ export function useProjectLikes(projectId: number, initialIsLiked?: boolean, ini
   };
 
   useEffect(() => {
+    // If we already have initial stats, don't fetch again
+    if (initialIsLiked !== undefined && initialLikeCount !== undefined) return;
+
     if (projectId && userId && isLoaded) {
       fetchLikeStatus();
     }
-  }, [projectId, userId, isLoaded]);
+  }, [projectId, userId, isLoaded, initialIsLiked, initialLikeCount]);
 
   return { isLiked, likeCount, toggleLike, fetchLikeStatus };
 }

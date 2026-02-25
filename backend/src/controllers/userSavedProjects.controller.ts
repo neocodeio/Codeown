@@ -30,7 +30,7 @@ export async function getUserSavedProjects(req: Request, res: Response) {
     const projectIds = savedProjects.map((sp: any) => sp.project_id);
     const { data: projects, error: projectsError } = await supabase
       .from("projects")
-      .select("*")
+      .select("id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id")
       .in("id", projectIds)
       .order("created_at", { ascending: false });
 

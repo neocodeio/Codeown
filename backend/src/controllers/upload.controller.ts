@@ -6,8 +6,7 @@ interface MulterRequest extends Request {
   file?: Express.Multer.File;
 }
 
-// Simple image upload handler - converts image to base64
-// In production, you should use Supabase Storage or similar service
+// Upload image to Supabase Storage and return public URL
 export async function uploadImage(req: MulterRequest, res: Response) {
   try {
     const user = req.user;
@@ -34,14 +33,31 @@ export async function uploadImage(req: MulterRequest, res: Response) {
       return res.status(400).json({ error: "File size should be less than 5MB" });
     }
 
-    // Convert buffer to base64
-    const base64Image = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+    // Generate unique filename
+    const fileExt = file.originalname.split('.').pop();
+    const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
-    // For now, return the base64 string
-    // In production, upload to Supabase Storage and return the public URL
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('images')
+      .upload(fileName, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true
+      });
+
+    if (error) {
+      console.error("Supabase upload error:", error);
+      return res.status(500).json({ error: "Failed to upload image" });
+    }
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('images')
+      .getPublicUrl(fileName);
+
     return res.json({ 
       success: true, 
-      url: base64Image // Match what frontend expects
+      url: publicUrl
     });
   } catch (error: any) {
     console.error("Unexpected error in uploadImage:", error);

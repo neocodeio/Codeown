@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "../api/axios";
 
@@ -26,7 +27,7 @@ export interface Post {
 
 export type FeedFilter = "all" | "following" | "contributors";
 
-export function usePosts(limit: number = 20, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string, lang?: "en" | "ar") {
+export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string, lang?: "en" | "ar", enabled: boolean = true) {
   const {
     data,
     fetchNextPage,
@@ -36,6 +37,7 @@ export function usePosts(limit: number = 20, filter: FeedFilter = "all", getToke
     refetch,
   } = useInfiniteQuery({
     queryKey: ["posts", filter, tag, lang],
+    enabled,
     queryFn: async ({ pageParam = 1 }) => {
       const token = getToken ? await getToken() : null;
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -72,10 +74,18 @@ export function usePosts(limit: number = 20, filter: FeedFilter = "all", getToke
 
   const posts = data?.pages.flatMap((page) => page.posts) || [];
 
+  const fetchPosts = useCallback((_pageNum?: number, append: boolean = false) => {
+    if (append) {
+      fetchNextPage();
+    } else {
+      refetch();
+    }
+  }, [fetchNextPage, refetch]);
+
   return {
     posts,
     loading: isLoading || isFetchingNextPage,
-    fetchPosts: (_pageNum?: number, append: boolean = false) => append ? fetchNextPage() : refetch(),
+    fetchPosts,
     total: data?.pages[0]?.total || 0,
     totalPages: data?.pages[0]?.totalPages || 0,
     hasMore: hasNextPage,

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getOptimizedImageUrl, handleImageError } from "../utils/image";
 
 interface ImageSliderProps {
   images: string[];
@@ -10,13 +11,13 @@ export default function ImageSlider({ images }: ImageSliderProps) {
   if (!images || images.length === 0) return null;
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === images.length - 1 ? 0 : prevIndex + 1
     );
   };
@@ -37,8 +38,8 @@ export default function ImageSlider({ images }: ImageSliderProps) {
       {/* Main Image */}
       <div style={{ position: "relative", width: "100%", paddingTop: "56.25%" }}> {/* 16:9 aspect ratio */}
         <img
-          src={images[currentIndex]}
-          alt={`Post image ${currentIndex + 1}`}
+          src={getOptimizedImageUrl(images[currentIndex], 800)}
+          alt={`Slide ${currentIndex + 1}`}
           style={{
             position: "absolute",
             top: 0,
@@ -47,8 +48,10 @@ export default function ImageSlider({ images }: ImageSliderProps) {
             height: "100%",
             objectFit: "cover",
           }}
+          onError={(e) => handleImageError(e.currentTarget)}
+          loading="lazy"
         />
-        
+
         {/* Navigation Arrows - Only show if more than one image */}
         {images.length > 1 && (
           <>

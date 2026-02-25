@@ -25,6 +25,9 @@ export function useLikes(postId: number | null, initialIsLiked?: boolean, initia
     let isMounted = true;
 
     const fetchStatus = async () => {
+      // If we already have initial stats from the feed/parent, don't fetch again
+      if (initialIsLiked !== undefined) return; // Modified: Only fetch if initialIsLiked is undefined
+
       if (!isLoaded || !postId) return;
 
       try {
@@ -53,7 +56,7 @@ export function useLikes(postId: number | null, initialIsLiked?: boolean, initia
     fetchStatus();
 
     return () => { isMounted = false; };
-  }, [postId, userId, getToken, isLoaded]);
+  }, [postId, userId, getToken, isLoaded, initialIsLiked]); // Modified: Removed initialLikeCount from dependencies
 
   const fetchLikeStatus = async () => {
     if (!postId) return;

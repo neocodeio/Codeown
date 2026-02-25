@@ -26,16 +26,16 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function getProjects(req: Request, res: Response) {
   try {
-    const { page = "1", limit = "20", filter = "all", tag } = req.query;
+    const { page = "1", limit = "10", filter = "all", tag } = req.query;
     const pageNum = parseInt(page as string, 10) || 1;
-    const limitNum = parseInt(limit as string, 10) || 20;
+    const limitNum = parseInt(limit as string, 10) || 10;
     const offset = (pageNum - 1) * limitNum;
 
     // Simplified query to ensure reliability in production
     let projectsQuery = supabase
       .from("projects")
       .select(`
-        *,
+        id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id,
         user:user_id(id, name, avatar_url, username, is_hirable),
         ratings:project_ratings(rating)
       `, { count: "exact" })
@@ -244,9 +244,10 @@ export async function getUserProjects(req: Request, res: Response) {
     const limitNum = parseInt(limit as string, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
 
+    // Fetch projects for the user with specific columns only
     const { data: projects, error: projectsError, count } = await supabase
       .from("projects")
-      .select("*", { count: "exact" })
+      .select("id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id", { count: "exact" })
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .range(offset, offset + limitNum - 1);
@@ -431,10 +432,10 @@ export async function updateProject(req: Request, res: Response) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    // Check if project exists and user owns it
+    // Check if project exists and user owns it - specific columns only
     const { data: existingProject, error: fetchError } = await supabase
       .from("projects")
-      .select("*")
+      .select("id, user_id")
       .eq("id", id)
       .eq("user_id", userId)
       .single();
@@ -524,10 +525,10 @@ export async function deleteProject(req: Request, res: Response) {
 
     console.log(`[deleteProject] Attempting to delete project ${resolvedId} for user ${userId}`);
 
-    // Check if project exists and user owns it
+    // Check if project exists and user owns it - specific columns only
     const { data: existingProject, error: fetchError } = await supabase
       .from("projects")
-      .select("*")
+      .select("id, user_id")
       .eq("id", resolvedId)
       .eq("user_id", userId)
       .single();
@@ -583,10 +584,10 @@ export async function toggleProjectLike(req: Request, res: Response) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    // Check if project exists
+    // Check if project exists - specific columns only for like toggle
     const { data: project, error: projectError } = await supabase
       .from("projects")
-      .select("*")
+      .select("id, user_id")
       .eq("id", id)
       .single();
 
@@ -598,10 +599,10 @@ export async function toggleProjectLike(req: Request, res: Response) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    // Check if user already liked the project
+    // Check if user already liked the project - specific columns only
     const { data: existingLike, error: likeError } = await supabase
       .from("project_likes")
-      .select("*")
+      .select("id")
       .eq("project_id", id)
       .eq("user_id", userId)
       .single();
@@ -672,10 +673,10 @@ export async function getProjectLikeStatus(req: Request, res: Response) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    // Check if user liked the project
+    // Check if user liked the project - specific columns only
     const { data: existingLike, error: likeError } = await supabase
       .from("project_likes")
-      .select("*")
+      .select("id")
       .eq("project_id", id)
       .eq("user_id", userId)
       .single();
@@ -699,10 +700,10 @@ export async function toggleProjectSave(req: Request, res: Response) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    // Check if project exists
+    // Check if project exists - specific columns only for like toggle
     const { data: project, error: projectError } = await supabase
       .from("projects")
-      .select("*")
+      .select("id, user_id")
       .eq("id", id)
       .single();
 
@@ -710,10 +711,10 @@ export async function toggleProjectSave(req: Request, res: Response) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    // Check if user already saved the project
+    // Check if user already saved the project - specific columns only
     const { data: existingSave, error: saveError } = await supabase
       .from("project_saves")
-      .select("*")
+      .select("id")
       .eq("project_id", id)
       .eq("user_id", userId)
       .single();
@@ -760,10 +761,10 @@ export async function getProjectSaveStatus(req: Request, res: Response) {
       return res.json({ isSaved: false });
     }
 
-    // Check if project exists
+    // Check if project exists - specific columns only for like toggle
     const { data: project, error: projectError } = await supabase
       .from("projects")
-      .select("*")
+      .select("id, user_id")
       .eq("id", id)
       .single();
 
@@ -771,10 +772,10 @@ export async function getProjectSaveStatus(req: Request, res: Response) {
       return res.status(404).json({ error: "Project not found" });
     }
 
-    // Check if user saved the project
+    // Check if user saved the project - specific columns only
     const { data: existingSave, error: saveError } = await supabase
       .from("project_saves")
-      .select("*")
+      .select("id")
       .eq("project_id", id)
       .eq("user_id", userId)
       .single();

@@ -38,7 +38,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   const { getToken } = useClerkAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { isLiked, likeCount, toggleLike, loading: likeLoading } = useLikes(post.id, post.isLiked, post.like_count);
-  const { isSaved, toggleSave, fetchSavedStatus } = useSaved(post.id, post.isSaved);
+  const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
   const [shareCopied, setShareCopied] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -48,11 +48,6 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   const isOwnPost = currentUser?.id === post.user_id;
 
   useEffect(() => {
-    if (post.id && post.user_id) {
-      // fetchLikeStatus(); // Handled internally by useLikes hook now
-      fetchSavedStatus();
-    }
-
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
@@ -65,7 +60,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [post.id, post.user_id, isMenuOpen]);
+  }, [isMenuOpen]);
 
   const handleUserClick = (e: React.MouseEvent) => {
     e.stopPropagation();

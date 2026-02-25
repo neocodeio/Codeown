@@ -31,8 +31,11 @@ export function useSaved(postId: number | null, initialIsSaved?: boolean) {
   };
 
   useEffect(() => {
+    // If we already have initial status from the feed, don't fetch again
+    if (initialIsSaved !== undefined) return;
+
     fetchSavedStatus();
-  }, [postId, userId, isLoaded]);
+  }, [postId, userId, isLoaded, initialIsSaved]);
 
   const toggleSave = async () => {
     if (!postId) return;

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 
@@ -20,95 +21,75 @@ export interface Notification {
 }
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(false);
   const { getToken, isSignedIn } = useClerkAuth();
+  const queryClient = useQueryClient();
 
-  const fetchNotifications = useCallback(async () => {
-    if (!isSignedIn) return;
-
-    setLoading(true);
-    try {
+  // Fetch full notifications list
+  const {
+    data: notifications = [],
+    isLoading,
+    refetch: fetchNotifications
+  } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: async () => {
       const token = await getToken();
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
+      if (!token) return [];
       const res = await api.get("/notifications?limit=20", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNotifications(res.data.notifications || []);
-      setUnreadCount(res.data.unreadCount || 0);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [isSignedIn, getToken]);
+      return res.data.notifications || [];
+    },
+    enabled: isSignedIn,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-  const fetchUnreadCount = useCallback(async () => {
-    if (!isSignedIn) return;
+  // Kill notification polling - fetch only once on mount
+  const [unreadCount, setUnreadCount] = useState(0);
+  
+  useEffect(() => {
+    const fetchUnreadCountOnce = async () => {
+      if (!isSignedIn) return;
+      try {
+        const token = await getToken();
+        if (!token) return;
+        const res = await api.get("/notifications/unread/count", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUnreadCount(res.data.count || 0);
+      } catch (e) {
+        setUnreadCount(0);
+      }
+    };
+    
+    fetchUnreadCountOnce();
+  }, []); // Empty dependency array - fetch only once on mount
 
-    try {
+  // Mark as read mutation
+  const markReadMutation = useMutation({
+    mutationFn: async (notificationId: number | "all") => {
       const token = await getToken();
       if (!token) return;
-
-      const res = await api.get("/notifications/unread/count", {
+      await api.put(`/notifications/${notificationId}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUnreadCount(res.data.count || 0);
-    } catch (error) {
-      console.error("Error fetching unread count:", error);
-    }
-  }, [isSignedIn, getToken]);
-
-  const markAsRead = async (notificationId: number | "all") => {
-    try {
-      const token = await getToken();
-      if (!token) return;
-
-      await api.put(
-        `/notifications/${notificationId}/read`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (notificationId === "all") {
-        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-        setUnreadCount(0);
-      } else {
-        setNotifications((prev) =>
-          prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
-        );
-        setUnreadCount((prev) => Math.max(0, prev - 1));
+      return notificationId;
+    },
+    onSuccess: (_notificationId) => {
+      // More targeted invalidation - only update what's necessary
+      queryClient.setQueryData(["notifications", "unreadCount"], 0);
+      if (_notificationId === "all") {
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
       }
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
     }
-  };
+  });
 
-  useEffect(() => {
-    fetchNotifications();
-    fetchUnreadCount();
-
-    // Poll for new notifications every 30 seconds
-    const interval = setInterval(() => {
-      fetchUnreadCount();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [fetchNotifications, fetchUnreadCount]);
-
-  return {
+  // Memoize return object to prevent unnecessary re-renders
+  return useMemo(() => ({
     notifications,
     unreadCount,
-    loading,
+    loading: isLoading,
     fetchNotifications,
-    markAsRead,
-    refreshUnreadCount: fetchUnreadCount,
-  };
+    markAsRead: markReadMutation.mutate,
+    refreshUnreadCount: () => {}, // No-op since we fetch only once on mount
+  }), [notifications, unreadCount, isLoading, fetchNotifications, markReadMutation.mutate]);
 }

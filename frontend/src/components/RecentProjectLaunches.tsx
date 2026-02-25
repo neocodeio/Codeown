@@ -1,28 +1,20 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import api from "../api/axios";
-import type { Project } from "../types/project";
 import { formatRelativeDate } from "../utils/date";
 
 export default function RecentProjectLaunches() {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchRecentProjects = async () => {
-            try {
-                const response = await api.get("/projects?limit=5");
-                const projectsData = response.data.projects || (Array.isArray(response.data) ? response.data : (response.data.data || []));
-                setProjects(projectsData.slice(0, 5));
-            } catch (error) {
-                console.error("Failed to fetch recent projects", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchRecentProjects();
-    }, []);
+    // Use React Query with caching to avoid duplicate requests
+    const { data: projects = [], isLoading: loading } = useQuery({
+        queryKey: ["recentProjects", "sidebar"],
+        queryFn: async () => {
+            const response = await api.get("/projects?limit=5");
+            const projectsData = response.data.projects || (Array.isArray(response.data) ? response.data : (response.data.data || []));
+            return projectsData.slice(0, 5);
+        },
+        staleTime: 10 * 60 * 1000, // 10 minutes cache
+        refetchOnWindowFocus: false,
+    });
 
     if (loading) {
         return (

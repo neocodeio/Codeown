@@ -39,7 +39,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
     }
   }, [isOpen, post]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
@@ -49,18 +49,20 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
       return;
     }
 
-    Array.from(files).forEach((file) => {
-      if (file.size > 5 * 1024 * 1024) {
-        alert(`Image ${file.name} is too large. Maximum size is 5MB.`);
-        return;
-      }
+    const { compressImage } = await import("../utils/image");
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setImages((prev) => [...prev, base64String]);
-      };
-      reader.readAsDataURL(file);
+    Array.from(files).forEach(async (file) => {
+      try {
+        const compressedBase64 = await compressImage(file, 1200, 1200, 0.7);
+        setImages((prev) => [...prev, compressedBase64]);
+      } catch (error) {
+        console.error("Compression error:", error);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImages((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      }
     });
   };
 

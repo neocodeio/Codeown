@@ -31,7 +31,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         fileInputRef.current?.click();
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files) return;
 
@@ -41,21 +41,24 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             return;
         }
 
-        Array.from(files).forEach((file) => {
-            if (file.size > 5 * 1024 * 1024) {
-                alert(`Image ${file.name} is too large. Maximum size is 5MB.`);
-                return;
-            }
+        const { compressImage } = await import("../utils/image");
 
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64String = reader.result as string;
-                setImages((prev) => [...prev, base64String]);
-            };
-            reader.readAsDataURL(file);
+        Array.from(files).forEach(async (file) => {
+            try {
+                // For feed posts, we use slightly more aggressive compression (1000px, 0.6 quality)
+                const compressedBase64 = await compressImage(file, 1000, 1000, 0.6);
+                setImages((prev) => [...prev, compressedBase64]);
+            } catch (error) {
+                console.error("Compression error:", error);
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setImages((prev) => [...prev, reader.result as string]);
+                };
+                reader.readAsDataURL(file);
+            }
         });
 
-        // Reset input value so the same file can be selected again if removed
+        // Reset input value
         e.target.value = "";
     };
 

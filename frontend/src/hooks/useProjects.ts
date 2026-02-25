@@ -1,9 +1,10 @@
+import { useCallback } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "../api/axios";
 
 export type FeedFilter = "all" | "following" | "contributors";
 
-export function useProjects(limit: number = 20, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string) {
+export function useProjects(limit: number = 10, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string, enabled: boolean = true) {
     const {
         data,
         fetchNextPage,
@@ -13,6 +14,7 @@ export function useProjects(limit: number = 20, filter: FeedFilter = "all", getT
         refetch,
     } = useInfiniteQuery({
         queryKey: ["projects", filter, tag],
+        enabled,
         queryFn: async ({ pageParam = 1 }) => {
             const token = getToken ? await getToken() : null;
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -46,10 +48,18 @@ export function useProjects(limit: number = 20, filter: FeedFilter = "all", getT
 
     const projects = data?.pages.flatMap((page) => page.projects) || [];
 
+    const fetchProjects = useCallback((_pageNum?: number, append: boolean = false) => {
+        if (append) {
+            fetchNextPage();
+        } else {
+            refetch();
+        }
+    }, [fetchNextPage, refetch]);
+
     return {
         projects,
         loading: isLoading || isFetchingNextPage,
-        fetchProjects: (_pageNum?: number, append: boolean = false) => append ? fetchNextPage() : refetch(),
+        fetchProjects,
         total: data?.pages[0]?.total || 0,
         totalPages: data?.pages[0]?.totalPages || 0,
         hasMore: hasNextPage,

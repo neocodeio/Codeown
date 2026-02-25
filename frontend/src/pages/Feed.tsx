@@ -53,14 +53,14 @@ export default function Feed() {
         loading: postsLoading,
         fetchPosts,
         hasMore: postsHasMore
-    } = usePosts(20, feedFilter, getToken, selectedTag, selectedLang || undefined);
+    } = usePosts(10, feedFilter, getToken, selectedTag, selectedLang || undefined, feedType === "posts");
 
     const {
         projects,
         loading: projectsLoading,
         fetchProjects,
         hasMore: projectsHasMore
-    } = useProjects(20, feedFilter, getToken, selectedTag);
+    } = useProjects(10, feedFilter, getToken, selectedTag, feedType === "projects");
 
     const loading = feedType === "posts" ? postsLoading : projectsLoading;
     const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;

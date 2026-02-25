@@ -41,10 +41,10 @@ export async function searchPosts(req: Request, res: Response) {
       return res.json({ posts: [], total: 0, page: pageNum, limit: limitNum });
     }
 
-    // Search posts by title, content, or tags
+    // Search posts by title, content, or tags - select only safe columns
     let postsQuery = supabase
       .from("posts")
-      .select("*", { count: "exact" })
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable)", { count: "exact" })
       .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
       .order("created_at", { ascending: false })
       .range(offset, offset + limitNum - 1);
@@ -54,7 +54,7 @@ export async function searchPosts(req: Request, res: Response) {
       const tag = query.substring(1).toLowerCase();
       postsQuery = supabase
         .from("posts")
-        .select("*", { count: "exact" })
+        .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable)", { count: "exact" })
         .contains("tags", [tag])
         .order("created_at", { ascending: false })
         .range(offset, offset + limitNum - 1);
@@ -123,10 +123,13 @@ export async function searchProjects(req: Request, res: Response) {
       return res.json({ projects: [], total: 0, page: pageNum, limit: limitNum });
     }
 
-    // Search projects by title, description, or technologies
+    // Search projects by title, description, or technologies - select only safe columns
     let projectsQuery = supabase
       .from("projects")
-      .select("*", { count: "exact" })
+      .select(`
+        id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id,
+        user:user_id(id, name, avatar_url, username, is_hirable)
+      `, { count: "exact" })
       .or(`title.ilike.%${query}%,description.ilike.%${query}%,technologies_used.cs.{${query}}`)
       .order("created_at", { ascending: false })
       .range(offset, offset + limitNum - 1);
@@ -233,7 +236,7 @@ export async function searchDevelopers(req: Request, res: Response) {
 
     let devQuery = supabase
       .from("users")
-      .select("*", { count: "exact" })
+      .select("id, name, username, avatar_url, bio, location, job_title, skills, experience_level, is_hirable, created_at", { count: "exact" })
       .eq("is_hirable", true);
 
     if (query) {
