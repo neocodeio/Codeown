@@ -88,10 +88,9 @@ export const base64ToFile = (base64: string, filename: string): File => {
 /**
  * Gets image URL with CORS-safe handling and fallback
  * @param url Original Supabase URL
- * @param width Desired width (not used for now)
  * @returns Direct Supabase URL with proper CORS handling
  */
-export const getOptimizedImageUrl = (url: string, width: number = 800) => {
+export const getOptimizedImageUrl = (url: string) => {
     if (!url || typeof url !== 'string') return url;
 
     // Return Supabase URLs as-is - they should work with proper bucket configuration

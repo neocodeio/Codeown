@@ -401,7 +401,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             transition: "border-color 0.2s"
           }}>
             <img
-              src={getOptimizedImageUrl(project.cover_image, 600)}
+              src={getOptimizedImageUrl(project.cover_image)}
               alt={project.title}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
               loading="lazy"

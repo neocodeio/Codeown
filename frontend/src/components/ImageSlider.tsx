@@ -38,7 +38,7 @@ export default function ImageSlider({ images }: ImageSliderProps) {
       {/* Main Image */}
       <div style={{ position: "relative", width: "100%", paddingTop: "56.25%" }}> {/* 16:9 aspect ratio */}
         <img
-          src={getOptimizedImageUrl(images[currentIndex], 800)}
+          src={getOptimizedImageUrl(images[currentIndex])}
           alt={`Slide ${currentIndex + 1}`}
           style={{
             position: "absolute",
