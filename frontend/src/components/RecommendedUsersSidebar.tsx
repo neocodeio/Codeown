@@ -69,7 +69,7 @@ export default function RecommendedUsersSidebar() {
                 width: "350px",
                 minWidth: "350px",
                 padding: width >= 1400 ? 0 : "0 14px 0 0",
-                marginRight: width >= 1280 ? "20px" : "0",
+                marginRight: width >= 1280 ? "-163px" : "0",
                 position: "sticky",
                 top: "100px",
                 height: "fit-content",

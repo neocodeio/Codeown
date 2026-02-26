@@ -89,7 +89,7 @@ export default function Navbar() {
 
   // Kill the active user count query - fetch only once on mount, no refetching
   const [activeCount, setActiveCount] = useState(0);
-  
+
   useEffect(() => {
     const fetchActiveCountOnce = async () => {
       if (!isSignedIn) return;
@@ -100,7 +100,7 @@ export default function Navbar() {
         setActiveCount(0);
       }
     };
-    
+
     fetchActiveCountOnce();
   }, []); // Empty dependency array - fetch only once on mount
 
@@ -116,7 +116,7 @@ export default function Navbar() {
     borderRadius: "12px",
     textDecoration: "none",
     color: location.pathname === path ? "#212121" : "#212121",
-    backgroundColor: location.pathname === path ? "#f0f0f0" : "transparent",
+    backgroundColor: location.pathname === path ? "#f8f8f8" : "transparent",
     fontWeight: location.pathname === path ? 700 : 500,
     fontSize: "16px",
     transition: "all 0.2s ease",
@@ -251,19 +251,6 @@ export default function Navbar() {
       {/* Spacer */}
       <div style={{ flex: 1 }}></div>
 
-      {/* FoundrList Badge */}
-      {/* <div style={{ padding: "0 20px 20px 20px", display: "flex", justifyContent: "center" }}>
-        <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://www.foundrlist.com/api/badge/codeown"
-            alt="Codeown - Live on FoundrList"
-            width="240"
-            height="96"
-            style={{ width: "100%", height: "auto", borderRadius: "12px", display: "block" }}
-          />
-        </a>
-      </div> */}
-
       {/* Footer Links & Profile */}
       <div style={{ padding: "0 20px 20px 20px" }}>
         {/* Profile Card */}
@@ -384,8 +371,9 @@ export default function Navbar() {
     return (
       <>
         <div style={{
-          width: "280px",
+          width: "350px",
           height: "100vh",
+          paddingLeft: "75px",
           position: "sticky",
           top: 0,
           borderRight: "1px solid #e2e8f0",

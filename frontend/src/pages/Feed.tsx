@@ -142,7 +142,7 @@ export default function Feed() {
                 <div style={{
                     maxWidth: width >= 1024 ? "600px" : "100%",
                     width: "100%",
-                    marginLeft: width >= 1280 ? "200px" : width >= 1024 ? "100px" : "0",
+                    marginLeft: width >= 1280 ? "-260px" : width >= 1024 ? "100px" : "0",
                     backgroundColor: "#fff",
                     borderLeft: width >= 1024 ? "1px solid #eff3f4" : "none",
                     borderRight: width >= 1024 ? "1px solid #eff3f4" : "none",
