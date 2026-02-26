@@ -173,18 +173,16 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   return (
     <article
       onClick={handleClick}
-      className="fade-in project-card-x-style"
+      className="fade-in"
       style={{
         cursor: "pointer",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "background-color 0.2s ease",
         backgroundColor: "#fff",
-        backgroundImage: !isMobile ? `linear-gradient(135deg, ${getStatusColor(project.status)}03, #fff)` : "none",
-        padding: isMobile ? "20px" : "28px",
-        position: "relative",
+        padding: isMobile ? "16px" : "24px",
         display: "flex",
-        gap: "16px",
-        borderBottom: "1px solid rgba(0, 0, 0, 0.04)",
-        borderLeft: !isMobile ? `4px solid ${getStatusColor(project.status)}` : "none",
+        gap: "14px",
+        borderBottom: "1px solid #eff3f4",
+        position: "relative"
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = "#fcfcfc";
@@ -199,15 +197,15 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           onClick={handleUserClick}
           style={{
             cursor: "pointer",
-            transition: "transform 0.2s ease",
+            transition: "opacity 0.2s ease",
           }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+          onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
         >
           <AvailabilityBadge
             avatarUrl={project.user?.avatar_url || null}
             name={userName}
-            size={isMobile ? 40 : 44}
+            size={isMobile ? 42 : 48}
             isOpenToOpportunities={project.user?.is_hirable}
           />
         </div>
@@ -215,415 +213,252 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
 
       {/* Right Column: Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Header Row: Name, Handle, Time, Actions */}
+        {/* Header Row */}
         <div style={{
           display: "flex",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: "4px",
+          marginBottom: "2px",
           gap: "8px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", minWidth: 0, flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "nowrap", minWidth: 0 }}>
             <span
               onClick={handleUserClick}
               style={{
                 fontSize: "15px",
-                fontWeight: "800",
+                fontWeight: 750,
                 color: "#0f172a",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "3px",
-                letterSpacing: "-0.01em"
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
               }}
               onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
               onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
             >
               {userName}
-              <VerifiedBadge username={project.user?.username} size="14px" />
             </span>
-            <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "400" }}>
+            <VerifiedBadge username={project.user?.username} size="14px" />
+            <span style={{ fontSize: "14px", color: "#64748b", whiteSpace: "nowrap" }}>
               @{project.user?.username || 'user'}
             </span>
-            <span style={{ fontSize: "14px", color: "#e2e8f0" }}>•</span>
-            <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "400" }}>
+            <span style={{ fontSize: "14px", color: "#cbd5e1" }}>•</span>
+            <span style={{ fontSize: "14px", color: "#64748b", whiteSpace: "nowrap" }}>
               {formatRelativeDate(project.created_at)}
             </span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {/* Minimal Status Indicator */}
             <div style={{
               display: "flex",
               alignItems: "center",
-              gap: "6px",
-              padding: "4px 10px",
-              backgroundColor: `${getStatusColor(project.status)}15`,
-              borderRadius: "100px",
-              border: `1px solid ${getStatusColor(project.status)}30`
+              gap: "5px",
+              padding: "3px 8px",
+              backgroundColor: "#f8fafc",
+              borderRadius: "6px",
+              border: "1px solid #f1f5f9"
             }}>
               <div style={{
                 backgroundColor: getStatusColor(project.status),
                 width: "6px",
                 height: "6px",
-                borderRadius: "50%",
-                boxShadow: `0 0 8px ${getStatusColor(project.status)}`
+                borderRadius: "50%"
               }} />
               <span style={{
-                fontSize: "11px",
-                fontWeight: 800,
-                color: getStatusColor(project.status),
+                fontSize: "10px",
+                fontWeight: 700,
+                color: "#64748b",
                 textTransform: "uppercase",
-                letterSpacing: "0.05em"
+                letterSpacing: "0.02em"
               }}>
                 {getStatusText(project.status)}
               </span>
             </div>
 
-          </div>
-
-          {/* Actions Menu */}
-          {isOwnProject && (
-            <div style={{ position: "relative" }} ref={menuRef}>
-              <button
-                onClick={toggleMenu}
-                style={{
-                  background: "none",
-                  color: "#94a3b8",
-                  cursor: "pointer",
-                  padding: "6px",
-                  borderRadius: "30px",
-                  border: "1px solid #e0e0e0",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.2s",
-                  backgroundColor: isMenuOpen ? "#f1f5f9" : "transparent"
-                }}
-                onMouseEnter={(e) => {
-                  if (!isMenuOpen) e.currentTarget.style.backgroundColor = "#f1f5f9";
-                  e.currentTarget.style.color = "#0f172a";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isMenuOpen) e.currentTarget.style.backgroundColor = "transparent";
-                  if (!isMenuOpen) e.currentTarget.style.color = "#94a3b8";
-                }}
-              >
-                <HugeiconsIcon icon={MoreHorizontalIcon} style={{ fontSize: "16px" }} />
-              </button>
-
-              {isMenuOpen && (
-                <div
-                  className="fade-in"
+            {isOwnProject && (
+              <div style={{ position: "relative" }} ref={menuRef}>
+                <button
+                  onClick={toggleMenu}
                   style={{
-                    position: "absolute",
-                    top: "100%",
-                    right: 0,
-                    border: "1px solid #e0e0e0",
-                    marginTop: "6px",
-                    width: "140px",
-                    backgroundColor: "#fff",
-                    borderRadius: "12px",
-                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
-                    zIndex: 100,
+                    background: "none",
+                    border: "none",
+                    color: "#94a3b8",
+                    cursor: "pointer",
                     padding: "4px",
-                    overflow: "hidden"
+                    display: "flex",
+                    borderRadius: "50%"
                   }}
-                  onClick={(e) => e.stopPropagation()}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
-                  <button
-                    onClick={(e) => {
-                      handleEditClick(e);
-                      setIsMenuOpen(false);
-                    }}
-                    style={{
-                      width: "100%",
-                      padding: "8px 10px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      border: "none",
-                      background: "none",
-                      cursor: "pointer",
-                      borderRadius: "8px",
-                      transition: "all 0.2s",
-                      color: "#0f172a",
-                      fontSize: "13px",
-                      fontWeight: 600
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                  >
-                    <HugeiconsIcon icon={Pen01Icon} style={{ fontSize: "14px" }} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      handleDeleteClick(e);
-                      setIsMenuOpen(false);
-                    }}
-                    style={{
-                      width: "100%",
-                      padding: "8px 10px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      border: "none",
-                      background: "none",
-                      cursor: "pointer",
-                      borderRadius: "8px",
-                      transition: "all 0.2s",
-                      color: "#ef4444",
-                      fontSize: "13px",
-                      fontWeight: 600
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fef2f2"}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                  >
-                    <HugeiconsIcon icon={Delete01Icon} style={{ fontSize: "14px" }} />
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+                  <HugeiconsIcon icon={MoreHorizontalIcon} style={{ fontSize: "18px" }} />
+                </button>
+
+                {isMenuOpen && (
+                  <div className="fade-in" style={{
+                    position: "absolute", top: "100%", right: 0,
+                    backgroundColor: "#fff", borderRadius: "12px", border: "1px solid #f1f5f9",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.08)", zIndex: 100, padding: "4px", minWidth: "120px"
+                  }}>
+                    {[
+                      { icon: Pen01Icon, label: "Edit", onClick: handleEditClick, color: "#0f172a" },
+                      { icon: Delete01Icon, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
+                    ].map((item, i) => (
+                      <button key={i} onClick={(e) => { item.onClick(e); setIsMenuOpen(false); }} style={{
+                        width: "100%", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px",
+                        border: "none", background: "none", cursor: "pointer", borderRadius: "8px",
+                        fontSize: "13px", fontWeight: 600, color: item.color
+                      }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                        <HugeiconsIcon icon={item.icon} style={{ fontSize: "14px" }} />
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Project Title & Description */}
-        <div style={{ marginBottom: "12px" }}>
+        {/* Project Content */}
+        <div style={{ marginTop: "4px" }}>
           <h3 style={{
-            fontSize: "18px",
-            fontWeight: "900",
+            fontSize: "17px",
+            fontWeight: 750,
             color: "#0f172a",
             margin: "0 0 6px 0",
-            lineHeight: "1.3",
-            letterSpacing: "-0.02em"
+            lineHeight: "1.4",
+            letterSpacing: "-0.01em"
           }}>
             {project.title}
           </h3>
           <p style={{
             fontSize: "15px",
-            lineHeight: "1.6",
-            color: "#0f172a",
-            wordBreak: "break-word",
+            lineHeight: "1.5",
+            color: "#475569",
+            margin: "0 0 12px 0",
             display: "-webkit-box",
             WebkitLineClamp: "3",
             WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            letterSpacing: "-0.01em"
+            overflow: "hidden"
           }}>
             {project.description}
           </p>
+
+          {project.cover_image && (
+            <div style={{
+              borderRadius: "14px",
+              overflow: "hidden",
+              border: "1px solid #f1f5f9",
+              aspectRatio: "16/9",
+              backgroundColor: "#f8fafc",
+              marginBottom: "16px"
+            }}>
+              <img
+                src={getOptimizedImageUrl(project.cover_image)}
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                loading="lazy"
+                onError={(e) => handleImageError(e.currentTarget)}
+              />
+            </div>
+          )}
+
+          {project.technologies_used && project.technologies_used.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+              {project.technologies_used.map((tech, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    color: "#3b82f6",
+                    backgroundColor: "rgba(59, 130, 246, 0.05)",
+                    padding: "4px 10px",
+                    borderRadius: "6px",
+                    border: "1px solid rgba(59, 130, 246, 0.1)"
+                  }}
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
-
-        {/* Cover Image */}
-        {project.cover_image && (
-          <div style={{
-            marginTop: "12px",
-            marginBottom: "16px",
-            borderRadius: "20px",
-            overflow: "hidden",
-            border: "1px solid rgba(0, 0, 0, 0.04)",
-            aspectRatio: "16/9",
-            transition: "border-color 0.2s"
-          }}>
-            <img
-              src={getOptimizedImageUrl(project.cover_image)}
-              alt={project.title}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              loading="lazy"
-              onError={(e) => handleImageError(e.currentTarget)}
-            />
-          </div>
-        )}
-
-        {/* Technologies */}
-        {project.technologies_used && project.technologies_used.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "16px" }}>
-            {project.technologies_used.map((tech, idx) => (
-              <span
-                key={idx}
-                style={{
-                  color: "#3b82f6",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  letterSpacing: "-0.01em",
-                  cursor: "pointer",
-                  padding: "2px 6px",
-                  borderRadius: "6px",
-                  transition: "all 0.2s"
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/?type=projects&tag=${encodeURIComponent(tech)}`);
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.08)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
-                #{tech.replace(/\s+/g, "")}
-              </span>
-            ))}
-          </div>
-        )}
 
         {/* Footer Actions */}
         <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          maxWidth: "425px",
-          marginTop: "16px",
-          marginLeft: "-8px"
+          gap: "24px",
+          marginTop: "4px"
         }}>
-          {/* Comment */}
-          <button
-            onClick={(e) => { e.stopPropagation(); navigate(`/project/${project.id}`); }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-              background: "none",
-              border: "none",
-              color: "#64748b",
-              cursor: "pointer",
-              fontSize: "13px",
-              padding: "4px 0",
-              transition: "all 0.2s"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#3b82f6";
-              const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-              if (icon) {
-                icon.style.backgroundColor = "rgba(59, 130, 246, 0.1)";
-                icon.style.transform = "scale(1.1)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#64748b";
-              const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-              if (icon) {
-                icon.style.backgroundColor = "transparent";
-                icon.style.transform = "scale(1)";
-              }
-            }}
-          >
-            <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}>
-              <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "16px" }} />
-            </div>
-            <span style={{ fontWeight: 500 }}>{project.comment_count || 0}</span>
-          </button>
-
-          {/* Upvote */}
-          <button
-            onClick={handleLike}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "2px",
-              background: isLiked ? "rgba(0, 186, 124, 0.1)" : "none",
-              border: "none",
-              color: isLiked ? "#00ba7c" : "#64748b",
-              cursor: "pointer",
-              fontSize: "13px",
-              padding: "2px 10px 2px 2px",
-              borderRadius: "100px",
-              transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-            }}
-            onMouseEnter={(e) => {
-              if (!isLiked) {
-                e.currentTarget.style.color = "#00ba7c";
-                e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.05)";
-              }
-              const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-              if (icon) {
-                icon.style.transform = "scale(1.15) translateY(-1px)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isLiked) {
-                e.currentTarget.style.color = "#64748b";
-                e.currentTarget.style.backgroundColor = "transparent";
-              } else {
-                e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.1)";
-              }
-              const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-              if (icon) {
-                icon.style.transform = "scale(1) translateY(0)";
-              }
-            }}
-            onMouseDown={(e) => e.currentTarget.style.transform = "scale(0.95)"}
-            onMouseUp={(e) => e.currentTarget.style.transform = "scale(1)"}
-          >
-            <div className="footer-icon" style={{
-              padding: "6px",
-              borderRadius: "50%",
-              display: "flex",
-              transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
-            }}>
+          {/* Interaction Icons matching PostCard functionality but with a cleaner Look */}
+          {[
+            {
+              icon: Comment02Icon,
+              count: project.comment_count,
+              onClick: (e: any) => { e.stopPropagation(); navigate(`/project/${project.id}`); },
+              hoverColor: "#3b82f6"
+            },
+            {
+              icon: CircleArrowUp01Icon,
+              count: likeCount,
+              onClick: handleLike,
+              active: isLiked,
+              activeColor: "#00ba7c",
+              hoverColor: "#00ba7c",
+              filled: isLiked
+            },
+            {
+              icon: isSaved ? Bookmark01Icon : Bookmark02Icon,
+              onClick: handleSave,
+              active: isSaved,
+              activeColor: "#3b82f6",
+              hoverColor: "#3b82f6"
+            },
+            {
+              icon: Share01Icon,
+              onClick: handleShare,
+              active: shareCopied,
+              activeColor: "#00ba7c",
+              hoverColor: "#00ba7c"
+            }
+          ].map((action, i) => (
+            <button
+              key={i}
+              onClick={action.onClick}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                background: "none",
+                border: "none",
+                padding: "4px 0",
+                cursor: "pointer",
+                color: action.active ? action.activeColor : "#64748b",
+                transition: "all 0.2s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = action.hoverColor || "#0f172a";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = action.active ? (action.activeColor || "#64748b") : "#64748b";
+              }}
+            >
               <HugeiconsIcon
-                icon={CircleArrowUp01Icon}
+                icon={action.icon}
                 style={{
                   fontSize: "18px",
-                  fill: isLiked ? "rgba(0, 186, 124, 0.2)" : "none",
+                  fill: action.filled ? "currentColor" : "none"
                 }}
               />
-            </div>
-            <span style={{ fontWeight: isLiked ? "800" : "600" }}>{likeCount || 0}</span>
-          </button>
-
-          {/* Share */}
-          <button
-            onClick={handleShare}
-            style={{
-              display: "flex",
-              background: "none",
-              border: "none",
-              color: shareCopied ? "#00ba7c" : "#64748b",
-              cursor: "pointer",
-              padding: "8px",
-              borderRadius: "50%",
-              transition: "all 0.2s"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.1)";
-              e.currentTarget.style.color = "#00ba7c";
-              e.currentTarget.style.transform = "scale(1.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              if (!shareCopied) e.currentTarget.style.color = "#64748b";
-              e.currentTarget.style.transform = "scale(1)";
-            }}
-          >
-            <HugeiconsIcon icon={Share01Icon} style={{ fontSize: "16px" }} />
-          </button>
-
-          {/* Save */}
-          <button
-            onClick={handleSave}
-            style={{
-              display: "flex",
-              background: "none",
-              border: "none",
-              color: isSaved ? "#3b82f6" : "#64748b",
-              cursor: "pointer",
-              padding: "8px",
-              borderRadius: "50%",
-              transition: "all 0.2s"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.1)";
-              e.currentTarget.style.color = "#3b82f6";
-              e.currentTarget.style.transform = "scale(1.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              if (!isSaved) e.currentTarget.style.color = "#64748b";
-              e.currentTarget.style.transform = "scale(1)";
-            }}
-          >
-            <HugeiconsIcon icon={isSaved ? Bookmark01Icon : Bookmark02Icon} style={{ fontSize: "16px" }} />
-          </button>
+              {action.count !== undefined && (
+                <span style={{ fontSize: "13px", fontWeight: 600 }}>{action.count || 0}</span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
