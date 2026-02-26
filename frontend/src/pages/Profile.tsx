@@ -17,12 +17,25 @@ import BioRenderer from "../components/BioRenderer";
 import Lightbox from "../components/Lightbox";
 import { formatJoinDate } from "../utils/date";
 import api from "../api/axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV, faUserEdit, faSignOutAlt, faKey, faLayerGroup, faRocket, faCalendarAlt, faGlobe, faShareNodes } from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
+import { HugeiconsIcon } from '@hugeicons/react';
+import {
+  UserEdit01Icon,
+  Logout01Icon,
+  Key01Icon,
+  Share01Icon,
+  Calendar03Icon,
+  Globe02Icon,
+  Layers01Icon,
+  Rocket01Icon,
+  Bookmark01Icon,
+  MoreVerticalIcon,
+  PackageIcon as PushpinIcon,
+} from '@hugeicons/core-free-icons';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface UserProfile {
   id: string;
@@ -59,9 +72,9 @@ export default function Profile() {
   const navigate = useNavigate();
   const userId = user?.id || null;
   const { posts, fetchUserPosts } = useUserPosts(userId);
-  const { savedPosts, loading: savedPostsLoading, fetchSavedPosts } = useSavedPosts();
+  const { savedPosts, fetchSavedPosts } = useSavedPosts();
   const { projects, fetchUserProjects } = useUserProjects(userId);
-  const { projects: savedProjects, loading: savedProjectsLoading, fetchUserSavedProjects } = useUserSavedProjects(userId);
+  const { projects: savedProjects, fetchUserSavedProjects } = useUserSavedProjects(userId);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -264,14 +277,16 @@ export default function Profile() {
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           text-decoration: none;
         }
+        .menu-item:hover {
+          background-color: #f8fafc;
+        }
         .menu-item:active {
-          background-color: #f1f5f9;
           transform: scale(0.98);
         }
         .menu-item-danger {
           color: #ef4444;
         }
-        .menu-item-danger:active {
+        .menu-item-danger:hover {
           background-color: #fff1f2;
         }
         .menu-icon-box {
@@ -285,13 +300,10 @@ export default function Profile() {
           transition: all 0.2s;
           flex-shrink: 0;
         }
-        .menu-item:active .menu-icon-box {
-          transform: scale(0.9);
-        }
         
         .profile-btn {
           padding: 10px 20px;
-          border-radius: 14px;
+          border-radius: 12px;
           font-size: 14px;
           font-weight: 700;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -299,99 +311,59 @@ export default function Profile() {
           display: flex;
           align-items: center;
           gap: 8px;
-          background: white;
-          color: #334155;
+          background: #fff;
+          color: #1e293b;
           cursor: pointer;
         }
         .profile-btn:hover {
-          background: #f1f5f9;
-          transform: translateY(-2px);
+          background: #f8fafc;
+          border-color: #cbd5e1;
+          transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .profile-btn-primary {
-          background: #212121;
+          background: #0f172a;
           color: white;
-          border-color: #212121;
+          border-color: #0f172a;
         }
         .profile-btn-primary:hover {
-          background: #444;
-          border-color: #444;
-          color: white;
+          background: #000;
+          border-color: #000;
         }
-        .tab-item {
-          padding: 16px 24px;
-          font-size: 14px;
-          font-weight: 800;
-          color: #94a3b8;
-          cursor: pointer;
-          position: relative;
-          transition: all 0.3s ease;
-          border: none;
-          background: none;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        .tab-item.active {
-          color: #212121;
-        }
-        .stat-card {
-          padding: 20px;
-          border-radius: 20px;
-          border: 1px solid #f1f5f9;
-          background: white;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        .stat-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 15px 30px rgba(0,0,0,0.05);
-          border-color: #e2e8f0;
-        }
-        .stat-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 12px;
-          background: #f1f5f9;
-          color: #64748b;
-          transition: all 0.3s ease;
-        }
-        .stat-card:hover .stat-icon {
-          background: #f0f0f0;
-          color: #212121;
-        }
-
+        
         .tab-btn {
           padding: 12px 24px;
           font-size: 13px;
-          font-weight: 700;
+          font-weight: 800;
           color: #64748b;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           border: none;
           background: transparent;
-          letter-spacing: 0.05em;
           text-transform: uppercase;
+          letter-spacing: 0.08em;
           border-radius: 12px;
         }
         .tab-btn:hover {
-          color: #1e293b;
-          background: rgba(241, 245, 249, 0.6);
+          color: #0f172a;
+          background: rgba(15, 23, 42, 0.04);
         }
         .tab-btn.active {
-          color: #1e293b;
+          color: #0f172a;
           background: #fff;
           box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        
+        .sidebar-section {
+          margin-bottom: 40px;
+        }
+        .sidebar-title {
+          font-size: 11px;
+          font-weight: 850;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          margin-bottom: 20px;
         }
       `}</style>
 
@@ -404,62 +376,25 @@ export default function Profile() {
         <div style={{
           width: "100%",
           height: isMobile ? "200px" : "320px",
-          borderRadius: "32px",
           backgroundColor: "#fff",
-          border: "1px solid #e2e8f0",
-          overflow: "visible", // Allow avatar to overlap
           position: "relative",
-          marginBottom: isMobile ? "60px" : "80px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+          overflow: "hidden",
+          borderRadius: isMobile ? "0" : "32px",
+          marginBottom: isMobile ? "0" : "20px"
         }}>
           {userProfile?.banner_url ? (
             <img
               src={userProfile.banner_url}
-              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "32px" }}
-              alt="Banner"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              alt=""
             />
           ) : (
             <div style={{
               width: "100%",
               height: "100%",
-              // Dynamic gradient based on username length to give some variety
               background: `linear-gradient(135deg, hsl(${(userProfile?.username?.length || 5) * 40}, 80%, 96%) 0%, hsl(${(userProfile?.username?.length || 5) * 40 + 40}, 80%, 96%) 100%)`,
-              borderRadius: "32px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
             }} />
           )}
-
-          {/* Avatar overlapped bottom */}
-          <div style={{
-            position: "absolute",
-            bottom: isMobile ? "-40px" : "-60px",
-            left: isMobile ? "50%" : "40px",
-            transform: isMobile ? "translateX(-50%)" : "none",
-            width: isMobile ? "100px" : "150px",
-            height: isMobile ? "100px" : "150px",
-            borderRadius: "100%",
-            border: "1px solid white",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
-            backgroundColor: "white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-            cursor: "pointer"
-          }} onClick={() => {
-            setLightboxImage(avatarUrl);
-            setLightboxOpen(true);
-          }}>
-            <AvailabilityBadge
-              avatarUrl={avatarUrl}
-              name={userProfile?.name || user?.fullName || "User"}
-              size={isMobile ? 100 : 150}
-              isOpenToOpportunities={userProfile?.is_hirable}
-              ringColor="#3b82f6"
-            />
-          </div>
         </div>
 
         <Lightbox
@@ -468,231 +403,132 @@ export default function Profile() {
           imageSrc={lightboxImage}
         />
 
-        {/* User Info Section */}
-        <div style={{ padding: "0 10px" }}>
+        {/* Profile Header Info */}
+        <div style={{
+          padding: isMobile ? "0 16px" : "0 24px",
+          position: "relative",
+          marginTop: isMobile ? "-40px" : "-60px",
+          marginBottom: "32px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px"
+        }}>
+          {/* Avatar and Primary Actions Row */}
           <div style={{
             display: "flex",
-            alignItems: isMobile ? "flex-start" : "center",
             justifyContent: "space-between",
-            flexDirection: isMobile ? "column" : "row",
-            gap: isMobile ? "12px" : "16px",
-            marginBottom: "16px"
+            alignItems: "flex-end",
+            width: "100%",
+            flexWrap: "wrap",
+            gap: "16px"
           }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <h1 style={{
-                fontSize: isMobile ? "28px" : "42px",
-                fontWeight: 900,
-                color: "#000",
-                margin: 0,
-                textTransform: "uppercase",
-                letterSpacing: "-0.04em",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px"
-              }}>
-                {userProfile?.name || user?.fullName}
-                <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "24px" : "16px"} />
-              </h1>
-              <div style={{
-                fontSize: "18px",
-                color: "#64748b",
-                fontWeight: 500,
-                display: "flex",
-                flexDirection: "column",
-                gap: "4px"
-              }}>
-                <div>@{userProfile?.username || user?.username}</div>
-                {userProfile?.is_hirable && (
-                  <div style={{
-                    fontSize: "14px",
-                    color: "#3b82f6",
-                    fontWeight: 700,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px"
-                  }}>
-                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", display: "inline-block" }}></span>
-                    OPEN TO OPPORTUNITIES
-                  </div>
-                )}
-              </div>
+            <div
+              onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }}
+              style={{
+                width: isMobile ? "100px" : "140px",
+                height: isMobile ? "100px" : "140px",
+                borderRadius: "50%",
+                border: "4px solid #fff",
+                backgroundColor: "#fff",
+                overflow: "hidden",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                flexShrink: 0
+              }}
+            >
+              <AvailabilityBadge
+                avatarUrl={avatarUrl}
+                name={userProfile?.name || user?.fullName || "User"}
+                size={isMobile ? 100 : 140}
+                isOpenToOpportunities={userProfile?.is_hirable}
+                ringColor="#0f172a"
+              />
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{
+              display: "flex",
+              gap: "12px",
+              marginBottom: "12px",
+              flexWrap: "wrap",
+              justifyContent: isMobile ? "flex-start" : "flex-end"
+            }}>
               <button
                 onClick={() => setIsEditModalOpen(true)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 18px",
-                  borderRadius: "100px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "white",
-                  color: "#1e293b",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "white"}
+                className="profile-btn profile-btn-primary"
               >
-                <FontAwesomeIcon icon={faUserEdit} style={{ fontSize: "14px" }} />
-                Edit Profile
+                <HugeiconsIcon icon={UserEdit01Icon} size={20} />
+                <span>Edit Profile</span>
               </button>
 
               <button
                 onClick={() => {
                   const username = userProfile?.username || user?.username;
-                  const shareUrl = username
-                    ? `${window.location.origin}/${username}`
-                    : `${window.location.origin}/user/${user?.id}`;
-
-                  if (navigator.share) {
-                    navigator.share({
-                      title: `${userProfile?.name || user?.fullName} on Codeown`,
-                      text: userProfile?.bio || `Check out my profile on Codeown!`,
-                      url: shareUrl,
-                    }).catch(console.error);
-                  } else {
-                    navigator.clipboard.writeText(shareUrl);
-                    alert("Profile link copied to clipboard!");
-                  }
+                  const shareUrl = username ? `${window.location.origin}/${username}` : `${window.location.origin}/user/${user?.id}`;
+                  navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "white",
-                  color: "#1e293b",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "white"}
-                title="Share Profile"
+                className="profile-btn"
+                title="Share"
               >
-                <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "14px" }} />
+                <HugeiconsIcon icon={Share01Icon} size={20} />
               </button>
 
               <div style={{ position: "relative" }}>
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "#94a3b8",
-                    cursor: "pointer",
-                    padding: "10px",
-                    fontSize: isMobile ? "22px" : "18px"
-                  }}
+                  className="profile-btn"
+                  style={{ padding: "10px" }}
                 >
-                  <FontAwesomeIcon icon={faEllipsisV} />
+                  <HugeiconsIcon icon={MoreVerticalIcon} size={20} />
                 </button>
                 {isMenuOpen && createPortal(
                   <>
-                    {/* Backdrop */}
                     <div
                       onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
                       style={{
                         position: "fixed",
                         inset: 0,
-                        backgroundColor: "rgba(15, 23, 42, 0.6)",
-                        backdropFilter: "blur(8px)",
+                        backgroundColor: "rgba(15, 23, 42, 0.4)",
+                        backdropFilter: "blur(4px)",
                         zIndex: 10000,
-                        cursor: "pointer",
-                        animation: "fadeIn 0.3s ease-out"
+                        cursor: "pointer"
                       }}
                     />
-                    <div style={{
+                    <div className="glass-card" style={{
                       position: "fixed",
                       bottom: isMobile ? "0" : "auto",
-                      left: isMobile ? "0" : "50%",
-                      right: isMobile ? "0" : "auto",
-                      transform: isMobile ? "none" : "translate(-50%, -50%)",
-                      top: isMobile ? "auto" : "50%",
-                      backgroundColor: "#fff",
-                      borderRadius: isMobile ? "32px 32px 0 0" : "28px",
-                      boxShadow: isMobile ? "0 -10px 40px rgba(0,0,0,0.3)" : "0 20px 60px rgba(0,0,0,0.2)",
-                      width: isMobile ? "100%" : "380px",
+                      left: isMobile ? "0" : "auto",
+                      right: isMobile ? "0" : "80px",
+                      top: isMobile ? "auto" : "200px",
+                      width: isMobile ? "100%" : "320px",
                       zIndex: 10001,
-                      padding: isMobile ? "16px 20px calc(24px + env(safe-area-inset-bottom))" : "24px",
+                      padding: "12px",
                       display: "flex",
                       flexDirection: "column",
                       gap: "4px",
-                      animation: isMobile ? "slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "fadeIn 0.3s ease-out"
+                      borderRadius: isMobile ? "32px 32px 0 0" : "24px",
+                      animation: isMobile ? "slideUpMobile 0.4s ease-out" : "fadeIn 0.2s ease-out"
                     }} onClick={(e) => e.stopPropagation()}>
-                      {isMobile && (
-                        <div style={{
-                          width: "40px",
-                          height: "4px",
-                          backgroundColor: "#e2e8f0",
-                          borderRadius: "2px",
-                          margin: "0 auto 12px",
-                          flexShrink: 0
-                        }} />
-                      )}
-
-                      <div style={{ padding: "8px 16px", marginBottom: "4px" }}>
-                        <h3 style={{ margin: 0, fontSize: "13px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em" }}>Settings & Account</h3>
-                      </div>
-
                       <button
                         className="menu-item"
                         onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }}
                       >
                         <div className="menu-icon-box">
-                          <FontAwesomeIcon icon={faKey} style={{ fontSize: "18px" }} />
+                          <HugeiconsIcon icon={Key01Icon} size={20} />
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                          <span style={{ fontSize: "16px", fontWeight: 800 }}>Reset Password</span>
-                          <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>Update your security credentials</span>
-                        </div>
+                        <span style={{ fontWeight: 800 }}>Reset Password</span>
                       </button>
 
-                      <div style={{ height: "1px", backgroundColor: "#f1f5f9", margin: "8px 16px" }} />
+                      <div style={{ height: "1px", backgroundColor: "rgba(15, 23, 42, 0.05)", margin: "8px" }} />
 
                       <button
                         className="menu-item menu-item-danger"
                         onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                       >
-                        <div className="menu-icon-box" style={{ backgroundColor: "#fff1f2", color: "#ef4444" }}>
-                          <FontAwesomeIcon icon={faSignOutAlt} style={{ fontSize: "18px" }} />
+                        <div className="menu-icon-box" style={{ backgroundColor: "#fff1f2" }}>
+                          <HugeiconsIcon icon={Logout01Icon} size={20} />
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                          <span style={{ fontSize: "16px", fontWeight: 800 }}>Sign Out</span>
-                          <span style={{ fontSize: "12px", color: "#fca5a5", fontWeight: 500 }}>Exit from your account session</span>
-                        </div>
+                        <span style={{ fontWeight: 800 }}>Sign Out</span>
                       </button>
-
-                      {isMobile && (
-                        <button
-                          onClick={() => setIsMenuOpen(false)}
-                          style={{
-                            marginTop: "16px",
-                            width: "100%",
-                            padding: "16px",
-                            border: "none",
-                            background: "#f1f5f9",
-                            color: "#64748b",
-                            fontWeight: 800,
-                            borderRadius: "18px",
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            transition: "all 0.2s"
-                          }}
-                        >
-                          CANCEL
-                        </button>
-                      )}
                     </div>
                   </>,
                   document.body
@@ -701,231 +537,264 @@ export default function Profile() {
             </div>
           </div>
 
-          {userProfile?.bio && (
-            <div style={{
-              fontSize: "16px",
-              lineHeight: "1.6",
-              color: "#334155",
-              marginBottom: "20px",
-              maxWidth: "600px"
-            }}>
-              <BioRenderer bio={userProfile.bio} />
-            </div>
-          )}
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
-            <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "14px", fontWeight: 600 }}>
-              <FontAwesomeIcon icon={faCalendarAlt} />
-              Joined {formatJoinDate(userProfile?.created_at || "")}
-            </span>
-            <div style={{
+          {/* Name and Handle */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <h1 style={{
+              fontSize: isMobile ? "24px" : "32px",
+              fontWeight: 850,
+              color: "#0f172a",
+              margin: 0,
               display: "flex",
               alignItems: "center",
-              gap: "24px",
-              color: "#64748b",
-              fontSize: "14px",
-              fontWeight: 600
+              gap: "8px",
+              letterSpacing: "-0.02em"
             }}>
-              <span
-                onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
-                style={{ cursor: "pointer", color: "#1e293b" }}
-              >
-                <strong style={{ fontWeight: 800 }}>{userProfile?.follower_count || 0}</strong> followers
-              </span>
-              <span
-                onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
-                style={{ cursor: "pointer", color: "#1e293b" }}
-              >
-                <strong style={{ fontWeight: 800 }}>{userProfile?.following_count || 0}</strong> following
-              </span>
-              <span style={{ color: "#1e293b" }}>
-                <strong style={{ fontWeight: 800 }}>{userProfile?.total_likes || 0}</strong> likes
-              </span>
-            </div>
+              {userProfile?.name || user?.fullName}
+              <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "20px" : "24px"} />
+            </h1>
+            <span style={{ fontSize: "16px", color: "#64748b", fontWeight: 600 }}>@{userProfile?.username || user?.username}</span>
           </div>
-
-          {/* Social Icons */}
-          <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "32px" }}>
-            {userProfile?.github_url && (
-              <a href={userProfile.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "#000", fontSize: "20px" }}>
-                <FontAwesomeIcon icon={faGithub} />
-              </a>
-            )}
-            {userProfile?.twitter_url && (
-              <a href={userProfile.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#000", fontSize: "20px" }}>
-                <FontAwesomeIcon icon={faInstagram} />
-              </a>
-            )}
-            {userProfile?.linkedin_url && (
-              <a href={userProfile.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "#000", fontSize: "20px" }}>
-                <FontAwesomeIcon icon={faLinkedin} />
-              </a>
-            )}
-            {userProfile?.website_url && (
-              <a href={userProfile.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#000", fontSize: "20px" }}>
-                <FontAwesomeIcon icon={faGlobe} />
-              </a>
-            )}
-          </div>
-
-          {/* Tech Stack / Skills */}
-          {userProfile?.skills && userProfile.skills.length > 0 && (
-            <div style={{ marginTop: "24px" }}>
-              <div style={{ fontSize: "12px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "12px" }}>Tech Stack</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                {userProfile.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    style={{
-                      padding: "6px 14px",
-                      backgroundColor: "white",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: "12px",
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      color: "#334155",
-                      transition: "all 0.2s ease",
-                      cursor: "default"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "#212121";
-                      e.currentTarget.style.transform = "translateY(-1px)";
-                      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.05)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "none";
-                    }}
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Tab Selection */}
+        {/* Main Layout Grid */}
         <div style={{
-          display: "flex",
-          justifyContent: isMobile ? "center" : "flex-start",
-          padding: "6px",
-          backgroundColor: "#f1f5f9",
-          borderRadius: "18px",
-          width: "fit-content",
-          marginBottom: "32px",
-          marginTop: "40px",
-          margin: isMobile ? "40px auto 32px" : "40px 0 32px"
+          display: "grid",
+          gridTemplateColumns: width >= 1024 ? "320px 1fr" : "1fr",
+          gap: "48px",
+          padding: isMobile ? "0 16px" : "0 24px"
         }}>
-          <button
-            onClick={() => setActiveTab("posts")}
-            className={`tab-btn ${activeTab === "posts" ? "active" : ""}`}
-          >
-            POSTS
-          </button>
-          <button
-            onClick={() => setActiveTab("projects")}
-            className={`tab-btn ${activeTab === "projects" ? "active" : ""}`}
-          >
-            PROJECTS
-          </button>
-          <button
-            onClick={() => setActiveTab("saved")}
-            className={`tab-btn ${activeTab === "saved" ? "active" : ""}`}
-          >
-            SAVED
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        <div key={activeTab} className="tab-content-enter">
-          {activeTab === "posts" ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-              {posts.length === 0 ? (
-                <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px", border: "1px solid #f1f5f9" }}>
-                  <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faLayerGroup} /></div>
-                  No posts published yet.
-                </div>
-              ) : (
-                posts.map((p) => (
-                  <PostCard
-                    key={p.id}
-                    post={p}
-                    onUpdated={handleProfileUpdated}
-                    isPinned={userProfile?.pinned_post_id === p.id}
-                  />
-                ))
-              )}
-            </div>
-          ) : activeTab === "projects" ? (
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
-              {projects.length === 0 ? (
-                <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px", border: "1px solid #f1f5f9" }}>
-                  <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faRocket} /></div>
-                  No projects launched yet.
-                </div>
-              ) : (
-                projects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={() => fetchUserProjects()} />)
-              )}
-            </div>
-          ) : (
-            <div>
-              <div style={{ display: "flex", gap: "10px", marginBottom: "24px" }}>
-                <button
-                  onClick={() => setSavedSubTab("posts")}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: "10px",
-                    border: "1px solid #e2e8f0",
-                    background: savedSubTab === "posts" ? "#000" : "white",
-                    color: savedSubTab === "posts" ? "white" : "#64748b",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                    cursor: "pointer"
-                  }}
-                >
-                  POSTS
-                </button>
-                <button
-                  onClick={() => setSavedSubTab("projects")}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: "10px",
-                    border: "1px solid #e2e8f0",
-                    background: savedSubTab === "projects" ? "#000" : "white",
-                    color: savedSubTab === "projects" ? "white" : "#64748b",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                    cursor: "pointer"
-                  }}
-                >
-                  PROJECTS
-                </button>
+          {/* Sidebar */}
+          <aside>
+            {userProfile?.bio && (
+              <div className="sidebar-section">
+                <p style={{ fontSize: "15px", lineHeight: "1.6", color: "#334155", margin: 0 }}>
+                  <BioRenderer bio={userProfile.bio} />
+                </p>
               </div>
-              {savedSubTab === "posts" ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-                  {savedPostsLoading ? <div style={{ padding: "40px 0", textAlign: "center" }}>Loading...</div> :
-                    savedPosts.length === 0 ? <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px", border: "1px solid #f1f5f9" }}>No saved posts.</div> :
-                      savedPosts.map((p) => <PostCard key={p.id} post={p} onUpdated={handleProfileUpdated} />)
-                  }
-                </div>
-              ) : (
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
-                  {savedProjectsLoading ? <div style={{ gridColumn: "1 / -1", padding: "40px 0", textAlign: "center" }}>Loading...</div> :
-                    savedProjects.length === 0 ? <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px", border: "1px solid #f1f5f9" }}>No saved projects.</div> :
-                      savedProjects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />)
-                  }
+            )}
+
+            <div className="sidebar-section" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "14px", fontWeight: 500 }}>
+                <HugeiconsIcon icon={Calendar03Icon} size={18} />
+                Joined {formatJoinDate(userProfile?.created_at || "")}
+              </div>
+              {userProfile?.website_url && (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3b82f6", fontSize: "14px", fontWeight: 600 }}>
+                  <HugeiconsIcon icon={Globe02Icon} size={18} />
+                  <a href={userProfile.website_url.startsWith('http') ? userProfile.website_url : `https://${userProfile.website_url}`} target="_blank" rel="noreferrer" style={{ color: "inherit", textDecoration: "none" }}>{userProfile.website_url.replace(/^https?:\/\//, '')}</a>
                 </div>
               )}
             </div>
-          )}
+
+            <div className="sidebar-section" style={{ display: "flex", gap: "20px" }}>
+              <div onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
+                <span style={{ fontSize: "15px", fontWeight: 750, color: "#0f172a" }}>{userProfile?.follower_count || 0}</span>
+                <span style={{ fontSize: "15px", color: "#64748b", marginLeft: "4px" }}>Followers</span>
+              </div>
+              <div onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
+                <span style={{ fontSize: "15px", fontWeight: 750, color: "#0f172a" }}>{userProfile?.following_count || 0}</span>
+                <span style={{ fontSize: "15px", color: "#64748b", marginLeft: "4px" }}>Following</span>
+              </div>
+            </div>
+
+            {userProfile?.skills && userProfile.skills.length > 0 && (
+              <div className="sidebar-section">
+                <h4 className="sidebar-title">Tech Stack</h4>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {userProfile.skills.map(skill => (
+                    <span key={skill} style={{
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      color: "#475569",
+                      padding: "4px 10px",
+                      backgroundColor: "#f1f5f9",
+                      borderRadius: "6px"
+                    }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </aside>
+
+          {/* Main Content Area */}
+          <div>
+            <div style={{
+              display: "flex",
+              backgroundColor: "rgba(241, 245, 249, 0.5)",
+              padding: "4px",
+              borderRadius: "16px",
+              marginBottom: "32px",
+              gap: "4px",
+              width: "fit-content",
+              maxWidth: "100%",
+              overflowX: "auto",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch"
+            }}>
+              <button
+                onClick={() => setActiveTab("posts")}
+                className={`tab-btn ${activeTab === "posts" ? 'active' : ''}`}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Posts
+              </button>
+              <button
+                onClick={() => setActiveTab("projects")}
+                className={`tab-btn ${activeTab === "projects" ? 'active' : ''}`}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Projects
+              </button>
+              <button
+                onClick={() => setActiveTab("saved")}
+                className={`tab-btn ${activeTab === "saved" ? 'active' : ''}`}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Saved
+              </button>
+            </div>
+
+            <div className="tab-content">
+              {activeTab === "posts" && (
+                <div className="tab-content-enter">
+                  {posts.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                      <HugeiconsIcon icon={Layers01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
+                      <p style={{ color: "#64748b", fontWeight: 700 }}>Share your first post with the community.</p>
+                    </div>
+                  ) : (
+                    posts.map((p) => (
+                      <div key={p.id} style={{ position: "relative" }}>
+                        {userProfile?.pinned_post_id === p.id && (
+                          <div style={{ padding: "12px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "13px", fontWeight: 700 }}>
+                            <HugeiconsIcon icon={PushpinIcon} size={14} />
+                            Pinned Post
+                          </div>
+                        )}
+                        <PostCard post={p} onUpdated={fetchUserPosts} />
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {activeTab === "projects" && (
+                <div className="tab-content-enter">
+                  {projects.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                      <HugeiconsIcon icon={Rocket01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
+                      <p style={{ color: "#64748b", fontWeight: 700 }}>Showcase your best projects.</p>
+                      <button onClick={() => setIsProjectModalOpen(true)} className="profile-btn profile-btn-primary" style={{ margin: "16px auto" }}>Add Project</button>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      {projects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)}
+                    </div>
+                  )
+                  }
+                </div>
+              )}
+
+              {activeTab === "saved" && (
+                <div className="tab-content-enter">
+                  <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+                    <button
+                      onClick={() => setSavedSubTab("posts")}
+                      style={{
+                        padding: "8px 16px",
+                        fontSize: "12px",
+                        fontWeight: 800,
+                        borderRadius: "100px",
+                        border: "1px solid",
+                        borderColor: savedSubTab === "posts" ? "#0f172a" : "#e2e8f0",
+                        backgroundColor: savedSubTab === "posts" ? "#0f172a" : "white",
+                        color: savedSubTab === "posts" ? "white" : "#64748b",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      Saved Posts
+                    </button>
+                    <button
+                      onClick={() => setSavedSubTab("projects")}
+                      style={{
+                        padding: "8px 16px",
+                        fontSize: "12px",
+                        fontWeight: 800,
+                        borderRadius: "100px",
+                        border: "1px solid",
+                        borderColor: savedSubTab === "projects" ? "#0f172a" : "#e2e8f0",
+                        backgroundColor: savedSubTab === "projects" ? "#0f172a" : "white",
+                        color: savedSubTab === "projects" ? "white" : "#64748b",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      Saved Projects
+                    </button>
+                  </div>
+
+                  {savedSubTab === "posts" ? (
+                    savedPosts.length === 0 ? (
+                      <div style={{ textAlign: "center", padding: "64px" }}>
+                        <HugeiconsIcon icon={Bookmark01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px" }} />
+                        <p style={{ color: "#64748b", fontWeight: 600 }}>No saved posts yet.</p>
+                      </div>
+                    ) : (
+                      savedPosts.map((p) => <PostCard key={p.id} post={p} onUpdated={fetchSavedPosts} />)
+                    )
+                  ) : (
+                    savedProjects.length === 0 ? (
+                      <div style={{ textAlign: "center", padding: "64px" }}>
+                        <HugeiconsIcon icon={Bookmark01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px" }} />
+                        <p style={{ color: "#64748b", fontWeight: 600 }}>No saved projects yet.</p>
+                      </div>
+                    ) : (
+                      savedProjects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />)
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {userProfile && <EditProfileModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onUpdated={handleProfileUpdated} currentUser={userProfile} projectCount={projects.length} />}
-      <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => fetchUserProjects()} />
-      {userId && <FollowersModal isOpen={followersModalOpen} onClose={() => setFollowersModalOpen(false)} userId={userId} type={followersModalType} title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"} />}
+      {userProfile && (
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          currentUser={userProfile}
+          onUpdated={handleProfileUpdated}
+        />
+      )}
+
+      <ProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+        onUpdated={handleProfileUpdated}
+      />
+
+      {userProfile?.id && (
+        <FollowersModal
+          isOpen={followersModalOpen}
+          onClose={() => setFollowersModalOpen(false)}
+          userId={userProfile.id}
+          type={followersModalType}
+          title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
+        />
+      )}
+
+      <Lightbox
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        imageSrc={lightboxImage}
+      />
+
+      <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
     </main>
   );
 }

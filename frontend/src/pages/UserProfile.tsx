@@ -10,24 +10,24 @@ import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
 import { formatJoinDate } from "../utils/date";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  faUserPlus,
-  faThumbtack,
-  faUserCheck,
-  faEnvelope,
-  faRocket,
-  faLayerGroup,
-  faCalendarAlt,
-  faGlobe,
-  faShareNodes,
-} from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+  UserAdd01Icon,
+  UserCheck01Icon,
+  Mail01Icon,
+  Share01Icon,
+  Calendar03Icon,
+  Globe02Icon,
+  Layers01Icon,
+  Rocket01Icon,
+  PackageIcon as PushpinIcon,
+} from '@hugeicons/core-free-icons';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
-import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
 
 interface User {
@@ -300,462 +300,352 @@ export default function UserProfile() {
         }}
       />
       <style>{`
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes tabContentEnter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .tab-content-enter { animation: tabContentEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        
         .profile-btn {
-          padding: 10px 24px;
-          border-radius: 100px;
+          padding: 10px 20px;
+          border-radius: 12px;
           font-size: 14px;
-          font-weight: 600;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          font-weight: 700;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           border: 1px solid #e2e8f0;
           display: flex;
           align-items: center;
-          gap: 10px;
-          background: rgba(255, 255, 255, 0.8);
-          backdrop-filter: blur(8px);
-          color: #334155;
+          gap: 8px;
+          background: #fff;
+          color: #1e293b;
           cursor: pointer;
         }
         .profile-btn:hover {
-          background: #fff;
-          transform: translateY(-2px);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+          background: #f8fafc;
           border-color: #cbd5e1;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .profile-btn-primary {
-          background: #1e293b;
-          color: white;
-          border-color: #1e293b;
-        }
-        .profile-btn-primary:hover {
           background: #0f172a;
           color: white;
+          border-color: #0f172a;
         }
-        .profile-btn-following {
-          background: white;
-          color: #1e293b;
-          border: 2px solid #1e293b;
+        .profile-btn-primary:hover {
+          background: #000;
+          border-color: #000;
         }
         
         .tab-btn {
           padding: 12px 24px;
           font-size: 13px;
-          font-weight: 700;
+          font-weight: 800;
           color: #64748b;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           border: none;
           background: transparent;
-          letter-spacing: 0.05em;
           text-transform: uppercase;
+          letter-spacing: 0.08em;
           border-radius: 12px;
+          position: relative;
         }
         .tab-btn:hover {
-          color: #1e293b;
-          background: rgba(241, 245, 249, 0.6);
+          color: #0f172a;
+          background: rgba(15, 23, 42, 0.04);
         }
         .tab-btn.active {
-          color: #1e293b;
+          color: #0f172a;
           background: #fff;
           box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
         
-        .stat-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 0 20px;
-          border-right: 1px solid #f1f5f9;
-          cursor: pointer;
-          transition: transform 0.2s;
+        .sidebar-section {
+          margin-bottom: 40px;
         }
-        .stat-item:last-child { border-right: none; }
-        .stat-item:hover { transform: translateY(-2px); }
-        .stat-value { font-size: 20px; font-weight: 800; color: #1e293b; }
-        .stat-label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
-        
-        @keyframes pulse-blue {
-          0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-          70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        .sidebar-title {
+          font-size: 11px;
+          font-weight: 850;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          margin-bottom: 20px;
         }
-        .pulse-hirable {
-          animation: pulse-blue 2s infinite;
-          background: #3b82f6 !important;
-          color: white !important;
-          border-color: #3b82f6 !important;
+        .glass-card {
+          background: rgba(255, 255, 255, 0.7);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 24px;
         }
       `}</style>
 
       <div style={{
-        maxWidth: "1000px",
+        maxWidth: "1100px",
         margin: "0 auto",
-        padding: isMobile ? "20px 16px" : "40px 20px"
+        padding: isMobile ? "0" : "0 20px"
       }}>
         {/* Banner Section */}
         <div style={{
           width: "100%",
-          height: isMobile ? "200px" : "320px",
-          borderRadius: "32px",
+          height: isMobile ? "180px" : "320px",
           backgroundColor: "#fff",
-          border: "1px solid #e2e8f0",
-          overflow: "visible", // Allow avatar to overlap
           position: "relative",
-          marginBottom: isMobile ? "60px" : "80px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+          overflow: "hidden",
+          borderRadius: isMobile ? "0" : "32px",
+          marginBottom: isMobile ? "0" : "20px"
         }}>
           {user.banner_url ? (
             <img
               src={user.banner_url}
-              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "32px" }}
-              alt="Banner"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              alt=""
             />
           ) : (
             <div style={{
               width: "100%",
               height: "100%",
-              // Dynamic gradient based on username length to give some variety
-              background: `linear-gradient(135deg, hsl(${(user.username?.length || 5) * 40}, 80%, 96%) 0%, hsl(${(user.username?.length || 5) * 40 + 40}, 80%, 96%) 100%)`,
-              borderRadius: "32px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              background: `linear-gradient(135deg, hsl(${(user?.username?.length || 5) * 40}, 80%, 96%) 0%, hsl(${(user?.username?.length || 5) * 40 + 40}, 80%, 96%) 100%)`,
             }} />
           )}
-
-          {/* Avatar overlapped bottom */}
-          <div style={{
-            position: "absolute",
-            bottom: isMobile ? "-40px" : "-60px",
-            left: isMobile ? "50%" : "40px",
-            transform: isMobile ? "translateX(-50%)" : "none",
-            width: isMobile ? "100px" : "150px",
-            height: isMobile ? "100px" : "150px",
-            borderRadius: "100%",
-            border: "1px solid white",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
-            backgroundColor: "white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-            cursor: "pointer"
-          }} onClick={() => {
-            setLightboxImage(avatarUrl);
-            setLightboxOpen(true);
-          }}>
-            <AvailabilityBadge
-              avatarUrl={avatarUrl}
-              name={user.name || "User"}
-              size={isMobile ? 100 : 150}
-              isOpenToOpportunities={user.is_hirable}
-              ringColor="#3b82f6"
-            />
-          </div>
         </div>
 
-        <Lightbox
-          isOpen={lightboxOpen}
-          onClose={() => setLightboxOpen(false)}
-          imageSrc={lightboxImage}
-        />
-
-        {/* User Info Section */}
+        {/* Profile Header Info */}
         <div style={{
-          padding: isMobile ? "0 4px" : "0 10px",
-          textAlign: isMobile ? "center" : "left",
+          padding: isMobile ? "0 16px" : "0 24px",
+          position: "relative",
+          marginTop: isMobile ? "-40px" : "-60px",
+          marginBottom: "32px",
           display: "flex",
           flexDirection: "column",
-          gap: "24px"
+          gap: "16px"
         }}>
+          {/* Avatar and Primary Actions Row */}
           <div style={{
             display: "flex",
-            alignItems: isMobile ? "center" : "flex-end",
             justifyContent: "space-between",
-            flexDirection: isMobile ? "column" : "row",
-            gap: "20px"
+            alignItems: "flex-end",
+            width: "100%",
+            flexWrap: "wrap",
+            gap: "16px"
           }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <h1 style={{
-                fontSize: isMobile ? "28px" : "36px",
-                fontWeight: 800,
-                color: "#0f172a",
-                margin: 0,
-                letterSpacing: "-0.03em",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: isMobile ? "center" : "flex-start",
-                gap: "10px"
-              }}>
-                {user.name}
-                <VerifiedBadge username={user.username} size={isMobile ? "22px" : "26px"} />
-              </h1>
-              <div style={{
-                fontSize: "18px",
-                color: "#64748b",
-                fontWeight: 500,
-                letterSpacing: "0.01em",
-                display: "flex",
-                flexDirection: "column",
-                gap: "4px"
-              }}>
-                <div>@{user.username}</div>
-                {user.is_hirable && (
-                  <div style={{
-                    fontSize: "14px",
-                    color: "#3b82f6",
-                    fontWeight: 700,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: isMobile ? "center" : "flex-start",
-                    gap: "6px"
-                  }}>
-                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", display: "inline-block" }}></span>
-                    OPEN TO OPPORTUNITIES
-                  </div>
-                )}
-              </div>
+            <div
+              onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }}
+              style={{
+                width: isMobile ? "100px" : "140px",
+                height: isMobile ? "100px" : "140px",
+                borderRadius: "50%",
+                border: "4px solid #fff",
+                backgroundColor: "#fff",
+                overflow: "hidden",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                flexShrink: 0
+              }}
+            >
+              <AvailabilityBadge
+                avatarUrl={avatarUrl}
+                name={user.name}
+                size={isMobile ? 100 : 140}
+                isOpenToOpportunities={user.is_hirable}
+                ringColor="#0f172a"
+              />
             </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+            <div style={{
+              display: "flex",
+              gap: "12px",
+              marginBottom: "12px",
+              flexWrap: "wrap",
+              justifyContent: isMobile ? "flex-start" : "flex-end"
+            }}>
               {isSignedIn && (
                 <button
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
-                  className={`profile-btn ${user.is_hirable ? 'pulse-hirable' : ''}`}
+                  className="profile-btn"
                   title="Message"
-                  style={{ width: "44px", height: "44px", padding: 0, justifyContent: "center" }}
                 >
-                  <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: "16px" }} />
+                  <HugeiconsIcon icon={Mail01Icon} size={20} />
                 </button>
               )}
               {isSignedIn && (
                 <button
                   onClick={handleFollow}
                   disabled={followLoading}
-                  className={`profile-btn ${isFollowing ? 'profile-btn-following' : 'profile-btn-primary'}`}
-                  style={{ minWidth: isMobile ? "120px" : "140px", justifyContent: "center" }}
+                  className={`profile-btn ${isFollowing ? '' : 'profile-btn-primary'}`}
+                  style={{ minWidth: "100px", justifyContent: "center" }}
                 >
-                  <FontAwesomeIcon icon={isFollowing ? faUserCheck : faUserPlus} />
+                  <HugeiconsIcon icon={isFollowing ? UserCheck01Icon : UserAdd01Icon} size={20} />
                   <span>{isFollowing ? "Following" : "Follow"}</span>
                 </button>
               )}
               <button
                 onClick={() => {
-                  const shareUrl = user.username
-                    ? `${window.location.origin}/${user.username}`
-                    : window.location.href;
-
-                  if (navigator.share) {
-                    navigator.share({
-                      title: `${user.name} on Codeown`,
-                      text: user.bio || `Check out ${user.name}'s profile on Codeown!`,
-                      url: shareUrl,
-                    }).catch(console.error);
-                  } else {
-                    navigator.clipboard.writeText(shareUrl);
-                    toast.success("Profile link copied to clipboard!");
-                  }
+                  const shareUrl = user.username ? `${window.location.origin}/${user.username}` : window.location.href;
+                  navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
                 }}
                 className="profile-btn"
-                title="Share Profile"
-                style={{ width: "44px", height: "44px", padding: 0, justifyContent: "center" }}
+                title="Share"
               >
-                <FontAwesomeIcon icon={faShareNodes} style={{ fontSize: "16px" }} />
+                <HugeiconsIcon icon={Share01Icon} size={20} />
               </button>
             </div>
           </div>
 
-          {user.bio && (
-            <div style={{
-              fontSize: "16px",
-              lineHeight: "1.6",
-              color: "#334155",
-              marginBottom: "20px",
-              maxWidth: "600px"
-            }}>
-              <BioRenderer bio={user.bio} />
-            </div>
-          )}
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
-            <span style={{ display: "flex", alignItems: "center", justifyContent: isMobile ? "center" : "flex-start", gap: "6px", color: "#64748b", fontSize: "14px", fontWeight: 600 }}>
-              <FontAwesomeIcon icon={faCalendarAlt} />
-              Joined {formatJoinDate(user.created_at || "")}
-            </span>
-            <div style={{
+          {/* Name and Handle */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <h1 style={{
+              fontSize: isMobile ? "24px" : "32px",
+              fontWeight: 850,
+              color: "#0f172a",
+              margin: 0,
               display: "flex",
               alignItems: "center",
-              justifyContent: isMobile ? "center" : "flex-start",
-              gap: "24px",
-              color: "#64748b",
-              fontSize: "14px",
-              fontWeight: 600
+              gap: "8px",
+              letterSpacing: "-0.02em"
             }}>
-              <span
-                onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
-                style={{ cursor: "pointer", color: "#1e293b" }}
-              >
-                <strong style={{ fontWeight: 800 }}>{user.follower_count || 0}</strong> followers
-              </span>
-              <span
-                onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
-                style={{ cursor: "pointer", color: "#1e293b" }}
-              >
-                <strong style={{ fontWeight: 800 }}>{user.following_count || 0}</strong> following
-              </span>
-              <span style={{ color: "#1e293b" }}>
-                <strong style={{ fontWeight: 800 }}>{user.total_likes || 0}</strong> likes
-              </span>
+              {user.name}
+              <VerifiedBadge username={user.username} size={isMobile ? "20px" : "24px"} />
+            </h1>
+            <span style={{ fontSize: "16px", color: "#64748b", fontWeight: 600 }}>@{user.username}</span>
+          </div>
+        </div>
+
+        {/* Main Layout Grid */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: width >= 1024 ? "320px 1fr" : "1fr",
+          gap: "48px",
+          padding: isMobile ? "0 16px" : "0 24px"
+        }}>
+          {/* Sidebar */}
+          <aside>
+            {user.bio && (
+              <div className="sidebar-section">
+                <p style={{
+                  fontSize: "15px",
+                  lineHeight: "1.6",
+                  color: "#334155",
+                  margin: 0
+                }}>
+                  <BioRenderer bio={user.bio} />
+                </p>
+              </div>
+            )}
+
+            <div className="sidebar-section" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "14px", fontWeight: 500 }}>
+                <HugeiconsIcon icon={Calendar03Icon} size={18} />
+                Joined {formatJoinDate(user.created_at || "")}
+              </div>
+              {user.website_url && (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3b82f6", fontSize: "14px", fontWeight: 600 }}>
+                  <HugeiconsIcon icon={Globe02Icon} size={18} />
+                  <a href={user.website_url.startsWith('http') ? user.website_url : `https://${user.website_url}`} target="_blank" rel="noreferrer" style={{ color: "inherit", textDecoration: "none" }}>{user.website_url.replace(/^https?:\/\//, '')}</a>
+                </div>
+              )}
             </div>
-          </div>
 
-          {/* Social Icons */}
-          <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "32px" }}>
-            {user.github_url && (
-              <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "#000", fontSize: "20px" }}>
-                <FontAwesomeIcon icon={faGithub} />
-              </a>
-            )}
-            {user.twitter_url && (
-              <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "#000", fontSize: "20px" }}>
-                <FontAwesomeIcon icon={faInstagram} />
-              </a>
-            )}
-            {user.linkedin_url && (
-              <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "#000", fontSize: "20px" }}>
-                <FontAwesomeIcon icon={faLinkedin} />
-              </a>
-            )}
-            {user.website_url && (
-              <a href={user.website_url} target="_blank" rel="noopener noreferrer" style={{ color: "#000", fontSize: "20px" }}>
-                <FontAwesomeIcon icon={faGlobe} />
-              </a>
-            )}
-          </div>
-
-          {/* Tech Stack / Skills */}
-          {user.skills && user.skills.length > 0 && (
-            <div style={{ marginTop: "24px" }}>
-              <div style={{ fontSize: "12px", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "12px" }}>Tech Stack</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                {user.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    style={{
-                      padding: "6px 14px",
-                      backgroundColor: "white",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: "12px",
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      color: "#334155",
-                      transition: "all 0.2s ease",
-                      cursor: "default"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "#212121";
-                      e.currentTarget.style.transform = "translateY(-1px)";
-                      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.05)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "none";
-                    }}
-                  >
-                    {skill}
-                  </span>
-                ))}
+            <div className="sidebar-section" style={{ display: "flex", gap: "20px" }}>
+              <div onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
+                <span style={{ fontSize: "15px", fontWeight: 750, color: "#0f172a" }}>{user.follower_count || 0}</span>
+                <span style={{ fontSize: "15px", color: "#64748b", marginLeft: "4px" }}>Followers</span>
+              </div>
+              <div onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
+                <span style={{ fontSize: "15px", fontWeight: 750, color: "#0f172a" }}>{user.following_count || 0}</span>
+                <span style={{ fontSize: "15px", color: "#64748b", marginLeft: "4px" }}>Following</span>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Tab Selection */}
-        <div style={{
-          display: "flex",
-          justifyContent: isMobile ? "center" : "flex-start",
-          padding: "6px",
-          backgroundColor: "#f1f5f9",
-          borderRadius: "18px",
-          width: "fit-content",
-          marginBottom: "32px",
-          marginTop: "40px",
-          margin: isMobile ? "40px auto 32px" : "40px 0 32px"
-        }}>
-          <button
-            onClick={() => setActiveTab("posts")}
-            className={`tab-btn ${activeTab === "posts" ? "active" : ""}`}
-          >
-            POSTS
-          </button>
-          <button
-            onClick={() => setActiveTab("projects")}
-            className={`tab-btn ${activeTab === "projects" ? "active" : ""}`}
-          >
-            PROJECTS
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        <div key={activeTab} className="tab-content-enter">
-          {activeTab === "posts" ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-              {posts.length === 0 ? (
-                <div style={{ padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px", border: "1px solid #f1f5f9" }}>
-                  <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faLayerGroup} /></div>
-                  No posts published yet.
+            {user.skills && user.skills.length > 0 && (
+              <div className="sidebar-section">
+                <h4 className="sidebar-title">Tech Stack</h4>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {user.skills.map(skill => (
+                    <span key={skill} style={{
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      color: "#475569",
+                      padding: "4px 10px",
+                      backgroundColor: "#f1f5f9",
+                      borderRadius: "6px"
+                    }}>
+                      {skill}
+                    </span>
+                  ))}
                 </div>
-              ) : (
-                posts.map((p) => (
-                  <div key={p.id} style={{ position: "relative" }}>
-                    <PostCard post={p} onUpdated={fetchUserPosts} />
-                    {user.pinned_post_id === p.id && (
-                      <div style={{
-                        position: "absolute",
-                        top: "20px",
-                        left: "20px",
-                        background: "#212121",
-                        color: "white",
-                        padding: "6px 14px",
-                        borderRadius: "12px",
-                        fontSize: "11px",
-                        fontWeight: 800,
-                        letterSpacing: "0.05em",
-                        textTransform: "uppercase",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        zIndex: 10,
-                        boxShadow: "0 4px 15px rgba(33, 33, 33, 0.3)"
-                      }}>
-                        <FontAwesomeIcon icon={faThumbtack} />
-                        Featured
-                      </div>
-                    )}
+              </div>
+            )}
+          </aside>
+
+          {/* Main Content Area */}
+          <div>
+            <div style={{
+              display: "flex",
+              backgroundColor: "rgba(241, 245, 249, 0.7)",
+              backdropFilter: "blur(8px)",
+              padding: "4px",
+              borderRadius: "16px",
+              marginBottom: "32px",
+              gap: "4px",
+              width: "fit-content",
+              maxWidth: "100%",
+              overflowX: "auto",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch"
+            }}>
+              <button
+                onClick={() => setActiveTab("posts")}
+                className={`tab-btn ${activeTab === "posts" ? 'active' : ''}`}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Posts
+              </button>
+              <button
+                onClick={() => setActiveTab("projects")}
+                className={`tab-btn ${activeTab === "projects" ? 'active' : ''}`}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Projects
+              </button>
+            </div>
+
+            {activeTab === "posts" ? (
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {posts.length === 0 ? (
+                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
+                    <HugeiconsIcon icon={Layers01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
+                    <p style={{ fontWeight: 600 }}>No posts yet</p>
                   </div>
-                ))
-              )}
-            </div>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
-              {projects.length === 0 ? (
-                <div style={{ gridColumn: "1 / -1", padding: "80px 0", textAlign: "center", color: "#94a3b8", fontWeight: 700, backgroundColor: "white", borderRadius: "24px", border: "1px solid #f1f5f9" }}>
-                  <div style={{ fontSize: "40px", marginBottom: "16px", opacity: 0.3 }}><FontAwesomeIcon icon={faRocket} /></div>
-                  No projects launched yet.
-                </div>
-              ) : (
-                projects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
-              )}
-            </div>
-          )}
+                ) : (
+                  posts.map(p => (
+                    <div key={p.id} style={{ position: "relative" }}>
+                      {user.pinned_post_id === p.id && (
+                        <div style={{
+                          padding: "12px 24px 0",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          color: "#64748b",
+                          fontSize: "13px",
+                          fontWeight: 700
+                        }}>
+                          <HugeiconsIcon icon={PushpinIcon} size={14} />
+                          Pinned Post
+                        </div>
+                      )}
+                      <PostCard post={p} onUpdated={fetchUserPosts} />
+                    </div>
+                  ))
+                )}
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {projects.length === 0 ? (
+                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
+                    <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
+                    <p style={{ fontWeight: 600 }}>No projects yet</p>
+                  </div>
+                ) : (
+                  projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -770,6 +660,12 @@ export default function UserProfile() {
           title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
         />
       )}
+      <Lightbox
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        imageSrc={lightboxImage}
+      />
+      <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
     </main>
   );
 }
