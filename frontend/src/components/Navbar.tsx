@@ -327,7 +327,7 @@ export default function Navbar() {
             </div>
 
             {/* Footer Links */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", fontSize: "10px", color: "#94a3b8", marginBottom: "10px", marginTop: "10px", padding: "0 4px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", fontSize: "10px", color: "#94a3b8", marginBottom: "10px", marginTop: "10px", padding: "0 4px", textAlign: "center" }}>
               <Link to="/privacy" style={{ color: "#94a3b8", textDecoration: "none" }}>Privacy Policy</Link>
               <span>•</span>
               <Link to="/terms" style={{ color: "#94a3b8", textDecoration: "none" }}>Terms</Link>
