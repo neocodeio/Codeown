@@ -408,8 +408,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               onClick: handleLike,
               active: isLiked,
               activeColor: "#00ba7c",
-              hoverColor: "#00ba7c",
-              filled: isLiked
+              hoverColor: "#00ba7c"
             },
             {
               icon: isSaved ? Bookmark01Icon : Bookmark02Icon,
@@ -451,7 +450,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                 icon={action.icon}
                 style={{
                   fontSize: "18px",
-                  fill: action.filled ? "currentColor" : "none"
+                  // Removed automatic fill to prevent solid green blobs
                 }}
               />
               {action.count !== undefined && (
