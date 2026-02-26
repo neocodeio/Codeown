@@ -111,12 +111,13 @@ export default function NotificationsPage() {
             />
 
             <div style={{
-                display: "flex",
-                justifyContent: "center",
-                maxWidth: width >= 1400 ? "1400px" : "100%",
-                margin: "0 auto",
-                width: "100%"
+                display: "grid",
+                gridTemplateColumns: width >= 1400 ? "1fr 600px 1fr" : width >= 1280 ? "100px 600px 1fr" : "1fr",
+                width: "100%",
+                backgroundColor: "#fff",
             }}>
+                {/* Left Balance Spacer (only desktop) */}
+                {width >= 1280 && <div />}
                 {/* Main Notifications Column */}
                 <div style={{
                     maxWidth: width >= 1024 ? "600px" : "100%",
@@ -124,7 +125,8 @@ export default function NotificationsPage() {
                     backgroundColor: "#fff",
                     borderLeft: width >= 1024 ? "1px solid #eff3f4" : "none",
                     borderRight: width >= 1024 ? "1px solid #eff3f4" : "none",
-                    minHeight: "100vh"
+                    minHeight: "100vh",
+                    margin: width >= 1280 ? "0" : "0 auto"
                 }}>
                     {/* Header */}
                     <header style={{
@@ -317,6 +319,9 @@ export default function NotificationsPage() {
                         })}
                     </div>
                 </div>
+
+                {/* Right Balance Spacer (only desktop) */}
+                {width >= 1280 && <div />}
             </div>
         </main>
     );
