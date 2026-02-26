@@ -130,23 +130,25 @@ export default function Feed() {
             />
 
             <div style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: width >= 1280 ? "64px" : "0",
-                maxWidth: width >= 1400 ? "1400px" : "100%",
-                margin: "0 auto",
+                display: "grid",
+                gridTemplateColumns: width >= 1400 ? "1fr 600px 1fr" : width >= 1280 ? "100px 600px 1fr" : "1fr",
                 width: "100%",
-                padding: width >= 1024 && width < 1400 ? "0 24px" : "0"
+                backgroundColor: "#fff",
             }}>
+                {/* Left Balance Spacer (only desktop) */}
+                {width >= 1280 && <div />}
+
                 {/* Main Feed Column */}
                 <div style={{
-                    maxWidth: width >= 1024 ? "600px" : "100%",
                     width: "100%",
-                    marginLeft: width >= 1280 ? "-260px" : width >= 1024 ? "100px" : "0",
+                    maxWidth: "600px",
                     backgroundColor: "#fff",
                     borderLeft: width >= 1024 ? "1px solid #eff3f4" : "none",
                     borderRight: width >= 1024 ? "1px solid #eff3f4" : "none",
-                    minHeight: "100vh"
+                    minHeight: "100vh",
+                    position: "relative",
+                    zIndex: 1,
+                    margin: width >= 1280 ? "0" : "0 auto"
                 }}>
                     {/* Top Tabs */}
                     <div style={{
@@ -423,8 +425,18 @@ export default function Feed() {
                     }
                 </div>
 
-                {/* Sidebar - Only visible on desktop */}
-                <RecommendedUsersSidebar />
+                {/* Sidebar Column */}
+                {width >= 1280 && (
+                    <div style={{
+                        padding: "32px",
+                        display: "flex",
+                        justifyContent: width >= 1600 ? "center" : "flex-start"
+                    }}>
+                        <div style={{ width: "350px", flexShrink: 0 }}>
+                            <RecommendedUsersSidebar />
+                        </div>
+                    </div>
+                )}
             </div>
         </main>
     );

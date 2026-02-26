@@ -176,13 +176,15 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       className="fade-in project-card-x-style"
       style={{
         cursor: "pointer",
-        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         backgroundColor: "#fff",
-        padding: isMobile ? "16px" : "24px",
+        backgroundImage: !isMobile ? `linear-gradient(135deg, ${getStatusColor(project.status)}03, #fff)` : "none",
+        padding: isMobile ? "20px" : "28px",
         position: "relative",
         display: "flex",
-        gap: "12px",
+        gap: "16px",
         borderBottom: "1px solid rgba(0, 0, 0, 0.04)",
+        borderLeft: !isMobile ? `4px solid ${getStatusColor(project.status)}` : "none",
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = "#fcfcfc";
@@ -248,12 +250,32 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               {formatRelativeDate(project.created_at)}
             </span>
             <div style={{
-              marginLeft: "2px",
-              backgroundColor: getStatusColor(project.status),
-              width: "8px",
-              height: "8px",
-              borderRadius: "50%"
-            }} title={getStatusText(project.status)} />
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "4px 10px",
+              backgroundColor: `${getStatusColor(project.status)}15`,
+              borderRadius: "100px",
+              border: `1px solid ${getStatusColor(project.status)}30`
+            }}>
+              <div style={{
+                backgroundColor: getStatusColor(project.status),
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                boxShadow: `0 0 8px ${getStatusColor(project.status)}`
+              }} />
+              <span style={{
+                fontSize: "11px",
+                fontWeight: 800,
+                color: getStatusColor(project.status),
+                textTransform: "uppercase",
+                letterSpacing: "0.05em"
+              }}>
+                {getStatusText(project.status)}
+              </span>
+            </div>
+
           </div>
 
           {/* Actions Menu */}
@@ -366,11 +388,12 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         {/* Project Title & Description */}
         <div style={{ marginBottom: "12px" }}>
           <h3 style={{
-            fontSize: "15px",
-            fontWeight: "800",
+            fontSize: "18px",
+            fontWeight: "900",
             color: "#0f172a",
-            margin: "0 0 4px 0",
-            lineHeight: "1.4"
+            margin: "0 0 6px 0",
+            lineHeight: "1.3",
+            letterSpacing: "-0.02em"
           }}>
             {project.title}
           </h3>

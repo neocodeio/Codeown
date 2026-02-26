@@ -36,8 +36,8 @@ export default function RecommendedUsersSidebar() {
         }
 
         // Optimistic update using query client
-        queryClient.setQueryData(["recommendedUsers"], (old: any[] = []) => 
-            old.map(u => 
+        queryClient.setQueryData(["recommendedUsers"], (old: any[] = []) =>
+            old.map(u =>
                 u.id === targetId ? { ...u, isFollowing: !currentStatus } : u
             )
         );
@@ -50,8 +50,8 @@ export default function RecommendedUsersSidebar() {
         } catch (error) {
             console.error("Failed to follow user", error);
             // Revert on error
-            queryClient.setQueryData(["recommendedUsers"], (old: any[] = []) => 
-                old.map(u => 
+            queryClient.setQueryData(["recommendedUsers"], (old: any[] = []) =>
+                old.map(u =>
                     u.id === targetId ? { ...u, isFollowing: currentStatus } : u
                 )
             );
@@ -69,7 +69,7 @@ export default function RecommendedUsersSidebar() {
                 width: "350px",
                 minWidth: "350px",
                 padding: width >= 1400 ? 0 : "0 14px 0 0",
-                marginRight: width >= 1280 ? "-163px" : "0",
+                marginRight: "0",
                 position: "sticky",
                 top: "100px",
                 height: "fit-content",

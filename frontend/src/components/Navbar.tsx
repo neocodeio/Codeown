@@ -327,18 +327,31 @@ export default function Navbar() {
             </div>
 
             {/* Footer Links */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", fontSize: "10px", color: "#94a3b8", marginBottom: "10px", marginTop: "10px", padding: "0 4px", textAlign: "center" }}>
-              <Link to="/privacy" style={{ color: "#94a3b8", textDecoration: "none" }}>Privacy Policy</Link>
-              <span>•</span>
-              <Link to="/terms" style={{ color: "#94a3b8", textDecoration: "none" }}>Terms</Link>
-              <span>•</span>
-              <Link to="/about" style={{ color: "#94a3b8", textDecoration: "none" }}>About Us</Link>
-              <span>•</span>
-              <Link to="/founder-story" style={{ color: "#94a3b8", textDecoration: "none" }}>Founder</Link>
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "8px",
+              fontSize: "11px",
+              color: "#94a3b8",
+              marginBottom: "12px",
+              marginTop: "16px",
+              padding: "0 10px",
+              textAlign: "center",
+              lineHeight: "1.5"
+            }}>
+              <Link to="/privacy" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "#64748b"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Privacy</Link>
+              <span style={{ color: "#e2e8f0" }}>•</span>
+              <Link to="/terms" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "#64748b"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Terms</Link>
+              <span style={{ color: "#e2e8f0" }}>•</span>
+              <Link to="/about" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "#64748b"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>About</Link>
+              <span style={{ color: "#e2e8f0" }}>•</span>
+              <Link to="/founder-story" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "#64748b"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Founder</Link>
             </div>
 
-            <div style={{ fontSize: "11px", color: "#94a3b8", textAlign: "center" }}>
-              © 2026 Codeown.
+            <div style={{ fontSize: "11px", color: "#cbd5e1", textAlign: "center", fontWeight: 500 }}>
+              © 2026 Codeown. Crafted for creators.
             </div>
           </>
         ) : (
@@ -371,9 +384,9 @@ export default function Navbar() {
     return (
       <>
         <div style={{
-          width: "350px",
+          width: "300px",
           height: "100vh",
-          paddingLeft: "75px",
+          padding: "0 12px",
           position: "sticky",
           top: 0,
           borderRight: "1px solid #e2e8f0",
