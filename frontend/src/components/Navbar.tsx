@@ -384,7 +384,7 @@ export default function Navbar() {
     return (
       <>
         <div style={{
-          width: "300px",
+          width: width < 1024 ? "240px" : "300px",
           height: "100vh",
           padding: "0 12px",
           position: "sticky",
@@ -445,15 +445,6 @@ export default function Navbar() {
             <StreakBadge count={streakCount} />
           </div>
         )}
-        {/* <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center" }}>
-          <img
-            src="https://www.foundrlist.com/api/badge/codeown"
-            alt="Codeown - Live on FoundrList"
-            width="240"
-            height="96"
-            style={{ height: "36px", width: "auto", borderRadius: "8px" }}
-          />
-        </a> */}
       </div>
 
       {/* Spacer for Top Header */}

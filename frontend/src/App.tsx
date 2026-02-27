@@ -64,7 +64,7 @@ export default function App() {
       backgroundColor: "#f8fafc"
     }}>
       <Navbar />
-      <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
+      <div style={{ flex: 1, position: "relative", minWidth: 0, overflowX: "hidden" }}>
         <ErrorBoundary>
           <div key={location.pathname} className="page-enter">
             <Suspense fallback={<PageLoader />}>
