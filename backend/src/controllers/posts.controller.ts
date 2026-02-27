@@ -333,10 +333,8 @@ export async function createPost(req: Request, res: Response) {
     const user = req.user;
     const { title, content, images, tags, language } = req.body;
 
-    // Validate input
-    if (!title || title.trim().length === 0) {
-      return res.status(400).json({ error: "Title is required" });
-    }
+    // Validate input - Title is now optional
+    const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
 
     if (!content || content.trim().length === 0) {
       return res.status(400).json({ error: "Content is required" });
@@ -423,7 +421,7 @@ export async function createPost(req: Request, res: Response) {
     console.log(`[CreatePost] Final language choice: '${langCode}' (Input was: '${language}')`);
 
     const { data, error } = await supabase.from("posts").insert({
-      title: title.trim(),
+      title: finalTitle,
       content: content.trim(),
       user_id: userId,
       images: imageUrls.length > 0 ? imageUrls : null,
@@ -464,11 +462,7 @@ export async function updatePost(req: Request, res: Response) {
       return res.status(401).json({ error: "User ID not found" });
     }
 
-    // Validate input
-    if (title !== undefined && (!title || title.trim().length === 0)) {
-      return res.status(400).json({ error: "Title cannot be empty" });
-    }
-
+    // Validate input - Title is now optional
     if (content !== undefined && (!content || content.trim().length === 0)) {
       return res.status(400).json({ error: "Content cannot be empty" });
     }
@@ -490,7 +484,7 @@ export async function updatePost(req: Request, res: Response) {
 
     // Update post
     const updateData: any = {};
-    if (title !== undefined) updateData.title = title.trim();
+    if (title !== undefined) updateData.title = title.trim() || "";
     if (content !== undefined) updateData.content = content.trim();
     if (language !== undefined) {
       const rawLang = String(language).toLowerCase().trim();

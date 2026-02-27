@@ -75,11 +75,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             const token = await getToken();
             if (!token) throw new Error("No token");
 
-            const firstLine = content.split('\n')[0];
-            const title = firstLine.length > 50 ? firstLine.substring(0, 47) + "..." : firstLine || "New Post";
-
             await api.post("/posts", {
-                title: title,
                 content: content.trim(),
                 images: images.length > 0 ? images : null,
                 language: "en"

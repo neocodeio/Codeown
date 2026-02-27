@@ -76,11 +76,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
       return;
     }
 
-    if (!title.trim()) {
-      alert("Title is required");
-      return;
-    }
-
+    // title is optional
     if (!content.trim()) {
       alert("Content is required");
       return;
@@ -446,14 +442,14 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
               <button
                 type="button"
                 onClick={submit}
-                disabled={!isLoaded || !title.trim() || !content.trim() || isSubmitting}
+                disabled={!isLoaded || !content.trim() || isSubmitting}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#212121" : "#e4e7eb",
+                  backgroundColor: isLoaded && content.trim() && !isSubmitting ? "#212121" : "#e4e7eb",
                   border: "none",
-                  color: isLoaded && title.trim() && content.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
+                  color: isLoaded && content.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
                   borderRadius: "20px",
-                  cursor: isLoaded && title.trim() && content.trim() && !isSubmitting ? "pointer" : "not-allowed",
+                  cursor: isLoaded && content.trim() && !isSubmitting ? "pointer" : "not-allowed",
                   fontSize: "15px",
                   fontWeight: 500,
                   transition: "all 0.15s",

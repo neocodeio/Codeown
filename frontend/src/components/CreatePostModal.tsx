@@ -157,7 +157,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   };
 
   const submit = async () => {
-    if (!isLoaded || !title.trim() || !content.trim()) return;
+    if (!isLoaded || !content.trim()) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -460,7 +460,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           <button onClick={onClose} style={{ padding: "10px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", background: "white", color: "#64748b", fontWeight: 600, cursor: "pointer" }}>Cancel</button>
           <button
             onClick={submit}
-            disabled={!title.trim() || !content.trim() || isSubmitting}
+            disabled={!content.trim() || isSubmitting}
             style={{
               padding: "10px 24px",
               borderRadius: "12px",
@@ -468,8 +468,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               background: "#212121",
               color: "white",
               fontWeight: 700,
-              cursor: (!title.trim() || !content.trim() || isSubmitting) ? "not-allowed" : "pointer",
-              opacity: (!title.trim() || !content.trim() || isSubmitting) ? 0.5 : 1
+              cursor: (!content.trim() || isSubmitting) ? "not-allowed" : "pointer",
+              opacity: (!content.trim() || isSubmitting) ? 0.5 : 1
             }}
           >
             {isSubmitting ? "Posting..." : "Post it"}
