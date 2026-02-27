@@ -212,25 +212,25 @@ export default function Feed() {
                     <div style={{
                         display: "flex",
                         flexDirection: "column",
-                        // borderBottom: "1px solid #eff3f4",
+                        borderBottom: "1px solid #eff3f4",
                         backgroundColor: "#fff",
                         // marginTop: "15%"
                     }}>
                         <div style={{
                             display: "flex",
-                            gap: "8px",
+                            gap: "12px",
                             padding: "12px 16px",
                             borderBottom: feedType === "projects" ? "1px solid #f8fafc" : "none"
                         }}>
                             <button
                                 onClick={() => updateParams({ type: "posts" })}
                                 style={{
-                                    padding: "6px 14px",
-                                    borderRadius: "12px",
+                                    padding: "8px 12px",
+                                    borderRadius: "14px",
                                     border: "1px solid #eff3f4",
                                     backgroundColor: feedType === "posts" ? "#212121" : "#fff",
                                     color: feedType === "posts" ? "#fff" : "#64748b",
-                                    fontSize: "13px",
+                                    fontSize: "15px",
                                     fontWeight: 700,
                                     cursor: "pointer",
                                     transition: "all 0.2s"
@@ -241,12 +241,12 @@ export default function Feed() {
                             <button
                                 onClick={() => updateParams({ type: "projects" })}
                                 style={{
-                                    padding: "6px 14px",
-                                    borderRadius: "12px",
+                                    padding: "8px 12px",
+                                    borderRadius: "14px",
                                     border: "1px solid #eff3f4",
                                     backgroundColor: feedType === "projects" ? "#212121" : "#fff",
                                     color: feedType === "projects" ? "#fff" : "#64748b",
-                                    fontSize: "13px",
+                                    fontSize: "15px",
                                     fontWeight: 700,
                                     cursor: "pointer",
                                     transition: "all 0.2s"
