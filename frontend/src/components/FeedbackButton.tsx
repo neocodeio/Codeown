@@ -6,7 +6,7 @@ import { faTimes, faComment } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@clerk/clerk-react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { HugeiconsIcon } from '@hugeicons/react';
-import { CommentAdd02Icon } from "@hugeicons/core-free-icons";
+import { ChatFeedbackIcon } from "@hugeicons/core-free-icons";
 
 
 export default function FeedbackButton() {
@@ -308,7 +308,7 @@ export default function FeedbackButton() {
         }}
         aria-label="Feedback"
       >
-        <HugeiconsIcon icon={CommentAdd02Icon} style={{ fontSize: "24px", fontWeight: "bold", color: "#fff", backgroundColor: "#212121", padding: "12px", borderRadius: "25px" }} />
+        <HugeiconsIcon icon={ChatFeedbackIcon} style={{ fontSize: "24px", fontWeight: "bold", color: "#fff", backgroundColor: "#000", padding: "12px", borderRadius: "25px" }} />
       </button>
       {modal}
     </>
