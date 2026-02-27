@@ -17,6 +17,7 @@ import messagesRoutes from "./src/routes/messages.routes.js";
 import migrationRoutes from "./src/routes/migration.routes.js";
 import imageProxyRoutes from "./src/routes/image-proxy.routes.js";
 import metadataRoutes from "./src/routes/metadata.routes.js";
+import seoRoutes from "./src/routes/seo.routes.js";
 
 import helmet from "helmet";
 
@@ -73,5 +74,6 @@ app.use("/", projectCommentsRoutes);
 app.use("/migration", migrationRoutes);
 app.use("/image-proxy", imageProxyRoutes);
 app.use("/metadata", metadataRoutes);
+app.use("/", seoRoutes);
 
 export default app;

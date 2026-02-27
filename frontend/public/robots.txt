@@ -1,8 +1,9 @@
 User-agent: *
 Allow: /
 
-# Sitemaps (once you have a dynamic one generated)
-# Sitemap: https://codeown.space/sitemap.xml
+# Provide the exact path to your dynamic backend Sitemap
+# Note: If your backend URL is different in production, update this to the live backend API URL:
+Sitemap: https://codeown.space/sitemap.xml
 
 # Prevent indexing of sign-in and sign-up pages
 Disallow: /sign-in
