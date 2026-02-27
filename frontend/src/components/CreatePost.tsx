@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import LinkPreview from "./LinkPreview";
 
 export default function CreatePost({ onCreated }: { onCreated: () => void }) {
   const [title, setTitle] = useState("");
@@ -131,6 +132,17 @@ export default function CreatePost({ onCreated }: { onCreated: () => void }) {
           e.currentTarget.style.boxShadow = "none";
         }}
       />
+
+      {/* Link Preview */}
+      {(() => {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const match = content.match(urlRegex);
+        if (match) {
+          return <div style={{ marginBottom: "16px" }}><LinkPreview url={match[0]} /></div>;
+        }
+        return null;
+      })()}
+
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <button
           onClick={submit}

@@ -6,6 +6,7 @@ import { useAvatar } from "../hooks/useAvatar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
 import MentionInput from "./MentionInput";
+import LinkPreview from "./LinkPreview";
 
 interface FeedPostComposerProps {
     onCreated: () => void;
@@ -126,6 +127,16 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         transparent={true}
                     />
                 </div>
+
+                {/* Link Preview */}
+                {(() => {
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+                    const match = content.match(urlRegex);
+                    if (match && images.length === 0) {
+                        return <div style={{ marginBottom: "12px" }}><LinkPreview url={match[0]} /></div>;
+                    }
+                    return null;
+                })()}
 
                 {images.length > 0 && (
                     <div style={{

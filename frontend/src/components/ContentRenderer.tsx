@@ -26,6 +26,7 @@ import "prismjs/components/prism-swift";
 import "prismjs/components/prism-kotlin";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy, faCheck } from "@fortawesome/free-solid-svg-icons";
+import LinkPreview from "./LinkPreview";
 
 interface ContentRendererProps {
   content: string;
@@ -120,6 +121,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
   const parseContent = (text: string) => {
     const elements: (string | React.JSX.Element)[] = [];
     let key = 0;
+    let firstUrl: string | null = null;
 
     // Split text into lines to handle block-level elements like headings and lists
     const lines = text.split("\n");
@@ -181,6 +183,10 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
       } else {
         elements.push(<div key={`p-${key++}`} style={{ marginBottom: "8px" }}>{parseInline(line)}</div>);
       }
+    }
+
+    if (firstUrl) {
+      elements.push(<LinkPreview key={`lp-${key++}`} url={firstUrl} />);
     }
 
     return elements;
@@ -269,8 +275,10 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         let match;
         while ((match = regex.exec(p)) !== null) {
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          const url = match[2];
+          if (!firstUrl) firstUrl = url;
           res.push(
-            <a key={`l-${key++}`} href={match[2]} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+            <a key={`l-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
               {match[1]}
             </a>
           );
@@ -289,9 +297,11 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         let match;
         while ((match = regex.exec(p)) !== null) {
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          const url = match[1];
+          if (!firstUrl) firstUrl = url;
           res.push(
-            <a key={`lu-${key++}`} href={match[1]} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
-              {match[1].length > 40 ? match[1].substring(0, 37) + "..." : match[1]}
+            <a key={`lu-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+              {url.length > 40 ? url.substring(0, 37) + "..." : url}
             </a>
           );
           lastIdx = match.index + match[0].length;
