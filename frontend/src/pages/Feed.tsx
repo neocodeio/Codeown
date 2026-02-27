@@ -130,25 +130,24 @@ export default function Feed() {
             />
 
             <div style={{
-                display: "grid",
-                gridTemplateColumns: width >= 1400 ? "1fr 600px 1fr" : width >= 1280 ? "100px 600px 1fr" : "1fr",
+                display: "flex",
+                flexDirection: width >= 1280 ? "row" : "column",
+                justifyContent: "center",
                 width: "100%",
+                maxWidth: "1400px",
+                margin: "0 auto",
                 backgroundColor: "#fff",
             }}>
-                {/* Left Balance Spacer (only desktop) */}
-                {width >= 1280 && <div />}
-
                 {/* Main Feed Column */}
                 <div style={{
-                    width: "100%",
-                    maxWidth: "600px",
-                    backgroundColor: "#fff",
+                    width: width >= 1280 ? "600px" : "100%",
+                    flexShrink: 0,
                     borderLeft: width >= 1024 ? "1px solid #eff3f4" : "none",
                     borderRight: width >= 1024 ? "1px solid #eff3f4" : "none",
                     minHeight: "100vh",
                     position: "relative",
                     zIndex: 1,
-                    margin: width >= 1280 ? "0" : "0 auto"
+                    margin: width >= 1280 ? "0 auto" : "0"
                 }}>
                     {/* Top Tabs */}
                     <div style={{
@@ -156,9 +155,11 @@ export default function Feed() {
                         borderBottom: "1px solid #eff3f4",
                         position: "sticky",
                         top: isMobile ? "64px" : 0,
-                        backgroundColor: "rgba(255, 255, 255, 0.85)",
-                        backdropFilter: "blur(12px)",
-                        zIndex: 10
+                        marginTop: isMobile ? "16%" : 0,
+                        backgroundColor: "rgba(255, 255, 255, 0.95)",
+                        backdropFilter: "blur(8px)",
+                        zIndex: 10,
+                        width: "100%"
                     }}>
                         <div
                             onClick={() => handleFilterChange("all")}
@@ -211,8 +212,9 @@ export default function Feed() {
                     <div style={{
                         display: "flex",
                         flexDirection: "column",
-                        borderBottom: "1px solid #eff3f4",
-                        backgroundColor: "#fff"
+                        // borderBottom: "1px solid #eff3f4",
+                        backgroundColor: "#fff",
+                        // marginTop: "15%"
                     }}>
                         <div style={{
                             display: "flex",

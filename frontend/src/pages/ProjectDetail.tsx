@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
 import type { Project } from "../types/project";
 import { formatRelativeDate } from "../utils/date";
@@ -32,6 +33,7 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 
 export default function ProjectDetail() {
+  const { width } = useWindowSize();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
@@ -371,10 +373,12 @@ export default function ProjectDetail() {
         }}>
           <div style={{ flex: 1 }}>
             <h1 style={{
-              fontSize: "48px",
+              fontSize: width < 768 ? "32px" : "48px",
               fontWeight: 800,
               marginBottom: "16px",
               lineHeight: "1.2",
+              overflowWrap: "anywhere",
+              wordBreak: "break-word"
             }}>
               {project.title}
             </h1>

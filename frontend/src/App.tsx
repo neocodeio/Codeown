@@ -61,10 +61,17 @@ export default function App() {
       display: "flex",
       flexDirection: isMobile ? "column" : "row",
       minHeight: "100vh",
-      backgroundColor: "#f8fafc"
+      backgroundColor: "#fff"
     }}>
       <Navbar />
-      <div style={{ flex: 1, position: "relative", minWidth: 0, overflowX: "hidden" }}>
+      <div style={{
+        flex: 1,
+        position: "relative",
+        minWidth: 0,
+        overflowX: "hidden",
+        paddingTop: isMobile ? "0px" : "0px",
+        marginBottom: isMobile ? "0px" : "0px"
+      }}>
         <ErrorBoundary>
           <div key={location.pathname} className="page-enter">
             <Suspense fallback={<PageLoader />}>
@@ -93,7 +100,6 @@ export default function App() {
         {location.pathname !== "/messages" && <FeedbackButton />}
         <ConnectionStatus />
       </div>
-      {isMobile && <div style={{ height: "80px" }} />}
     </div>
   );
 }

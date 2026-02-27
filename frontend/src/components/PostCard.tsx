@@ -348,7 +348,9 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
               fontWeight: "800",
               color: "#0f172a",
               margin: "0 0 4px 0",
-              lineHeight: "1.4"
+              lineHeight: "1.4",
+              overflowWrap: "anywhere",
+              wordBreak: "break-word"
             }}>
               {post.title}
             </h2>
@@ -360,6 +362,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
             lineHeight: "1.6",
             color: "#0f172a",
             wordBreak: "break-word",
+            overflowWrap: "anywhere",
             marginBottom: "12px",
             letterSpacing: "-0.01em"
           }}>

@@ -329,7 +329,9 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             color: "#0f172a",
             margin: "0 0 6px 0",
             lineHeight: "1.4",
-            letterSpacing: "-0.01em"
+            letterSpacing: "-0.01em",
+            overflowWrap: "anywhere",
+            wordBreak: "break-word"
           }}>
             {project.title}
           </h3>
@@ -341,7 +343,9 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             display: "-webkit-box",
             WebkitLineClamp: "3",
             WebkitBoxOrient: "vertical",
-            overflow: "hidden"
+            overflow: "hidden",
+            overflowWrap: "anywhere",
+            wordBreak: "break-word"
           }}>
             {project.description}
           </p>

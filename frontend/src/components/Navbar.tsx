@@ -447,8 +447,6 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Spacer for Top Header */}
-      <div style={{ height: "64px" }} />
 
       {/* Mobile Bottom Tab Bar */}
       <div style={{
