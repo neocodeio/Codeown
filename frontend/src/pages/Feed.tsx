@@ -17,6 +17,9 @@ import { SEO } from "../components/SEO";
 export default function Feed() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
+    const isDesktop = width >= 1280;
+    const MAIN_COLUMN_MAX_WIDTH = 620;
+    const SIDEBAR_WIDTH = 350;
     const [searchParams, setSearchParams] = useSearchParams();
 
     // Sync state with URL params
@@ -131,23 +134,27 @@ export default function Feed() {
 
             <div style={{
                 display: "flex",
-                flexDirection: width >= 1280 ? "row" : "column",
+                flexDirection: isDesktop ? "row" : "column",
                 justifyContent: "center",
+                alignItems: "flex-start",
                 width: "100%",
-                maxWidth: "1400px",
+                maxWidth: isDesktop ? MAIN_COLUMN_MAX_WIDTH + SIDEBAR_WIDTH + 80 : 960,
                 margin: "0 auto",
+                padding: isDesktop ? "0 24px" : "0 12px",
+                boxSizing: "border-box",
                 backgroundColor: "#fff",
+                gap: isDesktop ? 24 : 0,
             }}>
                 {/* Main Feed Column */}
                 <div style={{
-                    width: width >= 1280 ? "600px" : "100%",
                     flexShrink: 0,
+                    width: isDesktop ? `${MAIN_COLUMN_MAX_WIDTH}px` : "100%",
                     borderLeft: width >= 1024 ? "1px solid #eff3f4" : "none",
                     borderRight: width >= 1024 ? "1px solid #eff3f4" : "none",
                     minHeight: "100vh",
                     position: "relative",
                     zIndex: 1,
-                    margin: width >= 1280 ? "0 auto" : "0"
+                    margin: isDesktop ? "0" : "0 auto"
                 }}>
                     {/* Top Tabs */}
                     <div style={{
@@ -428,13 +435,13 @@ export default function Feed() {
                 </div>
 
                 {/* Sidebar Column */}
-                {width >= 1280 && (
+                {isDesktop && (
                     <div style={{
-                        padding: "32px",
+                        padding: "32px 0 32px 16px",
                         display: "flex",
-                        justifyContent: width >= 1600 ? "center" : "flex-start"
+                        justifyContent: "flex-start"
                     }}>
-                        <div style={{ width: "350px", flexShrink: 0 }}>
+                        <div style={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
                             <RecommendedUsersSidebar />
                         </div>
                     </div>
