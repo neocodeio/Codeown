@@ -415,7 +415,7 @@ export default function UserProfile() {
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
                   style={{
                     padding: "8px",
-                    borderRadius: "8px",
+                    borderRadius: "20px",
                     border: "1px solid #e2e8f0",
                     backgroundColor: "#fff",
                     color: "#64748b",
@@ -432,7 +432,7 @@ export default function UserProfile() {
                   disabled={followLoading}
                   style={{
                     padding: "8px 16px",
-                    borderRadius: "8px",
+                    borderRadius: "20px",
                     fontSize: "14px",
                     fontWeight: 600,
                     border: "1px solid",
@@ -456,7 +456,7 @@ export default function UserProfile() {
                 }}
                 style={{
                   padding: "8px",
-                  borderRadius: "8px",
+                  borderRadius: "20px",
                   border: "1px solid #e2e8f0",
                   backgroundColor: "#fff",
                   color: "#64748b",
@@ -589,7 +589,7 @@ export default function UserProfile() {
         }}>
           <div className="tabs-row" style={{
             display: "flex",
-            gap: isMobile ? "24px" : "32px",
+            gap: isMobile ? "24px" : "18px",
             marginBottom: "24px",
             marginTop: "24px",
             overflowX: "auto",
@@ -599,16 +599,16 @@ export default function UserProfile() {
             <button
               onClick={() => setActiveTab("posts")}
               style={{
-                padding: "12px 0",
-                fontSize: "15px",
-                fontWeight: activeTab === "posts" ? 700 : 500,
-                color: activeTab === "posts" ? "#0f172a" : "#64748b",
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                borderBottom: activeTab === "posts" ? "2px solid #0f172a" : "2px solid transparent",
-                marginBottom: "-2px",
-                whiteSpace: "nowrap",
+                padding: "8px 12px",
+                  fontSize: "15px",
+                  fontWeight: activeTab === "posts" ? 700 : 500,
+                  color: activeTab === "posts" ? "#0f172a" : "#64748b",
+                  borderRadius: "14px",
+                  border: "1px solid #e2e8f0",
+                  background: activeTab === "posts" ? "#F8FAFC" : "transparent",
+                  cursor: "pointer",
+                  marginBottom: "-2px",
+                  whiteSpace: "nowrap",
               }}
             >
               Posts
@@ -616,16 +616,16 @@ export default function UserProfile() {
             <button
               onClick={() => setActiveTab("projects")}
               style={{
-                padding: "12px 0",
-                fontSize: "15px",
-                fontWeight: activeTab === "projects" ? 700 : 500,
-                color: activeTab === "projects" ? "#0f172a" : "#64748b",
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                borderBottom: activeTab === "projects" ? "2px solid #0f172a" : "2px solid transparent",
-                marginBottom: "-2px",
-                whiteSpace: "nowrap",
+                padding: "8px 12px",
+                  fontSize: "15px",
+                  fontWeight: activeTab === "projects" ? 700 : 500,
+                  color: activeTab === "projects" ? "#0f172a" : "#64748b",
+                  borderRadius: "14px",
+                  border: "1px solid #e2e8f0",
+                  background: activeTab === "projects" ? "#F8FAFC" : "transparent",
+                  cursor: "pointer",
+                  marginBottom: "-2px",
+                  whiteSpace: "nowrap",
               }}
             >
               Projects

@@ -107,10 +107,9 @@ button {
 }
 
 button:hover {
-  background: var(--text-primary);
-  color: var(--bg-page);
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
 }
 
 button:active {

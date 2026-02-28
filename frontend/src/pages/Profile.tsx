@@ -386,8 +386,8 @@ export default function Profile() {
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 style={{
-                  padding: "8px 16px",
-                  borderRadius: "8px",
+                  padding: "8px 12px",
+                  borderRadius: "20px",
                   fontSize: "14px",
                   fontWeight: 600,
                   border: "1px solid #e2e8f0",
@@ -637,7 +637,7 @@ export default function Profile() {
         }}>
             <div className="tabs-row" style={{
               display: "flex",
-              gap: isMobile ? "24px" : "32px",
+              gap: isMobile ? "24px" : "18px",
               marginBottom: "24px",
               marginTop: "24px",
               overflowX: "auto",
@@ -647,14 +647,14 @@ export default function Profile() {
               <button
                 onClick={() => setActiveTab("posts")}
                 style={{
-                  padding: "12px 0",
+                  padding: "8px 12px",
                   fontSize: "15px",
                   fontWeight: activeTab === "posts" ? 700 : 500,
                   color: activeTab === "posts" ? "#0f172a" : "#64748b",
-                  border: "none",
-                  background: "none",
+                  borderRadius: "14px",
+                  border: "1px solid #e2e8f0",
+                  background: activeTab === "posts" ? "#F8FAFC" : "transparent",
                   cursor: "pointer",
-                  borderBottom: activeTab === "posts" ? "2px solid #0f172a" : "2px solid transparent",
                   marginBottom: "-2px",
                   whiteSpace: "nowrap",
                 }}
@@ -664,14 +664,14 @@ export default function Profile() {
               <button
                 onClick={() => setActiveTab("projects")}
                 style={{
-                  padding: "12px 0",
+                  padding: "8px 12px",
                   fontSize: "15px",
                   fontWeight: activeTab === "projects" ? 700 : 500,
                   color: activeTab === "projects" ? "#0f172a" : "#64748b",
-                  border: "none",
-                  background: "none",
+                  borderRadius: "14px",
+                  border: "1px solid #e2e8f0",
+                  background: activeTab === "projects" ? "#F8FAFC" : "transparent",
                   cursor: "pointer",
-                  borderBottom: activeTab === "projects" ? "2px solid #0f172a" : "2px solid transparent",
                   marginBottom: "-2px",
                   whiteSpace: "nowrap",
                 }}
@@ -681,14 +681,14 @@ export default function Profile() {
               <button
                 onClick={() => setActiveTab("saved")}
                 style={{
-                  padding: "12px 0",
+                  padding: "8px 12px",
                   fontSize: "15px",
                   fontWeight: activeTab === "saved" ? 700 : 500,
                   color: activeTab === "saved" ? "#0f172a" : "#64748b",
-                  border: "none",
-                  background: "none",
+                  borderRadius: "14px",
+                  border: "1px solid #e2e8f0",
+                  background: activeTab === "saved" ? "#F8FAFC" : "transparent",
                   cursor: "pointer",
-                  borderBottom: activeTab === "saved" ? "2px solid #0f172a" : "2px solid transparent",
                   marginBottom: "-2px",
                   whiteSpace: "nowrap",
                 }}
