@@ -467,36 +467,40 @@ export default function Navbar() {
         maxWidth: "100vw",
         boxSizing: "border-box"
       }}>
-        <Link to="/" style={{ color: location.pathname === "/" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+        <Link to="/" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/" ? "#212121" : "#94a3b8" }}>
           <HugeiconsIcon icon={Home01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
-        <Link to="/search" style={{ color: location.pathname === "/search" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+        <Link to="/search" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/search" ? "#212121" : "#94a3b8" }}>
           <HugeiconsIcon icon={Search01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
-        <Link to="/messages" style={{ color: location.pathname === "/messages" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+        <Link to="/messages" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/messages" ? "#212121" : "#94a3b8" }}>
           <HugeiconsIcon icon={BubbleChatIcon} style={{ fontSize: "20px" }} />
         </Link>
 
-        <div style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative" }}>
-          <div onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)} style={{
-            color: isCreateMenuOpen ? "#212121" : "#94a3b8",
+        <div
+          onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)}
+          style={{
+            flex: 1,
+            height: "44px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
             cursor: "pointer",
-            transition: "all 0.2s"
-          }}>
-            <HugeiconsIcon
-              icon={Add01Icon}
-              style={{
-                fontSize: "20px",
-                transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)",
-                transition: "transform 0.2s"
-              }}
-            />
-          </div>
+            color: isCreateMenuOpen ? "#212121" : "#94a3b8"
+          }}
+        >
+          <HugeiconsIcon
+            icon={Add01Icon}
+            style={{
+              fontSize: "20px",
+              transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)",
+              transition: "transform 0.2s"
+            }}
+          />
 
           {/* Create Menu - Absolute positioned above button */}
           {isCreateMenuOpen && (
@@ -542,19 +546,27 @@ export default function Navbar() {
 
         </div>
 
-        <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-          <Link
-            to="/notifications"
-            style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", color: location.pathname === "/notifications" ? "#212121" : "#94a3b8" }}
-          >
-            <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
-            {unreadCount > 0 && (
-              <span style={{ position: "absolute", top: "-2px", right: "-2px", width: "8px", height: "8px", background: "#ef4444", borderRadius: "50%", border: "2px solid #fff" }} />
-            )}
-          </Link>
-        </div>
+        <Link
+          to="/notifications"
+          style={{
+            flex: 1,
+            height: "44px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textDecoration: "none",
+            color: location.pathname === "/notifications" ? "#212121" : "#94a3b8",
+            position: "relative"
+          }}
+        >
+          <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
+          {unreadCount > 0 && (
+            <span style={{ position: "absolute", top: "50%", right: "50%", transform: "translate(10px, -10px)", width: "8px", height: "8px", background: "#ef4444", borderRadius: "50%", border: "2px solid #fff" }} />
+          )}
+        </Link>
 
-        <Link to="/profile" style={{ color: location.pathname === "/profile" ? "#212121" : "#94a3b8", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", textDecoration: "none", flex: 1 }}>
+        <Link to="/profile" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/profile" ? "#212121" : "#94a3b8" }}>
           {userAvatarUrl ? (
             <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname === "/profile" ? "2px solid #212121" : "none", objectFit: "cover" }} />
           ) : (

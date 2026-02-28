@@ -300,7 +300,7 @@ export default function PostDetail() {
               alignItems: "center",
               justifyContent: "space-between",
               maxWidth: "400px",
-              marginTop: "9%",
+              marginTop: "16px",
               borderTop: "1px solid #f1f5f9",
               paddingTop: "12px"
             }}>
@@ -312,7 +312,7 @@ export default function PostDetail() {
                 }}
                 style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#666", cursor: "pointer", fontSize: "13px" }}
               >
-                <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "414px" }} />
+                <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "16px" }} />
                 <span>{comments.length || 0}</span>
               </button>
 

@@ -155,7 +155,7 @@ export default function FeedbackButton() {
                   backgroundColor: "#f8fafc",
                   color: "#1e293b",
                   fontSize: "14px",
-                  outline: "none", 
+                  outline: "none",
                   transition: "border-color 0.2s",
                   boxSizing: "border-box"
                 }}
@@ -287,28 +287,43 @@ export default function FeedbackButton() {
       <button
         onClick={() => {
           setOpen(true);
-          reset(); // Pre-fill with user data if available
+          reset();
         }}
         style={{
           position: "fixed",
-          bottom: isMobile ? "70px" : "24px",
-          right: "10px",
+          bottom: isMobile ? "88px" : "32px",
+          right: isMobile ? "16px" : "32px",
           zIndex: 900,
-          width: "66px",
-          height: "66px",
+          width: isMobile ? "48px" : "56px",
+          height: isMobile ? "48px" : "56px",
           borderRadius: "50%",
-          backgroundColor: "transparent",
+          backgroundColor: "#0f172a",
           color: "#fff",
           border: "none",
           cursor: "pointer",
-          fontWeight: "bold",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          boxShadow: isMobile
+            ? "0 4px 12px rgba(0, 0, 0, 0.15)"
+            : "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+        onMouseEnter={(e) => {
+          if (!isMobile) {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.backgroundColor = "#1e293b";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isMobile) {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.backgroundColor = "#0f172a";
+          }
         }}
         aria-label="Feedback"
       >
-        <HugeiconsIcon icon={ChatFeedbackIcon} style={{ fontSize: "24px", fontWeight: "bold", color: "#fff", backgroundColor: "#000", padding: "12px", borderRadius: "25px" }} />
+        <HugeiconsIcon icon={ChatFeedbackIcon} size={isMobile ? 20 : 24} />
       </button>
       {modal}
     </>

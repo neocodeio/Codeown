@@ -195,13 +195,13 @@ export default function Messages() {
     return (
         <main className="container" style={{
             padding: isMobile ? "0" : "24px",
-            height: isMobile ? "calc(100vh - 66px)" : "calc(100vh - 80px)", // Adjusted for mobile nav
+            height: isMobile ? "calc(100vh - 144px)" : "calc(100vh - 80px)",
             display: "flex",
             gap: "24px",
             maxWidth: "1280px",
             margin: "0 auto",
             boxSizing: "border-box",
-            overflow: "hidden" // Prevent outer scroll
+            overflow: "hidden"
         }}>
             {/* Sidebar - List of Conversations */}
             {(!isMobile || !activeConvo) && (

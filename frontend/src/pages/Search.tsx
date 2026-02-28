@@ -237,7 +237,7 @@ export default function Search() {
       {/* Top Search Bar Configuration */}
       <div style={{
         position: "sticky",
-        top: isMobile ? "64px" : 0,
+        top: 0,
         backgroundColor: "#fff",
         zIndex: 100,
         borderBottom: "1px solid #f1f5f9",
@@ -543,7 +543,11 @@ export default function Search() {
             )}
 
             {activeFilter === "projects" && (
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "20px" }}>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                gap: "20px"
+              }}>
                 {projects.map((project) => (
                   <ProjectCard key={project.id} project={project as Project} />
                 ))}

@@ -152,7 +152,7 @@ export default function Profile() {
       <div style={{
         maxWidth: "1000px",
         margin: "0 auto",
-        padding: isMobile ? "20px 16px" : "40px 20px"
+        padding: isMobile ? "0" : "40px 20px"
       }}>
         {/* Banner Skeleton */}
         <div style={{
@@ -370,7 +370,7 @@ export default function Profile() {
       <div style={{
         maxWidth: "1000px",
         margin: "0 auto",
-        padding: isMobile ? "20px 16px" : "40px 20px"
+        padding: isMobile ? "0" : "40px 20px"
       }}>
         {/* Banner Section */}
         <div style={{
@@ -763,14 +763,16 @@ export default function Profile() {
         </div>
       </div>
 
-      {userProfile && (
-        <EditProfileModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          currentUser={userProfile}
-          onUpdated={handleProfileUpdated}
-        />
-      )}
+      {
+        userProfile && (
+          <EditProfileModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            currentUser={userProfile}
+            onUpdated={handleProfileUpdated}
+          />
+        )
+      }
 
       <ProjectModal
         isOpen={isProjectModalOpen}
@@ -778,15 +780,17 @@ export default function Profile() {
         onUpdated={handleProfileUpdated}
       />
 
-      {userProfile?.id && (
-        <FollowersModal
-          isOpen={followersModalOpen}
-          onClose={() => setFollowersModalOpen(false)}
-          userId={userProfile.id}
-          type={followersModalType}
-          title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
-        />
-      )}
+      {
+        userProfile?.id && (
+          <FollowersModal
+            isOpen={followersModalOpen}
+            onClose={() => setFollowersModalOpen(false)}
+            userId={userProfile.id}
+            type={followersModalType}
+            title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
+          />
+        )
+      }
 
       <Lightbox
         isOpen={lightboxOpen}
@@ -795,6 +799,6 @@ export default function Profile() {
       />
 
       <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
-    </main>
+    </main >
   );
 }

@@ -69,8 +69,8 @@ export default function App() {
         position: "relative",
         minWidth: 0,
         overflowX: "hidden",
-        paddingTop: isMobile ? "0px" : "0px",
-        marginBottom: isMobile ? "0px" : "0px"
+        paddingTop: isMobile ? "64px" : "0px",
+        paddingBottom: isMobile ? "80px" : "0px"
       }}>
         <ErrorBoundary>
           <div key={location.pathname} className="page-enter">

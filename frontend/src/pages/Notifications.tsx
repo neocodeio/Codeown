@@ -23,7 +23,7 @@ export default function NotificationsPage() {
     const { isSignedIn } = useClerkAuth();
     const navigate = useNavigate();
     const { width } = useWindowSize();
-    const isMobile = width < 768;
+
 
     const handleNotificationClick = (notification: Notification) => {
         if (!notification.read) {
@@ -104,7 +104,7 @@ export default function NotificationsPage() {
     }
 
     return (
-        <main style={{ padding: 0, minHeight: "100vh", backgroundColor: "#fff", width: "100%" }}>
+        <main style={{ padding: 0, backgroundColor: "#fff", width: "100%" }}>
             <SEO
                 title="Notifications - Codeown"
                 description="Stay updated with your latest interactions on Codeown."
@@ -131,7 +131,7 @@ export default function NotificationsPage() {
                     {/* Header */}
                     <header style={{
                         position: "sticky",
-                        top: isMobile ? "64px" : 0,
+                        top: 0,
                         backgroundColor: "rgba(255, 255, 255, 0.85)",
                         backdropFilter: "blur(12px)",
                         zIndex: 100,

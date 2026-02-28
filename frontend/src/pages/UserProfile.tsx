@@ -174,7 +174,7 @@ export default function UserProfile() {
       <div style={{
         maxWidth: "1000px",
         margin: "0 auto",
-        padding: isMobile ? "20px 16px" : "40px 20px"
+        padding: isMobile ? "0" : "40px 20px"
       }}>
         {/* Banner Skeleton */}
         <div style={{

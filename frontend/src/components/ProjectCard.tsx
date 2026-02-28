@@ -216,12 +216,13 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         {/* Header Row */}
         <div style={{
           display: "flex",
-          alignItems: "center",
+          alignItems: isMobile ? "flex-start" : "center",
           justifyContent: "space-between",
           marginBottom: "2px",
-          gap: "8px"
+          gap: "8px",
+          flexWrap: isMobile ? "wrap" : "nowrap"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "nowrap", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", minWidth: 0, flex: 1 }}>
             <span
               onClick={handleUserClick}
               style={{
@@ -230,7 +231,8 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                 color: "#0f172a",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
-                textOverflow: "ellipsis"
+                textOverflow: "ellipsis",
+                maxWidth: isMobile ? "150px" : "none"
               }}
               onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
               onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
@@ -395,8 +397,10 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         <div style={{
           display: "flex",
           alignItems: "center",
-          gap: "24px",
-          marginTop: "4px"
+          justifyContent: isMobile ? "space-between" : "flex-start",
+          gap: isMobile ? "4px" : "24px",
+          marginTop: "12px",
+          maxWidth: isMobile ? "100%" : "425px"
         }}>
           {/* Interaction Icons matching PostCard functionality but with a cleaner Look */}
           {[

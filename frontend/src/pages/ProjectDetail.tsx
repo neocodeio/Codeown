@@ -34,6 +34,7 @@ import { SEO } from "../components/SEO";
 
 export default function ProjectDetail() {
   const { width } = useWindowSize();
+  const isMobile = width < 768;
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
@@ -367,9 +368,11 @@ export default function ProjectDetail() {
 
         <div style={{
           display: "flex",
+          flexDirection: isMobile ? "column" : "row",
           justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: "40px"
+          alignItems: isMobile ? "stretch" : "flex-start",
+          marginBottom: "40px",
+          gap: isMobile ? "24px" : "0"
         }}>
           <div style={{ flex: 1 }}>
             <h1 style={{
@@ -641,8 +644,9 @@ export default function ProjectDetail() {
 
         <div style={{
           display: "flex",
-          gap: "16px",
-          padding: "20px",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? "12px" : "16px",
+          padding: isMobile ? "10px" : "20px",
           backgroundColor: "#f8f9fa",
           borderRadius: "12px",
           marginBottom: "40px",
@@ -768,14 +772,16 @@ export default function ProjectDetail() {
         </div>
       </div>
 
-      {project && (
-        <ProjectModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          onUpdated={handleProjectUpdated}
-          project={project}
-        />
-      )}
+      {
+        project && (
+          <ProjectModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onUpdated={handleProjectUpdated}
+            project={project}
+          />
+        )
+      }
     </main>
   );
 }
