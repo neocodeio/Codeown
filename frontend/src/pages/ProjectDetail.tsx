@@ -31,6 +31,7 @@ import {
 } from '@hugeicons/core-free-icons';
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
+import ShareModal from "../components/ShareModal";
 
 export default function ProjectDetail() {
   const { width } = useWindowSize();
@@ -49,7 +50,7 @@ export default function ProjectDetail() {
   const [likeCount, setLikeCount] = useState(0);
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
-  const [shareCopied, setShareCopied] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const viewLogged = useRef(false);
 
@@ -229,30 +230,9 @@ export default function ProjectDetail() {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     if (!project) return;
-    const shareUrl = `https://codeown.space/project/${id}`;
-    const shareData = {
-      title: `Codeown Project - ${project.title}`,
-      text: project.description?.substring(0, 100) || '',
-      url: shareUrl,
-    };
-
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        setShareCopied(true);
-        setTimeout(() => setShareCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    }
+    setIsShareModalOpen(true);
   };
 
   const handleProjectUpdated = () => {
@@ -278,6 +258,7 @@ export default function ProjectDetail() {
 
   const isOwnProject = currentUser?.id === project.user_id;
   const userName = project.user?.name || "User";
+  const shareUrl = `${window.location.origin}/project/${id}`;
   const avatarUrl = project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "U")}&background=212121&color=ffffff&bold=true`;
 
   return (
@@ -712,8 +693,8 @@ export default function ProjectDetail() {
               padding: "16px",
               border: "none",
               borderRadius: "8px",
-              backgroundColor: shareCopied ? "#10b981" : "#fff",
-              color: shareCopied ? "#fff" : "var(--text-primary)",
+              backgroundColor: "#fff",
+              color: "var(--text-primary)",
               cursor: "pointer",
               fontWeight: 600,
               fontSize: "16px",
@@ -722,29 +703,10 @@ export default function ProjectDetail() {
               justifyContent: "center",
               gap: "8px",
               transition: "all 0.2s ease",
-              position: "relative",
             }}
           >
             <HugeiconsIcon icon={Share01Icon} />
-            {shareCopied ? "Copied" : "Share"}
-            {shareCopied && (
-              <span style={{
-                position: "absolute",
-                bottom: "100%",
-                left: "50%",
-                transform: "translateX(-50%)",
-                backgroundColor: "#10b981",
-                color: "#fff",
-                padding: "4px 8px",
-                borderRadius: "8px",
-                fontSize: "10px",
-                whiteSpace: "nowrap",
-                marginBottom: "8px",
-                fontWeight: 700,
-              }}>
-                LINK COPIED!
-              </span>
-            )}
+            Share
           </button>
         </div>
 
@@ -782,6 +744,13 @@ export default function ProjectDetail() {
           />
         )
       }
+
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        url={shareUrl}
+        title="Share this project"
+      />
     </main>
   );
 }

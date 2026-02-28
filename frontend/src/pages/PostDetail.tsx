@@ -13,6 +13,7 @@ import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import { useWindowSize } from "../hooks/useWindowSize";
+import ShareModal from "../components/ShareModal";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Share01Icon,
@@ -22,7 +23,7 @@ import {
   Bookmark02Icon,
   // Delete01Icon,
   // Pen01Icon,
-  ArrowLeftIcon,
+  ArrowLeft01Icon,
   // PinIcon,
 } from '@hugeicons/core-free-icons';
 
@@ -57,7 +58,7 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [commentContent, setCommentContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [shareCopied, setShareCopied] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id), post?.isLiked, post?.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id), post?.isSaved);
@@ -120,30 +121,9 @@ export default function PostDetail() {
     setComments(Array.isArray(res.data) ? res.data : []);
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     if (!post) return;
-    const shareUrl = `https://codeown.space/post/${id}`;
-    const shareData = {
-      title: `Codeown - Post by ${post.user?.name || 'User'}`,
-      text: post.title || post.content?.substring(0, 100) || '',
-      url: shareUrl,
-    };
-
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        setShareCopied(true);
-        setTimeout(() => setShareCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    }
+    setIsShareModalOpen(true);
   };
 
   function buildTree(list: CommentWithMeta[]): CommentWithMeta[] {
@@ -172,6 +152,7 @@ export default function PostDetail() {
   if (!post) return <div style={{ textAlign: "center", padding: "100px" }}>Post not found</div>;
 
   const userName = post.user?.name || "User";
+  const shareUrl = `${window.location.origin}/post/${id}`;
   const avatarUrl = post.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=212121&color=ffffff&bold=true`;
 
   return (
@@ -234,7 +215,7 @@ export default function PostDetail() {
               cursor: "pointer",
             }}
           >
-            <HugeiconsIcon icon={ArrowLeftIcon} style={{ fontSize: "16px", color: "#1a1a1a" }} />
+            <HugeiconsIcon icon={ArrowLeft01Icon} size={28} style={{ width: 28, height: 28, flexShrink: 0, color: "#1a1a1a" }} />
           </button>
           <span style={{ marginLeft: "20px", fontSize: "18px", fontWeight: 700, color: "#1a1a1a" }}>Post</span>
         </div>
@@ -329,7 +310,7 @@ export default function PostDetail() {
               {/* Share */}
               <button
                 onClick={handleShare}
-                style={{ background: "none", border: "none", color: shareCopied ? "#10b981" : "#666", cursor: "pointer", padding: "4px" }}
+                style={{ background: "none", border: "none", color: "#666", cursor: "pointer", padding: "4px" }}
               >
                 <HugeiconsIcon icon={Share01Icon} style={{ fontSize: "12px" }} />
               </button>
@@ -410,6 +391,13 @@ export default function PostDetail() {
           )}
         </section>
       </div>
+
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        url={shareUrl}
+        title="Share this post"
+      />
 
       <style>{`
         body { background-color: #fff !important; }
