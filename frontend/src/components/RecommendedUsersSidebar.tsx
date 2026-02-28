@@ -74,7 +74,7 @@ export default function RecommendedUsersSidebar() {
                 top: "100px",
                 height: "fit-content",
                 maxHeight: "calc(100vh - 120px)",
-                overflowY: "auto",
+                // overflowY: "auto",
                 scrollbarWidth: "none"
             }}>
                 <div style={{
