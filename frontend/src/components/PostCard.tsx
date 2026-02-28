@@ -25,6 +25,7 @@ import {
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
+import ShareModal from "./ShareModal";
 
 interface PostCardProps {
   post: Post;
@@ -39,7 +40,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { isLiked, likeCount, toggleLike, loading: likeLoading } = useLikes(post.id, post.isLiked, post.like_count);
   const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
-  const [shareCopied, setShareCopied] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
@@ -86,30 +87,9 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
     navigate(`/post/${post.id}#comments`);
   };
 
-  const handleShare = async (e: React.MouseEvent) => {
+  const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const shareData = {
-      title: `Codeown - Post by ${post.user?.name || post.user?.username || 'User'}`,
-      text: post.title || post.content?.substring(0, 100) || '',
-      url: `https://codeown.space/post/${post.id}`,
-    };
-
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(`https://codeown.space/post/${post.id}`);
-        setShareCopied(true);
-        setTimeout(() => setShareCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    }
+    setIsShareModalOpen(true);
   };
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -147,6 +127,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   };
 
   const userName = post.user?.name || post.user?.username || "User";
+  const shareUrl = `${window.location.origin}/post/${post.id}`;
   return (
     <>
       <div
@@ -518,20 +499,20 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                 display: "flex",
                 background: "none",
                 border: "none",
-                color: shareCopied ? "#00ba7c" : "#64748b",
+                color: "#64748b",
                 cursor: "pointer",
                 padding: "8px",
                 borderRadius: "50%",
                 transition: "all 0.2s"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.1)";
+                e.currentTarget.style.backgroundColor = "rgba(0, 186, 124, 0.08)";
                 e.currentTarget.style.color = "#00ba7c";
-                e.currentTarget.style.transform = "scale(1.1)";
+                e.currentTarget.style.transform = "scale(1.05)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
-                if (!shareCopied) e.currentTarget.style.color = "#64748b";
+                e.currentTarget.style.color = "#64748b";
                 e.currentTarget.style.transform = "scale(1)";
               }}
             >
@@ -573,6 +554,12 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
         onClose={() => setIsEditModalOpen(false)}
         post={post}
         onUpdated={onUpdated || (() => { })}
+      />
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        url={shareUrl}
+        title="Share this post"
       />
     </>
   );

@@ -24,6 +24,7 @@ import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import { getOptimizedImageUrl, handleImageError } from "../utils/image";
+import ShareModal from "./ShareModal";
 
 interface ProjectCardProps {
   project: Project;
@@ -37,7 +38,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id, project.isLiked, project.like_count);
   const { isSaved, toggleSave } = useProjectSaved(project.id, project.isSaved);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [shareCopied, setShareCopied] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
@@ -90,6 +91,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   };
 
   const userName = project.user?.name || "User";
+  const shareUrl = `${window.location.origin}/project/${project.id}`;
 
   const handleClick = () => {
     if (isMenuOpen) {
@@ -144,30 +146,9 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
     await toggleSave();
   };
 
-  const handleShare = async (e: React.MouseEvent) => {
+  const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const shareUrl = `https://codeown.space/project/${project.id}`;
-    const shareData = {
-      title: `Codeown Project - ${project.title}`,
-      text: project.description?.substring(0, 100) || '',
-      url: shareUrl,
-    };
-
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        setShareCopied(true);
-        setTimeout(() => setShareCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    }
+    setIsShareModalOpen(true);
   };
 
   return (
@@ -428,9 +409,9 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             {
               icon: Share01Icon,
               onClick: handleShare,
-              active: shareCopied,
-              activeColor: "#00ba7c",
-              hoverColor: "#00ba7c"
+            active: false,
+            activeColor: "#00ba7c",
+            hoverColor: "#00ba7c"
             }
           ].map((action, i) => (
             <button
@@ -480,6 +461,12 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           project={project}
         />
       )}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        url={shareUrl}
+        title="Share this project"
+      />
     </article>
   );
 }
