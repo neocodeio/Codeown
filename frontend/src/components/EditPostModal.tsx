@@ -5,6 +5,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { normalizeLanguage } from "../utils/language";
+import { validateImageSize } from "../constants/upload";
 
 interface EditPostModalProps {
   isOpen: boolean;
@@ -47,6 +48,15 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
     if (images.length + files.length > maxImages) {
       alert(`You can upload a maximum of ${maxImages} images`);
       return;
+    }
+
+    for (const file of Array.from(files)) {
+      const sizeError = validateImageSize(file);
+      if (sizeError) {
+        alert(sizeError);
+        e.target.value = "";
+        return;
+      }
     }
 
     const { compressImage } = await import("../utils/image");

@@ -4,6 +4,7 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { updateAvatarCache } from "../hooks/useAvatar";
+import { validateImageSize } from "../constants/upload";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -86,8 +87,10 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Image size must be less than 5MB");
+      const sizeError = validateImageSize(file);
+      if (sizeError) {
+        alert(sizeError);
+        e.target.value = "";
         return;
       }
       setAvatarFile(file);
@@ -102,8 +105,10 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        alert("Banner image size must be less than 10MB");
+      const sizeError = validateImageSize(file);
+      if (sizeError) {
+        alert(sizeError);
+        e.target.value = "";
         return;
       }
       setBannerFile(file);

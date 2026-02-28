@@ -18,6 +18,7 @@ import {
 import MentionInput from "./MentionInput";
 import ContentRenderer from "./ContentRenderer";
 import { normalizeLanguage } from "../utils/language";
+import { validateImageSize } from "../constants/upload";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -131,6 +132,15 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
     if (images.length + files.length > maxImages) {
       alert(`You can upload a maximum of ${maxImages} images`);
       return;
+    }
+
+    for (const file of Array.from(files)) {
+      const sizeError = validateImageSize(file);
+      if (sizeError) {
+        alert(sizeError);
+        e.target.value = "";
+        return;
+      }
     }
 
     const { compressImage } = await import("../utils/image");

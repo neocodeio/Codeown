@@ -5,6 +5,7 @@ import type { Project, ProjectFormData } from "../types/project";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import VerifiedBadge from "./VerifiedBadge";
+import { validateImageSize } from "../constants/upload";
 
 interface ProjectModalProps {
     isOpen: boolean;
@@ -105,6 +106,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        const sizeError = validateImageSize(file);
+        if (sizeError) {
+            setError(sizeError);
+            e.target.value = "";
+            return;
+        }
 
         // Show loading state
         setLoading(true);

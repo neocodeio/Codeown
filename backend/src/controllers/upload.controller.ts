@@ -28,9 +28,9 @@ export async function uploadImage(req: MulterRequest, res: Response) {
       return res.status(400).json({ error: "Invalid file type. Only images are allowed" });
     }
 
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      return res.status(400).json({ error: "File size should be less than 5MB" });
+    // Validate file size (1MB limit)
+    if (file.size > 1024 * 1024) {
+      return res.status(400).json({ error: "Image size must not exceed 1MB. Please choose a smaller image." });
     }
 
     // Generate unique filename

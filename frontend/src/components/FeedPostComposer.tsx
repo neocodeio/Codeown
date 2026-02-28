@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
+import { validateImageSize } from "../constants/upload";
 
 interface FeedPostComposerProps {
     onCreated: () => void;
@@ -40,6 +41,15 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         if (images.length + files.length > maxImages) {
             alert(`You can upload a maximum of ${maxImages} images`);
             return;
+        }
+
+        for (const file of Array.from(files)) {
+            const sizeError = validateImageSize(file);
+            if (sizeError) {
+                alert(sizeError);
+                e.target.value = "";
+                return;
+            }
         }
 
         const { compressImage } = await import("../utils/image");
