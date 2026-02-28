@@ -225,22 +225,38 @@ export default function Feed() {
                     }}>
                         <div style={{
                             display: "flex",
-                            gap: "12px",
-                            padding: "12px 16px",
-                            borderBottom: feedType === "projects" ? "1px solid #f8fafc" : "none"
+                            alignItems: "center",
+                            justifyContent: isMobile ? "center" : "flex-start",
+                            gap: "4px",
+                            padding: "10px 16px 12px",
+                            borderBottom: feedType === "projects" ? "1px solid #f8fafc" : "none",
                         }}>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: isMobile ? 0 : 4,
+                                padding: "4px",
+                                borderRadius: "999px",
+                                border: "1px solid #e5e7eb",
+                                backgroundColor: "#f9fafb",
+                                width: isMobile ? "100%" : "auto",
+                                maxWidth: 360,
+                                justifyContent: "space-between",
+                            }}>
                             <button
                                 onClick={() => updateParams({ type: "posts" })}
                                 style={{
-                                    padding: "8px 12px",
-                                    borderRadius: "14px",
-                                    border: "1px solid #eff3f4",
-                                    backgroundColor: feedType === "posts" ? "#212121" : "#fff",
-                                    color: feedType === "posts" ? "#fff" : "#64748b",
-                                    fontSize: "15px",
-                                    fontWeight: 700,
-                                    cursor: "pointer",
-                                    transition: "all 0.2s"
+                                        padding: "8px 14px",
+                                        borderRadius: "999px",
+                                        border: "none",
+                                        backgroundColor: feedType === "posts" ? "#0f172a" : "transparent",
+                                        color: feedType === "posts" ? "#ffffff" : "#64748b",
+                                        fontSize: "14px",
+                                        fontWeight: 700,
+                                        cursor: "pointer",
+                                        transition: "background-color 0.2s ease, color 0.2s ease",
+                                        whiteSpace: "nowrap",
+                                        flex: isMobile ? 1 : undefined,
                                 }}
                             >
                                 Posts
@@ -248,19 +264,22 @@ export default function Feed() {
                             <button
                                 onClick={() => updateParams({ type: "projects" })}
                                 style={{
-                                    padding: "8px 12px",
-                                    borderRadius: "14px",
-                                    border: "1px solid #eff3f4",
-                                    backgroundColor: feedType === "projects" ? "#212121" : "#fff",
-                                    color: feedType === "projects" ? "#fff" : "#64748b",
-                                    fontSize: "15px",
-                                    fontWeight: 700,
-                                    cursor: "pointer",
-                                    transition: "all 0.2s"
+                                        padding: "8px 14px",
+                                        borderRadius: "999px",
+                                        border: "none",
+                                        backgroundColor: feedType === "projects" ? "#0f172a" : "transparent",
+                                        color: feedType === "projects" ? "#ffffff" : "#64748b",
+                                        fontSize: "14px",
+                                        fontWeight: 700,
+                                        cursor: "pointer",
+                                        transition: "background-color 0.2s ease, color 0.2s ease",
+                                        whiteSpace: "nowrap",
+                                        flex: isMobile ? 1 : undefined,
                                 }}
                             >
                                 Projects
                             </button>
+                            </div>
                         </div>
 
                         {/* Tech Stack Tags - Only for Projects */}
