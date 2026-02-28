@@ -50,6 +50,17 @@ export const formatJoinDate = (dateString: string | null | undefined) => {
     });
 };
 
+export const formatProfileJoinDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "";
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+};
+
 export const formatCompactRelativeDate = (dateString: string) => {
     if (!dateString) return "";
 

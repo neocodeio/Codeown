@@ -9,7 +9,7 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
-import { formatJoinDate } from "../utils/date";
+import { formatProfileJoinDate } from "../utils/date";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   UserAdd01Icon,
@@ -17,10 +17,14 @@ import {
   Mail01Icon,
   Share01Icon,
   Calendar03Icon,
-  Globe02Icon,
   Layers01Icon,
   Rocket01Icon,
   PackageIcon as PushpinIcon,
+  Location01Icon,
+  Link02Icon,
+  TwitterIcon,
+  Linkedin01Icon,
+  GithubIcon,
 } from '@hugeicons/core-free-icons';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -76,6 +80,9 @@ export default function UserProfile() {
   const [activeTab, setActiveTab] = useState<"posts" | "projects">("posts");
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
+  const containerPadding = isMobile ? "0" : isTablet ? "24px 16px" : "40px 20px";
+  const innerPaddingX = isMobile ? 16 : isTablet ? 20 : 24;
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
 
@@ -170,7 +177,7 @@ export default function UserProfile() {
   };
 
   if (loading) return (
-    <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
       <div style={{
         maxWidth: "1000px",
         margin: "0 auto",
@@ -275,7 +282,7 @@ export default function UserProfile() {
   const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=212121&color=ffffff&bold=true`;
 
   return (
-    <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
       <SEO
         title={`${user.name} (@${user.username})`}
         description={user.bio || `Check out ${user.name}'s developer profile on Codeown.`}
@@ -300,93 +307,26 @@ export default function UserProfile() {
         }}
       />
       <style>{`
-        .profile-btn {
-          padding: 10px 20px;
-          border-radius: 12px;
-          font-size: 14px;
-          font-weight: 700;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          border: 1px solid #e2e8f0;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: #fff;
-          color: #1e293b;
-          cursor: pointer;
-        }
-        .profile-btn:hover {
-          background: #f8fafc;
-          border-color: #cbd5e1;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .profile-btn-primary {
-          background: #0f172a;
-          color: white;
-          border-color: #0f172a;
-        }
-        .profile-btn-primary:hover {
-          background: #000;
-          border-color: #000;
-        }
-        
-        .tab-btn {
-          padding: 12px 24px;
-          font-size: 13px;
-          font-weight: 800;
-          color: #64748b;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          border: none;
-          background: transparent;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          border-radius: 12px;
-          position: relative;
-        }
-        .tab-btn:hover {
-          color: #0f172a;
-          background: rgba(15, 23, 42, 0.04);
-        }
-        .tab-btn.active {
-          color: #0f172a;
-          background: #fff;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        
-        .sidebar-section {
-          margin-bottom: 40px;
-        }
-        .sidebar-title {
-          font-size: 11px;
-          font-weight: 850;
-          color: #94a3b8;
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-          margin-bottom: 20px;
-        }
-        .glass-card {
-          background: rgba(255, 255, 255, 0.7);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 24px;
-        }
+        @keyframes tabContentEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content-enter { animation: tabContentEnter 0.25s ease-out forwards; }
+        .tabs-row { -ms-overflow-style: none; scrollbar-width: none; }
+        .tabs-row::-webkit-scrollbar { display: none; }
       `}</style>
 
       <div style={{
         maxWidth: "1100px",
         margin: "0 auto",
-        padding: isMobile ? "0" : "0 20px"
+        padding: containerPadding
       }}>
         {/* Banner Section */}
         <div style={{
           width: "100%",
-          height: isMobile ? "180px" : "320px",
-          backgroundColor: "#fff",
+          height: isMobile ? "160px" : "200px",
+          backgroundColor: "#f1f5f9",
           position: "relative",
           overflow: "hidden",
-          borderRadius: isMobile ? "0" : "32px",
-          marginBottom: isMobile ? "0" : "20px"
+          borderRadius: isMobile ? "0" : "12px",
+          marginBottom: 0,
         }}>
           {user.banner_url ? (
             <img
@@ -398,78 +338,115 @@ export default function UserProfile() {
             <div style={{
               width: "100%",
               height: "100%",
-              background: `linear-gradient(135deg, hsl(${(user?.username?.length || 5) * 40}, 80%, 96%) 0%, hsl(${(user?.username?.length || 5) * 40 + 40}, 80%, 96%) 100%)`,
+              background: "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)",
             }} />
           )}
         </div>
 
-        {/* Profile Header Info */}
+        {/* Profile Header - single column layout */}
         <div style={{
-          padding: isMobile ? "0 16px" : "0 24px",
+          padding: `0 ${innerPaddingX}px`,
           position: "relative",
-          marginTop: isMobile ? "-40px" : "-60px",
+          marginTop: isMobile ? "-48px" : "-56px",
           marginBottom: "32px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px"
         }}>
-          {/* Avatar and Primary Actions Row */}
+          {/* Avatar */}
+          <div
+            onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }}
+            style={{
+              width: isMobile ? "96px" : "120px",
+              height: isMobile ? "96px" : "120px",
+              borderRadius: "50%",
+              border: "4px solid #fff",
+              backgroundColor: "#fff",
+              overflow: "hidden",
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+              flexShrink: 0,
+              marginBottom: "16px",
+            }}
+          >
+            <AvailabilityBadge
+              avatarUrl={avatarUrl}
+              name={user.name}
+              size={isMobile ? 96 : 120}
+              isOpenToOpportunities={user.is_hirable}
+              ringColor="#0f172a"
+            />
+          </div>
+
+          {/* Name + Actions row */}
           <div style={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            width: "100%",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: isMobile ? "flex-start" : "center",
+            gap: "12px",
             flexWrap: "wrap",
-            gap: "16px"
+            marginBottom: "4px",
+            width: "100%",
           }}>
-            <div
-              onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }}
-              style={{
-                width: isMobile ? "100px" : "140px",
-                height: isMobile ? "100px" : "140px",
-                borderRadius: "50%",
-                border: "4px solid #fff",
-                backgroundColor: "#fff",
-                overflow: "hidden",
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                flexShrink: 0
-              }}
-            >
-              <AvailabilityBadge
-                avatarUrl={avatarUrl}
-                name={user.name}
-                size={isMobile ? 100 : 140}
-                isOpenToOpportunities={user.is_hirable}
-                ringColor="#0f172a"
-              />
-            </div>
-
+            <h1 style={{
+              fontSize: isMobile ? "22px" : "28px",
+              fontWeight: 700,
+              color: "#0f172a",
+              margin: 0,
+              textTransform: "uppercase",
+              letterSpacing: "-0.02em",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              maxWidth: "100%",
+              overflowWrap: "anywhere",
+              lineHeight: 1.12,
+            }}>
+              {(user.name || "").toUpperCase()}
+              <VerifiedBadge username={user.username} size={isMobile ? "18px" : "22px"} />
+            </h1>
             <div style={{
               display: "flex",
-              gap: "12px",
-              marginBottom: "12px",
+              gap: "8px",
+              marginLeft: isMobile ? 0 : "auto",
+              width: isMobile ? "100%" : "auto",
+              justifyContent: isMobile ? "flex-start" : "flex-end",
               flexWrap: "wrap",
-              justifyContent: isMobile ? "flex-start" : "flex-end"
             }}>
               {isSignedIn && (
                 <button
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
-                  className="profile-btn"
+                  style={{
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                    backgroundColor: "#fff",
+                    color: "#64748b",
+                    cursor: "pointer",
+                  }}
                   title="Message"
                 >
-                  <HugeiconsIcon icon={Mail01Icon} size={20} />
+                  <HugeiconsIcon icon={Mail01Icon} size={18} />
                 </button>
               )}
               {isSignedIn && (
                 <button
                   onClick={handleFollow}
                   disabled={followLoading}
-                  className={`profile-btn ${isFollowing ? '' : 'profile-btn-primary'}`}
-                  style={{ minWidth: "100px", justifyContent: "center" }}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    border: "1px solid",
+                    borderColor: isFollowing ? "#e2e8f0" : "#0f172a",
+                    backgroundColor: isFollowing ? "#f8fafc" : "#0f172a",
+                    color: isFollowing ? "#1e293b" : "#fff",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
                 >
-                  <HugeiconsIcon icon={isFollowing ? UserCheck01Icon : UserAdd01Icon} size={20} />
-                  <span>{isFollowing ? "Following" : "Follow"}</span>
+                  <HugeiconsIcon icon={isFollowing ? UserCheck01Icon : UserAdd01Icon} size={16} />
+                  {isFollowing ? "Following" : "Follow"}
                 </button>
               )}
               <button
@@ -477,134 +454,185 @@ export default function UserProfile() {
                   const shareUrl = user.username ? `${window.location.origin}/${user.username}` : window.location.href;
                   navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
                 }}
-                className="profile-btn"
+                style={{
+                  padding: "8px",
+                  borderRadius: "8px",
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#fff",
+                  color: "#64748b",
+                  cursor: "pointer",
+                }}
                 title="Share"
               >
-                <HugeiconsIcon icon={Share01Icon} size={20} />
+                <HugeiconsIcon icon={Share01Icon} size={18} />
               </button>
             </div>
           </div>
 
-          {/* Name and Handle */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <h1 style={{
-              fontSize: isMobile ? "24px" : "32px",
-              fontWeight: 850,
-              color: "#0f172a",
-              margin: 0,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              letterSpacing: "-0.02em"
-            }}>
-              {user.name}
-              <VerifiedBadge username={user.username} size={isMobile ? "20px" : "24px"} />
-            </h1>
-            <span style={{ fontSize: "16px", color: "#64748b", fontWeight: 600 }}>@{user.username}</span>
+          <span style={{ fontSize: "15px", color: "#64748b", display: "block", marginBottom: "12px" }}>
+            @{user.username}
+          </span>
+
+          {user.bio && (
+            <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#334155", margin: "0 0 12px 0" }}>
+              <BioRenderer bio={user.bio} />
+            </p>
+          )}
+
+          {/* Meta row: location, link, join date */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "16px 24px",
+            alignItems: "center",
+            color: "#64748b",
+            fontSize: "14px",
+            marginBottom: "12px",
+          }}>
+            {user.location && (
+              <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <HugeiconsIcon icon={Location01Icon} size={16} />
+                {user.location}
+              </span>
+            )}
+            {user.website_url && (
+              <a
+                href={user.website_url.startsWith("http") ? user.website_url : `https://${user.website_url}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  color: "#2563eb",
+                  textDecoration: "underline",
+                }}
+              >
+                <HugeiconsIcon icon={Link02Icon} size={16} />
+                {user.website_url.replace(/^https?:\/\//, "")}
+              </a>
+            )}
+            {user.created_at && (
+              <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <HugeiconsIcon icon={Calendar03Icon} size={16} />
+                Joined {formatProfileJoinDate(user.created_at)}
+              </span>
+            )}
+          </div>
+
+          {/* Followers + Social */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "20px",
+          }}>
+            <div style={{ display: "flex", gap: "16px" }}>
+              <button
+                onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
+                style={{
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  fontSize: "15px",
+                  color: "#0f172a",
+                  fontWeight: 600,
+                }}
+              >
+                {user.follower_count ?? 0} <span style={{ color: "#64748b", fontWeight: 500 }}>followers</span>
+              </button>
+              <button
+                onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
+                style={{
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  fontSize: "15px",
+                  color: "#0f172a",
+                  fontWeight: 600,
+                }}
+              >
+                {user.following_count ?? 0} <span style={{ color: "#64748b", fontWeight: 500 }}>following</span>
+              </button>
+            </div>
+            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+              {user.twitter_url && (
+                <a href={user.twitter_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="Twitter">
+                  <HugeiconsIcon icon={TwitterIcon} size={20} />
+                </a>
+              )}
+              {user.linkedin_url && (
+                <a href={user.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="LinkedIn">
+                  <HugeiconsIcon icon={Linkedin01Icon} size={20} />
+                </a>
+              )}
+              {user.github_url && (
+                <a href={user.github_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="GitHub">
+                  <HugeiconsIcon icon={GithubIcon} size={20} />
+                </a>
+              )}
+              {user.website_url && (
+                <a href={user.website_url.startsWith("http") ? user.website_url : `https://${user.website_url}`} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="Website">
+                  <HugeiconsIcon icon={Link02Icon} size={20} />
+                </a>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Main Layout Grid */}
+        {/* Tabs + Content */}
         <div style={{
-          display: "grid",
-          gridTemplateColumns: width >= 1024 ? "320px 1fr" : "1fr",
-          gap: "48px",
-          padding: isMobile ? "0 16px" : "0 24px"
+          padding: `0 ${innerPaddingX}px`,
+          borderTop: "1px solid #e2e8f0",
         }}>
-          {/* Sidebar */}
-          <aside>
-            {user.bio && (
-              <div className="sidebar-section">
-                <p style={{
-                  fontSize: "15px",
-                  lineHeight: "1.6",
-                  color: "#334155",
-                  margin: 0
-                }}>
-                  <BioRenderer bio={user.bio} />
-                </p>
-              </div>
-            )}
+          <div className="tabs-row" style={{
+            display: "flex",
+            gap: isMobile ? "24px" : "32px",
+            marginBottom: "24px",
+            marginTop: "24px",
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
+            paddingBottom: "2px",
+          }}>
+            <button
+              onClick={() => setActiveTab("posts")}
+              style={{
+                padding: "12px 0",
+                fontSize: "15px",
+                fontWeight: activeTab === "posts" ? 700 : 500,
+                color: activeTab === "posts" ? "#0f172a" : "#64748b",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                borderBottom: activeTab === "posts" ? "2px solid #0f172a" : "2px solid transparent",
+                marginBottom: "-2px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Posts
+            </button>
+            <button
+              onClick={() => setActiveTab("projects")}
+              style={{
+                padding: "12px 0",
+                fontSize: "15px",
+                fontWeight: activeTab === "projects" ? 700 : 500,
+                color: activeTab === "projects" ? "#0f172a" : "#64748b",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                borderBottom: activeTab === "projects" ? "2px solid #0f172a" : "2px solid transparent",
+                marginBottom: "-2px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Projects
+            </button>
+          </div>
 
-            <div className="sidebar-section" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "14px", fontWeight: 500 }}>
-                <HugeiconsIcon icon={Calendar03Icon} size={18} />
-                Joined {formatJoinDate(user.created_at || "")}
-              </div>
-              {user.website_url && (
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3b82f6", fontSize: "14px", fontWeight: 600 }}>
-                  <HugeiconsIcon icon={Globe02Icon} size={18} />
-                  <a href={user.website_url.startsWith('http') ? user.website_url : `https://${user.website_url}`} target="_blank" rel="noreferrer" style={{ color: "inherit", textDecoration: "none" }}>{user.website_url.replace(/^https?:\/\//, '')}</a>
-                </div>
-              )}
-            </div>
-
-            <div className="sidebar-section" style={{ display: "flex", gap: "20px" }}>
-              <div onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
-                <span style={{ fontSize: "15px", fontWeight: 750, color: "#0f172a" }}>{user.follower_count || 0}</span>
-                <span style={{ fontSize: "15px", color: "#64748b", marginLeft: "4px" }}>Followers</span>
-              </div>
-              <div onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
-                <span style={{ fontSize: "15px", fontWeight: 750, color: "#0f172a" }}>{user.following_count || 0}</span>
-                <span style={{ fontSize: "15px", color: "#64748b", marginLeft: "4px" }}>Following</span>
-              </div>
-            </div>
-
-            {user.skills && user.skills.length > 0 && (
-              <div className="sidebar-section">
-                <h4 className="sidebar-title">Tech Stack</h4>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                  {user.skills.map(skill => (
-                    <span key={skill} style={{
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      color: "#475569",
-                      padding: "4px 10px",
-                      backgroundColor: "#f1f5f9",
-                      borderRadius: "6px"
-                    }}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </aside>
-
-          {/* Main Content Area */}
-          <div>
-            <div style={{
-              display: "flex",
-              backgroundColor: "rgba(241, 245, 249, 0.7)",
-              backdropFilter: "blur(8px)",
-              padding: "4px",
-              borderRadius: "16px",
-              marginBottom: "32px",
-              gap: "4px",
-              width: "fit-content",
-              maxWidth: "100%",
-              overflowX: "auto",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch"
-            }}>
-              <button
-                onClick={() => setActiveTab("posts")}
-                className={`tab-btn ${activeTab === "posts" ? 'active' : ''}`}
-                style={{ whiteSpace: "nowrap" }}
-              >
-                Posts
-              </button>
-              <button
-                onClick={() => setActiveTab("projects")}
-                className={`tab-btn ${activeTab === "projects" ? 'active' : ''}`}
-                style={{ whiteSpace: "nowrap" }}
-              >
-                Projects
-              </button>
-            </div>
-
-            {activeTab === "posts" ? (
+          {activeTab === "posts" ? (
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {posts.length === 0 ? (
                   <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
@@ -645,11 +673,10 @@ export default function UserProfile() {
                 )}
               </div>
             )}
-          </div>
         </div>
       </div>
 
-      <div style={{ height: "100px" }} />
+      <div style={{ height: "60px" }} />
 
       {user.id && (
         <FollowersModal

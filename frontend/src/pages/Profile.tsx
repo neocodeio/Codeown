@@ -15,24 +15,29 @@ import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
 import Lightbox from "../components/Lightbox";
-import { formatJoinDate } from "../utils/date";
+import { formatProfileJoinDate } from "../utils/date";
 import api from "../api/axios";
 import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  UserEdit01Icon,
+  Pen01Icon,
   Logout01Icon,
   Key01Icon,
   Share01Icon,
   Calendar03Icon,
-  Globe02Icon,
   Layers01Icon,
   Rocket01Icon,
   Bookmark01Icon,
   MoreVerticalIcon,
   PackageIcon as PushpinIcon,
+  Camera01Icon,
+  Location01Icon,
+  Link02Icon,
+  TwitterIcon,
+  Linkedin01Icon,
+  GithubIcon,
 } from '@hugeicons/core-free-icons';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -68,6 +73,9 @@ export default function Profile() {
   const { user, isLoaded, isSignedIn } = useClerkUser();
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
+  const containerPadding = isMobile ? "0" : isTablet ? "24px 16px" : "40px 20px";
+  const innerPaddingX = isMobile ? 16 : isTablet ? 20 : 24;
   const { signOut, getToken } = useClerkAuth();
   const navigate = useNavigate();
   const userId = user?.id || null;
@@ -148,7 +156,7 @@ export default function Profile() {
 
 
   if (!isLoaded) return (
-    <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
       <div style={{
         maxWidth: "1000px",
         margin: "0 auto",
@@ -248,139 +256,29 @@ export default function Profile() {
   const avatarUrl = userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "U")}&background=212121&color=fff&bold=true`;
 
   return (
-    <main style={{ backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
       <SEO title="My Profile" description="Manage your Codeown profile and settings." />
       <style>{`
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes tabContentEnter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .tab-content-enter { animation: tabContentEnter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        .slide-up-mobile { animation: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        
-        .menu-item {
-          width: 100%;
-          text-align: left;
-          padding: 12px 16px;
-          border: none;
-          background: none;
-          color: #1e293b;
-          font-weight: 700;
-          cursor: pointer;
-          border-radius: 16px;
-          font-size: 16px;
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          text-decoration: none;
-        }
-        .menu-item:hover {
-          background-color: #f8fafc;
-        }
-        .menu-item:active {
-          transform: scale(0.98);
-        }
-        .menu-item-danger {
-          color: #ef4444;
-        }
-        .menu-item-danger:hover {
-          background-color: #fff1f2;
-        }
-        .menu-icon-box {
-          width: 44px;
-          height: 44px;
-          border-radius: 14px;
-          background-color: #f1f5f9;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s;
-          flex-shrink: 0;
-        }
-        
-        .profile-btn {
-          padding: 10px 20px;
-          border-radius: 12px;
-          font-size: 14px;
-          font-weight: 700;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          border: 1px solid #e2e8f0;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: #fff;
-          color: #1e293b;
-          cursor: pointer;
-        }
-        .profile-btn:hover {
-          background: #f8fafc;
-          border-color: #cbd5e1;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .profile-btn-primary {
-          background: #0f172a;
-          color: white;
-          border-color: #0f172a;
-        }
-        .profile-btn-primary:hover {
-          background: #000;
-          border-color: #000;
-        }
-        
-        .tab-btn {
-          padding: 12px 24px;
-          font-size: 13px;
-          font-weight: 800;
-          color: #64748b;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          border: none;
-          background: transparent;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          border-radius: 12px;
-        }
-        .tab-btn:hover {
-          color: #0f172a;
-          background: rgba(15, 23, 42, 0.04);
-        }
-        .tab-btn.active {
-          color: #0f172a;
-          background: #fff;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        
-        .sidebar-section {
-          margin-bottom: 40px;
-        }
-        .sidebar-title {
-          font-size: 11px;
-          font-weight: 850;
-          color: #94a3b8;
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-          margin-bottom: 20px;
-        }
+        @keyframes tabContentEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content-enter { animation: tabContentEnter 0.25s ease-out forwards; }
+        .tabs-row { -ms-overflow-style: none; scrollbar-width: none; }
+        .tabs-row::-webkit-scrollbar { display: none; }
       `}</style>
 
       <div style={{
         maxWidth: "1000px",
         margin: "0 auto",
-        padding: isMobile ? "0" : "40px 20px"
+        padding: containerPadding
       }}>
         {/* Banner Section */}
         <div style={{
           width: "100%",
-          height: isMobile ? "200px" : "320px",
-          backgroundColor: "#fff",
+          height: isMobile ? "160px" : "200px",
+          backgroundColor: "#f1f5f9",
           position: "relative",
           overflow: "hidden",
-          borderRadius: isMobile ? "0" : "32px",
-          marginBottom: isMobile ? "0" : "20px"
+          borderRadius: isMobile ? "0" : "12px",
+          marginBottom: 0
         }}>
           {userProfile?.banner_url ? (
             <img
@@ -392,93 +290,160 @@ export default function Profile() {
             <div style={{
               width: "100%",
               height: "100%",
-              background: `linear-gradient(135deg, hsl(${(userProfile?.username?.length || 5) * 40}, 80%, 96%) 0%, hsl(${(userProfile?.username?.length || 5) * 40 + 40}, 80%, 96%) 100%)`,
+              background: "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)",
             }} />
           )}
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            title="Change banner"
+            style={{
+              position: "absolute",
+              top: "12px",
+              right: "12px",
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              border: "none",
+              backgroundColor: "rgba(255,255,255,0.9)",
+              color: "#64748b",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            }}
+          >
+            <HugeiconsIcon icon={Camera01Icon} size={20} />
+          </button>
         </div>
 
-        <Lightbox
-          isOpen={lightboxOpen}
-          onClose={() => setLightboxOpen(false)}
-          imageSrc={lightboxImage}
-        />
-
-        {/* Profile Header Info */}
+        {/* Profile Header - single column layout */}
         <div style={{
-          padding: isMobile ? "0 16px" : "0 24px",
+          padding: `0 ${innerPaddingX}px`,
           position: "relative",
-          marginTop: isMobile ? "-40px" : "-60px",
+          marginTop: isMobile ? "-48px" : "-56px",
           marginBottom: "32px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px"
         }}>
-          {/* Avatar and Primary Actions Row */}
+          {/* Avatar - overlapping banner */}
+          <div
+            onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }}
+            style={{
+              width: isMobile ? "96px" : "120px",
+              height: isMobile ? "96px" : "120px",
+              borderRadius: "50%",
+              border: "4px solid #fff",
+              backgroundColor: "#fff",
+              overflow: "hidden",
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+              flexShrink: 0,
+              marginBottom: "16px",
+            }}
+          >
+            <AvailabilityBadge
+              avatarUrl={avatarUrl}
+              name={userProfile?.name || user?.fullName || "User"}
+              size={isMobile ? 96 : 120}
+              isOpenToOpportunities={userProfile?.is_hirable}
+              ringColor="#0f172a"
+            />
+          </div>
+
+          {/* Name + Edit Profile row */}
           <div style={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            width: "100%",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: isMobile ? "flex-start" : "center",
+            gap: "12px",
             flexWrap: "wrap",
-            gap: "16px"
+            marginBottom: "4px",
+            width: "100%",
           }}>
-            <div
-              onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }}
-              style={{
-                width: isMobile ? "100px" : "140px",
-                height: isMobile ? "100px" : "140px",
-                borderRadius: "50%",
-                border: "4px solid #fff",
-                backgroundColor: "#fff",
-                overflow: "hidden",
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                flexShrink: 0
-              }}
-            >
-              <AvailabilityBadge
-                avatarUrl={avatarUrl}
-                name={userProfile?.name || user?.fullName || "User"}
-                size={isMobile ? 100 : 140}
-                isOpenToOpportunities={userProfile?.is_hirable}
-                ringColor="#0f172a"
-              />
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              flexWrap: "wrap",
+              width: isMobile ? "100%" : "auto",
+            }}>
+              <h1 style={{
+                fontSize: isMobile ? "22px" : "28px",
+                fontWeight: 700,
+                color: "#0f172a",
+                margin: 0,
+                textTransform: "uppercase",
+                letterSpacing: "-0.02em",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                maxWidth: "100%",
+                overflowWrap: "anywhere",
+                lineHeight: 1.12,
+              }}>
+                {(userProfile?.name || user?.fullName || "").toUpperCase()}
+                <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "18px" : "22px"} />
+              </h1>
+              <button
+                onClick={() => setIsEditModalOpen(true)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#f8fafc",
+                  color: "#1e293b",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <HugeiconsIcon icon={Pen01Icon} size={16} />
+                Edit Profile
+              </button>
             </div>
 
             <div style={{
               display: "flex",
-              gap: "12px",
-              marginBottom: "12px",
+              gap: "8px",
+              marginLeft: isMobile ? 0 : "auto",
+              width: isMobile ? "100%" : "auto",
+              justifyContent: isMobile ? "flex-start" : "flex-end",
               flexWrap: "wrap",
-              justifyContent: isMobile ? "flex-start" : "flex-end"
             }}>
               <button
-                onClick={() => setIsEditModalOpen(true)}
-                className="profile-btn profile-btn-primary"
-              >
-                <HugeiconsIcon icon={UserEdit01Icon} size={20} />
-                <span>Edit Profile</span>
-              </button>
-
-              <button
                 onClick={() => {
-                  const username = userProfile?.username || user?.username;
-                  const shareUrl = username ? `${window.location.origin}/${username}` : `${window.location.origin}/user/${user?.id}`;
+                  const u = userProfile?.username || user?.username;
+                  const shareUrl = u ? `${window.location.origin}/${u}` : `${window.location.origin}/user/${user?.id}`;
                   navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
                 }}
-                className="profile-btn"
+                style={{
+                  padding: "8px",
+                  borderRadius: "8px",
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#fff",
+                  color: "#64748b",
+                  cursor: "pointer",
+                }}
                 title="Share"
               >
-                <HugeiconsIcon icon={Share01Icon} size={20} />
+                <HugeiconsIcon icon={Share01Icon} size={18} />
               </button>
-
               <div style={{ position: "relative" }}>
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
-                  className="profile-btn"
-                  style={{ padding: "10px" }}
+                  style={{
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                    backgroundColor: "#fff",
+                    color: "#64748b",
+                    cursor: "pointer",
+                  }}
                 >
-                  <HugeiconsIcon icon={MoreVerticalIcon} size={20} />
+                  <HugeiconsIcon icon={MoreVerticalIcon} size={18} />
                 </button>
                 {isMenuOpen && createPortal(
                   <>
@@ -487,47 +452,62 @@ export default function Profile() {
                       style={{
                         position: "fixed",
                         inset: 0,
-                        backgroundColor: "rgba(15, 23, 42, 0.4)",
-                        backdropFilter: "blur(4px)",
+                        backgroundColor: "rgba(0,0,0,0.3)",
                         zIndex: 10000,
-                        cursor: "pointer"
+                        cursor: "pointer",
                       }}
                     />
-                    <div className="glass-card" style={{
+                    <div style={{
                       position: "fixed",
                       bottom: isMobile ? "0" : "auto",
                       left: isMobile ? "0" : "auto",
                       right: isMobile ? "0" : "80px",
-                      top: isMobile ? "auto" : "200px",
-                      width: isMobile ? "100%" : "320px",
+                      top: isMobile ? "auto" : "120px",
+                      width: isMobile ? "100%" : "280px",
                       zIndex: 10001,
                       padding: "12px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "4px",
-                      borderRadius: isMobile ? "32px 32px 0 0" : "24px",
-                      animation: isMobile ? "slideUpMobile 0.4s ease-out" : "fadeIn 0.2s ease-out"
+                      backgroundColor: "#fff",
+                      borderRadius: isMobile ? "16px 16px 0 0" : "12px",
+                      boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
                     }} onClick={(e) => e.stopPropagation()}>
                       <button
-                        className="menu-item"
+                        style={{
+                          width: "100%",
+                          padding: "12px 16px",
+                          border: "none",
+                          background: "none",
+                          borderRadius: "8px",
+                          textAlign: "left",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          fontWeight: 600,
+                        }}
                         onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }}
                       >
-                        <div className="menu-icon-box">
-                          <HugeiconsIcon icon={Key01Icon} size={20} />
-                        </div>
-                        <span style={{ fontWeight: 800 }}>Reset Password</span>
+                        <HugeiconsIcon icon={Key01Icon} size={20} />
+                        Reset Password
                       </button>
-
-                      <div style={{ height: "1px", backgroundColor: "rgba(15, 23, 42, 0.05)", margin: "8px" }} />
-
                       <button
-                        className="menu-item menu-item-danger"
+                        style={{
+                          width: "100%",
+                          padding: "12px 16px",
+                          border: "none",
+                          background: "none",
+                          borderRadius: "8px",
+                          textAlign: "left",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          fontWeight: 600,
+                          color: "#dc2626",
+                        }}
                         onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                       >
-                        <div className="menu-icon-box" style={{ backgroundColor: "#fff1f2" }}>
-                          <HugeiconsIcon icon={Logout01Icon} size={20} />
-                        </div>
-                        <span style={{ fontWeight: 800 }}>Sign Out</span>
+                        <HugeiconsIcon icon={Logout01Icon} size={20} />
+                        Sign Out
                       </button>
                     </div>
                   </>,
@@ -537,121 +517,181 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Name and Handle */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <h1 style={{
-              fontSize: isMobile ? "24px" : "32px",
-              fontWeight: 850,
-              color: "#0f172a",
-              margin: 0,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              letterSpacing: "-0.02em"
-            }}>
-              {userProfile?.name || user?.fullName}
-              <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "20px" : "24px"} />
-            </h1>
-            <span style={{ fontSize: "16px", color: "#64748b", fontWeight: 600 }}>@{userProfile?.username || user?.username}</span>
+          <span style={{ fontSize: "15px", color: "#64748b", display: "block", marginBottom: "12px" }}>
+            @{userProfile?.username || user?.username}
+          </span>
+
+          {userProfile?.bio && (
+            <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#334155", margin: "0 0 12px 0" }}>
+              <BioRenderer bio={userProfile.bio} />
+            </p>
+          )}
+
+          {/* Meta row: location, link, join date */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "16px 24px",
+            alignItems: "center",
+            color: "#64748b",
+            fontSize: "14px",
+            marginBottom: "12px",
+          }}>
+            {userProfile?.location && (
+              <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <HugeiconsIcon icon={Location01Icon} size={16} />
+                {userProfile.location}
+              </span>
+            )}
+            {userProfile?.website_url && (
+              <a
+                href={userProfile.website_url.startsWith("http") ? userProfile.website_url : `https://${userProfile.website_url}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  color: "#2563eb",
+                  textDecoration: "underline",
+                }}
+              >
+                <HugeiconsIcon icon={Link02Icon} size={16} />
+                {userProfile.website_url.replace(/^https?:\/\//, "")}
+              </a>
+            )}
+            {userProfile?.created_at && (
+              <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <HugeiconsIcon icon={Calendar03Icon} size={16} />
+                Joined {formatProfileJoinDate(userProfile.created_at)}
+              </span>
+            )}
+          </div>
+
+          {/* Followers + Social */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "20px",
+          }}>
+            <div style={{ display: "flex", gap: "16px" }}>
+              <button
+                onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
+                style={{
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  fontSize: "15px",
+                  color: "#0f172a",
+                  fontWeight: 600,
+                }}
+              >
+                {userProfile?.follower_count ?? 0} <span style={{ color: "#64748b", fontWeight: 500 }}>followers</span>
+              </button>
+              <button
+                onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
+                style={{
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  fontSize: "15px",
+                  color: "#0f172a",
+                  fontWeight: 600,
+                }}
+              >
+                {userProfile?.following_count ?? 0} <span style={{ color: "#64748b", fontWeight: 500 }}>following</span>
+              </button>
+            </div>
+            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+              {userProfile?.twitter_url && (
+                <a href={userProfile.twitter_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="Twitter">
+                  <HugeiconsIcon icon={TwitterIcon} size={20} />
+                </a>
+              )}
+              {userProfile?.linkedin_url && (
+                <a href={userProfile.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="LinkedIn">
+                  <HugeiconsIcon icon={Linkedin01Icon} size={20} />
+                </a>
+              )}
+              {userProfile?.github_url && (
+                <a href={userProfile.github_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="GitHub">
+                  <HugeiconsIcon icon={GithubIcon} size={20} />
+                </a>
+              )}
+              {userProfile?.website_url && (
+                <a href={userProfile.website_url.startsWith("http") ? userProfile.website_url : `https://${userProfile.website_url}`} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="Website">
+                  <HugeiconsIcon icon={Link02Icon} size={20} />
+                </a>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Main Layout Grid */}
+        {/* Tabs + Content */}
         <div style={{
-          display: "grid",
-          gridTemplateColumns: width >= 1024 ? "320px 1fr" : "1fr",
-          gap: "48px",
-          padding: isMobile ? "0 16px" : "0 24px"
+          padding: `0 ${innerPaddingX}px`,
+          borderTop: "1px solid #e2e8f0",
         }}>
-          {/* Sidebar */}
-          <aside>
-            {userProfile?.bio && (
-              <div className="sidebar-section">
-                <p style={{ fontSize: "15px", lineHeight: "1.6", color: "#334155", margin: 0 }}>
-                  <BioRenderer bio={userProfile.bio} />
-                </p>
-              </div>
-            )}
-
-            <div className="sidebar-section" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "14px", fontWeight: 500 }}>
-                <HugeiconsIcon icon={Calendar03Icon} size={18} />
-                Joined {formatJoinDate(userProfile?.created_at || "")}
-              </div>
-              {userProfile?.website_url && (
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3b82f6", fontSize: "14px", fontWeight: 600 }}>
-                  <HugeiconsIcon icon={Globe02Icon} size={18} />
-                  <a href={userProfile.website_url.startsWith('http') ? userProfile.website_url : `https://${userProfile.website_url}`} target="_blank" rel="noreferrer" style={{ color: "inherit", textDecoration: "none" }}>{userProfile.website_url.replace(/^https?:\/\//, '')}</a>
-                </div>
-              )}
-            </div>
-
-            <div className="sidebar-section" style={{ display: "flex", gap: "20px" }}>
-              <div onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
-                <span style={{ fontSize: "15px", fontWeight: 750, color: "#0f172a" }}>{userProfile?.follower_count || 0}</span>
-                <span style={{ fontSize: "15px", color: "#64748b", marginLeft: "4px" }}>Followers</span>
-              </div>
-              <div onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ cursor: "pointer" }}>
-                <span style={{ fontSize: "15px", fontWeight: 750, color: "#0f172a" }}>{userProfile?.following_count || 0}</span>
-                <span style={{ fontSize: "15px", color: "#64748b", marginLeft: "4px" }}>Following</span>
-              </div>
-            </div>
-
-            {userProfile?.skills && userProfile.skills.length > 0 && (
-              <div className="sidebar-section">
-                <h4 className="sidebar-title">Tech Stack</h4>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                  {userProfile.skills.map(skill => (
-                    <span key={skill} style={{
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      color: "#475569",
-                      padding: "4px 10px",
-                      backgroundColor: "#f1f5f9",
-                      borderRadius: "6px"
-                    }}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </aside>
-
-          {/* Main Content Area */}
-          <div>
-            <div style={{
+            <div className="tabs-row" style={{
               display: "flex",
-              backgroundColor: "rgba(241, 245, 249, 0.5)",
-              padding: "4px",
-              borderRadius: "16px",
-              marginBottom: "32px",
-              gap: "4px",
-              width: "fit-content",
-              maxWidth: "100%",
+              gap: isMobile ? "24px" : "32px",
+              marginBottom: "24px",
+              marginTop: "24px",
               overflowX: "auto",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch"
+              WebkitOverflowScrolling: "touch",
+              paddingBottom: "2px",
             }}>
               <button
                 onClick={() => setActiveTab("posts")}
-                className={`tab-btn ${activeTab === "posts" ? 'active' : ''}`}
-                style={{ whiteSpace: "nowrap" }}
+                style={{
+                  padding: "12px 0",
+                  fontSize: "15px",
+                  fontWeight: activeTab === "posts" ? 700 : 500,
+                  color: activeTab === "posts" ? "#0f172a" : "#64748b",
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  borderBottom: activeTab === "posts" ? "2px solid #0f172a" : "2px solid transparent",
+                  marginBottom: "-2px",
+                  whiteSpace: "nowrap",
+                }}
               >
                 Posts
               </button>
               <button
                 onClick={() => setActiveTab("projects")}
-                className={`tab-btn ${activeTab === "projects" ? 'active' : ''}`}
-                style={{ whiteSpace: "nowrap" }}
+                style={{
+                  padding: "12px 0",
+                  fontSize: "15px",
+                  fontWeight: activeTab === "projects" ? 700 : 500,
+                  color: activeTab === "projects" ? "#0f172a" : "#64748b",
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  borderBottom: activeTab === "projects" ? "2px solid #0f172a" : "2px solid transparent",
+                  marginBottom: "-2px",
+                  whiteSpace: "nowrap",
+                }}
               >
                 Projects
               </button>
               <button
                 onClick={() => setActiveTab("saved")}
-                className={`tab-btn ${activeTab === "saved" ? 'active' : ''}`}
-                style={{ whiteSpace: "nowrap" }}
+                style={{
+                  padding: "12px 0",
+                  fontSize: "15px",
+                  fontWeight: activeTab === "saved" ? 700 : 500,
+                  color: activeTab === "saved" ? "#0f172a" : "#64748b",
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  borderBottom: activeTab === "saved" ? "2px solid #0f172a" : "2px solid transparent",
+                  marginBottom: "-2px",
+                  whiteSpace: "nowrap",
+                }}
               >
                 Saved
               </button>
@@ -687,7 +727,22 @@ export default function Profile() {
                     <div style={{ textAlign: "center", padding: "60px 20px" }}>
                       <HugeiconsIcon icon={Rocket01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
                       <p style={{ color: "#64748b", fontWeight: 700 }}>Showcase your best projects.</p>
-                      <button onClick={() => setIsProjectModalOpen(true)} className="profile-btn profile-btn-primary" style={{ margin: "16px auto" }}>Add Project</button>
+                      <button
+                        onClick={() => setIsProjectModalOpen(true)}
+                        style={{
+                          margin: "16px auto",
+                          padding: "10px 20px",
+                          borderRadius: "8px",
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          border: "none",
+                          backgroundColor: "#0f172a",
+                          color: "#fff",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Add Project
+                      </button>
                     </div>
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -759,7 +814,6 @@ export default function Profile() {
                 </div>
               )}
             </div>
-          </div>
         </div>
       </div>
 
