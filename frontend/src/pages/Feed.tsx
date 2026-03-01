@@ -115,7 +115,7 @@ export default function Feed() {
         (feedType === "projects" && projectsLoading && projects.length === 0);
 
     return (
-        <main style={{ padding: 0, minHeight: "100vh", backgroundColor: "#fff" }}>
+        <main style={{ padding: 0, minHeight: "100vh", backgroundColor: "#f8fafc" }}>
             <SEO
                 title="Home"
                 description="Share your projects, discover amazing code, and connect with developers worldwide on Codeown."
@@ -134,27 +134,25 @@ export default function Feed() {
 
             <div style={{
                 display: "flex",
-                flexDirection: isDesktop ? "row" : "column",
                 justifyContent: "center",
-                alignItems: "flex-start",
+                alignItems: "stretch",
                 width: "100%",
-                maxWidth: isDesktop ? MAIN_COLUMN_MAX_WIDTH + SIDEBAR_WIDTH + 80 : 960,
-                margin: "0 auto",
-                padding: isDesktop ? "0 24px" : "0 12px",
+                minHeight: "100vh",
                 boxSizing: "border-box",
-                backgroundColor: "#fff",
-                gap: isDesktop ? 24 : 0,
+                backgroundColor: "transparent",
             }}>
                 {/* Main Feed Column */}
                 <div style={{
                     flexShrink: 0,
-                    width: isDesktop ? `${MAIN_COLUMN_MAX_WIDTH}px` : "100%",
-                    borderLeft: width >= 1024 ? "1px solid #eff3f4" : "none",
-                    borderRight: width >= 1024 ? "1px solid #eff3f4" : "none",
+                    width: isMobile ? "100%" : `${MAIN_COLUMN_MAX_WIDTH}px`,
+                    borderLeft: !isMobile ? "1px solid #e5e7eb" : "none",
+                    borderRight: !isMobile ? "1px solid #e5e7eb" : "none",
+                    borderTop: !isMobile ? "1px solid #e5e7eb" : "none",
+                    borderBottom: !isMobile ? "1px solid #e5e7eb" : "none",
+                    backgroundColor: "#ffffff",
                     minHeight: "100vh",
                     position: "relative",
                     zIndex: 1,
-                    margin: isDesktop ? "0" : "0 auto"
                 }}>
                     {/* Top Tabs */}
                     <div style={{
@@ -179,7 +177,8 @@ export default function Feed() {
                                 fontWeight: feedFilter === "all" ? 700 : 500,
                                 color: feedFilter === "all" ? "#0f172a" : "#64748b",
                                 position: "relative",
-                                transition: "background-color 0.2s"
+                                transition: "background-color 0.2s",
+                                borderRight: "1px solid #eff3f4",
                             }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = "#eff3f4"}
                             onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
@@ -456,11 +455,12 @@ export default function Feed() {
                 {/* Sidebar Column */}
                 {isDesktop && (
                     <div style={{
-                        padding: "32px 0 32px 16px",
-                        display: "flex",
-                        justifyContent: "flex-start"
+                        width: `${SIDEBAR_WIDTH}px`,
+                        flexShrink: 0,
+                        minHeight: "100vh",
+                        paddingLeft: "24px",
                     }}>
-                        <div style={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
+                        <div style={{ position: "sticky", top: "0px", padding: "24px 24px 0" }}>
                             <RecommendedUsersSidebar />
                         </div>
                     </div>
