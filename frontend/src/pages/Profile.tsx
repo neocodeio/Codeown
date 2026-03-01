@@ -313,7 +313,7 @@ export default function Profile() {
               boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
             }}
           >
-            <HugeiconsIcon icon={Camera01Icon} size={20} />
+            <HugeiconsIcon icon={Camera01Icon} size={24} style={{ width: 24, height: 24, flexShrink: 0 }} />
           </button>
         </div>
 
