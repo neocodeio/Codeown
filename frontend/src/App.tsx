@@ -56,21 +56,28 @@ export default function App() {
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
+  const isAuthRoute =
+    location.pathname.startsWith("/sign-in") ||
+    location.pathname.startsWith("/sign-up") ||
+    location.pathname.startsWith("/forgot-password");
+
+  const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
+
   return (
     <div style={{
       display: "flex",
-      flexDirection: isMobile ? "column" : "row",
+      flexDirection: layoutDirection,
       minHeight: "100vh",
       backgroundColor: "#fff"
     }}>
-      <Navbar />
+      {!isAuthRoute && <Navbar />}
       <div style={{
         flex: 1,
         position: "relative",
         minWidth: 0,
         overflowX: "hidden",
-        paddingTop: isMobile ? "64px" : "0px",
-        paddingBottom: isMobile ? "80px" : "0px"
+        paddingTop: isMobile && !isAuthRoute ? "64px" : "0px",
+        paddingBottom: isMobile && !isAuthRoute ? "80px" : "0px"
       }}>
         <ErrorBoundary>
           <div key={location.pathname} className="page-enter">
@@ -97,8 +104,8 @@ export default function App() {
             </Suspense>
           </div>
         </ErrorBoundary>
-        {location.pathname !== "/messages" && <FeedbackButton />}
-        <ConnectionStatus />
+        {!isAuthRoute && location.pathname !== "/messages" && <FeedbackButton />}
+        {!isAuthRoute && <ConnectionStatus />}
       </div>
     </div>
   );
