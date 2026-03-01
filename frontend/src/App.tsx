@@ -68,7 +68,7 @@ export default function App() {
       display: "flex",
       flexDirection: layoutDirection,
       minHeight: "100vh",
-      backgroundColor: "#fff"
+      backgroundColor: "#F8FAFC"
     }}>
       {!isAuthRoute && <Navbar />}
       <div style={{
@@ -76,6 +76,9 @@ export default function App() {
         position: "relative",
         minWidth: 0,
         overflowX: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         paddingTop: isMobile && !isAuthRoute ? "64px" : "0px",
         paddingBottom: isMobile && !isAuthRoute ? "80px" : "0px"
       }}>
