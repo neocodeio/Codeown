@@ -72,6 +72,7 @@ export default function RecommendedUsersSidebar() {
                 marginRight: "0",
                 position: "sticky",
                 top: "100px",
+                marginTop: "-9%",
                 height: "fit-content",
                 maxHeight: "calc(100vh - 120px)",
                 // overflowY: "auto",
@@ -79,16 +80,18 @@ export default function RecommendedUsersSidebar() {
             }}>
                 <div style={{
                     backgroundColor: "#fff",
-                    borderRadius: "32px",
-                    border: "1px solid #e2e8f0",
-                    padding: "32px",
+                    // borderRadius: "32px",
+                    border: "1px solid #e5e7eb",
+                    padding: "26px",
                     boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
                 }}>
                     <div style={{
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        marginBottom: "28px"
+                        marginBottom: "28px",
+                        paddingBottom: "13px",
+                        borderBottom: "1px solid #eff3f4"
                     }}>
                         <h3 style={{
                             fontSize: "24px",

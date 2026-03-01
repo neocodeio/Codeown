@@ -19,10 +19,10 @@ export default function RecentProjectLaunches() {
     if (loading) {
         return (
             <div style={{
-                backgroundColor: "#fff",
-                borderRadius: "32px",
-                border: "1px solid #e2e8f0",
-                padding: "32px",
+                backgroundColor: "#000",
+                // borderRadius: "32px",
+                border: "1px solid #e5e7eb",
+                padding: "26px",
                 marginTop: "20px",
                 boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
             }}>
@@ -47,10 +47,10 @@ export default function RecentProjectLaunches() {
     return (
         <div style={{
             backgroundColor: "#fff",
-            borderRadius: "32px",
-            border: "1px solid #e2e8f0",
-            padding: "32px",
-            marginTop: "20px",
+            // borderRadius: "32px",
+            border: "1px solid #e5e7eb",
+            padding: "26px",
+            marginTop: "-3%",
             boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
         }}>
             <style>{`
