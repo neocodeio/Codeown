@@ -2,6 +2,10 @@ import { useCallback } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "../api/axios";
 
+/** Cache times: 30min stale = no refetch on tab switch; 60min gc = keep in memory */
+const FEED_STALE_TIME_MS = 1000 * 60 * 30;
+const FEED_GC_TIME_MS = 1000 * 60 * 60;
+
 export interface Post {
   id: number;
   title: string;
@@ -36,7 +40,7 @@ export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToke
     isLoading,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["posts", filter, tag, lang],
+    queryKey: ["posts", filter, tag ?? "", lang ?? ""],
     enabled,
     queryFn: async ({ pageParam = 1 }) => {
       const token = getToken ? await getToken() : null;
@@ -69,7 +73,10 @@ export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToke
       return undefined;
     },
     initialPageParam: 1,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: FEED_STALE_TIME_MS,
+    gcTime: FEED_GC_TIME_MS,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const posts = data?.pages.flatMap((page) => page.posts) || [];

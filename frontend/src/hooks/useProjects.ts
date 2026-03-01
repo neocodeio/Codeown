@@ -2,6 +2,10 @@ import { useCallback } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "../api/axios";
 
+/** Cache times: 30min stale = no refetch on tab switch; 60min gc = keep in memory */
+const FEED_STALE_TIME_MS = 1000 * 60 * 30;
+const FEED_GC_TIME_MS = 1000 * 60 * 60;
+
 export type FeedFilter = "all" | "following" | "contributors";
 
 export function useProjects(limit: number = 10, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string, enabled: boolean = true) {
@@ -13,7 +17,7 @@ export function useProjects(limit: number = 10, filter: FeedFilter = "all", getT
         isLoading,
         refetch,
     } = useInfiniteQuery({
-        queryKey: ["projects", filter, tag],
+        queryKey: ["projects", filter, tag ?? ""],
         enabled,
         queryFn: async ({ pageParam = 1 }) => {
             const token = getToken ? await getToken() : null;
@@ -43,7 +47,10 @@ export function useProjects(limit: number = 10, filter: FeedFilter = "all", getT
             return undefined;
         },
         initialPageParam: 1,
-        staleTime: 1000 * 60 * 2, // 2 minutes
+        staleTime: FEED_STALE_TIME_MS,
+        gcTime: FEED_GC_TIME_MS,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
     const projects = data?.pages.flatMap((page) => page.projects) || [];

@@ -50,20 +50,20 @@ export default function Feed() {
     const { getToken } = useClerkAuth();
     const { isSignedIn } = useClerkUser();
 
-    // Hooks using TanStack Query
+    // Both hooks always enabled: data is cached, tab switch is instant (no refetch)
     const {
         posts,
         loading: postsLoading,
         fetchPosts,
         hasMore: postsHasMore
-    } = usePosts(10, feedFilter, getToken, selectedTag, selectedLang || undefined, feedType === "posts");
+    } = usePosts(10, feedFilter, getToken, selectedTag, selectedLang || undefined, true);
 
     const {
         projects,
         loading: projectsLoading,
         fetchProjects,
         hasMore: projectsHasMore
-    } = useProjects(10, feedFilter, getToken, selectedTag, feedType === "projects");
+    } = useProjects(10, feedFilter, getToken, selectedTag, true);
 
     const loading = feedType === "posts" ? postsLoading : projectsLoading;
     const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;
