@@ -36,6 +36,7 @@ export default function Navbar() {
   const location = useLocation();
   const { width } = useWindowSize();
   const isMobile = width < 768; // Mobile breakpoint
+  const isDesktop = width >= 1280;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -396,8 +397,8 @@ export default function Navbar() {
           <SidebarContent />
         </div>
 
-        {/* Desktop Fixed Streak Badge */}
-        {isSignedIn && location.pathname !== "/messages" && (
+        {/* Desktop Fixed Streak Badge (large screens only to avoid overlap on tablets) */}
+        {isSignedIn && location.pathname !== "/messages" && isDesktop && (
           <div style={{
             position: "fixed",
             top: "20px",

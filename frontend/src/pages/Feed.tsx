@@ -154,60 +154,103 @@ export default function Feed() {
                     position: "relative",
                     zIndex: 1,
                 }}>
-                    {/* Top Tabs */}
-                    <div style={{
-                        display: "flex",
-                        borderBottom: "1px solid #eff3f4",
-                        position: "sticky",
-                        top: isMobile ? "0px" : 0,
-                        marginTop: 0,
-                        backgroundColor: "rgba(255, 255, 255, 0.95)",
-                        backdropFilter: "blur(8px)",
-                        zIndex: 10,
-                        width: "100%"
-                    }}>
+                    {/* Header + feed filter */}
+                    <div
+                        style={{
+                            borderBottom: "1px solid #eff3f4",
+                            position: "sticky",
+                            top: isMobile ? "0px" : 0,
+                            marginTop: 0,
+                            backgroundColor: "rgba(255, 255, 255, 0.95)",
+                            backdropFilter: "blur(8px)",
+                            zIndex: 10,
+                            width: "100%",
+                        }}
+                    >
                         <div
-                            onClick={() => handleFilterChange("all")}
                             style={{
-                                flex: 1,
-                                padding: "16px",
-                                textAlign: "center",
-                                cursor: "pointer",
-                                fontSize: "15px",
-                                fontWeight: feedFilter === "all" ? 700 : 500,
-                                color: feedFilter === "all" ? "#0f172a" : "#64748b",
-                                position: "relative",
-                                transition: "background-color 0.2s",
-                                borderRight: "1px solid #eff3f4",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                padding: "16px 20px 12px",
+                                gap: "12px",
+                                flexWrap: "wrap",
                             }}
-                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#eff3f4"}
-                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
                         >
-                            For You
-                            {feedFilter === "all" && (
-                                <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "56px", height: "4px", backgroundColor: "#212121", borderRadius: "0px" }} />
-                            )}
-                        </div>
-                        <div
-                            onClick={() => handleFilterChange("following")}
-                            style={{
-                                flex: 1,
-                                padding: "16px",
-                                textAlign: "center",
-                                cursor: "pointer",
-                                fontSize: "15px",
-                                fontWeight: feedFilter === "following" ? 700 : 500,
-                                color: feedFilter === "following" ? "#0f172a" : "#64748b",
-                                position: "relative",
-                                transition: "background-color 0.2s"
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "#eff3f4"}
-                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
-                        >
-                            Following
-                            {feedFilter === "following" && (
-                                <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "70px", height: "4px", backgroundColor: "#212121", borderRadius: "0px" }} />
-                            )}
+                            <h1
+                                style={{
+                                    margin: 0,
+                                    fontSize: "22px",
+                                    fontWeight: 800,
+                                    letterSpacing: "-0.02em",
+                                    color: "#0f172a",
+                                }}
+                            >
+                                Feed
+                            </h1>
+
+                            <div
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    padding: "4px",
+                                    borderRadius: "999px",
+                                    backgroundColor: "#f3f4f6",
+                                    border: "1px solid #e5e7eb",
+                                    gap: "4px",
+                                }}
+                            >
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterChange("all")}
+                                    style={{
+                                        border: "none",
+                                        outline: "none",
+                                        cursor: "pointer",
+                                        padding: "6px 12px",
+                                        borderRadius: "999px",
+                                        fontSize: "13px",
+                                        fontWeight: 600,
+                                        backgroundColor:
+                                            feedFilter === "all" ? "#ffffff" : "transparent",
+                                        color: feedFilter === "all" ? "#111827" : "#6b7280",
+                                        boxShadow:
+                                            feedFilter === "all"
+                                                ? "0 1px 2px rgba(15, 23, 42, 0.06)"
+                                                : "none",
+                                        transition:
+                                            "background-color 0.15s ease, color 0.15s ease",
+                                    }}
+                                >
+                                    Discover
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterChange("following")}
+                                    style={{
+                                        border: "none",
+                                        outline: "none",
+                                        cursor: "pointer",
+                                        padding: "6px 12px",
+                                        borderRadius: "999px",
+                                        fontSize: "13px",
+                                        fontWeight: 600,
+                                        backgroundColor:
+                                            feedFilter === "following"
+                                                ? "#ffffff"
+                                                : "transparent",
+                                        color: feedFilter === "following" ? "#111827" : "#6b7280",
+                                        boxShadow:
+                                            feedFilter === "following"
+                                                ? "0 1px 2px rgba(15, 23, 42, 0.06)"
+                                                : "none",
+                                        transition:
+                                            "background-color 0.15s ease, color 0.15s ease",
+                                    }}
+                                >
+                                    Following
+                                </button>
+                            </div>
                         </div>
                     </div>
 
