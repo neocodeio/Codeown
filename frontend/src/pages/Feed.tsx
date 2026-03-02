@@ -114,8 +114,27 @@ export default function Feed() {
     const isInitialLoading = (feedType === "posts" && postsLoading && posts.length === 0) ||
         (feedType === "projects" && projectsLoading && projects.length === 0);
 
+    // #region agent log
+    fetch('http://127.0.0.1:7640/ingest/89c68152-25b3-4fee-b263-e17685f6697b', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Debug-Session-Id': '4181a1',
+        },
+        body: JSON.stringify({
+            sessionId: '4181a1',
+            runId: 'pre-fix',
+            hypothesisId: 'H3',
+            location: 'pages/Feed.tsx:Feed',
+            message: 'feed layout decision',
+            data: { width, isMobile, isDesktop, feedType, feedFilter },
+            timestamp: Date.now(),
+        }),
+    }).catch(() => { });
+    // #endregion
+
     return (
-        <main style={{ padding: 0, minHeight: "100vh", backgroundColor: "#f8fafc" }}>
+        <main style={{ padding: 0, backgroundColor: "#f8fafc" }}>
             <SEO
                 title="Home"
                 description="Share your projects, discover amazing code, and connect with developers worldwide on Codeown."
@@ -135,9 +154,8 @@ export default function Feed() {
             <div style={{
                 display: "flex",
                 justifyContent: "center",
-                alignItems: "stretch",
+                alignItems: "flex-start",
                 width: "100%",
-                minHeight: "100vh",
                 boxSizing: "border-box",
                 backgroundColor: "transparent",
             }}>
@@ -150,7 +168,6 @@ export default function Feed() {
                     borderTop: !isMobile ? "1px solid #e5e7eb" : "none",
                     borderBottom: !isMobile ? "1px solid #e5e7eb" : "none",
                     backgroundColor: "#ffffff",
-                    minHeight: "100vh",
                     position: "relative",
                     zIndex: 1,
                 }}>
@@ -158,13 +175,13 @@ export default function Feed() {
                     <div
                         style={{
                             borderBottom: "1px solid #eff3f4",
-                            position: "sticky",
-                            top: isMobile ? "0px" : 0,
+                            position: isMobile ? "static" : "sticky",
+                            top: isMobile ? undefined : 0,
                             marginTop: 0,
-                            backgroundColor: "rgba(255, 255, 255, 0.95)",
-                            backdropFilter: "blur(8px)",
-                            zIndex: 10,
+                            backgroundColor: isMobile ? "#ffffff" : "rgba(255, 255, 255, 0.95)",
+                            backdropFilter: isMobile ? undefined : "blur(8px)",
                             width: "100%",
+                            zIndex: 10,
                         }}
                     >
                         <div
@@ -186,7 +203,7 @@ export default function Feed() {
                                     color: "#0f172a",
                                 }}
                             >
-                                Feed
+                                FEED
                             </h1>
 
                             <div
@@ -290,9 +307,9 @@ export default function Feed() {
                                 style={{
                                         padding: "8px 14px",
                                         borderRadius: "999px",
-                                        border: "none",
-                                        backgroundColor: feedType === "posts" ? "#0f172a" : "transparent",
-                                        color: feedType === "posts" ? "#ffffff" : "#64748b",
+                                        border: feedType === "posts" ? "1px solid #e0e0e0" : "none",
+                                        backgroundColor: feedType === "posts" ? "#fff" : "transparent",
+                                        color: feedType === "posts" ? "#000" : "#64748b",
                                         fontSize: "14px",
                                         fontWeight: 700,
                                         cursor: "pointer",
@@ -308,9 +325,9 @@ export default function Feed() {
                                 style={{
                                         padding: "8px 14px",
                                         borderRadius: "999px",
-                                        border: "none",
-                                        backgroundColor: feedType === "projects" ? "#0f172a" : "transparent",
-                                        color: feedType === "projects" ? "#ffffff" : "#64748b",
+                                        backgroundColor: feedType === "projects" ? "#fff" : "transparent",
+                                        color: feedType === "projects" ? "#000" : "#64748b",
+                                        border: feedType === "projects" ? "1px solid #e0e0e0" : "none",
                                         fontSize: "14px",
                                         fontWeight: 700,
                                         cursor: "pointer",

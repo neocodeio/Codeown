@@ -38,6 +38,25 @@ export default function Navbar() {
   const isMobile = width < 768; // Mobile breakpoint
   const isDesktop = width >= 1280;
 
+  // #region agent log
+  fetch('http://127.0.0.1:7640/ingest/89c68152-25b3-4fee-b263-e17685f6697b', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Debug-Session-Id': '4181a1',
+    },
+    body: JSON.stringify({
+      sessionId: '4181a1',
+      runId: 'pre-fix',
+      hypothesisId: 'H2',
+      location: 'components/Navbar.tsx:Navbar',
+      message: 'navbar layout decision',
+      data: { width, isMobile, isDesktop, path: location.pathname },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);

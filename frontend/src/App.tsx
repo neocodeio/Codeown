@@ -76,14 +76,11 @@ export default function App() {
         position: "relative",
         minWidth: 0,
         overflowX: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
         paddingTop: isMobile && !isAuthRoute ? "64px" : "0px",
         paddingBottom: isMobile && !isAuthRoute ? "80px" : "0px"
       }}>
         <ErrorBoundary>
-          <div key={location.pathname} className="page-enter">
+          <div key={location.pathname}>
             <Suspense fallback={<PageLoader />}>
               <Routes location={location}>
                 <Route path="/" element={<Feed />} />
