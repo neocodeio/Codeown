@@ -51,6 +51,7 @@ export default function RecentProjectLaunches() {
             border: "1px solid #e5e7eb",
             padding: "26px",
             marginTop: "-3%",
+            marginBottom: "5%",
             boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
         }}>
             <style>{`
