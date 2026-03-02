@@ -6,6 +6,7 @@ import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "./VerifiedBadge";
 import RecentProjectLaunches from "./RecentProjectLaunches";
+import StreakBadge from "./StreakBadge";
 
 export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
@@ -58,6 +59,25 @@ export default function RecommendedUsersSidebar() {
         }
     };
 
+    // Streak count (used in sidebar header)
+    const { data: streakData } = useQuery({
+        queryKey: ["streakCount"],
+        queryFn: async () => {
+            const token = await getToken();
+            if (!token) return { streak_count: 0 };
+            const res = await api.post(
+                "/users/streak/update",
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            return res.data || { streak_count: 0 };
+        },
+        enabled: isDesktop && isSignedIn,
+        staleTime: 30 * 60 * 1000, // 30 minutes
+        refetchOnWindowFocus: false,
+    });
+    const streakCount = streakData?.streak_count ?? 0;
+
     // Desktop: Show as sidebar (1024px+)
     // Mobile/Tablet: Show below streak badge as horizontal scroll
     const isMobile = width < 1280;
@@ -89,6 +109,7 @@ export default function RecommendedUsersSidebar() {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        gap: "12px",
                         marginBottom: "28px",
                         paddingBottom: "13px",
                         borderBottom: "1px solid #eff3f4"
@@ -103,6 +124,11 @@ export default function RecommendedUsersSidebar() {
                         }}>
                             Who to follow
                         </h3>
+                        {streakCount > 0 && (
+                            <div style={{ flexShrink: 0 }}>
+                                <StreakBadge count={streakCount} />
+                            </div>
+                        )}
                     </div>
 
                     {loading ? (

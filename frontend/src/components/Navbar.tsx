@@ -8,7 +8,6 @@ import CreatePostModal from "./CreatePostModal";
 import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
 import { useFaviconNotification } from "../hooks/useFaviconNotification";
-import StreakBadge from "./StreakBadge";
 import api from "../api/axios";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
@@ -61,10 +60,8 @@ export default function Navbar() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
-  const [streakCount, setStreakCount] = useState(0);
   const { unreadCount, messageUnreadCount } = useNotifications();
   useFaviconNotification(unreadCount);
-  const { getToken } = useClerkAuth();
 
   // Use the centralized avatar hook
   const { avatarUrl: userAvatarUrl } = useAvatar(
@@ -86,26 +83,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Streak update logic
-  useEffect(() => {
-    const handleStreakUpdate = async () => {
-      if (isSignedIn) {
-        try {
-          const token = await getToken();
-          const response = await api.post("/users/streak/update", {}, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (response.data && typeof response.data.streak_count === 'number') {
-            setStreakCount(response.data.streak_count);
-          }
-        } catch (error) {
-          console.error("Failed to update streak:", error);
-        }
-      }
-    };
-
-    handleStreakUpdate();
-  }, [isSignedIn, getToken]);
+  // Streak update logic (no longer rendered here, but kept for potential future use)
 
   // Kill the active user count query - fetch only once on mount, no refetching
   const [activeCount, setActiveCount] = useState(0);
@@ -441,18 +419,6 @@ export default function Navbar() {
           <SidebarContent />
         </div>
 
-        {/* Desktop Fixed Streak Badge (large screens only to avoid overlap on tablets) */}
-        {isSignedIn && location.pathname !== "/messages" && isDesktop && (
-          <div style={{
-            position: "fixed",
-            top: "20px",
-            right: "24px",
-            zIndex: 9999
-          }}>
-            <StreakBadge count={streakCount} />
-          </div>
-        )}
-
         {/* Modals */}
         <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
         <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
@@ -485,11 +451,7 @@ export default function Navbar() {
             Codeown
           </span>
         </Link>
-        {isSignedIn && location.pathname !== "/messages" && (
-          <div style={{ marginLeft: "auto" }}>
-            <StreakBadge count={streakCount} />
-          </div>
-        )}
+        {isSignedIn && location.pathname !== "/messages" && null}
       </div>
 
 
