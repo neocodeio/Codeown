@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 
@@ -40,29 +40,11 @@ export function useNotifications() {
       return res.data.notifications || [];
     },
     enabled: isSignedIn,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 30 * 1000,           // consider data fresh for 30s
+    refetchInterval: 10 * 1000,     // poll every 10s for near‑realtime updates
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
   });
-
-  // Kill notification polling - fetch only once on mount
-  const [unreadCount, setUnreadCount] = useState(0);
-  
-  useEffect(() => {
-    const fetchUnreadCountOnce = async () => {
-      if (!isSignedIn) return;
-      try {
-        const token = await getToken();
-        if (!token) return;
-        const res = await api.get("/notifications/unread/count", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUnreadCount(res.data.count || 0);
-      } catch (e) {
-        setUnreadCount(0);
-      }
-    };
-    
-    fetchUnreadCountOnce();
-  }, []); // Empty dependency array - fetch only once on mount
 
   // Mark as read mutation
   const markReadMutation = useMutation({
@@ -75,21 +57,39 @@ export function useNotifications() {
       return notificationId;
     },
     onSuccess: (_notificationId) => {
-      // More targeted invalidation - only update what's necessary
-      queryClient.setQueryData(["notifications", "unreadCount"], 0);
-      if (_notificationId === "all") {
-        queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      }
-    }
+      // Optimistically update local cache so badges drop immediately
+      queryClient.setQueryData<Notification[]>(["notifications"], (old = []) => {
+        if (_notificationId === "all") {
+          return old.map((n) => ({ ...n, read: true }));
+        }
+        return old.map((n) =>
+          n.id === _notificationId ? { ...n, read: true } : n
+        );
+      });
+    },
   });
+
+  const unreadCount = useMemo(
+    () => notifications.filter((n: Notification) => !n.read).length,
+    [notifications]
+  );
+
+  const messageUnreadCount = useMemo(
+    () =>
+      notifications.filter(
+        (n: Notification) => !n.read && n.type === "message"
+      ).length,
+    [notifications]
+  );
 
   // Memoize return object to prevent unnecessary re-renders
   return useMemo(() => ({
     notifications,
     unreadCount,
+    messageUnreadCount,
     loading: isLoading,
     fetchNotifications,
     markAsRead: markReadMutation.mutate,
     refreshUnreadCount: () => {}, // No-op since we fetch only once on mount
-  }), [notifications, unreadCount, isLoading, fetchNotifications, markReadMutation.mutate]);
+  }), [notifications, unreadCount, messageUnreadCount, isLoading, fetchNotifications, markReadMutation.mutate]);
 }

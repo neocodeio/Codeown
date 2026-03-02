@@ -78,21 +78,21 @@ export default function NotificationsPage() {
 
         switch (notification.type) {
             case "message":
-                return <>{nameWrapper} sent you a message</>;
+                return <>{nameWrapper} Sent you a message</>;
             case "like":
-                return <>{nameWrapper} {notification.project_id ? "liked your project" : "liked your post"}</>;
+                return <>{nameWrapper} {notification.project_id ? "Upvoted your project" : "Liked your post"}</>;
             case "comment":
-                return <>{nameWrapper} {notification.project_id ? "commented on your project" : "commented on your post"}</>;
+                return <>{nameWrapper} {notification.project_id ? "Commented on your project" : "Commented on your post"}</>;
             case "follow":
-                return <>{nameWrapper} started following you</>;
+                return <>{nameWrapper} Started following you</>;
             case "mention":
-                return <>{nameWrapper} mentioned you</>;
+                return <>{nameWrapper} Mentioned you</>;
             case "reply":
-                return <>{nameWrapper} replied to your comment</>;
+                return <>{nameWrapper} Replied to your comment</>;
             case "save":
-                return <>{nameWrapper} saved your project</>;
+                return <>{nameWrapper} Saved your project</>;
             case "profile_view":
-                return <>{nameWrapper} viewed your profile</>;
+                return <>{nameWrapper} Viewed your profile</>;
             default:
                 return <>New notification</>;
         }

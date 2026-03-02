@@ -62,7 +62,7 @@ export default function Navbar() {
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [streakCount, setStreakCount] = useState(0);
-  const { unreadCount } = useNotifications();
+  const { unreadCount, messageUnreadCount } = useNotifications();
   useFaviconNotification(unreadCount);
   const { getToken } = useClerkAuth();
 
@@ -168,7 +168,32 @@ export default function Navbar() {
         {isSignedIn && (
           <>
             <Link to="/messages" style={linkStyle("/messages")}>
-              <HugeiconsIcon icon={BubbleChatIcon} style={{ width: "20px" }} />
+              <div style={{ position: "relative", display: "flex", alignItems: "center", gap: "8px" }}>
+                <HugeiconsIcon icon={BubbleChatIcon} style={{ width: "20px" }} />
+                {messageUnreadCount > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -4,
+                      right: -8,
+                      minWidth: "18px",
+                      height: "18px",
+                      padding: "0 4px",
+                      backgroundColor: "#ef4444",
+                      color: "#fff",
+                      borderRadius: "999px",
+                      fontSize: "11px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 700,
+                      border: "2px solid #fff",
+                    }}
+                  >
+                    {messageUnreadCount > 9 ? "9+" : messageUnreadCount}
+                  </span>
+                )}
+              </div>
               Chat
             </Link>
 
@@ -495,8 +520,44 @@ export default function Navbar() {
           <HugeiconsIcon icon={Search01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
-        <Link to="/messages" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/messages" ? "#212121" : "#94a3b8" }}>
+        <Link
+          to="/messages"
+          style={{
+            flex: 1,
+            height: "44px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textDecoration: "none",
+            color: location.pathname === "/messages" ? "#212121" : "#94a3b8",
+            position: "relative",
+          }}
+        >
           <HugeiconsIcon icon={BubbleChatIcon} style={{ fontSize: "20px" }} />
+          {messageUnreadCount > 0 && (
+            <span
+              style={{
+                position: "absolute",
+                top: 6,
+                right: "calc(50% - 6px)",
+                minWidth: "16px",
+                height: "16px",
+                padding: "0 4px",
+                backgroundColor: "#ef4444",
+                color: "#fff",
+                borderRadius: "999px",
+                fontSize: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                border: "2px solid #fff",
+              }}
+            >
+              {messageUnreadCount > 9 ? "9+" : messageUnreadCount}
+            </span>
+          )}
         </Link>
 
         <div
@@ -577,12 +638,32 @@ export default function Navbar() {
             justifyContent: "center",
             textDecoration: "none",
             color: location.pathname === "/notifications" ? "#212121" : "#94a3b8",
-            position: "relative"
+            position: "relative",
           }}
         >
           <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
           {unreadCount > 0 && (
-            <span style={{ position: "absolute", top: "50%", right: "50%", transform: "translate(10px, -10px)", width: "8px", height: "8px", background: "#ef4444", borderRadius: "50%", border: "2px solid #fff" }} />
+            <span
+              style={{
+                position: "absolute",
+                top: 6,
+                right: "calc(50% - 6px)",
+                minWidth: "16px",
+                height: "16px",
+                padding: "0 4px",
+                backgroundColor: "#ef4444",
+                color: "#fff",
+                borderRadius: "999px",
+                fontSize: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                border: "2px solid #fff",
+              }}
+            >
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
           )}
         </Link>
 
