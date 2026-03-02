@@ -12,7 +12,8 @@ import {
     UserAdd01Icon,
     AtIcon,
     Bookmark01Icon,
-    Mail01Icon
+    Mail01Icon,
+    CircleArrowUp01Icon,
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -43,9 +44,13 @@ export default function NotificationsPage() {
         }
     };
 
-    const getNotificationIcon = (type: string) => {
-        switch (type) {
+    const getNotificationIcon = (notification: Notification) => {
+        switch (notification.type) {
             case "like":
+                // Use arrow-up icon for project upvotes, heart for post likes
+                if (notification.project_id) {
+                    return { icon: CircleArrowUp01Icon, color: "#0f766e" };
+                }
                 return { icon: FavouriteIcon, color: "#f91880" };
             case "comment":
             case "reply":
@@ -237,7 +242,7 @@ export default function NotificationsPage() {
                         )}
 
                         {notifications.map((notification) => {
-                            const itemStyle = getNotificationIcon(notification.type);
+                            const itemStyle = getNotificationIcon(notification);
                             return (
                                 <div
                                     key={notification.id}

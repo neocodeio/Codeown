@@ -13,7 +13,8 @@ import {
   AtIcon,
   Bookmark01Icon,
   Mail01Icon,
-  Tick01Icon
+  Tick01Icon,
+  CircleArrowUp01Icon,
 } from "@hugeicons/core-free-icons";
 import { formatCompactRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -62,10 +63,22 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
     setIsOpen(false);
   };
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
+  const getNotificationIcon = (notification: Notification) => {
+    switch (notification.type) {
       case "like":
-        return { icon: FavouriteIcon, color: "#f91880", bg: "rgba(249, 24, 128, 0.05)" };
+        // Use arrow-up icon for project upvotes, heart for post likes
+        if (notification.project_id) {
+          return {
+            icon: CircleArrowUp01Icon,
+            color: "#0f766e",
+            bg: "rgba(15, 118, 110, 0.06)",
+          };
+        }
+        return {
+          icon: FavouriteIcon,
+          color: "#f91880",
+          bg: "rgba(249, 24, 128, 0.05)",
+        };
       case "comment":
       case "reply":
         return { icon: Comment01Icon, color: "#3b82f6", bg: "rgba(59, 130, 246, 0.05)" };
@@ -99,7 +112,12 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
       case "message":
         return <span>{nameWrapper} sent you a message</span>;
       case "like":
-        return <span>{nameWrapper} {notification.project_id ? "liked your project" : "liked your post"}</span>;
+        return (
+          <span>
+            {nameWrapper}{" "}
+            {notification.project_id ? "upvoted your project" : "liked your post"}
+          </span>
+        );
       case "comment":
         return <span>{nameWrapper} {notification.project_id ? "commented on your project" : "commented on your post"}</span>;
       case "follow":
@@ -303,7 +321,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                 </div>
               ) : (
                 notifications.map((notification) => {
-                  const itemIcon = getNotificationIcon(notification.type);
+                  const itemIcon = getNotificationIcon(notification);
                   return (
                     <div
                       key={notification.id}
