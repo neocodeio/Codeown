@@ -305,13 +305,13 @@ export default function Feed() {
                             <button
                                 onClick={() => updateParams({ type: "posts" })}
                                 style={{
-                                        padding: "8px 14px",
+                                        padding: "8px 16px",
                                         borderRadius: "999px",
                                         border: feedType === "posts" ? "1px solid #e0e0e0" : "none",
                                         backgroundColor: feedType === "posts" ? "#fff" : "transparent",
                                         color: feedType === "posts" ? "#000" : "#64748b",
-                                        fontSize: "14px",
-                                        fontWeight: 700,
+                                        fontSize: "15px",
+                                        fontWeight: 600,
                                         cursor: "pointer",
                                         transition: "background-color 0.2s ease, color 0.2s ease",
                                         whiteSpace: "nowrap",
@@ -323,13 +323,13 @@ export default function Feed() {
                             <button
                                 onClick={() => updateParams({ type: "projects" })}
                                 style={{
-                                        padding: "8px 14px",
+                                        padding: "8px 16px",
                                         borderRadius: "999px",
                                         backgroundColor: feedType === "projects" ? "#fff" : "transparent",
                                         color: feedType === "projects" ? "#000" : "#64748b",
                                         border: feedType === "projects" ? "1px solid #e0e0e0" : "none",
-                                        fontSize: "14px",
-                                        fontWeight: 700,
+                                        fontSize: "15px",
+                                        fontWeight: 600,
                                         cursor: "pointer",
                                         transition: "background-color 0.2s ease, color 0.2s ease",
                                         whiteSpace: "nowrap",
