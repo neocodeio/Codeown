@@ -7,6 +7,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "./VerifiedBadge";
 import RecentProjectLaunches from "./RecentProjectLaunches";
 import StreakBadge from "./StreakBadge";
+import UserHoverCard from "./UserHoverCard";
 
 export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
@@ -147,53 +148,55 @@ export default function RecommendedUsersSidebar() {
                         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                             {users.map(user => (
                                 <div key={user.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-                                    <Link to={`/user/${user.id}`} style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                        textDecoration: "none",
-                                        flex: 1,
-                                        minWidth: 0
-                                    }}>
-                                        <div style={{ position: "relative" }}>
-                                            <img
-                                                src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`}
-                                                alt={user.name}
-                                                style={{
-                                                    width: "42px",
-                                                    height: "42px",
-                                                    borderRadius: "50%",
-                                                    objectFit: "cover",
-                                                    border: "1px solid #f1f5f9"
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "2px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                                <span style={{
-                                                    fontSize: "15px",
-                                                    fontWeight: 700,
-                                                    color: "#0f172a",
-                                                    whiteSpace: "nowrap",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis"
-                                                }}>
-                                                    {user.name}
-                                                </span>
-                                                <VerifiedBadge username={user.username} size="15px" />
+                                    <UserHoverCard userId={user.id}>
+                                        <Link to={`/user/${user.id}`} style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                            textDecoration: "none",
+                                            flex: 1,
+                                            minWidth: 0
+                                        }}>
+                                            <div style={{ position: "relative" }}>
+                                                <img
+                                                    src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`}
+                                                    alt={user.name}
+                                                    style={{
+                                                        width: "42px",
+                                                        height: "42px",
+                                                        borderRadius: "50%",
+                                                        objectFit: "cover",
+                                                        border: "1px solid #f1f5f9"
+                                                    }}
+                                                />
                                             </div>
-                                            {user.streak_count > 0 ? (
-                                                <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
-                                                    🔥 {user.streak_count} day streak
-                                                </span>
-                                            ) : (
-                                                <span style={{ fontSize: "12px", color: "#94a3b8", fontWeight: 500 }}>
-                                                    Codeown Creator
-                                                </span>
-                                            )}
-                                        </div>
-                                    </Link>
+
+                                            <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "2px" }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                                    <span style={{
+                                                        fontSize: "15px",
+                                                        fontWeight: 700,
+                                                        color: "#0f172a",
+                                                        whiteSpace: "nowrap",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis"
+                                                    }}>
+                                                        {user.name}
+                                                    </span>
+                                                    <VerifiedBadge username={user.username} size="15px" />
+                                                </div>
+                                                {user.streak_count > 0 ? (
+                                                    <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
+                                                        🔥 {user.streak_count} day streak
+                                                    </span>
+                                                ) : (
+                                                    <span style={{ fontSize: "12px", color: "#94a3b8", fontWeight: 500 }}>
+                                                        Codeown Creator
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </Link>
+                                    </UserHoverCard>
 
                                     <button
                                         onClick={() => handleFollow(user.id, user.isFollowing)}

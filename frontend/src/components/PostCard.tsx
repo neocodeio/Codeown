@@ -25,6 +25,7 @@ import {
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
+import UserHoverCard from "./UserHoverCard";
 import ShareModal from "./ShareModal";
 
 interface PostCardProps {
@@ -185,24 +186,47 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
             gap: "8px"
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", minWidth: 0, flex: 1 }}>
-              <span
-                onClick={handleUserClick}
-                style={{
-                  fontSize: "15px",
-                  fontWeight: "800",
-                  color: "#0f172a",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "3px",
-                  letterSpacing: "-0.01em"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
-                onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
-              >
-                {userName}
-                <VerifiedBadge username={post.user?.username} size="14px" />
-              </span>
+              {post.user_id ? (
+                <UserHoverCard userId={post.user_id}>
+                  <span
+                    onClick={handleUserClick}
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: "800",
+                      color: "#0f172a",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "3px",
+                      letterSpacing: "-0.01em"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+                    onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+                  >
+                    {userName}
+                    <VerifiedBadge username={post.user?.username} size="14px" />
+                  </span>
+                </UserHoverCard>
+              ) : (
+                <span
+                  onClick={handleUserClick}
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: "800",
+                    color: "#0f172a",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "3px",
+                    letterSpacing: "-0.01em"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+                  onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+                >
+                  {userName}
+                  <VerifiedBadge username={post.user?.username} size="14px" />
+                </span>
+              )}
               <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "400" }}>
                 @{post.user?.username || 'user'}
               </span>

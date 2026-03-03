@@ -23,6 +23,7 @@ import {
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
+import UserHoverCard from "./UserHoverCard";
 import { getOptimizedImageUrl, handleImageError } from "../utils/image";
 import ShareModal from "./ShareModal";
 
@@ -204,22 +205,43 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           flexWrap: isMobile ? "wrap" : "nowrap"
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", minWidth: 0, flex: 1 }}>
-            <span
-              onClick={handleUserClick}
-              style={{
-                fontSize: "15px",
-                fontWeight: 750,
-                color: "#0f172a",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxWidth: isMobile ? "150px" : "none"
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
-              onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
-            >
-              {userName}
-            </span>
+            {project.user_id ? (
+              <UserHoverCard userId={project.user_id}>
+                <span
+                  onClick={handleUserClick}
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 750,
+                    color: "#0f172a",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: isMobile ? "150px" : "none"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+                  onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+                >
+                  {userName}
+                </span>
+              </UserHoverCard>
+            ) : (
+              <span
+                onClick={handleUserClick}
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 750,
+                  color: "#0f172a",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: isMobile ? "150px" : "none"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+                onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+              >
+                {userName}
+              </span>
+            )}
             <VerifiedBadge username={project.user?.username} size="14px" />
             <span style={{ fontSize: "14px", color: "#64748b", whiteSpace: "nowrap" }}>
               @{project.user?.username || 'user'}
