@@ -172,13 +172,13 @@ export default function Feed() {
                     zIndex: 1,
                 }}>
                     {/* Status banner */}
-                    <div
+                    {/* <div
                         style={{
                             padding: isMobile ? "12px 16px" : "14px 20px",
                             backgroundColor: "#f0f9ff",
                             borderBottom: "1px solid #e0f2fe",
                         }}
-                    >
+                    > */}
                         <p
                             style={{
                                 margin: 0,
@@ -188,9 +188,9 @@ export default function Feed() {
                                 fontWeight: 500,
                             }}
                         >
-                            We're growing faster than our servers! We're currently optimizing our storage to accommodate all new users. Back shortly!
+                            {/* We're growing faster than our servers! We're currently optimizing our storage to accommodate all new users. Back shortly! */}
                         </p>
-                    </div>
+                    {/* </div> */}
 
                     {/* Header + feed filter */}
                     <div
@@ -210,7 +210,7 @@ export default function Feed() {
                                 display: "flex",
                                 flexDirection: isMobile ? "column" : "row",
                                 alignItems: isMobile ? "flex-start" : "center",
-                                justifyContent: isMobile ? "flex-start" : "space-between",
+                                justifyContent: "flex-start",
                                 padding: "16px 20px 12px",
                                 gap: isMobile ? "10px" : "12px",
                                 flexWrap: "wrap",
@@ -225,14 +225,15 @@ export default function Feed() {
                                     color: "#0f172a",
                                 }}
                             >
-                                FEED
+                                {/* FEED */}
                             </h1>
 
                             <div
                                 style={{
                                     display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: isMobile ? "stretch" : "flex-end",
+                                    flexDirection: isMobile ? "column" : "row",
+                                    alignItems: "center",
+                                    justifyContent: isMobile ? "stretch" : "flex-end",
                                     gap: isMobile ? 6 : 8,
                                     width: isMobile ? "100%" : "auto",
                                 }}
