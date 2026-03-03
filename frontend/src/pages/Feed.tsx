@@ -247,7 +247,7 @@ export default function Feed() {
                                         cursor: "pointer",
                                         padding: "6px 12px",
                                         borderRadius: "999px",
-                                        fontSize: "13px",
+                                        fontSize: isMobile ? "14px" : "13px",
                                         fontWeight: 600,
                                         backgroundColor:
                                             feedFilter === "all" ? "#ffffff" : "transparent",
@@ -271,7 +271,7 @@ export default function Feed() {
                                         cursor: "pointer",
                                         padding: "6px 12px",
                                         borderRadius: "999px",
-                                        fontSize: "13px",
+                                        fontSize: isMobile ? "14px" : "13px",
                                         fontWeight: 600,
                                         backgroundColor:
                                             feedFilter === "following"
@@ -301,7 +301,6 @@ export default function Feed() {
                         flexDirection: "column",
                         borderBottom: "1px solid #eff3f4",
                         backgroundColor: "#fff",
-                        // marginTop: "15%"
                     }}>
                         <div style={{
                             display: "flex",
@@ -314,51 +313,66 @@ export default function Feed() {
                             <div style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: isMobile ? 0 : 4,
                                 padding: "4px",
                                 borderRadius: "999px",
+                                backgroundColor: "#f3f4f6",
                                 border: "1px solid #e5e7eb",
-                                backgroundColor: "#f9fafb",
+                                gap: "4px",
                                 width: isMobile ? "100%" : "auto",
-                                maxWidth: 360,
-                                justifyContent: "space-between",
+                                maxWidth: isMobile ? 360 : undefined,
                             }}>
-                            <button
-                                onClick={() => updateParams({ type: "posts" })}
-                                style={{
-                                        padding: "8px 16px",
-                                        borderRadius: "999px",
-                                        border: feedType === "posts" ? "1px solid #e0e0e0" : "none",
-                                        backgroundColor: feedType === "posts" ? "#fff" : "transparent",
-                                        color: feedType === "posts" ? "#000" : "#64748b",
-                                        fontSize: "15px",
-                                        fontWeight: 600,
+                                <button
+                                    type="button"
+                                    onClick={() => updateParams({ type: "posts" })}
+                                    style={{
+                                        border: "none",
+                                        outline: "none",
                                         cursor: "pointer",
-                                        transition: "background-color 0.2s ease, color 0.2s ease",
-                                        whiteSpace: "nowrap",
-                                        flex: isMobile ? 1 : undefined,
-                                }}
-                            >
-                                Posts
-                            </button>
-                            <button
-                                onClick={() => updateParams({ type: "projects" })}
-                                style={{
-                                        padding: "8px 16px",
+                                        padding: "6px 12px",
                                         borderRadius: "999px",
-                                        backgroundColor: feedType === "projects" ? "#fff" : "transparent",
-                                        color: feedType === "projects" ? "#000" : "#64748b",
-                                        border: feedType === "projects" ? "1px solid #e0e0e0" : "none",
-                                        fontSize: "15px",
+                                        fontSize: isMobile ? "14px" : "13px",
                                         fontWeight: 600,
-                                        cursor: "pointer",
-                                        transition: "background-color 0.2s ease, color 0.2s ease",
-                                        whiteSpace: "nowrap",
                                         flex: isMobile ? 1 : undefined,
-                                }}
-                            >
-                                Projects
-                            </button>
+                                        textAlign: "center",
+                                        backgroundColor:
+                                            feedType === "posts" ? "#ffffff" : "transparent",
+                                        color: feedType === "posts" ? "#111827" : "#6b7280",
+                                        boxShadow:
+                                            feedType === "posts"
+                                                ? "0 1px 2px rgba(15, 23, 42, 0.06)"
+                                                : "none",
+                                        transition:
+                                            "background-color 0.15s ease, color 0.15s ease",
+                                    }}
+                                >
+                                    Posts
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => updateParams({ type: "projects" })}
+                                    style={{
+                                        border: "none",
+                                        outline: "none",
+                                        cursor: "pointer",
+                                        padding: "6px 12px",
+                                        borderRadius: "999px",
+                                        fontSize: isMobile ? "14px" : "13px",
+                                        fontWeight: 600,
+                                        flex: isMobile ? 1 : undefined,
+                                        textAlign: "center",
+                                        backgroundColor:
+                                            feedType === "projects" ? "#ffffff" : "transparent",
+                                        color: feedType === "projects" ? "#111827" : "#6b7280",
+                                        boxShadow:
+                                            feedType === "projects"
+                                                ? "0 1px 2px rgba(15, 23, 42, 0.06)"
+                                                : "none",
+                                        transition:
+                                            "background-color 0.15s ease, color 0.15s ease",
+                                    }}
+                                >
+                                    Projects
+                                </button>
                             </div>
                         </div>
 

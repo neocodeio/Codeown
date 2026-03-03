@@ -374,7 +374,7 @@ export default function Navbar() {
             </div>
 
             <div style={{ fontSize: "11px", color: "#cbd5e1", textAlign: "center", fontWeight: 500 }}>
-              © 2026 Codeown. Crafted for creators.
+              © 2026 Codeown.
             </div>
           </>
         ) : (
