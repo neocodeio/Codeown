@@ -15,8 +15,8 @@ export default function StreakBadge({ count }: StreakBadgeProps) {
             style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "4px",
-                padding: "1px 10px 1px 6px",
+                gap: "8px",
+                padding: "0px 8px 0px 8px",
                 backgroundColor: isActive ? "rgba(255, 126, 0, 0.1)" : "rgba(148, 163, 184, 0.1)",
                 borderRadius: "20px",
                 border: isActive ? "1px solid rgba(255, 126, 0, 0.2)" : "1px solid rgba(148, 163, 184, 0.2)",
@@ -39,9 +39,9 @@ export default function StreakBadge({ count }: StreakBadgeProps) {
                         src={flameGif}
                         alt="Streak active"
                         style={{
-                            width: "24px",
-                            height: "24px",
-                            marginTop: "-1px"
+                            width: "22px",
+                            height: "22px",
+                            marginBottom: "5%"
                         }}
                     />
                 ) : (
@@ -57,6 +57,8 @@ export default function StreakBadge({ count }: StreakBadgeProps) {
             <span style={{
                 fontSize: "13px",
                 fontWeight: 800,
+                verticalAlign: "middle",
+                paddingTop: "2px",
                 color: isActive ? "#ff7e00" : "#94a3b8",
                 fontFamily: "'Outfit', sans-serif"
             }}>

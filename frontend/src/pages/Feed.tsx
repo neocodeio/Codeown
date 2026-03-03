@@ -171,6 +171,27 @@ export default function Feed() {
                     position: "relative",
                     zIndex: 1,
                 }}>
+                    {/* Status banner */}
+                    <div
+                        style={{
+                            padding: isMobile ? "12px 16px" : "14px 20px",
+                            backgroundColor: "#f0f9ff",
+                            borderBottom: "1px solid #e0f2fe",
+                        }}
+                    >
+                        <p
+                            style={{
+                                margin: 0,
+                                fontSize: isMobile ? "13px" : "14px",
+                                color: "#0369a1",
+                                lineHeight: 1.5,
+                                fontWeight: 500,
+                            }}
+                        >
+                            We're growing faster than our servers! We're currently optimizing our storage to accommodate all new users. Back shortly!
+                        </p>
+                    </div>
+
                     {/* Header + feed filter */}
                     <div
                         style={{
