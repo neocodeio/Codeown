@@ -1,10 +1,16 @@
 import { Router } from "express";
-import { handleClerkWebhook } from "../controllers/webhooks.controller.js";
+import {
+  handleClerkWebhook,
+  handleLemonWebhook,
+} from "../controllers/webhooks.controller.js";
 
 const router = Router();
 
 // Clerk webhook endpoint
 router.post("/clerk", handleClerkWebhook);
+
+// Lemon Squeezy webhook endpoint
+router.post("/lemon", handleLemonWebhook);
 
 export default router;
 
