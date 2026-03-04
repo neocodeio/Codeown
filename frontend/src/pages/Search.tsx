@@ -30,6 +30,7 @@ interface SearchUser {
   avatar_url: string | null;
   is_organization?: boolean;
   is_hirable?: boolean;
+  is_pro?: boolean;
 }
 
 interface SearchPost {
@@ -471,7 +472,7 @@ export default function Search() {
                 gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
                 gap: "20px"
               }}>
-                {users.filter(user => !showOnlyHirable || user.is_hirable).map((user) => (
+                {users.filter(user => !showOnlyHirable || (user.is_pro === true && user.is_hirable === true)).map((user) => (
                   <div key={user.id}
                     onClick={() => navigate(user.username ? `/${user.username}` : `/user/${user.id}`)}
                     style={{
@@ -500,7 +501,7 @@ export default function Search() {
                         avatarUrl={user.avatar_url}
                         name={user.name}
                         size={80}
-                        isOpenToOpportunities={user.is_hirable}
+                        isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
                         ringColor="#3b82f6"
                       />
                     </div>

@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
 import { useUserProjects } from "../hooks/useUserProjects";
@@ -60,6 +60,7 @@ interface UserProfile {
   experience_level: string | null;
   skills: string[] | null;
   is_hirable: boolean;
+  is_pro: boolean;
   is_organization: boolean;
   github_url: string | null;
   twitter_url: string | null;
@@ -353,7 +354,7 @@ export default function Profile() {
               avatarUrl={avatarUrl}
               name={userProfile?.name || user?.fullName || "User"}
               size={isMobile ? 96 : 120}
-              isOpenToOpportunities={userProfile?.is_hirable === true}
+              isOpenToOpportunities={userProfile?.is_pro === true && userProfile?.is_hirable === true}
               ringColor="#0f172a"
             />
           </div>
@@ -391,7 +392,39 @@ export default function Profile() {
               }}>
                 {(userProfile?.name || user?.fullName || "").toUpperCase()}
                 <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "18px" : "22px"} />
+                {userProfile?.is_pro === true && (
+                  <span style={{
+                    fontSize: isMobile ? 10 : 11,
+                    fontWeight: 700,
+                    padding: "4px 8px",
+                    borderRadius: 6,
+                    backgroundColor: "#0f172a",
+                    color: "#fff",
+                    letterSpacing: "0.02em",
+                  }}>PRO</span>
+                )}
               </h1>
+              {userProfile?.is_pro !== true && (
+                <Link
+                  to="/billing"
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: "20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    border: "1px solid #0f172a",
+                    backgroundColor: "#0f172a",
+                    color: "#fff",
+                    textDecoration: "none",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Upgrade to Pro (Beta)
+                </Link>
+              )}
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 style={{

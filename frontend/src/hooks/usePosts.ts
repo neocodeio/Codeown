@@ -22,6 +22,7 @@ export interface Post {
     avatar_url?: string | null;
     username?: string | null;
     is_hirable?: boolean;
+    is_pro?: boolean;
   };
   isLiked?: boolean;
   isSaved?: boolean;

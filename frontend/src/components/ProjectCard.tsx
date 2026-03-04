@@ -188,7 +188,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             avatarUrl={project.user?.avatar_url || null}
             name={userName}
             size={isMobile ? 42 : 48}
-            isOpenToOpportunities={project.user?.is_hirable}
+            isOpenToOpportunities={project.user?.is_pro === true && project.user?.is_hirable === true}
           />
         </div>
       </div>

@@ -24,6 +24,7 @@ export interface Project {
     avatar_url: string | null;
     email: string | null;
     is_hirable?: boolean;
+    is_pro?: boolean;
   };
   rating?: number;
   rating_count?: number;

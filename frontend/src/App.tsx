@@ -24,6 +24,7 @@ const AboutUs = lazy(() => import("./pages/AboutUs"));
 const FounderStory = lazy(() => import("./pages/FounderStory"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Billing = lazy(() => import("./pages/Billing"));
 
 // Basic loading fallback
 const PageLoader = () => (
@@ -92,6 +93,7 @@ export default function App() {
                 <Route path="/sign-up/*" element={<SignUpPage />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/billing" element={<Billing />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/messages" element={<Messages />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />

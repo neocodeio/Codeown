@@ -51,6 +51,7 @@ interface User {
   experience_level: string | null;
   skills: string[] | null;
   is_hirable: boolean;
+  is_pro: boolean;
   is_organization: boolean;
   github_url: string | null;
   twitter_url: string | null;
@@ -369,7 +370,7 @@ export default function UserProfile() {
               avatarUrl={avatarUrl}
               name={user.name}
               size={isMobile ? 96 : 120}
-              isOpenToOpportunities={user.is_hirable === true}
+              isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
               ringColor="#0f172a"
             />
           </div>

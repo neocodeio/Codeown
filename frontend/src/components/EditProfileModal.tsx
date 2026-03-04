@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "react-router-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -23,6 +24,7 @@ interface EditProfileModalProps {
     experience_level?: string | null;
     skills?: string[] | null;
     is_hirable?: boolean;
+    is_pro?: boolean;
     is_organization?: boolean;
     github_url?: string | null;
     twitter_url?: string | null;
@@ -512,41 +514,71 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
               </div>
             </div>
 
-            {/* Developer Settings */}
+            {/* Pro: Open to Opportunities */}
             <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "24px", marginBottom: "16px" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#0f172a", marginBottom: "4px" }}>Open to Opportunities</label>
-                  <p style={{ margin: 0, fontSize: "13px", color: "#64748b", lineHeight: "1.5" }}>
-                    Show a badge on your profile indicating you are looking for work.
-                  </p>
-                  <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5" }}>
-                    Requires: at least one project, at least one skill, and a bio.
-                  </p>
+              {currentUser.is_pro === true ? (
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#0f172a", marginBottom: "4px" }}>Open to Opportunities</label>
+                    <p style={{ margin: 0, fontSize: "13px", color: "#64748b", lineHeight: "1.5" }}>
+                      Show a badge on your profile indicating you are looking for work.
+                    </p>
+                    <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5" }}>
+                      Requires: at least one project, at least one skill, and a bio.
+                    </p>
+                  </div>
+                  <div
+                    onClick={() => canToggleOpenToOpportunities && setIsHirable(!isHirable)}
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "12px",
+                      border: isHirable ? "2px solid #10b981" : "2px solid #e2e8f0",
+                      backgroundColor: isHirable ? "#10b981" : "white",
+                      color: isHirable ? "white" : "#64748b",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      cursor: canToggleOpenToOpportunities ? "pointer" : "not-allowed",
+                      opacity: canToggleOpenToOpportunities ? 1 : 0.6,
+                      transition: "all 0.2s ease"
+                    }}
+                    title={canToggleOpenToOpportunities ? undefined : "Add a project, at least one skill, and a bio to enable"}
+                  >
+                    {isHirable ? "✓" : "○"}
+                  </div>
                 </div>
-                <div
-                  onClick={() => canToggleOpenToOpportunities && setIsHirable(!isHirable)}
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "12px",
-                    border: isHirable ? "2px solid #10b981" : "2px solid #e2e8f0",
-                    backgroundColor: isHirable ? "#10b981" : "white",
-                    color: isHirable ? "white" : "#64748b",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    cursor: canToggleOpenToOpportunities ? "pointer" : "not-allowed",
-                    opacity: canToggleOpenToOpportunities ? 1 : 0.6,
-                    transition: "all 0.2s ease"
-                  }}
-                  title={canToggleOpenToOpportunities ? undefined : "Add a project, at least one skill, and a bio to enable"}
-                >
-                  {isHirable ? "✓" : "○"}
+              ) : (
+                <div style={{
+                  padding: "16px",
+                  borderRadius: "12px",
+                  backgroundColor: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                }}>
+                  <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "#0f172a" }}>Open to Opportunities</p>
+                  <p style={{ margin: "6px 0 12px", fontSize: "13px", color: "#64748b", lineHeight: 1.5 }}>
+                    Pro feature. Upgrade to show the badge and stand out to recruiters.
+                  </p>
+                  <Link
+                    to="/billing"
+                    onClick={onClose}
+                    style={{
+                      display: "inline-block",
+                      padding: "8px 16px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      color: "#fff",
+                      backgroundColor: "#0f172a",
+                      borderRadius: "8px",
+                      textDecoration: "none",
+                    }}
+                  >
+                    Upgrade to Pro (Beta)
+                  </Link>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Action Buttons */}

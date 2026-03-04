@@ -311,7 +311,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     // Check if user exists - select only safe columns
     const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url")
+        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url")
         .eq("id", userId)
         .single();
 
@@ -430,7 +430,7 @@ export async function getUserProfile(req: Request, res: Response) {
         // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url")
             .eq(field, userId)
             .single();
 
@@ -598,6 +598,7 @@ export async function getUserProfile(req: Request, res: Response) {
             skills: userData.skills || null,
             experience_level: userData.experience_level || null,
             is_hirable: userData.is_hirable ?? false,
+            is_pro: userData.is_pro ?? false,
             is_organization: userData.is_organization ?? false,
             // Social links
             github_url: userData.github_url || null,
@@ -664,7 +665,7 @@ export async function updateUserProfile(req: Request, res: Response) {
         // Get current user data
         const { data: currentUser, error: fetchError } = await supabase
             .from("users")
-            .select("username, username_changed_at")
+            .select("username, username_changed_at, is_pro")
             .eq("id", userId)
             .single();
 
@@ -699,7 +700,9 @@ export async function updateUserProfile(req: Request, res: Response) {
         if (location !== undefined) updateData.location = location;
         if (job_title !== undefined) updateData.job_title = job_title;
         if (skills !== undefined) updateData.skills = skills;
-        if (is_hirable !== undefined) updateData.is_hirable = is_hirable;
+        if (is_hirable !== undefined) {
+            updateData.is_hirable = currentUser?.is_pro ? is_hirable : false;
+        }
         if (experience_level !== undefined) updateData.experience_level = experience_level;
         if (is_organization !== undefined) updateData.is_organization = is_organization;
         if (onboarding_completed !== undefined) updateData.onboarding_completed = onboarding_completed;

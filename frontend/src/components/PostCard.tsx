@@ -170,7 +170,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
               avatarUrl={post.user?.avatar_url || null}
               name={userName}
               size={isMobile ? 40 : 44}
-              isOpenToOpportunities={post.user?.is_hirable}
+              isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
             />
           </div>
         </div>
