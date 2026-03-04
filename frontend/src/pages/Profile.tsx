@@ -94,14 +94,18 @@ export default function Profile() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
 
-  const handleProfileUpdated = useCallback(async () => {
+  const handleProfileUpdated = useCallback(async (updatedUser?: Record<string, unknown>) => {
     if (userId) {
+      // Merge PUT response immediately so badge (e.g. is_hirable) appears without waiting for GET
+      if (updatedUser && Object.keys(updatedUser).length > 0) {
+        setUserProfile((prev) => (prev ? { ...prev, ...updatedUser } : prev));
+      }
       try {
         const token = await getToken();
         const res = await api.get(`/users/${userId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        setUserProfile(res.data);
+        if (res.data) setUserProfile(res.data);
         fetchUserPosts();
         fetchSavedPosts();
         fetchUserProjects();
@@ -121,10 +125,15 @@ export default function Profile() {
   }, [isMenuOpen]);
 
   useEffect(() => {
-    window.addEventListener("profileUpdated", handleProfileUpdated);
+    const onProfileUpdated = () => {
+      void handleProfileUpdated();
+    };
+
+    window.addEventListener("profileUpdated", onProfileUpdated);
     window.addEventListener("projectCreated", fetchUserProjects);
+
     return () => {
-      window.removeEventListener("profileUpdated", handleProfileUpdated);
+      window.removeEventListener("profileUpdated", onProfileUpdated);
       window.removeEventListener("projectCreated", fetchUserProjects);
     };
   }, [handleProfileUpdated, fetchUserProjects]);
@@ -333,18 +342,18 @@ export default function Profile() {
               borderRadius: "50%",
               border: "4px solid #fff",
               backgroundColor: "#fff",
-              overflow: "hidden",
               cursor: "pointer",
               boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
               flexShrink: 0,
               marginBottom: "16px",
+              // No overflow:hidden so AvailabilityBadge briefcase icon can show
             }}
           >
             <AvailabilityBadge
               avatarUrl={avatarUrl}
               name={userProfile?.name || user?.fullName || "User"}
               size={isMobile ? 96 : 120}
-              isOpenToOpportunities={userProfile?.is_hirable}
+              isOpenToOpportunities={userProfile?.is_hirable === true}
               ringColor="#0f172a"
             />
           </div>
@@ -824,6 +833,7 @@ export default function Profile() {
             onClose={() => setIsEditModalOpen(false)}
             currentUser={userProfile}
             onUpdated={handleProfileUpdated}
+            projectCount={projects.length}
           />
         )
       }

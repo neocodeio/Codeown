@@ -9,7 +9,7 @@ import { validateImageSize } from "../constants/upload";
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdated: () => void;
+  onUpdated: (updatedUser?: Record<string, unknown>) => void;
   currentUser: {
     id: string;
     name: string;
@@ -54,6 +54,9 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const { getToken, isLoaded } = useClerkAuth();
   const { width } = useWindowSize();
   const isMobile = width < 768;
+
+  const canToggleOpenToOpportunities =
+    (projectCount ?? 0) > 0 && skills.length > 0 && bio.trim().length > 0;
 
   useEffect(() => {
     if (isOpen && currentUser) {
@@ -224,7 +227,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
         }
       }
 
-      await api.put(
+      const res = await api.put(
         `/users/${currentUser.id}`,
         {
           name: name.trim(),
@@ -248,10 +251,15 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       // Update the avatar cache to ensure immediate visibility across all components
       updateAvatarCache(currentUser.id, avatarUrl);
 
+      // Apply updated user (e.g. is_hirable) immediately so badge appears without waiting for refetch
+      const updatedUser = res.data?.user;
+      if (typeof onUpdated === "function") {
+        onUpdated(updatedUser);
+      }
+
       // Dispatch custom event to notify other components (like Navbar) to refresh user data
       window.dispatchEvent(new CustomEvent("profileUpdated"));
 
-      onUpdated();
       onClose();
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -512,13 +520,12 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   <p style={{ margin: 0, fontSize: "13px", color: "#64748b", lineHeight: "1.5" }}>
                     Show a badge on your profile indicating you are looking for work.
                   </p>
+                  <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5" }}>
+                    Requires: at least one project, at least one skill, and a bio.
+                  </p>
                 </div>
                 <div
-                  onClick={() => {
-                    if (projectCount > 0 && skills.length > 0 && bio.trim().length > 0) {
-                      setIsHirable(!isHirable);
-                    }
-                  }}
+                  onClick={() => canToggleOpenToOpportunities && setIsHirable(!isHirable)}
                   style={{
                     width: "48px",
                     height: "48px",
@@ -531,9 +538,11 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                     justifyContent: "center",
                     fontSize: "14px",
                     fontWeight: 600,
-                    cursor: "pointer",
+                    cursor: canToggleOpenToOpportunities ? "pointer" : "not-allowed",
+                    opacity: canToggleOpenToOpportunities ? 1 : 0.6,
                     transition: "all 0.2s ease"
                   }}
+                  title={canToggleOpenToOpportunities ? undefined : "Add a project, at least one skill, and a bio to enable"}
                 >
                   {isHirable ? "✓" : "○"}
                 </div>

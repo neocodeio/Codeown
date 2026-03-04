@@ -18,6 +18,7 @@ export default function AvailabilityBadge({
     tooltipText = "Open to opportunities",
     ringColor = "#3b82f6"
 }: AvailabilityBadgeProps) {
+    const showBadge = isOpenToOpportunities === true;
     // scale icon bg size: 35% of avatar size
     const briefcaseBgSize = Math.max(14, Math.round(size * 0.25));
     const briefcaseIconSize = Math.max(8, Math.round(briefcaseBgSize * 0.45));
@@ -25,11 +26,13 @@ export default function AvailabilityBadge({
     return (
         <div
             className="availability-badge-container"
-            title={isOpenToOpportunities ? tooltipText : undefined}
+            title={showBadge ? tooltipText : undefined}
             style={{
                 position: "relative",
                 width: size,
                 height: size,
+                maxWidth: "100%",
+                maxHeight: "100%",
                 display: "inline-flex",
                 flexShrink: 0,
             }}
@@ -46,7 +49,7 @@ export default function AvailabilityBadge({
                     alignItems: "center",
                     justifyContent: "center",
                     // The ring is now part of the border to ensure it's visible and doesn't shrink content
-                    border: isOpenToOpportunities ? `2.5px solid ${ringColor}` : "1px solid rgba(0,0,0,0.08)",
+                    border: showBadge ? `2.5px solid ${ringColor}` : "1px solid rgba(0,0,0,0.08)",
                     boxSizing: "border-box",
                     zIndex: 1
                 }}
@@ -63,7 +66,7 @@ export default function AvailabilityBadge({
                 />
             </div>
 
-            {isOpenToOpportunities && (
+            {showBadge && (
                 <div
                     style={{
                         position: "absolute",

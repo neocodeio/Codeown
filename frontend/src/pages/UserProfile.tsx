@@ -359,7 +359,6 @@ export default function UserProfile() {
               borderRadius: "50%",
               border: "4px solid #fff",
               backgroundColor: "#fff",
-              overflow: "hidden",
               cursor: "pointer",
               boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
               flexShrink: 0,
@@ -370,7 +369,7 @@ export default function UserProfile() {
               avatarUrl={avatarUrl}
               name={user.name}
               size={isMobile ? 96 : 120}
-              isOpenToOpportunities={user.is_hirable}
+              isOpenToOpportunities={user.is_hirable === true}
               ringColor="#0f172a"
             />
           </div>
