@@ -159,8 +159,10 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       className="fade-in"
       style={{
         cursor: "pointer",
-        transition: "background-color 0.2s ease",
-        backgroundColor: isPro ? "rgba(255,255,255,0.85)" : "#fff",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        backgroundColor: isPro ? "rgba(255, 255, 255, 0.75)" : "#fff",
+        backdropFilter: isPro ? "blur(12px)" : "none",
+        WebkitBackdropFilter: isPro ? "blur(12px)" : "none",
         padding: isMobile ? "16px" : "24px",
         display: "flex",
         gap: "14px",
@@ -169,10 +171,12 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         position: "relative"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = isPro ? "rgba(255,255,255,0.88)" : "#fcfcfc";
+        e.currentTarget.style.backgroundColor = isPro ? "rgba(255, 255, 255, 0.82)" : "#fcfcfc";
+        if (isPro) e.currentTarget.style.transform = "translateY(-1px)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = isPro ? "rgba(255,255,255,0.85)" : "#fff";
+        e.currentTarget.style.backgroundColor = isPro ? "rgba(255, 255, 255, 0.75)" : "#fff";
+        if (isPro) e.currentTarget.style.transform = "translateY(0)";
       }}
     >
       {/* Left Column: Avatar */}
@@ -348,12 +352,13 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
           <h3 style={{
             fontSize: "17px",
             fontWeight: 750,
-            color: "#0f172a",
+            color: isPro ? "#1a1a1a" : "#0f172a",
             margin: "0 0 6px 0",
             lineHeight: "1.4",
-            letterSpacing: "-0.01em",
+            letterSpacing: isPro ? "0.02em" : "-0.01em",
             overflowWrap: "anywhere",
-            wordBreak: "break-word"
+            wordBreak: "break-word",
+            textTransform: isPro ? "capitalize" : "none",
           }}>
             {project.title}
           </h3>
@@ -513,27 +518,32 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
 
   return (
     <div
-      className="pro-card-shine"
+      className="pro-card-expensive-wrapper"
       style={{
         position: "relative",
-        margin: isMobile ? "6px 4px" : "8px 10px",
+        margin: isMobile ? "12px 6px" : "16px 14px",
         borderRadius: "0px",
-        padding: "1px", // Minimal border effect
-        background: "#e0d6c8", // Base gold/tan border
+        borderBottom: "1px solid #e2e8f0",
+        borderTop: "1px solid #e2e8f0",
+        padding: "0.5px", // Razor-thin luxury border
+        // background: "linear-gradient(135deg, #c5a059, #f1d78c, #c5a059)",
         overflow: "hidden",
+        // boxShadow: isMobile
+        //   ? "0 4px 10px rgba(0,0,0,0.08)"
+        //   : "0 10px 25px -5px rgba(184, 134, 11, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
       }}
     >
-      {/* Horizontal Shine Sweep */}
+      {/* Horizontal Silk/Diamond Shine Sweep */}
       <div
         style={{
           position: "absolute",
           top: 0,
-          left: "-150%",
-          width: "150%",
+          left: "-180%",
+          width: "180%",
           height: "100%",
-          background: "linear-gradient(90deg, transparent 0%, rgba(212, 168, 83, 0.1) 30%, rgba(240, 215, 140, 0.4) 50%, rgba(212, 168, 83, 0.1) 70%, transparent 100%)",
-          transform: "skewX(-20deg)",
-          animation: "proShine 3s infinite",
+          background: "linear-gradient(105deg, transparent 0%, rgba(197, 160, 89, 0.05) 35%, rgba(249, 208, 5, 0.98) 50%, rgba(197, 160, 89, 0.05) 65%, transparent 100%)",
+          transform: "skewX(-25deg)",
+          animation: "proLuxuryShine 4s cubic-bezier(0.4, 0, 0.2, 1) infinite",
           zIndex: 0,
         }}
       />
@@ -542,10 +552,12 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         {cardElement}
       </div>
       <style>{`
-        @keyframes proShine {
-          0% { left: -150%; }
-          30% { left: 150%; }
-          100% { left: 150%; }
+        @keyframes proLuxuryShine {
+          0% { left: -180%; opacity: 0; }
+          10% { opacity: 1; }
+          40% { left: 180%; opacity: 1; }
+          50% { left: 180%; opacity: 0; }
+          100% { left: 180%; opacity: 0; }
         }
       `}</style>
     </div>
