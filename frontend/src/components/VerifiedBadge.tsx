@@ -30,7 +30,7 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                     aria-label="Verified Official Account"
                     style={{
                         fontSize: size,
-                        color: "#2B7FFF", // High-visibility premium blue
+                        color: isPro ? "#d4a853" : "#2B7FFF", // Gold for Pro, Blue for others
                         marginLeft: "6px",
                         verticalAlign: "middle",
                         flexShrink: 0,

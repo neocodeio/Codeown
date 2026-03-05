@@ -93,6 +93,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
 
   const userName = project.user?.name || "User";
   const shareUrl = `${window.location.origin}/project/${project.id}`;
+  const isPro = project.user?.is_pro === true;
 
   const handleClick = () => {
     if (isMenuOpen) {
@@ -152,25 +153,26 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
     setIsShareModalOpen(true);
   };
 
-  return (
+  const cardElement = (
     <article
       onClick={handleClick}
       className="fade-in"
       style={{
         cursor: "pointer",
         transition: "background-color 0.2s ease",
-        backgroundColor: "#fff",
+        backgroundColor: isPro ? "rgba(255,255,255,0.85)" : "#fff",
         padding: isMobile ? "16px" : "24px",
         display: "flex",
         gap: "14px",
-        borderBottom: "1px solid #eff3f4",
+        borderBottom: isPro ? "none" : "1px solid #eff3f4",
+        borderRadius: isPro ? "0px" : undefined,
         position: "relative"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "#fcfcfc";
+        e.currentTarget.style.backgroundColor = isPro ? "rgba(255,255,255,0.88)" : "#fcfcfc";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "#fff";
+        e.currentTarget.style.backgroundColor = isPro ? "rgba(255,255,255,0.85)" : "#fff";
       }}
     >
       {/* Left Column: Avatar */}
@@ -189,6 +191,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             name={userName}
             size={isMobile ? 42 : 48}
             isOpenToOpportunities={project.user?.is_pro === true && project.user?.is_hirable === true}
+            ringColor={isPro ? "#d4a853" : "#3b82f6"}
           />
         </div>
       </div>
@@ -246,14 +249,15 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             {project.user?.is_pro === true && (
               <span style={{
                 fontSize: "9px",
-                fontWeight: 700,
-                padding: "2px 6px",
+                fontWeight: 800,
+                padding: "2px 7px",
                 borderRadius: "4px",
-                backgroundColor: "#0f172a",
-                color: "#fff",
-                letterSpacing: "0.05em",
+                background: "linear-gradient(135deg, #d4a853, #f0d78c)",
+                color: "#5c4a1e",
+                letterSpacing: "0.06em",
                 lineHeight: "1",
                 textTransform: "uppercase",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
               }}>PRO</span>
             )}
             <span style={{ fontSize: "14px", color: "#64748b", whiteSpace: "nowrap" }}>
@@ -503,5 +507,47 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         title="Share this project"
       />
     </article>
+  );
+
+  if (!isPro) return cardElement;
+
+  return (
+    <div
+      className="pro-card-shine"
+      style={{
+        position: "relative",
+        margin: isMobile ? "6px 4px" : "8px 10px",
+        borderRadius: "0px",
+        padding: "1px", // Minimal border effect
+        background: "#e0d6c8", // Base gold/tan border
+        overflow: "hidden",
+      }}
+    >
+      {/* Horizontal Shine Sweep */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "-150%",
+          width: "150%",
+          height: "100%",
+          background: "linear-gradient(90deg, transparent 0%, rgba(212, 168, 83, 0.1) 30%, rgba(240, 215, 140, 0.4) 50%, rgba(212, 168, 83, 0.1) 70%, transparent 100%)",
+          transform: "skewX(-20deg)",
+          animation: "proShine 3s infinite",
+          zIndex: 0,
+        }}
+      />
+      {/* Card sits on top with semi-transparency to let shine through if desired, or just above */}
+      <div style={{ position: "relative", zIndex: 1, borderRadius: "0px", overflow: "hidden" }}>
+        {cardElement}
+      </div>
+      <style>{`
+        @keyframes proShine {
+          0% { left: -150%; }
+          30% { left: 150%; }
+          100% { left: 150%; }
+        }
+      `}</style>
+    </div>
   );
 }
