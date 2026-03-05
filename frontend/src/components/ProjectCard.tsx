@@ -159,43 +159,29 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       className="fade-in"
       style={{
         cursor: "pointer",
-        transition: "background-color 0.3s ease",
-        backgroundColor: isPro ? "#fffdf7" : "#fff",
+        transition: "all 0.2s ease",
+        backgroundColor: "#fff",
         padding: isMobile ? "16px" : "24px",
         display: "flex",
         gap: "14px",
-        borderBottom: "1px solid #eff3f4",
-        borderLeft: isPro ? "3px solid #d4a853" : "3px solid transparent",
+        borderBottom: isPro ? "none" : "1px solid #eff3f4",
         position: "relative",
-        overflow: "hidden",
+        ...(isPro ? {
+          margin: isMobile ? "8px 8px" : "10px 12px",
+          borderRadius: "16px",
+          border: "1px solid #e8e4df",
+          boxShadow: "0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02)",
+        } : {}),
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = isPro ? "#fffbf0" : "#fcfcfc";
+        e.currentTarget.style.backgroundColor = isPro ? "#fafaf8" : "#fcfcfc";
+        if (isPro) e.currentTarget.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = isPro ? "#fffdf7" : "#fff";
+        e.currentTarget.style.backgroundColor = "#fff";
+        if (isPro) e.currentTarget.style.boxShadow = "0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02)";
       }}
     >
-      {/* Pro shimmer effect */}
-      {isPro && (
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "1px",
-          background: "linear-gradient(90deg, transparent, #d4a853, #f0d78c, #d4a853, transparent)",
-          backgroundSize: "200% 100%",
-          animation: "proShimmer 3s linear infinite",
-          opacity: 0.7,
-        }} />
-      )}
-      <style>{`
-        @keyframes proShimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-      `}</style>
       {/* Left Column: Avatar */}
       <div style={{ flexShrink: 0 }}>
         <div
@@ -369,12 +355,12 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             {isPro && (
               <span style={{
                 fontSize: "9px",
-                fontWeight: 800,
+                fontWeight: 700,
                 padding: "2px 6px",
                 borderRadius: "4px",
-                background: "linear-gradient(135deg, #d4a853, #f0d78c)",
-                color: "#5c4a1e",
-                letterSpacing: "0.06em",
+                backgroundColor: "#0f172a",
+                color: "#fff",
+                letterSpacing: "0.05em",
                 lineHeight: "1",
                 flexShrink: 0,
                 textTransform: "uppercase",
