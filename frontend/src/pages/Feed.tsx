@@ -114,24 +114,7 @@ export default function Feed() {
     const isInitialLoading = (feedType === "posts" && postsLoading && posts.length === 0) ||
         (feedType === "projects" && projectsLoading && projects.length === 0);
 
-    // #region agent log
-    fetch('http://127.0.0.1:7640/ingest/89c68152-25b3-4fee-b263-e17685f6697b', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': '4181a1',
-        },
-        body: JSON.stringify({
-            sessionId: '4181a1',
-            runId: 'pre-fix',
-            hypothesisId: 'H3',
-            location: 'pages/Feed.tsx:Feed',
-            message: 'feed layout decision',
-            data: { width, isMobile, isDesktop, feedType, feedFilter },
-            timestamp: Date.now(),
-        }),
-    }).catch(() => { });
-    // #endregion
+
 
     return (
         <main style={{ padding: 0, backgroundColor: "#f8fafc" }}>
@@ -179,17 +162,17 @@ export default function Feed() {
                             borderBottom: "1px solid #e0f2fe",
                         }}
                     > */}
-                        <p
-                            style={{
-                                margin: 0,
-                                fontSize: isMobile ? "13px" : "14px",
-                                color: "#0369a1",
-                                lineHeight: 1.5,
-                                fontWeight: 500,
-                            }}
-                        >
-                            {/* We're growing faster than our servers! We're currently optimizing our storage to accommodate all new users. Back shortly! */}
-                        </p>
+                    <p
+                        style={{
+                            margin: 0,
+                            fontSize: isMobile ? "13px" : "14px",
+                            color: "#0369a1",
+                            lineHeight: 1.5,
+                            fontWeight: 500,
+                        }}
+                    >
+                        {/* We're growing faster than our servers! We're currently optimizing our storage to accommodate all new users. Back shortly! */}
+                    </p>
                     {/* </div> */}
 
                     {/* Header + feed filter */}

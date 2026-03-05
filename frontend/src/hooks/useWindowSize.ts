@@ -13,24 +13,7 @@ export function useWindowSize() {
         height: window.innerHeight,
       });
 
-      // #region agent log
-      fetch('http://127.0.0.1:7640/ingest/89c68152-25b3-4fee-b263-e17685f6697b', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Debug-Session-Id': '4181a1',
-        },
-        body: JSON.stringify({
-          sessionId: '4181a1',
-          runId: 'pre-fix',
-          hypothesisId: 'H1',
-          location: 'hooks/useWindowSize.ts:handleResize',
-          message: 'window resized',
-          data: { width: window.innerWidth, height: window.innerHeight },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
+
     }
 
     window.addEventListener("resize", handleResize);
