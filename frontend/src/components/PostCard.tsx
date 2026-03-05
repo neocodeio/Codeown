@@ -646,11 +646,11 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
           className="pro-post-expensive-wrapper"
           style={{
             position: "relative",
-            margin: isMobile ? "0px" : "16px 20px",
+            margin: "0px",
             borderRadius: "0px",
-            borderBottom: "1px solid #e2e8f0",
-            borderTop: isMobile ? "none" : "1px solid #e2e8f0",
-            padding: "0.5px",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.04)",
+            borderTop: "none",
+            padding: "0px",
             overflow: "hidden",
           }}
         >

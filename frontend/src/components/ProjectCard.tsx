@@ -521,16 +521,12 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       className="pro-card-expensive-wrapper"
       style={{
         position: "relative",
-        margin: isMobile ? "12px 6px" : "16px 14px",
+        margin: "0px",
         borderRadius: "0px",
-        borderBottom: "1px solid #e2e8f0",
-        borderTop: "1px solid #e2e8f0",
-        padding: "0.5px", // Razor-thin luxury border
-        // background: "linear-gradient(135deg, #c5a059, #f1d78c, #c5a059)",
+        borderBottom: "1px solid #eff3f4",
+        borderTop: "none",
+        padding: "0px",
         overflow: "hidden",
-        // boxShadow: isMobile
-        //   ? "0 4px 10px rgba(0,0,0,0.08)"
-        //   : "0 10px 25px -5px rgba(184, 134, 11, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
       }}
     >
       {/* Horizontal Silk/Diamond Shine Sweep */}
