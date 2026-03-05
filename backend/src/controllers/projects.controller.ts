@@ -595,7 +595,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
     if (projectError || !project) {
       return res.status(404).json({ error: "Project not found" });
     }
-
+ 
     if (!userId) {
       return res.status(401).json({ error: "Unauthorized" });
     }
