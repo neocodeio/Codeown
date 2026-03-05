@@ -5,17 +5,15 @@ import { Link, Navigate } from "react-router-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
 
-const PRO_CHECKOUT_BASE =
-  "https://codeown.lemonsqueezy.com/buy/33a97835-6017-448a-a671-57ef2302126d";
+const PRO_CHECKOUT_BASE = "https://codeown.lemonsqueezy.com/buy/33a97835-6017-448a-a671-57ef2302126d";
 
 function buildProCheckoutUrl(userId: string): string {
-  const url = new URL(PRO_CHECKOUT_BASE);
-  // Add user ID to custom data for the webhook to identify the user
-  url.searchParams.set("checkout[custom][user_id]", userId);
-  // Redirect back to profile page after payment
-  url.searchParams.set("checkout[success_url]", window.location.origin + "/profile?checkout_completed=true");
+  const successUrl = encodeURIComponent(window.location.origin + "/profile?checkout_completed=true");
+  const finalUrl =
+    PRO_CHECKOUT_BASE +
+    `?checkout[custom][user_id]=${encodeURIComponent(userId)}` +
+    `&checkout[success_url]=${successUrl}`;
 
-  const finalUrl = url.toString();
   console.log("[Billing] Generated checkout URL:", finalUrl);
   return finalUrl;
 }
