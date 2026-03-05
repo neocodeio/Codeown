@@ -93,7 +93,6 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
 
   const userName = project.user?.name || "User";
   const shareUrl = `${window.location.origin}/project/${project.id}`;
-  const isPro = project.user?.is_pro === true;
 
   const handleClick = () => {
     if (isMenuOpen) {
@@ -159,27 +158,19 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       className="fade-in"
       style={{
         cursor: "pointer",
-        transition: "all 0.2s ease",
+        transition: "background-color 0.2s ease",
         backgroundColor: "#fff",
         padding: isMobile ? "16px" : "24px",
         display: "flex",
         gap: "14px",
-        borderBottom: isPro ? "none" : "1px solid #eff3f4",
-        position: "relative",
-        ...(isPro ? {
-          margin: isMobile ? "8px 8px" : "10px 12px",
-          borderRadius: "16px",
-          border: "1px solid #e8e4df",
-          boxShadow: "0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02)",
-        } : {}),
+        borderBottom: "1px solid #eff3f4",
+        position: "relative"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = isPro ? "#fafaf8" : "#fcfcfc";
-        if (isPro) e.currentTarget.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03)";
+        e.currentTarget.style.backgroundColor = "#fcfcfc";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = "#fff";
-        if (isPro) e.currentTarget.style.boxShadow = "0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02)";
       }}
     >
       {/* Left Column: Avatar */}
@@ -252,6 +243,19 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               </span>
             )}
             <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="14px" />
+            {project.user?.is_pro === true && (
+              <span style={{
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 6px",
+                borderRadius: "4px",
+                backgroundColor: "#0f172a",
+                color: "#fff",
+                letterSpacing: "0.05em",
+                lineHeight: "1",
+                textTransform: "uppercase",
+              }}>PRO</span>
+            )}
             <span style={{ fontSize: "14px", color: "#64748b", whiteSpace: "nowrap" }}>
               @{project.user?.username || 'user'}
             </span>
@@ -345,27 +349,9 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             lineHeight: "1.4",
             letterSpacing: "-0.01em",
             overflowWrap: "anywhere",
-            wordBreak: "break-word",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            flexWrap: "wrap",
+            wordBreak: "break-word"
           }}>
             {project.title}
-            {isPro && (
-              <span style={{
-                fontSize: "9px",
-                fontWeight: 700,
-                padding: "2px 6px",
-                borderRadius: "4px",
-                backgroundColor: "#0f172a",
-                color: "#fff",
-                letterSpacing: "0.05em",
-                lineHeight: "1",
-                flexShrink: 0,
-                textTransform: "uppercase",
-              }}>PRO</span>
-            )}
           </h3>
           <p style={{
             fontSize: "15px",
