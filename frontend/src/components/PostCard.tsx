@@ -484,48 +484,67 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
             <button
               onClick={handleLike}
               disabled={likeLoading}
+              className={`post-action-button like-button ${isLiked ? 'is-liked' : ''}`}
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "2px",
-                background: isLiked ? "rgba(249, 24, 128, 0.1)" : "none",
+                background: "none",
                 border: "none",
                 color: isLiked ? "#f91880" : "#64748b",
                 cursor: "pointer",
                 fontSize: "13px",
                 padding: "2px 10px 2px 2px",
                 borderRadius: "100px",
-                transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                position: "relative",
               }}
               onMouseEnter={(e) => {
                 if (!isLiked) {
                   e.currentTarget.style.color = "#f91880";
-                  e.currentTarget.style.backgroundColor = "rgba(249, 24, 128, 0.05)";
+                  e.currentTarget.style.backgroundColor = "rgba(249, 24, 128, 0.08)";
                 }
                 const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-                if (icon) {
-                  icon.style.transform = "scale(1.15)";
-                }
+                if (icon) icon.style.transform = "scale(1.15)";
               }}
               onMouseLeave={(e) => {
                 if (!isLiked) {
                   e.currentTarget.style.color = "#64748b";
                   e.currentTarget.style.backgroundColor = "transparent";
-                } else {
-                  e.currentTarget.style.backgroundColor = "rgba(249, 24, 128, 0.1)";
                 }
                 const icon = e.currentTarget.querySelector('.footer-icon') as HTMLDivElement;
-                if (icon) {
-                  icon.style.transform = "scale(1)";
-                }
+                if (icon) icon.style.transform = "scale(1)";
               }}
-              onMouseDown={(e) => e.currentTarget.style.transform = "scale(0.95)"}
+              onMouseDown={(e) => e.currentTarget.style.transform = "scale(0.92)"}
               onMouseUp={(e) => e.currentTarget.style.transform = "scale(1)"}
             >
-              <div className="footer-icon" style={{ padding: "6px", borderRadius: "50%", display: "flex", transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}>
-                <HugeiconsIcon icon={FavouriteIcon} style={{ fontSize: "16px", fill: isLiked ? "currentColor" : "none" }} />
+              <div
+                className="footer-icon"
+                style={{
+                  padding: "8px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                  animation: isLiked ? "like-pop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275)" : "none"
+                }}
+              >
+                <HugeiconsIcon
+                  icon={FavouriteIcon}
+                  style={{
+                    fontSize: "18px",
+                    fill: isLiked ? "currentColor" : "none",
+                    filter: isLiked ? "drop-shadow(0 0 4px rgba(249, 24, 128, 0.3))" : "none",
+                    strokeWidth: isLiked ? "0" : "1.5px"
+                  }}
+                />
               </div>
-              <span style={{ fontWeight: isLiked ? "800" : "600" }}>{likeCount || 0}</span>
+              <span style={{
+                fontWeight: isLiked ? "800" : "600",
+                transition: "all 0.2s ease",
+                transform: isLiked ? "scale(1.05)" : "scale(1)"
+              }}>
+                {likeCount || 0}
+              </span>
             </button>
 
             {/* Share */}
@@ -597,6 +616,17 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
         url={shareUrl}
         title="Share this post"
       />
+      <style>{`
+        @keyframes like-pop {
+          0% { transform: scale(1); }
+          25% { transform: scale(1.3); }
+          50% { transform: scale(0.9); }
+          100% { transform: scale(1); }
+        }
+        .post-action-button:active {
+          transform: scale(0.95);
+        }
+      `}</style>
     </>
   );
 }
