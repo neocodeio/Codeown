@@ -3,6 +3,7 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
+import { useWindowSize } from "../hooks/useWindowSize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
 import MentionInput from "./MentionInput";
@@ -14,6 +15,8 @@ interface FeedPostComposerProps {
 }
 
 export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
+    const { width } = useWindowSize();
+    const isMobile = width < 768;
     const [content, setContent] = useState("");
     const [images, setImages] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,7 +111,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
     return (
         <div style={{
-            padding: "16px 20px",
+            padding: isMobile ? "16px" : "24px 20px",
             borderBottom: "1px solid #eff3f4",
             display: "flex",
             gap: "12px"

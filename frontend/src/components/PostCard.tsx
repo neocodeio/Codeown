@@ -646,10 +646,10 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
           className="pro-post-expensive-wrapper"
           style={{
             position: "relative",
-            margin: isMobile ? "12px 6px" : "16px 14px",
+            margin: isMobile ? "0px" : "16px 20px",
             borderRadius: "0px",
             borderBottom: "1px solid #e2e8f0",
-            borderTop: "1px solid #e2e8f0",
+            borderTop: isMobile ? "none" : "1px solid #e2e8f0",
             padding: "0.5px",
             overflow: "hidden",
           }}
@@ -661,9 +661,9 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
               left: "-180%",
               width: "180%",
               height: "100%",
-              background: "linear-gradient(105deg, transparent 0%, rgba(197, 160, 89, 0.05) 35%, rgba(249, 208, 5, 0.98) 50%, rgba(197, 160, 89, 0.05) 65%, transparent 100%)",
+              background: "linear-gradient(105deg, transparent 0%, rgba(212, 168, 83, 0.05) 35%, rgba(212, 168, 83, 0.4) 50%, rgba(212, 168, 83, 0.05) 65%, transparent 100%)",
               transform: "skewX(-25deg)",
-              animation: "proLuxuryShine 4s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+              animation: "proLuxuryShine 6s cubic-bezier(0.4, 0, 0.2, 1) infinite",
               zIndex: 0,
             }}
           />
@@ -671,14 +671,14 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
             {postCardContent}
           </div>
           <style>{`
-              @keyframes proLuxuryShine {
-                0% { left: -180%; opacity: 0; }
-                10% { opacity: 1; }
-                40% { left: 180%; opacity: 1; }
-                50% { left: 180%; opacity: 0; }
-                100% { left: 180%; opacity: 0; }
-              }
-            `}</style>
+                @keyframes proLuxuryShine {
+                  0% { left: -180%; opacity: 0; }
+                  10% { opacity: 1; }
+                  40% { left: 180%; opacity: 1; }
+                  50% { left: 180%; opacity: 0; }
+                  100% { left: 180%; opacity: 0; }
+                }
+              `}</style>
         </div>
       )}
     </>

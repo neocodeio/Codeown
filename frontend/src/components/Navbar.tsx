@@ -43,6 +43,28 @@ export default function Navbar() {
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const { unreadCount, messageUnreadCount } = useNotifications();
+  const [profile, setProfile] = useState<any>(null);
+  const { getToken } = useClerkAuth();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (isSignedIn && user?.id) {
+        try {
+          const token = await getToken();
+          const res = await api.get(`/users/${user.id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setProfile(res.data);
+        } catch (err) {
+          console.error("Navbar profile fetch failed", err);
+        }
+      }
+    };
+    fetchProfile();
+  }, [isSignedIn, user?.id, getToken]);
+
+  const isPro = profile?.is_pro === true;
+
   useFaviconNotification(unreadCount);
 
   // Use the centralized avatar hook
@@ -107,11 +129,29 @@ export default function Navbar() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
       {/* Logo */}
       <div style={{ padding: "24px 20px 32px 20px" }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
           <img src={logo} alt="Codeown" style={{ height: "40px", width: "auto" }} />
-          <span style={{ fontSize: "20px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
-            Codeown
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "20px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
+              Codeown
+            </span>
+            {isSignedIn && isPro && (
+              <span style={{
+                fontSize: "10px",
+                fontWeight: 900,
+                color: "#d4a853",
+                border: "1px solid #d4a853",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                letterSpacing: "0.02em",
+                textTransform: "uppercase",
+                opacity: 0.9,
+                marginTop: "2px"
+              }}>
+                PRO
+              </span>
+            )}
+          </div>
         </Link>
       </div>
 
@@ -222,6 +262,88 @@ export default function Navbar() {
               Profile
             </Link>
 
+            {/* Pro Upgrade CTA for Sidebar */}
+            {isSignedIn && !isPro && (
+              <div style={{
+                margin: "20px 16px 8px",
+                padding: "10px",
+                borderRadius: "15px",
+                background: "#000",
+                color: "#fff",
+                position: "relative",
+                overflow: "hidden",
+                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
+                border: "1px solid rgba(184, 134, 11, 0.2)"
+              }}>
+                <div style={{
+                  position: "absolute",
+                  top: 0,
+                  left: "-150%",
+                  width: "150%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.05), transparent)",
+                  transform: "skewX(-20deg)",
+                  animation: "ctaShine 6s infinite cubic-bezier(0.4, 0, 0.2, 1)",
+                }} />
+
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                    <div style={{
+                      backgroundColor: "#fff",
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "6px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#000"
+                    }}>
+                      <HugeiconsIcon icon={Rocket01Icon} style={{ width: "14px", height: "14px" }} />
+                    </div>
+                    <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "#fff", letterSpacing: "-0.01em" }}>
+                      Pro Profile
+                    </h3>
+                  </div>
+                  <p style={{ margin: "0 0 16px 0", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5", fontWeight: 500 }}>
+                    Stand out with the golden badge and better visibility.
+                  </p>
+                  <Link to="/billing" style={{ textDecoration: "none" }}>
+                    <button style={{
+                      width: "100%",
+                      padding: "10px",
+                      backgroundColor: "#fff",
+                      color: "#000",
+                      border: "none",
+                      borderRadius: "100px",
+                      fontSize: "13px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      boxShadow: "0 4px 12px rgba(255,255,255,0.1)"
+                    }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.backgroundColor = "#fff";
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.backgroundColor = "#fff";
+                      }}
+                    >
+                      Upgrade Now
+                    </button>
+                  </Link>
+                </div>
+                <style>{`
+                  @keyframes ctaShine {
+                    0% { left: -150%; }
+                    25% { left: 150%; }
+                    100% { left: 150%; }
+                  }
+                `}</style>
+              </div>
+            )}
+
             {/* Real-time Status Badge */}
             <div style={{
               marginTop: "12px",
@@ -280,7 +402,7 @@ export default function Navbar() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center" }}>
                   {user.fullName || user.username}
-                  <VerifiedBadge username={user.username} size="14px" />
+                  <VerifiedBadge username={user.username} isPro={isPro} size="14px" />
                 </div>
                 <div style={{ color: "#64748b", fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   @{user.username}
@@ -427,12 +549,31 @@ export default function Navbar() {
         zIndex: 2000,
         boxShadow: "0 1px 3px rgba(0,0,0,0.02)"
       }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
-          <img src={logo} alt="Codeown" style={{ height: "32px", width: "auto" }} />
-          <span style={{ fontSize: "18px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
-            Codeown
-          </span>
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+            <img src={logo} alt="Codeown" style={{ height: "32px", width: "auto" }} />
+            <span style={{ fontSize: "18px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
+              Codeown
+            </span>
+          </Link>
+          {isSignedIn && !isPro && (
+            <Link to="/billing" style={{ textDecoration: "none" }}>
+              <span style={{
+                fontSize: "10px",
+                fontWeight: 900,
+                color: "#d4a853",
+                border: "1.5px solid #d4a853",
+                padding: "3px 8px",
+                borderRadius: "5px",
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+                display: "inline-block"
+              }}>
+                PRO
+              </span>
+            </Link>
+          )}
+        </div>
         {isSignedIn && location.pathname !== "/messages" && null}
       </div>
 
@@ -611,14 +752,26 @@ export default function Navbar() {
           )}
         </Link>
 
-        <Link to="/profile" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/profile" ? "#212121" : "#94a3b8" }}>
+        <Link to="/profile" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/profile" ? "#212121" : "#94a3b8", position: "relative" }}>
           {userAvatarUrl ? (
             <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname === "/profile" ? "2px solid #212121" : "none", objectFit: "cover" }} />
           ) : (
             <HugeiconsIcon icon={UserIcon} style={{ fontSize: "20px" }} />
           )}
+          {isSignedIn && !isPro && (
+            <span style={{
+              position: "absolute",
+              top: 8,
+              right: "calc(50% - 14px)",
+              width: "8px",
+              height: "8px",
+              backgroundColor: "#d4a853",
+              borderRadius: "50%",
+              border: "2px solid #fff"
+            }} />
+          )}
         </Link>
-      </div>
+      </div >
 
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />

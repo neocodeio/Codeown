@@ -11,8 +11,6 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { SEO } from "../components/SEO";
-// import { HugeiconsIcon } from '@hugeicons/react';
-// import { Configuration01Icon } from '@hugeicons/core-free-icons';
 
 export default function Feed() {
     const { width } = useWindowSize();
@@ -49,7 +47,6 @@ export default function Feed() {
 
     const { getToken } = useClerkAuth();
     const { isSignedIn } = useClerkUser();
-
     // Both hooks always enabled: data is cached, tab switch is instant (no refetch)
     const {
         posts,
