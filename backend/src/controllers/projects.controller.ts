@@ -39,6 +39,7 @@ export async function getProjects(req: Request, res: Response) {
         user:user_id(id, name, avatar_url, username, is_hirable, is_pro),
         ratings:project_ratings(rating)
       `, { count: "exact" })
+      .order("is_pro", { foreignTable: "user", ascending: false })
       .order("created_at", { ascending: false });
 
     if (tag) {

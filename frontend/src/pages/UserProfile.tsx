@@ -400,7 +400,7 @@ export default function UserProfile() {
               lineHeight: 1.12,
             }}>
               {(user.name || "").toUpperCase()}
-              <VerifiedBadge username={user.username} size={isMobile ? "18px" : "22px"} />
+              <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
               {user.is_pro === true && (
                 <span style={{
                   fontSize: isMobile ? 10 : 11,

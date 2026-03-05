@@ -183,7 +183,7 @@ export default function RecommendedUsersSidebar() {
                                                     }}>
                                                         {user.name}
                                                     </span>
-                                                    <VerifiedBadge username={user.username} size="15px" />
+                                                    <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
                                                     {user.is_pro && (
                                                         <span style={{
                                                             fontSize: "8px",

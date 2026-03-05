@@ -204,7 +204,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                     onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
                   >
                     {userName}
-                    <VerifiedBadge username={post.user?.username} size="14px" />
+                    <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
                     {post.user?.is_pro && (
                       <span style={{
                         fontSize: "9px",
@@ -236,7 +236,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                   onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
                 >
                   {userName}
-                  <VerifiedBadge username={post.user?.username} size="14px" />
+                  <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
                 </span>
               )}
               <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "400" }}>

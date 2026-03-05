@@ -4,13 +4,16 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface VerifiedBadgeProps {
     username?: string | null;
+    isPro?: boolean;
     size?: string;
 }
 
-export default function VerifiedBadge({ username, size = "14px" }: VerifiedBadgeProps) {
+export default function VerifiedBadge({ username, isPro, size = "14px" }: VerifiedBadgeProps) {
     const [showTooltip, setShowTooltip] = useState(false);
 
-    if (username?.toLowerCase() === "amin.ceo") {
+    const isVerified = username?.toLowerCase() === "amin.ceo" || isPro === true;
+
+    if (isVerified) {
         return (
             <div
                 style={{

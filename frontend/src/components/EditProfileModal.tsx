@@ -523,8 +523,14 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                     <p style={{ margin: 0, fontSize: "13px", color: "#64748b", lineHeight: "1.5" }}>
                       Show a badge on your profile indicating you are looking for work.
                     </p>
-                    <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5" }}>
-                      Requires: at least one project, at least one skill, and a bio.
+                    <p style={{ margin: "8px 0 0", fontSize: "12px", color: (projectCount ?? 0) > 0 ? "#10b981" : "#94a3b8", lineHeight: "1.5" }}>
+                      {(projectCount ?? 0) > 0 ? "✓" : "×"} At least one project
+                    </p>
+                    <p style={{ margin: "4px 0 0", fontSize: "12px", color: skills.length > 0 ? "#10b981" : "#94a3b8", lineHeight: "1.5" }}>
+                      {skills.length > 0 ? "✓" : "×"} At least one skill
+                    </p>
+                    <p style={{ margin: "4px 0 0", fontSize: "12px", color: bio.trim().length > 0 ? "#10b981" : "#94a3b8", lineHeight: "1.5" }}>
+                      {bio.trim().length > 0 ? "✓" : "×"} A bio description
                     </p>
                   </div>
                   <div

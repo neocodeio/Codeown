@@ -16,6 +16,7 @@ export async function getPosts(req: Request, res: Response) {
     let postsQuery = supabase
       .from("posts")
       .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" })
+      .order("is_pro", { foreignTable: "users", ascending: false })
       .order("created_at", { ascending: false });
 
     if (lang && typeof lang === 'string' && lang.trim().length > 0) {

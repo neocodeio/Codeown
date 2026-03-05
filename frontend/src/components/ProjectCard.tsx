@@ -242,7 +242,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                 {userName}
               </span>
             )}
-            <VerifiedBadge username={project.user?.username} size="14px" />
+            <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="14px" />
             <span style={{ fontSize: "14px", color: "#64748b", whiteSpace: "nowrap" }}>
               @{project.user?.username || 'user'}
             </span>
@@ -431,9 +431,9 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             {
               icon: Share01Icon,
               onClick: handleShare,
-            active: false,
-            activeColor: "#00ba7c",
-            hoverColor: "#00ba7c"
+              active: false,
+              activeColor: "#00ba7c",
+              hoverColor: "#00ba7c"
             }
           ].map((action, i) => (
             <button

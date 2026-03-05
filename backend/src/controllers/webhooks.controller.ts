@@ -104,32 +104,39 @@ export async function handleLemonWebhook(req: Request, res: Response) {
     }
 
     if (!userId) {
-      // Nothing to map back to our users table, but acknowledge so LS doesn't retry forever
-      console.warn("Lemon webhook without user_id in custom_data", eventName);
+      console.warn(`[LemonWebhook] No user_id in custom_data for event: ${eventName}`);
       return res.status(200).json({ received: true });
     }
+
+    console.log(`[LemonWebhook] Processing ${eventName} for user: ${userId}`);
+
+    // Extract ID properly (event.data.id is the object ID)
+    const objectId = event.data?.id?.toString() || attrs.id?.toString() || null;
 
     // Build common update payload with optional tracking fields
     const baseUpdate: Record<string, unknown> = {
       lemon_customer_id: attrs.customer_id?.toString?.() ?? null,
-      lemon_subscription_id: attrs.id?.toString?.() ?? null,
-      lemon_subscription_status: attrs.status ?? null,
+      lemon_subscription_id: event.data?.type === "subscriptions" ? objectId : null,
+      lemon_order_id: event.data?.type === "orders" ? objectId : null,
+      lemon_subscription_status: attrs.status ?? (event.data?.type === "orders" ? "paid" : null),
       lemon_variant_id: attrs.variant_id ?? null,
     };
 
-    // Turn Pro on for successful / active subscription events
+    // Turn Pro on for successful / active subscription/order events
     if (
       eventName === "subscription_created" ||
       eventName === "subscription_resumed" ||
-      eventName === "subscription_payment_success"
+      eventName === "subscription_payment_success" ||
+      eventName === "order_created"
     ) {
+      console.log(`[LemonWebhook] Upgrading user ${userId} to Pro`);
       const { error } = await supabase
         .from("users")
         .update({ ...baseUpdate, is_pro: true })
         .eq("id", userId);
 
       if (error) {
-        console.error("Error updating user to pro:", error.message);
+        console.error(`[LemonWebhook] Error updating user ${userId} to pro:`, error.message);
         return res.status(500).json({ error: "Failed to update user to pro" });
       }
     }
@@ -140,13 +147,14 @@ export async function handleLemonWebhook(req: Request, res: Response) {
       eventName === "subscription_expired" ||
       eventName === "subscription_payment_failed"
     ) {
+      console.log(`[LemonWebhook] Downgrading user ${userId} from Pro`);
       const { error } = await supabase
         .from("users")
         .update({ ...baseUpdate, is_pro: false })
         .eq("id", userId);
 
       if (error) {
-        console.error("Error downgrading user from pro:", error.message);
+        console.error(`[LemonWebhook] Error downgrading user ${userId} from pro:`, error.message);
         return res.status(500).json({ error: "Failed to downgrade user" });
       }
     }
@@ -154,7 +162,7 @@ export async function handleLemonWebhook(req: Request, res: Response) {
     return res.status(200).json({ received: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("Error handling Lemon Squeezy webhook:", message);
+    console.error("[LemonWebhook] Critical error:", message);
     return res.status(500).json({ error: "Error processing webhook", details: message });
   }
 }

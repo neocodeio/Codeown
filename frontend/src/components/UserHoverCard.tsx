@@ -193,7 +193,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                   <span style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a" }}>
                     {user.name}
                   </span>
-                  <VerifiedBadge username={user.username} size="14px" />
+                  <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
                   {user.is_pro && (
                     <span style={{
                       fontSize: 10,

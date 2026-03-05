@@ -218,7 +218,7 @@ export default function PopularUsersHorizontal() {
                                     }}>
                                         {user.name}
                                     </span>
-                                    <VerifiedBadge username={user.username} size="14px" />
+                                    <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
                                     {user.is_pro && (
                                         <span style={{
                                             fontSize: "8px",
