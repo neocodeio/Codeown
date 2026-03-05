@@ -68,20 +68,19 @@ export async function handleLemonWebhook(req: Request, res: Response) {
   const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
 
   if (!secret) {
-    console.error("LEMONSQUEEZY_WEBHOOK_SECRET is not set");
+    console.error("[LemonWebhook] LEMONSQUEEZY_WEBHOOK_SECRET is not set");
     return res.status(500).json({ error: "Webhook secret not configured" });
   }
 
   try {
-    const signature = (req.headers["x-signature"] ||
-      req.headers["X-Signature"]) as string | undefined;
+    const signature = (req.headers["x-signature"] || req.headers["X-Signature"]) as string | undefined;
 
     if (!signature) {
+      console.error("[LemonWebhook] Missing X-Signature header");
       return res.status(400).json({ error: "Missing X-Signature header" });
     }
 
-    const rawBody =
-      req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body));
+    const rawBody = req.body instanceof Buffer ? req.body : Buffer.from(JSON.stringify(req.body));
 
     const computed = crypto
       .createHmac("sha256", secret)
@@ -89,74 +88,92 @@ export async function handleLemonWebhook(req: Request, res: Response) {
       .digest("hex");
 
     if (computed !== signature) {
-      console.error("Invalid Lemon Squeezy webhook signature");
+      console.error("[LemonWebhook] Invalid signature match");
       return res.status(400).json({ error: "Invalid signature" });
     }
 
     const event = JSON.parse(rawBody.toString("utf8"));
     const eventName = event.meta?.event_name as string | undefined;
     const customData = event.meta?.custom_data || {};
-    const userId = customData.user_id as string | undefined;
+    const userId = (customData.user_id || customData.userId) as string | undefined;
     const attrs = event.data?.attributes || {};
+    const objectType = event.data?.type as string | undefined;
 
     if (!eventName) {
+      console.warn("[LemonWebhook] Missing event_name in payload");
       return res.status(400).json({ error: "Missing event name" });
     }
 
     if (!userId) {
-      console.warn(`[LemonWebhook] No user_id in custom_data for event: ${eventName}`);
-      return res.status(200).json({ received: true });
+      console.warn(`[LemonWebhook] No user_id in custom_data for event: ${eventName}. Available meta:`, JSON.stringify(event.meta));
+      return res.status(200).json({ received: true, info: "No user_id found" });
     }
 
     console.log(`[LemonWebhook] Processing ${eventName} for user: ${userId}`);
 
-    // Extract ID properly (event.data.id is the object ID)
-    const objectId = event.data?.id?.toString() || attrs.id?.toString() || null;
-
-    // Build common update payload with optional tracking fields
-    const baseUpdate: Record<string, unknown> = {
-      lemon_customer_id: attrs.customer_id?.toString?.() ?? null,
-      lemon_subscription_id: event.data?.type === "subscriptions" ? objectId : null,
-      lemon_order_id: event.data?.type === "orders" ? objectId : null,
-      lemon_subscription_status: attrs.status ?? (event.data?.type === "orders" ? "paid" : null),
-      lemon_variant_id: attrs.variant_id ?? null,
-    };
-
-    // Turn Pro on for successful / active subscription/order events
-    if (
-      eventName === "subscription_created" ||
-      eventName === "subscription_resumed" ||
-      eventName === "subscription_payment_success" ||
-      eventName === "order_created"
-    ) {
-      console.log(`[LemonWebhook] Upgrading user ${userId} to Pro`);
-      const { error } = await supabase
-        .from("users")
-        .update({ ...baseUpdate, is_pro: true })
-        .eq("id", userId);
-
-      if (error) {
-        console.error(`[LemonWebhook] Error updating user ${userId} to pro:`, error.message);
-        return res.status(500).json({ error: "Failed to update user to pro" });
-      }
+    // Robust user check - ensure they exist in Supabase before updating
+    try {
+      await ensureUserExists(userId);
+    } catch (e: any) {
+      console.warn(`[LemonWebhook] ensureUserExists check failed for ${userId}: ${e.message}`);
     }
 
-    // Turn Pro off for terminal / failed subscription events
-    if (
-      eventName === "subscription_cancelled" ||
-      eventName === "subscription_expired" ||
-      eventName === "subscription_payment_failed"
-    ) {
-      console.log(`[LemonWebhook] Downgrading user ${userId} from Pro`);
-      const { error } = await supabase
+    // Extraction with fallbacks
+    const objectId = event.data?.id?.toString() || attrs.id?.toString() || null;
+    const baseUpdate: Record<string, any> = {
+      lemon_customer_id: attrs.customer_id?.toString() || null,
+      lemon_variant_id: attrs.variant_id?.toString() || null,
+      lemon_subscription_status: attrs.status || (objectType === "orders" ? "paid" : null),
+    };
+
+    if (objectType === "subscriptions") {
+      baseUpdate.lemon_subscription_id = objectId;
+      baseUpdate.lemon_order_id = attrs.order_id?.toString() || null;
+    } else if (objectType === "orders") {
+      baseUpdate.lemon_order_id = objectId;
+    }
+
+    // Determine if we should grant Pro status
+    const isProEvent = [
+      "subscription_created",
+      "subscription_resumed",
+      "subscription_payment_success",
+      "subscription_updated",
+      "order_created"
+    ].includes(eventName);
+
+    const isDowngradeEvent = [
+      "subscription_cancelled",
+      "subscription_expired",
+      "subscription_payment_failed"
+    ].includes(eventName);
+
+    if (isProEvent || isDowngradeEvent) {
+      const proStatus = isProEvent;
+      console.log(`[LemonWebhook] Updating Pro status to ${proStatus} for user ${userId}`);
+
+      // Try full update first (includes metadata columns that might not exist yet)
+      const { error: fullError } = await supabase
         .from("users")
-        .update({ ...baseUpdate, is_pro: false })
+        .update({ ...baseUpdate, is_pro: proStatus })
         .eq("id", userId);
 
-      if (error) {
-        console.error(`[LemonWebhook] Error downgrading user ${userId} from pro:`, error.message);
-        return res.status(500).json({ error: "Failed to downgrade user" });
+      if (fullError) {
+        console.warn(`[LemonWebhook] Full update failed (likely missing columns): ${fullError.message}. Retrying with is_pro only.`);
+
+        // Fallback update: only is_pro which is guaranteed to exist
+        const { error: fallbackError } = await supabase
+          .from("users")
+          .update({ is_pro: proStatus })
+          .eq("id", userId);
+
+        if (fallbackError) {
+          console.error(`[LemonWebhook] Critical: Fallback update failed: ${fallbackError.message}`);
+          return res.status(500).json({ error: "Database update failed" });
+        }
       }
+
+      console.log(`[LemonWebhook] Successfully processed ${eventName} for user ${userId}`);
     }
 
     return res.status(200).json({ received: true });

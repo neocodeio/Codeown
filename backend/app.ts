@@ -18,6 +18,8 @@ import migrationRoutes from "./src/routes/migration.routes.js";
 import imageProxyRoutes from "./src/routes/image-proxy.routes.js";
 import metadataRoutes from "./src/routes/metadata.routes.js";
 import seoRoutes from "./src/routes/seo.routes.js";
+import { handleLemonWebhook, handleClerkWebhook } from "./src/controllers/webhooks.controller.js";
+
 
 import helmet from "helmet";
 
@@ -36,8 +38,10 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// 2. Webhooks need raw body for signature verification - MUST be before express.json()
-app.use("/webhooks", express.raw({ type: "application/json" }), webhooksRoutes);
+// 2. Webhooks need raw body for signature verification
+// Use a more robust approach to avoid 405 errors and handle body parsing correctly
+app.post("/webhooks/lemon", express.raw({ type: "*/*" }), handleLemonWebhook);
+app.post("/webhooks/clerk", express.raw({ type: "*/*" }), handleClerkWebhook);
 
 // 3. Regular JSON parser
 app.use(express.json({ limit: "50mb" }));

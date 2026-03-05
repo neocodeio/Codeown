@@ -153,7 +153,7 @@ export async function getProject(req: Request, res: Response) {
       .from("projects")
       .select(`
         *,
-        user:user_id(id, name, avatar_url, username, is_hirable)
+        user:user_id(id, name, avatar_url, username, is_hirable, is_pro)
       `)
       .eq("id", resolvedId)
       .maybeSingle();
@@ -556,7 +556,7 @@ export async function deleteProject(req: Request, res: Response) {
     const { error: deleteError } = await supabase
       .from("projects")
       .delete()
-      .eq("id", resolvedId)
+      .eq("id", String(resolvedId))
       .eq("user_id", userId);
 
     if (deleteError) {
@@ -629,7 +629,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
 
       // Create notification for project owner (if not the liker)
       if (project.user_id !== String(userId)) {
-        await createProjectNotification(project.user_id, "like", String(userId), parseInt(id));
+        await createProjectNotification(project.user_id, "like", String(userId), parseInt(id as string));
       }
 
     }
@@ -741,7 +741,7 @@ export async function toggleProjectSave(req: Request, res: Response) {
 
       // Create notification for project owner (if not the saver)
       if (project.user_id !== String(userId)) {
-        await createProjectNotification(project.user_id, "save", String(userId), parseInt(id));
+        await createProjectNotification(project.user_id, "save", String(userId), parseInt(id as string));
       }
 
     }

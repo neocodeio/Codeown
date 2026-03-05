@@ -311,7 +311,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     // Check if user exists - select only safe columns
     const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url")
+        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
         .eq("id", userId)
         .single();
 
@@ -430,7 +430,7 @@ export async function getUserProfile(req: Request, res: Response) {
         // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
             .eq(field, userId)
             .single();
 
@@ -665,7 +665,7 @@ export async function updateUserProfile(req: Request, res: Response) {
         // Get current user data
         const { data: currentUser, error: fetchError } = await supabase
             .from("users")
-            .select("username, username_changed_at, is_pro")
+            .select("username, username_changed_at, is_pro, lemon_subscription_status")
             .eq("id", userId)
             .single();
 
