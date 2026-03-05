@@ -410,7 +410,7 @@ export default function UserProfile() {
                   backgroundColor: "#0f172a",
                   color: "#fff",
                   letterSpacing: "0.02em",
-                }}>PRO PROFILE</span>
+                }}>PRO</span>
               )}
             </h1>
             <div style={{
