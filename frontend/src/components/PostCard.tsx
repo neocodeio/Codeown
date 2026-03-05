@@ -439,7 +439,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
             alignItems: "center",
             justifyContent: "space-between",
             maxWidth: "425px",
-            marginTop: "16px",
+            marginTop: "26px",
             marginLeft: "-8px" // Align icons perfectly with text above
           }}>
             {/* Comment */}
