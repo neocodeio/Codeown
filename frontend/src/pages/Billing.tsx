@@ -6,14 +6,18 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
 
 const PRO_CHECKOUT_BASE =
-  "https://codeown.lemonsqueezy.com/checkout/buy/33a97835-6017-448a-a671-57ef2302126d";
+  "https://codeown.lemonsqueezy.com/buy/33a97835-6017-448a-a671-57ef2302126d";
 
 function buildProCheckoutUrl(userId: string): string {
   const url = new URL(PRO_CHECKOUT_BASE);
+  // Add user ID to custom data for the webhook to identify the user
   url.searchParams.set("checkout[custom][user_id]", userId);
-  // Redirect back to profile page after payment with a flag to refresh status
+  // Redirect back to profile page after payment
   url.searchParams.set("checkout[success_url]", window.location.origin + "/profile?checkout_completed=true");
-  return url.toString();
+
+  const finalUrl = url.toString();
+  console.log("[Billing] Generated checkout URL:", finalUrl);
+  return finalUrl;
 }
 
 const PRO_FEATURES = [
@@ -36,7 +40,7 @@ export default function Billing() {
       if (isSignedIn && user?.id) {
         try {
           const token = await getToken();
-          const res = await api.get(`/users/profile/${user.id}`, {
+          const res = await api.get(`/users/${user.id}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setProfile(res.data);

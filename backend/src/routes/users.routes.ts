@@ -17,17 +17,21 @@ import { requireAuth, optionalAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
+// Static/specific routes MUST come before /:userId to avoid being swallowed by the wildcard
 router.get("/recommended", optionalAuth, getRecommendedUsers);
-router.get("/:userId", getUserProfile);
-router.put("/:userId", requireAuth, updateUserProfile);
+router.get("/active/count", getActiveCount);
+router.post("/active/ping", optionalAuth, trackActiveSession);
 router.post("/pin/:postId", requireAuth, pinPost);
 router.post("/onboarding/complete", requireAuth, completeOnboarding);
 router.post("/streak/update", requireAuth, updateStreak);
+
+// Wildcard routes last
+router.get("/:userId", getUserProfile);
+router.put("/:userId", requireAuth, updateUserProfile);
 router.get("/:userId/likes", getUserTotalLikes);
 router.get("/:userId/projects", getUserProjects);
 router.get("/:userId/saved-projects", getUserSavedProjects);
-router.post("/active/ping", optionalAuth, trackActiveSession);
-router.get("/active/count", getActiveCount);
 router.post("/:userId/view", requireAuth, recordProfileView);
 
 export default router;
+
