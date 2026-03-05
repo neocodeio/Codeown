@@ -155,6 +155,8 @@ export default function Navbar() {
         </Link>
       </div>
 
+
+
       {/* Nav Links */}
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: "4px" }}>
         <Link to="/" style={linkStyle("/")}>
@@ -262,87 +264,9 @@ export default function Navbar() {
               Profile
             </Link>
 
-            {/* Pro Upgrade CTA for Sidebar */}
-            {isSignedIn && !isPro && (
-              <div style={{
-                margin: "20px 16px 8px",
-                padding: "10px",
-                borderRadius: "15px",
-                background: "#000",
-                color: "#fff",
-                position: "relative",
-                overflow: "hidden",
-                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
-                border: "1px solid rgba(184, 134, 11, 0.2)"
-              }}>
-                <div style={{
-                  position: "absolute",
-                  top: 0,
-                  left: "-150%",
-                  width: "150%",
-                  height: "100%",
-                  background: "linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.05), transparent)",
-                  transform: "skewX(-20deg)",
-                  animation: "ctaShine 6s infinite cubic-bezier(0.4, 0, 0.2, 1)",
-                }} />
 
-                <div style={{ position: "relative", zIndex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                    <div style={{
-                      backgroundColor: "#fff",
-                      width: "24px",
-                      height: "24px",
-                      borderRadius: "6px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#000"
-                    }}>
-                      <HugeiconsIcon icon={Rocket01Icon} style={{ width: "14px", height: "14px" }} />
-                    </div>
-                    <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "#fff", letterSpacing: "-0.01em" }}>
-                      Pro Profile
-                    </h3>
-                  </div>
-                  <p style={{ margin: "0 0 16px 0", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5", fontWeight: 500 }}>
-                    Stand out with the golden badge and better visibility.
-                  </p>
-                  <Link to="/billing" style={{ textDecoration: "none" }}>
-                    <button style={{
-                      width: "100%",
-                      padding: "10px",
-                      backgroundColor: "#fff",
-                      color: "#000",
-                      border: "none",
-                      borderRadius: "100px",
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      boxShadow: "0 4px 12px rgba(255,255,255,0.1)"
-                    }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.transform = "translateY(-1px)";
-                        e.currentTarget.style.backgroundColor = "#fff";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.backgroundColor = "#fff";
-                      }}
-                    >
-                      Upgrade Now
-                    </button>
-                  </Link>
-                </div>
-                <style>{`
-                  @keyframes ctaShine {
-                    0% { left: -150%; }
-                    25% { left: 150%; }
-                    100% { left: 150%; }
-                  }
-                `}</style>
-              </div>
-            )}
+
+
 
             {/* Real-time Status Badge */}
             <div style={{
@@ -379,7 +303,7 @@ export default function Navbar() {
       <div style={{ flex: 1 }}></div>
 
       {/* Footer Links & Profile */}
-      <div style={{ padding: "0 20px 20px 20px" }}>
+      <div style={{ padding: "0 16px 20px 16px" }}>
         {/* Profile Card */}
         {isSignedIn && user ? (
           <>
@@ -387,7 +311,7 @@ export default function Navbar() {
               display: "flex",
               alignItems: "center",
               gap: "10px",
-              padding: "12px",
+              padding: "16px",
               backgroundColor: "#fff",
               border: "1px solid #e2e8f0",
               borderRadius: "16px",
@@ -556,23 +480,6 @@ export default function Navbar() {
               Codeown
             </span>
           </Link>
-          {isSignedIn && !isPro && (
-            <Link to="/billing" style={{ textDecoration: "none" }}>
-              <span style={{
-                fontSize: "10px",
-                fontWeight: 900,
-                color: "#d4a853",
-                border: "1.5px solid #d4a853",
-                padding: "3px 8px",
-                borderRadius: "5px",
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-                display: "inline-block"
-              }}>
-                PRO
-              </span>
-            </Link>
-          )}
         </div>
         {isSignedIn && location.pathname !== "/messages" && null}
       </div>

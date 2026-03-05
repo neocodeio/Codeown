@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -13,9 +14,29 @@ export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
     const isDesktop = width >= 1280;
     const { getToken } = useClerkAuth();
-    const { isSignedIn } = useClerkUser();
+    const { isSignedIn, user } = useClerkUser();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const [profile, setProfile] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (isSignedIn && user?.id) {
+                try {
+                    const token = await getToken();
+                    const res = await api.get(`/users/${user.id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setProfile(res.data);
+                } catch (err) {
+                    console.error("Sidebar profile fetch failed", err);
+                }
+            }
+        };
+        fetchProfile();
+    }, [isSignedIn, user?.id, getToken]);
+
+    const isPro = profile?.is_pro === true;
 
     // Use React Query for recommended users with proper caching
     const { data: users = [], isLoading: loading } = useQuery({
@@ -99,6 +120,54 @@ export default function RecommendedUsersSidebar() {
                 overflowY: "auto",
                 scrollbarWidth: "none"
             }}>
+                {/* Pro Upgrade CTA */}
+                {isSignedIn && !isPro && (
+                    <div style={{
+                        marginBottom: "0px",
+                        padding: "20px",
+                        borderRadius: "0px",
+                        background: "#fff",
+                        color: "#000",
+                        position: "relative",
+                        overflow: "hidden",
+                        border: "1px solid #e0e0e0",
+                        borderBottom: "none",
+                        transition: "all 0.3s ease",
+                        // boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
+                    }}>
+                        <div style={{ position: "relative", zIndex: 1 }}>
+                            <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: 800, color: "#000", letterSpacing: "-0.01em" }}>
+                                Upgrade to Pro
+                            </h3>
+                            <p style={{ margin: "0 0 16px 0", fontSize: "14px", color: "#000", lineHeight: "1.5", fontWeight: 500 }}>
+                                Unlock exclusive features, get the golden badge, and boost your presence in the community.
+                            </p>
+                            <Link to="/billing" style={{ textDecoration: "none" }}>
+                                <button style={{
+                                    padding: "8px 24px",
+                                    backgroundColor: "#000",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "100px",
+                                    fontSize: "14px",
+                                    fontWeight: 700,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s ease",
+                                }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.backgroundColor = "#000";
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.backgroundColor = "#000";
+                                    }}
+                                >
+                                    Upgrade Now
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
                 <div style={{
                     backgroundColor: "#fff",
                     // borderRadius: "32px",
