@@ -93,6 +93,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
 
   const userName = project.user?.name || "User";
   const shareUrl = `${window.location.origin}/project/${project.id}`;
+  const isPro = project.user?.is_pro === true;
 
   const handleClick = () => {
     if (isMenuOpen) {
@@ -158,21 +159,43 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       className="fade-in"
       style={{
         cursor: "pointer",
-        transition: "background-color 0.2s ease",
-        backgroundColor: "#fff",
+        transition: "background-color 0.3s ease",
+        backgroundColor: isPro ? "#fffdf7" : "#fff",
         padding: isMobile ? "16px" : "24px",
         display: "flex",
         gap: "14px",
         borderBottom: "1px solid #eff3f4",
-        position: "relative"
+        borderLeft: isPro ? "3px solid #d4a853" : "3px solid transparent",
+        position: "relative",
+        overflow: "hidden",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "#fcfcfc";
+        e.currentTarget.style.backgroundColor = isPro ? "#fffbf0" : "#fcfcfc";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "#fff";
+        e.currentTarget.style.backgroundColor = isPro ? "#fffdf7" : "#fff";
       }}
     >
+      {/* Pro shimmer effect */}
+      {isPro && (
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "1px",
+          background: "linear-gradient(90deg, transparent, #d4a853, #f0d78c, #d4a853, transparent)",
+          backgroundSize: "200% 100%",
+          animation: "proShimmer 3s linear infinite",
+          opacity: 0.7,
+        }} />
+      )}
+      <style>{`
+        @keyframes proShimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+      `}</style>
       {/* Left Column: Avatar */}
       <div style={{ flexShrink: 0 }}>
         <div
@@ -336,9 +359,27 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             lineHeight: "1.4",
             letterSpacing: "-0.01em",
             overflowWrap: "anywhere",
-            wordBreak: "break-word"
+            wordBreak: "break-word",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            flexWrap: "wrap",
           }}>
             {project.title}
+            {isPro && (
+              <span style={{
+                fontSize: "9px",
+                fontWeight: 800,
+                padding: "2px 6px",
+                borderRadius: "4px",
+                background: "linear-gradient(135deg, #d4a853, #f0d78c)",
+                color: "#5c4a1e",
+                letterSpacing: "0.06em",
+                lineHeight: "1",
+                flexShrink: 0,
+                textTransform: "uppercase",
+              }}>PRO</span>
+            )}
           </h3>
           <p style={{
             fontSize: "15px",
