@@ -663,7 +663,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
               height: "100%",
               background: "linear-gradient(105deg, transparent 0%, rgba(212, 168, 83, 0.05) 35%, rgba(212, 168, 83, 0.4) 50%, rgba(212, 168, 83, 0.05) 65%, transparent 100%)",
               transform: "skewX(-25deg)",
-              animation: "proLuxuryShine 6s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+              animation: "proLuxuryShine 6s cubic-bezier(0.0, 0, 0.2, 1) infinite",
               zIndex: 0,
             }}
           />
