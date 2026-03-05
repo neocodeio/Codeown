@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
 import { useUserProjects } from "../hooks/useUserProjects";
@@ -92,6 +92,7 @@ export default function Profile() {
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
 
@@ -116,6 +117,25 @@ export default function Profile() {
       }
     }
   }, [userId, getToken, fetchUserPosts, fetchSavedPosts, fetchUserProjects, fetchUserSavedProjects]);
+
+  useEffect(() => {
+    if (searchParams.get("checkout_completed") === "true") {
+      toast.success("Welcome to Pro! Your account has been upgraded.", {
+        position: "top-center",
+        autoClose: 5000,
+      });
+      // Remove the param from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("checkout_completed");
+      setSearchParams(newParams, { replace: true });
+
+      // Refetch profile with a small delay to ensure webhook processed
+      const timer = setTimeout(() => {
+        void handleProfileUpdated();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, setSearchParams, handleProfileUpdated]);
 
   useEffect(() => {
     const closeMenu = () => setIsMenuOpen(false);
@@ -401,7 +421,7 @@ export default function Profile() {
                     backgroundColor: "#0f172a",
                     color: "#fff",
                     letterSpacing: "0.02em",
-                  }}>PRO</span>
+                  }}>PRO PROFILE</span>
                 )}
               </h1>
               {userProfile?.is_pro !== true && (
@@ -677,185 +697,185 @@ export default function Profile() {
           padding: `0 ${innerPaddingX}px`,
           borderTop: "1px solid #e2e8f0",
         }}>
-            <div className="tabs-row" style={{
-              display: "flex",
-              gap: isMobile ? "24px" : "18px",
-              marginBottom: "24px",
-              marginTop: "24px",
-              overflowX: "auto",
-              WebkitOverflowScrolling: "touch",
-              paddingBottom: "2px",
-            }}>
-              <button
-                onClick={() => setActiveTab("posts")}
-                style={{
-                  padding: "8px 12px",
-                  fontSize: "15px",
-                  fontWeight: activeTab === "posts" ? 700 : 500,
-                  color: activeTab === "posts" ? "#0f172a" : "#64748b",
-                  borderRadius: "14px",
-                  border: "1px solid #e2e8f0",
-                  background: activeTab === "posts" ? "#F8FAFC" : "transparent",
-                  cursor: "pointer",
-                  marginBottom: "-2px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Posts
-              </button>
-              <button
-                onClick={() => setActiveTab("projects")}
-                style={{
-                  padding: "8px 12px",
-                  fontSize: "15px",
-                  fontWeight: activeTab === "projects" ? 700 : 500,
-                  color: activeTab === "projects" ? "#0f172a" : "#64748b",
-                  borderRadius: "14px",
-                  border: "1px solid #e2e8f0",
-                  background: activeTab === "projects" ? "#F8FAFC" : "transparent",
-                  cursor: "pointer",
-                  marginBottom: "-2px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Projects
-              </button>
-              <button
-                onClick={() => setActiveTab("saved")}
-                style={{
-                  padding: "8px 12px",
-                  fontSize: "15px",
-                  fontWeight: activeTab === "saved" ? 700 : 500,
-                  color: activeTab === "saved" ? "#0f172a" : "#64748b",
-                  borderRadius: "14px",
-                  border: "1px solid #e2e8f0",
-                  background: activeTab === "saved" ? "#F8FAFC" : "transparent",
-                  cursor: "pointer",
-                  marginBottom: "-2px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Saved
-              </button>
-            </div>
+          <div className="tabs-row" style={{
+            display: "flex",
+            gap: isMobile ? "24px" : "18px",
+            marginBottom: "24px",
+            marginTop: "24px",
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
+            paddingBottom: "2px",
+          }}>
+            <button
+              onClick={() => setActiveTab("posts")}
+              style={{
+                padding: "8px 12px",
+                fontSize: "15px",
+                fontWeight: activeTab === "posts" ? 700 : 500,
+                color: activeTab === "posts" ? "#0f172a" : "#64748b",
+                borderRadius: "14px",
+                border: "1px solid #e2e8f0",
+                background: activeTab === "posts" ? "#F8FAFC" : "transparent",
+                cursor: "pointer",
+                marginBottom: "-2px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Posts
+            </button>
+            <button
+              onClick={() => setActiveTab("projects")}
+              style={{
+                padding: "8px 12px",
+                fontSize: "15px",
+                fontWeight: activeTab === "projects" ? 700 : 500,
+                color: activeTab === "projects" ? "#0f172a" : "#64748b",
+                borderRadius: "14px",
+                border: "1px solid #e2e8f0",
+                background: activeTab === "projects" ? "#F8FAFC" : "transparent",
+                cursor: "pointer",
+                marginBottom: "-2px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Projects
+            </button>
+            <button
+              onClick={() => setActiveTab("saved")}
+              style={{
+                padding: "8px 12px",
+                fontSize: "15px",
+                fontWeight: activeTab === "saved" ? 700 : 500,
+                color: activeTab === "saved" ? "#0f172a" : "#64748b",
+                borderRadius: "14px",
+                border: "1px solid #e2e8f0",
+                background: activeTab === "saved" ? "#F8FAFC" : "transparent",
+                cursor: "pointer",
+                marginBottom: "-2px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Saved
+            </button>
+          </div>
 
-            <div className="tab-content">
-              {activeTab === "posts" && (
-                <div className="tab-content-enter">
-                  {posts.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "60px 20px" }}>
-                      <HugeiconsIcon icon={Layers01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
-                      <p style={{ color: "#64748b", fontWeight: 700 }}>Share your first post with the community.</p>
+          <div className="tab-content">
+            {activeTab === "posts" && (
+              <div className="tab-content-enter">
+                {posts.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                    <HugeiconsIcon icon={Layers01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
+                    <p style={{ color: "#64748b", fontWeight: 700 }}>Share your first post with the community.</p>
+                  </div>
+                ) : (
+                  posts.map((p) => (
+                    <div key={p.id} style={{ position: "relative" }}>
+                      {userProfile?.pinned_post_id === p.id && (
+                        <div style={{ padding: "12px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "13px", fontWeight: 700 }}>
+                          <HugeiconsIcon icon={PushpinIcon} size={14} />
+                          Pinned Post
+                        </div>
+                      )}
+                      <PostCard post={p} onUpdated={fetchUserPosts} />
                     </div>
-                  ) : (
-                    posts.map((p) => (
-                      <div key={p.id} style={{ position: "relative" }}>
-                        {userProfile?.pinned_post_id === p.id && (
-                          <div style={{ padding: "12px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "13px", fontWeight: 700 }}>
-                            <HugeiconsIcon icon={PushpinIcon} size={14} />
-                            Pinned Post
-                          </div>
-                        )}
-                        <PostCard post={p} onUpdated={fetchUserPosts} />
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
+                  ))
+                )}
+              </div>
+            )}
 
-              {activeTab === "projects" && (
-                <div className="tab-content-enter">
-                  {projects.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "60px 20px" }}>
-                      <HugeiconsIcon icon={Rocket01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
-                      <p style={{ color: "#64748b", fontWeight: 700 }}>Showcase your best projects.</p>
-                      <button
-                        onClick={() => setIsProjectModalOpen(true)}
-                        style={{
-                          margin: "16px auto",
-                          padding: "10px 20px",
-                          borderRadius: "8px",
-                          fontSize: "14px",
-                          fontWeight: 600,
-                          border: "none",
-                          backgroundColor: "#0f172a",
-                          color: "#fff",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Add Project
-                      </button>
-                    </div>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                      {projects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)}
-                    </div>
-                  )
-                  }
-                </div>
-              )}
-
-              {activeTab === "saved" && (
-                <div className="tab-content-enter">
-                  <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+            {activeTab === "projects" && (
+              <div className="tab-content-enter">
+                {projects.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                    <HugeiconsIcon icon={Rocket01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
+                    <p style={{ color: "#64748b", fontWeight: 700 }}>Showcase your best projects.</p>
                     <button
-                      onClick={() => setSavedSubTab("posts")}
+                      onClick={() => setIsProjectModalOpen(true)}
                       style={{
-                        padding: "8px 16px",
-                        fontSize: "12px",
-                        fontWeight: 800,
-                        borderRadius: "100px",
-                        border: "1px solid",
-                        borderColor: savedSubTab === "posts" ? "#0f172a" : "#e2e8f0",
-                        backgroundColor: savedSubTab === "posts" ? "#0f172a" : "white",
-                        color: savedSubTab === "posts" ? "white" : "#64748b",
+                        margin: "16px auto",
+                        padding: "10px 20px",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        border: "none",
+                        backgroundColor: "#0f172a",
+                        color: "#fff",
                         cursor: "pointer",
-                        transition: "all 0.2s"
                       }}
                     >
-                      Saved Posts
-                    </button>
-                    <button
-                      onClick={() => setSavedSubTab("projects")}
-                      style={{
-                        padding: "8px 16px",
-                        fontSize: "12px",
-                        fontWeight: 800,
-                        borderRadius: "100px",
-                        border: "1px solid",
-                        borderColor: savedSubTab === "projects" ? "#0f172a" : "#e2e8f0",
-                        backgroundColor: savedSubTab === "projects" ? "#0f172a" : "white",
-                        color: savedSubTab === "projects" ? "white" : "#64748b",
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      Saved Projects
+                      Add Project
                     </button>
                   </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {projects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)}
+                  </div>
+                )
+                }
+              </div>
+            )}
 
-                  {savedSubTab === "posts" ? (
-                    savedPosts.length === 0 ? (
-                      <div style={{ textAlign: "center", padding: "64px" }}>
-                        <HugeiconsIcon icon={Bookmark01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px" }} />
-                        <p style={{ color: "#64748b", fontWeight: 600 }}>No saved posts yet.</p>
-                      </div>
-                    ) : (
-                      savedPosts.map((p) => <PostCard key={p.id} post={p} onUpdated={fetchSavedPosts} />)
-                    )
-                  ) : (
-                    savedProjects.length === 0 ? (
-                      <div style={{ textAlign: "center", padding: "64px" }}>
-                        <HugeiconsIcon icon={Bookmark01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px" }} />
-                        <p style={{ color: "#64748b", fontWeight: 600 }}>No saved projects yet.</p>
-                      </div>
-                    ) : (
-                      savedProjects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />)
-                    )
-                  )}
+            {activeTab === "saved" && (
+              <div className="tab-content-enter">
+                <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+                  <button
+                    onClick={() => setSavedSubTab("posts")}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "12px",
+                      fontWeight: 800,
+                      borderRadius: "100px",
+                      border: "1px solid",
+                      borderColor: savedSubTab === "posts" ? "#0f172a" : "#e2e8f0",
+                      backgroundColor: savedSubTab === "posts" ? "#0f172a" : "white",
+                      color: savedSubTab === "posts" ? "white" : "#64748b",
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    Saved Posts
+                  </button>
+                  <button
+                    onClick={() => setSavedSubTab("projects")}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "12px",
+                      fontWeight: 800,
+                      borderRadius: "100px",
+                      border: "1px solid",
+                      borderColor: savedSubTab === "projects" ? "#0f172a" : "#e2e8f0",
+                      backgroundColor: savedSubTab === "projects" ? "#0f172a" : "white",
+                      color: savedSubTab === "projects" ? "white" : "#64748b",
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    Saved Projects
+                  </button>
                 </div>
-              )}
-            </div>
+
+                {savedSubTab === "posts" ? (
+                  savedPosts.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "64px" }}>
+                      <HugeiconsIcon icon={Bookmark01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px" }} />
+                      <p style={{ color: "#64748b", fontWeight: 600 }}>No saved posts yet.</p>
+                    </div>
+                  ) : (
+                    savedPosts.map((p) => <PostCard key={p.id} post={p} onUpdated={fetchSavedPosts} />)
+                  )
+                ) : (
+                  savedProjects.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "64px" }}>
+                      <HugeiconsIcon icon={Bookmark01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px" }} />
+                      <p style={{ color: "#64748b", fontWeight: 600 }}>No saved projects yet.</p>
+                    </div>
+                  ) : (
+                    savedProjects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />)
+                  )
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

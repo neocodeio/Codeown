@@ -184,6 +184,18 @@ export default function RecommendedUsersSidebar() {
                                                         {user.name}
                                                     </span>
                                                     <VerifiedBadge username={user.username} size="15px" />
+                                                    {user.is_pro && (
+                                                        <span style={{
+                                                            fontSize: "8px",
+                                                            fontWeight: "800",
+                                                            padding: "1px 4px",
+                                                            borderRadius: "3px",
+                                                            backgroundColor: "#0f172a",
+                                                            color: "#fff",
+                                                            letterSpacing: "0.02em",
+                                                            marginLeft: "2px"
+                                                        }}>PRO</span>
+                                                    )}
                                                 </div>
                                                 {user.streak_count > 0 ? (
                                                     <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>

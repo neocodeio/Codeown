@@ -205,6 +205,18 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                   >
                     {userName}
                     <VerifiedBadge username={post.user?.username} size="14px" />
+                    {post.user?.is_pro && (
+                      <span style={{
+                        fontSize: "9px",
+                        fontWeight: "800",
+                        padding: "1px 5px",
+                        borderRadius: "4px",
+                        backgroundColor: "#0f172a",
+                        color: "#fff",
+                        letterSpacing: "0.02em",
+                        marginLeft: "2px"
+                      }}>PRO</span>
+                    )}
                   </span>
                 </UserHoverCard>
               ) : (

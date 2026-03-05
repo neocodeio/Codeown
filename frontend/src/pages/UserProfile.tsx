@@ -401,6 +401,17 @@ export default function UserProfile() {
             }}>
               {(user.name || "").toUpperCase()}
               <VerifiedBadge username={user.username} size={isMobile ? "18px" : "22px"} />
+              {user.is_pro === true && (
+                <span style={{
+                  fontSize: isMobile ? 10 : 11,
+                  fontWeight: 700,
+                  padding: "4px 8px",
+                  borderRadius: 6,
+                  backgroundColor: "#0f172a",
+                  color: "#fff",
+                  letterSpacing: "0.02em",
+                }}>PRO PROFILE</span>
+              )}
             </h1>
             <div style={{
               display: "flex",
@@ -600,15 +611,15 @@ export default function UserProfile() {
               onClick={() => setActiveTab("posts")}
               style={{
                 padding: "8px 12px",
-                  fontSize: "15px",
-                  fontWeight: activeTab === "posts" ? 700 : 500,
-                  color: activeTab === "posts" ? "#0f172a" : "#64748b",
-                  borderRadius: "14px",
-                  border: "1px solid #e2e8f0",
-                  background: activeTab === "posts" ? "#F8FAFC" : "transparent",
-                  cursor: "pointer",
-                  marginBottom: "-2px",
-                  whiteSpace: "nowrap",
+                fontSize: "15px",
+                fontWeight: activeTab === "posts" ? 700 : 500,
+                color: activeTab === "posts" ? "#0f172a" : "#64748b",
+                borderRadius: "14px",
+                border: "1px solid #e2e8f0",
+                background: activeTab === "posts" ? "#F8FAFC" : "transparent",
+                cursor: "pointer",
+                marginBottom: "-2px",
+                whiteSpace: "nowrap",
               }}
             >
               Posts
@@ -617,15 +628,15 @@ export default function UserProfile() {
               onClick={() => setActiveTab("projects")}
               style={{
                 padding: "8px 12px",
-                  fontSize: "15px",
-                  fontWeight: activeTab === "projects" ? 700 : 500,
-                  color: activeTab === "projects" ? "#0f172a" : "#64748b",
-                  borderRadius: "14px",
-                  border: "1px solid #e2e8f0",
-                  background: activeTab === "projects" ? "#F8FAFC" : "transparent",
-                  cursor: "pointer",
-                  marginBottom: "-2px",
-                  whiteSpace: "nowrap",
+                fontSize: "15px",
+                fontWeight: activeTab === "projects" ? 700 : 500,
+                color: activeTab === "projects" ? "#0f172a" : "#64748b",
+                borderRadius: "14px",
+                border: "1px solid #e2e8f0",
+                background: activeTab === "projects" ? "#F8FAFC" : "transparent",
+                cursor: "pointer",
+                marginBottom: "-2px",
+                whiteSpace: "nowrap",
               }}
             >
               Projects
@@ -633,46 +644,46 @@ export default function UserProfile() {
           </div>
 
           {activeTab === "posts" ? (
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                {posts.length === 0 ? (
-                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
-                    <HugeiconsIcon icon={Layers01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
-                    <p style={{ fontWeight: 600 }}>No posts yet</p>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {posts.length === 0 ? (
+                <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
+                  <HugeiconsIcon icon={Layers01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
+                  <p style={{ fontWeight: 600 }}>No posts yet</p>
+                </div>
+              ) : (
+                posts.map(p => (
+                  <div key={p.id} style={{ position: "relative" }}>
+                    {user.pinned_post_id === p.id && (
+                      <div style={{
+                        padding: "12px 24px 0",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        color: "#64748b",
+                        fontSize: "13px",
+                        fontWeight: 700
+                      }}>
+                        <HugeiconsIcon icon={PushpinIcon} size={14} />
+                        Pinned Post
+                      </div>
+                    )}
+                    <PostCard post={p} onUpdated={fetchUserPosts} />
                   </div>
-                ) : (
-                  posts.map(p => (
-                    <div key={p.id} style={{ position: "relative" }}>
-                      {user.pinned_post_id === p.id && (
-                        <div style={{
-                          padding: "12px 24px 0",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          color: "#64748b",
-                          fontSize: "13px",
-                          fontWeight: 700
-                        }}>
-                          <HugeiconsIcon icon={PushpinIcon} size={14} />
-                          Pinned Post
-                        </div>
-                      )}
-                      <PostCard post={p} onUpdated={fetchUserPosts} />
-                    </div>
-                  ))
-                )}
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                {projects.length === 0 ? (
-                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
-                    <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
-                    <p style={{ fontWeight: 600 }}>No projects yet</p>
-                  </div>
-                ) : (
-                  projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
-                )}
-              </div>
-            )}
+                ))
+              )}
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {projects.length === 0 ? (
+                <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
+                  <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
+                  <p style={{ fontWeight: 600 }}>No projects yet</p>
+                </div>
+              ) : (
+                projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
+              )}
+            </div>
+          )}
         </div>
       </div>
 

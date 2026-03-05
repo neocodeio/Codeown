@@ -59,7 +59,7 @@ export async function getComments(req: Request, res: Response) {
 
     const { data: users, error: usersError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url")
+      .select("id, name, email, avatar_url, username, is_pro")
       .in("id", [...userIds]);
 
     if (usersError) {
@@ -78,7 +78,7 @@ export async function getComments(req: Request, res: Response) {
         for (const userId of missingUserIds) {
           try {
             const clerkUser = await clerkClient.users.getUser(userId);
-            
+
             // Extract user name with better fallback logic
             let userName: string | null = null;
             if (clerkUser.firstName && clerkUser.lastName) {
@@ -92,19 +92,22 @@ export async function getComments(req: Request, res: Response) {
             } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
               const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
               if (emailAddress) {
-                userName = emailAddress.split("@")[0]; // Use email username as fallback
+                const parts = emailAddress.split("@");
+                userName = parts[0] ? parts[0] : null; // Use email username as fallback
               }
             }
-            
+
             // If still no name, use a default
             if (!userName) {
               userName = "User";
             }
-            
+
             clerkUserMap.set(userId, {
               name: userName,
               email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
               avatar_url: clerkUser.imageUrl || null,
+              username: clerkUser.username || null,
+              is_pro: false,
             });
 
             // Sync user to Supabase
@@ -127,14 +130,16 @@ export async function getComments(req: Request, res: Response) {
       const clerkUser = clerkUserMap.get(comment.user_id);
       const user = supabaseUser || clerkUser;
 
-      let userData: { name: string; email: string | null; avatar_url: string | null };
+      let userData: { name: string; email: string | null; avatar_url: string | null; username: string | null; is_pro: boolean };
       if (user) {
         const userName = user.name || (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) || user.firstName || user.lastName || user.username || null;
         const userEmail = user.email || (user.emailAddresses?.[0]?.emailAddress) || null;
         const avatarUrl = user.avatar_url || user.imageUrl || null;
-        userData = { name: userName || (userEmail ? userEmail.split("@")[0] : "User"), email: userEmail, avatar_url: avatarUrl };
+        const username = user.username || null;
+        const is_pro = user.is_pro ?? false;
+        userData = { name: userName || (userEmail ? userEmail.split("@")[0] : "User"), email: userEmail, avatar_url: avatarUrl, username, is_pro };
       } else {
-        userData = { name: "User", email: null, avatar_url: null };
+        userData = { name: "User", email: null, avatar_url: null, username: null, is_pro: false };
       }
 
       let parent_author_name: string | null = null;
@@ -152,9 +157,9 @@ export async function getComments(req: Request, res: Response) {
     return res.json(commentsWithUsers);
   } catch (error: any) {
     console.error("Unexpected error in getComments:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }
@@ -175,7 +180,7 @@ export async function createComment(req: Request, res: Response) {
 
     // Get user ID
     const userId = user?.sub || user?.id || user?.userId;
-    
+
     if (!userId) {
       console.error("No user ID found in user object:", user);
       return res.status(401).json({ error: "User ID not found" });
@@ -194,7 +199,7 @@ export async function createComment(req: Request, res: Response) {
         // Continue with JWT token data
       }
     }
-    
+
     try {
       await ensureUserExists(userId as string, userDataForSync as unknown as any);
     } catch (error: any) {
@@ -210,7 +215,7 @@ export async function createComment(req: Request, res: Response) {
 
     // Ensure post_id is an integer (posts table uses INTEGER/SERIAL, not UUID)
     const postIdInt = typeof post_id === 'string' ? parseInt(post_id, 10) : post_id;
-    
+
     if (isNaN(postIdInt)) {
       return res.status(400).json({ error: "Invalid post ID" });
     }
@@ -236,8 +241,8 @@ export async function createComment(req: Request, res: Response) {
 
     if (error) {
       console.error("Supabase error:", error);
-      return res.status(500).json({ 
-        error: "Failed to create comment", 
+      return res.status(500).json({
+        error: "Failed to create comment",
         details: error.message,
         code: error.code,
         hint: error.hint
@@ -336,9 +341,9 @@ export async function createComment(req: Request, res: Response) {
     return res.status(201).json({ success: true, data, commentId });
   } catch (error: any) {
     console.error("Unexpected error in createComment:", error);
-    return res.status(500).json({ 
-      error: "Internal server error", 
-      details: error?.message 
+    return res.status(500).json({
+      error: "Internal server error",
+      details: error?.message
     });
   }
 }

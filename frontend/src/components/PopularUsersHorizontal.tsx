@@ -12,6 +12,7 @@ interface RecommendedUser {
     avatar_url: string;
     streak_count: number;
     isFollowing: boolean;
+    is_pro: boolean;
 }
 
 export default function PopularUsersHorizontal() {
@@ -218,6 +219,18 @@ export default function PopularUsersHorizontal() {
                                         {user.name}
                                     </span>
                                     <VerifiedBadge username={user.username} size="14px" />
+                                    {user.is_pro && (
+                                        <span style={{
+                                            fontSize: "8px",
+                                            fontWeight: "800",
+                                            padding: "1px 4px",
+                                            borderRadius: "3px",
+                                            backgroundColor: "#0f172a",
+                                            color: "#fff",
+                                            letterSpacing: "0.02em",
+                                            marginLeft: "2px"
+                                        }}>PRO</span>
+                                    )}
                                 </div>
                                 <span style={{
                                     fontSize: "12px",
@@ -252,7 +265,7 @@ export default function PopularUsersHorizontal() {
                         </button>
                     </div>
                 ))}
-            </div>
+            </div >
 
             <style>{`
                 .hide-scrollbar::-webkit-scrollbar {
@@ -263,6 +276,6 @@ export default function PopularUsersHorizontal() {
                     scrollbar-width: none;
                 }
             `}</style>
-        </div>
+        </div >
     );
 }

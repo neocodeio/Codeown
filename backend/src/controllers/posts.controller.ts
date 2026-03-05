@@ -125,7 +125,7 @@ export async function getPostById(req: Request, res: Response) {
     // Fetch the post and user data in one join query
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username)")
+      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro)")
       .eq("id", id)
       .single();
 
@@ -139,6 +139,7 @@ export async function getPostById(req: Request, res: Response) {
       name: rawUser?.name || "User",
       avatar_url: rawUser?.avatar_url || null,
       username: rawUser?.username || null,
+      is_pro: rawUser?.is_pro ?? false,
     };
 
     // Parallelize non-blocking updates and additional data fetching
@@ -278,12 +279,14 @@ export async function getPostsByUser(req: Request, res: Response) {
           name: userName,
           avatar_url: (userData as any).avatar_url || null,
           username: (userData as any).username || null,
+          is_pro: (userData as any).is_pro ?? false,
         };
       } else {
         // No user data found
         userDisplayData = {
           name: "User",
           avatar_url: null,
+          is_pro: false,
         };
       }
 

@@ -15,6 +15,7 @@ interface UserProfile {
   bio: string | null;
   follower_count: number;
   following_count: number;
+  is_pro: boolean;
 }
 
 interface UserHoverCardProps {
@@ -193,6 +194,17 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                     {user.name}
                   </span>
                   <VerifiedBadge username={user.username} size="14px" />
+                  {user.is_pro && (
+                    <span style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      padding: "2px 6px",
+                      borderRadius: 4,
+                      backgroundColor: "#0f172a",
+                      color: "#fff",
+                      letterSpacing: "0.02em",
+                    }}>PRO</span>
+                  )}
                 </div>
                 <span style={{ fontSize: "14px", color: "#64748b" }}>
                   @{user.username || "user"}

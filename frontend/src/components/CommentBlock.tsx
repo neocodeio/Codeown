@@ -116,6 +116,18 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
             >
               {name}
               <VerifiedBadge username={comment.user?.username} size="12px" />
+              {(comment.user as any)?.is_pro && (
+                <span style={{
+                  fontSize: "8px",
+                  fontWeight: "800",
+                  padding: "1px 4px",
+                  borderRadius: "3px",
+                  backgroundColor: "#0f172a",
+                  color: "#fff",
+                  letterSpacing: "0.02em",
+                  marginLeft: "2px"
+                }}>PRO</span>
+              )}
             </span>
             <span style={{ fontSize: "12px", color: "#666" }}>
               • {formatRelativeDate(comment.created_at)}

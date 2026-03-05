@@ -1,6 +1,9 @@
 import { useClerkUser } from "../hooks/useClerkUser";
+import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
+import api from "../api/axios";
 
 const PRO_CHECKOUT_BASE =
   "https://codeown.lemonsqueezy.com/checkout/buy/33a97835-6017-448a-a671-57ef2302126d";
@@ -8,6 +11,8 @@ const PRO_CHECKOUT_BASE =
 function buildProCheckoutUrl(userId: string): string {
   const url = new URL(PRO_CHECKOUT_BASE);
   url.searchParams.set("checkout[custom][user_id]", userId);
+  // Redirect back to profile page after payment with a flag to refresh status
+  url.searchParams.set("checkout[success_url]", window.location.origin + "/profile?checkout_completed=true");
   return url.toString();
 }
 
@@ -20,10 +25,34 @@ const PRO_FEATURES = [
 
 export default function Billing() {
   const { user, isLoaded, isSignedIn } = useClerkUser();
+  const { getToken } = useClerkAuth();
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const [profile, setProfile] = useState<any>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
-  if (!isLoaded) {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (isSignedIn && user?.id) {
+        try {
+          const token = await getToken();
+          const res = await api.get(`/users/profile/${user.id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setProfile(res.data);
+        } catch (err) {
+          console.error("Failed to fetch profile in billing", err);
+        } finally {
+          setLoadingProfile(false);
+        }
+      } else if (isLoaded) {
+        setLoadingProfile(false);
+      }
+    };
+    fetchProfile();
+  }, [isSignedIn, user?.id, isLoaded, getToken]);
+
+  if (!isLoaded || loadingProfile) {
     return (
       <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f8fafc" }}>
         <div style={{ width: 32, height: 32, border: "3px solid #e2e8f0", borderTopColor: "#0f172a", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
@@ -36,7 +65,10 @@ export default function Billing() {
     return <Navigate to="/sign-in" replace />;
   }
 
+  const isPro = profile?.is_pro === true;
+
   const handleUpgrade = () => {
+    if (isPro) return;
     window.location.href = buildProCheckoutUrl(user.id);
   };
 
@@ -137,24 +169,44 @@ export default function Billing() {
           }}>
             <button
               onClick={handleUpgrade}
+              disabled={isPro}
               style={{
                 width: "100%",
                 padding: "14px 24px",
                 fontSize: 16,
                 fontWeight: 600,
                 color: "#fff",
-                backgroundColor: "#0f172a",
+                backgroundColor: isPro ? "#10b981" : "#0f172a",
                 border: "none",
                 borderRadius: "12px",
-                cursor: "pointer",
-                transition: "opacity 0.2s",
+                cursor: isPro ? "default" : "pointer",
+                transition: "all 0.2s",
+                opacity: isPro ? 1 : undefined,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
               }}
-              onMouseDown={(e) => { e.currentTarget.style.opacity = "0.9"; }}
-              onMouseUp={(e) => { e.currentTarget.style.opacity = "1"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
             >
-              Upgrade to Pro (Beta)
+              {isPro ? (
+                <>
+                  <span style={{ fontSize: "18px" }}>✓</span>
+                  You are a Pro member
+                </>
+              ) : (
+                "Upgrade to Pro (Beta)"
+              )}
             </button>
+            {isPro && (
+              <p style={{
+                textAlign: "center",
+                marginTop: "12px",
+                fontSize: "13px",
+                color: "#64748b"
+              }}>
+                You already have a Pro account. Thank you for your support!
+              </p>
+            )}
             <p style={{
               margin: "12px 0 0",
               fontSize: 12,
