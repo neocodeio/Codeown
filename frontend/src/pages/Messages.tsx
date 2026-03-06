@@ -459,15 +459,15 @@ export default function Messages() {
                     {convo.last_message && (
                       <span style={{ fontSize: "12px", color: "#94a3b8", flexShrink: 0 }}>
                         {new Date(convo.last_message.created_at).toLocaleDateString() ===
-                        new Date().toLocaleDateString()
+                          new Date().toLocaleDateString()
                           ? new Date(convo.last_message.created_at).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
                           : new Date(convo.last_message.created_at).toLocaleDateString([], {
-                              month: "short",
-                              day: "numeric",
-                            })}
+                            month: "short",
+                            day: "numeric",
+                          })}
                       </span>
                     )}
                   </div>
@@ -478,9 +478,22 @@ export default function Messages() {
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
+                      display: "flex",
+                      gap: "4px"
                     }}
                   >
-                    {convo.last_message?.content || "No messages yet"}
+                    {convo.last_message ? (
+                      <>
+                        {convo.last_message.sender_id === currentUser?.id && (
+                          <span style={{ color: "#94a3b8", fontWeight: 600 }}>You:</span>
+                        )}
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {convo.last_message.content}
+                        </span>
+                      </>
+                    ) : (
+                      "No messages yet"
+                    )}
                   </div>
                 </div>
               </div>
@@ -635,34 +648,48 @@ export default function Messages() {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: isMine ? "flex-end" : "flex-start",
-                        gap: "4px",
+                        gap: "2px",
                       }}
                     >
+                      {/* Name Label */}
+                      <span style={{
+                        fontSize: "10px",
+                        fontWeight: 800,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        color: isMine ? "#0f172a" : "#64748b",
+                        marginBottom: "2px",
+                        padding: "0 4px"
+                      }}>
+                        {isMine ? "You" : activeConvo.partner.name}
+                      </span>
+
                       <div
                         style={{
-                          padding: "14px 18px",
+                          padding: "12px 16px",
                           borderRadius: isMine
-                            ? "20px 20px 6px 20px"
-                            : "20px 20px 20px 6px",
+                            ? "18px 18px 4px 18px"
+                            : "18px 18px 18px 4px",
                           backgroundColor: isMine ? "#0f172a" : "#fff",
                           color: isMine ? "#fff" : "#0f172a",
                           fontSize: "15px",
                           lineHeight: 1.5,
                           boxShadow:
                             isMine
-                              ? "0 4px 12px rgba(15, 23, 42, 0.15)"
-                              : "0 2px 8px rgba(0,0,0,0.06)",
+                              ? "0 2px 8px rgba(15, 23, 42, 0.12)"
+                              : "0 2px 8px rgba(0,0,0,0.04)",
                           border: isMine ? "none" : "1px solid #e2e8f0",
+                          wordBreak: "break-word"
                         }}
                       >
                         {msg.content}
                       </div>
                       <span
                         style={{
-                          fontSize: "11px",
+                          fontSize: "10px",
                           color: "#94a3b8",
                           fontWeight: 500,
-                          padding: "0 6px",
+                          padding: "2px 6px 0",
                         }}
                       >
                         {new Date(msg.created_at).toLocaleTimeString([], {
