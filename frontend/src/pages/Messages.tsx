@@ -677,18 +677,20 @@ export default function Messages() {
                         gap: "2px",
                       }}
                     >
-                      {/* Name Label */}
-                      <span style={{
-                        fontSize: "10px",
-                        fontWeight: 800,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        color: isMine ? "#0f172a" : "#64748b",
-                        marginBottom: "2px",
-                        padding: "0 4px"
-                      }}>
-                        {isMine ? "You" : activeConvo.partner.name}
-                      </span>
+                      {/* Name Label - Only show for received messages */}
+                      {!isMine && (
+                        <span style={{
+                          fontSize: "10px",
+                          fontWeight: 800,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          color: "#64748b",
+                          marginBottom: "2px",
+                          padding: "0 4px"
+                        }}>
+                          {activeConvo.partner.name}
+                        </span>
+                      )}
 
                       <div
                         style={{
