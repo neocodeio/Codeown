@@ -546,7 +546,7 @@ export default function Feed() {
                         minHeight: "100vh",
                         paddingLeft: "24px",
                     }}>
-                        <div style={{ position: "sticky", top: "0px", padding: "24px 24px 0" }}>
+                        <div style={{ position: "sticky", top: "0px", padding: "24px 10px 0" }}>
                             <RecommendedUsersSidebar />
                         </div>
                     </div>

@@ -107,10 +107,11 @@ export default function RecommendedUsersSidebar() {
 
                 <div style={{
                     backgroundColor: "#fff",
-                    // borderRadius: "32px",
                     border: "1px solid #e5e7eb",
-                    padding: "26px",
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
+                    padding: "20px 24px",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.02)",
+                    width: "100%",
+                    boxSizing: "border-box"
                 }}>
                     <div style={{
                         display: "flex",
@@ -122,14 +123,15 @@ export default function RecommendedUsersSidebar() {
                         borderBottom: "1px solid #eff3f4"
                     }}>
                         <h3 style={{
-                            fontSize: "24px",
+                            fontSize: "22px",
                             fontWeight: 900,
                             color: "#0f172a",
                             margin: 0,
                             letterSpacing: "-0.04em",
-                            lineHeight: 1.1
+                            lineHeight: 1.1,
+                            textTransform: "uppercase"
                         }}>
-                            Who to follow
+                            WHO TO FOLLOW
                         </h3>
                         {streakCount > 0 && (
                             <div style={{ flexShrink: 0 }}>
@@ -151,9 +153,9 @@ export default function RecommendedUsersSidebar() {
                             ))}
                         </div>
                     ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                             {users.map(user => (
-                                <div key={user.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", width: "100%", overflow: "hidden" }}>
+                                <div key={user.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", width: "100%", minWidth: 0 }}>
                                     <UserHoverCard userId={user.id}>
                                         <Link to={`/user/${user.id}`} style={{
                                             display: "flex",
@@ -192,7 +194,7 @@ export default function RecommendedUsersSidebar() {
                                                     }}>
                                                         {user.name}
                                                     </span>
-                                                    <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
                                                         <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
                                                         {user.is_pro && (
                                                             <span style={{
@@ -206,7 +208,7 @@ export default function RecommendedUsersSidebar() {
                                                                 display: "flex",
                                                                 alignItems: "center",
                                                                 justifyContent: "center",
-                                                                height: "16px",
+                                                                height: "17px",
                                                                 lineHeight: 1
                                                             }}>PRO</span>
                                                         )}
@@ -245,7 +247,8 @@ export default function RecommendedUsersSidebar() {
                                             justifyContent: "center",
                                             textTransform: "uppercase",
                                             letterSpacing: "0.02em",
-                                            flexShrink: 0
+                                            flexShrink: 0,
+                                            marginLeft: "auto"
                                         }}
                                         onMouseEnter={(e) => {
                                             if (!user.isFollowing) e.currentTarget.style.backgroundColor = "#1e293b";
