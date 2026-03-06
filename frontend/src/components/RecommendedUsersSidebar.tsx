@@ -192,7 +192,7 @@ export default function RecommendedUsersSidebar() {
                                                         textTransform: "uppercase",
                                                         flexShrink: 1
                                                     }}>
-                                                        {user.name}
+                                                        {user.name.split(" ")[0]}
                                                     </span>
                                                     <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
                                                         <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
