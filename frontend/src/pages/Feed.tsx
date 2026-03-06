@@ -11,6 +11,7 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { SEO } from "../components/SEO";
+import ProUpgradeCTA from "../components/ProUpgradeCTA";
 
 export default function Feed() {
     const { width } = useWindowSize();
@@ -360,6 +361,7 @@ export default function Feed() {
                             </div>
                         </div>
                     </div>
+                    {isMobile && <ProUpgradeCTA style={{ margin: "10px", borderRadius: "16px" }} />}
 
                     {/* Popular Users - Mobile/Tablet Only - Hidden by request */}
                     {/* {width < 1024 && <PopularUsersHorizontal />} */}

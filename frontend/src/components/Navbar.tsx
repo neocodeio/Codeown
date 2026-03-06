@@ -21,6 +21,7 @@ import {
   Logout01Icon,
   MoreHorizontalIcon,
   Login01Icon,
+  ChartBarLineIcon,
   // faEllipsisH,
   // faSignOutAlt,
   // faPlus,
@@ -263,6 +264,13 @@ export default function Navbar() {
               <HugeiconsIcon icon={UserIcon} style={{ width: "20px" }} />
               Profile
             </Link>
+            {isPro && (
+              <Link to="/analytics" style={linkStyle("/analytics")}>
+                <HugeiconsIcon icon={ChartBarLineIcon} style={{ width: "20px" }} />
+                Analytics
+                <span style={{ fontSize: '9px', backgroundColor: '#000', color: '#fff', padding: '2px 5px', borderRadius: '4px', marginLeft: '4px', fontWeight: 800 }}>PRO</span>
+              </Link>
+            )}
 
 
 

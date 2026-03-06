@@ -38,6 +38,7 @@ import {
   TwitterIcon,
   Linkedin01Icon,
   GithubIcon,
+  ChartBarLineIcon,
 } from '@hugeicons/core-free-icons';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -465,6 +466,29 @@ export default function Profile() {
                 <HugeiconsIcon icon={Pen01Icon} size={16} />
                 Edit Profile
               </button>
+              {userProfile?.is_pro && (
+                <button
+                  onClick={() => navigate("/analytics")}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "20px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    border: "1px solid #e2e8f0",
+                    backgroundColor: "#f8fafc",
+                    color: "#1e293b",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <HugeiconsIcon icon={ChartBarLineIcon} size={16} />
+                  Analytics
+                  <span style={{ fontSize: '9px', backgroundColor: '#000', color: '#fff', padding: '2px 5px', borderRadius: '4px', fontWeight: 800 }}>PRO</span>
+                </button>
+              )}
             </div>
 
             <div style={{

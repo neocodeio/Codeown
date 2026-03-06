@@ -59,11 +59,7 @@ export default function ProjectDetail() {
       fetchProject();
       fetchReactionStatus();
 
-      // Increment view count
-      if (!viewLogged.current) {
-        viewLogged.current = true;
-        api.post(`/projects/${id}/view`).catch(err => console.error("Failed to record view", err));
-      }
+      // View count increment logic moved to fetchProject to get target_user_id
     }
   }, [id]);
 
@@ -74,6 +70,19 @@ export default function ProjectDetail() {
 
       setLikeCount(response.data.like_count || 0);
       setUserRating(response.data.user_rating || 0);
+
+      // Track project view analytics
+      if (!viewLogged.current) {
+        viewLogged.current = true;
+        const token = await getToken();
+        api.post(`/analytics/track`, {
+          event_type: 'project_view',
+          target_user_id: response.data.user_id,
+          project_id: response.data.id
+        }, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        }).catch(err => console.error("Failed to record analytics", err));
+      }
     } catch (error) {
       console.error("Error fetching project:", error);
       navigate("/");

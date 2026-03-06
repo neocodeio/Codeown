@@ -128,7 +128,10 @@ export default function UserProfile() {
             setIsFollowing(followRes.data.isFollowing || false);
 
             // Record profile view
-            await api.post(`/users/${userRes.data.id}/view`, {}, {
+            await api.post(`/analytics/track`, {
+              event_type: 'profile_view',
+              target_user_id: userRes.data.id
+            }, {
               headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
           } catch (error) {
@@ -458,6 +461,37 @@ export default function UserProfile() {
                 >
                   <HugeiconsIcon icon={isFollowing ? UserCheck01Icon : UserAdd01Icon} size={16} />
                   {isFollowing ? "Following" : "Follow"}
+                </button>
+              )}
+              {user.is_pro && user.is_hirable && (
+                <button
+                  onClick={async () => {
+                    const token = await getToken();
+                    await api.post("/analytics/track", {
+                      event_type: "opportunity_click",
+                      target_user_id: user.id
+                    }, {
+                      headers: token ? { Authorization: `Bearer ${token}` } : {}
+                    });
+                    navigate(`/messages?userId=${user.id}&message=${encodeURIComponent("Hi! I saw you are open to opportunities and I'd like to chat.")}`);
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "20px",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    backgroundColor: "#2563eb",
+                    color: "#fff",
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    boxShadow: "0 4px 12px rgba(37, 99, 235, 0.2)"
+                  }}
+                >
+                  <HugeiconsIcon icon={Rocket01Icon} size={16} />
+                  Hire Me
                 </button>
               )}
               <button
