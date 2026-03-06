@@ -45,7 +45,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               border: 1px solid #e2e8f0;
             }
             .header-banner {
-              background-color: #10633b;
+              background-color: #000000;
               height: 8px;
               width: 100%;
             }
@@ -62,7 +62,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               font-family: 'JetBrains Mono', monospace;
               font-size: 12px;
               font-weight: 500;
-              color: #10633b;
+              color: #000000;
               background: #e7f5ed;
               padding: 4px 8px;
               border-radius: 6px;
@@ -110,7 +110,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               width: 24px;
               height: 24px;
               background: #ffffff;
-              border: 2px solid #10633b;
+              border: 2px solid #000000;
               border-radius: 50%;
               box-sizing: border-box;
             }
@@ -129,7 +129,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               margin-top: 48px;
             }
             .btn {
-              background-color: #10633b;
+              background-color: #000000;
               color: #ffffff !important;
               padding: 16px 32px;
               text-decoration: none;
@@ -199,7 +199,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
                 </div>
 
                 <div class="cta-container">
-                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="btn">Enter the OS &rarr;</a>
+                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="btn">Enter Codeown &rarr;</a>
                 </div>
               </div>
               
