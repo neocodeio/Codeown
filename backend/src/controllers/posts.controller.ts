@@ -570,6 +570,15 @@ export async function deletePost(req: Request, res: Response) {
       return res.status(403).json({ error: "You can only delete your own posts" });
     }
 
+    // MANUALLY DELETE DEPENDENCIES to prevent foreign key constraint errors
+    await Promise.all([
+      supabase.from("likes").delete().eq("post_id", id),
+      supabase.from("comments").delete().eq("post_id", id),
+      supabase.from("saved_posts").delete().eq("post_id", id),
+      supabase.from("notifications").delete().eq("post_id", id),
+      supabase.from("analytics_events").delete().eq("post_id", id)
+    ]);
+
     // Delete post
     const { error: deleteError } = await supabase
       .from("posts")

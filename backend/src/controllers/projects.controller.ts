@@ -558,7 +558,8 @@ export async function deleteProject(req: Request, res: Response) {
       supabase.from("project_ratings").delete().eq("project_id", resolvedId),
       supabase.from("project_contributors").delete().eq("project_id", resolvedId),
       supabase.from("project_comments").delete().eq("project_id", resolvedId),
-      supabase.from("notifications").delete().eq("project_id", resolvedId)
+      supabase.from("notifications").delete().eq("project_id", resolvedId),
+      supabase.from("analytics_events").delete().eq("project_id", resolvedId)
     ]);
 
     // Delete project
