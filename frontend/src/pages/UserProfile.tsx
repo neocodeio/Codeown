@@ -428,13 +428,21 @@ export default function UserProfile() {
                 <button
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
                   style={{
-                    padding: "8px",
-                    borderRadius: "20px",
+                    padding: "10px 18px",
+                    borderRadius: "30px",
+                    fontSize: "14px",
+                    fontWeight: 700,
                     border: "1px solid #e2e8f0",
-                    backgroundColor: "#fff",
-                    color: "#64748b",
+                    backgroundColor: "#ffffff",
+                    color: "#1e293b",
                     cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    transition: "all 0.2s ease",
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
                   title="Message"
                 >
                   <HugeiconsIcon icon={Mail01Icon} size={18} />
@@ -445,18 +453,27 @@ export default function UserProfile() {
                   onClick={handleFollow}
                   disabled={followLoading}
                   style={{
-                    padding: "8px 16px",
-                    borderRadius: "20px",
+                    padding: "10px 22px",
+                    borderRadius: "30px",
                     fontSize: "14px",
-                    fontWeight: 600,
-                    border: "1px solid",
-                    borderColor: isFollowing ? "#e2e8f0" : "#0f172a",
-                    backgroundColor: isFollowing ? "#f8fafc" : "#0f172a",
+                    fontWeight: 700,
+                    border: isFollowing ? "1px solid #e2e8f0" : "none",
+                    backgroundColor: isFollowing ? "#ffffff" : "#0f172a",
                     color: isFollowing ? "#1e293b" : "#fff",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: "6px",
+                    gap: "8px",
+                    transition: "all 0.2s ease",
+                    boxShadow: isFollowing ? "none" : "0 4px 12px rgba(15, 23, 42, 0.1)"
+                  }}
+                  onMouseEnter={(e) => {
+                    if (isFollowing) e.currentTarget.style.backgroundColor = "#f8fafc";
+                    else e.currentTarget.style.backgroundColor = "#1e293b";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (isFollowing) e.currentTarget.style.backgroundColor = "#ffffff";
+                    else e.currentTarget.style.backgroundColor = "#0f172a";
                   }}
                 >
                   <HugeiconsIcon icon={isFollowing ? UserCheck01Icon : UserAdd01Icon} size={16} />
@@ -476,19 +493,22 @@ export default function UserProfile() {
                     navigate(`/messages?userId=${user.id}&message=${encodeURIComponent("Hi! I saw you are open to opportunities and I'd like to chat.")}`);
                   }}
                   style={{
-                    padding: "8px 16px",
-                    borderRadius: "20px",
+                    padding: "10px 22px",
+                    borderRadius: "30px",
                     fontSize: "14px",
-                    fontWeight: 700,
-                    backgroundColor: "#2563eb",
-                    color: "#fff",
+                    fontWeight: 800,
                     border: "none",
+                    backgroundColor: "#3b82f6",
+                    color: "#fff",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: "6px",
-                    boxShadow: "0 4px 12px rgba(37, 99, 235, 0.2)"
+                    gap: "8px",
+                    transition: "all 0.2s ease",
+                    boxShadow: "0 4px 12px rgba(59, 130, 246, 0.2)"
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
                 >
                   <HugeiconsIcon icon={Rocket01Icon} size={16} />
                   Hire Me
@@ -500,13 +520,16 @@ export default function UserProfile() {
                   navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
                 }}
                 style={{
-                  padding: "8px",
-                  borderRadius: "20px",
+                  padding: "10px 18px",
+                  borderRadius: "30px",
                   border: "1px solid #e2e8f0",
-                  backgroundColor: "#fff",
+                  backgroundColor: "#ffffff",
                   color: "#64748b",
                   cursor: "pointer",
+                  transition: "all 0.2s ease",
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
                 title="Share"
               >
                 <HugeiconsIcon icon={Share01Icon} size={18} />
@@ -634,90 +657,123 @@ export default function UserProfile() {
         }}>
           <div className="tabs-row" style={{
             display: "flex",
-            gap: isMobile ? "24px" : "18px",
-            marginBottom: "24px",
-            marginTop: "24px",
+            gap: "0px",
+            marginBottom: "0px",
+            marginTop: "8px",
             overflowX: "auto",
             WebkitOverflowScrolling: "touch",
-            paddingBottom: "2px",
+            borderBottom: "1px solid #e2e8f0",
+            position: "relative",
           }}>
             <button
               onClick={() => setActiveTab("posts")}
               style={{
-                padding: "8px 12px",
+                flex: isMobile ? "1" : "none",
+                minWidth: isMobile ? "0" : "120px",
+                padding: "16px 20px",
                 fontSize: "15px",
-                fontWeight: activeTab === "posts" ? 700 : 500,
+                fontWeight: activeTab === "posts" ? 700 : 600,
                 color: activeTab === "posts" ? "#0f172a" : "#64748b",
-                borderRadius: "14px",
-                border: "1px solid #e2e8f0",
-                background: activeTab === "posts" ? "#F8FAFC" : "transparent",
+                background: "transparent",
+                border: "none",
                 cursor: "pointer",
-                marginBottom: "-2px",
                 whiteSpace: "nowrap",
+                position: "relative",
+                transition: "all 0.2s ease",
               }}
+              onMouseEnter={(e) => { if (activeTab !== "posts") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
               Posts
+              {activeTab === "posts" && (
+                <div style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: "25%",
+                  right: "25%",
+                  height: "3px",
+                  backgroundColor: "#0f172a",
+                  borderRadius: "2px 2px 0 0"
+                }} />
+              )}
             </button>
             <button
               onClick={() => setActiveTab("projects")}
               style={{
-                padding: "8px 12px",
+                flex: isMobile ? "1" : "none",
+                minWidth: isMobile ? "0" : "120px",
+                padding: "16px 20px",
                 fontSize: "15px",
-                fontWeight: activeTab === "projects" ? 700 : 500,
+                fontWeight: activeTab === "projects" ? 700 : 600,
                 color: activeTab === "projects" ? "#0f172a" : "#64748b",
-                borderRadius: "14px",
-                border: "1px solid #e2e8f0",
-                background: activeTab === "projects" ? "#F8FAFC" : "transparent",
+                background: "transparent",
+                border: "none",
                 cursor: "pointer",
-                marginBottom: "-2px",
                 whiteSpace: "nowrap",
+                position: "relative",
+                transition: "all 0.2s ease",
               }}
+              onMouseEnter={(e) => { if (activeTab !== "projects") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
               Projects
+              {activeTab === "projects" && (
+                <div style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: "25%",
+                  right: "25%",
+                  height: "3px",
+                  backgroundColor: "#0f172a",
+                  borderRadius: "2px 2px 0 0"
+                }} />
+              )}
             </button>
           </div>
 
-          {activeTab === "posts" ? (
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {posts.length === 0 ? (
-                <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
-                  <HugeiconsIcon icon={Layers01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
-                  <p style={{ fontWeight: 600 }}>No posts yet</p>
-                </div>
-              ) : (
-                posts.map(p => (
-                  <div key={p.id} style={{ position: "relative" }}>
-                    {user.pinned_post_id === p.id && (
-                      <div style={{
-                        padding: "12px 24px 0",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        color: "#64748b",
-                        fontSize: "13px",
-                        fontWeight: 700
-                      }}>
-                        <HugeiconsIcon icon={PushpinIcon} size={14} />
-                        Pinned Post
-                      </div>
-                    )}
-                    <PostCard post={p} onUpdated={fetchUserPosts} />
+          <div className="tab-content" style={{ marginTop: "20px" }}>
+            {activeTab === "posts" ? (
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {posts.length === 0 ? (
+                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
+                    <HugeiconsIcon icon={Layers01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
+                    <p style={{ fontWeight: 600 }}>No posts yet</p>
                   </div>
-                ))
-              )}
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {projects.length === 0 ? (
-                <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
-                  <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
-                  <p style={{ fontWeight: 600 }}>No projects yet</p>
-                </div>
-              ) : (
-                projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
-              )}
-            </div>
-          )}
+                ) : (
+                  posts.map(p => (
+                    <div key={p.id} style={{ position: "relative" }}>
+                      {user.pinned_post_id === p.id && (
+                        <div style={{
+                          padding: "12px 24px 0",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          color: "#64748b",
+                          fontSize: "13px",
+                          fontWeight: 700
+                        }}>
+                          <HugeiconsIcon icon={PushpinIcon} size={14} />
+                          Pinned Post
+                        </div>
+                      )}
+                      <PostCard post={p} onUpdated={fetchUserPosts} />
+                    </div>
+                  ))
+                )}
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {projects.length === 0 ? (
+                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
+                    <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
+                    <p style={{ fontWeight: 600 }}>No projects yet</p>
+                  </div>
+                ) : (
+                  projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

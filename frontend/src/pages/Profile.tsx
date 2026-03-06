@@ -429,39 +429,45 @@ export default function Profile() {
                 <Link
                   to="/billing"
                   style={{
-                    padding: "8px 14px",
-                    borderRadius: "20px",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    border: "1px solid #0f172a",
+                    padding: "10px 18px",
+                    borderRadius: "30px",
+                    fontSize: "14px",
+                    fontWeight: 800,
                     backgroundColor: "#0f172a",
                     color: "#fff",
                     textDecoration: "none",
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: "6px",
+                    gap: "8px",
                     whiteSpace: "nowrap",
+                    transition: "all 0.2s ease",
+                    boxShadow: "0 4px 12px rgba(15, 23, 42, 0.1)"
                   }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.backgroundColor = "#1e293b"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.backgroundColor = "#0f172a"; }}
                 >
-                  Upgrade to Pro (Beta)
+                  Upgrade to Pro
                 </Link>
               )}
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 style={{
-                  padding: "8px 12px",
-                  borderRadius: "20px",
+                  padding: "10px 18px",
+                  borderRadius: "30px",
                   fontSize: "14px",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   border: "1px solid #e2e8f0",
-                  backgroundColor: "#f8fafc",
+                  backgroundColor: "#ffffff",
                   color: "#1e293b",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: "6px",
+                  gap: "8px",
                   whiteSpace: "nowrap",
+                  transition: "all 0.2s ease",
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
               >
                 <HugeiconsIcon icon={Pen01Icon} size={16} />
                 Edit Profile
@@ -470,23 +476,26 @@ export default function Profile() {
                 <button
                   onClick={() => navigate("/analytics")}
                   style={{
-                    padding: "8px 12px",
-                    borderRadius: "20px",
+                    padding: "10px 18px",
+                    borderRadius: "30px",
                     fontSize: "14px",
-                    fontWeight: 600,
+                    fontWeight: 700,
                     border: "1px solid #e2e8f0",
-                    backgroundColor: "#f8fafc",
+                    backgroundColor: "#ffffff",
                     color: "#1e293b",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: "6px",
+                    gap: "8px",
                     whiteSpace: "nowrap",
+                    transition: "all 0.2s ease",
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
                 >
                   <HugeiconsIcon icon={ChartBarLineIcon} size={16} />
                   Analytics
-                  <span style={{ fontSize: '9px', backgroundColor: '#000', color: '#fff', padding: '2px 5px', borderRadius: '4px', fontWeight: 800 }}>PRO</span>
+                  <span style={{ fontSize: '9px', backgroundColor: '#000', color: '#fff', padding: '2px 5px', borderRadius: '4px', fontWeight: 900 }}>PRO</span>
                 </button>
               )}
             </div>
@@ -723,67 +732,113 @@ export default function Profile() {
         }}>
           <div className="tabs-row" style={{
             display: "flex",
-            gap: isMobile ? "24px" : "18px",
-            marginBottom: "24px",
-            marginTop: "24px",
+            gap: "0px",
+            marginBottom: "0px",
+            marginTop: "8px",
             overflowX: "auto",
             WebkitOverflowScrolling: "touch",
-            paddingBottom: "2px",
+            borderBottom: "1px solid #e2e8f0",
+            position: "relative",
           }}>
             <button
               onClick={() => setActiveTab("posts")}
               style={{
-                padding: "8px 12px",
+                flex: isMobile ? "1" : "none",
+                minWidth: isMobile ? "0" : "100px",
+                padding: "16px 20px",
                 fontSize: "15px",
-                fontWeight: activeTab === "posts" ? 700 : 500,
+                fontWeight: activeTab === "posts" ? 700 : 600,
                 color: activeTab === "posts" ? "#0f172a" : "#64748b",
-                borderRadius: "14px",
-                border: "1px solid #e2e8f0",
-                background: activeTab === "posts" ? "#F8FAFC" : "transparent",
+                background: "transparent",
+                border: "none",
                 cursor: "pointer",
-                marginBottom: "-2px",
                 whiteSpace: "nowrap",
+                position: "relative",
+                transition: "all 0.2s ease",
               }}
+              onMouseEnter={(e) => { if (activeTab !== "posts") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
               Posts
+              {activeTab === "posts" && (
+                <div style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: "25%",
+                  right: "25%",
+                  height: "3px",
+                  backgroundColor: "#0f172a",
+                  borderRadius: "2px 2px 0 0"
+                }} />
+              )}
             </button>
             <button
               onClick={() => setActiveTab("projects")}
               style={{
-                padding: "8px 12px",
+                flex: isMobile ? "1" : "none",
+                minWidth: isMobile ? "0" : "100px",
+                padding: "16px 20px",
                 fontSize: "15px",
-                fontWeight: activeTab === "projects" ? 700 : 500,
+                fontWeight: activeTab === "projects" ? 700 : 600,
                 color: activeTab === "projects" ? "#0f172a" : "#64748b",
-                borderRadius: "14px",
-                border: "1px solid #e2e8f0",
-                background: activeTab === "projects" ? "#F8FAFC" : "transparent",
+                background: "transparent",
+                border: "none",
                 cursor: "pointer",
-                marginBottom: "-2px",
                 whiteSpace: "nowrap",
+                position: "relative",
+                transition: "all 0.2s ease",
               }}
+              onMouseEnter={(e) => { if (activeTab !== "projects") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
               Projects
+              {activeTab === "projects" && (
+                <div style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: "25%",
+                  right: "25%",
+                  height: "3px",
+                  backgroundColor: "#0f172a",
+                  borderRadius: "2px 2px 0 0"
+                }} />
+              )}
             </button>
             <button
               onClick={() => setActiveTab("saved")}
               style={{
-                padding: "8px 12px",
+                flex: isMobile ? "1" : "none",
+                minWidth: isMobile ? "0" : "100px",
+                padding: "16px 20px",
                 fontSize: "15px",
-                fontWeight: activeTab === "saved" ? 700 : 500,
+                fontWeight: activeTab === "saved" ? 700 : 600,
                 color: activeTab === "saved" ? "#0f172a" : "#64748b",
-                borderRadius: "14px",
-                border: "1px solid #e2e8f0",
-                background: activeTab === "saved" ? "#F8FAFC" : "transparent",
+                background: "transparent",
+                border: "none",
                 cursor: "pointer",
-                marginBottom: "-2px",
                 whiteSpace: "nowrap",
+                position: "relative",
+                transition: "all 0.2s ease",
               }}
+              onMouseEnter={(e) => { if (activeTab !== "saved") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
               Saved
+              {activeTab === "saved" && (
+                <div style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: "25%",
+                  right: "25%",
+                  height: "3px",
+                  backgroundColor: "#0f172a",
+                  borderRadius: "2px 2px 0 0"
+                }} />
+              )}
             </button>
           </div>
 
-          <div className="tab-content">
+          <div className="tab-content" style={{ marginTop: "20px" }}>
             {activeTab === "posts" && (
               <div className="tab-content-enter">
                 {posts.length === 0 ? (
