@@ -57,7 +57,7 @@ export default function ProUpgradeCTA({ style, compact }: ProUpgradeCTAProps) {
                     Upgrade to Pro
                 </h3>
                 <p style={{ margin: "0 0 16px 0", fontSize: compact ? "13px" : "14px", color: "#64748b", lineHeight: "1.5", fontWeight: 500 }}>
-                    Unlock exclusive features, get the golden badge, and see who's viewing your work.
+                    Unlock exclusive features, get the golden badge, and explore your personalized analytics.
                 </p>
                 <Link to="/billing" style={{ textDecoration: "none" }}>
                     <button style={{

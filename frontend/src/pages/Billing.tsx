@@ -19,6 +19,7 @@ function buildProCheckoutUrl(userId: string): string {
 }
 
 const PRO_FEATURES = [
+  "Comprehensive Analytics dashboard",
   "Open to opportunities badge on your profile",
   "Stand out in search and project cards",
   "Show recruiters you're actively looking",
@@ -127,7 +128,7 @@ export default function Billing() {
               color: "#64748b",
               lineHeight: 1.5,
             }}>
-              Upgrade your account to get more visibility and unlock the Open to opportunities badge.
+              Upgrade your account to get better visibility, unlock advanced analytics, and get the "Open to opportunities" badge.
               <br />
               <br />
               <span style={{ fontSize: 12, color: "#94a3b8" }}>
