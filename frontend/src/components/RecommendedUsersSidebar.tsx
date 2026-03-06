@@ -153,7 +153,7 @@ export default function RecommendedUsersSidebar() {
                     ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                             {users.map(user => (
-                                <div key={user.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                                <div key={user.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", width: "100%", overflow: "hidden" }}>
                                     <UserHoverCard userId={user.id}>
                                         <Link to={`/user/${user.id}`} style={{
                                             display: "flex",
@@ -161,15 +161,16 @@ export default function RecommendedUsersSidebar() {
                                             gap: "12px",
                                             textDecoration: "none",
                                             flex: 1,
-                                            minWidth: 0
+                                            minWidth: 0,
+                                            overflow: "hidden"
                                         }}>
-                                            <div style={{ position: "relative" }}>
+                                            <div style={{ position: "relative", flexShrink: 0 }}>
                                                 <img
                                                     src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`}
                                                     alt={user.name}
                                                     style={{
-                                                        width: "42px",
-                                                        height: "42px",
+                                                        width: "44px",
+                                                        height: "44px",
                                                         borderRadius: "50%",
                                                         objectFit: "cover",
                                                         border: "1px solid #f1f5f9"
@@ -177,34 +178,42 @@ export default function RecommendedUsersSidebar() {
                                                 />
                                             </div>
 
-                                            <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "2px" }}>
-                                                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                            <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "2px", flex: 1 }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "4px", minWidth: 0 }}>
                                                     <span style={{
                                                         fontSize: "15px",
-                                                        fontWeight: 700,
+                                                        fontWeight: 800,
                                                         color: "#0f172a",
                                                         whiteSpace: "nowrap",
                                                         overflow: "hidden",
-                                                        textOverflow: "ellipsis"
+                                                        textOverflow: "ellipsis",
+                                                        textTransform: "uppercase",
+                                                        flexShrink: 1
                                                     }}>
                                                         {user.name}
                                                     </span>
-                                                    <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
-                                                    {user.is_pro && (
-                                                        <span style={{
-                                                            fontSize: "8px",
-                                                            fontWeight: "800",
-                                                            padding: "1px 4px",
-                                                            borderRadius: "3px",
-                                                            backgroundColor: "#0f172a",
-                                                            color: "#fff",
-                                                            letterSpacing: "0.02em",
-                                                            marginLeft: "2px"
-                                                        }}>PRO</span>
-                                                    )}
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
+                                                        <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
+                                                        {user.is_pro && (
+                                                            <span style={{
+                                                                fontSize: "9px",
+                                                                fontWeight: "900",
+                                                                padding: "2px 6px",
+                                                                borderRadius: "6px",
+                                                                backgroundColor: "#0f172a",
+                                                                color: "#fff",
+                                                                letterSpacing: "0.05em",
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+                                                                height: "16px",
+                                                                lineHeight: 1
+                                                            }}>PRO</span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 {user.streak_count > 0 ? (
-                                                    <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
+                                                    <span style={{ fontSize: "12px", color: "#475569", fontWeight: 600, display: "flex", alignItems: "center", gap: "4px" }}>
                                                         🔥 {user.streak_count} day streak
                                                     </span>
                                                 ) : (
@@ -219,21 +228,24 @@ export default function RecommendedUsersSidebar() {
                                     <button
                                         onClick={() => handleFollow(user.id, user.isFollowing)}
                                         style={{
-                                            padding: "6px 16px",
+                                            padding: "0 16px",
                                             borderRadius: "100px",
-                                            border: user.isFollowing ? "1px solid #cbd5e1" : "none",
-                                            backgroundColor: user.isFollowing ? "#fff" : "#0f172a",
-                                            color: user.isFollowing ? "#475569" : "#fff",
-                                            fontSize: "13px",
-                                            fontWeight: 700,
+                                            border: user.isFollowing ? "1px solid #e2e8f0" : "none",
+                                            backgroundColor: user.isFollowing ? "transparent" : "#0f172a",
+                                            color: user.isFollowing ? "#1e293b" : "#fff",
+                                            fontSize: "12px",
+                                            fontWeight: 900,
                                             cursor: "pointer",
                                             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                                             whiteSpace: "nowrap",
-                                            minWidth: "80px",
-                                            height: "32px",
+                                            minWidth: "95px",
+                                            height: "34px",
                                             display: "flex",
                                             alignItems: "center",
-                                            justifyContent: "center"
+                                            justifyContent: "center",
+                                            textTransform: "uppercase",
+                                            letterSpacing: "0.02em",
+                                            flexShrink: 0
                                         }}
                                         onMouseEnter={(e) => {
                                             if (!user.isFollowing) e.currentTarget.style.backgroundColor = "#1e293b";
@@ -241,7 +253,7 @@ export default function RecommendedUsersSidebar() {
                                         }}
                                         onMouseLeave={(e) => {
                                             if (!user.isFollowing) e.currentTarget.style.backgroundColor = "#0f172a";
-                                            else e.currentTarget.style.backgroundColor = "#fff";
+                                            else e.currentTarget.style.backgroundColor = "transparent";
                                         }}
                                     >
                                         {user.isFollowing ? "Following" : "Follow"}
