@@ -28,6 +28,9 @@ import rateLimit from "express-rate-limit";
 
 const app = express();
 
+// Trust proxy for Railway/deployment load balancers
+app.set("trust proxy", 1);
+
 // 1. CORS - MUST BE FIRST for preflight requests
 app.use(cors({
   origin: [
