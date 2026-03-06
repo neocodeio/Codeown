@@ -203,7 +203,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: "3px",
+                    gap: "1px",
                     letterSpacing: "-0.01em"
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
@@ -215,13 +215,12 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                     <span style={{
                       fontSize: "9px",
                       fontWeight: "800",
-                      padding: "1px 6px",
+                      padding: "1px 4px",
                       borderRadius: "4px",
-                      background: "linear-gradient(135deg, #d4a853, #f0d78c)",
-                      color: "#5c4a1e",
+                      background: "#000",
+                      color: "#fff",
                       letterSpacing: "0.06em",
                       marginLeft: "4px",
-                      boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
                       textTransform: "uppercase"
                     }}>PRO</span>
                   )}
@@ -541,7 +540,6 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                 style={{
                   fontSize: "18px",
                   fill: isLiked ? "currentColor" : "none",
-                  filter: isLiked ? "drop-shadow(0 0 4px rgba(249, 24, 128, 0.3))" : "none",
                   strokeWidth: isLiked ? "0" : "1.5px"
                 }}
               />

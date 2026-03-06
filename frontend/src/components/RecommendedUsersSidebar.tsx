@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,6 +10,7 @@ import VerifiedBadge from "./VerifiedBadge";
 import RecentProjectLaunches from "./RecentProjectLaunches";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
@@ -144,7 +146,11 @@ export default function RecommendedUsersSidebar() {
                             </p>
                             <Link to="/billing" style={{ textDecoration: "none" }}>
                                 <button style={{
-                                    padding: "8px 24px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "8px",
+                                    padding: "10px 12px",
                                     backgroundColor: "#000",
                                     color: "#fff",
                                     border: "none",
@@ -155,13 +161,16 @@ export default function RecommendedUsersSidebar() {
                                     transition: "all 0.2s ease",
                                 }}
                                     onMouseEnter={e => {
-                                        e.currentTarget.style.backgroundColor = "#000";
+                                        e.currentTarget.style.transform = "scale(1.02)";
+                                        e.currentTarget.style.backgroundColor = "#1a1a1a";
                                     }}
                                     onMouseLeave={e => {
+                                        e.currentTarget.style.transform = "scale(1)";
                                         e.currentTarget.style.backgroundColor = "#000";
                                     }}
                                 >
                                     Upgrade Now
+                                    <HugeiconsIcon icon={ArrowRight01Icon} style={{ width: "16px", height: "16px" }} />
                                 </button>
                             </Link>
                         </div>

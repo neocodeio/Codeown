@@ -188,12 +188,14 @@ export default function Feed() {
                         <div
                             style={{
                                 display: "flex",
-                                flexDirection: isMobile ? "column" : "row",
-                                alignItems: isMobile ? "flex-start" : "center",
-                                justifyContent: "flex-start",
-                                padding: "16px 20px 12px",
-                                gap: isMobile ? "10px" : "12px",
-                                flexWrap: "wrap",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: isMobile ? "space-between" : "flex-start",
+                                padding: isMobile ? "12px 14px" : "16px 20px 12px",
+                                gap: isMobile ? "8px" : "12px",
+                                flexWrap: "nowrap",
+                                overflowX: isMobile ? "auto" : "visible",
+                                scrollbarWidth: "none"
                             }}
                         >
                             <h1
@@ -211,9 +213,9 @@ export default function Feed() {
                             <div
                                 style={{
                                     display: "flex",
-                                    flexDirection: isMobile ? "column" : "row",
+                                    flexDirection: "row",
                                     alignItems: "center",
-                                    justifyContent: isMobile ? "stretch" : "flex-end",
+                                    justifyContent: isMobile ? "space-between" : "flex-end",
                                     gap: isMobile ? 6 : 8,
                                     width: isMobile ? "100%" : "auto",
                                 }}
@@ -239,10 +241,10 @@ export default function Feed() {
                                             border: "none",
                                             outline: "none",
                                             cursor: "pointer",
-                                            padding: "5px 8px",
+                                            padding: isMobile ? "4px 10px" : "5px 8px",
                                             borderRadius: "999px",
-                                            fontSize: isMobile ? "13px" : "12px",
-                                            fontWeight: 600,
+                                            fontSize: isMobile ? "12px" : "12px",
+                                            fontWeight: 700,
                                             flex: isMobile ? 1 : undefined,
                                             textAlign: "center",
                                             backgroundColor:
@@ -265,10 +267,10 @@ export default function Feed() {
                                             border: "none",
                                             outline: "none",
                                             cursor: "pointer",
-                                            padding: "5px 10px",
+                                            padding: isMobile ? "4px 10px" : "5px 10px",
                                             borderRadius: "999px",
-                                            fontSize: isMobile ? "13px" : "12px",
-                                            fontWeight: 600,
+                                            fontSize: isMobile ? "12px" : "12px",
+                                            fontWeight: 700,
                                             flex: isMobile ? 1 : undefined,
                                             textAlign: "center",
                                             backgroundColor:
@@ -309,10 +311,10 @@ export default function Feed() {
                                             border: "none",
                                             outline: "none",
                                             cursor: "pointer",
-                                            padding: "5px 10px",
+                                            padding: isMobile ? "4px 12px" : "5px 10px",
                                             borderRadius: "999px",
-                                            fontSize: isMobile ? "13px" : "12px",
-                                            fontWeight: 600,
+                                            fontSize: isMobile ? "12px" : "12px",
+                                            fontWeight: 700,
                                             flex: isMobile ? 1 : undefined,
                                             textAlign: "center",
                                             backgroundColor:
@@ -335,10 +337,10 @@ export default function Feed() {
                                             border: "none",
                                             outline: "none",
                                             cursor: "pointer",
-                                            padding: "5px 10px",
+                                            padding: isMobile ? "4px 12px" : "5px 10px",
                                             borderRadius: "999px",
-                                            fontSize: isMobile ? "13px" : "12px",
-                                            fontWeight: 600,
+                                            fontSize: isMobile ? "12px" : "12px",
+                                            fontWeight: 700,
                                             flex: isMobile ? 1 : undefined,
                                             textAlign: "center",
                                             backgroundColor:

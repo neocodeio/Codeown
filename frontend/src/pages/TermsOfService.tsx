@@ -72,27 +72,32 @@ export default function TermsOfService() {
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>5. Limitation of Liability</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>5. PRO Subscriptions & Refunds</h2>
+                    <p>For our PRO subscriptions, refunds are handled on a case-by-case basis. If you are unsatisfied with the service, please contact us within 7 days of purchase.</p>
+                </section>
+
+                <section>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>6. Limitation of Liability</h2>
                     <p>We are not responsible for any direct or indirect damages resulting from the use of the website.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>6. Termination</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>7. Termination</h2>
                     <p>We reserve the right to suspend or terminate accounts that violate these Terms of Service.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>7. Changes to the Terms</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>8. Changes to the Terms</h2>
                     <p>We may update these Terms at any time. Continued use of the website means you accept the updated terms.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>8. Governing Law</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>9. Governing Law</h2>
                     <p>These Terms shall be governed and interpreted according to applicable laws.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>9. Contact</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>10. Contact</h2>
                     <p>If you have any questions regarding these Terms, please contact us at:</p>
                     <a href="mailto:codeown.neocode@outlook.com" style={{ color: "#212121", fontWeight: 700, textDecoration: "none" }}>codeown.neocode@outlook.com</a>
                 </section>

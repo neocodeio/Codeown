@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { faInstagram, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { faInstagram, faWhatsapp, faTwitter } from "@fortawesome/free-brands-svg-icons";
 
 export default function AboutUs() {
     const navigate = useNavigate();
@@ -76,6 +76,19 @@ export default function AboutUs() {
                                 <FontAwesomeIcon icon={faWhatsapp} />
                             </div>
                             WhatsApp
+                        </a>
+                        <a
+                            href="https://twitter.com/neocode_io"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: "flex", alignItems: "center", gap: "10px", color: "#0f172a", fontWeight: 700, textDecoration: "none", transition: "transform 0.2s" }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+                        >
+                            <div style={{ width: "40px", height: "40px", borderRadius: "12px", backgroundColor: "#000000", display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
+                                <FontAwesomeIcon icon={faTwitter} />
+                            </div>
+                            Twitter
                         </a>
                     </div>
                 </div>

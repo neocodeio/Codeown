@@ -60,22 +60,27 @@ export default function PrivacyPolicy() {
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>3. Data Protection</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>3. Payment Processing</h2>
+                    <p>We use Lemon Squeezy for payment processing. We do not store your credit card information on our servers. All payment data is handled securely by Lemon Squeezy in accordance with their privacy policy.</p>
+                </section>
+
+                <section>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>4. Data Protection</h2>
                     <p>We take reasonable technical and organizational measures to protect your data from unauthorized access, loss, or misuse.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>4. Sharing of Information</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>5. Sharing of Information</h2>
                     <p>We do not sell or rent your personal information. We may share data only when required by law or to protect our legal rights.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>5. Cookies</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>6. Cookies</h2>
                     <p>We may use cookies to enhance user experience and analyze website usage. You can disable cookies through your browser settings.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>6. User Rights</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>7. User Rights</h2>
                     <p>You have the right to:</p>
                     <ul style={{ paddingLeft: "20px", marginTop: "8px", listStyleType: "disc" }}>
                         <li>Access your personal data.</li>
@@ -85,12 +90,12 @@ export default function PrivacyPolicy() {
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>7. Changes to This Policy</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>8. Changes to This Policy</h2>
                     <p>We may update this Privacy Policy from time to time. Any changes will be posted on this page.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>8. Contact Us</h2>
+                    <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>9. Contact Us</h2>
                     <p>If you have any questions about this Privacy Policy, please contact us at:</p>
                     <a href="mailto:codeown.neocode@outlook.com" style={{ color: "#212121", fontWeight: 700, textDecoration: "none" }}>codeown.neocode@outlook.com</a>
                 </section>
