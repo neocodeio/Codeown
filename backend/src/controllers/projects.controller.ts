@@ -411,6 +411,16 @@ export async function createProject(req: Request, res: Response) {
       }
     }
 
+    // Track project creation analytics (non-blocking)
+    supabase.from("analytics_events").insert({
+      event_type: 'project_created',
+      actor_id: userId,
+      target_user_id: userId,
+      project_id: project.id
+    }).then(({ error }) => {
+      if (error) console.error("Error logging project creation analytics:", error);
+    });
+
     return res.status(201).json({
       ...project,
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
@@ -595,7 +605,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
     if (projectError || !project) {
       return res.status(404).json({ error: "Project not found" });
     }
- 
+
     if (!userId) {
       return res.status(401).json({ error: "Unauthorized" });
     }

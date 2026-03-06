@@ -87,6 +87,15 @@ export default function PostDetail() {
         if (isMounted) {
           setPost(postRes.data);
           setComments(Array.isArray(commentsRes.data) ? commentsRes.data : []);
+
+          // Track post view analytics
+          api.post(`/analytics/track`, {
+            event_type: 'post_view',
+            target_user_id: postRes.data.user_id,
+            post_id: postRes.data.id
+          }, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+          }).catch(err => console.error("Failed to record post analytics", err));
         }
       } catch (e) {
         console.error("Error fetching post details:", e);

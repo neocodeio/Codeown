@@ -11,7 +11,8 @@ import {
     ChartBarLineIcon,
     UserIcon,
     Time02Icon,
-    Rocket01Icon
+    Rocket01Icon,
+    File01Icon
 } from '@hugeicons/core-free-icons';
 import { formatRelativeDate } from "../utils/date";
 import { SEO } from "../components/SEO";
@@ -167,6 +168,34 @@ export default function Analytics() {
                             marginBottom: "20px",
                             color: "#0f172a"
                         }}>
+                            <HugeiconsIcon icon={File01Icon} size={24} />
+                        </div>
+                        <p style={{ fontSize: "14px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>
+                            Post Views
+                        </p>
+                        <h2 style={{ fontSize: "32px", fontWeight: 800, color: "#0f172a" }}>
+                            {stats?.summary?.total_post_views || 0}
+                        </h2>
+                    </div>
+
+                    <div style={{
+                        padding: "32px",
+                        backgroundColor: "#fff",
+                        borderRadius: "24px",
+                        border: "1px solid #f1f5f9",
+                        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02)"
+                    }}>
+                        <div style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "14px",
+                            backgroundColor: "#f8fafc",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginBottom: "20px",
+                            color: "#0f172a"
+                        }}>
                             <HugeiconsIcon icon={CursorPointer01Icon} size={24} />
                         </div>
                         <p style={{ fontSize: "14px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>
@@ -229,8 +258,16 @@ export default function Analytics() {
                                             <p style={{ margin: 0, fontSize: "15px", color: "#0f172a", fontWeight: 600 }}>
                                                 {event.event_type === "project_view" ? (
                                                     <>Viewed your project <span style={{ color: "#2563eb" }}>{event.project?.title}</span></>
-                                                ) : (
+                                                ) : event.event_type === "post_view" ? (
+                                                    <>Viewed your <span style={{ color: "#2563eb" }}>post</span></>
+                                                ) : event.event_type === "post_created" ? (
+                                                    <>You shared a new <span style={{ color: "#059669" }}>post</span></>
+                                                ) : event.event_type === "project_created" ? (
+                                                    <>You launched <span style={{ color: "#059669" }}>{event.project?.title || "a new project"}</span></>
+                                                ) : event.event_type === "opportunity_click" ? (
                                                     <>Clicked your <span style={{ fontWeight: 800 }}>"Open to Opportunities"</span></>
+                                                ) : (
+                                                    <>Interacted with your profile</>
                                                 )}
                                             </p>
                                             <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8" }}>
@@ -239,7 +276,7 @@ export default function Analytics() {
                                         </div>
                                     </div>
 
-                                    {event.actor && (
+                                    {event.actor ? (
                                         <div
                                             onClick={() => navigate(`/${event.actor.username}`)}
                                             style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 12px", borderRadius: "10px", backgroundColor: "#f8fafc", cursor: "pointer", transition: "all 0.2s" }}
@@ -252,6 +289,11 @@ export default function Analytics() {
                                                 style={{ width: "24px", height: "24px", borderRadius: "50%" }}
                                             />
                                             <span style={{ fontSize: "13px", fontWeight: 700, color: "#334155" }}>{event.actor.name}</span>
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px", borderRadius: "10px", backgroundColor: "#f8fafc", opacity: 0.7 }}>
+                                            <HugeiconsIcon icon={UserIcon} size={14} style={{ color: "#64748b" }} />
+                                            <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748b" }}>Anonymous Visitor</span>
                                         </div>
                                     )}
                                 </div>

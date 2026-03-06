@@ -45,14 +45,16 @@ export async function getAnalytics(req: Request, res: Response) {
         }
 
         // Fetch analytics summary
-        const [viewsRes, clicksRes, recentRes] = await Promise.all([
+        const [viewsRes, postViewsRes, clicksRes, recentRes] = await Promise.all([
             // Project views count
             supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "project_view"),
+            // Post views count
+            supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "post_view"),
             // Opportunity clicks count
             supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "opportunity_click"),
             // Recent visitors (last 30 days)
             supabase.from("analytics_events")
-                .select("created_at, event_type, project:projects(title), actor:users!analytics_events_actor_id_fkey(name, username, avatar_url)")
+                .select("created_at, event_type, project:projects(title), actor:users!actor_id(name, username, avatar_url)")
                 .eq("target_user_id", userId)
                 .order("created_at", { ascending: false })
                 .limit(20)
@@ -61,6 +63,7 @@ export async function getAnalytics(req: Request, res: Response) {
         return res.json({
             summary: {
                 total_project_views: viewsRes.count || 0,
+                total_post_views: postViewsRes.count || 0,
                 total_opportunity_clicks: clicksRes.count || 0,
             },
             recent_events: recentRes.data || []

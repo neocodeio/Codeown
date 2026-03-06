@@ -447,6 +447,17 @@ export async function createPost(req: Request, res: Response) {
     }
 
     console.log("Post created successfully:", data);
+
+    // Track post creation analytics (non-blocking)
+    supabase.from("analytics_events").insert({
+      event_type: 'post_created',
+      actor_id: userId,
+      target_user_id: userId,
+      post_id: data.id
+    }).then(({ error }) => {
+      if (error) console.error("Error logging post creation analytics:", error);
+    });
+
     return res.status(201).json({ success: true, data });
   } catch (error: any) {
     console.error("Unexpected error in createPost:", error);
