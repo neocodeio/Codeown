@@ -34,6 +34,7 @@ interface Conversation {
   id: number;
   partner: Partner;
   last_message: Message | null;
+  unread_count?: number;
 }
 
 export default function Messages() {
@@ -64,9 +65,9 @@ export default function Messages() {
     scrollToBottom();
   }, [messages]);
 
-  const fetchConversations = async () => {
+  const fetchConversations = async (isInitial = false) => {
     try {
-      setLoading(true);
+      if (isInitial) setLoading(true);
       const token = await getToken();
       const res = await api.get("/messages", {
         headers: { Authorization: `Bearer ${token}` },
@@ -74,7 +75,7 @@ export default function Messages() {
       const convos = Array.isArray(res.data) ? res.data : [];
       setConversations(convos);
 
-      if (targetUserId) {
+      if (targetUserId && !activeConvo) {
         const existing = convos.find((c: Conversation) => c.partner.id === targetUserId);
         if (existing) {
           setActiveConvo(existing);
@@ -84,11 +85,11 @@ export default function Messages() {
       }
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      if (targetUserId) {
+      if (targetUserId && !activeConvo) {
         await startPlaceholderConvo(targetUserId);
       }
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
   };
 
@@ -134,7 +135,10 @@ export default function Messages() {
   };
 
   useEffect(() => {
-    fetchConversations();
+    fetchConversations(true);
+    // Poll for new conversations/messages every 10 seconds
+    const interval = setInterval(() => fetchConversations(false), 10000);
+    return () => clearInterval(interval);
   }, [targetUserId]);
 
   useEffect(() => {
@@ -395,7 +399,14 @@ export default function Messages() {
             {filteredConversations.map((convo) => (
               <div
                 key={convo.id}
-                onClick={() => setActiveConvo(convo)}
+                onClick={() => {
+                  setActiveConvo(convo);
+                  if (convo.unread_count && convo.unread_count > 0) {
+                    setConversations(prev =>
+                      prev.map(c => c.id === convo.id ? { ...c, unread_count: 0 } : c)
+                    );
+                  }
+                }}
                 style={{
                   padding: "14px 16px",
                   cursor: "pointer",
@@ -474,25 +485,40 @@ export default function Messages() {
                   <div
                     style={{
                       fontSize: "14px",
-                      color: activeConvo?.id === convo.id ? "#475569" : "#64748b",
+                      color: convo.unread_count && convo.unread_count > 0 ? "#0f172a" : (activeConvo?.id === convo.id ? "#475569" : "#64748b"),
+                      fontWeight: convo.unread_count && convo.unread_count > 0 ? 700 : 400,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                       gap: "4px"
                     }}
                   >
-                    {convo.last_message ? (
-                      <>
-                        {convo.last_message.sender_id === currentUser?.id && (
-                          <span style={{ color: "#94a3b8", fontWeight: 600 }}>You:</span>
-                        )}
-                        <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {convo.last_message.content}
-                        </span>
-                      </>
-                    ) : (
-                      "No messages yet"
+                    <div style={{ display: "flex", gap: "4px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {convo.last_message ? (
+                        <>
+                          {convo.last_message.sender_id === currentUser?.id && (
+                            <span style={{ color: "#94a3b8", fontWeight: 600 }}>You:</span>
+                          )}
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {convo.last_message.content}
+                          </span>
+                        </>
+                      ) : (
+                        "No messages yet"
+                      )}
+                    </div>
+                    {convo.unread_count && convo.unread_count > 0 && (
+                      <div style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        backgroundColor: "#3b82f6",
+                        flexShrink: 0,
+                        marginLeft: "8px"
+                      }} />
                     )}
                   </div>
                 </div>

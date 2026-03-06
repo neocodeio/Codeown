@@ -87,22 +87,31 @@ export async function getConversations(req: Request, res: Response) {
 
         if (err3) throw err3;
 
-        // Get last messages (basic approach)
-        // A better way would be a view or a separate query per convo if list is small
+        // Get last messages and unread counts
         const conversations = await Promise.all(participants.map(async (p) => {
             const user = users.find(u => u.id === p.user_id);
-            const { data: lastMsg } = await supabase
-                .from("messages")
-                .select("*")
-                .eq("conversation_id", p.conversation_id)
-                .order("created_at", { ascending: false })
-                .limit(1)
-                .single();
+
+            const [lastMsgRes, unreadRes] = await Promise.all([
+                supabase
+                    .from("messages")
+                    .select("*")
+                    .eq("conversation_id", p.conversation_id)
+                    .order("created_at", { ascending: false })
+                    .limit(1)
+                    .single(),
+                supabase
+                    .from("messages")
+                    .select("id", { count: 'exact' })
+                    .eq("conversation_id", p.conversation_id)
+                    .eq("is_read", false)
+                    .neq("sender_id", userId)
+            ]);
 
             return {
                 id: p.conversation_id,
                 partner: user || { id: p.user_id, name: 'Unknown', username: 'unknown', avatar_url: null },
-                last_message: lastMsg,
+                last_message: lastMsgRes.data,
+                unread_count: unreadRes.count || 0
             };
         }));
 
@@ -144,6 +153,33 @@ export async function getMessages(req: Request, res: Response) {
             .order("created_at", { ascending: true });
 
         if (error) throw error;
+
+        // Mark messages as read (those sent by partner)
+        await supabase
+            .from("messages")
+            .update({ is_read: true })
+            .eq("conversation_id", id)
+            .neq("sender_id", userId)
+            .eq("is_read", false);
+
+        // Mark related notifications as read
+        // Find other participant id first
+        const { data: otherParticipant } = await supabase
+            .from("conversation_participants")
+            .select("user_id")
+            .eq("conversation_id", id)
+            .neq("user_id", userId)
+            .single();
+
+        if (otherParticipant) {
+            await supabase
+                .from("notifications")
+                .update({ read: true })
+                .eq("user_id", userId)
+                .eq("actor_id", otherParticipant.user_id)
+                .eq("type", "message")
+                .eq("read", false);
+        }
 
         return res.json(messages);
 
