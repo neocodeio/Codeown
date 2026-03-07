@@ -115,7 +115,7 @@ export default function Feed() {
 
 
     return (
-        <main style={{ padding: 0, backgroundColor: "#f8fafc" }}>
+        <main style={{ padding: 0, backgroundColor: "#ffffff" }}>
             <SEO
                 title="Home"
                 description="Share your projects, discover amazing code, and connect with developers worldwide on Codeown."
@@ -217,7 +217,7 @@ export default function Feed() {
                                     flexDirection: "row",
                                     alignItems: "center",
                                     justifyContent: isMobile ? "space-between" : "flex-end",
-                                    gap: isMobile ? 6 : 8,
+                                    gap: isMobile ? 6 : 0,
                                     width: isMobile ? "100%" : "auto",
                                 }}
                             >
@@ -227,7 +227,8 @@ export default function Feed() {
                                         display: "flex",
                                         alignItems: "center",
                                         padding: "4px",
-                                        borderRadius: "999px",
+                                        borderTopLeftRadius: "10px",
+                                        borderBottomLeftRadius: "10px",
                                         backgroundColor: "#f3f4f6",
                                         border: "1px solid #e5e7eb",
                                         gap: "4px",
@@ -243,7 +244,7 @@ export default function Feed() {
                                             outline: "none",
                                             cursor: "pointer",
                                             padding: isMobile ? "4px 10px" : "5px 8px",
-                                            borderRadius: "999px",
+                                            borderRadius: "5px",
                                             fontSize: isMobile ? "12px" : "12px",
                                             fontWeight: 700,
                                             flex: isMobile ? 1 : undefined,
@@ -269,7 +270,7 @@ export default function Feed() {
                                             outline: "none",
                                             cursor: "pointer",
                                             padding: isMobile ? "4px 10px" : "5px 10px",
-                                            borderRadius: "999px",
+                                            borderRadius: "5px",
                                             fontSize: isMobile ? "12px" : "12px",
                                             fontWeight: 700,
                                             flex: isMobile ? 1 : undefined,
@@ -297,7 +298,8 @@ export default function Feed() {
                                         display: "inline-flex",
                                         alignItems: "center",
                                         padding: "4px",
-                                        borderRadius: "999px",
+                                        borderBottomRightRadius: "10px",
+                                        borderTopRightRadius: "10px",
                                         backgroundColor: "#f3f4f6",
                                         border: "1px solid #e5e7eb",
                                         gap: "4px",
@@ -313,7 +315,7 @@ export default function Feed() {
                                             outline: "none",
                                             cursor: "pointer",
                                             padding: isMobile ? "4px 12px" : "5px 10px",
-                                            borderRadius: "999px",
+                                            borderRadius: "5px",
                                             fontSize: isMobile ? "12px" : "12px",
                                             fontWeight: 700,
                                             flex: isMobile ? 1 : undefined,
@@ -339,7 +341,7 @@ export default function Feed() {
                                             outline: "none",
                                             cursor: "pointer",
                                             padding: isMobile ? "4px 12px" : "5px 10px",
-                                            borderRadius: "999px",
+                                            borderRadius: "5px",
                                             fontSize: isMobile ? "12px" : "12px",
                                             fontWeight: 700,
                                             flex: isMobile ? 1 : undefined,
