@@ -5,16 +5,14 @@ import { Link, Navigate } from "react-router-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
 
-const PRO_CHECKOUT_BASE = "https://codeown.lemonsqueezy.com/buy/33a97835-6017-448a-a671-57ef2302126d";
+const PRO_CHECKOUT_PRODUCT_ID = "pdt_0NZynf5GNfjz9K6ddEmO0";
 
 function buildProCheckoutUrl(userId: string): string {
-  const successUrl = encodeURIComponent(window.location.origin + "/profile?checkout_completed=true");
-  const finalUrl =
-    PRO_CHECKOUT_BASE +
-    `?checkout[custom][user_id]=${encodeURIComponent(userId)}` +
-    `&checkout[success_url]=${successUrl}`;
+  // Dodo Payments uses metadata_ prefix for custom fields on static links
+  const baseUrl = `https://checkout.dodopayments.com/buy/${PRO_CHECKOUT_PRODUCT_ID}`;
+  const finalUrl = `${baseUrl}?metadata_user_id=${encodeURIComponent(userId)}`;
 
-  console.log("[Billing] Generated checkout URL:", finalUrl);
+  console.log("[Billing] Generated Dodo checkout URL:", finalUrl);
   return finalUrl;
 }
 
@@ -131,8 +129,8 @@ export default function Billing() {
               Upgrade your account to get better visibility, unlock advanced analytics, and get the "Open to opportunities" badge.
               <br />
               <br />
-              <span style={{ fontSize: 12, color: "#94a3b8" }}>
-                Note: This is a beta feature and may be subject to change.
+              <span style={{ fontSize: 14, color: "#94a3b8" }}>
+                Note: This is not ready yet, we are working on it.
               </span>
             </p>
           </div>
@@ -216,7 +214,7 @@ export default function Billing() {
               color: "#94a3b8",
               textAlign: "center",
             }}>
-              Secure checkout via Lemon Squeezy. Cancel anytime.
+              Secure checkout via Dodo Payments. Cancel anytime.
             </p>
           </div>
         </div>

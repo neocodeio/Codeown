@@ -19,7 +19,7 @@ import imageProxyRoutes from "./src/routes/image-proxy.routes.js";
 import metadataRoutes from "./src/routes/metadata.routes.js";
 import seoRoutes from "./src/routes/seo.routes.js";
 import analyticsRoutes from "./src/routes/analytics.routes.js";
-import { handleLemonWebhook, handleClerkWebhook } from "./src/controllers/webhooks.controller.js";
+import { handleDodoWebhook, handleClerkWebhook } from "./src/controllers/webhooks.controller.js";
 
 
 import helmet from "helmet";
@@ -44,7 +44,7 @@ app.use(cors({
 
 // 2. Webhooks need raw body for signature verification
 // Use a more robust approach to avoid 405 errors and handle body parsing correctly
-app.post("/webhooks/lemon", express.raw({ type: "*/*" }), handleLemonWebhook);
+app.post("/webhooks/dodo", express.raw({ type: "*/*" }), handleDodoWebhook);
 app.post("/webhooks/clerk", express.raw({ type: "*/*" }), handleClerkWebhook);
 
 // 3. Regular JSON parser

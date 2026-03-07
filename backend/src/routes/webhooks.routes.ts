@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   handleClerkWebhook,
-  handleLemonWebhook,
+  handleDodoWebhook,
 } from "../controllers/webhooks.controller.js";
 
 const router = Router();
@@ -9,8 +9,8 @@ const router = Router();
 // Clerk webhook endpoint
 router.post("/clerk", handleClerkWebhook);
 
-// Lemon Squeezy webhook endpoint
-router.post("/lemon", handleLemonWebhook);
+// Dodo Payments webhook endpoint
+router.post("/dodo", handleDodoWebhook);
 
 export default router;
 
