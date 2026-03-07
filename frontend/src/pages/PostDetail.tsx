@@ -291,8 +291,8 @@ export default function PostDetail() {
               justifyContent: "space-between",
               maxWidth: "400px",
               marginTop: "16px",
-              borderTop: "1px solid #f1f5f9",
-              paddingTop: "12px"
+              borderBottom: "1px solid #f1f5f9",
+              paddingBottom: "10px"
             }}>
               {/* Comment */}
               <button
