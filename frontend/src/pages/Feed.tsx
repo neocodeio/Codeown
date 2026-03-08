@@ -4,6 +4,7 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -11,7 +12,7 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { SEO } from "../components/SEO";
-import ProUpgradeCTA from "../components/ProUpgradeCTA";
+
 
 export default function Feed() {
     const { width } = useWindowSize();
@@ -363,7 +364,7 @@ export default function Feed() {
                             </div>
                         </div>
                     </div>
-                    {isMobile && <ProUpgradeCTA style={{ margin: "10px", borderRadius: "16px" }} />}
+
 
                     {/* Popular Users - Mobile/Tablet Only - Hidden by request */}
                     {/* {width < 1024 && <PopularUsersHorizontal />} */}
@@ -465,6 +466,9 @@ export default function Feed() {
                         </p>
                     </div> */}
 
+                    {/* Spotlight */}
+
+
                     {/* Composer */}
                     {feedType === "posts" && (
                         <FeedPostComposer onCreated={handlePostCreated} />
@@ -545,10 +549,13 @@ export default function Feed() {
                     <div style={{
                         width: `${SIDEBAR_WIDTH}px`,
                         flexShrink: 0,
-                        minHeight: "100vh",
                         paddingLeft: "24px",
+                        alignSelf: "stretch" // Extremely important: Sidebar must grow with the main content for sticky to work
                     }}>
-                        <div style={{ position: "sticky", top: "0px", padding: "24px 10px 0" }}>
+                        <div style={{
+                            position: "sticky",
+                            top: "24px", // Fixed offset from top of viewport
+                        }}>
                             <RecommendedUsersSidebar />
                         </div>
                     </div>

@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom"; //link
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
 import { useUserProjects } from "../hooks/useUserProjects";
@@ -425,7 +425,7 @@ export default function Profile() {
                   }}>PRO</span>
                 )}
               </h1>
-              {userProfile?.is_pro !== true && (
+              {/* {userProfile?.is_pro !== true && (
                 <Link
                   to="/billing"
                   style={{
@@ -448,7 +448,7 @@ export default function Profile() {
                 >
                   Upgrade to Pro
                 </Link>
-              )}
+              )} */}
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 style={{

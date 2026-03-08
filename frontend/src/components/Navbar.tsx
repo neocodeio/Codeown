@@ -22,6 +22,7 @@ import {
   MoreHorizontalIcon,
   Login01Icon,
   ChartBarLineIcon,
+  UserMultipleIcon,
   // faEllipsisH,
   // faSignOutAlt,
   // faPlus,
@@ -167,6 +168,10 @@ export default function Navbar() {
         <Link to="/search" style={linkStyle("/search")}>
           <HugeiconsIcon icon={Search01Icon} style={{ width: "20px" }} />
           Search
+        </Link>
+        <Link to="/leaderboard" style={linkStyle("/leaderboard")}>
+          <HugeiconsIcon icon={UserMultipleIcon} style={{ width: "20px" }} />
+          Leaderboard
         </Link>
         {isSignedIn && (
           <>

@@ -19,6 +19,7 @@ import imageProxyRoutes from "./src/routes/image-proxy.routes.js";
 import metadataRoutes from "./src/routes/metadata.routes.js";
 import seoRoutes from "./src/routes/seo.routes.js";
 import analyticsRoutes from "./src/routes/analytics.routes.js";
+import leaderboardRoutes from "./src/routes/leaderboard.routes.js";
 import { handleDodoWebhook, handleClerkWebhook } from "./src/controllers/webhooks.controller.js";
 
 
@@ -83,6 +84,7 @@ app.use("/migration", migrationRoutes);
 app.use("/image-proxy", imageProxyRoutes);
 app.use("/metadata", metadataRoutes);
 app.use("/analytics", analyticsRoutes);
+app.use("/leaderboard", leaderboardRoutes);
 app.use("/", seoRoutes);
 
 export default app;
