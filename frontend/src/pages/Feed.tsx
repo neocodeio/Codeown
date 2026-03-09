@@ -549,15 +549,10 @@ export default function Feed() {
                     <div style={{
                         width: `${SIDEBAR_WIDTH}px`,
                         flexShrink: 0,
-                        paddingLeft: "24px",
-                        alignSelf: "stretch" // Extremely important: Sidebar must grow with the main content for sticky to work
+                        marginLeft: "24px",
+                        alignSelf: "stretch"
                     }}>
-                        <div style={{
-                            position: "sticky",
-                            top: "24px", // Fixed offset from top of viewport
-                        }}>
-                            <RecommendedUsersSidebar />
-                        </div>
+                        <RecommendedUsersSidebar />
                     </div>
                 )}
             </div>

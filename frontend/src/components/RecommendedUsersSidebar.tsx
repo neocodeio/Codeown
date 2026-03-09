@@ -54,9 +54,9 @@ export default function RecommendedUsersSidebar() {
     const { data: projects = [], isLoading: projectsLoading } = useQuery({
         queryKey: ["recentProjects", "sidebar"],
         queryFn: async () => {
-            const response = await api.get("/projects?limit=3");
+            const response = await api.get("/projects?limit=6");
             const projectsData = response.data.projects || (Array.isArray(response.data) ? response.data : (response.data.data || []));
-            return projectsData.slice(0, 3);
+            return projectsData.slice(0, 6);
         },
         enabled: isDesktop,
         staleTime: 10 * 60 * 1000,
@@ -99,24 +99,29 @@ export default function RecommendedUsersSidebar() {
     if (isMobile) return null;
 
     return (
-        <div style={{
-            width: "350px", // Fixed width for consistent design
-            backgroundColor: "#fff",
-            border: "1px solid #e5e7eb",
-            borderRadius: "0px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.02)",
-            overflow: "hidden",
-            position: "fixed",
-            // Center the sidebar relative to the main column: 50% + half main column + gap
-            left: "calc(50% + 310px + 24px)",
-            top: "0px", // Anchor from top of viewport
-            maxHeight: "calc(100vh - 48px)", // Maximize visible area
-            overflowY: "auto", // Handle internal scrolling for long lists
-            scrollbarWidth: "none",
-            zIndex: 40,
-        }}>
+        <div
+            className="sidebar-container no-scrollbar"
+            style={{
+                width: "350px", // Essential when fixed: define exact width
+                backgroundColor: "#fff",
+                border: "1px solid #e5edef",
+                position: "fixed",
+                // Center relative to main column: 50% + Half Main Col (310px) + Gap (24px)
+                left: "calc(50% + 310px + 24px)",
+                top: "0px",
+                height: "100vh",
+                overflowY: "auto", // Better user experience than 'scroll'
+                zIndex: 40,
+                transition: "all 0.3s ease"
+            }}
+        >
             <style>{`
-                .sidebar-section { padding: 22px 24px; border-bottom: 1px solid #f1f5f9; position: relative; }
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                .sidebar-container::-webkit-scrollbar { width: 5px; }
+                .sidebar-container::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; }
+                .sidebar-container:hover::-webkit-scrollbar-thumb { background: #e2e8f0; }
+                .sidebar-section { padding: 24px 24px; border-bottom: 1px solid #f1f5f9; position: relative; }
                 .sidebar-section:last-child { border-bottom: none; }
                 .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
                 .sidebar-title { font-size: 13px; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: 0.05em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
