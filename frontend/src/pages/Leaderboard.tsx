@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 import api from "../api/axios";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-    FireIcon,
     ChartBarLineIcon,
     Tick01Icon,
     Rocket01Icon,
     DashboardSpeed01Icon
 } from "@hugeicons/core-free-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
+import flameGif from "../assets/flame.gif";
 
 interface LeaderboardUser {
     id: string;
@@ -125,7 +125,7 @@ export default function Leaderboard() {
                             </div>
 
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "32px" }}>
-                                <StatItem icon={<HugeiconsIcon icon={FireIcon} size={16} />} label="Streak" value={`${top3[0].streak_count}d`} isDark={true} />
+                                <StatItem icon={<img src={flameGif} style={{ width: "16px", height: "16px", objectFit: "contain" }} alt="fire" />} label="Streak" value={`${top3[0].streak_count}d`} isDark={true} />
                                 <StatItem icon={<HugeiconsIcon icon={ChartBarLineIcon} size={16} />} label="Rank" value="#1" isDark={true} />
                                 <StatItem icon={<HugeiconsIcon icon={DashboardSpeed01Icon} size={16} />} label="Tier" value={top3[0].tier} isDark={true} />
                             </div>
@@ -171,7 +171,7 @@ export default function Leaderboard() {
                             </div>
                             <div style={{ display: "flex", gap: "16px" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#64748b", fontSize: "12px", fontWeight: 500 }}>
-                                    <HugeiconsIcon icon={FireIcon} size={13} /> {user.streak_count}d
+                                    <img src={flameGif} style={{ width: "13px", height: "13px", objectFit: "contain" }} alt="fire" /> {user.streak_count}d
                                 </div>
                                 <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#64748b", fontSize: "12px", fontWeight: 500 }}>
                                     <HugeiconsIcon icon={ChartBarLineIcon} size={13} /> {user.tier}
@@ -182,7 +182,7 @@ export default function Leaderboard() {
 
                     {/* Simple Info Block */}
                     <div style={{ background: "#000", borderRadius: "20px", padding: "24px", color: "#fff", display: "flex", alignItems: "center", gap: "16px" }}>
-                        <HugeiconsIcon icon={FireIcon} size={28} color="#facc15" />
+                        <img src={flameGif} style={{ width: "28px", height: "28px", objectFit: "contain" }} alt="fire" />
                         <div>
                             <div style={{ fontWeight: 700, fontSize: "14px" }}>Active Daily</div>
                             <div style={{ fontSize: "12px", opacity: 0.6 }}>Consistent activity yields the highest Pulse multipliers.</div>
@@ -277,7 +277,7 @@ function LeaderboardRow({ user, rank, isMobile }: { user: LeaderboardUser, rank:
 
             <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b" }}>
-                    <HugeiconsIcon icon={FireIcon} size={16} />
+                    <img src={flameGif} style={{ width: "16px", height: "16px", objectFit: "contain" }} alt="fire" />
                     <span style={{ fontSize: "14px", fontWeight: 700 }}>{user.streak_count}d</span>
                 </div>
                 <div style={{ width: "80px", textAlign: "right" }}>
