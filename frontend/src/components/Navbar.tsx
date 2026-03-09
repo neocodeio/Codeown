@@ -525,44 +525,8 @@ export default function Navbar() {
           <HugeiconsIcon icon={Search01Icon} style={{ fontSize: "20px" }} />
         </Link>
 
-        <Link
-          to="/messages"
-          style={{
-            flex: 1,
-            height: "44px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textDecoration: "none",
-            color: location.pathname === "/messages" ? "#212121" : "#94a3b8",
-            position: "relative",
-          }}
-        >
-          <HugeiconsIcon icon={BubbleChatIcon} style={{ fontSize: "20px" }} />
-          {messageUnreadCount > 0 && (
-            <span
-              style={{
-                position: "absolute",
-                top: 6,
-                right: "calc(50% - 6px)",
-                minWidth: "16px",
-                height: "16px",
-                padding: "0 4px",
-                backgroundColor: "#ef4444",
-                color: "#fff",
-                borderRadius: "999px",
-                fontSize: "10px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: 700,
-                border: "2px solid #fff",
-              }}
-            >
-              {messageUnreadCount > 9 ? "9+" : messageUnreadCount}
-            </span>
-          )}
+        <Link to="/leaderboard" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/leaderboard" ? "#212121" : "#94a3b8" }}>
+          <HugeiconsIcon icon={UserMultipleIcon} style={{ fontSize: "20px" }} />
         </Link>
 
         <div
@@ -631,6 +595,46 @@ export default function Navbar() {
           )}
 
         </div>
+
+        <Link
+          to="/messages"
+          style={{
+            flex: 1,
+            height: "44px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textDecoration: "none",
+            color: location.pathname === "/messages" ? "#212121" : "#94a3b8",
+            position: "relative",
+          }}
+        >
+          <HugeiconsIcon icon={BubbleChatIcon} style={{ fontSize: "20px" }} />
+          {messageUnreadCount > 0 && (
+            <span
+              style={{
+                position: "absolute",
+                top: 6,
+                right: "calc(50% - 6px)",
+                minWidth: "16px",
+                height: "16px",
+                padding: "0 4px",
+                backgroundColor: "#ef4444",
+                color: "#fff",
+                borderRadius: "999px",
+                fontSize: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                border: "2px solid #fff",
+              }}
+            >
+              {messageUnreadCount > 9 ? "9+" : messageUnreadCount}
+            </span>
+          )}
+        </Link>
 
         <Link
           to="/notifications"
