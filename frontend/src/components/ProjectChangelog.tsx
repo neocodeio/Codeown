@@ -47,9 +47,10 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
             setLogs([res.data, ...logs]);
             setNewLog("");
             setShowAddForm(false);
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to add changelog:", err);
-            alert("Failed to add changelog update.");
+            const errorMsg = err.response?.data?.error || err.response?.data?.details || err.message || "Unknown error";
+            alert(`Failed to add changelog update: ${errorMsg}`);
         } finally {
             setIsSubmitting(false);
         }

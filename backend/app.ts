@@ -88,3 +88,4 @@ app.use("/leaderboard", leaderboardRoutes);
 app.use("/", seoRoutes);
 
 export default app;
+// Force backend reload
