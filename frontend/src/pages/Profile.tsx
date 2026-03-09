@@ -20,6 +20,7 @@ import api from "../api/axios";
 import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
+import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Pen01Icon,
@@ -39,6 +40,7 @@ import {
   Linkedin01Icon,
   GithubIcon,
   ChartBarLineIcon,
+  IdIcon,
 } from '@hugeicons/core-free-icons';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -96,6 +98,7 @@ export default function Profile() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
+  const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
 
   const handleProfileUpdated = useCallback(async (updatedUser?: Record<string, unknown>) => {
     if (userId) {
@@ -498,6 +501,28 @@ export default function Profile() {
                   <span style={{ fontSize: '9px', backgroundColor: '#000', color: '#fff', padding: '2px 5px', borderRadius: '4px', fontWeight: 900 }}>PRO</span>
                 </button>
               )}
+              <button
+                onClick={() => setIsIDCardModalOpen(true)}
+                style={{
+                  padding: "10px",
+                  borderRadius: "30px",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#ffffff",
+                  color: "#1e293b",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+              >
+                <HugeiconsIcon icon={IdIcon} size={20} />
+              </button>
             </div>
 
             <div style={{
@@ -995,6 +1020,21 @@ export default function Profile() {
       />
 
       <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
-    </main >
+      {userProfile && (
+        <DeveloperIDCardModal
+          isOpen={isIDCardModalOpen}
+          onClose={() => setIsIDCardModalOpen(false)}
+          user={{
+            name: userProfile.name,
+            username: userProfile.username,
+            avatar_url: userProfile.avatar_url,
+            created_at: userProfile.created_at,
+            skills: userProfile.skills,
+            is_pro: userProfile.is_pro
+          }}
+          projectsCount={projects.length}
+        />
+      )}
+    </main>
   );
 }

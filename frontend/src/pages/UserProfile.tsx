@@ -25,6 +25,7 @@ import {
   TwitterIcon,
   Linkedin01Icon,
   GithubIcon,
+  IdIcon,
 } from '@hugeicons/core-free-icons';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,6 +34,7 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import Lightbox from "../components/Lightbox";
+import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 
 interface User {
   id: string;
@@ -86,6 +88,7 @@ export default function UserProfile() {
   const innerPaddingX = isMobile ? 16 : isTablet ? 20 : 24;
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
+  const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
 
   const isOwnProfile = currentUser?.id === (user?.id || userId);
 
@@ -534,6 +537,29 @@ export default function UserProfile() {
               >
                 <HugeiconsIcon icon={Share01Icon} size={18} />
               </button>
+              <button
+                onClick={() => setIsIDCardModalOpen(true)}
+                style={{
+                  padding: "10px",
+                  borderRadius: "30px",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#ffffff",
+                  color: "#1e293b",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+                title="Developer ID Card"
+              >
+                <HugeiconsIcon icon={IdIcon} size={18} />
+              </button>
             </div>
           </div>
 
@@ -794,6 +820,21 @@ export default function UserProfile() {
         imageSrc={lightboxImage}
       />
       <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
+      {user && (
+        <DeveloperIDCardModal
+          isOpen={isIDCardModalOpen}
+          onClose={() => setIsIDCardModalOpen(false)}
+          user={{
+            name: user.name,
+            username: user.username,
+            avatar_url: user.avatar_url,
+            created_at: user.created_at,
+            skills: user.skills,
+            is_pro: user.is_pro
+          }}
+          projectsCount={projects.length}
+        />
+      )}
     </main>
   );
 }
