@@ -10,7 +10,9 @@ import {
   getProjectLikeStatus,
   toggleProjectSave,
   getProjectSaveStatus,
-  rateProject
+  rateProject,
+  getProjectChangelogs,
+  addProjectChangelog
 } from "../controllers/projects.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
@@ -38,5 +40,9 @@ router.get("/:id/save", requireAuth, getProjectSaveStatus);
 
 // Rating routes
 router.post("/:id/rate", requireAuth, rateProject);
+
+// Changelog routes
+router.get("/:id/changelogs", getProjectChangelogs);
+router.post("/:id/changelogs", requireAuth, addProjectChangelog);
 
 export default router;

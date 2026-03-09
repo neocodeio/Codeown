@@ -1,0 +1,1 @@
+{"project_details":"an e-commerce project to sell and buy things from others"}

@@ -24,6 +24,55 @@ async function createProjectNotification(
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 
+// Changelogs features
+export async function getProjectChangelogs(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { data, error } = await supabase
+      .from("project_changelogs")
+      .select("*")
+      .eq("project_id", id)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch changelogs", details: err.message });
+  }
+}
+
+export async function addProjectChangelog(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+    if (!content) return res.status(400).json({ error: "Content is required" });
+
+    // Verify ownership
+    const { data: project } = await supabase.from("projects").select("user_id").eq("id", id).single();
+    if (!project || project.user_id !== userId) {
+      return res.status(403).json({ error: "Only project owner can add changelogs" });
+    }
+
+    const { data, error } = await supabase
+      .from("project_changelogs")
+      .insert({
+        project_id: parseInt(id),
+        user_id: userId,
+        content
+      })
+      .select("*")
+      .single();
+
+    if (error) throw error;
+    res.json(data);
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to add changelog", details: err.message });
+  }
+}
+
 export async function getProjects(req: Request, res: Response) {
   try {
     const { page = "1", limit = "10", filter = "all", tag } = req.query;

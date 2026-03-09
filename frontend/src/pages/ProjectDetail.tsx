@@ -32,6 +32,7 @@ import {
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
+import ProjectChangelog from "../components/ProjectChangelog";
 
 export default function ProjectDetail() {
   const { width } = useWindowSize();
@@ -51,6 +52,7 @@ export default function ProjectDetail() {
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"details" | "changelog">("details");
 
   const viewLogged = useRef(false);
 
@@ -720,13 +722,59 @@ export default function ProjectDetail() {
         </div>
 
         <div style={{ marginBottom: "40px" }}>
-          <h2 style={{ fontSize: "32px", fontWeight: 800, marginBottom: "24px" }}>Project Details</h2>
+          {/* Custom Tabs */}
           <div style={{
-            fontSize: "16px",
-            lineHeight: "1.8",
-            color: "var(--text-secondary)",
+            display: "flex",
+            gap: "32px",
+            borderBottom: "1px solid #e2e8f0",
+            marginBottom: "24px"
           }}>
-            <ContentRenderer content={project.project_details} />
+            <button
+              onClick={() => setActiveTab("details")}
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: "12px 0",
+                fontSize: "16px",
+                fontWeight: 700,
+                color: activeTab === "details" ? "#0f172a" : "#64748b",
+                borderBottom: activeTab === "details" ? "2px solid #0f172a" : "2px solid transparent",
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab("changelog")}
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: "12px 0",
+                fontSize: "16px",
+                fontWeight: 700,
+                color: activeTab === "changelog" ? "#0f172a" : "#64748b",
+                borderBottom: activeTab === "changelog" ? "2px solid #0f172a" : "2px solid transparent",
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              Changelog
+            </button>
+          </div>
+
+          <div style={{ minHeight: "200px" }}>
+            {activeTab === "details" ? (
+              <div style={{
+                fontSize: "16px",
+                lineHeight: "1.8",
+                color: "var(--text-secondary)",
+              }}>
+                <ContentRenderer content={project.project_details} />
+              </div>
+            ) : (
+              <ProjectChangelog projectId={project.id} isOwner={isOwnProject} />
+            )}
           </div>
         </div>
 
