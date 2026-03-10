@@ -293,7 +293,7 @@ export default function Profile() {
   const avatarUrl = userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "U")}&background=212121&color=fff&bold=true`;
 
   return (
-    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+  <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
       <SEO title="My Profile" description="Manage your Codeown profile and settings." />
       <style>{`
         @keyframes tabContentEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

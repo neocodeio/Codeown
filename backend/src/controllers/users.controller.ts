@@ -875,7 +875,7 @@ export async function getRecommendedUsers(req: Request, res: Response) {
         // Fetch users with highest streaks
         let usersQuery = supabase
             .from("users")
-            .select("id, name, username, avatar_url, streak_count, is_pro")
+            .select("id, name, username, avatar_url, streak_count, is_pro, skills")
             .order("streak_count", { ascending: false })
             .limit(Number(limit));
 

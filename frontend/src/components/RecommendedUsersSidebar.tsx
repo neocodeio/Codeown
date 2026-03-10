@@ -143,28 +143,92 @@ export default function RecommendedUsersSidebar() {
                         <div style={{ height: "40px", backgroundColor: "#f8fafc", borderRadius: "8px", animation: "pulse 2s infinite" }} />
                     ) : (
                         users.map(user => (
-                            <div key={user.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }} className="sidebar-item">
+                            <div
+                                key={user.id}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "flex-start",
+                                    justifyContent: "space-between",
+                                    gap: "10px"
+                                }}
+                                className="sidebar-item"
+                            >
                                 <UserHoverCard userId={user.id}>
-                                    <Link to={user.username ? `/${user.username}` : `/user/${user.id}`} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", flex: 1, minWidth: 0 }}>
-                                        <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`} style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #f1f5f9" }} alt="" />
-                                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                                    <Link
+                                        to={user.username ? `/${user.username}` : `/user/${user.id}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "flex-start",
+                                            gap: "10px",
+                                            textDecoration: "none",
+                                            flex: 1,
+                                            minWidth: 0
+                                        }}
+                                    >
+                                        <img
+                                            src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`}
+                                            style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #f1f5f9" }}
+                                            alt=""
+                                        />
+                                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "4px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                                <span style={{ fontSize: "14px", fontWeight: 800, color: "#0f172a" }}>{user.name.split(" ")[0]}</span>
+                                                <span style={{ fontSize: "14px", fontWeight: 800, color: "#0f172a" }}>
+                                                    {user.name.split(" ")[0]}
+                                                </span>
                                                 <VerifiedBadge username={user.username} isPro={user.is_pro} size="13px" />
                                                 {user.streak_count > 0 && <StreakBadge count={user.streak_count} mini />}
                                             </div>
-                                            <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600 }}>@{user.username}</span>
+                                            <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                                @{user.username}
+                                            </span>
+                                            {Array.isArray(user.skills) && user.skills.length > 0 && (
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        flexWrap: "wrap",
+                                                        gap: "6px",
+                                                        marginTop: "2px"
+                                                    }}
+                                                >
+                                                    {user.skills.slice(0, 3).map((skill: string, index: number) => (
+                                                        <span
+                                                            key={index}
+                                                            style={{
+                                                                fontSize: "10px",
+                                                                fontWeight: 700,
+                                                                padding: "4px 8px",
+                                                                borderRadius: "999px",
+                                                                backgroundColor: "#f1f5f9",
+                                                                color: "#64748b",
+                                                                border: "1px solid #e2e8f0",
+                                                                maxWidth: "100%",
+                                                                whiteSpace: "nowrap",
+                                                                overflow: "hidden",
+                                                                textOverflow: "ellipsis"
+                                                            }}
+                                                        >
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </Link>
                                 </UserHoverCard>
                                 <button
                                     onClick={() => handleFollow(user.id, user.isFollowing)}
                                     style={{
-                                        padding: "0 14px", height: "30px", borderRadius: "100px",
+                                        padding: "0 14px",
+                                        height: "30px",
+                                        borderRadius: "100px",
                                         backgroundColor: user.isFollowing ? "transparent" : "#0f172a",
                                         color: user.isFollowing ? "#1e293b" : "#fff",
                                         border: user.isFollowing ? "1px solid #e2e8f0" : "none",
-                                        fontSize: "10px", fontWeight: 900, cursor: "pointer", textTransform: "uppercase"
+                                        fontSize: "10px",
+                                        fontWeight: 900,
+                                        cursor: "pointer",
+                                        textTransform: "uppercase",
+                                        flexShrink: 0
                                     }}
                                 >
                                     {user.isFollowing ? "Following" : "Follow"}
