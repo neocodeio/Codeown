@@ -356,7 +356,7 @@ export default function Navbar() {
                   onClick={() => setIsLogoutOpen(!isLogoutOpen)}
                   style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: "8px" }}
                 >
-                  <HugeiconsIcon icon={MoreHorizontalIcon} />
+                  <HugeiconsIcon icon={MoreHorizontalIcon} style={{ color: "#000" }} />
                 </button>
 
                 {isLogoutOpen && (
