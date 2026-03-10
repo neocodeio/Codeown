@@ -288,20 +288,31 @@ export default function UserProfile() {
 
   const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=212121&color=ffffff&bold=true`;
 
+  const seoDescription = user.bio
+    ? (user.bio.length > 160 ? user.bio.substring(0, 157) + "..." : user.bio)
+    : `${user.name} is a developer on Codeown${user.job_title ? ` specializing in ${user.job_title}` : ""}. ${user.skills?.length ? `Expertise: ${user.skills.slice(0, 5).join(", ")}.` : ""}`;
+
+  const [firstName, ...lastNameParts] = user.name.split(" ");
+  const lastName = lastNameParts.join(" ");
+
   return (
     <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
       <SEO
         title={`${user.name} (@${user.username})`}
-        description={user.bio || `Check out ${user.name}'s developer profile on Codeown.`}
+        description={seoDescription}
         image={avatarUrl}
         url={user.username ? `${window.location.origin}/${user.username}` : window.location.href}
         type="profile"
         author={user.name}
-        keywords={[user.name, user.username || "", "developer", "portfolio", "coding"]}
+        username={user.username || undefined}
+        firstName={firstName}
+        lastName={lastName}
+        keywords={[user.name, user.username || "", "developer", "portfolio", "coding", ...(user.skills || [])]}
         schema={{
           "@context": "https://schema.org",
           "@type": "Person",
           "name": user.name,
+          "jobTitle": user.job_title,
           "description": user.bio,
           "image": avatarUrl,
           "url": window.location.href,
@@ -431,19 +442,19 @@ export default function UserProfile() {
                 <button
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
                   style={{
-                  padding: "10px",
-                  borderRadius: "30px",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#ffffff",
-                  color: "#1e293b",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.2s ease",
+                    padding: "10px",
+                    borderRadius: "30px",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    border: "1px solid #e2e8f0",
+                    backgroundColor: "#ffffff",
+                    color: "#1e293b",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}

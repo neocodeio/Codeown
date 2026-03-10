@@ -276,7 +276,7 @@ export default function ProjectDetail() {
     <main className="container" style={{ padding: "60px 20px" }}>
       <SEO
         title={`${project.title} by ${userName}`}
-        description={project.description || `Check out ${project.title} on Codeown.`}
+        description={project.description && project.description.length > 160 ? project.description.substring(0, 157) + "..." : (project.description || `Check out ${project.title} on Codeown.`)}
         image={project.cover_image || avatarUrl}
         url={window.location.href}
         type="article"

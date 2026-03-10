@@ -167,8 +167,8 @@ export default function PostDetail() {
   return (
     <main style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
       <SEO
-        title={post.title || "Post"}
-        description={post.content.substring(0, 160) + "..."}
+        title={post.title || (post.content.length > 30 ? post.content.substring(0, 30) + "..." : post.content)}
+        description={post.content.length > 160 ? post.content.substring(0, 157) + "..." : post.content}
         image={post.images && post.images.length > 0 ? post.images[0] : avatarUrl}
         url={window.location.href}
         type="article"

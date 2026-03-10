@@ -9,6 +9,9 @@ interface SEOProps {
     author?: string;
     publishedTime?: string;
     keywords?: string[];
+    username?: string;
+    firstName?: string;
+    lastName?: string;
     schema?: object;
 }
 
@@ -21,6 +24,9 @@ export const SEO = ({
     author,
     publishedTime,
     keywords = ["coding", "programming", "developer", "portfolio", "showcase", "collaboration"],
+    username,
+    firstName,
+    lastName,
     schema
 }: SEOProps) => {
     const siteTitle = 'Codeown';
@@ -43,12 +49,22 @@ export const SEO = ({
             <meta property="og:image" content={fullImage} />
             <meta property="og:site_name" content={siteTitle} />
 
+            {/* Profile Specific OG Tags */}
+            {type === 'profile' && (
+                <>
+                    {username && <meta property="profile:username" content={username} />}
+                    {firstName && <meta property="profile:first_name" content={firstName} />}
+                    {lastName && <meta property="profile:last_name" content={lastName} />}
+                </>
+            )}
+
             {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:url" content={url} />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={fullImage} />
+            <meta name="twitter:creator" content="@codeown_space" />
 
             {/* Article Specific */}
             {publishedTime && <meta property="article:published_time" content={publishedTime} />}
