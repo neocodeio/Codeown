@@ -7,6 +7,6 @@ const router = Router();
 router.get("/sitemap.xml", generateSitemap);
 
 // Fallback for all other routes to serve dynamic HTML with SEO tags
-router.get("/:path(.*)", serveDynamicSEO);
+router.get(/.*/, serveDynamicSEO);
 
 export default router;
