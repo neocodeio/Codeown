@@ -253,10 +253,10 @@ export default function RecommendedUsersSidebar() {
                         {spotlight.slice(0, 3).map((user: any, idx: number) => (
                             <Link key={user.id} to={`/${user.username}`} style={{ textDecoration: "none", color: "inherit", textAlign: "center" }} className="sidebar-item">
                                 <div style={{ position: "relative", marginBottom: "8px", display: "inline-block" }}>
-                                    <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`} style={{ width: "52px", height: "52px", borderRadius: "14px", border: "1px solid #fff", boxShadow: idx === 0 ? "0 4px 12px rgba(250, 204, 21, 0.2)" : "none" }} alt="" />
+                                    <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`} style={{ width: "52px", height: "52px", borderRadius: "14px", border: "1px solid #fff", }} alt="" />
                                     {idx === 0 && (
-                                        <div style={{ position: "absolute", bottom: "-4px", right: "-4px", background: "#facc15", borderRadius: "50%", width: "16px", height: "16px", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #fff" }}>
-                                            <span style={{ fontSize: "10px", fontWeight: 900, color: "#000" }}>1</span>
+                                        <div style={{ position: "absolute", bottom: "-4px", right: "-4px", background: "#facc15", borderRadius: "50%", width: "23px", height: "23px", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #fff" }}>
+                                            <span style={{ fontSize: "13px", fontWeight: 900, color: "#000" }}>1</span>
                                         </div>
                                     )}
                                 </div>
