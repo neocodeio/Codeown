@@ -614,6 +614,42 @@ export default function UserProfile() {
             )}
           </div>
 
+          {/* Tech Stacks */}
+          {user.skills && user.skills.length > 0 && (
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px",
+              marginBottom: "16px",
+            }}>
+              {user.skills.map((skill, index) => (
+                <span
+                  key={index}
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    padding: "6px 14px",
+                    backgroundColor: "#f1f5f9",
+                    color: "#475569",
+                    borderRadius: "100px",
+                    border: "1px solid #e2e8f0",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#e2e8f0";
+                    e.currentTarget.style.color = "#0f172a";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f1f5f9";
+                    e.currentTarget.style.color = "#475569";
+                  }}
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* Followers + Social */}
           <div style={{
             display: "flex",
