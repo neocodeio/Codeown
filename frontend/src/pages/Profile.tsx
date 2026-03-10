@@ -455,7 +455,7 @@ export default function Profile() {
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 style={{
-                  padding: "10px 18px",
+                  padding: "10px",
                   borderRadius: "30px",
                   fontSize: "14px",
                   fontWeight: 700,
@@ -540,13 +540,22 @@ export default function Profile() {
                   navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
                 }}
                 style={{
-                  padding: "8px",
-                  borderRadius: "8px",
+                  padding: "10px",
+                  borderRadius: "30px",
+                  fontSize: "14px",
+                  fontWeight: 700,
                   border: "1px solid #e2e8f0",
-                  backgroundColor: "#fff",
-                  color: "#64748b",
+                  backgroundColor: "#ffffff",
+                  color: "#1e293b",
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease",
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
                 title="Share"
               >
                 <HugeiconsIcon icon={Share01Icon} size={18} />
@@ -555,13 +564,22 @@ export default function Profile() {
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
                   style={{
-                    padding: "8px",
-                    borderRadius: "8px",
-                    border: "1px solid #e2e8f0",
-                    backgroundColor: "#fff",
-                    color: "#64748b",
-                    cursor: "pointer",
+                  padding: "10px",
+                  borderRadius: "30px",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#ffffff",
+                  color: "#1e293b",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease",
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
                 >
                   <HugeiconsIcon icon={MoreVerticalIcon} size={18} />
                 </button>

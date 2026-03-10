@@ -431,18 +431,19 @@ export default function UserProfile() {
                 <button
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
                   style={{
-                    padding: "10px 18px",
-                    borderRadius: "30px",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    border: "1px solid #e2e8f0",
-                    backgroundColor: "#ffffff",
-                    color: "#1e293b",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    transition: "all 0.2s ease",
+                  padding: "10px",
+                  borderRadius: "30px",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  border: "1px solid #e2e8f0",
+                  backgroundColor: "#ffffff",
+                  color: "#1e293b",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
@@ -523,12 +524,18 @@ export default function UserProfile() {
                   navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
                 }}
                 style={{
-                  padding: "10px 18px",
+                  padding: "10px",
                   borderRadius: "30px",
+                  fontSize: "14px",
+                  fontWeight: 700,
                   border: "1px solid #e2e8f0",
                   backgroundColor: "#ffffff",
-                  color: "#64748b",
+                  color: "#1e293b",
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
                   transition: "all 0.2s ease",
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
