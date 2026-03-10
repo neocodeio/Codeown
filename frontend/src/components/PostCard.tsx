@@ -27,6 +27,8 @@ import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import UserHoverCard from "./UserHoverCard";
 import ShareModal from "./ShareModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { toast } from "react-toastify";
 
 interface PostCardProps {
   post: Post;
@@ -42,6 +44,8 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
   const { isLiked, likeCount, toggleLike, loading: likeLoading } = useLikes(post.id, post.isLiked, post.like_count);
   const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
@@ -98,19 +102,25 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this post?')) {
-      try {
-        const token = await getToken();
-        await api.delete(`/posts/${post.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        onUpdated?.();
-      } catch (error) {
-        console.error('Error deleting post:', error);
-        alert('Failed to delete post');
-      }
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      setIsDeleting(true);
+      const token = await getToken();
+      await api.delete(`/posts/${post.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setIsDeleteModalOpen(false);
+      onUpdated?.();
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Failed to delete post");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -340,7 +350,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                   </button>
                   <button
                     onClick={(e) => {
-                      handleDelete(e);
+                      handleDeleteClick(e);
                       setIsMenuOpen(false);
                     }}
                     style={{
@@ -631,6 +641,15 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
         onClose={() => setIsShareModalOpen(false)}
         url={shareUrl}
         title="Share this post"
+      />
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete post"
+        message="Are you sure you want to delete this post? This action cannot be undone."
+        confirmLabel="Delete"
+        isLoading={isDeleting}
       />
       <style>{`
           @keyframes like-pop {

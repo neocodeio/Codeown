@@ -33,6 +33,8 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
 import ProjectChangelog from "../components/ProjectChangelog";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import { toast } from "react-toastify";
 
 export default function ProjectDetail() {
   const { width } = useWindowSize();
@@ -52,6 +54,7 @@ export default function ProjectDetail() {
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "changelog">("details");
 
   const viewLogged = useRef(false);
@@ -148,9 +151,11 @@ export default function ProjectDetail() {
     setIsEditModalOpen(true);
   };
 
-  const handleDeleteClick = async () => {
-    if (!confirm("Delete this project? This action cannot be undone.")) return;
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true);
+  };
 
+  const handleDeleteConfirm = async () => {
     setIsDeleting(true);
     try {
       const token = await getToken();
@@ -158,10 +163,11 @@ export default function ProjectDetail() {
       await api.delete(`/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      setIsDeleteModalOpen(false);
       navigate("/");
     } catch (error) {
       console.error("Error deleting project:", error);
-      alert("Failed to delete project");
+      toast.error("Failed to delete project");
     } finally {
       setIsDeleting(false);
     }
@@ -614,7 +620,6 @@ export default function ProjectDetail() {
                 </button>
                 <button
                   onClick={handleDeleteClick}
-                  disabled={isDeleting}
                   style={{
                     padding: "12px 20px",
                     backgroundColor: "#dc3545",
@@ -627,7 +632,7 @@ export default function ProjectDetail() {
                   }}
                 >
                   <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px" }} />
-                  {isDeleting ? "Deleting..." : "Delete Project"}
+                  Delete Project
                 </button>
               </>
             )}
@@ -807,6 +812,15 @@ export default function ProjectDetail() {
         onClose={() => setIsShareModalOpen(false)}
         url={shareUrl}
         title="Share this project"
+      />
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete project"
+        message="Delete this project? This action cannot be undone."
+        confirmLabel="Delete"
+        isLoading={isDeleting}
       />
     </main>
   );

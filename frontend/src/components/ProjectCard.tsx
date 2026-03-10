@@ -26,6 +26,8 @@ import AvailabilityBadge from "./AvailabilityBadge";
 import UserHoverCard from "./UserHoverCard";
 import { getOptimizedImageUrl, handleImageError } from "../utils/image";
 import ShareModal from "./ShareModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { toast } from "react-toastify";
 
 interface ProjectCardProps {
   project: Project;
@@ -40,6 +42,8 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const { isSaved, toggleSave } = useProjectSaved(project.id, project.isSaved);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
@@ -113,20 +117,26 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
     setShowEditModal(true);
   };
 
-  const handleDeleteClick = async (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Delete this project? This action cannot be undone.")) return;
+    setIsDeleteModalOpen(true);
+  };
 
+  const handleDeleteConfirm = async () => {
     try {
+      setIsDeleting(true);
       const token = await getToken();
       if (!token) return;
       await api.delete(`/projects/${project.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      setIsDeleteModalOpen(false);
       onUpdated ? onUpdated() : window.location.reload();
     } catch (error) {
       console.error("Error deleting project:", error);
-      alert("Failed to delete project");
+      toast.error("Failed to delete project");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -510,6 +520,15 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         onClose={() => setIsShareModalOpen(false)}
         url={shareUrl}
         title="Share this project"
+      />
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete project"
+        message="Delete this project? This action cannot be undone."
+        confirmLabel="Delete"
+        isLoading={isDeleting}
       />
     </article>
   );
