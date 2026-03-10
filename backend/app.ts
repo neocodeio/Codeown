@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import postsRoutes from "./src/routes/posts.routes.js";
 import commentsRoutes from "./src/routes/comments.routes.js";
 import usersRoutes from "./src/routes/users.routes.js";
@@ -21,6 +23,9 @@ import seoRoutes from "./src/routes/seo.routes.js";
 import analyticsRoutes from "./src/routes/analytics.routes.js";
 import leaderboardRoutes from "./src/routes/leaderboard.routes.js";
 import { handleDodoWebhook, handleClerkWebhook } from "./src/controllers/webhooks.controller.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 import helmet from "helmet";
@@ -85,6 +90,10 @@ app.use("/image-proxy", imageProxyRoutes);
 app.use("/metadata", metadataRoutes);
 app.use("/analytics", analyticsRoutes);
 app.use("/leaderboard", leaderboardRoutes);
+
+// Static assets should be served first (except index.html)
+app.use(express.static(path.join(__dirname, "../frontend/dist"), { index: false }));
+
 app.use("/", seoRoutes);
 
 export default app;
