@@ -181,37 +181,6 @@ export default function RecommendedUsersSidebar() {
                                             <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                                 @{user.username}
                                             </span>
-                                            {Array.isArray(user.skills) && user.skills.length > 0 && (
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        flexWrap: "wrap",
-                                                        gap: "6px",
-                                                        marginTop: "2px"
-                                                    }}
-                                                >
-                                                    {user.skills.slice(0, 3).map((skill: string, index: number) => (
-                                                        <span
-                                                            key={index}
-                                                            style={{
-                                                                fontSize: "10px",
-                                                                fontWeight: 700,
-                                                                padding: "4px 8px",
-                                                                borderRadius: "999px",
-                                                                backgroundColor: "#f1f5f9",
-                                                                color: "#64748b",
-                                                                border: "1px solid #e2e8f0",
-                                                                maxWidth: "100%",
-                                                                whiteSpace: "nowrap",
-                                                                overflow: "hidden",
-                                                                textOverflow: "ellipsis"
-                                                            }}
-                                                        >
-                                                            {skill}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            )}
                                         </div>
                                     </Link>
                                 </UserHoverCard>
