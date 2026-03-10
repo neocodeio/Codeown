@@ -316,7 +316,7 @@ export default function Navbar() {
       <div style={{ flex: 1 }}></div>
 
       {/* Footer Links & Profile */}
-      <div style={{ padding: "0 16px 20px 16px" }}>
+      <div style={{ padding: "0 16px 20px 16px", borderTop: "1px solid #e2e8f0" }}>
         {/* Profile Card */}
         {isSignedIn && user ? (
           <>
@@ -325,12 +325,16 @@ export default function Navbar() {
               alignItems: "center",
               gap: "10px",
               padding: "16px",
+              marginTop: "5px",
               backgroundColor: "#fff",
-              border: "1px solid #e2e8f0",
-              borderRadius: "16px",
+              // border: "1px solid #e2e8f0",
+              borderRadius: "15px",
               position: "relative",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
-            }}>
+              // boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f9f9f9"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+            >
               <img
                 src={userAvatarUrl || user.imageUrl}
                 alt="Profile"
