@@ -55,6 +55,7 @@ interface SearchProject {
 }
 
 type FilterType = "people" | "posts" | "projects";
+type SortOption = "best" | "newest";
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -75,6 +76,7 @@ export default function Search() {
   const [history, setHistory] = useState<string[]>([]);
   const [currentUserFollowing, setCurrentUserFollowing] = useState<string[]>([]);
   const [showOnlyHirable, setShowOnlyHirable] = useState(false);
+  const [sortOption, setSortOption] = useState<SortOption>("best");
 
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -231,6 +233,25 @@ export default function Search() {
       console.error(err);
     }
   };
+
+  // Derived, display-ready collections
+  const peopleResults = [...users]
+    .filter((user) => !showOnlyHirable || (user.is_pro === true && user.is_hirable === true))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const postsSorted =
+    sortOption === "newest"
+      ? [...posts].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+      : posts;
+
+  const projectsSorted =
+    sortOption === "newest"
+      ? [...projects].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+      : projects;
 
   return (
     <main style={{ backgroundColor: "#fff", minHeight: "100vh", paddingBottom: "40px" }}>
@@ -464,7 +485,103 @@ export default function Search() {
           </div>
         ) : (
           <div className="fade-in">
-            {/* ... rest of the component remains same ... */}
+            {/* Summary + micro-filters header */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                alignItems: isMobile ? "flex-start" : "center",
+                justifyContent: "space-between",
+                gap: "12px",
+                marginBottom: "20px",
+              }}
+            >
+              <div style={{ fontSize: "13px", color: "#64748b", fontWeight: 600 }}>
+                <span style={{ color: "#0f172a" }}>Results for</span>{" "}
+                <span
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: "999px",
+                    backgroundColor: "#f1f5f9",
+                    fontWeight: 700,
+                    color: "#0f172a",
+                  }}
+                >
+                  “{query}”
+                </span>
+                <span style={{ marginLeft: "8px" }}>
+                  · {peopleResults.length} people · {posts.length} posts · {projects.length} projects
+                </span>
+              </div>
+
+              {/* Secondary filter chips */}
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "8px",
+                }}
+              >
+                {[
+                  { id: "people", label: "People" },
+                  { id: "posts", label: "Posts" },
+                  { id: "projects", label: "Projects" },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setActiveFilter(opt.id as FilterType)}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: "999px",
+                      border: "1px solid",
+                      borderColor: activeFilter === opt.id ? "#0f172a" : "#e2e8f0",
+                      backgroundColor: activeFilter === opt.id ? "#0f172a" : "#fff",
+                      color: activeFilter === opt.id ? "#fff" : "#64748b",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+
+                {/* Sort toggle (client-side) */}
+                <div
+                  style={{
+                    display: "inline-flex",
+                    borderRadius: "999px",
+                    border: "1px solid #e2e8f0",
+                    overflow: "hidden",
+                  }}
+                >
+                  {[
+                    { id: "best", label: "Best match" },
+                    { id: "newest", label: "Newest" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setSortOption(opt.id as SortOption)}
+                      style={{
+                        padding: "6px 10px",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        border: "none",
+                        backgroundColor: sortOption === opt.id ? "#0f172a" : "transparent",
+                        color: sortOption === opt.id ? "#fff" : "#64748b",
+                        cursor: "pointer",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {activeFilter === "people" && (
               <div style={{
@@ -472,7 +589,7 @@ export default function Search() {
                 gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
                 gap: "20px"
               }}>
-                {users.filter(user => !showOnlyHirable || (user.is_pro === true && user.is_hirable === true)).map((user) => (
+                {peopleResults.map((user) => (
                   <div key={user.id}
                     onClick={() => navigate(user.username ? `/${user.username}` : `/user/${user.id}`)}
                     style={{
@@ -530,29 +647,29 @@ export default function Search() {
                     </button>
                   </div>
                 ))}
-                {users.length === 0 && <EmptyState type="People" />}
+                {peopleResults.length === 0 && <EmptyState type="People" />}
               </div>
             )}
 
             {activeFilter === "posts" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                {posts.map((post) => (
+                {postsSorted.map((post) => (
                   <PostCard key={post.id} post={post as Post} />
                 ))}
-                {posts.length === 0 && <EmptyState type="Posts" />}
+                {postsSorted.length === 0 && <EmptyState type="Posts" />}
               </div>
             )}
 
             {activeFilter === "projects" && (
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
                 gap: "20px"
               }}>
-                {projects.map((project) => (
+                {projectsSorted.map((project) => (
                   <ProjectCard key={project.id} project={project as Project} />
                 ))}
-                {projects.length === 0 && <EmptyState type="Projects" />}
+                {projectsSorted.length === 0 && <EmptyState type="Projects" />}
               </div>
             )}
           </div>
