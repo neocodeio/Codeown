@@ -343,7 +343,7 @@ export default function Navbar() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "4px" }}>
                   {profile?.name || user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || "User"}
-                  <VerifiedBadge username={profile?.username || user.username} isPro={isPro} size="14px" />
+                  <VerifiedBadge username={profile?.username || user.username} isPro={isPro} size="12px" />
                 </div>
                 <div style={{ color: "#64748b", fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   @{profile?.username || user.username || "user"}
