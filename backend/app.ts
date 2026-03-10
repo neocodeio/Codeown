@@ -37,34 +37,56 @@ const app = express();
 // Trust proxy for Railway/deployment load balancers
 app.set("trust proxy", 1);
 
-// 1. CORS - MUST BE FIRST for preflight requests
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://codeown.space",
+  "https://www.codeown.space"
+];
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://codeown.space"
-  ],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+
+    const isAllowed = allowedOrigins.some(o => o.toLowerCase() === origin.toLowerCase()) ||
+      origin.toLowerCase().includes("codeown.space");
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+    "X-Clerk-User-Id",
+    "X-Clerk-Auth-Token",
+    "Origin"
+  ],
+  optionsSuccessStatus: 204
 }));
 
-// 2. Webhooks need raw body for signature verification
-// Use a more robust approach to avoid 405 errors and handle body parsing correctly
+// 2. Security Headers (Moved after CORS to ensure no interference)
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false, // Disabling CSP temporarily to rule out interface blocking
+}));
+
+// 3. Webhooks need raw body for signature verification
 app.post("/webhooks/dodo", express.raw({ type: "*/*" }), handleDodoWebhook);
 app.post("/webhooks/clerk", express.raw({ type: "*/*" }), handleClerkWebhook);
 
-// 3. Regular JSON parser
+// 4. Regular JSON parser
 app.use(express.json({ limit: "50mb" }));
-
-// 4. Security Headers
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-}));
 
 // 5. Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 2000, // Increased for development
+  max: 5000, // Increased further for high-traffic sessions
   standardHeaders: true,
   legacyHeaders: false,
   message: "Too many requests from this IP, please try again after 15 minutes",
