@@ -115,7 +115,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
 
   const handleMentionClick = (username: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/${username}`);
+    navigate(`/${username.toLowerCase()}`);
   };
 
   const parseContent = (text: string) => {
@@ -255,9 +255,10 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         let match;
         while ((match = regex.exec(p)) !== null) {
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          const username = match[1];
           res.push(
-            <span key={`m-${key++}`} onClick={(e) => handleMentionClick(match![1], e)} style={{ color: "#2563eb", cursor: "pointer", fontWeight: 500 }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
-              @{match[1]}
+            <span key={`m-${key++}`} onClick={(e) => handleMentionClick(username, e)} style={{ color: "#2563eb", cursor: "pointer", fontWeight: 500 }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+              @{username}
             </span>
           );
           lastIdx = match.index + match[0].length;
