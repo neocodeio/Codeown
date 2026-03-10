@@ -50,7 +50,7 @@ const corsOptions = {
 
     const normalizedOrigin = origin.toLowerCase();
     const isAllowed = allowedOrigins.some(o => o.toLowerCase() === normalizedOrigin) ||
-      normalizedOrigin.endsWith("codeown.space") ||
+      normalizedOrigin.includes("codeown.space") ||
       normalizedOrigin.includes("localhost");
 
     if (isAllowed) {

@@ -73,7 +73,7 @@ export default function Navbar() {
   const { avatarUrl: userAvatarUrl } = useAvatar(
     user?.id,
     user?.imageUrl,
-    user?.fullName || user?.username || "User"
+    profile?.name || user?.fullName || `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || user?.username || "User"
   );
 
   const logoutRef = useRef<HTMLDivElement>(null);
@@ -332,8 +332,8 @@ export default function Navbar() {
               position: "relative",
               // boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f9f9f9"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f9f9f9"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
             >
               <img
                 src={userAvatarUrl || user.imageUrl}
@@ -341,12 +341,12 @@ export default function Navbar() {
                 style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center" }}>
-                  {user.fullName || user.username}
-                  <VerifiedBadge username={user.username} isPro={isPro} size="14px" />
+                <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "4px" }}>
+                  {profile?.name || user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || "User"}
+                  <VerifiedBadge username={profile?.username || user.username} isPro={isPro} size="14px" />
                 </div>
                 <div style={{ color: "#64748b", fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  @{user.username}
+                  @{profile?.username || user.username || "user"}
                 </div>
               </div>
 
