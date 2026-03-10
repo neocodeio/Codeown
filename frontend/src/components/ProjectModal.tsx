@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import VerifiedBadge from "./VerifiedBadge";
 import { validateImageSize } from "../constants/upload";
+import confetti from "canvas-confetti";
+import { toast } from "react-toastify";
 
 interface ProjectModalProps {
     isOpen: boolean;
@@ -127,7 +129,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
             // Check if compression is needed (only if file > 200KB)
             if (needsCompression(file, 200)) {
                 console.log(`Compressing image from ${(file.size / 1024 / 1024).toFixed(2)}MB...`);
-                
+
                 try {
                     // Use simple compression utility
                     fileToUpload = await compressImageSimple(file, {
@@ -181,10 +183,50 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 await api.put(`/projects/${project.id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                toast.success("Project updated successfully!");
             } else {
-                await api.post("/projects", formData, {
+                const response = await api.post("/projects", formData, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+
+                if (response.data.is_first) {
+                    // Confetti trigger for first project!
+                    const duration = 5 * 1000;
+                    const animationEnd = Date.now() + duration;
+                    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 11000 };
+
+                    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+                    const interval: any = setInterval(function () {
+                        const timeLeft = animationEnd - Date.now();
+
+                        if (timeLeft <= 0) {
+                            return clearInterval(interval);
+                        }
+
+                        const particleCount = 50 * (timeLeft / duration);
+                        // since particles fall down, start a bit higher than random
+                        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+                        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+                    }, 250);
+
+                    toast.success("You just shipped your first project! 🚀", {
+                        position: "top-center",
+                        autoClose: 6000,
+                        icon: <span>🏆</span>,
+                        style: {
+                            borderRadius: '20px',
+                            background: '#0f172a',
+                            color: '#fff',
+                            fontWeight: 900,
+                            padding: '16px 24px',
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                            fontSize: '15px'
+                        }
+                    });
+                } else {
+                    toast.success("Project launched successfully! 🚀");
+                }
             }
 
             window.dispatchEvent(new CustomEvent("projectCreated"));
@@ -196,6 +238,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
             const backendCode = error.response?.data?.code ? ` [Code: ${error.response.data.code}]` : "";
 
             setError(`${backendError}${backendDetails}${backendCode}`);
+            toast.error(backendError);
             console.error("Project save error:", error);
         } finally {
             setLoading(false);

@@ -59,8 +59,8 @@ export async function addProjectChangelog(req: Request, res: Response) {
     const { data, error } = await supabase
       .from("project_changelogs")
       .insert({
-        project_id: parseInt(id),
-        user_id: userId,
+        project_id: parseInt(id!),
+        user_id: userId!,
         content
       })
       .select("*")
@@ -384,6 +384,13 @@ export async function createProject(req: Request, res: Response) {
     const now = new Date().toISOString();
     console.log("Inserting project into Supabase projects table...");
 
+    const { count: existingCount } = await supabase
+      .from("projects")
+      .select("id", { count: 'exact', head: true })
+      .eq("user_id", userId);
+
+    const isFirstProject = existingCount === 0;
+
     const projectData: any = {
       user_id: userId,
       title: title.trim(),
@@ -472,6 +479,7 @@ export async function createProject(req: Request, res: Response) {
 
     return res.status(201).json({
       ...project,
+      is_first: isFirstProject,
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
     });
   } catch (error: any) {
@@ -589,8 +597,8 @@ export async function deleteProject(req: Request, res: Response) {
     const { data: existingProject, error: fetchError } = await supabase
       .from("projects")
       .select("id, user_id")
-      .eq("id", resolvedId)
-      .eq("user_id", userId)
+      .eq("id", resolvedId!)
+      .eq("user_id", userId!)
       .single();
 
     if (fetchError || !existingProject) {
@@ -689,7 +697,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
 
       // Create notification for project owner (if not the liker)
       if (project.user_id !== String(userId)) {
-        await createProjectNotification(project.user_id, "like", String(userId), parseInt(id as string));
+        await createProjectNotification(project.user_id, "like", String(userId!), parseInt(id as string));
       }
 
     }
@@ -801,7 +809,7 @@ export async function toggleProjectSave(req: Request, res: Response) {
 
       // Create notification for project owner (if not the saver)
       if (project.user_id !== String(userId)) {
-        await createProjectNotification(project.user_id, "save", String(userId), parseInt(id as string));
+        await createProjectNotification(project.user_id, "save", String(userId!), parseInt(id as string));
       }
 
     }
@@ -866,8 +874,8 @@ export async function rateProject(req: Request, res: Response) {
     const { error: upsertError } = await supabase
       .from("project_ratings")
       .upsert({
-        project_id: parseInt(id),
-        user_id: String(userId),
+        project_id: parseInt(id!),
+        user_id: String(userId!),
         rating: rating,
         created_at: new Date().toISOString()
       }, { onConflict: "project_id,user_id" });
