@@ -21,6 +21,7 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
+// import StreakBadge from "../components/StreakBadge";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Pen01Icon,
@@ -71,6 +72,8 @@ interface UserProfile {
   website_url: string | null;
   banner_url: string | null;
   created_at: string | null;
+  // streak_count: number;
+  onboarding_completed: boolean;
 }
 
 export default function Profile() {
@@ -416,6 +419,7 @@ export default function Profile() {
               }}>
                 {(userProfile?.name || user?.fullName || "").toUpperCase()}
                 <VerifiedBadge username={userProfile?.username || user?.username} isPro={userProfile?.is_pro} size={isMobile ? "18px" : "22px"} />
+                {/* {userProfile && userProfile.streak_count > 0 && <StreakBadge count={userProfile.streak_count} />} */}
                 {userProfile?.is_pro === true && (
                   <span style={{
                     fontSize: isMobile ? 10 : 11,
@@ -564,19 +568,19 @@ export default function Profile() {
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
                   style={{
-                  padding: "10px",
-                  borderRadius: "30px",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#ffffff",
-                  color: "#1e293b",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.2s ease",
+                    padding: "10px",
+                    borderRadius: "30px",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    border: "1px solid #e2e8f0",
+                    backgroundColor: "#ffffff",
+                    color: "#1e293b",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}

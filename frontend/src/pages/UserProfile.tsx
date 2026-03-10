@@ -35,6 +35,7 @@ import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import Lightbox from "../components/Lightbox";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
+// import StreakBadge from "../components/StreakBadge";
 
 interface User {
   id: string;
@@ -60,6 +61,7 @@ interface User {
   linkedin_url: string | null;
   website_url: string | null;
   banner_url: string | null;
+  // streak_count: number;
   created_at: string | null;
 }
 
@@ -418,6 +420,7 @@ export default function UserProfile() {
             }}>
               {(user.name || "").toUpperCase()}
               <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
+              {/* {user.streak_count > 0 && <StreakBadge count={user.streak_count} />} */}
               {user.is_pro === true && (
                 <span style={{
                   fontSize: isMobile ? 10 : 11,

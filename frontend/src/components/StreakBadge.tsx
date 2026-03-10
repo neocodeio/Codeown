@@ -4,9 +4,10 @@ import flameGif from "../assets/flame.gif";
 
 interface StreakBadgeProps {
     count: number;
+    mini?: boolean;
 }
 
-export default function StreakBadge({ count }: StreakBadgeProps) {
+export default function StreakBadge({ count, mini }: StreakBadgeProps) {
     const isActive = count > 0;
 
     return (
@@ -15,23 +16,23 @@ export default function StreakBadge({ count }: StreakBadgeProps) {
             style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
-                padding: "0px 8px 0px 8px",
+                gap: mini ? "4px" : "8px",
+                padding: mini ? "0px 6px" : "0px 8px",
                 backgroundColor: isActive ? "rgba(255, 126, 0, 0.1)" : "rgba(148, 163, 184, 0.1)",
                 borderRadius: "20px",
                 border: isActive ? "1px solid rgba(255, 126, 0, 0.2)" : "1px solid rgba(148, 163, 184, 0.2)",
                 transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                 cursor: "pointer",
                 userSelect: "none",
-                minHeight: "26px"
+                minHeight: mini ? "20px" : "26px"
             }}
         >
             <div style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: "20px",
-                height: "20px",
+                width: mini ? "14px" : "20px",
+                height: mini ? "14px" : "20px",
                 position: "relative"
             }}>
                 {isActive ? (
@@ -39,26 +40,26 @@ export default function StreakBadge({ count }: StreakBadgeProps) {
                         src={flameGif}
                         alt="Streak active"
                         style={{
-                            width: "22px",
-                            height: "22px",
-                            marginBottom: "5%"
+                            width: mini ? "14px" : "22px",
+                            height: mini ? "14px" : "22px",
+                            marginBottom: mini ? "0" : "5%"
                         }}
                     />
                 ) : (
                     <HugeiconsIcon
                         icon={FireIcon}
                         style={{
-                            fontSize: "14px",
+                            fontSize: mini ? "10px" : "14px",
                             color: "#94a3b8"
                         }}
                     />
                 )}
             </div>
             <span style={{
-                fontSize: "13px",
-                fontWeight: 800,
+                fontSize: mini ? "10px" : "13px",
+                fontWeight: 900,
                 verticalAlign: "middle",
-                paddingTop: "2px",
+                paddingTop: mini ? "0px" : "2px",
                 color: isActive ? "#ff7e00" : "#94a3b8",
                 fontFamily: "'Outfit', sans-serif"
             }}>

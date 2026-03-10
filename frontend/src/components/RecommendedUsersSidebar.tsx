@@ -151,6 +151,7 @@ export default function RecommendedUsersSidebar() {
                                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                                                 <span style={{ fontSize: "14px", fontWeight: 800, color: "#0f172a" }}>{user.name.split(" ")[0]}</span>
                                                 <VerifiedBadge username={user.username} isPro={user.is_pro} size="13px" />
+                                                {user.streak_count > 0 && <StreakBadge count={user.streak_count} mini />}
                                             </div>
                                             <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600 }}>@{user.username}</span>
                                         </div>
@@ -195,7 +196,10 @@ export default function RecommendedUsersSidebar() {
                                         </div>
                                     )}
                                 </div>
-                                <div style={{ fontSize: "11px", fontWeight: 800, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.name.split(' ')[0]}</div>
+                                <div style={{ fontSize: "11px", fontWeight: 800, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}>
+                                    {user.name.split(' ')[0]}
+                                    {/* {user.streak_count > 0 && <StreakBadge count={user.streak_count} mini />} */}
+                                </div>
                                 <div style={{ fontSize: "10px", color: "#64748b", fontWeight: 700, marginTop: "2px", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}>
                                     <HugeiconsIcon icon={ChartBarLineIcon} size={10} />
                                     {user.pulse_score}
