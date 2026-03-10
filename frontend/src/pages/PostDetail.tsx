@@ -303,7 +303,7 @@ export default function PostDetail() {
                 style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#666", cursor: "pointer", fontSize: "13px" }}
               >
                 <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "16px" }} />
-                <span>{comments.length || 0}</span>
+                {comments.length > 0 && <span>{comments.length}</span>}
               </button>
 
               {/* Like */}
@@ -313,7 +313,7 @@ export default function PostDetail() {
                 style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "#ef4444" : "#666", cursor: "pointer", fontSize: "13px" }}
               >
                 <HugeiconsIcon icon={isLiked ? FavouriteIcon : FavouriteIcon} style={{ fontSize: "12px", opacity: isLiked ? 1 : 0.6 }} />
-                <span>{likeCount || 0}</span>
+                {likeCount > 0 && <span>{likeCount}</span>}
               </button>
 
               {/* Share */}

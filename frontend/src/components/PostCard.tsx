@@ -489,7 +489,7 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
             <div className="footer-icon" style={{ padding: "8px", borderRadius: "50%", display: "flex", transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}>
               <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "16px" }} />
             </div>
-            <span style={{ fontWeight: 500 }}>{post.comment_count || 0}</span>
+            {(post.comment_count || 0) > 0 && <span style={{ fontWeight: 500 }}>{post.comment_count}</span>}
           </button>
 
           {/* Like */}
@@ -549,13 +549,15 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                 }}
               />
             </div>
-            <span style={{
-              fontWeight: isLiked ? "800" : "600",
-              transition: "all 0.2s ease",
-              transform: isLiked ? "scale(1.05)" : "scale(1)"
-            }}>
-              {likeCount || 0}
-            </span>
+            {likeCount > 0 && (
+              <span style={{
+                fontWeight: isLiked ? "800" : "600",
+                transition: "all 0.2s ease",
+                transform: isLiked ? "scale(1.05)" : "scale(1)"
+              }}>
+                {likeCount}
+              </span>
+            )}
           </button>
 
           {/* Share */}

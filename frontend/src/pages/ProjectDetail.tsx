@@ -664,7 +664,7 @@ export default function ProjectDetail() {
             }}
           >
             <HugeiconsIcon icon={FavouriteIcon} />
-            {likeCount || 0} Likes
+            {likeCount > 0 ? `${likeCount} ` : ""}Likes
           </button>
 
           <button

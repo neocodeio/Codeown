@@ -486,8 +486,8 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                   // Removed automatic fill to prevent solid green blobs
                 }}
               />
-              {action.count !== undefined && (
-                <span style={{ fontSize: "13px", fontWeight: 600 }}>{action.count || 0}</span>
+              {action.count !== undefined && action.count > 0 && (
+                <span style={{ fontSize: "13px", fontWeight: 600 }}>{action.count}</span>
               )}
             </button>
           ))}
