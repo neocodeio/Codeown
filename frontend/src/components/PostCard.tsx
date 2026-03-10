@@ -246,7 +246,12 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
                 <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
               </span>
             )}
-            <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "400" }}>
+            <span
+              onClick={handleUserClick}
+              style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "400", cursor: "pointer" }}
+              onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+              onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+            >
               @{post.user?.username || 'user'}
             </span>
             <span style={{ fontSize: "14px", color: "#e2e8f0" }}>•</span>

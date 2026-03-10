@@ -115,7 +115,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
 
   const handleMentionClick = (username: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/search?q=@${username}`);
+    navigate(`/${username}`);
   };
 
   const parseContent = (text: string) => {

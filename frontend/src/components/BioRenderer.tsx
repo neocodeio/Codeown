@@ -9,7 +9,7 @@ export default function BioRenderer({ bio }: BioRendererProps) {
 
     const handleMentionClick = (username: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        navigate(`/search?q=@${username}`);
+        navigate(`/${username}`);
     };
 
     const parseBio = (text: string) => {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -35,6 +35,7 @@ export default function Navbar() {
   const { isSignedIn, user } = useClerkUser();
   const { signOut } = useClerkAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const { width } = useWindowSize();
   const isMobile = width < 768; // Mobile breakpoint
 
@@ -265,10 +266,28 @@ export default function Navbar() {
               Launch Project
             </div>
 
-            <Link to="/profile" style={linkStyle("/profile")}>
+            <div
+              onClick={() => {
+                const username = profile?.username || user?.username;
+                if (username) {
+                  navigate(`/${username}`);
+                } else {
+                  navigate("/profile");
+                }
+              }}
+              style={{ ...linkStyle(""), cursor: "pointer" }}
+              onMouseEnter={(e) => {
+                const active = location.pathname === "/profile" || (profile?.username && location.pathname === `/${profile.username}`);
+                if (!active) e.currentTarget.style.backgroundColor = "#f8fafc";
+              }}
+              onMouseLeave={(e) => {
+                const active = location.pathname === "/profile" || (profile?.username && location.pathname === `/${profile.username}`);
+                if (!active) e.currentTarget.style.backgroundColor = "transparent";
+              }}
+            >
               <HugeiconsIcon icon={UserIcon} style={{ width: "20px" }} />
               Profile
-            </Link>
+            </div>
             {isPro && (
               <Link to="/analytics" style={linkStyle("/analytics")}>
                 <HugeiconsIcon icon={ChartBarLineIcon} style={{ width: "20px" }} />
@@ -320,18 +339,27 @@ export default function Navbar() {
         {/* Profile Card */}
         {isSignedIn && user ? (
           <>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "16px",
-              marginTop: "5px",
-              backgroundColor: "#fff",
-              // border: "1px solid #e2e8f0",
-              borderRadius: "15px",
-              position: "relative",
-              // boxShadow: "0 2px 5px rgba(0,0,0,0.03)"
-            }}
+            <div
+              onClick={() => {
+                const username = profile?.username || user?.username;
+                if (username) {
+                  navigate(`/${username}`);
+                } else {
+                  navigate("/profile");
+                }
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "16px",
+                marginTop: "5px",
+                backgroundColor: "#fff",
+                borderRadius: "15px",
+                position: "relative",
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f9f9f9"}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
             >
@@ -680,7 +708,10 @@ export default function Navbar() {
           )}
         </Link>
 
-        <Link to="/profile" style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/profile" ? "#212121" : "#94a3b8", position: "relative" }}>
+        <Link
+          to={(profile?.username || user?.username) ? `/${profile?.username || user?.username}` : "/profile"}
+          style={{ flex: 1, height: "44px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textDecoration: "none", color: (location.pathname === "/profile" || (profile?.username && location.pathname === `/${profile.username}`)) ? "#212121" : "#94a3b8", position: "relative" }}
+        >
           {userAvatarUrl ? (
             <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname === "/profile" ? "2px solid #212121" : "none", objectFit: "cover" }} />
           ) : (

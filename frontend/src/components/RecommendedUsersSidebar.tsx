@@ -145,7 +145,7 @@ export default function RecommendedUsersSidebar() {
                         users.map(user => (
                             <div key={user.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }} className="sidebar-item">
                                 <UserHoverCard userId={user.id}>
-                                    <Link to={`/user/${user.id}`} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", flex: 1, minWidth: 0 }}>
+                                    <Link to={user.username ? `/${user.username}` : `/user/${user.id}`} style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", flex: 1, minWidth: 0 }}>
                                         <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`} style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #f1f5f9" }} alt="" />
                                         <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
