@@ -17,7 +17,7 @@ export default function BioRenderer({ bio }: BioRendererProps) {
         let localKey = 0;
 
         // Combined regex for mentions and URLs
-        const combinedRegex = /(@\w+)|(https?:\/\/[^\s]+)/g;
+        const combinedRegex = /(@\w+(?:\.\w+)*)|(https?:\/\/[^\s]+)/g;
         let lastIndex = 0;
         let match;
 

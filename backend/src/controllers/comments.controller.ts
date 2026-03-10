@@ -209,7 +209,7 @@ export async function createComment(req: Request, res: Response) {
     console.log("Creating comment with:", { post_id, content, userId });
 
     // Extract mentions from content (@username)
-    const mentionRegex = /@(\w+)/g;
+    const mentionRegex = /@(\w+(?:\.\w+)*)/g;
     const mentions = content.match(mentionRegex) || [];
     const mentionedUsernames = mentions.map((m: string) => m.substring(1).toLowerCase());
 

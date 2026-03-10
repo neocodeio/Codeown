@@ -249,7 +249,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
       // Mentions (@username)
       parts = parts.flatMap(p => {
         if (typeof p !== 'string') return p;
-        const regex = /@(\w+)/g;
+        const regex = /@(\w+(?:\.\w+)*)/g;
         const res: (string | React.JSX.Element)[] = [];
         let lastIdx = 0;
         let match;
