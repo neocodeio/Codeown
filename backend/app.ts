@@ -37,22 +37,26 @@ const app = express();
 // Trust proxy for Railway/deployment load balancers
 app.set("trust proxy", 1);
 
+// 1. CORS Configuration
 const allowedOrigins = [
   "http://localhost:5173",
   "https://codeown.space",
   "https://www.codeown.space"
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     if (!origin) return callback(null, true);
 
-    const isAllowed = allowedOrigins.some(o => o.toLowerCase() === origin.toLowerCase()) ||
-      origin.toLowerCase().includes("codeown.space");
+    const normalizedOrigin = origin.toLowerCase();
+    const isAllowed = allowedOrigins.some(o => o.toLowerCase() === normalizedOrigin) ||
+      normalizedOrigin.endsWith("codeown.space") ||
+      normalizedOrigin.includes("localhost");
 
     if (isAllowed) {
       callback(null, true);
     } else {
+      console.warn(`[CORS] Rejected: ${origin}`);
       callback(null, false);
     }
   },
@@ -63,17 +67,26 @@ app.use(cors({
     "Authorization",
     "X-Requested-With",
     "Accept",
+    "Origin",
     "X-Clerk-User-Id",
     "X-Clerk-Auth-Token",
-    "Origin"
+    "X-Clerk-After-Sign-In-Url",
+    "X-Clerk-After-Sign-Up-Url"
   ],
-  optionsSuccessStatus: 204
-}));
+  optionsSuccessStatus: 204,
+  maxAge: 86400
+};
 
-// 2. Security Headers (Moved after CORS to ensure no interference)
+// Apply CORS to all routes
+app.use(cors(corsOptions));
+
+// Explicitly handle all preflight requests
+app.options("*", cors(corsOptions));
+
+// 2. Security Headers (Moved after CORS)
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
-  contentSecurityPolicy: false, // Disabling CSP temporarily to rule out interface blocking
+  contentSecurityPolicy: false,
 }));
 
 // 3. Webhooks need raw body for signature verification
@@ -86,10 +99,9 @@ app.use(express.json({ limit: "50mb" }));
 // 5. Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5000, // Increased further for high-traffic sessions
+  max: 10000, // Very high limit to ensure no blocking during development/testing
   standardHeaders: true,
   legacyHeaders: false,
-  message: "Too many requests from this IP, please try again after 15 minutes",
 });
 app.use(limiter);
 
