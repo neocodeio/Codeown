@@ -187,180 +187,87 @@ export default function Feed() {
                             zIndex: 10,
                         }}
                     >
+                        <style>{`
+                            .feed-tabs-row {
+                                display: flex;
+                                align-items: center;
+                                gap: 18px;
+                                padding: 0 16px;
+                                overflow-x: auto;
+                                scrollbar-width: none;
+                                -ms-overflow-style: none;
+                            }
+                            .feed-tabs-row::-webkit-scrollbar { display: none; }
+                            .feed-tab-btn {
+                                position: relative;
+                                appearance: none;
+                                border: none;
+                                background: transparent;
+                                padding: 14px 2px 12px;
+                                font-size: 14px;
+                                font-weight: 700;
+                                color: #94a3b8;
+                                cursor: pointer;
+                                white-space: nowrap;
+                                transition: color 0.15s ease;
+                            }
+                            .feed-tab-btn:hover { color: #64748b; }
+                            .feed-tab-btn.active { color: #0f172a; }
+                            .feed-tab-underline {
+                                position: absolute;
+                                left: 50%;
+                                bottom: 0;
+                                transform: translateX(-50%);
+                                width: 46px;
+                                height: 2px;
+                                background: #0f172a;
+                                border-radius: 999px;
+                            }
+                        `}</style>
                         <div
                             style={{
                                 display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: isMobile ? "space-between" : "flex-start",
-                                padding: isMobile ? "12px 14px" : "16px 20px 12px",
-                                gap: isMobile ? "8px" : "12px",
-                                flexWrap: "nowrap",
-                                overflowX: isMobile ? "auto" : "visible",
-                                scrollbarWidth: "none"
+                                justifyContent: "center",
                             }}
                         >
-                            <h1
-                                style={{
-                                    margin: 0,
-                                    fontSize: isMobile ? "20px" : "22px",
-                                    fontWeight: 800,
-                                    letterSpacing: "-0.02em",
-                                    color: "#0f172a",
-                                }}
-                            >
-                                {/* FEED */}
-                            </h1>
-
                             <div
+                                className="feed-tabs-row"
                                 style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: isMobile ? "space-between" : "flex-end",
-                                    gap: isMobile ? 6 : 0,
-                                    width: isMobile ? "100%" : "auto",
+                                    width: "100%",
+                                    maxWidth: isMobile ? "100%" : `${MAIN_COLUMN_MAX_WIDTH}px`,
+                                    justifyContent: isMobile ? "flex-start" : "center",
                                 }}
                             >
-                                {/* Discover / Following */}
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        padding: "4px",
-                                        borderTopLeftRadius: "10px",
-                                        borderBottomLeftRadius: "10px",
-                                        backgroundColor: "#f3f4f6",
-                                        border: "1px solid #e5e7eb",
-                                        gap: "4px",
-                                        width: isMobile ? "100%" : "auto",
-                                        maxWidth: isMobile ? 360 : undefined,
-                                    }}
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterChange("all")}
+                                    className={`feed-tab-btn ${feedFilter === "all" ? "active" : ""}`}
                                 >
-                                    <button
-                                        type="button"
-                                        onClick={() => handleFilterChange("all")}
-                                        style={{
-                                            border: "none",
-                                            outline: "none",
-                                            cursor: "pointer",
-                                            padding: isMobile ? "4px 10px" : "5px 8px",
-                                            borderRadius: "5px",
-                                            fontSize: isMobile ? "12px" : "12px",
-                                            fontWeight: 700,
-                                            flex: isMobile ? 1 : undefined,
-                                            textAlign: "center",
-                                            backgroundColor:
-                                                feedFilter === "all" ? "#ffffff" : "transparent",
-                                            color: feedFilter === "all" ? "#111827" : "#6b7280",
-                                            boxShadow:
-                                                feedFilter === "all"
-                                                    ? "0 1px 2px rgba(15, 23, 42, 0.06)"
-                                                    : "none",
-                                            transition:
-                                                "background-color 0.15s ease, color 0.15s ease",
-                                        }}
-                                    >
-                                        Discover
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleFilterChange("following")}
-                                        style={{
-                                            border: "none",
-                                            outline: "none",
-                                            cursor: "pointer",
-                                            padding: isMobile ? "4px 10px" : "5px 10px",
-                                            borderRadius: "5px",
-                                            fontSize: isMobile ? "12px" : "12px",
-                                            fontWeight: 700,
-                                            flex: isMobile ? 1 : undefined,
-                                            textAlign: "center",
-                                            backgroundColor:
-                                                feedFilter === "following"
-                                                    ? "#ffffff"
-                                                    : "transparent",
-                                            color: feedFilter === "following" ? "#111827" : "#6b7280",
-                                            boxShadow:
-                                                feedFilter === "following"
-                                                    ? "0 1px 2px rgba(15, 23, 42, 0.06)"
-                                                    : "none",
-                                            transition:
-                                                "background-color 0.15s ease, color 0.15s ease",
-                                        }}
-                                    >
-                                        Following
-                                    </button>
-                                </div>
-
-                                {/* Posts / Projects */}
-                                <div
-                                    style={{
-                                        display: "inline-flex",
-                                        alignItems: "center",
-                                        padding: "4px",
-                                        borderBottomRightRadius: "10px",
-                                        borderTopRightRadius: "10px",
-                                        backgroundColor: "#f3f4f6",
-                                        border: "1px solid #e5e7eb",
-                                        gap: "4px",
-                                        width: isMobile ? "100%" : "auto",
-                                        maxWidth: isMobile ? 360 : undefined,
-                                    }}
+                                    Discover
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterChange("following")}
+                                    className={`feed-tab-btn ${feedFilter === "following" ? "active" : ""}`}
                                 >
-                                    <button
-                                        type="button"
-                                        onClick={() => updateParams({ type: "posts" })}
-                                        style={{
-                                            border: "none",
-                                            outline: "none",
-                                            cursor: "pointer",
-                                            padding: isMobile ? "4px 12px" : "5px 10px",
-                                            borderRadius: "5px",
-                                            fontSize: isMobile ? "12px" : "12px",
-                                            fontWeight: 700,
-                                            flex: isMobile ? 1 : undefined,
-                                            textAlign: "center",
-                                            backgroundColor:
-                                                feedType === "posts" ? "#ffffff" : "transparent",
-                                            color: feedType === "posts" ? "#111827" : "#6b7280",
-                                            boxShadow:
-                                                feedType === "posts"
-                                                    ? "0 1px 2px rgba(15, 23, 42, 0.06)"
-                                                    : "none",
-                                            transition:
-                                                "background-color 0.15s ease, color 0.15s ease",
-                                        }}
-                                    >
-                                        Posts
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => updateParams({ type: "projects" })}
-                                        style={{
-                                            border: "none",
-                                            outline: "none",
-                                            cursor: "pointer",
-                                            padding: isMobile ? "4px 12px" : "5px 10px",
-                                            borderRadius: "5px",
-                                            fontSize: isMobile ? "12px" : "12px",
-                                            fontWeight: 700,
-                                            flex: isMobile ? 1 : undefined,
-                                            textAlign: "center",
-                                            backgroundColor:
-                                                feedType === "projects" ? "#ffffff" : "transparent",
-                                            color: feedType === "projects" ? "#111827" : "#6b7280",
-                                            boxShadow:
-                                                feedType === "projects"
-                                                    ? "0 1px 2px rgba(15, 23, 42, 0.06)"
-                                                    : "none",
-                                            transition:
-                                                "background-color 0.15s ease, color 0.15s ease",
-                                        }}
-                                    >
-                                        Projects
-                                    </button>
-                                </div>
+                                    Following
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => updateParams({ type: "posts" })}
+                                    className={`feed-tab-btn ${feedType === "posts" ? "active" : ""}`}
+                                >
+                                    Posts
+                                    {feedType === "posts" && <span className="feed-tab-underline" />}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => updateParams({ type: "projects" })}
+                                    className={`feed-tab-btn ${feedType === "projects" ? "active" : ""}`}
+                                >
+                                    Projects
+                                    {feedType === "projects" && <span className="feed-tab-underline" />}
+                                </button>
                             </div>
                         </div>
                     </div>
