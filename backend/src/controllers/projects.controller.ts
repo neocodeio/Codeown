@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { sendNewLikeEmail } from "../lib/email.js";
+import { emitUpdate } from "../services/socket.js";
 
 // Helper function to create notifications
 async function createProjectNotification(
@@ -478,6 +479,12 @@ export async function createProject(req: Request, res: Response) {
       if (error) console.error("Error logging project creation analytics:", error);
     });
 
+    emitUpdate("project_created", {
+      ...project,
+      is_first: isFirstProject,
+      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+    });
+
     return res.status(201).json({
       ...project,
       is_first: isFirstProject,
@@ -571,6 +578,11 @@ export async function updateProject(req: Request, res: Response) {
       console.error("Error fetching user for project:", userError);
     }
 
+    emitUpdate("project_updated", {
+      ...project,
+      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+    });
+
     return res.json({
       ...project,
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
@@ -585,7 +597,7 @@ export async function deleteProject(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
-    const numericId = parseInt(id, 10);
+    const numericId = parseInt(String(id), 10);
     const resolvedId = isNaN(numericId) ? id : numericId;
 
     if (!userId) {
@@ -638,6 +650,9 @@ export async function deleteProject(req: Request, res: Response) {
     }
 
     console.log(`[deleteProject] Successfully deleted project ${resolvedId}`);
+    
+    emitUpdate("project_deleted", { id: resolvedId });
+
     return res.json({ message: "Project deleted successfully" });
   } catch (error: any) {
     console.error("Error in deleteProject:", error);
@@ -702,8 +717,8 @@ export async function toggleProjectLike(req: Request, res: Response) {
         
         try {
           const [{ data: liker }, { data: projOwner }] = await Promise.all([
-            supabase.from("users").select("name").eq("id", userId).single(),
-            supabase.from("users").select("name, email").eq("id", project.user_id).single()
+            supabase.from("users").select("name").eq("id", String(userId)).single(),
+            supabase.from("users").select("name, email").eq("id", String(project.user_id)).single()
           ]);
           
           if (projOwner?.email && liker?.name) {
@@ -726,7 +741,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
     const { data: updatedProject } = await supabase
       .from("project_likes")
       .select("project_id")
-      .eq("project_id", id);
+      .eq("project_id", String(id));
 
     const likeCount = updatedProject?.length || 0;
 
@@ -734,6 +749,8 @@ export async function toggleProjectLike(req: Request, res: Response) {
       .from("projects")
       .update({ like_count: likeCount })
       .eq("id", id);
+      
+    emitUpdate("project_liked", { projectId: parseInt(id), liked: isLiked, likeCount });
 
     return res.json({ isLiked, likeCount });
   } catch (error) {
@@ -755,7 +772,7 @@ export async function getProjectLikeStatus(req: Request, res: Response) {
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select("like_count")
-      .eq("id", id)
+      .eq("id", String(id))
       .single();
 
     if (projectError || !project) {
@@ -829,7 +846,7 @@ export async function toggleProjectSave(req: Request, res: Response) {
 
       // Create notification for project owner (if not the saver)
       if (project.user_id !== String(userId)) {
-        await createProjectNotification(project.user_id, "save", String(userId!), parseInt(id as string));
+        await createProjectNotification(String(project.user_id), "save", String(userId!), parseInt(String(id)));
       }
 
     }

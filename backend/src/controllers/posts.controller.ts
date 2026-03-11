@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { emitUpdate } from "../services/socket.js";
 
 export async function getPosts(req: Request, res: Response) {
   try {
@@ -457,6 +458,8 @@ export async function createPost(req: Request, res: Response) {
     }).then(({ error }) => {
       if (error) console.error("Error logging post creation analytics:", error);
     });
+    
+    emitUpdate("post_created", data);
 
     return res.status(201).json({ success: true, data });
   } catch (error: any) {
@@ -534,6 +537,9 @@ export async function updatePost(req: Request, res: Response) {
       });
     }
 
+    
+    emitUpdate("post_updated", updatedPost);
+
     return res.json({ success: true, data: updatedPost });
   } catch (error: any) {
     console.error("Unexpected error in updatePost:", error);
@@ -592,6 +598,9 @@ export async function deletePost(req: Request, res: Response) {
         details: deleteError.message
       });
     }
+
+    
+    emitUpdate("post_deleted", { id });
 
     return res.json({ success: true });
   } catch (error: any) {

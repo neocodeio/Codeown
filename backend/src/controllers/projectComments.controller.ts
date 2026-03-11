@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { emitUpdate } from "../services/socket.js";
 
 // Helper function to create project comment notifications
 async function createProjectCommentNotification(
@@ -204,13 +205,19 @@ export async function createProjectComment(req: Request, res: Response) {
         await createProjectCommentNotification(project.user_id, "comment", userId, parseInt(id as string), comment.id);
       }
     }
-
-    // Get user data for response
-    const { data: user, error: userError } = await supabase
+    const { data: user } = await supabase
       .from("users")
       .select("id, name, email, avatar_url, username")
       .eq("id", userId)
       .single();
+
+    emitUpdate("project_comment_created", {
+      projectId: parseInt(id as string),
+      comment: {
+        ...comment,
+        user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+      }
+    });
 
     return res.status(201).json({
       ...comment,
@@ -272,6 +279,14 @@ export async function updateProjectComment(req: Request, res: Response) {
       .eq("id", userId)
       .single();
 
+    emitUpdate("project_comment_updated", {
+      projectId: comment.project_id,
+      comment: {
+        ...comment,
+        user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+      }
+    });
+
     return res.json({
       ...comment,
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
@@ -327,6 +342,11 @@ export async function deleteProjectComment(req: Request, res: Response) {
       .from("projects")
       .update({ comment_count: commentCount })
       .eq("id", existingComment.project_id);
+
+    emitUpdate("project_comment_deleted", {
+      projectId: existingComment.project_id,
+      commentId: commentId
+    });
 
     return res.json({ message: "Comment deleted successfully" });
   } catch (error) {

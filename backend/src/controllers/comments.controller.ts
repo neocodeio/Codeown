@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { sendNewCommentEmail } from "../lib/email.js";
+import { emitUpdate } from "../services/socket.js";
 
 export async function getComments(req: Request, res: Response) {
   try {
@@ -353,6 +354,14 @@ export async function createComment(req: Request, res: Response) {
     }
 
     console.log("Comment created successfully:", data);
+    
+    emitUpdate("comment_created", {
+      postId: postIdInt,
+      commentId,
+      userId,
+      content: content.trim()
+    });
+
     return res.status(201).json({ success: true, data, commentId });
   } catch (error: any) {
     console.error("Unexpected error in createComment:", error);

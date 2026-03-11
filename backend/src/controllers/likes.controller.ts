@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { sendNewLikeEmail } from "../lib/email.js";
+import { emitUpdate } from "../services/socket.js";
 
 export async function likePost(req: Request, res: Response) {
   try {
@@ -53,7 +54,10 @@ export async function likePost(req: Request, res: Response) {
         .select("*", { count: "exact", head: true })
         .eq("post_id", postIdNum);
 
-      return res.json({ liked: false, message: "Post unliked", likeCount: count || 0 });
+      const updatedCount = count || 0;
+      emitUpdate("post_liked", { postId: postIdNum, liked: false, likeCount: updatedCount });
+
+      return res.json({ liked: false, message: "Post unliked", likeCount: updatedCount });
     } else {
       // Like
       const { data, error } = await supabase
@@ -118,7 +122,10 @@ export async function likePost(req: Request, res: Response) {
         .select("*", { count: "exact", head: true })
         .eq("post_id", postIdNum);
 
-      return res.json({ liked: true, message: "Post liked", data, likeCount: count || 0 });
+      const updatedCount = count || 0;
+      emitUpdate("post_liked", { postId: postIdNum, liked: true, likeCount: updatedCount });
+
+      return res.json({ liked: true, message: "Post liked", data, likeCount: updatedCount });
     }
   } catch (error: any) {
     console.error("Unexpected error in likePost:", error);
@@ -230,7 +237,10 @@ export async function likeComment(req: Request, res: Response) {
         .from("likes")
         .select("*", { count: "exact", head: true })
         .eq("comment_id", commentIdNum);
-      return res.json({ liked: false, likeCount: count || 0 });
+        
+      const updatedCount = count || 0;
+      emitUpdate("comment_liked", { commentId: commentIdNum, liked: false, likeCount: updatedCount });
+      return res.json({ liked: false, likeCount: updatedCount });
     } else {
       const { error } = await supabase
         .from("likes")
@@ -267,7 +277,10 @@ export async function likeComment(req: Request, res: Response) {
         .from("likes")
         .select("*", { count: "exact", head: true })
         .eq("comment_id", commentIdNum);
-      return res.json({ liked: true, likeCount: count || 0 });
+        
+      const updatedCount = count || 0;
+      emitUpdate("comment_liked", { commentId: commentIdNum, liked: true, likeCount: updatedCount });
+      return res.json({ liked: true, likeCount: updatedCount });
     }
   } catch (error: any) {
     console.error("Unexpected error in likeComment:", error);
