@@ -6,7 +6,6 @@ import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
 import {
     Rocket01Icon,
-    ChartBarLineIcon,
     UserGroupIcon,
     StarIcon
 } from "@hugeicons/core-free-icons";
@@ -216,29 +215,147 @@ export default function RecommendedUsersSidebar() {
                             <HugeiconsIcon icon={StarIcon} size={15} />
                             Leaderboard
                         </h3>
-                        <Link to="/leaderboard" style={{ fontSize: "10px", color: "#64748b", textDecoration: "none", fontWeight: 800 }}>PULSE TOP</Link>
+                        <Link
+                            to="/leaderboard"
+                            style={{
+                                fontSize: "12px",
+                                color: "#2563eb",
+                                textDecoration: "none",
+                                fontWeight: 800
+                            }}
+                        >
+                            This week
+                        </Link>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
-                        {spotlight.slice(0, 3).map((user: any, idx: number) => (
-                            <Link key={user.id} to={`/${user.username}`} style={{ textDecoration: "none", color: "inherit", textAlign: "center" }} className="sidebar-item">
-                                <div style={{ position: "relative", marginBottom: "8px", display: "inline-block" }}>
-                                    <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`} style={{ width: "52px", height: "52px", borderRadius: "14px", border: "1px solid #fff", }} alt="" />
-                                    {idx === 0 && (
-                                        <div style={{ position: "absolute", bottom: "-4px", right: "-4px", background: "#facc15", borderRadius: "50%", width: "23px", height: "23px", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #fff" }}>
-                                            <span style={{ fontSize: "13px", fontWeight: 900, color: "#000" }}>1</span>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            justifyContent: "space-between",
+                            gap: "14px",
+                        }}
+                    >
+                        {(() => {
+                            const top3 = spotlight.slice(0, 3);
+                            // Render order: #2 (left), #1 (center), #3 (right)
+                            const ordered = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3;
+                            return ordered.map((user: any, idx: number) => {
+                                const rank = top3.length >= 3 ? (idx === 0 ? 2 : idx === 1 ? 1 : 3) : idx + 1;
+                            const firstName = (user?.name || "User").split(" ")[0];
+                            const initials = (user?.name || "U")
+                                .split(" ")
+                                .filter(Boolean)
+                                .slice(0, 2)
+                                .map((p: string) => p[0]?.toUpperCase())
+                                .join("");
+                            const isTop = rank === 1;
+
+                            return (
+                                <Link
+                                    key={user.id}
+                                    to={`/${user.username}`}
+                                    style={{
+                                        textDecoration: "none",
+                                        color: "inherit",
+                                        textAlign: "center",
+                                        flex: 1,
+                                        minWidth: 0,
+                                    }}
+                                    className="sidebar-item"
+                                >
+                                    <div
+                                        style={{
+                                            position: "relative",
+                                            width: "58px",
+                                            height: "58px",
+                                            margin: "0 auto 10px",
+                                        }}
+                                    >
+                                        {user.avatar_url ? (
+                                            <img
+                                                src={user.avatar_url}
+                                                alt=""
+                                                style={{
+                                                    width: "58px",
+                                                    height: "58px",
+                                                    borderRadius: "999px",
+                                                    objectFit: "cover",
+                                                    border: "1px solid #eef2f7",
+                                                    backgroundColor: "#f8fafc",
+                                                }}
+                                            />
+                                        ) : (
+                                            <div
+                                                style={{
+                                                    width: "58px",
+                                                    height: "58px",
+                                                    borderRadius: "999px",
+                                                    backgroundColor: "#f1f5f9",
+                                                    border: "1px solid #eef2f7",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    fontSize: "14px",
+                                                    fontWeight: 900,
+                                                    color: "#0f172a",
+                                                    letterSpacing: "0.02em",
+                                                }}
+                                            >
+                                                {initials || "U"}
+                                            </div>
+                                        )}
+
+                                        <div
+                                            style={{
+                                                position: "absolute",
+                                                bottom: "-3px",
+                                                right: "-3px",
+                                                width: "20px",
+                                                height: "20px",
+                                                borderRadius: "999px",
+                                                backgroundColor: isTop ? "#f97316" : "#0f172a",
+                                                color: "#fff",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                border: "2px solid #fff",
+                                                fontSize: "11px",
+                                                fontWeight: 900,
+                                            }}
+                                        >
+                                            {rank}
                                         </div>
-                                    )}
-                                </div>
-                                <div style={{ fontSize: "11px", fontWeight: 800, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}>
-                                    {user.name.split(' ')[0]}
-                                    {/* {user.streak_count > 0 && <StreakBadge count={user.streak_count} mini />} */}
-                                </div>
-                                <div style={{ fontSize: "10px", color: "#64748b", fontWeight: 700, marginTop: "2px", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}>
-                                    <HugeiconsIcon icon={ChartBarLineIcon} size={10} />
-                                    {user.pulse_score}
-                                </div>
-                            </Link>
-                        ))}
+                                    </div>
+
+                                    <div
+                                        style={{
+                                            fontSize: "12px",
+                                            fontWeight: 800,
+                                            color: "#0f172a",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                        }}
+                                        title={firstName}
+                                    >
+                                        {firstName}
+                                    </div>
+
+                                    <div
+                                        style={{
+                                            marginTop: "3px",
+                                            fontSize: "12px",
+                                            fontWeight: 900,
+                                            color: isTop ? "#f97316" : "#64748b",
+                                            lineHeight: 1.1,
+                                        }}
+                                    >
+                                        {user.pulse_score}
+                                    </div>
+                                </Link>
+                            );
+                            });
+                        })()}
                     </div>
                 </div>
             )}
