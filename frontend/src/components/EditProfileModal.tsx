@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Link } from "react-router-dom";
+
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -516,7 +516,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
             {/* Pro: Open to Opportunities */}
             <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "24px", marginBottom: "16px" }}>
-              {currentUser.is_pro === true ? (
+              {currentUser.is_pro === true && (
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#0f172a", marginBottom: "4px" }}>Open to Opportunities</label>
@@ -555,34 +555,6 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   >
                     {isHirable ? "✓" : "○"}
                   </div>
-                </div>
-              ) : (
-                <div style={{
-                  padding: "16px",
-                  borderRadius: "12px",
-                  backgroundColor: "#f8fafc",
-                  border: "1px solid #e2e8f0",
-                }}>
-                  <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "#0f172a" }}>Open to Opportunities</p>
-                  <p style={{ margin: "6px 0 12px", fontSize: "13px", color: "#64748b", lineHeight: 1.5 }}>
-                    Pro feature. Upgrade to show the badge and stand out to recruiters.
-                  </p>
-                  <Link
-                    to="/billing"
-                    onClick={onClose}
-                    style={{
-                      display: "inline-block",
-                      padding: "8px 16px",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      color: "#fff",
-                      backgroundColor: "#0f172a",
-                      borderRadius: "8px",
-                      textDecoration: "none",
-                    }}
-                  >
-                    Upgrade to Pro (Beta)
-                  </Link>
                 </div>
               )}
             </div>
