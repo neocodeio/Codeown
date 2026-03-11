@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
+import { sendNewLikeEmail } from "../lib/email.js";
 
 export async function likePost(req: Request, res: Response) {
   try {
@@ -90,9 +91,24 @@ export async function likePost(req: Request, res: Response) {
             console.error("Error creating like notification:", notifError);
           } else {
             console.log(`Created like notification for user ${post.user_id} from ${userId} on post ${postIdNum}`);
+            
+            const [{ data: liker }, { data: postOwner }] = await Promise.all([
+              supabase.from("users").select("name").eq("id", userId).single(),
+              supabase.from("users").select("name, email").eq("id", post.user_id).single()
+            ]);
+            
+            if (postOwner?.email && liker?.name) {
+              sendNewLikeEmail(
+                postOwner.email,
+                postOwner.name || "User",
+                liker.name,
+                'post',
+                postIdNum
+              );
+            }
           }
         } catch (notifError) {
-          console.error("Error creating like notification:", notifError);
+          console.error("Error creating like notification or email:", notifError);
         }
       }
 

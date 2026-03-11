@@ -230,6 +230,28 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
             console.log(`[Welcome Message] Notification created successfully`);
         }
 
+        // Auto-follow CEO to populate the user's feed initially
+        console.log(`[Welcome Message] Auto-following CEO for new user to prepopulate feed`);
+        const { error: followError } = await supabase
+            .from("follows")
+            .insert({
+                follower_id: newUserId,
+                following_id: ceoId,
+            });
+
+        if (followError) {
+            console.error(`[Welcome Message] Error auto-following CEO:`, followError);
+        } else {
+            // Give the new user a welcome notification that they are following someone!
+            await supabase.from("notifications").insert({
+                user_id: ceoId,
+                type: "follow",
+                actor_id: newUserId,
+                read: false,
+            });
+            console.log(`[Welcome Message] Auto-followed CEO successfully`);
+        }
+
         console.log(`[Welcome Message] Welcome experience completed successfully for user ${newUserId}`);
     } catch (error: any) {
         console.error(`[Welcome Message] Unexpected error creating welcome experience for new user:`, error?.message || error);

@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { sendNewCommentEmail } from "../lib/email.js";
 
 export async function getComments(req: Request, res: Response) {
   try {
@@ -279,8 +280,22 @@ export async function createComment(req: Request, res: Response) {
           comment_id: commentId,
           read: false,
         });
+
+        const [{ data: commenter }, { data: postOwner }] = await Promise.all([
+          supabase.from("users").select("name").eq("id", userId).single(),
+          supabase.from("users").select("name, email").eq("id", post.user_id).single()
+        ]);
+        
+        if (postOwner?.email && commenter?.name) {
+          sendNewCommentEmail(
+            postOwner.email,
+            postOwner.name || "User",
+            commenter.name,
+            postIdInt
+          );
+        }
       } catch (notifError) {
-        console.error("Error creating comment notification:", notifError);
+        console.error("Error creating comment notification or email:", notifError);
       }
     }
 

@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
+import { sendNewLikeEmail } from "../lib/email.js";
 
 // Helper function to create notifications
 async function createProjectNotification(
@@ -698,6 +699,25 @@ export async function toggleProjectLike(req: Request, res: Response) {
       // Create notification for project owner (if not the liker)
       if (project.user_id !== String(userId)) {
         await createProjectNotification(project.user_id, "like", String(userId!), parseInt(id as string));
+        
+        try {
+          const [{ data: liker }, { data: projOwner }] = await Promise.all([
+            supabase.from("users").select("name").eq("id", userId).single(),
+            supabase.from("users").select("name, email").eq("id", project.user_id).single()
+          ]);
+          
+          if (projOwner?.email && liker?.name) {
+            sendNewLikeEmail(
+              projOwner.email,
+              projOwner.name || "User",
+              liker.name,
+              'project',
+              parseInt(id)
+            );
+          }
+        } catch (e) {
+          console.error("Error sending project like email:", e);
+        }
       }
 
     }

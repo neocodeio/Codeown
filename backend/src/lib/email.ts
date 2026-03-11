@@ -279,3 +279,119 @@ export async function sendOrgStatusUpdateEmail(email: string, orgName: string, s
     console.error("Error sending org status update email:", err);
   }
 }
+
+export async function sendNewFollowerEmail(email: string, userName: string, followerName: string, followerUsername: string) {
+  if (!resend) return;
+  try {
+    await resend.emails.send({
+      from: "Codeown <notifications@codeown.space>",
+      to: email,
+      subject: `${followerName} just followed you on Codeown! 🎉`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px;">
+          <h2>Hey ${userName},</h2>
+          <p><strong>${followerName}</strong> (@${followerUsername}) just started following you on Codeown.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/${followerUsername}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View their Profile</a>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Error sending new follower email:", err);
+  }
+}
+
+export async function sendNewLikeEmail(email: string, userName: string, likerName: string, contentType: 'post' | 'project', contentId: number) {
+  if (!resend) return;
+  try {
+    const url = contentType === 'project' ? `/project/${contentId}` : `/`;
+    await resend.emails.send({
+      from: "Codeown <notifications@codeown.space>",
+      to: email,
+      subject: `${likerName} liked your ${contentType}! ❤️`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px;">
+          <h2>Hey ${userName},</h2>
+          <p><strong>${likerName}</strong> just liked your ${contentType}.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View ${contentType}</a>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Error sending like email:", err);
+  }
+}
+
+export async function sendNewCommentEmail(email: string, userName: string, commenterName: string, postId: number) {
+  if (!resend) return;
+  try {
+    await resend.emails.send({
+      from: "Codeown <notifications@codeown.space>",
+      to: email,
+      subject: `${commenterName} commented on your post! 💬`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px;">
+          <h2>Hey ${userName},</h2>
+          <p><strong>${commenterName}</strong> just commented on your post.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View Comment</a>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Error sending comment email:", err);
+  }
+}
+
+export async function sendStreakWarningEmail(email: string, userName: string, streakCount: number) {
+  if (!resend) return;
+  try {
+    await resend.emails.send({
+      from: "Codeown <notifications@codeown.space>",
+      to: email,
+      subject: `Don't break your ${streakCount}-day streak! 🔥`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px;">
+          <h2>Hey ${userName},</h2>
+          <p>You're about to lose your <strong>${streakCount}-day coding streak</strong>! Log in to claim it today before it resets.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/" style="padding: 10px 20px; background: #f97316; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">Claim Streak</a>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Error sending streak email:", err);
+  }
+}
+
+export async function sendWeeklyDigestEmail(email: string, userName: string, projects: any[]) {
+  if (!resend) return;
+  if (!projects || projects.length === 0) return;
+  
+  const projectsHtml = projects.map(p => `
+    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eef2f7;">
+      <h3 style="margin-bottom: 5px;">${p.title}</h3>
+      <p style="color: #64748b; margin-top: 0;">${p.description || 'Check out this awesome new project.'}</p>
+      <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/project/${p.id}" style="color: #3b82f6; text-decoration: none; font-weight: bold;">View Project &rarr;</a>
+    </div>
+  `).join('');
+
+  try {
+    await resend.emails.send({
+      from: "Codeown Weekly <digest@codeown.space>",
+      to: email,
+      subject: "Here are the top trending projects on Codeown this week 🚀",
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h2>Happy Friday, ${userName}!</h2>
+          <p>Here are the top projects launched this week that you don't want to miss.</p>
+          <div style="margin-top: 30px;">
+            ${projectsHtml}
+          </div>
+          <div style="margin-top: 30px; text-align: center;">
+            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/search?type=projects" style="padding: 12px 24px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">Discover More Projects</a>
+          </div>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Error sending weekly digest:", err);
+  }
+}

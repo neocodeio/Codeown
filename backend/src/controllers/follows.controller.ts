@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { sendNewFollowerEmail } from "../lib/email.js";
 
 export async function followUser(req: Request, res: Response) {
   try {
@@ -78,8 +79,23 @@ export async function followUser(req: Request, res: Response) {
           read: false,
         });
         console.log(`Created follow notification for user ${targetUserId} from ${userId}`);
+        
+        // Send email notification
+        const [{ data: follower }, { data: targetUser }] = await Promise.all([
+          supabase.from("users").select("name, username").eq("id", userId).single(),
+          supabase.from("users").select("name, email").eq("id", targetUserId).single()
+        ]);
+        
+        if (targetUser?.email && follower?.name && follower?.username) {
+          sendNewFollowerEmail(
+            targetUser.email, 
+            targetUser.name || "User", 
+            follower.name, 
+            follower.username
+          );
+        }
       } catch (notifError) {
-        console.error("Error creating follow notification:", notifError);
+        console.error("Error creating follow notification or email:", notifError);
       }
 
       // Get updated counts
