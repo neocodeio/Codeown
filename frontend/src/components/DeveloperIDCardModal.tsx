@@ -80,13 +80,13 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                 <div
                     ref={cardRef}
                     style={{
-                        width: "380px",
-                        height: "560px",
+                        width: "min(380px, 90vw)",
+                        height: "min(560px, 80vh)",
                         background: "#020617", // Deeper solid base for better element contrast
                         borderRadius: "40px",
                         border: "1px solid rgba(255, 255, 255, 0.15)",
                         boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
-                        padding: "32px",
+                        padding: "min(32px, 4vw)",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
@@ -96,6 +96,42 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                         fontFamily: "'Inter', sans-serif"
                     }}
                 >
+                    {/* Holographic Shimmer Effect */}
+                    <div style={{
+                        position: "absolute",
+                        top: "-50%",
+                        left: "-50%",
+                        width: "200%",
+                        height: "200%",
+                        background: `
+                            linear-gradient(
+                                105deg,
+                                transparent 30%,
+                                rgba(255, 255, 255, 0.15) 50%,
+                                rgba(255, 255, 255, 0.25) 55%,
+                                rgba(255, 255, 255, 0.15) 60%,
+                                transparent 70%
+                            )
+                        `,
+                        zIndex: 3,
+                        pointerEvents: "none",
+                        animation: "holographic-shimmer 3s ease-in-out infinite"
+                    }} />
+
+                    {/* Holographic Glow Effect */}
+                    <div style={{
+                        position: "absolute",
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        background: `
+                            radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+                            radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
+                            radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.2) 0%, transparent 70%)
+                        `,
+                        zIndex: 2,
+                        pointerEvents: "none",
+                        animation: "holographic-glow 3s ease-in-out infinite"
+                    }} />
+
                     {/* The Grain/Noise Overlay - Background Layer 1 */}
                     <div style={{
                         position: "absolute",
@@ -128,13 +164,13 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                         </div>
 
                         {/* Avatar */}
-                        <div style={{ position: "relative", marginBottom: "20px" }}>
+                        <div style={{ position: "relative", marginBottom: "min(20px, 4vw)" }}>
                             <img
                                 src={avatarUrl}
                                 alt={user.name}
                                 style={{
-                                    width: "110px",
-                                    height: "110px",
+                                    width: "min(110px, 25vw)",
+                                    height: "min(110px, 25vw)",
                                     borderRadius: "50%",
                                     objectFit: "cover",
                                     border: "4px solid rgba(255,255,255,0.2)",
@@ -153,16 +189,16 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                     borderRadius: "50%",
                                     border: "2px solid rgba(255,255,255,0.2)"
                                 }}>
-                                    <VerifiedBadge username={user.username} isPro={true} size="24px" />
+                                    <VerifiedBadge username={user.username} isPro={true} size="min(24px, 6vw)" />
                                 </div>
                             )}
                         </div>
 
                         {/* User Info */}
-                        <h2 style={{ fontSize: "24px", fontWeight: 800, margin: "0 0 4px 0", letterSpacing: "-0.5px", textAlign: "center" }}>
+                        <h2 style={{ fontSize: "min(24px, 6vw)", fontWeight: 800, margin: "0 0 4px 0", letterSpacing: "-0.5px", textAlign: "center" }}>
                             {user.name}
                         </h2>
-                        <p style={{ fontSize: "15px", color: "rgba(255,255,255,0.6)", margin: "0 0 24px 0", fontWeight: 500 }}>
+                        <p style={{ fontSize: "min(15px, 4vw)", color: "rgba(255,255,255,0.6)", margin: "0 0 min(24px, 4vw) 0", fontWeight: 500 }}>
                             @{user.username || "developer"}
                         </p>
 
@@ -172,19 +208,19 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             width: "100%",
                             justifyContent: "space-around",
                             background: "rgba(0,0,0,0.3)",
-                            padding: "16px",
+                            padding: "min(16px, 3vw)",
                             borderRadius: "16px",
-                            marginBottom: "24px",
+                            marginBottom: "min(24px, 4vw)",
                             border: "1px solid rgba(255,255,255,0.05)"
                         }}>
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>Joined</div>
-                                <div style={{ fontSize: "14px", fontWeight: 700 }}>{joinDate}</div>
+                                <div style={{ fontSize: "min(11px, 3vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>Joined</div>
+                                <div style={{ fontSize: "min(14px, 4vw)", fontWeight: 700 }}>{joinDate}</div>
                             </div>
                             <div style={{ width: "1px", background: "rgba(255,255,255,0.1)" }} />
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>Projects</div>
-                                <div style={{ fontSize: "16px", fontWeight: 800 }}>{projectsCount}</div>
+                                <div style={{ fontSize: "min(11px, 3vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>Projects</div>
+                                <div style={{ fontSize: "min(16px, 4.5vw)", fontWeight: 800 }}>{projectsCount}</div>
                             </div>
                         </div>
 
@@ -194,16 +230,17 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             width: "100%",
                             justifyContent: "space-between",
                             alignItems: "flex-end",
-                            marginTop: "auto"
+                            marginTop: "auto",
+                            gap: "min(16px, 3vw)"
                         }}>
-                            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
-                                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase" }}>Tech Stack</div>
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "min(8px, 2vw)" }}>
+                                <div style={{ fontSize: "min(11px, 3vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase" }}>Tech Stack</div>
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: "min(6px, 1.5vw)" }}>
                                     {techStacks.length > 0 ? techStacks.map((skill, idx) => (
                                         <span key={idx} style={{
-                                            fontSize: "12px",
+                                            fontSize: "min(12px, 3.5vw)",
                                             fontWeight: 600,
-                                            padding: "4px 10px",
+                                            padding: "min(4px, 1vw) min(10px, 2.5vw)",
                                             backgroundColor: "rgba(255,255,255,0.1)",
                                             border: "1px solid rgba(255,255,255,0.15)",
                                             borderRadius: "100px",
@@ -212,21 +249,26 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                             {skill}
                                         </span>
                                     )) : (
-                                        <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>Developer</span>
+                                        <span style={{ fontSize: "min(13px, 4vw)", color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>Developer</span>
                                     )}
                                 </div>
                             </div>
 
                             <div style={{
                                 background: "#fff",
-                                padding: "6px",
+                                padding: "min(6px, 1.5vw)",
                                 borderRadius: "15px",
                                 boxShadow: "0 10px 20px rgba(0,0,0,0.3)"
                             }}>
                                 <img
                                     src={qrCodeUrl}
                                     alt="Profile QR Code"
-                                    style={{ width: "70px", height: "70px", display: "block", borderRadius: "6px" }}
+                                    style={{ 
+                                        width: "min(70px, 18vw)", 
+                                        height: "min(70px, 18vw)", 
+                                        display: "block", 
+                                        borderRadius: "6px" 
+                                    }}
                                     crossOrigin="anonymous"
                                 />
                             </div>
@@ -239,16 +281,16 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                     onClick={handleDownload}
                     disabled={downloading}
                     style={{
-                        padding: "16px 32px",
+                        padding: "min(16px, 4vw) min(32px, 8vw)",
                         backgroundColor: "#fff",
                         color: "#0f172a",
                         border: "none",
                         borderRadius: "100px",
-                        fontSize: "16px",
+                        fontSize: "min(16px, 4.5vw)",
                         fontWeight: 700,
                         display: "flex",
                         alignItems: "center",
-                        gap: "10px",
+                        gap: "min(10px, 2.5vw)",
                         cursor: downloading ? "not-allowed" : "pointer",
                         boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
                         transition: "all 0.2s",
@@ -260,6 +302,64 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                     <HugeiconsIcon icon={Download01Icon} size={20} />
                     {downloading ? "Generating..." : "Download ID Card"}
                 </button>
+
+                {/* Holographic Animations */}
+                <style>{`
+                    @keyframes holographic-shimmer {
+                        0% {
+                            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                            opacity: 0;
+                        }
+                        25% {
+                            opacity: 1;
+                        }
+                        50% {
+                            transform: translateX(100%) translateY(100%) rotate(45deg);
+                            opacity: 1;
+                        }
+                        75% {
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                            opacity: 0;
+                        }
+                    }
+
+                    @keyframes holographic-glow {
+                        0%, 100% {
+                            opacity: 0.3;
+                            transform: scale(1);
+                        }
+                        50% {
+                            opacity: 0.8;
+                            transform: scale(1.05);
+                        }
+                    }
+
+                    @media (max-width: 768px) {
+                        @keyframes holographic-shimmer {
+                            0% {
+                                transform: translateX(-150%) translateY(-150%) rotate(45deg);
+                                opacity: 0;
+                            }
+                            25% {
+                                opacity: 1;
+                            }
+                            50% {
+                                transform: translateX(150%) translateY(150%) rotate(45deg);
+                                opacity: 1;
+                            }
+                            75% {
+                                opacity: 1;
+                            }
+                            100% {
+                                transform: translateX(-150%) translateY(-150%) rotate(45deg);
+                                opacity: 0;
+                            }
+                        }
+                    }
+                `}</style>
             </div>
         </div>
     );
