@@ -98,3 +98,92 @@ export async function getAnalytics(req: Request, res: Response) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
+export async function getWeeklyRecap(req: Request, res: Response) {
+    try {
+        const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+        if (!userId) {
+            return res.status(401).json({ error: "Authentication required" });
+        }
+
+        const statsEnd = new Date();
+        const statsStart = new Date();
+        statsStart.setDate(statsEnd.getDate() - 7);
+
+        const startIso = statsStart.toISOString();
+
+        // 1. Get new followers
+        const { count: newFollowers } = await supabase
+            .from("follows")
+            .select("id", { count: "exact", head: true })
+            .eq("following_id", userId)
+            .gte("created_at", startIso);
+
+        // 2. Get views this week
+        const { count: projectViews } = await supabase
+            .from("analytics_events")
+            .select("id", { count: "exact", head: true })
+            .eq("target_user_id", userId)
+            .eq("event_type", "project_view")
+            .gte("created_at", startIso);
+
+        const { count: postViews } = await supabase
+            .from("analytics_events")
+            .select("id", { count: "exact", head: true })
+            .eq("target_user_id", userId)
+            .eq("event_type", "post_view")
+            .gte("created_at", startIso);
+
+        // 3. Get likes received this week
+        const [{ data: userPosts }, { data: userProjects }] = await Promise.all([
+            supabase.from("posts").select("id").eq("user_id", userId),
+            supabase.from("projects").select("id").eq("user_id", userId)
+        ]);
+
+        const postIds = userPosts?.map(p => p.id) || [];
+        const projectIds = userProjects?.map(p => p.id) || [];
+
+        let newLikes = 0;
+        if (postIds.length > 0) {
+            const { count } = await supabase
+                .from("likes")
+                .select("id", { count: "exact", head: true })
+                .in("post_id", postIds)
+                .gte("created_at", startIso);
+            newLikes += (count || 0);
+        }
+        if (projectIds.length > 0) {
+            const { count } = await supabase
+                .from("likes")
+                .select("id", { count: "exact", head: true })
+                .in("project_id", projectIds)
+                .gte("created_at", startIso);
+            newLikes += (count || 0);
+        }
+
+        // 4. Get current streak
+        const { data: userData } = await supabase
+            .from("users")
+            .select("streak_count")
+            .eq("id", userId)
+            .single();
+
+        return res.json({
+            period: {
+                start: startIso,
+                end: statsEnd.toISOString()
+            },
+            stats: {
+                new_followers: newFollowers || 0,
+                project_views: projectViews || 0,
+                post_views: postViews || 0,
+                new_likes: newLikes,
+                streak: userData?.streak_count || 0
+            }
+        });
+    } catch (error) {
+        console.error("Error in getWeeklyRecap:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}

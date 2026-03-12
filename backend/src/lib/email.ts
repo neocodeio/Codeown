@@ -395,3 +395,85 @@ export async function sendWeeklyDigestEmail(email: string, userName: string, pro
     console.error("Error sending weekly digest:", err);
   }
 }
+
+export async function sendPersonalWeeklyRecapEmail(email: string, userName: string, stats: any) {
+  if (!resend) return;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "Codeown Activity <stats@codeown.space>",
+      to: email,
+      subject: `Your Week on Codeown: +${stats.new_followers} new followers! 🔥`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            .stat-box {
+              padding: 20px;
+              background: #f8fafc;
+              border-radius: 16px;
+              text-align: center;
+              margin-bottom: 20px;
+            }
+            .stat-value {
+              font-size: 28px;
+              font-weight: 800;
+              color: #0f172a;
+              margin: 0;
+            }
+            .stat-label {
+              font-size: 14px;
+              color: #64748b;
+              font-weight: 600;
+              text-transform: uppercase;
+            }
+          </style>
+        </head>
+        <body style="font-family: sans-serif; background-color: #f8fafc; padding: 40px 20px;">
+          <div style="max-width: 500px; margin: 0 auto; background: #fff; border-radius: 24px; padding: 40px; border: 1px solid #e2e8f0;">
+            <div style="text-align: center; margin-bottom: 32px;">
+              <div style="background: #000; color: #fff; display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 12px; margin-bottom: 16px;">WEEKLY RECAP</div>
+              <h1 style="font-size: 32px; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: -1px;">You're killing it, ${userName}!</h1>
+              <p style="color: #64748b; font-size: 16px; margin-top: 8px;">Here is your activity for the past 7 days.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div class="stat-box" style="background: #e0f2fe;">
+                <p class="stat-value" style="color: #0369a1;">+${stats.new_followers}</p>
+                <p class="stat-label">Followers</p>
+              </div>
+              <div class="stat-box" style="background: #fef3c7;">
+                <p class="stat-value" style="color: #b45309;">${stats.project_views + stats.post_views}</p>
+                <p class="stat-label">Views</p>
+              </div>
+              <div class="stat-box" style="background: #fce7f3;">
+                <p class="stat-value" style="color: #be185d;">${stats.new_likes}</p>
+                <p class="stat-label">Likes</p>
+              </div>
+              <div class="stat-box" style="background: #ffedd5;">
+                <p class="stat-value" style="color: #ea580c;">${stats.streak}d</p>
+                <p class="stat-label">Streak</p>
+              </div>
+            </div>
+
+            <div style="margin-top: 32px; text-align: center;">
+              <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}" style="background: #000; color: #fff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block;">View Profile Highlights</a>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
+            
+            <p style="text-align: center; font-size: 12px; color: #94a3b8;">
+              You received this because you're a member of the Codeown community.
+            </p>
+          </div>
+        </body>
+        </html>
+      `
+    });
+
+    if (error) console.error("Error sending weekly recap email:", error);
+  } catch (err) {
+    console.error("Unexpected error in sendPersonalWeeklyRecapEmail:", err);
+  }
+}

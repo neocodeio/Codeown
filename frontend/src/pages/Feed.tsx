@@ -4,6 +4,9 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import WeeklyRecapModal from "../components/WeeklyRecapModal";
+import api from "../api/axios";
+import { useState } from "react";
 
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
@@ -63,6 +66,52 @@ export default function Feed() {
         fetchProjects,
         hasMore: projectsHasMore
     } = useProjects(10, feedFilter, getToken, selectedTag, true);
+
+    const [recapStats, setRecapStats] = useState<any>(null);
+    const [showRecap, setShowRecap] = useState(false);
+
+    useEffect(() => {
+        const checkRecap = async () => {
+            if (!isSignedIn) return;
+
+            const userId = localStorage.getItem("clerk-user-id"); // Optionally tie to user
+            const storageKey = `last_recap_seen_${userId || 'guest'}`;
+            const lastSeen = localStorage.getItem(storageKey);
+            const now = new Date();
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+
+            if (!lastSeen || (now.getTime() - new Date(lastSeen).getTime() > oneWeek)) {
+                // Show if Sunday or Monday, or just whenever it's been a week
+                try {
+                    const token = await getToken();
+                    const res = await api.get("/analytics/recap", {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+
+                    if (res.data && res.data.stats) {
+                        const s = res.data.stats;
+                        // Avoid showing empty recap (must have at least one interaction)
+                        if (s.new_followers > 0 || s.project_views > 0 || s.post_views > 0 || s.new_likes > 0) {
+                            setRecapStats(res.data.stats);
+                            setShowRecap(true);
+                        }
+                        // Mark as seen anyway to avoid refetching every load
+                        localStorage.setItem(storageKey, now.toISOString());
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch weekly recap:", err);
+                    // Mark as seen on error too to prevent infinite retries
+                    localStorage.setItem(storageKey, now.toISOString());
+                }
+            }
+        };
+
+        const timer = setTimeout(() => {
+            checkRecap();
+        }, 1500); // Small delay to let other things load
+
+        return () => clearTimeout(timer);
+    }, [isSignedIn, getToken]);
 
     const loading = feedType === "posts" ? postsLoading : projectsLoading;
     const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;
@@ -462,7 +511,16 @@ export default function Feed() {
                         <RecommendedUsersSidebar />
                     </div>
                 )}
+                {isMobile && <div style={{ height: "40px" }} />}
             </div>
+
+            {recapStats && (
+                <WeeklyRecapModal
+                    isOpen={showRecap}
+                    onClose={() => setShowRecap(false)}
+                    stats={recapStats}
+                />
+            )}
         </main>
     );
 }

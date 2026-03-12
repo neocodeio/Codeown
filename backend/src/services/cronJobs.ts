@@ -1,6 +1,6 @@
 import { CronJob } from 'cron';
 import { supabase } from '../lib/supabase.js';
-import { sendWeeklyDigestEmail, sendStreakWarningEmail } from '../lib/email.js';
+import { sendWeeklyDigestEmail, sendStreakWarningEmail, sendPersonalWeeklyRecapEmail } from '../lib/email.js';
 
 export function initializeCronJobs() {
   console.log('[Cron] Initializing scheduled jobs...');
@@ -92,7 +92,92 @@ export function initializeCronJobs() {
     }
   });
 
+  // Personal Weekly Recap (Every Sunday at 8:00 PM)
+  const personalRecapJob = new CronJob('0 20 * * 0', async () => {
+    console.log('[Cron] Running Personal Weekly Recap Job...');
+    try {
+      const statsEnd = new Date();
+      const statsStart = new Date();
+      statsStart.setDate(statsStart.getDate() - 7);
+      const startIso = statsStart.toISOString();
+
+      // Fetch all users
+      const { data: users, error: usersError } = await supabase
+        .from('users')
+        .select('id, email, name, streak_count');
+
+      if (usersError || !users) return;
+
+      console.log(`[Cron] Preparing recaps for ${users.length} users.`);
+
+      for (const user of users) {
+        if (!user.email) continue;
+
+        try {
+          // 1. New followers
+          const { count: newFollowers } = await supabase
+            .from("follows")
+            .select("id", { count: "exact", head: true })
+            .eq("following_id", user.id)
+            .gte("created_at", startIso);
+
+          // 2. Views
+          const { count: projectViews } = await supabase
+            .from("analytics_events")
+            .select("id", { count: "exact", head: true })
+            .eq("target_user_id", user.id)
+            .eq("event_type", "project_view")
+            .gte("created_at", startIso);
+
+          const { count: postViews } = await supabase
+            .from("analytics_events")
+            .select("id", { count: "exact", head: true })
+            .eq("target_user_id", user.id)
+            .eq("event_type", "post_view")
+            .gte("created_at", startIso);
+
+          // 3. Likes
+          const [{ data: userPosts }, { data: userProjects }] = await Promise.all([
+            supabase.from("posts").select("id").eq("user_id", user.id),
+            supabase.from("projects").select("id").eq("user_id", user.id)
+          ]);
+
+          const postIds = userPosts?.map(p => p.id) || [];
+          const projectIds = userProjects?.map(p => p.id) || [];
+
+          let newLikes = 0;
+          if (postIds.length > 0) {
+            const { count } = await supabase.from("likes").select("id", { count: "exact", head: true }).in("post_id", postIds).gte("created_at", startIso);
+            newLikes += (count || 0);
+          }
+          if (projectIds.length > 0) {
+            const { count } = await supabase.from("likes").select("id", { count: "exact", head: true }).in("project_id", projectIds).gte("created_at", startIso);
+            newLikes += (count || 0);
+          }
+
+          const stats = {
+            new_followers: newFollowers || 0,
+            project_views: projectViews || 0,
+            post_views: postViews || 0,
+            new_likes: newLikes,
+            streak: user.streak_count || 0
+          };
+
+          // Only send if there was SOME activity
+          if (stats.new_followers > 0 || stats.project_views > 0 || stats.post_views > 0 || stats.new_likes > 0) {
+            await sendPersonalWeeklyRecapEmail(user.email, user.name || 'User', stats);
+          }
+        } catch (err) {
+          console.error(`[Cron] Error generating recap for user ${user.id}:`, err);
+        }
+      }
+    } catch (error) {
+      console.error('[Cron] Error in Personal Weekly Recap Job:', error);
+    }
+  });
+
   weeklyDigestJob.start();
   streakReminderJob.start();
+  personalRecapJob.start();
   console.log('[Cron] Jobs scheduled.');
 }

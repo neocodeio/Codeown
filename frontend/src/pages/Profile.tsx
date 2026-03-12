@@ -21,6 +21,7 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
+import ProfileStrength from "../components/ProfileStrength";
 // import StreakBadge from "../components/StreakBadge";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
@@ -806,6 +807,14 @@ export default function Profile() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Profile Strength */}
+        <div style={{ padding: `0 ${innerPaddingX}px` }}>
+          <ProfileStrength 
+            user={userProfile} 
+            projectsCount={projects?.length || 0} 
+          />
         </div>
 
         {/* Tabs + Content */}
