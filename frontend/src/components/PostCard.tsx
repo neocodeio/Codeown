@@ -144,7 +144,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         cursor: "pointer",
         padding: isMobile ? "24px 16px" : "32px 24px",
         backgroundColor: "#fff",
-        borderBottom: "1px solid #f1f5f9",
+        borderBottom: "1.60px solid #f1f5f9",
         display: "flex",
         gap: "16px",
         transition: "background-color 0.2s ease",

@@ -108,8 +108,7 @@ export default function Feed() {
                     width: "100%",
                     maxWidth: isDesktop ? "700px" : "100%",
                     flexShrink: 0,
-                    borderLeft: isDesktop ? "1px solid #f1f5f9" : "none",
-                    borderRight: isDesktop ? "1px solid #f1f5f9" : "none",
+                    border: isDesktop ? "2px solid #f1f5f9" : "none",
                     minHeight: "100vh",
                     position: "relative"
                 }}>
