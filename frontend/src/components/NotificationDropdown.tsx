@@ -130,9 +130,8 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
       case "save":
         return <span>{nameWrapper} saved your project</span>;
       case "profile_view":
-        return <span>{nameWrapper} viewed your profile</span>;
       case "project_view":
-        return <span>{nameWrapper} viewed your project</span>;
+        return <span>{nameWrapper} {notification.project_id ? "viewed your project" : "viewed your profile"}</span>;
       default:
         return <span>New notification</span>;
     }

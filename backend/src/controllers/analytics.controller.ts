@@ -31,7 +31,7 @@ export async function trackEvent(req: Request, res: Response) {
                 .select("id")
                 .eq("user_id", target_user_id)
                 .eq("actor_id", actor_id)
-                .eq("type", "project_view")
+                .eq("type", "profile_view") // Using profile_view for compat; distinguish via project_id
                 .eq("project_id", project_id)
                 .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
                 .maybeSingle();
@@ -39,7 +39,7 @@ export async function trackEvent(req: Request, res: Response) {
             if (!existingNotif) {
                 await supabase.from("notifications").insert({
                     user_id: target_user_id,
-                    type: "project_view",
+                    type: "profile_view", // Using profile_view for compat; distinguish via project_id
                     actor_id: actor_id,
                     project_id: project_id,
                     read: false,

@@ -98,9 +98,8 @@ export default function NotificationsPage() {
             case "save":
                 return <>{nameWrapper} Saved your project</>;
             case "profile_view":
-                return <>{nameWrapper} Viewed your profile</>;
             case "project_view":
-                return <>{nameWrapper} Viewed your project</>;
+                return <>{nameWrapper} {notification.project_id ? "Viewed your project" : "Viewed your profile"}</>;
             default:
                 return <>New notification</>;
         }
