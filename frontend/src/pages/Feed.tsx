@@ -165,7 +165,7 @@ export default function Feed() {
 
 
     return (
-        <main style={{ padding: 0, backgroundColor: "#f8fafc" }}>
+        <main style={{ padding: 0, backgroundColor: "#fff" }}>
             <SEO
                 title="Discover"
                 description="The place where developers share projects, discover amazing code, and connect with other builders worldwide."

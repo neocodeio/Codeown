@@ -103,6 +103,8 @@ export default function RecommendedUsersSidebar() {
             style={{
                 width: "100%",
                 backgroundColor: "#fff",
+                border: "1px solid #e2e8f0",
+                borderLeft: "none",
             }}
         >
             <style>{`
