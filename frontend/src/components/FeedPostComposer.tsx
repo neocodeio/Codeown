@@ -111,10 +111,11 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
     return (
         <div style={{
-            padding: isMobile ? "16px" : "24px 20px",
-            borderBottom: "1px solid #eff3f4",
+            padding: isMobile ? "16px" : "20px 24px",
+            borderBottom: "1px solid #e2e8f0",
+            backgroundColor: "#fff",
             display: "flex",
-            gap: "12px"
+            gap: "12px",
         }}>
             <img
                 src={avatarUrl}

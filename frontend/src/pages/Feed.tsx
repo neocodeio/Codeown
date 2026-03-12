@@ -165,7 +165,7 @@ export default function Feed() {
 
 
     return (
-        <main style={{ padding: 0, backgroundColor: "#ffffff" }}>
+        <main style={{ padding: 0, backgroundColor: "#f8fafc" }}>
             <SEO
                 title="Discover"
                 description="The place where developers share projects, discover amazing code, and connect with other builders worldwide."
@@ -188,330 +188,159 @@ export default function Feed() {
                 alignItems: "flex-start",
                 width: "100%",
                 boxSizing: "border-box",
-                backgroundColor: "transparent",
             }}>
-                {/* Main Feed Column */}
+                {/* ── Main Feed Column ── */}
                 <div style={{
                     flexShrink: 0,
                     width: isMobile ? "100%" : `${MAIN_COLUMN_MAX_WIDTH}px`,
-                    borderLeft: !isMobile ? "1px solid #e5e7eb" : "none",
-                    borderRight: !isMobile ? "1px solid #e5e7eb" : "none",
-                    borderTop: !isMobile ? "1px solid #e5e7eb" : "none",
-                    borderBottom: !isMobile ? "1px solid #e5e7eb" : "none",
                     backgroundColor: "#ffffff",
-                    position: "relative",
-                    zIndex: 1,
+                    borderLeft: !isMobile ? "1px solid #e2e8f0" : "none",
+                    borderRight: !isMobile ? "1px solid #e2e8f0" : "none",
+                    minHeight: "100vh",
                 }}>
-                    {/* Status banner */}
-                    {/* <div
-                        style={{
-                            padding: isMobile ? "12px 16px" : "14px 20px",
-                            backgroundColor: "#f0f9ff",
-                            borderBottom: "1px solid #e0f2fe",
-                        }}
-                    > */}
-                    <p
-                        style={{
-                            margin: 0,
-                            fontSize: isMobile ? "13px" : "14px",
-                            color: "#0369a1",
-                            lineHeight: 1.5,
-                            fontWeight: 500,
-                        }}
-                    >
-                        {/* We're growing faster than our servers! We're currently optimizing our storage to accommodate all new users. Back shortly! */}
-                    </p>
-                    {/* </div> */}
 
-                    {/* Header + feed filter */}
-                    <div
-                        style={{
-                            borderBottom: "1px solid #eff3f4",
-                            position: isMobile ? "static" : "sticky",
-                            top: isMobile ? undefined : 0,
-                            marginTop: 0,
-                            backgroundColor: isMobile ? "#ffffff" : "rgba(255, 255, 255, 0.95)",
-                            backdropFilter: isMobile ? undefined : "blur(8px)",
-                            width: "100%",
-                            zIndex: 10,
-                        }}
-                    >
+                    {/* ── Sticky header: filters + type tabs ── */}
+                    <div style={{
+                        position: isMobile ? "static" : "sticky",
+                        top: 0,
+                        zIndex: 20,
+                        backgroundColor: "rgba(255,255,255,0.97)",
+                        backdropFilter: "blur(12px)",
+                        WebkitBackdropFilter: "blur(12px)",
+                        borderBottom: "1px solid #e2e8f0",
+                    }}>
                         <style>{`
-                            .feed-tabs-row {
-                                display: flex;
-                                align-items: center;
-                                gap: 18px;
-                                padding: 0 16px;
-                                overflow-x: auto;
-                                scrollbar-width: none;
-                                -ms-overflow-style: none;
+                            .fp-pill {
+                                appearance: none; border: none; background: transparent;
+                                padding: 9px 16px; font-size: 13px; font-weight: 600;
+                                color: #94a3b8; cursor: pointer; border-radius: 999px;
+                                transition: all 0.15s ease; white-space: nowrap;
                             }
-                            .feed-tabs-row::-webkit-scrollbar { display: none; }
-                            .feed-tab-btn {
-                                position: relative;
-                                appearance: none;
-                                border: none;
-                                background: transparent;
-                                padding: 14px 2px 12px;
-                                font-size: 14px;
-                                font-weight: 700;
-                                color: #94a3b8;
-                                cursor: pointer;
-                                white-space: nowrap;
-                                transition: color 0.15s ease;
+                            .fp-pill:hover { color: #475569; background: #f1f5f9; }
+                            .fp-pill.active { color: #0f172a; background: #f1f5f9; font-weight: 700; }
+                            .fp-type-pill {
+                                appearance: none; border: 1px solid #e2e8f0; background: transparent;
+                                padding: 6px 14px; font-size: 13px; font-weight: 600;
+                                color: #94a3b8; cursor: pointer; border-radius: 999px;
+                                transition: all 0.15s ease; white-space: nowrap;
                             }
-                            .feed-tab-btn:hover { color: #64748b; }
-                            .feed-tab-btn.active { color: #0f172a; }
-                            .feed-tab-underline {
-                                position: absolute;
-                                left: 50%;
-                                bottom: 0;
-                                transform: translateX(-50%);
-                                width: 46px;
-                                height: 2px;
-                                background: #0f172a;
-                                border-radius: 999px;
-                            }
+                            .fp-type-pill:hover { color: #475569; border-color: #cbd5e1; }
+                            .fp-type-pill.active { color: #0f172a; border-color: #0f172a; background: rgba(15,23,42,0.04); font-weight: 700; }
                         `}</style>
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <div
-                                className="feed-tabs-row"
-                                style={{
-                                    width: "100%",
-                                    maxWidth: isMobile ? "100%" : `${MAIN_COLUMN_MAX_WIDTH}px`,
-                                    justifyContent: isMobile ? "flex-start" : "center",
-                                }}
-                            >
-                                <button
-                                    type="button"
-                                    onClick={() => handleFilterChange("all")}
-                                    className={`feed-tab-btn ${feedFilter === "all" ? "active" : ""}`}
-                                >
-                                    Discover
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleFilterChange("following")}
-                                    className={`feed-tab-btn ${feedFilter === "following" ? "active" : ""}`}
-                                >
-                                    Following
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => updateParams({ type: "posts" })}
-                                    className={`feed-tab-btn ${feedType === "posts" ? "active" : ""}`}
-                                >
-                                    Posts
-                                    {feedType === "posts" && <span className="feed-tab-underline" />}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => updateParams({ type: "projects" })}
-                                    className={`feed-tab-btn ${feedType === "projects" ? "active" : ""}`}
-                                >
-                                    Projects
-                                    {feedType === "projects" && <span className="feed-tab-underline" />}
-                                </button>
+
+                        <div style={{
+                            display: "flex", alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "10px 16px", gap: "8px", overflowX: "auto",
+                        }}>
+                            <div style={{ display: "flex", gap: "4px", flexShrink: 0 }}>
+                                <button className={`fp-pill ${feedFilter === "all" ? "active" : ""}`} onClick={() => handleFilterChange("all")}>Discover</button>
+                                <button className={`fp-pill ${feedFilter === "following" ? "active" : ""}`} onClick={() => handleFilterChange("following")}>Following</button>
+                            </div>
+                            <div style={{ width: "1px", height: "22px", backgroundColor: "#e2e8f0", flexShrink: 0 }} />
+                            <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                                <button className={`fp-type-pill ${feedType === "posts" ? "active" : ""}`} onClick={() => updateParams({ type: "posts" })}>Posts</button>
+                                <button className={`fp-type-pill ${feedType === "projects" ? "active" : ""}`} onClick={() => updateParams({ type: "projects" })}>Projects</button>
                             </div>
                         </div>
+
+                        {feedType === "projects" && (
+                            <div style={{
+                                display: "flex", gap: "6px",
+                                padding: "0 16px 10px",
+                                overflowX: "auto", scrollbarWidth: "none", msOverflowStyle: "none",
+                            }}>
+                                <style>{`.fp-tags::-webkit-scrollbar{display:none}`}</style>
+                                {["All","React","TypeScript","Next.js","Node.js","Python","Tailwind","Flutter","Rust","Go","Supabase","AI"].map(tag => {
+                                    const isSelected = (tag === "All" && !selectedTag) || selectedTag === tag;
+                                    return (
+                                        <button key={tag} onClick={() => updateParams({ tag: tag === "All" ? null : tag })} style={{
+                                            padding: "4px 12px", borderRadius: "999px", flexShrink: 0,
+                                            border: `1px solid ${isSelected ? "#0f172a" : "#e2e8f0"}`,
+                                            backgroundColor: isSelected ? "#0f172a" : "#fff",
+                                            color: isSelected ? "#fff" : "#64748b",
+                                            fontSize: "12px", fontWeight: isSelected ? 700 : 500,
+                                            cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s ease",
+                                        }}>
+                                            {tag === "All" ? tag : `#${tag}`}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
+                    {/* ── Composer ── */}
+                    {feedType === "posts" && <FeedPostComposer onCreated={handlePostCreated} />}
 
-                    {/* Popular Users - Mobile/Tablet Only - Hidden by request */}
-                    {/* {width < 1024 && <PopularUsersHorizontal />} */}
-
-                    {/* Tech Stack Tags - Only for Projects */}
-                    {feedType === "projects" && (
-                        <div style={{
-                            display: "flex",
-                            gap: "8px",
-                            padding: "8px 16px 12px",
-                            borderBottom: "1px solid #eff3f4",
-                            backgroundColor: "#fff",
-                            overflowX: "auto",
-                            WebkitOverflowScrolling: "touch",
-                            scrollbarWidth: "none",
-                            msOverflowStyle: "none"
-                        }} className="no-scrollbar">
-                            <style>{`
-                                .no-scrollbar::-webkit-scrollbar { display: none; }
-                            `}</style>
-                            {["All", "React", "TypeScript", "Next.js", "Node.js", "Python", "Tailwind", "Flutter", "Rust", "Go", "Supabase", "AI"].map((tag) => {
-                                const isSelected = (tag === "All" && !selectedTag) || (selectedTag === tag);
-                                return (
-                                    <button
-                                        key={tag}
-                                        onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
-                                        style={{
-                                            padding: "5px 12px",
-                                            borderRadius: "20px",
-                                            border: isSelected ? "1px solid #212121" : "1px solid #eff3f4",
-                                            backgroundColor: isSelected ? "#f8fafc" : "#fff",
-                                            color: isSelected ? "#212121" : "#64748b",
-                                            fontSize: "12px",
-                                            fontWeight: isSelected ? 800 : 500,
-                                            cursor: "pointer",
-                                            whiteSpace: "nowrap",
-                                            transition: "all 0.2s ease"
-                                        }}
-                                        onMouseEnter={e => {
-                                            if (!isSelected) e.currentTarget.style.backgroundColor = "#f8fafc";
-                                        }}
-                                        onMouseLeave={e => {
-                                            if (!isSelected) e.currentTarget.style.backgroundColor = "#fff";
-                                        }}
-                                    >
-                                        {tag === "All" ? tag : `#${tag}`}
+                    {/* ── Feed stream ── */}
+                    {isInitialLoading ? (
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} style={{ padding: "20px", borderBottom: "1px solid #f1f5f9" }}>
+                                    <PostCardSkeleton />
+                                </div>
+                            ))}
+                        </div>
+                    ) : currentItems.length === 0 && !loading ? (
+                        <div style={{ padding: "80px 20px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+                            <span style={{ fontSize: "42px" }}>{feedFilter === "following" ? "🔭" : "🌱"}</span>
+                            {feedFilter === "following" ? (
+                                <>
+                                    <h2 style={{ fontSize: "18px", fontWeight: 800, margin: 0, color: "#0f172a", letterSpacing: "-0.03em" }}>Your following feed is quiet</h2>
+                                    <p style={{ color: "#94a3b8", fontSize: "14px", lineHeight: 1.6, maxWidth: "300px", margin: 0 }}>Follow creators to see their posts here.</p>
+                                    <button onClick={() => handleFilterChange("all")} style={{ marginTop: "8px", padding: "10px 24px", backgroundColor: "#0f172a", color: "#fff", border: "none", borderRadius: "999px", fontWeight: 700, fontSize: "14px", cursor: "pointer" }}>
+                                        Explore Discover
                                     </button>
-                                );
-                            })}
+                                </>
+                            ) : (
+                                <>
+                                    <h2 style={{ fontSize: "18px", fontWeight: 800, margin: 0, color: "#0f172a", letterSpacing: "-0.03em" }}>Nothing here yet</h2>
+                                    <p style={{ color: "#94a3b8", fontSize: "14px", lineHeight: 1.6, margin: 0 }}>Be the first to share something!</p>
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            {feedType === "posts"
+                                ? (currentItems as any[]).map(p => <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(undefined, false)} />)
+                                : (currentItems as any[]).map(p => <ProjectCard key={p.id} project={p} onUpdated={() => fetchProjects(undefined, false)} />)
+                            }
+                            {loading && (
+                                <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
+                                    <div className="spinner" />
+                                </div>
+                            )}
                         </div>
                     )}
 
-                    {/* Maintenance Disclaimer */}
-                    {/* <div style={{
-                        padding: "24px",
-                        backgroundColor: "#fff",
-                        borderBottom: "1px solid #eff3f4",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "12px"
-                    }}>
-                        <div style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            color: "#0f172a"
-                        }}>
-                            <div style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "32px",
-                                height: "32px",
-                                backgroundColor: "rgba(59, 130, 246, 0.05)",
-                                borderRadius: "8px",
-                                color: "#3b82f6"
-                            }}>
-                                <HugeiconsIcon icon={Configuration01Icon} style={{ width: "18px", height: "18px" }} />
-                            </div>
-                            <h2 style={{
-                                fontSize: "16px",
-                                fontWeight: 800,
-                                margin: 0,
-                                letterSpacing: "-0.02em",
-                                textTransform: "none"
-                            }}>
-                                Temporary Service Interruption
-                            </h2>
-                        </div>
-                        <p style={{
-                            fontSize: "14px",
-                            color: "#64748b",
-                            lineHeight: 1.6,
-                            margin: 0,
-                            fontWeight: 500
-                        }}>
-                            Codeown is currently undergoing scheduled infrastructure migration. Consequently, some features may be temporarily unavailable as we transition to a more robust hosting environment.
-                            Our team is working to restore full service as soon as possible. We apologize for the inconvenience.
-                        </p>
-                    </div> */}
-
-                    {/* Spotlight */}
-
-
-                    {/* Composer */}
-                    {feedType === "posts" && (
-                        <FeedPostComposer onCreated={handlePostCreated} />
-                    )}
-
-                    {
-                        isInitialLoading ? (
-                            <div style={{ display: "flex", flexDirection: "column" }}>
-                                {[...Array(5)].map((_, i) => (
-                                    <div key={i} style={{ padding: "20px", borderBottom: "1px solid #eff3f4" }}>
-                                        <PostCardSkeleton />
-                                    </div>
-                                ))}
-                            </div>
-                        ) : currentItems.length === 0 && !loading ? (
-                            <div className="fade-in" style={{ padding: "80px 20px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                {feedFilter === "following" ? (
-                                    <>
-                                        <h2 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "12px", color: "#0f172a" }}>
-                                            Follow creators to see their activity
-                                        </h2>
-                                        <p style={{ color: "#64748b", fontSize: "16px", lineHeight: 1.6, maxWidth: "400px", margin: "0 auto 32px" }}>
-                                            It looks like you haven't followed anyone yet. Discover amazing creators and start building your feed!
-                                        </p>
-                                        <button
-                                            onClick={() => handleFilterChange("all")}
-                                            style={{
-                                                padding: "12px 24px",
-                                                backgroundColor: "#212121",
-                                                color: "#fff",
-                                                border: "none",
-                                                borderRadius: "100px",
-                                                fontWeight: 700,
-                                                fontSize: "15px",
-                                                cursor: "pointer",
-                                            }}
-                                        >
-                                            Explore
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <h2 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "12px", color: "#0f172a" }}>
-                                            Nothing here yet
-                                        </h2>
-                                        <p style={{ color: "#64748b", fontSize: "16px", lineHeight: 1.6 }}>
-                                            Check back later for new {feedType}!
-                                        </p>
-                                    </>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="feed-stream" style={{ display: "flex", flexDirection: "column" }}>
-                                {feedType === "posts" ? (
-                                    // Items are Posts
-                                    (currentItems as any[]).map((p) => (
-                                        <PostCard key={p.id} post={p} onUpdated={() => fetchPosts(undefined, false)} />
-                                    ))
-                                ) : (
-                                    // Items are Projects
-                                    (currentItems as any[]).map((p) => (
-                                        <ProjectCard key={p.id} project={p} onUpdated={() => fetchProjects(undefined, false)} />
-                                    ))
-                                )}
-
-                                {loading && (
-                                    <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
-                                        <div className="spinner" />
-                                    </div>
-                                )}
-                            </div>
-                        )
-                    }
+                    {isMobile && <div style={{ height: "80px" }} />}
                 </div>
 
-                {/* Sidebar Column */}
+                {/* ── Right Sidebar (fixed, stays on scroll) ── */}
                 {isDesktop && (
                     <div style={{
                         width: `${SIDEBAR_WIDTH}px`,
                         flexShrink: 0,
-                        marginLeft: "24px",
-                        alignSelf: "stretch"
                     }}>
-                        <RecommendedUsersSidebar />
+                        {/* Inner div is fixed — always stays visible during scroll */}
+                        {/* Formula: left = (100vw + navbarWidth + feedWidth - sidebarWidth) / 2 */}
+                        {/* = (100vw + 300px + 620px - 350px) / 2 = 50vw + 285px */}
+                        <div style={{
+                            position: "fixed",
+                            left: `calc(50vw + 285px)`,
+                            top: 0,
+                            width: `${SIDEBAR_WIDTH}px`,
+                            height: "100vh",
+                            overflowY: "auto",
+                            borderLeft: "1px solid #e2e8f0",
+                            backgroundColor: "#fff",
+                            zIndex: 40,
+                        }}>
+                            <RecommendedUsersSidebar />
+                        </div>
                     </div>
                 )}
-                {isMobile && <div style={{ height: "40px" }} />}
             </div>
 
             {recapStats && (

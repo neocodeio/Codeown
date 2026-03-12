@@ -146,15 +146,15 @@ export default function PostCard({ post, onUpdated, isPinned }: PostCardProps) {
       className="fade-in post-card-x-style"
       style={{
         cursor: "pointer",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "background 0.15s ease",
         backgroundColor: isPro ? "rgba(255, 255, 255, 0.75)" : "#fff",
         backdropFilter: isPro ? "blur(12px)" : "none",
         WebkitBackdropFilter: isPro ? "blur(12px)" : "none",
-        padding: isMobile ? "16px" : "24px",
+        padding: isMobile ? "16px 16px" : "20px 24px",
         position: "relative",
         display: "flex",
         gap: "12px",
-        borderBottom: isPro ? "none" : "1px solid rgba(0, 0, 0, 0.04)",
+        borderBottom: "1px solid #f1f5f9",
       }}
       onClick={handleCardClick}
       onMouseEnter={(e) => {

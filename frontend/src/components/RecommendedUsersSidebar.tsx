@@ -101,31 +101,19 @@ export default function RecommendedUsersSidebar() {
         <div
             className="sidebar-container no-scrollbar"
             style={{
-                width: "350px", // Essential when fixed: define exact width
+                width: "100%",
                 backgroundColor: "#fff",
-                border: "1px solid #e5edef",
-                position: "fixed",
-                // Center relative to main column: 50% + Half Main Col (310px) + Gap (24px)
-                left: "calc(50% + 310px + 24px)",
-                top: "0px",
-                height: "100vh",
-                overflowY: "auto", // Better user experience than 'scroll'
-                zIndex: 40,
-                transition: "all 0.3s ease"
             }}
         >
             <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-                .sidebar-container::-webkit-scrollbar { width: 5px; }
-                .sidebar-container::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; }
-                .sidebar-container:hover::-webkit-scrollbar-thumb { background: #e2e8f0; }
-                .sidebar-section { padding: 24px 24px; border-bottom: 1px solid #f1f5f9; position: relative; }
+                .sidebar-section { padding: 20px 20px; border-bottom: 1px solid #f1f5f9; }
                 .sidebar-section:last-child { border-bottom: none; }
-                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-                .sidebar-title { font-size: 13px; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: 0.05em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
-                .sidebar-item { transition: all 0.2s ease; cursor: pointer; }
-                .sidebar-item:hover { transform: translateX(2px); }
+                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+                .sidebar-title { font-size: 11px; font-weight: 800; color: #94a3b8; margin: 0; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+                .sidebar-item { transition: opacity 0.15s ease; }
+                .sidebar-item:hover { opacity: 0.8; }
             `}</style>
 
             {/* Section 1: WHO TO FOLLOW */}
