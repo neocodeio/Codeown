@@ -120,7 +120,7 @@ export default function Feed() {
                         zIndex: 100,
                         backgroundColor: "rgba(255, 255, 255, 0.95)",
                         backdropFilter: "blur(20px)",
-                        borderBottom: "1px solid #f1f5f9",
+                        borderBottom: "3px solid #f1f5f9",
                     }}>
                         <div style={{
                             display: "flex",
