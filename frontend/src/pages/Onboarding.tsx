@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -18,10 +18,13 @@ const SKILL_OPTIONS = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user } = useClerkUser();
+  const { user, isLoaded, isSignedIn } = useClerkUser();
   const { getToken, signOut } = useClerkAuth();
   const { width } = useWindowSize();
   const isMobile = width < 768;
+
+  const [accessChecked, setAccessChecked] = useState(false);
+  const [accessAllowed, setAccessAllowed] = useState(false);
 
   const [step, setStep] = useState(0);
   const [bio, setBio] = useState("");
@@ -34,6 +37,70 @@ export default function Onboarding() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // --- Access guard ---
+  useEffect(() => {
+    const checkAccess = async () => {
+      // Wait for Clerk to load
+      if (!isLoaded) return;
+
+      // Not signed in → go to sign-in
+      if (!isSignedIn || !user?.id) {
+        navigate("/sign-in", { replace: true });
+        return;
+      }
+
+      // Signed in → check if already completed onboarding
+      try {
+        const token = await getToken();
+        if (!token) {
+          navigate("/sign-in", { replace: true });
+          return;
+        }
+        const res = await api.get(`/users/${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.data && res.data.onboarding_completed === true) {
+          // Already completed → send to home
+          navigate("/", { replace: true });
+          return;
+        }
+        // Not completed → allow access
+        setAccessAllowed(true);
+      } catch {
+        // If the user doesn't exist yet in DB, that means they're brand new → allow access
+        setAccessAllowed(true);
+      } finally {
+        setAccessChecked(true);
+      }
+    };
+
+    checkAccess();
+  }, [isLoaded, isSignedIn, user?.id]);
+
+  // Show loading while checking access
+  if (!accessChecked || !accessAllowed) {
+    return (
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100%",
+        backgroundColor: "#fafbfc",
+      }}>
+        <div style={{
+          width: "32px",
+          height: "32px",
+          border: "3px solid #f3f3f3",
+          borderTop: "3px solid #212121",
+          borderRadius: "50%",
+          animation: "spin 1s linear infinite",
+        }} />
+        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills((prev) =>
