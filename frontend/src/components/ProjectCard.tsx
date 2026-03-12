@@ -284,7 +284,49 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         {/* Project Details */}
         <div style={{ marginBottom: "16px" }}>
           <h3 style={{ fontSize: "17px", fontWeight: "800", color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.01em" }}>{project.title}</h3>
-          <p style={{ fontSize: "15px", lineHeight: "1.6", color: "#475569" }}>{project.description}</p>
+          <p style={{ fontSize: "15px", lineHeight: "1.6", color: "#475569", marginBottom: "12px" }}>{project.description}</p>
+          
+          {/* Tech Stack Chips */}
+          {project.technologies_used && project.technologies_used.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
+              {project.technologies_used.map((tech, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/?type=projects&tag=${encodeURIComponent(tech)}`);
+                  }}
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: "6px",
+                    border: "1px solid #f1f5f9",
+                    backgroundColor: "#f8fafc",
+                    color: "#64748b",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    textTransform: "none",
+                    letterSpacing: "normal"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "#0f172a";
+                    e.currentTarget.style.color = "#0f172a";
+                    e.currentTarget.style.backgroundColor = "#fff";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "#f1f5f9";
+                    e.currentTarget.style.color = "#64748b";
+                    e.currentTarget.style.backgroundColor = "#f8fafc";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  {tech}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Media */}
