@@ -92,22 +92,43 @@ export default function Navbar() {
 
   // Streak update logic (no longer rendered here, but kept for potential future use)
 
-  // Kill the active user count query - fetch only once on mount, no refetching
+  // Active user tracking and polling
   const [activeCount, setActiveCount] = useState(0);
 
   useEffect(() => {
-    const fetchActiveCountOnce = async () => {
-      if (!isSignedIn) return;
+    const fetchActiveCount = async () => {
       try {
         const { data } = await api.get("/users/active/count");
-        setActiveCount(data?.count || 0);
+        setActiveCount(data?.count || 1);
       } catch (e) {
-        setActiveCount(0);
+        setActiveCount(1);
       }
     };
 
-    fetchActiveCountOnce();
-  }, []); // Empty dependency array - fetch only once on mount
+    const pingActiveSession = async () => {
+      try {
+        const token = await getToken();
+        await api.post("/users/active/ping", {}, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+      } catch (e) {
+        // Silently fail pings
+      }
+    };
+
+    // Initial calls
+    fetchActiveCount();
+    pingActiveSession();
+
+    // Set up intervals
+    const countInterval = setInterval(fetchActiveCount, 30000); // 30s
+    const pingInterval = setInterval(pingActiveSession, 45000); // 45s
+
+    return () => {
+      clearInterval(countInterval);
+      clearInterval(pingInterval);
+    };
+  }, [getToken]);
 
   // Remove periodic ping - React Query handles active count efficiently
   // Only ping when user actively interacts, not on a timer
@@ -134,26 +155,58 @@ export default function Navbar() {
       <div style={{ padding: "24px 20px 32px 20px" }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
           <img src={logo} alt="Codeown" style={{ height: "40px", width: "auto" }} />
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "20px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
-              Codeown
-            </span>
-            {isSignedIn && isPro && (
-              <span style={{
-                fontSize: "10px",
-                fontWeight: 900,
-                color: "#d4a853",
-                border: "1px solid #d4a853",
-                padding: "2px 6px",
-                borderRadius: "4px",
-                letterSpacing: "0.02em",
-                textTransform: "uppercase",
-                opacity: 0.9,
-                marginTop: "2px"
-              }}>
-                PRO
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "20px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
+                Codeown
               </span>
-            )}
+              {isSignedIn && isPro && (
+                <span style={{
+                  fontSize: "10px",
+                  fontWeight: 900,
+                  color: "#d4a853",
+                  border: "1px solid #d4a853",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  letterSpacing: "0.02em",
+                  textTransform: "uppercase",
+                  opacity: 0.9
+                }}>
+                  PRO
+                </span>
+              )}
+            </div>
+            {/* Online Status */}
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "5px", 
+              marginTop: "-2px" 
+            }}>
+              <div style={{ 
+                width: "6px", 
+                height: "6px", 
+                borderRadius: "50%", 
+                backgroundColor: "#22c55e",
+                boxShadow: "0 0 8px rgba(34, 197, 94, 0.4)",
+                animation: "onlinePulse 2s infinite"
+              }} />
+              <span style={{ 
+                fontSize: "11px", 
+                fontWeight: 600, 
+                color: "#64748b",
+                letterSpacing: "0.01em"
+              }}>
+                {activeCount} {activeCount === 1 ? "builder" : "builders"} online
+              </span>
+            </div>
+            <style>{`
+              @keyframes onlinePulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.4; }
+                100% { opacity: 1; }
+              }
+            `}</style>
           </div>
         </Link>
       </div>
@@ -300,33 +353,6 @@ export default function Navbar() {
 
 
 
-            {/* Real-time Status Badge */}
-            <div style={{
-              marginTop: "12px",
-              padding: "10px 16px",
-              alignItems: "center",
-              gap: "10px",
-              color: "#3b82f6",
-              fontSize: "13px",
-              fontWeight: 700,
-              letterSpacing: "0.02em",
-              backgroundColor: "rgba(59, 130, 246, 0.05)",
-              borderRadius: "12px",
-              margin: "8px 16px",
-              display: "none" // Hidden by request
-            }}>
-              <div style={{ color: "#3b82f6", fontWeight: 800 }}>
-                {activeCount} {activeCount === 1 ? "DEVELOPER" : "DEVELOPERS"} ONLINE
-              </div>
-
-              <style>{`
-                @keyframes pulseActive {
-                  0% { opacity: 1; transform: scale(1); }
-                  50% { opacity: 0.5; transform: scale(1.2); }
-                  100% { opacity: 1; transform: scale(1); }
-                }
-              `}</style>
-            </div>
           </>
         )}
       </div>
