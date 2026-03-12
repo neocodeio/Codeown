@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { sendNewLikeEmail } from "../lib/email.js";
-import { emitUpdate } from "../services/socket.js";
 
 // Helper function to create notifications
 async function createProjectNotification(
@@ -479,12 +478,6 @@ export async function createProject(req: Request, res: Response) {
       if (error) console.error("Error logging project creation analytics:", error);
     });
 
-    emitUpdate("project_created", {
-      ...project,
-      is_first: isFirstProject,
-      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
-    });
-
     return res.status(201).json({
       ...project,
       is_first: isFirstProject,
@@ -578,11 +571,6 @@ export async function updateProject(req: Request, res: Response) {
       console.error("Error fetching user for project:", userError);
     }
 
-    emitUpdate("project_updated", {
-      ...project,
-      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
-    });
-
     return res.json({
       ...project,
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
@@ -650,8 +638,6 @@ export async function deleteProject(req: Request, res: Response) {
     }
 
     console.log(`[deleteProject] Successfully deleted project ${resolvedId}`);
-    
-    emitUpdate("project_deleted", { id: resolvedId });
 
     return res.json({ message: "Project deleted successfully" });
   } catch (error: any) {
@@ -749,8 +735,6 @@ export async function toggleProjectLike(req: Request, res: Response) {
       .from("projects")
       .update({ like_count: likeCount })
       .eq("id", id);
-      
-    emitUpdate("project_liked", { projectId: parseInt(id), liked: isLiked, likeCount });
 
     return res.json({ isLiked, likeCount });
   } catch (error) {

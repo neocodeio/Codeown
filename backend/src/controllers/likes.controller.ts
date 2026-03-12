@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { sendNewLikeEmail } from "../lib/email.js";
-import { emitUpdate } from "../services/socket.js";
 
 export async function likePost(req: Request, res: Response) {
   try {
@@ -55,7 +54,6 @@ export async function likePost(req: Request, res: Response) {
         .eq("post_id", postIdNum);
 
       const updatedCount = count || 0;
-      emitUpdate("post_liked", { postId: postIdNum, liked: false, likeCount: updatedCount });
 
       return res.json({ liked: false, message: "Post unliked", likeCount: updatedCount });
     } else {
@@ -123,7 +121,6 @@ export async function likePost(req: Request, res: Response) {
         .eq("post_id", postIdNum);
 
       const updatedCount = count || 0;
-      emitUpdate("post_liked", { postId: postIdNum, liked: true, likeCount: updatedCount });
 
       return res.json({ liked: true, message: "Post liked", data, likeCount: updatedCount });
     }
@@ -239,7 +236,6 @@ export async function likeComment(req: Request, res: Response) {
         .eq("comment_id", commentIdNum);
         
       const updatedCount = count || 0;
-      emitUpdate("comment_liked", { commentId: commentIdNum, liked: false, likeCount: updatedCount });
       return res.json({ liked: false, likeCount: updatedCount });
     } else {
       const { error } = await supabase
@@ -279,7 +275,6 @@ export async function likeComment(req: Request, res: Response) {
         .eq("comment_id", commentIdNum);
         
       const updatedCount = count || 0;
-      emitUpdate("comment_liked", { commentId: commentIdNum, liked: true, likeCount: updatedCount });
       return res.json({ liked: true, likeCount: updatedCount });
     }
   } catch (error: any) {
