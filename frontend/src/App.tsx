@@ -131,7 +131,6 @@ export default function App() {
         flex: 1,
         position: "relative",
         minWidth: 0,
-        overflowX: "hidden",
         paddingTop: isMobile && !isAuthRoute ? "64px" : "0px",
         paddingBottom: isMobile && !isAuthRoute ? "80px" : "0px"
       }}>

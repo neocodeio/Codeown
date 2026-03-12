@@ -102,9 +102,12 @@ export default function RecommendedUsersSidebar() {
             className="sidebar-container no-scrollbar"
             style={{
                 width: "100%",
+                height: "100vh",
                 backgroundColor: "#fff",
                 border: "1px solid #e2e8f0",
                 borderLeft: "none",
+                overflowY: "auto",
+                position: "relative",
             }}
         >
             <style>{`

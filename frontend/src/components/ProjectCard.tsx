@@ -23,8 +23,7 @@ import {
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
-import UserHoverCard from "./UserHoverCard";
-import { getOptimizedImageUrl, handleImageError } from "../utils/image";
+import { getOptimizedImageUrl } from "../utils/image";
 import ShareModal from "./ShareModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { toast } from "react-toastify";
@@ -97,7 +96,6 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
 
   const userName = project.user?.name || "User";
   const shareUrl = `${window.location.origin}/project/${project.id}`;
-  const isPro = project.user?.is_pro === true;
 
   const handleClick = () => {
     if (isMenuOpen) {
@@ -169,335 +167,193 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       className="fade-in"
       style={{
         cursor: "pointer",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        backgroundColor: isPro ? "rgba(255, 255, 255, 0.75)" : "#fff",
-        backdropFilter: isPro ? "blur(12px)" : "none",
-        WebkitBackdropFilter: isPro ? "blur(12px)" : "none",
-        padding: isMobile ? "16px" : "24px",
+        padding: isMobile ? "24px 16px" : "32px 24px",
+        backgroundColor: "#fff",
+        borderBottom: "1px solid #f1f5f9",
         display: "flex",
-        gap: "14px",
-        borderBottom: isPro ? "none" : "1px solid #eff3f4",
-        borderRadius: isPro ? "0px" : undefined,
-        position: "relative"
+        gap: "16px",
+        transition: "background-color 0.2s ease",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = isPro ? "rgba(255, 255, 255, 0.82)" : "#fcfcfc";
-        if (isPro) e.currentTarget.style.transform = "translateY(-1px)";
+        e.currentTarget.style.backgroundColor = "#fafafa";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = isPro ? "rgba(255, 255, 255, 0.75)" : "#fff";
-        if (isPro) e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.backgroundColor = "#fff";
       }}
     >
-      {/* Left Column: Avatar */}
+      {/* Avatar Col */}
       <div style={{ flexShrink: 0 }}>
-        <div
-          onClick={handleUserClick}
-          style={{
-            cursor: "pointer",
-            transition: "opacity 0.2s ease",
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
-          onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-        >
+        <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
           <AvailabilityBadge
             avatarUrl={project.user?.avatar_url || null}
             name={userName}
             size={isMobile ? 42 : 48}
             isOpenToOpportunities={project.user?.is_pro === true && project.user?.is_hirable === true}
-            ringColor={isPro ? "#d4a853" : "#3b82f6"}
+            ringColor="#f1f5f9"
           />
         </div>
       </div>
 
-      {/* Right Column: Content */}
+      {/* Content Col */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Header Row */}
+        {/* Header Info */}
         <div style={{
           display: "flex",
-          alignItems: isMobile ? "flex-start" : "center",
           justifyContent: "space-between",
-          marginBottom: "2px",
-          gap: "8px",
-          flexWrap: isMobile ? "wrap" : "nowrap"
+          alignItems: "flex-start",
+          marginBottom: "6px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", minWidth: 0, flex: 1 }}>
-            {project.user_id ? (
-              <UserHoverCard userId={project.user_id}>
-                <span
-                  onClick={handleUserClick}
-                  style={{
-                    fontSize: "15px",
-                    fontWeight: 750,
-                    color: "#0f172a",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: isMobile ? "150px" : "none"
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
-                  onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
-                >
-                  {userName}
-                </span>
-              </UserHoverCard>
-            ) : (
-              <span
-                onClick={handleUserClick}
-                style={{
-                  fontSize: "15px",
-                  fontWeight: 750,
-                  color: "#0f172a",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  maxWidth: isMobile ? "150px" : "none"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
-                onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
-              >
-                {userName}
-              </span>
-            )}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+            <span
+              onClick={handleUserClick}
+              style={{
+                fontSize: "15px",
+                fontWeight: "800",
+                color: "#0f172a",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              {userName}
+            </span>
             <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="14px" />
-            {project.user?.is_pro === true && (
-              <span style={{
-                fontSize: "9px",
-                fontWeight: 800,
-                padding: "2px 7px",
-                borderRadius: "4px",
-                background: "#000",
-                color: "#fff",
-                letterSpacing: "0.06em",
-                lineHeight: "1",
-                textTransform: "uppercase",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-              }}>PRO</span>
-            )}
-            <span style={{ fontSize: "14px", color: "#64748b", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "500" }}>
               @{project.user?.username || 'user'}
             </span>
-            <span style={{ fontSize: "14px", color: "#cbd5e1" }}>•</span>
-            <span style={{ fontSize: "14px", color: "#64748b", whiteSpace: "nowrap" }}>
+            <span style={{ color: "#e2e8f0" }}>•</span>
+            <span style={{ fontSize: "14px", color: "#94a3b8" }}>
               {formatRelativeDate(project.created_at)}
             </span>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            {/* Minimal Status Indicator */}
+            
+            {/* Status pill inside header flow */}
             <div style={{
+              marginLeft: "4px",
+              padding: "2px 8px",
+              borderRadius: "4px",
+              backgroundColor: "#f8fafc",
+              border: "1px solid #f1f5f9",
               display: "flex",
               alignItems: "center",
-              gap: "5px",
-              padding: "3px 8px",
-              backgroundColor: "#f8fafc",
-              borderRadius: "6px",
-              border: "1px solid #f1f5f9"
+              gap: "4px"
             }}>
-              <div style={{
-                backgroundColor: getStatusColor(project.status),
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%"
-              }} />
-              <span style={{
-                fontSize: "10px",
-                fontWeight: 700,
-                color: "#64748b",
-                textTransform: "uppercase",
-                letterSpacing: "0.02em"
-              }}>
-                {getStatusText(project.status)}
-              </span>
+              <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: getStatusColor(project.status) }} />
+              <span style={{ fontSize: "10px", fontWeight: "700", color: "#64748b", textTransform: "uppercase" }}>{getStatusText(project.status)}</span>
             </div>
-
-            {isOwnProject && (
-              <div style={{ position: "relative" }} ref={menuRef}>
-                <button
-                  onClick={toggleMenu}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "#94a3b8",
-                    cursor: "pointer",
-                    padding: "4px",
-                    display: "flex",
-                    borderRadius: "50%"
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                >
-                  <HugeiconsIcon icon={MoreHorizontalIcon} style={{ fontSize: "18px" }} />
-                </button>
-
-                {isMenuOpen && (
-                  <div className="fade-in" style={{
-                    position: "absolute", top: "100%", right: 0,
-                    backgroundColor: "#fff", borderRadius: "12px", border: "1px solid #f1f5f9",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.08)", zIndex: 100, padding: "4px", minWidth: "120px"
-                  }}>
-                    {[
-                      { icon: Pen01Icon, label: "Edit", onClick: handleEditClick, color: "#0f172a" },
-                      { icon: Delete01Icon, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
-                    ].map((item, i) => (
-                      <button key={i} onClick={(e) => { item.onClick(e); setIsMenuOpen(false); }} style={{
-                        width: "100%", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px",
-                        border: "none", background: "none", cursor: "pointer", borderRadius: "8px",
-                        fontSize: "13px", fontWeight: 600, color: item.color
-                      }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
-                        <HugeiconsIcon icon={item.icon} style={{ fontSize: "14px" }} />
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Project Content */}
-        <div style={{ marginTop: "4px" }}>
-          <h3 style={{
-            fontSize: "17px",
-            fontWeight: 750,
-            color: isPro ? "#1a1a1a" : "#0f172a",
-            margin: "0 0 6px 0",
-            lineHeight: "1.4",
-            letterSpacing: isPro ? "0.02em" : "-0.01em",
-            overflowWrap: "anywhere",
-            wordBreak: "break-word",
-            textTransform: isPro ? "capitalize" : "none",
-          }}>
-            {project.title}
-          </h3>
-          <p style={{
-            fontSize: "15px",
-            lineHeight: "1.5",
-            color: "#475569",
-            margin: "0 0 12px 0",
-            display: "-webkit-box",
-            WebkitLineClamp: "3",
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            overflowWrap: "anywhere",
-            wordBreak: "break-word"
-          }}>
-            {project.description}
-          </p>
+          {isOwnProject && (
+            <div style={{ position: "relative" }} ref={menuRef}>
+              <button
+                onClick={toggleMenu}
+                style={{
+                  background: "none", border: "none", color: "#cbd5e1",
+                  cursor: "pointer", padding: "4px", borderRadius: "50%",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "#0f172a"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "#cbd5e1"}
+              >
+                <HugeiconsIcon icon={MoreHorizontalIcon} style={{ fontSize: "18px" }} />
+              </button>
 
-          {project.cover_image && (
-            <div style={{
-              borderRadius: "14px",
-              overflow: "hidden",
-              border: "1px solid #f1f5f9",
-              aspectRatio: "16/9",
-              backgroundColor: "#f8fafc",
-              marginBottom: "16px"
-            }}>
-              <img
-                src={getOptimizedImageUrl(project.cover_image)}
-                alt=""
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                loading="lazy"
-                onError={(e) => handleImageError(e.currentTarget)}
-              />
-            </div>
-          )}
-
-          {project.technologies_used && project.technologies_used.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
-              {project.technologies_used.map((tech, idx) => (
-                <span
-                  key={idx}
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: "#3b82f6",
-                    backgroundColor: "rgba(59, 130, 246, 0.05)",
-                    padding: "4px 10px",
-                    borderRadius: "6px",
-                    border: "1px solid rgba(59, 130, 246, 0.1)"
-                  }}
-                >
-                  {tech}
-                </span>
-              ))}
+              {isMenuOpen && (
+                <div style={{
+                  position: "absolute", top: "100%", right: 0,
+                  backgroundColor: "#fff", borderRadius: "10px", border: "1px solid #f1f5f9",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.05)", zIndex: 10, padding: "4px", minWidth: "120px"
+                }}>
+                  {[
+                    { icon: Pen01Icon, label: "Edit", onClick: handleEditClick, color: "#0f172a" },
+                    { icon: Delete01Icon, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
+                  ].map((item, i) => (
+                    <button key={i} onClick={(e) => { item.onClick(e); setIsMenuOpen(false); }} style={{
+                      width: "100%", padding: "8px 10px", display: "flex", alignItems: "center", gap: "8px",
+                      border: "none", background: "none", cursor: "pointer", borderRadius: "6px",
+                      fontSize: "13px", fontWeight: "600", color: item.color
+                    }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                      <HugeiconsIcon icon={item.icon} style={{ fontSize: "14px" }} />
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Footer Actions */}
-        <div style={{
-          display: "flex",
+        {/* Project Details */}
+        <div style={{ marginBottom: "16px" }}>
+          <h3 style={{ fontSize: "17px", fontWeight: "800", color: "#0f172a", marginBottom: "4px", letterSpacing: "-0.01em" }}>{project.title}</h3>
+          <p style={{ fontSize: "15px", lineHeight: "1.6", color: "#475569" }}>{project.description}</p>
+        </div>
+
+        {/* Media */}
+        {project.cover_image && (
+          <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid #f1f5f9", marginBottom: "16px", aspectRatio: "16/9" }}>
+            <img src={getOptimizedImageUrl(project.cover_image)} alt={project.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </div>
+        )}
+
+        {/* Interactions */}
+        <div style={{ 
+          display: "flex", 
+          gap: isMobile ? "12px" : "32px", 
           alignItems: "center",
-          justifyContent: isMobile ? "space-between" : "flex-start",
-          gap: isMobile ? "4px" : "24px",
-          marginTop: "12px",
-          maxWidth: isMobile ? "100%" : "425px"
+          justifyContent: isMobile ? "space-between" : "flex-start"
         }}>
-          {/* Interaction Icons matching PostCard functionality but with a cleaner Look */}
           {[
-            {
-              icon: Comment02Icon,
-              count: project.comment_count,
-              onClick: (e: any) => { e.stopPropagation(); navigate(`/project/${project.id}`); },
-              hoverColor: "#3b82f6"
+            { 
+              icon: Comment02Icon, 
+              count: project.comment_count, 
+              onClick: (e: any) => { e.stopPropagation(); navigate(`/project/${project.id}`); }, 
+              hoverColor: "#3b82f6",
+              hoverBg: "rgba(59, 130, 246, 0.05)"
             },
-            {
-              icon: CircleArrowUp01Icon,
-              count: likeCount,
-              onClick: handleLike,
-              active: isLiked,
+            { 
+              icon: CircleArrowUp01Icon, 
+              count: likeCount, 
+              onClick: handleLike, 
+              active: isLiked, 
               activeColor: "#00ba7c",
-              hoverColor: "#00ba7c"
+              hoverColor: "#00ba7c",
+              hoverBg: "rgba(0, 186, 124, 0.05)"
             },
-            {
-              icon: isSaved ? Bookmark01Icon : Bookmark02Icon,
-              onClick: handleSave,
-              active: isSaved,
+            { 
+              icon: isSaved ? Bookmark01Icon : Bookmark02Icon, 
+              onClick: handleSave, 
+              active: isSaved, 
               activeColor: "#3b82f6",
-              hoverColor: "#3b82f6"
+              hoverColor: "#3b82f6",
+              hoverBg: "rgba(59, 130, 246, 0.05)"
             },
-            {
-              icon: Share01Icon,
-              onClick: handleShare,
-              active: false,
-              activeColor: "#00ba7c",
-              hoverColor: "#00ba7c"
+            { 
+              icon: Share01Icon, 
+              onClick: handleShare, 
+              hoverColor: "#00ba7c",
+              hoverBg: "rgba(0, 186, 124, 0.05)"
             }
           ].map((action, i) => (
             <button
               key={i}
               onClick={action.onClick}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                background: "none",
-                border: "none",
-                padding: "4px 0",
-                cursor: "pointer",
-                color: action.active ? action.activeColor : "#64748b",
+                display: "flex", alignItems: "center", gap: "6px",
+                background: "none", border: "none", padding: "6px 8px", borderRadius: "8px",
+                cursor: "pointer", color: action.active ? action.activeColor : "#94a3b8",
                 transition: "all 0.2s ease"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = action.hoverColor || "#0f172a";
+                e.currentTarget.style.color = action.hoverColor;
+                e.currentTarget.style.backgroundColor = action.hoverBg;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = action.active ? (action.activeColor || "#64748b") : "#64748b";
+                e.currentTarget.style.color = action.active ? action.activeColor : "#94a3b8";
+                e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              <HugeiconsIcon
-                icon={action.icon}
-                style={{
-                  fontSize: "18px",
-                  // Removed automatic fill to prevent solid green blobs
-                }}
-              />
+              <HugeiconsIcon icon={action.icon} style={{ fontSize: "18px" }} />
               {action.count !== undefined && action.count > 0 && (
-                <span style={{ fontSize: "13px", fontWeight: 600 }}>{action.count}</span>
+                <span style={{ fontSize: "13px", fontWeight: "700" }}>{action.count}</span>
               )}
             </button>
           ))}
@@ -533,48 +389,5 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
     </article>
   );
 
-  if (!isPro) return cardElement;
-
-  return (
-    <div
-      className="pro-card-expensive-wrapper"
-      style={{
-        position: "relative",
-        margin: "0px",
-        borderRadius: "0px",
-        borderBottom: "1px solid #eff3f4",
-        borderTop: "none",
-        padding: "0px",
-        overflow: "hidden",
-      }}
-    >
-      {/* Horizontal Silk/Diamond Shine Sweep */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "-180%",
-          width: "180%",
-          height: "100%",
-          background: "linear-gradient(105deg, transparent 0%, rgba(197, 160, 89, 0.05) 35%, rgba(249, 208, 5, 0.98) 50%, rgba(197, 160, 89, 0.05) 65%, transparent 100%)",
-          transform: "skewX(-25deg)",
-          animation: "proLuxuryShine 4s cubic-bezier(0.4, 0, 0.2, 1) infinite",
-          zIndex: 0,
-        }}
-      />
-      {/* Card sits on top with semi-transparency to let shine through if desired, or just above */}
-      <div style={{ position: "relative", zIndex: 1, borderRadius: "0px", overflow: "hidden" }}>
-        {cardElement}
-      </div>
-      <style>{`
-        @keyframes proLuxuryShine {
-          0% { left: -180%; opacity: 0; }
-          10% { opacity: 1; }
-          40% { left: 180%; opacity: 1; }
-          50% { left: 180%; opacity: 0; }
-          100% { left: 180%; opacity: 0; }
-        }
-      `}</style>
-    </div>
-  );
+  return cardElement;
 }
