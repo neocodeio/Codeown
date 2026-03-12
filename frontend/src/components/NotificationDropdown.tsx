@@ -91,6 +91,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
       case "message":
         return { icon: Mail01Icon, color: "#00ba7c", bg: "rgba(0, 186, 124, 0.05)" };
       case "profile_view":
+      case "project_view":
         return { icon: ViewIcon, color: "#6366f1", bg: "rgba(99, 102, 241, 0.05)" };
       default:
         return { icon: Notification01Icon, color: "#94a3b8", bg: "#f8fafc" };
@@ -130,6 +131,8 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
         return <span>{nameWrapper} saved your project</span>;
       case "profile_view":
         return <span>{nameWrapper} viewed your profile</span>;
+      case "project_view":
+        return <span>{nameWrapper} viewed your project</span>;
       default:
         return <span>New notification</span>;
     }

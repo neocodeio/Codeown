@@ -64,6 +64,7 @@ export default function NotificationsPage() {
             case "message":
                 return { icon: Mail01Icon, color: "#00ba7c" };
             case "profile_view":
+            case "project_view":
                 return { icon: ViewIcon, color: "#6366f1" };
             default:
                 return { icon: Notification01Icon, color: "#94a3b8" };
@@ -98,6 +99,8 @@ export default function NotificationsPage() {
                 return <>{nameWrapper} Saved your project</>;
             case "profile_view":
                 return <>{nameWrapper} Viewed your profile</>;
+            case "project_view":
+                return <>{nameWrapper} Viewed your project</>;
             default:
                 return <>New notification</>;
         }

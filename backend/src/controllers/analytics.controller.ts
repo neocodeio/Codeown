@@ -23,6 +23,31 @@ export async function trackEvent(req: Request, res: Response) {
             // Non-blocking error for tracking
         }
 
+        // Project view notification logic
+        if (event_type === 'project_view' && actor_id && target_user_id && actor_id !== target_user_id) {
+            // Check to avoid spamming view notifications within a 24h window
+            const { data: existingNotif } = await supabase
+                .from("notifications")
+                .select("id")
+                .eq("user_id", target_user_id)
+                .eq("actor_id", actor_id)
+                .eq("type", "project_view")
+                .eq("project_id", project_id)
+                .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+                .maybeSingle();
+
+            if (!existingNotif) {
+                await supabase.from("notifications").insert({
+                    user_id: target_user_id,
+                    type: "project_view",
+                    actor_id: actor_id,
+                    project_id: project_id,
+                    read: false,
+                    created_at: new Date().toISOString(),
+                });
+            }
+        }
+
         return res.status(204).send();
     } catch (error) {
         console.error("Unexpected error in trackEvent:", error);
