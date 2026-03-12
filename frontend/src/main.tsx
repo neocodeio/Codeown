@@ -11,6 +11,18 @@ import 'react-toastify/dist/ReactToastify.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
 
+// Unregister any existing service workers to prevent errors
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for(let registration of registrations) {
+      console.log('Unregistering existing service worker:', registration);
+      registration.unregister();
+    }
+  }).catch(function(error) {
+    console.log('Service worker unregistration failed:', error);
+  });
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

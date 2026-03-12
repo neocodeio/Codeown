@@ -4,8 +4,6 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
-import ConnectionStatus from "./components/ConnectionStatus";
-import SocketListener from "./components/SocketListener";
 import { useWindowSize } from "./hooks/useWindowSize";
 
 // Lazy load pages
@@ -84,7 +82,6 @@ export default function App() {
         paddingBottom: isMobile && !isAuthRoute ? "80px" : "0px"
       }}>
         <ErrorBoundary>
-          <SocketListener />
           <div key={location.pathname}>
             <Suspense fallback={<PageLoader />}>
               <Routes location={location}>
@@ -113,7 +110,6 @@ export default function App() {
           </div>
         </ErrorBoundary>
         {!isAuthRoute && location.pathname !== "/messages" && <FeedbackButton />}
-        {!isAuthRoute && <ConnectionStatus />}
       </div>
     </div>
   );
