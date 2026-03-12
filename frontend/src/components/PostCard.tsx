@@ -268,7 +268,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         {/* Interaction Tray */}
         <div style={{ 
           display: "flex", 
-          gap: isMobile ? "12px" : "32px", 
+          marginTop: "8%",
+          gap: isMobile ? "12px" : "18%", 
           alignItems: "center",
           justifyContent: isMobile ? "space-between" : "flex-start"
         }}>
