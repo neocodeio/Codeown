@@ -26,7 +26,7 @@ router.post("/onboarding/complete", requireAuth, completeOnboarding);
 router.post("/streak/update", requireAuth, updateStreak);
 
 // Wildcard routes last
-router.get("/:userId", getUserProfile);
+router.get("/:userId", optionalAuth, getUserProfile);
 router.put("/:userId", requireAuth, updateUserProfile);
 router.get("/:userId/likes", getUserTotalLikes);
 router.get("/:userId/projects", getUserProjects);

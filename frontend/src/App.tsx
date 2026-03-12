@@ -90,12 +90,13 @@ export default function App() {
         const res = await api.get(`/users/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.data && res.data.onboarding_completed === false) {
+        // If onboarding_completed is explicitly false OR not present in response, redirect
+        if (res.data && res.data.onboarding_completed !== true) {
           navigate("/onboarding", { replace: true });
         }
-      } catch (err) {
-        // Silently ignore - user might be new and not in DB yet
-        console.error("Onboarding check error:", err);
+      } catch {
+        // User not in DB yet = brand new user → send to onboarding
+        navigate("/onboarding", { replace: true });
       }
     };
 
