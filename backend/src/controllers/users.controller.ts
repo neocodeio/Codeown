@@ -635,7 +635,7 @@ export async function getUserProfile(req: Request, res: Response) {
 
         if (currentUserId === targetUserId) {
             responseData.username_changed_at = userData.username_changed_at || null;
-            responseData.onboarding_completed = userData.onboarding_completed || false;
+            responseData.onboarding_completed = userData.onboarding_completed ?? true;
         }
 
         return res.json(responseData);

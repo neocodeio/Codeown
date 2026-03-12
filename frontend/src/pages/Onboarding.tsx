@@ -50,6 +50,13 @@ export default function Onboarding() {
         return;
       }
 
+      // Already completed/skipped locally → send to home
+      const localFlag = localStorage.getItem(`onboarding_done_${user.id}`);
+      if (localFlag === "true") {
+        navigate("/", { replace: true });
+        return;
+      }
+
       // Signed in → check if already completed onboarding
       try {
         const token = await getToken();
@@ -62,6 +69,7 @@ export default function Onboarding() {
         });
         if (res.data && res.data.onboarding_completed === true) {
           // Already completed → send to home
+          localStorage.setItem(`onboarding_done_${user.id}`, "true");
           navigate("/", { replace: true });
           return;
         }
@@ -138,6 +146,8 @@ export default function Onboarding() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      // Mark as done locally to prevent redirect loop
+      if (user?.id) localStorage.setItem(`onboarding_done_${user.id}`, "true");
       window.dispatchEvent(new Event("profileUpdated"));
       navigate("/", { replace: true });
     } catch (error) {
@@ -159,6 +169,8 @@ export default function Onboarding() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      // Mark as done locally to prevent redirect loop
+      if (user?.id) localStorage.setItem(`onboarding_done_${user.id}`, "true");
       window.dispatchEvent(new Event("profileUpdated"));
       navigate("/", { replace: true });
     } catch (error) {

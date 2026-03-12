@@ -82,6 +82,12 @@ export default function App() {
         return;
       }
 
+      // Skip check if already marked as completed locally
+      const localFlag = localStorage.getItem(`onboarding_done_${user.id}`);
+      if (localFlag === "true") {
+        return;
+      }
+
       try {
         const token = await getToken();
         if (!token) {
@@ -90,13 +96,15 @@ export default function App() {
         const res = await api.get(`/users/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // If onboarding_completed is explicitly false OR not present in response, redirect
-        if (res.data && res.data.onboarding_completed !== true) {
+        if (res.data && res.data.onboarding_completed === true) {
+          // Mark locally so we never check again for this user
+          localStorage.setItem(`onboarding_done_${user.id}`, "true");
+        } else if (res.data && res.data.onboarding_completed === false) {
           navigate("/onboarding", { replace: true });
         }
+        // If onboarding_completed is undefined/missing, do nothing (old user without the field)
       } catch {
-        // User not in DB yet = brand new user → send to onboarding
-        navigate("/onboarding", { replace: true });
+        // If API fails, don't redirect — avoid breaking existing users
       }
     };
 
