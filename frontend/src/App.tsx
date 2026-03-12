@@ -1,10 +1,13 @@
-import { Suspense, lazy } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Suspense, lazy, useEffect } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 // import { useTheme } from "./hooks/useTheme";
 import Navbar from "./components/Navbar";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
 import { useWindowSize } from "./hooks/useWindowSize";
+import { useClerkUser } from "./hooks/useClerkUser";
+import { useClerkAuth } from "./hooks/useClerkAuth";
+import api from "./api/axios";
 
 // Lazy load pages
 const Feed = lazy(() => import("./pages/Feed"));
@@ -26,6 +29,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Billing = lazy(() => import("./pages/Billing"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
 
 // Basic loading fallback
 const PageLoader = () => (
@@ -55,13 +59,54 @@ const PageLoader = () => (
 
 export default function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const { user, isLoaded: userLoaded, isSignedIn } = useClerkUser();
+  const { getToken } = useClerkAuth();
+
+  // Check onboarding status for signed-in users
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      if (!userLoaded || !isSignedIn || !user?.id) {
+        return;
+      }
+
+      // Don't redirect if already on onboarding or auth pages
+      if (
+        location.pathname === "/onboarding" ||
+        location.pathname.startsWith("/sign-in") ||
+        location.pathname.startsWith("/sign-up") ||
+        location.pathname.startsWith("/forgot-password")
+      ) {
+        return;
+      }
+
+      try {
+        const token = await getToken();
+        if (!token) {
+          return;
+        }
+        const res = await api.get(`/users/${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.data && res.data.onboarding_completed === false) {
+          navigate("/onboarding", { replace: true });
+        }
+      } catch (err) {
+        // Silently ignore - user might be new and not in DB yet
+        console.error("Onboarding check error:", err);
+      }
+    };
+
+    checkOnboarding();
+  }, [userLoaded, isSignedIn, user?.id, location.pathname]);
 
   const isAuthRoute =
     location.pathname.startsWith("/sign-in") ||
     location.pathname.startsWith("/sign-up") ||
-    location.pathname.startsWith("/forgot-password");
+    location.pathname.startsWith("/forgot-password") ||
+    location.pathname === "/onboarding";
 
   const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
 
@@ -93,6 +138,7 @@ export default function App() {
                 <Route path="/sign-in/*" element={<SignInPage />} />
                 <Route path="/sign-up/*" element={<SignUpPage />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/billing" element={<Billing />} />
                 <Route path="/analytics" element={<Analytics />} />
