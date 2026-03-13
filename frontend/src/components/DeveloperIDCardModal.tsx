@@ -14,6 +14,7 @@ interface DeveloperIDCardModalProps {
         created_at: string | null;
         skills: string[] | null;
         is_pro: boolean;
+        bio: string | null;
     };
     projectsCount: number;
 }
@@ -31,6 +32,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`${window.location.origin}/${user.username || ""}`)}`;
 
     const techStacks = (user.skills || []).slice(0, 3);
+    const firstLineBio = user.bio ? user.bio.split('\n')[0].trim() : "";
 
     const handleDownload = async () => {
         if (!cardRef.current) return;
@@ -198,9 +200,24 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                         <h2 style={{ fontSize: "min(24px, 6vw)", fontWeight: 800, margin: "0 0 4px 0", letterSpacing: "-0.5px", textAlign: "center" }}>
                             {user.name}
                         </h2>
-                        <p style={{ fontSize: "min(15px, 4vw)", color: "rgba(255,255,255,0.6)", margin: "0 0 min(24px, 4vw) 0", fontWeight: 500 }}>
+                        <p style={{ fontSize: "min(15px, 4vw)", color: "rgba(255,255,255,0.6)", margin: "0 0 8px 0", fontWeight: 500 }}>
                             @{user.username || "developer"}
                         </p>
+                        {firstLineBio && (
+                            <p style={{ 
+                                fontSize: "min(13px, 3.5vw)", 
+                                color: "rgba(255,255,255,0.45)", 
+                                margin: "0 0 min(24px, 4vw) 0", 
+                                fontWeight: 400,
+                                textAlign: "center",
+                                maxWidth: "280px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap"
+                            }}>
+                                {firstLineBio}
+                            </p>
+                        )}
 
                         {/* Stats */}
                         <div style={{

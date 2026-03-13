@@ -1097,7 +1097,8 @@ export default function Profile() {
             avatar_url: userProfile.avatar_url,
             created_at: userProfile.created_at,
             skills: userProfile.skills,
-            is_pro: userProfile.is_pro
+            is_pro: userProfile.is_pro,
+            bio: userProfile.bio
           }}
           projectsCount={projects.length}
         />
