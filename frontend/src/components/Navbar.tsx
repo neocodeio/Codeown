@@ -28,7 +28,7 @@ import {
   // faPlus,
   // faBell
 } from '@hugeicons/core-free-icons';
-import logo from "../assets/icon-remove.png";
+import logo from "../assets/icon-removebg.png";
 import VerifiedBadge from "./VerifiedBadge";
 
 export default function Navbar() {
