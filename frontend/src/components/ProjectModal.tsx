@@ -189,6 +189,15 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
+                // Play the sound effect
+                try {
+                    const audio = new Audio('/achievementunlocked.mp3');
+                    audio.volume = 0.5; // 50% volume so it isn't deafening
+                    audio.play().catch(e => console.log("Audio playback was prevented by the browser:", e));
+                } catch (e) {
+                    console.error("Failed to play sound:", e);
+                }
+
                 if (response.data.is_first) {
                     // Confetti trigger for first project!
                     const duration = 5 * 1000;
