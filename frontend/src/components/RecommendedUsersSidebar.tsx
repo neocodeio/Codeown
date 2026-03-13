@@ -343,7 +343,7 @@ export default function RecommendedUsersSidebar() {
                                             lineHeight: 1.1,
                                         }}
                                     >
-                                        {user.pulse_score}
+                                        {user.pulse_score} P
                                     </div>
                                 </Link>
                             );
