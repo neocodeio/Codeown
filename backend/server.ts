@@ -30,6 +30,10 @@ io.on("connection", (socket) => {
     socket.to(receiverId).emit("stop_typing", { senderId });
   });
 
+  socket.on("mark_read", ({ senderId, receiverId, conversationId }: { senderId: string, receiverId: string, conversationId: number }) => {
+    socket.to(receiverId).emit("messages_read", { conversationId, readerId: senderId });
+  });
+
   socket.on("disconnect", () => {
     console.log("Socket disconnected:", socket.id);
   });

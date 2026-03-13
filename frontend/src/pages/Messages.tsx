@@ -29,6 +29,7 @@ interface Message {
   sender_id: string;
   content: string;
   created_at: string;
+  is_read?: boolean;
 }
 
 interface Conversation {
@@ -76,12 +77,18 @@ export default function Messages() {
       setTypingUsers((prev) => ({ ...prev, [senderId]: false }));
     };
 
+    const handleMessagesRead = ({ conversationId, readerId }: { conversationId: number, readerId: string }) => {
+      setMessages((prev) => prev.map(m => (m.conversation_id === conversationId && !m.is_read && m.sender_id !== readerId) ? { ...m, is_read: true } : m));
+    };
+
     socket.on("typing", handleTyping);
     socket.on("stop_typing", handleStopTyping);
+    socket.on("messages_read", handleMessagesRead);
 
     return () => {
       socket.off("typing", handleTyping);
       socket.off("stop_typing", handleStopTyping);
+      socket.off("messages_read", handleMessagesRead);
       socket.disconnect();
     };
   }, [currentUser?.id]);
@@ -147,7 +154,7 @@ export default function Messages() {
     }
   };
 
-  const fetchMessages = async (convoId: number) => {
+  const fetchMessages = async (convoId: number, partnerId?: string) => {
     if (convoId === 0) {
       setMessages([]);
       return;
@@ -158,6 +165,10 @@ export default function Messages() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessages(res.data);
+
+      if (currentUser?.id && partnerId) {
+        socket.emit("mark_read", { senderId: currentUser.id, receiverId: partnerId, conversationId: convoId });
+      }
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
@@ -172,9 +183,9 @@ export default function Messages() {
 
   useEffect(() => {
     if (activeConvo && activeConvo.id !== 0) {
-      fetchMessages(activeConvo.id);
+      fetchMessages(activeConvo.id, activeConvo.partner.id);
       const interval = setInterval(() => {
-        fetchMessages(activeConvo.id);
+        fetchMessages(activeConvo.id, activeConvo.partner.id);
       }, 5000);
       return () => clearInterval(interval);
     }
@@ -762,19 +773,32 @@ export default function Messages() {
                       >
                         {msg.content}
                       </div>
-                      <span
-                        style={{
-                          fontSize: "10px",
-                          color: "#94a3b8",
-                          fontWeight: 500,
-                          padding: "2px 6px 0",
-                        }}
-                      >
-                        {new Date(msg.created_at).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
+                        <span
+                          style={{
+                            fontSize: "10px",
+                            color: "#94a3b8",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {new Date(msg.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                        {isMine && msg.is_read && (() => {
+                          let lastMyMsgIdx = -1;
+                          for (let i = messages.length - 1; i >= 0; i--) {
+                            if (messages[i].sender_id === currentUser?.id) {
+                              lastMyMsgIdx = i;
+                              break;
+                            }
+                          }
+                          return idx === lastMyMsgIdx;
+                        })() && (
+                          <span style={{ fontSize: "10px", color: "#3b82f6", fontWeight: 700, marginLeft: "2px" }}>Seen</span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
