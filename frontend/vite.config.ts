@@ -9,16 +9,6 @@ export default defineConfig({
     port: 5173,
   },
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'clerk-vendor': ['@clerk/clerk-react'],
-          'ui-vendor': ['@hugeicons/react', '@hugeicons/core-free-icons'],
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'prism-vendor': ['prismjs'],
-        },
-      },
-    },
     chunkSizeWarningLimit: 1000,
   },
 })
