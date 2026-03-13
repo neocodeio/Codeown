@@ -39,6 +39,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [location, setLocation] = useState("");
   const [isOrganization, setIsOrganization] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -65,6 +67,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setName(currentUser.name || "");
       setUsername(currentUser.username || "");
       setBio(currentUser.bio || "");
+      setJobTitle(currentUser.job_title || "");
+      setLocation(currentUser.location || "");
       setIsOrganization(currentUser.is_organization ?? false);
       setAvatarPreview(currentUser.avatar_url);
       setGithubUrl(currentUser.github_url || "");
@@ -242,6 +246,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           twitter_url: twitterUrl.trim() || null,
           linkedin_url: linkedinUrl.trim() || null,
           website_url: websiteUrl.trim() || null,
+          job_title: jobTitle.trim() || null,
+          location: location.trim() || null,
           skills: skills.length > 0 ? skills : null,
           is_hirable: isHirable,
         },
@@ -440,6 +446,16 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                 placeholder="username"
               />
               {usernameError && <p style={{ color: "#ef4444", fontSize: "12px", marginTop: "6px", fontWeight: 600 }}>{usernameError}</p>}
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>Job Title</label>
+              <input style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }} type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Full Stack Developer" />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>Location</label>
+              <input style={{ width: "100%", padding: "14px 20px", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "16px", transition: "all 0.2s ease", background: "#f8fafc", color: "#0f172a", outline: "none", boxSizing: "border-box" }} type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. San Francisco, CA" />
             </div>
 
             <div>
