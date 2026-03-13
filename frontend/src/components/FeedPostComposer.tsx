@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -31,6 +31,24 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     );
 
     const charLimit = 280;
+
+    const placeholderText = useMemo(() => {
+        const textOptions = [
+            "What did you build today?",
+            "Shipped any bugs to production today?",
+            "What's the latest side project you're working on?",
+            "Learned a new tech stack? Share it!",
+            "What are you currently stuck on? Ask the community!",
+            "Squashed any bugs today? ",
+            "What's your current dev obsession?",
+            "Drop a link to your latest repository",
+            "Did you remember to center that div?",
+            "Share a snippet you're proud of today",
+            "What's on your coding playlist today?",
+            "Refactored any messy code recently?"
+        ];
+        return textOptions[Math.floor(Math.random() * textOptions.length)];
+    }, []);
 
     const handleImageClick = () => {
         fileInputRef.current?.click();
@@ -132,7 +150,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     <MentionInput
                         value={content}
                         onChange={setContent}
-                        placeholder="What did you build today?"
+                        placeholder={placeholderText}
                         minHeight="60px"
                         transparent={true}
                     />
