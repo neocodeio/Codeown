@@ -14,6 +14,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import NewMessageModal from "../components/NewMessageModal";
 import VerifiedBadge from "../components/VerifiedBadge";
+import { socket } from "../lib/socket";
 
 interface Partner {
   id: string;
@@ -56,6 +57,34 @@ export default function Messages() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    socket.connect();
+    socket.emit("join", currentUser.id);
+
+    const handleTyping = ({ senderId }: { senderId: string }) => {
+      setTypingUsers((prev) => ({ ...prev, [senderId]: true }));
+      scrollToBottom();
+    };
+
+    const handleStopTyping = ({ senderId }: { senderId: string }) => {
+      setTypingUsers((prev) => ({ ...prev, [senderId]: false }));
+    };
+
+    socket.on("typing", handleTyping);
+    socket.on("stop_typing", handleStopTyping);
+
+    return () => {
+      socket.off("typing", handleTyping);
+      socket.off("stop_typing", handleStopTyping);
+      socket.disconnect();
+    };
+  }, [currentUser?.id]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -155,6 +184,11 @@ export default function Messages() {
     e.preventDefault();
     if (!newMessage.trim() || sending) return;
 
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    if (activeConvo && activeConvo.partner.id && currentUser?.id) {
+      socket.emit("stop_typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
+    }
+
     setSending(true);
     try {
       const token = await getToken();
@@ -180,6 +214,20 @@ export default function Messages() {
       console.error("Error sending message:", error);
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    
+    if (activeConvo && activeConvo.partner.id && currentUser?.id) {
+      socket.emit("typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
+
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      
+      typingTimeoutRef.current = setTimeout(() => {
+        socket.emit("stop_typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
+      }, 2000);
     }
   };
 
@@ -497,7 +545,9 @@ export default function Messages() {
                     }}
                   >
                     <div style={{ display: "flex", gap: "4px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {convo.last_message ? (
+                      {typingUsers[convo.partner.id] ? (
+                        <span style={{ color: "#3b82f6", fontWeight: 700, fontStyle: "italic", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}>typing...</span>
+                      ) : convo.last_message ? (
                         <>
                           {convo.last_message.sender_id === currentUser?.id && (
                             <span style={{ color: "#94a3b8", fontWeight: 600 }}>You:</span>
@@ -728,6 +778,29 @@ export default function Messages() {
                     </div>
                   );
                 })}
+                
+                {activeConvo && typingUsers[activeConvo.partner.id] && (
+                  <div
+                    style={{
+                      alignSelf: "flex-start",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      padding: "16px",
+                      borderRadius: "18px 18px 18px 4px",
+                      backgroundColor: "#fff",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                      border: "1px solid #e2e8f0",
+                      marginTop: "4px"
+                    }}
+                  >
+                    {/* The animation frames are in the style tag below */}
+                    <div style={{ backgroundColor: "#94a3b8", width: "6px", height: "6px", borderRadius: "50%", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.32s" }} />
+                    <div style={{ backgroundColor: "#94a3b8", width: "6px", height: "6px", borderRadius: "50%", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.16s" }} />
+                    <div style={{ backgroundColor: "#94a3b8", width: "6px", height: "6px", borderRadius: "50%", animation: "typing-bounce 1.4s infinite ease-in-out both" }} />
+                  </div>
+                )}
+                
                 <div ref={messagesEndRef} />
               </div>
 
@@ -747,7 +820,7 @@ export default function Messages() {
                   <input
                     type="text"
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={handleInputChange}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
@@ -868,6 +941,17 @@ export default function Messages() {
         onClose={() => setIsNewMessageModalOpen(false)}
         onSelectUser={(user) => startPlaceholderConvo(user.id)}
       />
+
+      <style>{`
+        @keyframes typing-bounce {
+          0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+          40% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: .5; }
+        }
+      `}</style>
     </main>
   );
 }

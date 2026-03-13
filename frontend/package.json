@@ -34,7 +34,8 @@
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^7.13.0",
     "react-toastify": "^11.0.5",
-    "resend": "^6.9.2"
+    "resend": "^6.9.2",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
