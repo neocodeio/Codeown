@@ -158,10 +158,23 @@ export default function RecommendedUsersSidebar() {
                                             style={{ width: 48, height: 48, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
                                         />
                                         <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                                <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
+                                                <span style={{ 
+                                                    fontSize: "14px", 
+                                                    fontWeight: 700, 
+                                                    color: "var(--text-primary)", 
+                                                    letterSpacing: "-0.01em",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap"
+                                                }}>
                                                     {(user.name || "User").split(" ")[0]}
                                                 </span>
+                                                {user.streak_count > 0 && (
+                                                    <div style={{ flexShrink: 0 }}>
+                                                        <StreakBadge count={user.streak_count} mini />
+                                                    </div>
+                                                )}
                                             </div>
                                             <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
                                                 @{user.username}
@@ -312,7 +325,7 @@ export default function RecommendedUsersSidebar() {
                                                     borderRadius: "1px"
                                                 }}
                                             >
-                                                {rank.toString().padStart(2, '0')}
+                                                {rank}
                                             </div>
                                         </div>
 
@@ -334,13 +347,27 @@ export default function RecommendedUsersSidebar() {
                                         <div
                                             style={{
                                                 marginTop: "4px",
-                                                fontSize: "11px",
-                                                fontWeight: 800,
-                                                color: "var(--text-secondary)",
-                                                fontFamily: "var(--font-mono)",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                gap: "4px"
                                             }}
                                         >
-                                            {user.pulse_score.toString().padStart(3, '0')}P
+                                            <div
+                                                style={{
+                                                    fontSize: "11px",
+                                                    fontWeight: 800,
+                                                    color: "var(--text-secondary)",
+                                                    fontFamily: "var(--font-mono)",
+                                                }}
+                                            >
+                                                {user.pulse_score}P
+                                            </div>
+                                            {user.streak_count > 0 && (
+                                                <div style={{ flexShrink: 0 }}>
+                                                    <StreakBadge count={user.streak_count} mini />
+                                                </div>
+                                            )}
                                         </div>
                                     </Link>
                                 );

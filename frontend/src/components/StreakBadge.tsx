@@ -15,15 +15,15 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
             style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "4px",
-                padding: "2px 8px",
+                gap: mini ? "2px" : "4px",
+                padding: mini ? "1px 6px" : "2px 8px",
                 backgroundColor: "transparent",
                 borderRadius: "var(--radius-xs)",
                 border: "0.5px solid var(--border-hairline)",
                 transition: "all 0.15s ease",
                 cursor: "pointer",
                 userSelect: "none",
-                minHeight: "22px"
+                minHeight: mini ? "18px" : "22px"
             }}
         >
             <div style={{
@@ -60,7 +60,7 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
                 color: isActive ? "var(--text-primary)" : "var(--text-tertiary)",
                 fontFamily: "var(--font-mono)"
             }}>
-                {count.toString().padStart(2, '0')}
+                {count}
             </span>
 
             <style>{`
