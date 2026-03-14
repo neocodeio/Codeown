@@ -2,13 +2,7 @@ import { useState } from "react";
 import { useSignIn } from "@clerk/clerk-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  ArrowLeft01Icon,
-  Mail01Icon,
-  Key01Icon,
-  LockIcon,
-} from "@hugeicons/core-free-icons";
+import { CaretLeft, EnvelopeSimple, Key, Lock } from "phosphor-react";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -90,19 +84,18 @@ export default function ForgotPassword() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: isMobile ? "24px 16px" : "40px 24px",
-        background: "radial-gradient(ellipse at top, rgba(15, 23, 42, 0.03) 0%, transparent 60%)",
+        padding: isMobile ? "32px 24px" : "48px 24px",
+        backgroundColor: "var(--bg-page)",
       }}
     >
       <div
         style={{
           width: "100%",
-          maxWidth: "440px",
-          backgroundColor: "#fff",
-          borderRadius: isMobile ? "20px" : "24px",
-          padding: isMobile ? "28px 20px" : "40px 36px",
-          boxShadow: "0 4px 24px rgba(15, 23, 42, 0.06)",
-          border: "1px solid #f1f5f9",
+          maxWidth: "400px",
+          backgroundColor: "var(--bg-page)",
+          borderRadius: "2px",
+          padding: isMobile ? "32px 24px" : "48px 40px",
+          border: "0.5px solid var(--border-hairline)",
         }}
       >
         <Link
@@ -111,44 +104,49 @@ export default function ForgotPassword() {
             display: "inline-flex",
             alignItems: "center",
             gap: "8px",
-            color: "#64748b",
-            fontSize: "14px",
-            fontWeight: 600,
-            marginBottom: "24px",
+            color: "var(--text-tertiary)",
+            fontSize: "11px",
+            fontWeight: 700,
+            marginBottom: "32px",
             textDecoration: "none",
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
+            transition: "all 0.15s ease",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = "#0f172a";
+            e.currentTarget.style.color = "var(--text-primary)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "#64748b";
+            e.currentTarget.style.color = "var(--text-tertiary)";
           }}
         >
-          <HugeiconsIcon icon={ArrowLeft01Icon} size={18} style={{ width: 18, height: 18 }} />
-          Back to sign in
+          <CaretLeft size={16} weight="bold" />
+          BACK TO SIGN IN
         </Link>
 
-        <div style={{ marginBottom: "28px" }}>
+        <div style={{ marginBottom: "32px" }}>
           <h1
             style={{
-              fontSize: isMobile ? "24px" : "28px",
-              fontWeight: 900,
-              marginBottom: "8px",
-              color: "#0f172a",
-              letterSpacing: "-0.03em",
+              fontSize: "14px",
+              fontWeight: 700,
+              marginBottom: "12px",
+              color: "var(--text-primary)",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
             }}
           >
             {step === "email" ? "Reset password" : "Check your email"}
           </h1>
           <p
             style={{
-              color: "#64748b",
-              fontSize: "15px",
-              lineHeight: 1.5,
+              color: "var(--text-secondary)",
+              fontSize: "14px",
+              lineHeight: 1.6,
             }}
           >
             {step === "email"
-              ? "No worries, it happens to all of us. Enter your email and we'll send you reset instructions."
+              ? "Enter your email and we'll send you reset instructions."
               : (
                   <>
                     We've sent a 6-digit verification code to{" "}
@@ -172,13 +170,15 @@ export default function ForgotPassword() {
         {error && (
           <div
             style={{
-              padding: "14px 16px",
-              backgroundColor: "#fef2f2",
-              border: "1px solid #fecaca",
-              borderRadius: "12px",
-              color: "#dc2626",
-              fontSize: "14px",
-              fontWeight: 500,
+              padding: "12px 16px",
+              backgroundColor: "var(--bg-hover)",
+              border: "0.5px solid var(--border-hairline)",
+              borderRadius: "2px",
+              color: "var(--text-primary)",
+              fontSize: "12px",
+              fontWeight: 700,
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
               marginBottom: "24px",
             }}
           >
@@ -195,12 +195,13 @@ export default function ForgotPassword() {
               <label
                 style={{
                   display: "block",
-                  fontSize: "13px",
+                  fontSize: "11px",
                   fontWeight: 700,
-                  color: "#64748b",
+                  color: "var(--text-tertiary)",
                   textTransform: "uppercase",
-                  letterSpacing: "0.05em",
+                  letterSpacing: "0.1em",
                   marginBottom: "8px",
+                  fontFamily: "var(--font-mono)",
                 }}
               >
                 Email address
@@ -209,13 +210,13 @@ export default function ForgotPassword() {
                 <div
                   style={{
                     position: "absolute",
-                    left: "16px",
+                    left: "12px",
                     top: "50%",
                     transform: "translateY(-50%)",
-                    color: "#94a3b8",
+                    color: "var(--text-tertiary)",
                   }}
                 >
-                  <HugeiconsIcon icon={Mail01Icon} size={20} style={{ width: 20, height: 20 }} />
+                  <EnvelopeSimple size={18} weight="thin" />
                 </div>
                 <input
                   type="email"
@@ -225,25 +226,21 @@ export default function ForgotPassword() {
                   required
                   style={{
                     width: "100%",
-                    paddingLeft: "48px",
-                    paddingRight: "16px",
-                    paddingTop: "14px",
-                    paddingBottom: "14px",
-                    borderRadius: "12px",
-                    backgroundColor: "#f8fafc",
-                    border: "1px solid #e2e8f0",
-                    fontSize: "15px",
-                    color: "#0f172a",
+                    padding: "12px 12px 12px 40px",
+                    borderRadius: "2px",
+                    backgroundColor: "transparent",
+                    border: "0.5px solid var(--border-hairline)",
+                    fontSize: "14px",
+                    color: "var(--text-primary)",
                     outline: "none",
                     boxSizing: "border-box",
+                    fontFamily: "var(--font-mono)",
                   }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#0f172a";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(15, 23, 42, 0.15)";
+                    e.currentTarget.style.borderColor = "var(--text-primary)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.borderColor = "var(--border-hairline)";
                   }}
                 />
               </div>
@@ -254,12 +251,13 @@ export default function ForgotPassword() {
                 <label
                   style={{
                     display: "block",
-                    fontSize: "13px",
+                    fontSize: "11px",
                     fontWeight: 700,
-                    color: "#64748b",
+                    color: "var(--text-tertiary)",
                     textTransform: "uppercase",
-                    letterSpacing: "0.05em",
+                    letterSpacing: "0.1em",
                     marginBottom: "8px",
+                    fontFamily: "var(--font-mono)",
                   }}
                 >
                   Verification code
@@ -268,13 +266,13 @@ export default function ForgotPassword() {
                   <div
                     style={{
                       position: "absolute",
-                      left: "16px",
+                      left: "12px",
                       top: "50%",
                       transform: "translateY(-50%)",
-                      color: "#94a3b8",
+                      color: "var(--text-tertiary)",
                     }}
                   >
-                    <HugeiconsIcon icon={Key01Icon} size={20} style={{ width: 20, height: 20 }} />
+                    <Key size={18} weight="thin" />
                   </div>
                   <input
                     type="text"
@@ -285,27 +283,23 @@ export default function ForgotPassword() {
                     maxLength={6}
                     style={{
                       width: "100%",
-                      paddingLeft: "48px",
-                      paddingRight: "16px",
-                      paddingTop: "14px",
-                      paddingBottom: "14px",
-                      borderRadius: "12px",
-                      backgroundColor: "#f8fafc",
-                      border: "1px solid #e2e8f0",
+                      padding: "12px 12px 12px 40px",
+                      borderRadius: "2px",
+                      backgroundColor: "transparent",
+                      border: "0.5px solid var(--border-hairline)",
                       letterSpacing: "0.2em",
                       fontWeight: 700,
-                      fontSize: "16px",
-                      color: "#0f172a",
+                      fontSize: "15px",
+                      color: "var(--text-primary)",
                       outline: "none",
                       boxSizing: "border-box",
+                      fontFamily: "var(--font-mono)",
                     }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "#0f172a";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(15, 23, 42, 0.15)";
+                      e.currentTarget.style.borderColor = "var(--text-primary)";
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.borderColor = "var(--border-hairline)";
                     }}
                   />
                 </div>
@@ -315,12 +309,13 @@ export default function ForgotPassword() {
                 <label
                   style={{
                     display: "block",
-                    fontSize: "13px",
+                    fontSize: "11px",
                     fontWeight: 700,
-                    color: "#64748b",
+                    color: "var(--text-tertiary)",
                     textTransform: "uppercase",
-                    letterSpacing: "0.05em",
+                    letterSpacing: "0.1em",
                     marginBottom: "8px",
+                    fontFamily: "var(--font-mono)",
                   }}
                 >
                   New password
@@ -329,13 +324,13 @@ export default function ForgotPassword() {
                   <div
                     style={{
                       position: "absolute",
-                      left: "16px",
+                      left: "12px",
                       top: "50%",
                       transform: "translateY(-50%)",
-                      color: "#94a3b8",
+                      color: "var(--text-tertiary)",
                     }}
                   >
-                    <HugeiconsIcon icon={LockIcon} size={20} style={{ width: 20, height: 20 }} />
+                    <Lock size={18} weight="thin" />
                   </div>
                   <input
                     type="password"
@@ -345,25 +340,21 @@ export default function ForgotPassword() {
                     required
                     style={{
                       width: "100%",
-                      paddingLeft: "48px",
-                      paddingRight: "16px",
-                      paddingTop: "14px",
-                      paddingBottom: "14px",
-                      borderRadius: "12px",
-                      backgroundColor: "#f8fafc",
-                      border: "1px solid #e2e8f0",
-                      fontSize: "15px",
-                      color: "#0f172a",
+                      padding: "12px 12px 12px 40px",
+                      borderRadius: "2px",
+                      backgroundColor: "transparent",
+                      border: "0.5px solid var(--border-hairline)",
+                      fontSize: "14px",
+                      color: "var(--text-primary)",
                       outline: "none",
                       boxSizing: "border-box",
+                      fontFamily: "var(--font-mono)",
                     }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "#0f172a";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(15, 23, 42, 0.15)";
+                      e.currentTarget.style.borderColor = "var(--text-primary)";
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.borderColor = "var(--border-hairline)";
                     }}
                   />
                 </div>
@@ -375,20 +366,28 @@ export default function ForgotPassword() {
             type="submit"
             disabled={loading}
             style={{
-              padding: "14px 24px",
-              borderRadius: "12px",
-              fontSize: "15px",
+              padding: "12px 24px",
+              borderRadius: "2px",
+              fontSize: "12px",
               fontWeight: 700,
-              backgroundColor: "#0f172a",
-              color: "white",
+              backgroundColor: "var(--text-primary)",
+              color: "var(--bg-page)",
               border: "none",
               cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1,
+              transition: "all 0.15s ease",
               marginTop: "8px",
-              transition: "all 0.2s",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) e.currentTarget.style.opacity = "0.9";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
             }}
           >
-            {loading ? "Please wait..." : step === "email" ? "Send Instructions" : "Reset Password"}
+            {loading ? "PLEASE WAIT..." : step === "email" ? "SEND INSTRUCTIONS" : "RESET PASSWORD"}
           </button>
         </form>
 
@@ -396,9 +395,11 @@ export default function ForgotPassword() {
           <p
             style={{
               textAlign: "center",
-              marginTop: "24px",
-              fontSize: "14px",
-              color: "#64748b",
+              marginTop: "32px",
+              fontSize: "11px",
+              color: "var(--text-tertiary)",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
             }}
           >
             Didn't receive the email?{" "}
@@ -429,10 +430,13 @@ export default function ForgotPassword() {
                 background: "none",
                 border: "none",
                 padding: 0,
-                color: loading ? "#94a3b8" : "#0f172a",
+                color: loading ? "var(--text-tertiary)" : "var(--text-primary)",
                 fontWeight: 700,
-                fontSize: "14px",
+                fontSize: "11px",
                 cursor: loading ? "not-allowed" : "pointer",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase",
+                textDecoration: "underline",
               }}
               onMouseEnter={(e) => {
                 if (!loading) e.currentTarget.style.textDecoration = "underline";

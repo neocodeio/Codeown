@@ -95,14 +95,14 @@ export default function Onboarding() {
         alignItems: "center",
         height: "100vh",
         width: "100%",
-        backgroundColor: "#fafbfc",
+        backgroundColor: "var(--bg-page)",
       }}>
         <div style={{
-          width: "32px",
-          height: "32px",
-          border: "3px solid #f3f3f3",
-          borderTop: "3px solid #212121",
-          borderRadius: "50%",
+          width: "20px",
+          height: "20px",
+          border: "0.5px solid var(--border-hairline)",
+          borderTopColor: "var(--text-primary)",
+          borderRadius: "2px",
           animation: "spin 1s linear infinite",
         }} />
         <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
@@ -194,15 +194,14 @@ export default function Onboarding() {
 
   // --- Progress Dots ---
   const ProgressDots = () => (
-    <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
+    <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
       {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
         <div
           key={i}
           style={{
-            width: i === step ? "28px" : "8px",
-            height: "8px",
-            borderRadius: "100px",
-            backgroundColor: i === step ? "#0f172a" : i < step ? "#94a3b8" : "#e2e8f0",
+            width: i === step ? "40px" : "12px",
+            height: "2px",
+            backgroundColor: i === step ? "var(--text-primary)" : i < step ? "var(--text-secondary)" : "var(--border-hairline)",
             transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         />
@@ -237,22 +236,24 @@ export default function Onboarding() {
           onClick={back}
           style={{
             padding: "12px 28px",
-            borderRadius: "100px",
-            border: "1px solid #e2e8f0",
-            backgroundColor: "#fff",
-            color: "#64748b",
-            fontSize: "15px",
-            fontWeight: 600,
+            borderRadius: "2px",
+            border: "0.5px solid var(--border-hairline)",
+            backgroundColor: "transparent",
+            color: "var(--text-secondary)",
+            fontSize: "12px",
+            fontWeight: 700,
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
             cursor: "pointer",
-            transition: "all 0.2s",
+            transition: "all 0.15s ease",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "#cbd5e1";
-            e.currentTarget.style.color = "#0f172a";
+            e.currentTarget.style.borderColor = "var(--text-primary)";
+            e.currentTarget.style.color = "var(--text-primary)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "#e2e8f0";
-            e.currentTarget.style.color = "#64748b";
+            e.currentTarget.style.borderColor = "var(--border-hairline)";
+            e.currentTarget.style.color = "var(--text-secondary)";
           }}
         >
           Back
@@ -263,28 +264,23 @@ export default function Onboarding() {
         disabled={disabled}
         style={{
           padding: "12px 32px",
-          borderRadius: "100px",
+          borderRadius: "2px",
           border: "none",
-          backgroundColor: disabled ? "#94a3b8" : "#0f172a",
-          color: "#fff",
-          fontSize: "15px",
+          backgroundColor: disabled ? "var(--border-hairline)" : "var(--text-primary)",
+          color: disabled ? "var(--text-tertiary)" : "var(--bg-page)",
+          fontSize: "12px",
           fontWeight: 700,
+          fontFamily: "var(--font-mono)",
+          textTransform: "uppercase",
           cursor: disabled ? "not-allowed" : "pointer",
           display: "flex",
           alignItems: "center",
           gap: "8px",
-          transition: "all 0.2s",
-          opacity: disabled ? 0.6 : 1,
-        }}
-        onMouseEnter={(e) => {
-          if (!disabled) e.currentTarget.style.backgroundColor = "#1e293b";
-        }}
-        onMouseLeave={(e) => {
-          if (!disabled) e.currentTarget.style.backgroundColor = "#0f172a";
+          transition: "all 0.15s ease",
         }}
       >
         {nextLabel}
-        <span style={{ fontSize: "18px" }}>→</span>
+        <span style={{ fontSize: "14px" }}>→</span>
       </button>
     </div>
   );
@@ -292,25 +288,28 @@ export default function Onboarding() {
   // --- Input Styles ---
   const inputStyle: React.CSSProperties = {
     width: "100%",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    border: "1px solid #e2e8f0",
-    fontSize: "15px",
+    padding: "16px 20px",
+    borderRadius: "2px",
+    border: "0.5px solid var(--border-hairline)",
+    fontSize: "14px",
     fontWeight: 500,
-    color: "#0f172a",
-    backgroundColor: "#fff",
+    color: "var(--text-primary)",
+    backgroundColor: "var(--bg-page)",
     outline: "none",
-    transition: "border-color 0.2s, box-shadow 0.2s",
+    transition: "all 0.15s ease",
     fontFamily: "inherit",
     boxSizing: "border-box",
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: "14px",
-    fontWeight: 600,
-    color: "#64748b",
+    fontSize: "12px",
+    fontWeight: 700,
+    color: "var(--text-tertiary)",
     marginBottom: "8px",
     display: "block",
+    fontFamily: "var(--font-mono)",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em"
   };
 
   // --- Steps ---
@@ -332,37 +331,39 @@ export default function Onboarding() {
           >
             <p
               style={{
-                fontSize: "14px",
-                fontWeight: 600,
-                color: "#6366f1",
-                letterSpacing: "0.05em",
-                marginBottom: "16px",
+                fontSize: "12px",
+                fontWeight: 700,
+                color: "var(--text-primary)",
+                letterSpacing: "0.1em",
+                marginBottom: "24px",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase"
               }}
             >
-              Welcome to Codeown!
+              Step 1 of {TOTAL_STEPS}
             </p>
             <h1
               style={{
-                fontSize: isMobile ? "32px" : "44px",
+                fontSize: isMobile ? "32px" : "64px",
                 fontWeight: 800,
-                color: "#0f172a",
-                lineHeight: 1.15,
-                marginBottom: "20px",
-                letterSpacing: "-0.03em",
+                color: "var(--text-primary)",
+                lineHeight: 1,
+                marginBottom: "32px",
+                letterSpacing: "-0.04em",
+                textTransform: "uppercase"
               }}
             >
-              The home for developers
+              The home for<br />developers
             </h1>
             <p
               style={{
                 fontSize: "16px",
-                color: "#64748b",
+                color: "var(--text-secondary)",
                 lineHeight: 1.6,
                 maxWidth: "420px",
               }}
             >
-              Let's set up your profile so you can launch your projects and get
-              discovered by the community.
+              Let's set up your profile so you can launch your projects and get discovered by the community.
             </p>
             <NavButtons onNext={next} showBack={false} nextLabel="Continue" />
           </div>
@@ -371,12 +372,12 @@ export default function Onboarding() {
       // Step 1: Features
       case 1: {
         const features = [
-          { label: "Launch Projects", color: "#f59e0b", bg: "#fffbeb" },
-          { label: "Get Discovered", color: "#8b5cf6", bg: "#f5f3ff" },
-          { label: "Build in Public", color: "#ef4444", bg: "#fef2f2" },
-          { label: "Connect", color: "#3b82f6", bg: "#eff6ff" },
-          { label: "Grow Audience", color: "#10b981", bg: "#ecfdf5" },
-          { label: "and much more", color: "#64748b", bg: "#f8fafc" },
+          { label: "Launch Projects" },
+          { label: "Get Discovered" },
+          { label: "Build in Public" },
+          { label: "Connect with Devs" },
+          { label: "Grow Audience" },
+          { label: "Showcase Skills" },
         ];
         return (
           <div
@@ -393,38 +394,40 @@ export default function Onboarding() {
             <h1
               style={{
                 fontSize: isMobile ? "28px" : "36px",
-                fontWeight: 800,
-                color: "#0f172a",
+                fontWeight: 700,
+                color: "var(--text-primary)",
                 lineHeight: 1.15,
-                marginBottom: "14px",
-                letterSpacing: "-0.03em",
+                marginBottom: "16px",
+                letterSpacing: "-0.04em",
               }}
             >
-              Your Launchpad Awaits.
+              YOUR LAUNCHPAD AWAITS
             </h1>
             <p
               style={{
                 fontSize: "15px",
-                color: "#64748b",
+                color: "var(--text-secondary)",
                 lineHeight: 1.6,
-                marginBottom: "28px",
+                marginBottom: "32px",
               }}
             >
-              Codeown is where developers showcase their projects and get
-              discovered by the world. Here you can
+              Codeown is where developers showcase their projects and get discovered by the world.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "24px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "32px" }}>
               {features.map((f) => (
                 <span
                   key={f.label}
                   style={{
-                    padding: "8px 18px",
-                    borderRadius: "100px",
-                    fontSize: "14px",
+                    padding: "10px 20px",
+                    borderRadius: "2px",
+                    fontSize: "12px",
                     fontWeight: 700,
-                    color: f.color,
-                    backgroundColor: f.bg,
-                    border: `1px solid ${f.color}20`,
+                    color: "var(--text-primary)",
+                    backgroundColor: "transparent",
+                    border: "0.5px solid var(--border-hairline)",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em"
                   }}
                 >
                   {f.label}
@@ -433,13 +436,13 @@ export default function Onboarding() {
             </div>
             <p
               style={{
-                fontSize: "14px",
-                color: "#94a3b8",
-                fontStyle: "italic",
+                fontSize: "13px",
+                color: "var(--text-tertiary)",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase"
               }}
             >
-              Complete your profile to join the community of ambitious
-              developers!
+              Complete your profile to join the community.
             </p>
             <NavButtons onNext={next} nextLabel="Start onboarding" />
           </div>
@@ -463,20 +466,20 @@ export default function Onboarding() {
             <h1
               style={{
                 fontSize: isMobile ? "28px" : "36px",
-                fontWeight: 800,
-                color: "#0f172a",
+                fontWeight: 700,
+                color: "var(--text-primary)",
                 lineHeight: 1.15,
-                marginBottom: "8px",
-                letterSpacing: "-0.03em",
+                marginBottom: "12px",
+                letterSpacing: "-0.04em",
               }}
             >
-              Tell us about yourself
+              TELL US ABOUT YOURSELF
             </h1>
             <p
               style={{
                 fontSize: "15px",
-                color: "#94a3b8",
-                marginBottom: "32px",
+                color: "var(--text-tertiary)",
+                marginBottom: "40px",
               }}
             >
               A few details to help others know you better.
@@ -489,17 +492,15 @@ export default function Onboarding() {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Full Stack Developer"
+                  placeholder="E.G. FULL STACK DEVELOPER"
                   value={jobTitle}
                   onChange={(e) => setJobTitle(e.target.value)}
                   style={inputStyle}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#6366f1";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99, 102, 241, 0.08)";
+                    e.currentTarget.style.borderColor = "var(--text-primary)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.borderColor = "var(--border-hairline)";
                   }}
                 />
               </div>
@@ -510,17 +511,15 @@ export default function Onboarding() {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. San Francisco, CA"
+                  placeholder="E.G. LONDON, UK"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   style={inputStyle}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#6366f1";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99, 102, 241, 0.08)";
+                    e.currentTarget.style.borderColor = "var(--text-primary)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.borderColor = "var(--border-hairline)";
                   }}
                 />
               </div>
@@ -535,7 +534,7 @@ export default function Onboarding() {
                   </span>
                 </div>
                 <textarea
-                  placeholder="Brief bio about yourself..."
+                  placeholder="TELL THE WORLD YOUR STORY..."
                   value={bio}
                   onChange={(e) => {
                     if (e.target.value.length <= 160) setBio(e.target.value);
@@ -547,12 +546,10 @@ export default function Onboarding() {
                     lineHeight: 1.6,
                   }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#6366f1";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99, 102, 241, 0.08)";
+                    e.currentTarget.style.borderColor = "var(--text-primary)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.borderColor = "var(--border-hairline)";
                   }}
                 />
               </div>
@@ -579,26 +576,26 @@ export default function Onboarding() {
             <h1
               style={{
                 fontSize: isMobile ? "28px" : "36px",
-                fontWeight: 800,
-                color: "#0f172a",
+                fontWeight: 700,
+                color: "var(--text-primary)",
                 lineHeight: 1.15,
-                marginBottom: "8px",
-                letterSpacing: "-0.03em",
+                marginBottom: "12px",
+                letterSpacing: "-0.04em",
               }}
             >
-              What's your stack?
+              WHAT'S YOUR STACK?
             </h1>
             <p
               style={{
                 fontSize: "15px",
-                color: "#94a3b8",
-                marginBottom: "28px",
+                color: "var(--text-tertiary)",
+                marginBottom: "32px",
               }}
             >
               Pick your favorite technologies to personalize your experience.
             </p>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "20px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "32px" }}>
               {SKILL_OPTIONS.map((skill) => {
                 const isSelected = selectedSkills.includes(skill);
                 return (
@@ -606,19 +603,20 @@ export default function Onboarding() {
                     key={skill}
                     onClick={() => toggleSkill(skill)}
                     style={{
-                      padding: "8px 18px",
-                      borderRadius: "100px",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      border: isSelected ? "1.5px solid #0f172a" : "1px solid #e2e8f0",
-                      backgroundColor: isSelected ? "#0f172a" : "#fff",
-                      color: isSelected ? "#fff" : "#475569",
+                      padding: "10px 20px",
+                      borderRadius: "2px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      fontFamily: "var(--font-mono)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      border: isSelected ? "0.5px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
+                      backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
+                      color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
                       cursor: "pointer",
-                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                      transform: isSelected ? "scale(1.04)" : "scale(1)",
+                      transition: "all 0.15s ease",
                     }}
                   >
-                    {isSelected && "✓ "}
                     {skill}
                   </button>
                 );
@@ -652,20 +650,20 @@ export default function Onboarding() {
             <h1
               style={{
                 fontSize: isMobile ? "28px" : "36px",
-                fontWeight: 800,
-                color: "#0f172a",
+                fontWeight: 700,
+                color: "var(--text-primary)",
                 lineHeight: 1.15,
-                marginBottom: "8px",
-                letterSpacing: "-0.03em",
+                marginBottom: "12px",
+                letterSpacing: "-0.04em",
               }}
             >
-              Almost there!
+              ALMOST THERE
             </h1>
             <p
               style={{
                 fontSize: "15px",
-                color: "#94a3b8",
-                marginBottom: "32px",
+                color: "var(--text-tertiary)",
+                marginBottom: "40px",
               }}
             >
               Add your social links so people can connect with you.
@@ -693,17 +691,15 @@ export default function Onboarding() {
                   </span>
                   <input
                     type="text"
-                    placeholder="username"
+                    placeholder="USERNAME"
                     value={githubUrl}
                     onChange={(e) => setGithubUrl(e.target.value)}
                     style={{ ...inputStyle, paddingLeft: "112px" }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "#6366f1";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99, 102, 241, 0.08)";
+                      e.currentTarget.style.borderColor = "var(--text-primary)";
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.borderColor = "var(--border-hairline)";
                     }}
                   />
                 </div>
@@ -730,17 +726,15 @@ export default function Onboarding() {
                   </span>
                   <input
                     type="text"
-                    placeholder="username"
+                    placeholder="USERNAME"
                     value={twitterUrl}
                     onChange={(e) => setTwitterUrl(e.target.value)}
                     style={{ ...inputStyle, paddingLeft: "36px" }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "#6366f1";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99, 102, 241, 0.08)";
+                      e.currentTarget.style.borderColor = "var(--text-primary)";
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.borderColor = "var(--border-hairline)";
                     }}
                   />
                 </div>
@@ -767,17 +761,15 @@ export default function Onboarding() {
                   </span>
                   <input
                     type="text"
-                    placeholder="username"
+                    placeholder="USERNAME"
                     value={linkedinUrl}
                     onChange={(e) => setLinkedinUrl(e.target.value)}
                     style={{ ...inputStyle, paddingLeft: "134px" }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "#6366f1";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99, 102, 241, 0.08)";
+                      e.currentTarget.style.borderColor = "var(--text-primary)";
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.borderColor = "var(--border-hairline)";
                     }}
                   />
                 </div>
@@ -789,17 +781,15 @@ export default function Onboarding() {
                 </label>
                 <input
                   type="text"
-                  placeholder="https://yoursite.com"
+                  placeholder="HTTPS://YOURSITE.COM"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   style={inputStyle}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#6366f1";
-                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99, 102, 241, 0.08)";
+                    e.currentTarget.style.borderColor = "var(--text-primary)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.borderColor = "var(--border-hairline)";
                   }}
                 />
               </div>
@@ -818,23 +808,17 @@ export default function Onboarding() {
               <button
                 onClick={back}
                 style={{
-                  padding: "12px 28px",
-                  borderRadius: "100px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#fff",
-                  color: "#64748b",
-                  fontSize: "15px",
-                  fontWeight: 600,
+                  padding: "12px 32px",
+                  borderRadius: "2px",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "transparent",
+                  color: "var(--text-secondary)",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase",
                   cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "#cbd5e1";
-                  e.currentTarget.style.color = "#0f172a";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#e2e8f0";
-                  e.currentTarget.style.color = "#64748b";
+                  transition: "all 0.15s ease",
                 }}
               >
                 Back
@@ -843,28 +827,23 @@ export default function Onboarding() {
                 onClick={handleComplete}
                 disabled={isSubmitting}
                 style={{
-                  padding: "12px 32px",
-                  borderRadius: "100px",
+                  padding: "12px 36px",
+                  borderRadius: "2px",
                   border: "none",
-                  backgroundColor: isSubmitting ? "#94a3b8" : "#0f172a",
-                  color: "#fff",
-                  fontSize: "15px",
+                  backgroundColor: isSubmitting ? "var(--border-hairline)" : "var(--text-primary)",
+                  color: isSubmitting ? "var(--text-tertiary)" : "var(--bg-page)",
+                  fontSize: "12px",
                   fontWeight: 700,
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase",
                   cursor: isSubmitting ? "not-allowed" : "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
-                  transition: "all 0.2s",
-                  opacity: isSubmitting ? 0.6 : 1,
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSubmitting) e.currentTarget.style.backgroundColor = "#1e293b";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSubmitting) e.currentTarget.style.backgroundColor = "#0f172a";
+                  gap: "10px",
+                  transition: "all 0.15s ease",
                 }}
               >
-                {isSubmitting ? "Setting up..." : "Complete Profile"}
+                {isSubmitting ? "Setting up..." : "Complete profile"}
               </button>
             </div>
           </div>
@@ -880,7 +859,7 @@ export default function Onboarding() {
       ref={containerRef}
       style={{
         minHeight: "100vh",
-        backgroundColor: "#fafbfc",
+        backgroundColor: "var(--bg-page)",
         display: "flex",
         flexDirection: "column",
       }}
@@ -903,28 +882,28 @@ export default function Onboarding() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: isMobile ? "16px 20px" : "20px 40px",
+          padding: isMobile ? "24px 20px" : "32px 48px",
           position: "relative",
+          backgroundColor: "var(--bg-page)"
         }}
       >
         <div style={{ width: "80px" }} /> {/* spacer */}
         <ProgressDots />
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
           <button
             onClick={handleSkip}
             style={{
               background: "none",
               border: "none",
-              color: "#94a3b8",
-              fontSize: "14px",
-              fontWeight: 600,
+              color: "var(--text-tertiary)",
+              fontSize: "11px",
+              fontWeight: 700,
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
               cursor: "pointer",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              transition: "color 0.2s",
+              padding: "8px",
+              transition: "color 0.15s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#64748b")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#94a3b8")}
           >
             Skip
           </button>
@@ -933,19 +912,18 @@ export default function Onboarding() {
             style={{
               background: "none",
               border: "none",
-              color: "#94a3b8",
-              fontSize: "14px",
-              fontWeight: 600,
+              color: "var(--text-tertiary)",
+              fontSize: "11px",
+              fontWeight: 700,
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              transition: "color 0.2s",
+              padding: "8px",
+              transition: "color 0.15s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#64748b")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#94a3b8")}
           >
             Logout
           </button>

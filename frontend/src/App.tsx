@@ -38,15 +38,16 @@ const PageLoader = () => (
     justifyContent: "center",
     alignItems: "center",
     height: "100vh",
-    width: "100%"
+    width: "100%",
+    backgroundColor: "var(--bg-page)"
   }}>
-    <div className="spinner" style={{
-      width: "32px",
-      height: "32px",
-      border: "3px solid #f3f3f3",
-      borderTop: "3px solid #212121",
+    <div style={{
+      width: "24px",
+      height: "24px",
+      border: "0.5px solid var(--border-hairline)",
+      borderTopColor: "var(--text-primary)",
       borderRadius: "50%",
-      animation: "spin 1s linear infinite"
+      animation: "spin 0.8s linear infinite"
     }} />
     <style>{`
       @keyframes spin {
@@ -124,7 +125,7 @@ export default function App() {
       display: "flex",
       flexDirection: layoutDirection,
       minHeight: "100vh",
-      backgroundColor: "#F8FAFC"
+      backgroundColor: "var(--bg-page)"
     }}>
       {!isAuthRoute && <Navbar />}
       <div style={{

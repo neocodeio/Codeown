@@ -2,21 +2,21 @@ export function PostCardSkeleton() {
   return (
     <article
       style={{
-        backgroundColor: "#ffffff",
-        padding: "16px 20px",
-        borderBottom: "1px solid #eff3f4",
+        backgroundColor: "var(--bg-page)",
+        padding: "48px 40px",
+        borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
-        gap: "12px"
+        gap: "24px"
       }}
     >
       {/* Left Column: Avatar skeleton */}
       <div style={{ flexShrink: 0 }}>
         <div
           style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            backgroundColor: "#f1f5f9",
+            width: "44px",
+            height: "44px",
+            borderRadius: "2px",
+            backgroundColor: "var(--bg-hover)",
             animation: "pulse 1.5s ease-in-out infinite",
           }}
         />
@@ -27,20 +27,21 @@ export function PostCardSkeleton() {
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
           <div
             style={{
-              width: "100px",
-              height: "14px",
-              backgroundColor: "#f1f5f9",
-              borderRadius: "4px",
+              width: "120px",
+              height: "16px",
+              backgroundColor: "var(--bg-hover)",
+              borderRadius: "1px",
               animation: "pulse 1.5s ease-in-out infinite",
             }}
           />
           <div
             style={{
-              width: "60px",
-              height: "12px",
-              backgroundColor: "#f1f5f9",
-              borderRadius: "4px",
+              width: "80px",
+              height: "14px",
+              backgroundColor: "var(--bg-hover)",
+              borderRadius: "1px",
               animation: "pulse 1.5s ease-in-out infinite",
+              opacity: 0.6
             }}
           />
         </div>
@@ -48,31 +49,33 @@ export function PostCardSkeleton() {
         <div
           style={{
             width: "80%",
-            height: "16px",
-            backgroundColor: "#f1f5f9",
-            borderRadius: "4px",
-            marginBottom: "12px",
+            height: "18px",
+            backgroundColor: "var(--bg-hover)",
+            borderRadius: "1px",
+            marginBottom: "16px",
             animation: "pulse 1.5s ease-in-out infinite",
           }}
         />
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
           <div
             style={{
               width: "100%",
-              height: "12px",
-              backgroundColor: "#f8fafc",
-              borderRadius: "4px",
+              height: "14px",
+              backgroundColor: "var(--bg-hover)",
+              borderRadius: "1px",
               animation: "pulse 1.5s ease-in-out infinite",
+              opacity: 0.4
             }}
           />
           <div
             style={{
               width: "90%",
-              height: "12px",
-              backgroundColor: "#f8fafc",
-              borderRadius: "4px",
+              height: "14px",
+              backgroundColor: "var(--bg-hover)",
+              borderRadius: "1px",
               animation: "pulse 1.5s ease-in-out infinite",
+              opacity: 0.4
             }}
           />
         </div>
@@ -82,11 +85,12 @@ export function PostCardSkeleton() {
             <div
               key={i}
               style={{
-                width: "40px",
-                height: "14px",
-                backgroundColor: "#f8fafc",
-                borderRadius: "4px",
+                width: "48px",
+                height: "16px",
+                backgroundColor: "var(--bg-hover)",
+                borderRadius: "1px",
                 animation: "pulse 1.5s ease-in-out infinite",
+                opacity: 0.3
               }}
             />
           ))}
@@ -107,43 +111,44 @@ export function ProfileSkeleton() {
   return (
     <div
       style={{
-        backgroundColor: "#ffffff",
-        borderRadius: "30px",
-        padding: "40px",
+        backgroundColor: "var(--bg-page)",
+        borderRadius: "2px",
+        padding: "48px",
         marginBottom: "24px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
-        border: "1px solid #e4e7eb",
+        boxShadow: "none",
+        border: "0.5px solid var(--border-hairline)",
         textAlign: "center",
       }}
     >
       <div
         style={{
-          width: "120px",
-          height: "120px",
-          borderRadius: "50%",
-          backgroundColor: "#e4e7eb",
-          margin: "0 auto 20px",
+          width: "128px",
+          height: "128px",
+          borderRadius: "2px",
+          backgroundColor: "var(--bg-hover)",
+          margin: "0 auto 32px",
           animation: "pulse 1.5s ease-in-out infinite",
         }}
       />
       <div
         style={{
-          width: "200px",
-          height: "28px",
-          backgroundColor: "#e4e7eb",
-          borderRadius: "4px",
-          margin: "0 auto 12px",
+          width: "240px",
+          height: "32px",
+          backgroundColor: "var(--bg-hover)",
+          borderRadius: "1px",
+          margin: "0 auto 16px",
           animation: "pulse 1.5s ease-in-out infinite",
         }}
       />
       <div
         style={{
-          width: "150px",
-          height: "16px",
-          backgroundColor: "#e4e7eb",
-          borderRadius: "4px",
+          width: "180px",
+          height: "18px",
+          backgroundColor: "var(--bg-hover)",
+          borderRadius: "1px",
           margin: "0 auto",
           animation: "pulse 1.5s ease-in-out infinite",
+          opacity: 0.6
         }}
       />
       <style>{`

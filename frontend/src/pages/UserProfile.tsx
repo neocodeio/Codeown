@@ -10,23 +10,22 @@ import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
 import { formatProfileJoinDate } from "../utils/date";
-import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  UserAdd01Icon,
-  UserCheck01Icon,
-  Mail01Icon,
-  Share01Icon,
-  Calendar03Icon,
-  Layers01Icon,
-  Rocket01Icon,
-  PackageIcon as PushpinIcon,
-  Location01Icon,
-  Link02Icon,
-  TwitterIcon,
-  Linkedin01Icon,
-  GithubIcon,
-  IdIcon,
-} from '@hugeicons/core-free-icons';
+  EnvelopeSimple,
+  ShareNetwork,
+  Calendar,
+  Layout,
+  Rocket,
+  PushPin,
+  MapPin,
+  Link,
+  TwitterLogo,
+  LinkedinLogo,
+  GithubLogo,
+  IdentificationCard,
+  Plus,
+  Check
+} from "phosphor-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -186,7 +185,7 @@ export default function UserProfile() {
   };
 
   if (loading) return (
-    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
       <div style={{
         maxWidth: "1000px",
         margin: "0 auto",
@@ -196,11 +195,11 @@ export default function UserProfile() {
         <div style={{
           width: "100%",
           height: isMobile ? "200px" : "320px",
-          borderRadius: "32px",
-          backgroundColor: "#e2e8f0",
+          borderRadius: "2px",
+          backgroundColor: "var(--bg-hover)",
           position: "relative",
           marginBottom: isMobile ? "60px" : "80px",
-          animation: "pulse 1.5s infinite ease-in-out"
+          border: "0.5px solid var(--border-hairline)"
         }}>
           {/* Avatar Skeleton */}
           <div style={{
@@ -210,9 +209,9 @@ export default function UserProfile() {
             transform: isMobile ? "translateX(-50%)" : "none",
             width: isMobile ? "100px" : "150px",
             height: isMobile ? "100px" : "150px",
-            borderRadius: "100%",
-            border: "4px solid white",
-            backgroundColor: "#cbd5e1",
+            borderRadius: "50%",
+            border: "2px solid var(--bg-page)",
+            backgroundColor: "var(--border-hairline)",
             zIndex: 10
           }} />
         </div>
@@ -232,27 +231,27 @@ export default function UserProfile() {
             gap: "20px"
           }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", alignItems: isMobile ? "center" : "flex-start" }}>
-              <div style={{ width: "60%", height: "40px", backgroundColor: "#e2e8f0", borderRadius: "8px", animation: "pulse 1.5s infinite ease-in-out" }} />
-              <div style={{ width: "30%", height: "24px", backgroundColor: "#f1f5f9", borderRadius: "6px", animation: "pulse 1.5s infinite ease-in-out" }} />
+              <div style={{ width: "60%", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+              <div style={{ width: "30%", height: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
             </div>
 
             <div style={{ display: "flex", gap: "12px" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
-              <div style={{ width: "140px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
-              <div style={{ width: "44px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
+              <div style={{ width: "44px", height: "44px", borderRadius: "2px", backgroundColor: "var(--bg-hover)" }} />
+              <div style={{ width: "140px", height: "44px", borderRadius: "2px", backgroundColor: "var(--bg-hover)" }} />
+              <div style={{ width: "44px", height: "44px", borderRadius: "2px", backgroundColor: "var(--bg-hover)" }} />
             </div>
           </div>
 
           <div style={{ width: "100%", maxWidth: "600px", display: "flex", flexDirection: "column", gap: "8px", alignItems: isMobile ? "center" : "flex-start" }}>
-            <div style={{ width: "100%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "90%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "80%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "100%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+            <div style={{ width: "90%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+            <div style={{ width: "80%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
           </div>
 
           <div style={{ display: "flex", gap: "24px", justifyContent: isMobile ? "center" : "flex-start" }}>
-            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
           </div>
         </div>
 
@@ -260,14 +259,14 @@ export default function UserProfile() {
         <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "32px", alignItems: isMobile ? "center" : "flex-start" }}>
           {/* Tabs */}
           <div style={{ display: "flex", gap: "12px" }}>
-            <div style={{ width: "100px", height: "40px", backgroundColor: "#e2e8f0", borderRadius: "12px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "100px", height: "40px", backgroundColor: "#f1f5f9", borderRadius: "12px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "100px", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+            <div style={{ width: "100px", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
           </div>
 
           {/* Content Grid */}
           <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px" }}>
-            <div style={{ width: "100%", height: "200px", backgroundColor: "#fff", borderRadius: "24px", border: "1px solid #e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "100%", height: "200px", backgroundColor: "#fff", borderRadius: "24px", border: "1px solid #e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ width: "100%", height: "200px", backgroundColor: "transparent", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} />
+            <div style={{ width: "100%", height: "200px", backgroundColor: "transparent", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} />
           </div>
         </div>
       </div>
@@ -298,7 +297,7 @@ export default function UserProfile() {
   const lastName = lastNameParts.join(" ");
 
   return (
-    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", paddingBottom: "64px" }}>
       <SEO
         title={`${user.name} (@${user.username})`}
         description={seoDescription}
@@ -341,11 +340,12 @@ export default function UserProfile() {
         {/* Banner Section */}
         <div style={{
           width: "100%",
-          height: isMobile ? "160px" : "200px",
-          backgroundColor: "#f1f5f9",
+          height: isMobile ? "160px" : "240px",
+          backgroundColor: "#fcfcfc",
           position: "relative",
           overflow: "hidden",
-          borderRadius: isMobile ? "0" : "12px",
+          borderRadius: "0",
+          borderBottom: "0.5px solid var(--border-hairline)",
           marginBottom: 0,
         }}>
           {user.banner_url ? (
@@ -358,7 +358,7 @@ export default function UserProfile() {
             <div style={{
               width: "100%",
               height: "100%",
-              background: "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)",
+              backgroundColor: "var(--bg-hover)",
             }} />
           )}
         </div>
@@ -376,13 +376,14 @@ export default function UserProfile() {
             style={{
               width: isMobile ? "96px" : "120px",
               height: isMobile ? "96px" : "120px",
-              borderRadius: "50%",
-              border: "4px solid #fff",
-              backgroundColor: "#fff",
+              borderRadius: "2px",
+              border: "4px solid var(--bg-page)",
+              backgroundColor: "var(--bg-page)",
               cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
               flexShrink: 0,
-              marginBottom: "16px",
+              marginBottom: "20px",
+              position: "relative",
+              zIndex: 10
             }}
           >
             <AvailabilityBadge
@@ -390,7 +391,6 @@ export default function UserProfile() {
               name={user.name}
               size={isMobile ? 96 : 120}
               isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
-              ringColor="#0f172a"
             />
           </div>
 
@@ -407,29 +407,29 @@ export default function UserProfile() {
             <h1 style={{
               fontSize: isMobile ? "22px" : "28px",
               fontWeight: 700,
-              color: "#0f172a",
+              color: "var(--text-primary)",
               margin: 0,
-              textTransform: "uppercase",
-              letterSpacing: "-0.02em",
               display: "flex",
               alignItems: "center",
-              gap: "6px",
+              gap: "8px",
               maxWidth: "100%",
               overflowWrap: "anywhere",
               lineHeight: 1.12,
+              textTransform: "uppercase"
             }}>
-              {(user.name || "").toUpperCase()}
+              {user.name}
               <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
-              {/* {user.streak_count > 0 && <StreakBadge count={user.streak_count} />} */}
               {user.is_pro === true && (
                 <span style={{
                   fontSize: isMobile ? 10 : 11,
-                  fontWeight: 700,
+                  fontWeight: 800,
                   padding: "4px 8px",
-                  borderRadius: 6,
-                  backgroundColor: "#0f172a",
-                  color: "#fff",
-                  letterSpacing: "0.02em",
+                  borderRadius: "1px",
+                  backgroundColor: "var(--text-primary)",
+                  color: "var(--bg-page)",
+                  letterSpacing: "0.1em",
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase"
                 }}>PRO</span>
               )}
             </h1>
@@ -446,24 +446,21 @@ export default function UserProfile() {
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
                   style={{
                     padding: "10px",
-                    borderRadius: "30px",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    border: "1px solid #e2e8f0",
-                    backgroundColor: "#ffffff",
-                    color: "#1e293b",
+                    borderRadius: "2px",
+                    backgroundColor: "transparent",
+                    color: "var(--text-primary)",
+                    border: "0.5px solid var(--border-hairline)",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: "8px",
-                    whiteSpace: "nowrap",
-                    transition: "all 0.2s ease",
+                    justifyContent: "center",
+                    transition: "all 0.15s ease",
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   title="Message"
                 >
-                  <HugeiconsIcon icon={Mail01Icon} size={18} />
+                  <EnvelopeSimple size={20} weight="thin" />
                 </button>
               )}
               {isSignedIn && (
@@ -471,31 +468,32 @@ export default function UserProfile() {
                   onClick={handleFollow}
                   disabled={followLoading}
                   style={{
-                    padding: "10px 22px",
-                    borderRadius: "30px",
-                    fontSize: "14px",
+                    padding: "10px 24px",
+                    borderRadius: "2px",
+                    fontSize: "12px",
                     fontWeight: 700,
-                    border: isFollowing ? "1px solid #e2e8f0" : "none",
-                    backgroundColor: isFollowing ? "#ffffff" : "#0f172a",
-                    color: isFollowing ? "#1e293b" : "#fff",
+                    border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
+                    backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
+                    color: isFollowing ? "var(--text-primary)" : "var(--bg-page)",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
-                    transition: "all 0.2s ease",
-                    boxShadow: isFollowing ? "none" : "0 4px 12px rgba(15, 23, 42, 0.1)"
+                    transition: "all 0.15s ease",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
                   onMouseEnter={(e) => {
-                    if (isFollowing) e.currentTarget.style.backgroundColor = "#f8fafc";
-                    else e.currentTarget.style.backgroundColor = "#1e293b";
+                    if (isFollowing) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    else e.currentTarget.style.opacity = "0.9";
                   }}
                   onMouseLeave={(e) => {
-                    if (isFollowing) e.currentTarget.style.backgroundColor = "#ffffff";
-                    else e.currentTarget.style.backgroundColor = "#0f172a";
+                    if (isFollowing) e.currentTarget.style.backgroundColor = "transparent";
+                    else e.currentTarget.style.opacity = "1";
                   }}
                 >
-                  <HugeiconsIcon icon={isFollowing ? UserCheck01Icon : UserAdd01Icon} size={16} />
-                  {isFollowing ? "Following" : "Follow"}
+                  {isFollowing ? <Check size={16} weight="bold" /> : <Plus size={16} weight="bold" />}
+                  {isFollowing ? "FOLLOWING" : "FOLLOW"}
                 </button>
               )}
               {user.is_pro && user.is_hirable && (
@@ -511,25 +509,26 @@ export default function UserProfile() {
                     navigate(`/messages?userId=${user.id}&message=${encodeURIComponent("Hi! I saw you are open to opportunities and I'd like to chat.")}`);
                   }}
                   style={{
-                    padding: "10px 22px",
-                    borderRadius: "30px",
-                    fontSize: "14px",
-                    fontWeight: 800,
-                    border: "none",
-                    backgroundColor: "#3b82f6",
-                    color: "#fff",
+                    padding: "10px 24px",
+                    borderRadius: "2px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    backgroundColor: "transparent",
+                    color: "var(--text-primary)",
+                    border: "0.5px solid var(--border-hairline)",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
-                    transition: "all 0.2s ease",
-                    boxShadow: "0 4px 12px rgba(59, 130, 246, 0.2)"
+                    transition: "all 0.15s ease",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#3b82f6"}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
-                  <HugeiconsIcon icon={Rocket01Icon} size={16} />
-                  Hire Me
+                  <Rocket size={16} weight="bold" />
+                  HIRE ME
                 </button>
               )}
               <button
@@ -539,74 +538,71 @@ export default function UserProfile() {
                 }}
                 style={{
                   padding: "10px",
-                  borderRadius: "30px",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#ffffff",
-                  color: "#1e293b",
+                  borderRadius: "2px",
+                  backgroundColor: "transparent",
+                  color: "var(--text-primary)",
+                  border: "0.5px solid var(--border-hairline)",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.2s ease",
+                  justifyContent: "center",
+                  transition: "all 0.15s ease",
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 title="Share"
               >
-                <HugeiconsIcon icon={Share01Icon} size={18} />
+                <ShareNetwork size={20} weight="thin" />
               </button>
               <button
                 onClick={() => setIsIDCardModalOpen(true)}
                 style={{
                   padding: "10px",
-                  borderRadius: "30px",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#ffffff",
-                  color: "#1e293b",
+                  borderRadius: "2px",
+                  backgroundColor: "transparent",
+                  color: "var(--text-primary)",
+                  border: "0.5px solid var(--border-hairline)",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.2s ease",
+                  justifyContent: "center",
+                  transition: "all 0.15s ease",
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 title="Developer ID Card"
               >
-                <HugeiconsIcon icon={IdIcon} size={18} />
+                <IdentificationCard size={20} weight="thin" />
               </button>
             </div>
           </div>
 
-          <span style={{ fontSize: "15px", color: "#64748b", display: "block", marginBottom: "12px" }}>
+          <span style={{ fontSize: "14px", color: "var(--text-tertiary)", display: "block", marginBottom: "16px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
             @{user.username}
           </span>
 
           {user.bio && (
-            <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#334155", margin: "0 0 12px 0" }}>
+            <div style={{ fontSize: "15px", lineHeight: 1.6, color: "var(--text-secondary)", margin: "0 0 24px 0", maxWidth: "800px" }}>
               <BioRenderer bio={user.bio} />
-            </p>
+            </div>
           )}
 
           {/* Meta row: location, link, join date */}
           <div style={{
             display: "flex",
             flexWrap: "wrap",
-            gap: "16px 24px",
+            gap: "24px",
             alignItems: "center",
-            color: "#64748b",
-            fontSize: "14px",
-            marginBottom: "12px",
+            color: "var(--text-tertiary)",
+            fontSize: "12px",
+            fontWeight: 700,
+            marginBottom: "24px",
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase"
           }}>
             {user.location && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <HugeiconsIcon icon={Location01Icon} size={16} />
+                <MapPin size={16} weight="thin" />
                 {user.location}
               </span>
             )}
@@ -619,18 +615,18 @@ export default function UserProfile() {
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
-                  color: "#2563eb",
-                  textDecoration: "underline",
+                  color: "var(--text-primary)",
+                  textDecoration: "none",
                 }}
               >
-                <HugeiconsIcon icon={Link02Icon} size={16} />
+                <Link size={16} weight="thin" />
                 {user.website_url.replace(/^https?:\/\//, "")}
               </a>
             )}
             {user.created_at && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <HugeiconsIcon icon={Calendar03Icon} size={16} />
-                Joined {formatProfileJoinDate(user.created_at)}
+                <Calendar size={16} weight="thin" />
+                JOINED {formatProfileJoinDate(user.created_at).toUpperCase()}
               </span>
             )}
           </div>
@@ -641,28 +637,30 @@ export default function UserProfile() {
               display: "flex",
               flexWrap: "wrap",
               gap: "8px",
-              marginBottom: "16px",
+              marginBottom: "32px",
             }}>
               {user.skills.map((skill, index) => (
                 <span
                   key={index}
                   style={{
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    padding: "6px 14px",
-                    backgroundColor: "#f1f5f9",
-                    color: "#475569",
-                    borderRadius: "100px",
-                    border: "1px solid #e2e8f0",
-                    transition: "all 0.2s ease",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    padding: "6px 12px",
+                    backgroundColor: "transparent",
+                    color: "var(--text-secondary)",
+                    borderRadius: "2px",
+                    border: "0.5px solid var(--border-hairline)",
+                    transition: "all 0.15s ease",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#e2e8f0";
-                    e.currentTarget.style.color = "#0f172a";
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.color = "var(--text-primary)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f1f5f9";
-                    e.currentTarget.style.color = "#475569";
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--text-secondary)";
                   }}
                 >
                   {skill}
@@ -676,9 +674,9 @@ export default function UserProfile() {
             display: "flex",
             flexWrap: "wrap",
             alignItems: "center",
-            gap: "20px",
+            gap: "32px",
           }}>
-            <div style={{ display: "flex", gap: "16px" }}>
+            <div style={{ display: "flex", gap: "24px" }}>
               <button
                 onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
                 style={{
@@ -686,12 +684,14 @@ export default function UserProfile() {
                   background: "none",
                   cursor: "pointer",
                   padding: 0,
-                  fontSize: "15px",
-                  color: "#0f172a",
-                  fontWeight: 600,
+                  fontSize: "12px",
+                  color: "var(--text-primary)",
+                  fontWeight: 700,
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase"
                 }}
               >
-                {user.follower_count ?? 0} <span style={{ color: "#64748b", fontWeight: 500 }}>followers</span>
+                {user.follower_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>FOLLOWERS</span>
               </button>
               <button
                 onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
@@ -700,83 +700,81 @@ export default function UserProfile() {
                   background: "none",
                   cursor: "pointer",
                   padding: 0,
-                  fontSize: "15px",
-                  color: "#0f172a",
-                  fontWeight: 600,
+                  fontSize: "12px",
+                  color: "var(--text-primary)",
+                  fontWeight: 700,
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase"
                 }}
               >
-                {user.following_count ?? 0} <span style={{ color: "#64748b", fontWeight: 500 }}>following</span>
+                {user.following_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>FOLLOWING</span>
               </button>
             </div>
-            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
               {user.twitter_url && (
-                <a href={user.twitter_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="Twitter">
-                  <HugeiconsIcon icon={TwitterIcon} size={20} />
+                <a href={user.twitter_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-tertiary)", transition: "color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"} aria-label="Twitter">
+                  <TwitterLogo size={20} weight="thin" />
                 </a>
               )}
               {user.linkedin_url && (
-                <a href={user.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="LinkedIn">
-                  <HugeiconsIcon icon={Linkedin01Icon} size={20} />
+                <a href={user.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-tertiary)", transition: "color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"} aria-label="LinkedIn">
+                  <LinkedinLogo size={20} weight="thin" />
                 </a>
               )}
               {user.github_url && (
-                <a href={user.github_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="GitHub">
-                  <HugeiconsIcon icon={GithubIcon} size={20} />
-                </a>
-              )}
-              {user.website_url && (
-                <a href={user.website_url.startsWith("http") ? user.website_url : `https://${user.website_url}`} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="Website">
-                  <HugeiconsIcon icon={Link02Icon} size={20} />
+                <a href={user.github_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-tertiary)", transition: "color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"} aria-label="GitHub">
+                  <GithubLogo size={20} weight="thin" />
                 </a>
               )}
             </div>
           </div>
         </div>
 
-        {/* Tabs + Content */}
         <div style={{
           padding: `0 ${innerPaddingX}px`,
-          borderTop: "1px solid #e2e8f0",
+          marginTop: "48px",
+          borderTop: "0.5px solid var(--border-hairline)",
         }}>
           <div className="tabs-row" style={{
             display: "flex",
             gap: "0px",
             marginBottom: "0px",
-            marginTop: "8px",
+            marginTop: "0px",
             overflowX: "auto",
             WebkitOverflowScrolling: "touch",
-            borderBottom: "1px solid #e2e8f0",
             position: "relative",
           }}>
             <button
               onClick={() => setActiveTab("posts")}
               style={{
                 flex: isMobile ? "1" : "none",
-                minWidth: isMobile ? "0" : "120px",
-                padding: "16px 20px",
-                fontSize: "15px",
-                fontWeight: activeTab === "posts" ? 700 : 600,
-                color: activeTab === "posts" ? "#0f172a" : "#64748b",
+                minWidth: isMobile ? "0" : "140px",
+                padding: "20px 24px",
+                fontSize: "12px",
+                fontWeight: 800,
+                color: activeTab === "posts" ? "var(--text-primary)" : "var(--text-tertiary)",
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 position: "relative",
-                transition: "all 0.2s ease",
+                transition: "all 0.15s ease",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em"
               }}
-              onMouseEnter={(e) => { if (activeTab !== "posts") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
+              onMouseEnter={(e) => { if (activeTab !== "posts") e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
-              Posts
+              POSTS
               {activeTab === "posts" && (
                 <div style={{
                   position: "absolute",
                   bottom: 0,
-                  left: "25%",
-                  right: "25%",
-                  height: "3px",
-                  backgroundColor: "#0f172a",
-                  borderRadius: "2px 2px 0 0"
+                  left: 0,
+                  right: 0,
+                  height: "1px",
+                  backgroundColor: "var(--text-primary)",
                 }} />
               )}
             </button>
@@ -784,31 +782,33 @@ export default function UserProfile() {
               onClick={() => setActiveTab("projects")}
               style={{
                 flex: isMobile ? "1" : "none",
-                minWidth: isMobile ? "0" : "120px",
-                padding: "16px 20px",
-                fontSize: "15px",
-                fontWeight: activeTab === "projects" ? 700 : 600,
-                color: activeTab === "projects" ? "#0f172a" : "#64748b",
+                minWidth: isMobile ? "0" : "140px",
+                padding: "20px 24px",
+                fontSize: "12px",
+                fontWeight: 800,
+                color: activeTab === "projects" ? "var(--text-primary)" : "var(--text-tertiary)",
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 position: "relative",
-                transition: "all 0.2s ease",
+                transition: "all 0.15s ease",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em"
               }}
-              onMouseEnter={(e) => { if (activeTab !== "projects") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
+              onMouseEnter={(e) => { if (activeTab !== "projects") e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
-              Projects
+              PROJECTS
               {activeTab === "projects" && (
                 <div style={{
                   position: "absolute",
                   bottom: 0,
-                  left: "25%",
-                  right: "25%",
-                  height: "3px",
-                  backgroundColor: "#0f172a",
-                  borderRadius: "2px 2px 0 0"
+                  left: 0,
+                  right: 0,
+                  height: "1px",
+                  backgroundColor: "var(--text-primary)",
                 }} />
               )}
             </button>
@@ -818,9 +818,9 @@ export default function UserProfile() {
             {activeTab === "posts" ? (
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {posts.length === 0 ? (
-                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
-                    <HugeiconsIcon icon={Layers01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
-                    <p style={{ fontWeight: 600 }}>No posts yet</p>
+                  <div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
+                    <Layout size={40} weight="thin" style={{ opacity: 0.5, marginBottom: "16px" }} />
+                    <p style={{ fontWeight: 700, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>No posts yet</p>
                   </div>
                 ) : (
                   posts.map(p => (
@@ -831,12 +831,15 @@ export default function UserProfile() {
                           display: "flex",
                           alignItems: "center",
                           gap: "8px",
-                          color: "#64748b",
-                          fontSize: "13px",
-                          fontWeight: 700
+                          color: "var(--text-tertiary)",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          fontFamily: "var(--font-mono)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em"
                         }}>
-                          <HugeiconsIcon icon={PushpinIcon} size={14} />
-                          Pinned Post
+                          <PushPin size={14} weight="thin" />
+                          PINNED POST
                         </div>
                       )}
                       <PostCard post={p} onUpdated={fetchUserPosts} />
@@ -847,9 +850,9 @@ export default function UserProfile() {
             ) : (
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {projects.length === 0 ? (
-                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#64748b" }}>
-                    <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.2, marginBottom: "12px" }} />
-                    <p style={{ fontWeight: 600 }}>No projects yet</p>
+                  <div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
+                    <Rocket size={40} weight="thin" style={{ opacity: 0.5, marginBottom: "16px" }} />
+                    <p style={{ fontWeight: 700, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>No projects yet</p>
                   </div>
                 ) : (
                   projects.map(p => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)

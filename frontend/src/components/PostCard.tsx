@@ -10,17 +10,7 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { HugeiconsIcon } from '@hugeicons/react';
-import {
-  Share01Icon,
-  FavouriteIcon,
-  Comment02Icon,
-  Bookmark01Icon,
-  Bookmark02Icon,
-  Delete01Icon,
-  Pen01Icon,
-  MoreHorizontalIcon,
-} from '@hugeicons/core-free-icons';
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -142,19 +132,21 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       className="fade-in"
       style={{
         cursor: "pointer",
-        padding: isMobile ? "24px 16px" : "32px 24px",
-        backgroundColor: "#fff",
-        borderBottom: "1.60px solid #f1f5f9",
+        padding: isMobile ? "32px 20px" : "48px 40px",
+        backgroundColor: "var(--bg-page)",
+        borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
-        gap: "16px",
-        transition: "background-color 0.2s ease",
+        gap: "24px",
+        transition: "all 0.15s ease",
+        width: "100%",
+        boxSizing: "border-box"
       }}
       onClick={handleCardClick}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "#fafafa";
+        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "#fff";
+        e.currentTarget.style.backgroundColor = "var(--bg-page)";
       }}
     >
       {/* Avatar Col */}
@@ -162,10 +154,9 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
           <AvailabilityBadge
             avatarUrl={post.user?.avatar_url || null}
-            name={userName}
-            size={isMobile ? 42 : 48}
+            name={post.user?.name || "User"}
+            size={40}
             isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
-            ringColor="#f1f5f9"
           />
         </div>
       </div>
@@ -179,68 +170,69 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           alignItems: "flex-start",
           marginBottom: "6px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <span
               onClick={handleUserClick}
               style={{
-                fontSize: "15px",
-                fontWeight: "800",
-                color: "#0f172a",
+                fontSize: "14px",
+                fontWeight: 700,
+                color: "var(--text-primary)",
                 letterSpacing: "-0.01em",
+                textTransform: "uppercase"
               }}
             >
               {userName}
             </span>
             <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
-            <span style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "500" }}>
+            <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
               @{post.user?.username || 'user'}
             </span>
-            <span style={{ color: "#e2e8f0" }}>•</span>
-            <span style={{ fontSize: "14px", color: "#94a3b8" }}>
-              {formatRelativeDate(post.created_at)}
+            <span style={{ color: "var(--border-hairline)" }}>•</span>
+            <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+              {formatRelativeDate(post.created_at).toUpperCase()}
             </span>
           </div>
 
           {isOwnPost && (
             <div style={{ position: "relative" }} ref={menuRef}>
-              <button
-                onClick={toggleMenu}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#cbd5e1",
-                  cursor: "pointer",
-                  padding: "4px",
-                  borderRadius: "50%",
-                  transition: "all 0.2s"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = "#0f172a"}
-                onMouseLeave={(e) => e.currentTarget.style.color = "#cbd5e1"}
-              >
-                <HugeiconsIcon icon={MoreHorizontalIcon} style={{ fontSize: "18px" }} />
-              </button>
+                <button
+                  onClick={toggleMenu}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--text-tertiary)",
+                    cursor: "pointer",
+                    padding: "4px",
+                    borderRadius: "2px",
+                    transition: "all 0.15s ease"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                >
+                  <DotsThree size={20} weight="thin" />
+                </button>
 
               {isMenuOpen && (
-                <div style={{
-                  position: "absolute", top: "100%", right: 0,
-                  backgroundColor: "#fff", borderRadius: "10px", border: "1px solid #f1f5f9",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.05)", zIndex: 10, padding: "4px", minWidth: "120px"
-                }}>
-                  {[
-                    { icon: Pen01Icon, label: "Edit", onClick: handleEdit, color: "#0f172a" },
-                    { icon: Delete01Icon, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
-                  ].map((item, i) => (
-                    <button key={i} onClick={item.onClick} style={{
-                      width: "100%", padding: "8px 10px", display: "flex", alignItems: "center", gap: "8px",
-                      border: "none", background: "none", cursor: "pointer", borderRadius: "6px",
-                      fontSize: "13px", fontWeight: "600", color: item.color
-                    }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
-                      <HugeiconsIcon icon={item.icon} style={{ fontSize: "14px" }} />
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
+                  <div style={{
+                    position: "absolute", top: "100%", right: 0,
+                    backgroundColor: "var(--bg-page)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)",
+                    boxShadow: "none", zIndex: 10, padding: "4px", minWidth: "160px"
+                  }}>
+                    {[
+                      { icon: PencilSimple, label: "Edit", onClick: handleEdit, color: "var(--text-primary)" },
+                      { icon: Trash, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
+                    ].map((item, i) => (
+                      <button key={i} onClick={item.onClick} style={{
+                        width: "100%", padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px",
+                        border: "none", background: "none", cursor: "pointer", borderRadius: "2px",
+                        fontSize: "11px", fontWeight: 800, color: item.color, fontFamily: "var(--font-mono)", textTransform: "uppercase"
+                      }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                        <item.icon size={16} weight="thin" />
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
               )}
             </div>
           )}
@@ -249,18 +241,17 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         {/* Post Text */}
         <div style={{
           fontSize: "15px",
-          lineHeight: "1.6",
-          color: "#1e293b",
-          marginBottom: "16px",
-          letterSpacing: "-0.01em"
+          lineHeight: "1.7",
+          color: "var(--text-secondary)",
+          marginBottom: "24px",
         }}>
-          {post.title && <h2 style={{ fontSize: "16px", fontWeight: "800", color: "#0f172a", margin: "0 0 4px" }}>{post.title}</h2>}
+          {post.title && <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", margin: "0 0 12px", letterSpacing: "-0.02em", textTransform: "uppercase" }}>{post.title}</h2>}
           <ContentRenderer content={post.content} />
         </div>
 
         {/* Media */}
         {post.images && post.images.length > 0 && (
-          <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid #f1f5f9", marginBottom: "16px" }}>
+          <div style={{ borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px" }}>
             <ImageSlider images={post.images} />
           </div>
         )}
@@ -268,41 +259,37 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         {/* Interaction Tray */}
         <div style={{ 
           display: "flex", 
-          marginTop: "8%",
-          gap: isMobile ? "12px" : "18%", 
+          marginTop: "24px",
+          gap: isMobile ? "20px" : "40px", 
           alignItems: "center",
-          justifyContent: isMobile ? "space-between" : "flex-start"
+          justifyContent: "flex-start"
         }}>
           {[
             { 
-              icon: Comment02Icon, 
+              icon: ChatCircle, 
               count: post.comment_count, 
               onClick: handleComment, 
-              hoverColor: "#3b82f6",
-              hoverBg: "rgba(59, 130, 246, 0.05)"
+              hoverColor: "var(--text-primary)",
             },
             { 
-              icon: FavouriteIcon, 
+              icon: Heart, 
               count: likeCount, 
               onClick: handleLike, 
               active: isLiked, 
-              activeColor: "#f91880",
-              hoverColor: "#f91880",
-              hoverBg: "rgba(249, 24, 128, 0.05)"
+              activeColor: "var(--text-primary)",
+              weight: isLiked ? "fill" as const : "thin" as const
             },
             { 
-              icon: isSaved ? Bookmark01Icon : Bookmark02Icon, 
+              icon: BookmarkSimple, 
               onClick: handleSave, 
               active: isSaved, 
-              activeColor: "#3b82f6",
-              hoverColor: "#3b82f6",
-              hoverBg: "rgba(59, 130, 246, 0.05)"
+              activeColor: "var(--text-primary)",
+              weight: isSaved ? "fill" as const : "thin" as const
             },
             { 
-              icon: Share01Icon, 
+              icon: ShareNetwork, 
               onClick: handleShare, 
-              hoverColor: "#00ba7c",
-              hoverBg: "rgba(0, 186, 124, 0.05)"
+              hoverColor: "var(--text-primary)",
             }
           ].map((action, i) => (
             <button
@@ -310,25 +297,22 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
               onClick={action.onClick}
               style={{
                 display: "flex", alignItems: "center", gap: "6px",
-                background: "none", border: "none", padding: "6px 8px", borderRadius: "8px",
-                cursor: "pointer", color: action.active ? action.activeColor : "#94a3b8",
-                transition: "all 0.2s ease"
+                background: "none", border: "none", padding: "4px 0",
+                cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
+                transition: "all 0.15s ease",
+                fontFamily: "var(--font-mono)",
+                fontSize: "12px"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = action.hoverColor;
-                e.currentTarget.style.backgroundColor = action.hoverBg;
+                e.currentTarget.style.color = action.hoverColor || action.activeColor || "var(--text-primary)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = action.active ? action.activeColor : "#94a3b8";
-                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
               }}
             >
-              <HugeiconsIcon icon={action.icon} style={{ 
-                fontSize: "18px",
-                fill: action.active ? "currentColor" : "none" 
-              }} />
+                 <action.icon size={20} weight={action.weight || "thin"} />
               {action.count !== undefined && action.count > 0 && (
-                <span style={{ fontSize: "13px", fontWeight: "700" }}>{action.count}</span>
+                <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count.toString().padStart(2, '0')}</span>
               )}
             </button>
           ))}

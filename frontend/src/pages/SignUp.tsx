@@ -13,14 +13,14 @@ export default function SignUpPage() {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      minHeight: "70vh",
-      padding: "20px 20px",
+      minHeight: "100vh",
+      padding: "20px 24px",
+      backgroundColor: "var(--bg-page)"
     }}>
       <div style={{
         width: "100%",
         maxWidth: "480px",
-        borderRadius: "24px",
-        padding: "40px",
+        borderRadius: "2px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -32,22 +32,31 @@ export default function SignUpPage() {
             path="/sign-up"
             signInUrl="/sign-in"
             appearance={{
-              elements: {
-                rootBox: "mx-auto",
-                card: "shadow-none border-0 p-0 m-0",
-                headerTitle: "text-3xl font-bold tracking-tight text-gray-900",
-                headerSubtitle: "text-gray-500 mt-2",
-                socialButtonsBlockButton: "border-gray-200 hover:bg-gray-50 transition-all rounded-xl",
-                formButtonPrimary: "bg-[#5046e5] hover:bg-[#3730a3] transition-all rounded-xl py-3",
-                footerActionLink: "text-[#5046e5] hover:text-[#3730a3]",
-                formFieldInput: "rounded-xl border-gray-200 focus:ring-[#5046e5] transition-all",
-              }
-            }}
+                variables: {
+                  colorPrimary: "#000000",
+                  borderRadius: "2px",
+                  fontSize: "14px",
+                },
+                elements: {
+                  rootBox: "mx-auto",
+                  card: "shadow-none border-0 bg-transparent p-0 m-0",
+                  headerTitle: "text-2xl font-bold tracking-tight text-black uppercase",
+                  headerSubtitle: "text-gray-500 mt-2 text-sm",
+                  socialButtonsBlockButton: "border-[0.5px] border-gray-200 hover:bg-gray-50 transition-all rounded-[2px]",
+                  formButtonPrimary: "bg-black hover:bg-zinc-800 transition-all rounded-[2px] py-3 text-xs uppercase font-bold tracking-widest",
+                  footerActionLink: "text-black hover:underline",
+                  formFieldInput: "rounded-[2px] border-[0.5px] border-gray-200 focus:border-black transition-all",
+                  dividerLine: "bg-gray-100",
+                  dividerText: "text-gray-400 text-[10px] uppercase font-bold",
+                  socialButtonsBlockButtonText: "text-sm font-medium",
+                  formFieldLabel: "text-[11px] uppercase font-bold text-gray-400 mb-1"
+                }
+              }}
           />
         ) : (
           <div style={{ textAlign: "center" }}>
-            <h1 style={{ marginBottom: "16px", fontSize: "28px", color: "var(--text-primary)" }}>Sign Up</h1>
-            <p style={{ color: "var(--text-secondary)", marginBottom: "32px" }}>Please configure Clerk to continue.</p>
+            <h1 style={{ marginBottom: "16px", fontSize: "24px", fontWeight: 700, color: "var(--text-primary)", textTransform: "uppercase" }}>Sign Up</h1>
+            <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>Please configure Clerk to continue.</p>
           </div>
         )}
       </div>

@@ -4,14 +4,14 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  SentIcon,
-  Comment01Icon,
-  ArrowLeft01Icon,
-  MailEdit01Icon,
-  Search01Icon,
-} from "@hugeicons/core-free-icons";
+import { 
+  PaperPlaneTilt, 
+  CaretLeft, 
+  ChatTeardropText, 
+  NotePencil, 
+  MagnifyingGlass,
+  Plus
+} from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { socket } from "../lib/socket";
@@ -262,10 +262,10 @@ export default function Messages() {
       >
         <div
           style={{
-            width: "40px",
-            height: "40px",
-            border: "3px solid #f1f5f9",
-            borderTopColor: "#0f172a",
+            width: "32px",
+            height: "32px",
+            border: "0.5px solid var(--border-hairline)",
+            borderTopColor: "var(--text-primary)",
             borderRadius: "50%",
             animation: "spin 0.8s linear infinite",
           }}
@@ -282,10 +282,10 @@ export default function Messages() {
         display: "flex",
         flexDirection: isMobile ? "column" : "row",
         height: isMobile ? "calc(100vh - 64px)" : "calc(100vh - 0px)",
-        maxWidth: "1280px",
+        maxWidth: "100%",
         margin: "0 auto",
         overflow: "hidden",
-        backgroundColor: "#fff",
+        backgroundColor: "var(--bg-page)",
       }}
     >
       {/* Sidebar */}
@@ -297,14 +297,15 @@ export default function Messages() {
             flexShrink: 0,
             display: "flex",
             flexDirection: "column",
-            borderRight: isMobile ? "none" : "1px solid #f1f5f9",
+            borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
             height: "100%",
+            backgroundColor: "var(--bg-page)",
           }}
         >
           <div
             style={{
-              padding: isMobile ? "20px 16px" : "24px 20px",
-              borderBottom: "1px solid #f1f5f9",
+              padding: isMobile ? "20px 24px" : "28px 24px",
+              borderBottom: "0.5px solid var(--border-hairline)",
               flexShrink: 0,
             }}
           >
@@ -318,40 +319,42 @@ export default function Messages() {
             >
               <h1
                 style={{
-                  fontSize: isMobile ? "22px" : "24px",
-                  fontWeight: 800,
-                  color: "#0f172a",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
                   margin: 0,
-                  letterSpacing: "-0.03em",
+                  letterSpacing: "0.05em",
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase"
                 }}
               >
-                Messages
+                MESSAGES
               </h1>
               <button
                 onClick={() => setIsNewMessageModalOpen(true)}
                 style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#fff",
-                  color: "#0f172a",
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "2px",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-page)",
+                  color: "var(--text-primary)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   cursor: "pointer",
-                  transition: "all 0.2s",
+                  transition: "all 0.15s ease",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f8fafc";
-                  e.currentTarget.style.borderColor = "#0f172a";
+                  e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                  e.currentTarget.style.borderColor = "var(--text-primary)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#fff";
-                  e.currentTarget.style.borderColor = "#e2e8f0";
+                  e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                  e.currentTarget.style.borderColor = "var(--border-hairline)";
                 }}
               >
-                <HugeiconsIcon icon={MailEdit01Icon} size={22} style={{ width: 22, height: 22 }} />
+                <Plus size={18} weight="thin" />
               </button>
             </div>
 
@@ -359,21 +362,21 @@ export default function Messages() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
-                padding: "12px 16px",
-                backgroundColor: "#f8fafc",
-                borderRadius: "14px",
-                border: "1px solid #e2e8f0",
+                gap: "10px",
+                padding: "10px 14px",
+                backgroundColor: "var(--bg-input)",
+                borderRadius: "2px",
+                border: "0.5px solid var(--border-hairline)",
               }}
             >
-              <HugeiconsIcon
-                icon={Search01Icon}
-                size={20}
-                style={{ color: "#94a3b8", flexShrink: 0 }}
+              <MagnifyingGlass
+                size={16}
+                weight="thin"
+                style={{ color: "var(--text-tertiary)", flexShrink: 0 }}
               />
               <input
                 type="text"
-                placeholder="Search conversations..."
+                placeholder="SEARCH..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -381,8 +384,11 @@ export default function Messages() {
                   background: "none",
                   flex: 1,
                   outline: "none",
-                  fontSize: "15px",
-                  color: "#0f172a",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  fontFamily: "var(--font-mono)",
+                  color: "var(--text-primary)",
+                  textTransform: "uppercase"
                 }}
               />
             </div>
@@ -408,50 +414,47 @@ export default function Messages() {
               >
                 <div
                   style={{
-                    width: "72px",
-                    height: "72px",
-                    borderRadius: "50%",
-                    backgroundColor: "#f1f5f9",
+                    width: "64px",
+                    height: "64px",
+                    borderRadius: "2px",
+                    backgroundColor: "var(--bg-hover)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    border: "0.5px solid var(--border-hairline)"
                   }}
                 >
-                  <HugeiconsIcon
-                    icon={MailEdit01Icon}
-                    size={36}
-                    style={{ color: "#94a3b8", opacity: 0.6 }}
+                  <NotePencil
+                    size={24}
+                    weight="thin"
+                    style={{ color: "var(--text-tertiary)" }}
                   />
                 </div>
                 <div>
-                  <p style={{ fontWeight: 700, color: "#0f172a", margin: 0, fontSize: "16px" }}>
-                    No conversations yet
+                  <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "14px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                    NO CONVERSATIONS
                   </p>
-                  <p style={{ fontSize: "14px", color: "#64748b", marginTop: "6px" }}>
-                    Start a conversation with someone from the community
+                  <p style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "6px" }}>
+                    Start a conversation with someone from the community.
                   </p>
                 </div>
                 <button
                   onClick={() => setIsNewMessageModalOpen(true)}
                   style={{
-                    padding: "12px 24px",
-                    borderRadius: "12px",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    backgroundColor: "#0f172a",
-                    color: "#fff",
+                    padding: "10px 20px",
+                    borderRadius: "2px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    fontFamily: "var(--font-mono)",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
                     border: "none",
                     cursor: "pointer",
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#1e293b";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#0f172a";
+                    transition: "all 0.15s ease",
+                    textTransform: "uppercase"
                   }}
                 >
-                  New message
+                  NEW MESSAGE
                 </button>
               </div>
             )}
@@ -467,23 +470,19 @@ export default function Messages() {
                   }
                 }}
                 style={{
-                  padding: "14px 16px",
+                  padding: "20px",
                   cursor: "pointer",
-                  backgroundColor: activeConvo?.id === convo.id ? "#f8fafc" : "transparent",
-                  borderRadius: "14px",
+                  backgroundColor: activeConvo?.id === convo.id ? "var(--bg-hover)" : "transparent",
+                  borderRadius: "2px",
                   display: "flex",
                   alignItems: "center",
-                  gap: "14px",
-                  marginBottom: "4px",
-                  border:
-                    activeConvo?.id === convo.id
-                      ? "1px solid #e2e8f0"
-                      : "1px solid transparent",
-                  transition: "all 0.2s",
+                  gap: "16px",
+                  borderBottom: "0.5px solid var(--border-hairline)",
+                  transition: "all 0.15s ease",
                 }}
                 onMouseEnter={(e) => {
                   if (activeConvo?.id !== convo.id)
-                    e.currentTarget.style.backgroundColor = "#f8fafc";
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                 }}
                 onMouseLeave={(e) => {
                   if (activeConvo?.id !== convo.id)
@@ -497,11 +496,12 @@ export default function Messages() {
                   }
                   alt=""
                   style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "50%",
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "2px",
                     objectFit: "cover",
                     flexShrink: 0,
+                    border: "0.5px solid var(--border-hairline)"
                   }}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -515,19 +515,19 @@ export default function Messages() {
                   >
                     <div
                       style={{
-                        fontWeight: 700,
-                        fontSize: "15px",
-                        color: "#0f172a",
+                        fontWeight: 600,
+                        fontSize: "14px",
+                        color: "var(--text-primary)",
                         display: "flex",
                         alignItems: "center",
                         gap: "4px",
                       }}
                     >
                       {convo.partner.name}
-                      <VerifiedBadge username={convo.partner.username} size="14px" />
+                      <VerifiedBadge username={convo.partner.username} size="13px" />
                     </div>
                     {convo.last_message && (
-                      <span style={{ fontSize: "12px", color: "#94a3b8", flexShrink: 0 }}>
+                      <span style={{ fontSize: "10px", color: "var(--text-tertiary)", flexShrink: 0, fontFamily: "var(--font-mono)" }}>
                         {new Date(convo.last_message.created_at).toLocaleDateString() ===
                           new Date().toLocaleDateString()
                           ? new Date(convo.last_message.created_at).toLocaleTimeString([], {
@@ -543,8 +543,8 @@ export default function Messages() {
                   </div>
                   <div
                     style={{
-                      fontSize: "14px",
-                      color: convo.unread_count && convo.unread_count > 0 ? "#0f172a" : (activeConvo?.id === convo.id ? "#475569" : "#64748b"),
+                      fontSize: "13px",
+                      color: convo.unread_count && convo.unread_count > 0 ? "var(--text-primary)" : "var(--text-secondary)",
                       fontWeight: convo.unread_count && convo.unread_count > 0 ? 700 : 400,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
@@ -555,13 +555,13 @@ export default function Messages() {
                       gap: "4px"
                     }}
                   >
-                    <div style={{ display: "flex", gap: "4px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div style={{ display: "flex", gap: "6px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", alignItems: "center" }}>
                       {typingUsers[convo.partner.id] ? (
-                        <span style={{ color: "#3b82f6", fontWeight: 700, fontStyle: "italic", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}>typing...</span>
+                        <span style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: "10px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}>typing...</span>
                       ) : convo.last_message ? (
                         <>
                           {convo.last_message.sender_id === currentUser?.id && (
-                            <span style={{ color: "#94a3b8", fontWeight: 600 }}>You:</span>
+                            <span style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "11px", fontFamily: "var(--font-mono)" }}>YOU:</span>
                           )}
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
                             {convo.last_message.content}
@@ -573,10 +573,10 @@ export default function Messages() {
                     </div>
                     {convo.unread_count && convo.unread_count > 0 && (
                       <div style={{
-                        width: "8px",
-                        height: "8px",
+                        width: "6px",
+                        height: "6px",
                         borderRadius: "50%",
-                        backgroundColor: "#3b82f6",
+                        backgroundColor: "var(--text-primary)",
                         flexShrink: 0,
                         marginLeft: "8px"
                       }} />
@@ -598,20 +598,20 @@ export default function Messages() {
             flexDirection: "column",
             minWidth: 0,
             height: "100%",
-            backgroundColor: "#fafafa",
+            backgroundColor: "var(--bg-page)",
           }}
         >
           {activeConvo ? (
             <>
               {/* Header */}
-              <div
+                <div
                 style={{
-                  padding: isMobile ? "16px 20px" : "20px 24px",
-                  borderBottom: "1px solid #e2e8f0",
+                  padding: isMobile ? "20px" : "28px 24px",
+                  borderBottom: "0.5px solid var(--border-hairline)",
                   display: "flex",
                   alignItems: "center",
-                  gap: "14px",
-                  backgroundColor: "#fff",
+                  gap: "16px",
+                  backgroundColor: "var(--bg-page)",
                   flexShrink: 0,
                 }}
               >
@@ -621,19 +621,18 @@ export default function Messages() {
                     style={{
                       background: "none",
                       border: "none",
-                      padding: "8px",
+                      padding: "4px",
                       cursor: "pointer",
-                      marginLeft: "-8px",
-                      color: "#64748b",
+                      marginLeft: "-4px",
+                      color: "var(--text-secondary)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    <HugeiconsIcon
-                      icon={ArrowLeft01Icon}
-                      size={24}
-                      style={{ width: 24, height: 24 }}
+                    <CaretLeft
+                      size={20}
+                      weight="thin"
                     />
                   </button>
                 )}
@@ -644,32 +643,35 @@ export default function Messages() {
                   }
                   alt=""
                   style={{
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "50%",
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "2px",
                     cursor: "pointer",
                     objectFit: "cover",
                     flexShrink: 0,
+                    border: "0.5px solid var(--border-hairline)"
                   }}
                   onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
                 />
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div
+                      <div
                     style={{
                       fontWeight: 700,
                       cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#0f172a",
+                      fontSize: "14px",
+                      color: "var(--text-primary)",
                       display: "flex",
                       alignItems: "center",
-                      gap: "4px",
+                      gap: "6px",
+                      fontFamily: "var(--font-mono)",
+                      letterSpacing: "0.05em"
                     }}
                     onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
                   >
-                    {activeConvo.partner.name}
+                    {activeConvo.partner.name.toUpperCase()}
                     <VerifiedBadge username={activeConvo.partner.username} size="14px" />
                   </div>
-                  <div style={{ fontSize: "13px", color: "#64748b" }}>
+                  <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
                     @{activeConvo.partner.username || "user"}
                   </div>
                 </div>
@@ -699,26 +701,27 @@ export default function Messages() {
                   >
                     <div
                       style={{
-                        width: "80px",
-                        height: "80px",
-                        borderRadius: "50%",
-                        backgroundColor: "#f1f5f9",
+                        width: "64px",
+                        height: "64px",
+                        borderRadius: "2px",
+                        backgroundColor: "var(--bg-hover)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        border: "0.5px solid var(--border-hairline)"
                       }}
                     >
-                      <HugeiconsIcon
-                        icon={Comment01Icon}
-                        size={40}
-                        style={{ color: "#94a3b8", opacity: 0.5 }}
+                      <ChatTeardropText
+                        size={24}
+                        weight="thin"
+                        style={{ color: "var(--text-tertiary)" }}
                       />
                     </div>
                     <div>
-                      <p style={{ fontWeight: 700, color: "#0f172a", margin: 0, fontSize: "16px" }}>
-                        No messages yet
+                      <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                        NO MESSAGES
                       </p>
-                      <p style={{ fontSize: "14px", color: "#64748b", marginTop: "6px" }}>
+                      <p style={{ fontSize: "11px", color: "var(--text-tertiary)", marginTop: "6px" }}>
                         Say hello and start the conversation
                       </p>
                     </div>
@@ -745,9 +748,10 @@ export default function Messages() {
                           fontWeight: 800,
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
-                          color: "#64748b",
-                          marginBottom: "2px",
-                          padding: "0 4px"
+                          color: "var(--text-secondary)",
+                          marginBottom: "4px",
+                          padding: "0 4px",
+                          fontFamily: "var(--font-mono)"
                         }}>
                           {activeConvo.partner.name}
                         </span>
@@ -755,19 +759,13 @@ export default function Messages() {
 
                       <div
                         style={{
-                          padding: "12px 16px",
-                          borderRadius: isMine
-                            ? "18px 18px 4px 18px"
-                            : "18px 18px 18px 4px",
-                          backgroundColor: isMine ? "#0f172a" : "#fff",
-                          color: isMine ? "#fff" : "#0f172a",
-                          fontSize: "15px",
+                          padding: "10px 14px",
+                          borderRadius: "2px",
+                          backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-page)",
+                          color: isMine ? "var(--bg-page)" : "var(--text-primary)",
+                          fontSize: "14px",
                           lineHeight: 1.5,
-                          boxShadow:
-                            isMine
-                              ? "0 2px 8px rgba(15, 23, 42, 0.12)"
-                              : "0 2px 8px rgba(0,0,0,0.04)",
-                          border: isMine ? "none" : "1px solid #e2e8f0",
+                          border: "0.5px solid var(--border-hairline)",
                           wordBreak: "break-word"
                         }}
                       >
@@ -777,8 +775,9 @@ export default function Messages() {
                         <span
                           style={{
                             fontSize: "10px",
-                            color: "#94a3b8",
+                            color: "var(--text-tertiary)",
                             fontWeight: 500,
+                            fontFamily: "var(--font-mono)"
                           }}
                         >
                           {new Date(msg.created_at).toLocaleTimeString([], {
@@ -796,7 +795,7 @@ export default function Messages() {
                           }
                           return idx === lastMyMsgIdx;
                         })() && (
-                          <span style={{ fontSize: "10px", color: "#3b82f6", fontWeight: 700, marginLeft: "2px" }}>Seen</span>
+                          <span style={{ fontSize: "10px", color: "var(--text-primary)", fontWeight: 700, marginLeft: "4px", fontFamily: "var(--font-mono)" }}>SEEN</span>
                         )}
                       </div>
                     </div>
@@ -804,24 +803,22 @@ export default function Messages() {
                 })}
                 
                 {activeConvo && typingUsers[activeConvo.partner.id] && (
-                  <div
-                    style={{
-                      alignSelf: "flex-start",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      padding: "16px",
-                      borderRadius: "18px 18px 18px 4px",
-                      backgroundColor: "#fff",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                      border: "1px solid #e2e8f0",
-                      marginTop: "4px"
-                    }}
-                  >
-                    {/* The animation frames are in the style tag below */}
-                    <div style={{ backgroundColor: "#94a3b8", width: "6px", height: "6px", borderRadius: "50%", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.32s" }} />
-                    <div style={{ backgroundColor: "#94a3b8", width: "6px", height: "6px", borderRadius: "50%", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.16s" }} />
-                    <div style={{ backgroundColor: "#94a3b8", width: "6px", height: "6px", borderRadius: "50%", animation: "typing-bounce 1.4s infinite ease-in-out both" }} />
+                      <div
+                        style={{
+                          alignSelf: "flex-start",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          padding: "12px 16px",
+                          borderRadius: "2px",
+                          backgroundColor: "var(--bg-hover)",
+                          border: "0.5px solid var(--border-hairline)",
+                          marginTop: "4px"
+                        }}
+                      >
+                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "2px", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.32s" }} />
+                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "2px", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.16s" }} />
+                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "2px", animation: "typing-bounce 1.4s infinite ease-in-out both" }} />
                   </div>
                 )}
                 
@@ -831,9 +828,9 @@ export default function Messages() {
               {/* Input */}
               <div
                 style={{
-                  padding: isMobile ? "16px" : "20px 24px",
-                  backgroundColor: "#fff",
-                  borderTop: "1px solid #e2e8f0",
+                  padding: isMobile ? "12px 16px" : "16px 24px",
+                  backgroundColor: "var(--bg-page)",
+                  borderTop: "0.5px solid var(--border-hairline)",
                   flexShrink: 0,
                 }}
               >
@@ -854,47 +851,44 @@ export default function Messages() {
                     placeholder="Type a message..."
                     style={{
                       flex: 1,
-                      padding: isMobile ? "14px 18px" : "16px 20px",
-                      borderRadius: "100px",
-                      border: "1px solid #e2e8f0",
+                      padding: "12px 16px",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
                       outline: "none",
-                      backgroundColor: "#f8fafc",
-                      fontSize: "15px",
-                      color: "#0f172a",
-                      transition: "all 0.2s",
+                      backgroundColor: "var(--bg-input)",
+                      fontSize: "14px",
+                      color: "var(--text-primary)",
+                      transition: "all 0.15s ease",
                       minWidth: 0,
                     }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "#0f172a";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(15, 23, 42, 0.1)";
+                      e.currentTarget.style.borderColor = "var(--text-primary)";
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.borderColor = "var(--border-hairline)";
                     }}
                   />
                   <button
                     type="submit"
                     disabled={!newMessage.trim() || sending}
                     style={{
-                      width: isMobile ? "48px" : "52px",
-                      height: isMobile ? "48px" : "52px",
-                      borderRadius: "50%",
-                      border: "none",
-                      backgroundColor: newMessage.trim() ? "#0f172a" : "#e2e8f0",
-                      color: newMessage.trim() ? "#fff" : "#94a3b8",
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
+                      backgroundColor: newMessage.trim() ? "var(--text-primary)" : "transparent",
+                      color: newMessage.trim() ? "var(--bg-page)" : "var(--text-tertiary)",
                       cursor: newMessage.trim() ? "pointer" : "default",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      transition: "all 0.2s",
+                      transition: "all 0.15s ease",
                       flexShrink: 0,
                     }}
                   >
-                    <HugeiconsIcon
-                      icon={SentIcon}
-                      size={22}
-                      style={{ width: 22, height: 22 }}
+                    <PaperPlaneTilt
+                      size={20}
+                      weight="thin"
                     />
                   </button>
                 </form>
@@ -908,46 +902,49 @@ export default function Messages() {
                 alignItems: "center",
                 justifyContent: "center",
                 flexDirection: "column",
-                gap: "20px",
+                gap: "24px",
                 padding: "40px",
                 textAlign: "center",
-                backgroundColor: "#fafafa",
+                backgroundColor: "var(--bg-page)",
               }}
             >
               <div
                 style={{
-                  width: "96px",
-                  height: "96px",
-                  borderRadius: "50%",
-                  backgroundColor: "#f1f5f9",
+                  width: "72px",
+                  height: "72px",
+                  borderRadius: "2px",
+                  backgroundColor: "var(--bg-hover)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  border: "0.5px solid var(--border-hairline)"
                 }}
               >
-                <HugeiconsIcon
-                  icon={Comment01Icon}
-                  size={48}
-                  style={{ color: "#94a3b8", opacity: 0.5 }}
+                <ChatTeardropText
+                  size={32}
+                  weight="thin"
+                  style={{ color: "var(--text-tertiary)" }}
                 />
               </div>
               <div>
                 <h3
                   style={{
-                    fontSize: "20px",
-                    fontWeight: 800,
-                    color: "#0f172a",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
                     margin: 0,
-                    letterSpacing: "-0.02em",
+                    letterSpacing: "0.05em",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
                 >
-                  Your messages
+                  YOUR MESSAGES
                 </h3>
                 <p
                   style={{
                     margin: "8px 0 0",
-                    fontSize: "15px",
-                    color: "#64748b",
+                    fontSize: "13px",
+                    color: "var(--text-tertiary)",
                     lineHeight: 1.5,
                     maxWidth: "280px",
                   }}

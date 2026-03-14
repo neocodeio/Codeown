@@ -4,20 +4,14 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import {
-    Rocket01Icon,
-    UserGroupIcon,
-    StarIcon
-} from "@hugeicons/core-free-icons";
-import VerifiedBadge from "./VerifiedBadge";
+import { Rocket, Users, Star } from "phosphor-react";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { formatRelativeDate } from "../utils/date";
 
 export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
-    const isDesktop = width >= 1280;
+    const isDesktop = width >= 1100;
     const { getToken } = useClerkAuth();
     const { isSignedIn } = useClerkUser();
     const navigate = useNavigate();
@@ -93,8 +87,7 @@ export default function RecommendedUsersSidebar() {
     };
 
     const streakCount = streakData?.streak_count ?? 0;
-    const isMobile = width < 1280;
-
+    const isMobile = width < 1100;
     if (isMobile) return null;
 
     return (
@@ -103,9 +96,10 @@ export default function RecommendedUsersSidebar() {
             style={{
                 width: "100%",
                 height: "100vh",
-                backgroundColor: "#fff",
-                border: "1px solid #e2e8f0",
+                backgroundColor: "var(--bg-page)",
+                border: "0.5px solid var(--border-hairline)",
                 borderLeft: "none",
+                borderTop: "none",
                 overflowY: "auto",
                 position: "relative",
             }}
@@ -113,26 +107,27 @@ export default function RecommendedUsersSidebar() {
             <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-                .sidebar-section { padding: 20px 20px; border-bottom: 1px solid #f1f5f9; }
+                .sidebar-section { padding: 40px 24px; border-bottom: 0.5px solid var(--border-hairline); }
                 .sidebar-section:last-child { border-bottom: none; }
-                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-                .sidebar-title { font-size: 11px; font-weight: 800; color: #94a3b8; margin: 0; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+                .sidebar-title { font-size: 11px; font-family: var(--font-mono); font-weight: 800; color: var(--text-tertiary); margin: 0; letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
                 .sidebar-item { transition: opacity 0.15s ease; }
-                .sidebar-item:hover { opacity: 0.8; }
+                .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: 2px; animation: skeleton-pulse 2s infinite ease-in-out; }
+                @keyframes skeleton-pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
             `}</style>
 
             {/* Section 1: WHO TO FOLLOW */}
             <div className="sidebar-section">
                 <div className="sidebar-title-row">
                     <h3 className="sidebar-title">
-                        <HugeiconsIcon icon={UserGroupIcon} size={15} />
-                        Who to Follow
+                        <Users size={14} weight="thin" />
+                        WHO TO FOLLOW
                     </h3>
                     {streakCount > 0 && <StreakBadge count={streakCount} />}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     {followersLoading ? (
-                        <div style={{ height: "40px", backgroundColor: "#f8fafc", borderRadius: "8px", animation: "pulse 2s infinite" }} />
+                        <div className="skeleton-pulse" />
                     ) : (
                         users.map(user => (
                             <div
@@ -158,19 +153,17 @@ export default function RecommendedUsersSidebar() {
                                         }}
                                     >
                                         <img
-                                            src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff`}
-                                            style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #f1f5f9" }}
+                                            src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
                                             alt=""
+                                            style={{ width: 48, height: 48, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
                                         />
-                                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "4px" }}>
+                                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                                <span style={{ fontSize: "14px", fontWeight: 800, color: "#0f172a" }}>
+                                                <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
                                                     {user.name.split(" ")[0]}
                                                 </span>
-                                                <VerifiedBadge username={user.username} isPro={user.is_pro} size="13px" />
-                                                {user.streak_count > 0 && <StreakBadge count={user.streak_count} mini />}
                                             </div>
-                                            <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
                                                 @{user.username}
                                             </span>
                                         </div>
@@ -179,20 +172,22 @@ export default function RecommendedUsersSidebar() {
                                 <button
                                     onClick={() => handleFollow(user.id, user.isFollowing)}
                                     style={{
-                                        padding: "0 14px",
-                                        height: "30px",
-                                        borderRadius: "100px",
-                                        backgroundColor: user.isFollowing ? "transparent" : "#0f172a",
-                                        color: user.isFollowing ? "#1e293b" : "#fff",
-                                        border: user.isFollowing ? "1px solid #e2e8f0" : "none",
+                                        padding: "0 12px",
+                                        height: "28px",
+                                        borderRadius: "2px",
+                                        backgroundColor: user.isFollowing ? "transparent" : "var(--text-primary)",
+                                        color: user.isFollowing ? "var(--text-primary)" : "var(--bg-page)",
+                                        border: "0.5px solid var(--border-hairline)",
                                         fontSize: "10px",
-                                        fontWeight: 900,
+                                        fontWeight: 800,
                                         cursor: "pointer",
                                         textTransform: "uppercase",
+                                        letterSpacing: "0.05em",
+                                        fontFamily: "var(--font-mono)",
                                         flexShrink: 0
                                     }}
                                 >
-                                    {user.isFollowing ? "Following" : "Follow"}
+                                    {user.isFollowing ? "Unfollow" : "Follow"}
                                 </button>
                             </div>
                         ))
@@ -202,22 +197,25 @@ export default function RecommendedUsersSidebar() {
 
             {/* Section 2: COMMUNITY SPOTLIGHT */}
             {!spotlightLoading && spotlight.length > 0 && (
-                <div className="sidebar-section" style={{ backgroundColor: "#fff" }}>
+                <div className="sidebar-section">
                     <div className="sidebar-title-row">
                         <h3 className="sidebar-title">
-                            <HugeiconsIcon icon={StarIcon} size={15} />
-                            Leaderboard
+                            <Star size={14} weight="thin" />
+                            LEADERBOARD
                         </h3>
-                        <Link
+                            <Link
                             to="/leaderboard"
                             style={{
-                                fontSize: "12px",
-                                color: "#2563eb",
+                                fontSize: "10px",
+                                color: "var(--text-tertiary)",
                                 textDecoration: "none",
-                                fontWeight: 800
+                                fontWeight: 800,
+                                fontFamily: "var(--font-mono)",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.05em"
                             }}
                         >
-                            This week
+                            THIS WEEK
                         </Link>
                     </div>
                     <div
@@ -241,7 +239,6 @@ export default function RecommendedUsersSidebar() {
                                 .slice(0, 2)
                                 .map((p: string) => p[0]?.toUpperCase())
                                 .join("");
-                            const isTop = rank === 1;
 
                             return (
                                 <Link
@@ -259,9 +256,9 @@ export default function RecommendedUsersSidebar() {
                                     <div
                                         style={{
                                             position: "relative",
-                                            width: "58px",
-                                            height: "58px",
-                                            margin: "0 auto 10px",
+                                            width: "48px",
+                                            height: "48px",
+                                            margin: "0 auto 8px",
                                         }}
                                     >
                                         {user.avatar_url ? (
@@ -269,29 +266,28 @@ export default function RecommendedUsersSidebar() {
                                                 src={user.avatar_url}
                                                 alt=""
                                                 style={{
-                                                    width: "58px",
-                                                    height: "58px",
-                                                    borderRadius: "999px",
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    borderRadius: "2px",
                                                     objectFit: "cover",
-                                                    border: "1px solid #eef2f7",
-                                                    backgroundColor: "#f8fafc",
+                                                    border: "0.5px solid var(--border-hairline)",
+                                                    backgroundColor: "var(--bg-hover)",
                                                 }}
                                             />
                                         ) : (
                                             <div
                                                 style={{
-                                                    width: "58px",
-                                                    height: "58px",
-                                                    borderRadius: "999px",
-                                                    backgroundColor: "#f1f5f9",
-                                                    border: "1px solid #eef2f7",
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    borderRadius: "2px",
+                                                    backgroundColor: "var(--bg-hover)",
+                                                    border: "0.5px solid var(--border-hairline)",
                                                     display: "flex",
                                                     alignItems: "center",
                                                     justifyContent: "center",
-                                                    fontSize: "14px",
-                                                    fontWeight: 900,
-                                                    color: "#0f172a",
-                                                    letterSpacing: "0.02em",
+                                                    fontSize: "12px",
+                                                    fontWeight: 500,
+                                                    color: "var(--text-primary)",
                                                 }}
                                             >
                                                 {initials || "U"}
@@ -301,33 +297,34 @@ export default function RecommendedUsersSidebar() {
                                         <div
                                             style={{
                                                 position: "absolute",
-                                                bottom: "-3px",
-                                                right: "-3px",
-                                                width: "20px",
-                                                height: "20px",
-                                                borderRadius: "999px",
-                                                backgroundColor: isTop ? "#f97316" : "#0f172a",
-                                                color: "#fff",
+                                                top: "-4px",
+                                                left: "-4px",
+                                                padding: "2px 6px",
+                                                backgroundColor: "var(--text-primary)",
+                                                color: "var(--bg-page)",
                                                 display: "flex",
                                                 alignItems: "center",
                                                 justifyContent: "center",
-                                                border: "2px solid #fff",
-                                                fontSize: "11px",
-                                                fontWeight: 900,
+                                                fontSize: "10px",
+                                                fontFamily: "var(--font-mono)",
+                                                fontWeight: 800,
+                                                letterSpacing: "0.05em",
+                                                borderRadius: "1px"
                                             }}
                                         >
-                                            {rank}
+                                            {rank.toString().padStart(2, '0')}
                                         </div>
                                     </div>
 
                                     <div
                                         style={{
-                                            fontSize: "12px",
-                                            fontWeight: 800,
-                                            color: "#0f172a",
+                                            fontSize: "13px",
+                                            fontWeight: 700,
+                                            color: "var(--text-primary)",
                                             overflow: "hidden",
                                             textOverflow: "ellipsis",
                                             whiteSpace: "nowrap",
+                                            letterSpacing: "-0.01em"
                                         }}
                                         title={firstName}
                                     >
@@ -336,14 +333,14 @@ export default function RecommendedUsersSidebar() {
 
                                     <div
                                         style={{
-                                            marginTop: "3px",
-                                            fontSize: "12px",
-                                            fontWeight: 900,
-                                            color: isTop ? "#f97316" : "#64748b",
-                                            lineHeight: 1.1,
+                                            marginTop: "4px",
+                                            fontSize: "11px",
+                                            fontWeight: 800,
+                                            color: "var(--text-secondary)",
+                                            fontFamily: "var(--font-mono)",
                                         }}
                                     >
-                                        {user.pulse_score} P
+                                        {user.pulse_score.toString().padStart(3, '0')}P
                                     </div>
                                 </Link>
                             );
@@ -358,23 +355,23 @@ export default function RecommendedUsersSidebar() {
                 <div className="sidebar-section">
                     <div className="sidebar-title-row">
                         <h3 className="sidebar-title">
-                            <HugeiconsIcon icon={Rocket01Icon} size={15} />
-                            Recent Launches
+                            <Rocket size={14} weight="thin" />
+                            RECENT LAUNCHES
                         </h3>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         {projects.map(project => (
-                            <Link key={project.id} to={`/project/${project.id}`} style={{ display: "flex", gap: "12px", textDecoration: "none" }} className="sidebar-item">
-                                <div style={{ width: "46px", height: "46px", borderRadius: "12px", overflow: "hidden", backgroundColor: "#f1f5f9", flexShrink: 0, border: "1px solid #eff3f4" }}>
+                             <Link key={project.id} to={`/project/${project.id}`} style={{ display: "flex", gap: "16px", textDecoration: "none" }} className="sidebar-item">
+                                <div style={{ width: "44px", height: "44px", borderRadius: "2px", overflow: "hidden", backgroundColor: "var(--bg-hover)", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}>
                                     {project.cover_image ? (
                                         <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
                                     ) : (
-                                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px" }}>🚀</div>
+                                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: "var(--text-tertiary)" }}>•</div>
                                     )}
                                 </div>
-                                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center" }}>
-                                    <span style={{ fontSize: "13px", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{project.title}</span>
-                                    <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600 }}>{formatRelativeDate(project.created_at)}</span>
+                                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center", gap: "4px" }}>
+                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "-0.01em" }}>{project.title}</span>
+                                    <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>{formatRelativeDate(project.created_at).toUpperCase()}</span>
                                 </div>
                             </Link>
                         ))}

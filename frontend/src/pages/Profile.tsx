@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom"; //link
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useSavedPosts } from "../hooks/useSavedPosts";
 import { useUserProjects } from "../hooks/useUserProjects";
@@ -22,28 +22,27 @@ import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import ProfileStrength from "../components/ProfileStrength";
-// import StreakBadge from "../components/StreakBadge";
-import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Pen01Icon,
-  Logout01Icon,
-  Key01Icon,
-  Share01Icon,
-  Calendar03Icon,
-  Layers01Icon,
-  Rocket01Icon,
-  Bookmark01Icon,
-  MoreVerticalIcon,
-  PackageIcon as PushpinIcon,
-  Camera01Icon,
-  Location01Icon,
-  Link02Icon,
-  TwitterIcon,
-  Linkedin01Icon,
-  GithubIcon,
-  ChartBarLineIcon,
-  IdIcon,
-} from '@hugeicons/core-free-icons';
+  PencilSimple,
+  SignOut,
+  Key,
+  ShareNetwork,
+  CalendarBlank,
+  SquaresFour,
+  Rocket,
+  BookmarkSimple,
+  DotsThreeVertical,
+  PushPin,
+  Camera,
+  MapPin,
+  Link as LinkIcon,
+  TwitterLogo,
+  LinkedinLogo,
+  GithubLogo,
+  ChartBar,
+  IdentificationCard,
+  Plus
+} from "phosphor-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -194,96 +193,72 @@ export default function Profile() {
 
 
   if (!isLoaded) return (
-    <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
       <div style={{
         maxWidth: "1000px",
         margin: "0 auto",
         padding: isMobile ? "0" : "40px 20px"
       }}>
         {/* Banner Skeleton */}
-        <div style={{
+        <div className="skeleton-pulse" style={{
           width: "100%",
           height: isMobile ? "200px" : "320px",
-          borderRadius: "32px",
-          backgroundColor: "#e2e8f0",
+          borderRadius: "0",
+          backgroundColor: "var(--bg-hover)",
           position: "relative",
           marginBottom: isMobile ? "60px" : "80px",
-          animation: "pulse 1.5s infinite ease-in-out"
         }}>
           {/* Avatar Skeleton */}
-          <div style={{
+          <div className="skeleton-pulse" style={{
             position: "absolute",
             bottom: isMobile ? "-40px" : "-60px",
             left: isMobile ? "50%" : "40px",
             transform: isMobile ? "translateX(-50%)" : "none",
             width: isMobile ? "100px" : "150px",
             height: isMobile ? "100px" : "150px",
-            borderRadius: "100%",
-            border: "4px solid white",
-            backgroundColor: "#cbd5e1",
+            borderRadius: "2px",
+            border: "4px solid var(--bg-page)",
+            backgroundColor: "var(--bg-page)",
             zIndex: 10
           }} />
         </div>
 
         {/* User Info Skeleton */}
         <div style={{
-          padding: isMobile ? "0 4px" : "0 10px",
+          padding: "0 24px",
           display: "flex",
           flexDirection: "column",
-          gap: "24px"
+          gap: "32px"
         }}>
           <div style={{
             display: "flex",
-            alignItems: isMobile ? "center" : "flex-end",
+            alignItems: "flex-end",
             justifyContent: "space-between",
             flexDirection: isMobile ? "column" : "row",
-            gap: "20px"
+            gap: "24px"
           }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", alignItems: isMobile ? "center" : "flex-start" }}>
-              <div style={{ width: "60%", height: "40px", backgroundColor: "#e2e8f0", borderRadius: "8px", animation: "pulse 1.5s infinite ease-in-out" }} />
-              <div style={{ width: "30%", height: "24px", backgroundColor: "#f1f5f9", borderRadius: "6px", animation: "pulse 1.5s infinite ease-in-out" }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
+              <div className="skeleton-pulse" style={{ width: "40%", height: "32px" }} />
+              <div className="skeleton-pulse" style={{ width: "20%", height: "20px" }} />
             </div>
 
             <div style={{ display: "flex", gap: "12px" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
-              <div style={{ width: "140px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
-              <div style={{ width: "44px", height: "44px", borderRadius: "100px", backgroundColor: "#e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
+              <div className="skeleton-pulse" style={{ width: "44px", height: "44px" }} />
+              <div className="skeleton-pulse" style={{ width: "120px", height: "44px" }} />
             </div>
-          </div>
-
-          <div style={{ width: "100%", maxWidth: "600px", display: "flex", flexDirection: "column", gap: "8px", alignItems: isMobile ? "center" : "flex-start" }}>
-            <div style={{ width: "100%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "90%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "80%", height: "16px", backgroundColor: "#f1f5f9", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-          </div>
-
-          <div style={{ display: "flex", gap: "24px", justifyContent: isMobile ? "center" : "flex-start" }}>
-            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "80px", height: "20px", backgroundColor: "#e2e8f0", borderRadius: "4px", animation: "pulse 1.5s infinite ease-in-out" }} />
-          </div>
-        </div>
-
-        {/* Content Skeleton (mimics tabs and posts) */}
-        <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "32px", alignItems: isMobile ? "center" : "flex-start" }}>
-          {/* Tabs */}
-          <div style={{ display: "flex", gap: "12px" }}>
-            <div style={{ width: "100px", height: "40px", backgroundColor: "#e2e8f0", borderRadius: "12px", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "100px", height: "40px", backgroundColor: "#f1f5f9", borderRadius: "12px", animation: "pulse 1.5s infinite ease-in-out" }} />
-          </div>
-
-          {/* Content Grid */}
-          <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px" }}>
-            <div style={{ width: "100%", height: "200px", backgroundColor: "#fff", borderRadius: "24px", border: "1px solid #e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
-            <div style={{ width: "100%", height: "200px", backgroundColor: "#fff", borderRadius: "24px", border: "1px solid #e2e8f0", animation: "pulse 1.5s infinite ease-in-out" }} />
           </div>
         </div>
       </div>
       <style>{`
-        @keyframes pulse {
-          0% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(0.995); }
-          100% { opacity: 1; transform: scale(1); }
+        .skeleton-pulse {
+          background-color: var(--bg-hover);
+          border-radius: 2px;
+          animation: skeleton-pulse-anim 2s infinite ease-in-out;
+        }
+        @keyframes skeleton-pulse-anim {
+          0% { opacity: 0.5; }
+          50% { opacity: 1; }
+          100% { opacity: 0.5; }
         }
       `}</style>
     </main>
@@ -294,7 +269,7 @@ export default function Profile() {
   const avatarUrl = userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "U")}&background=212121&color=fff&bold=true`;
 
   return (
-  <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+  <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
       <SEO title="My Profile" description="Manage your Codeown profile and settings." />
       <style>{`
         @keyframes tabContentEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -311,11 +286,12 @@ export default function Profile() {
         {/* Banner Section */}
         <div style={{
           width: "100%",
-          height: isMobile ? "160px" : "200px",
-          backgroundColor: "#f1f5f9",
+          height: isMobile ? "160px" : "240px",
+          backgroundColor: "#fcfcfc",
           position: "relative",
           overflow: "hidden",
-          borderRadius: isMobile ? "0" : "12px",
+          borderRadius: "0",
+          borderBottom: "0.5px solid var(--border-hairline)",
           marginBottom: 0
         }}>
           {userProfile?.banner_url ? (
@@ -328,7 +304,7 @@ export default function Profile() {
             <div style={{
               width: "100%",
               height: "100%",
-              background: "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)",
+              backgroundColor: "var(--bg-hover)",
             }} />
           )}
           <button
@@ -336,22 +312,22 @@ export default function Profile() {
             title="Change banner"
             style={{
               position: "absolute",
-              top: "12px",
-              right: "12px",
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              border: "none",
-              backgroundColor: "rgba(255,255,255,0.9)",
-              color: "#64748b",
+              top: "16px",
+              right: "16px",
+              width: "36px",
+              height: "36px",
+              borderRadius: "2px",
+              border: "0.5px solid var(--border-hairline)",
+              backgroundColor: "var(--bg-page)",
+              color: "var(--text-secondary)",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              backdropFilter: "blur(4px)",
             }}
           >
-            <HugeiconsIcon icon={Camera01Icon} size={24} style={{ width: 24, height: 24, flexShrink: 0 }} />
+            <Camera size={20} weight="thin" />
           </button>
         </div>
 
@@ -368,14 +344,13 @@ export default function Profile() {
             style={{
               width: isMobile ? "96px" : "120px",
               height: isMobile ? "96px" : "120px",
-              borderRadius: "50%",
-              border: "4px solid #fff",
-              backgroundColor: "#fff",
+              borderRadius: "2px",
+              border: "4px solid var(--bg-page)",
+              backgroundColor: "var(--bg-page)",
               cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
               flexShrink: 0,
-              marginBottom: "16px",
-              // No overflow:hidden so AvailabilityBadge briefcase icon can show
+              marginBottom: "20px",
+              position: "relative",
             }}
           >
             <AvailabilityBadge
@@ -383,7 +358,6 @@ export default function Profile() {
               name={userProfile?.name || user?.fullName || "User"}
               size={isMobile ? 96 : 120}
               isOpenToOpportunities={userProfile?.is_pro === true && userProfile?.is_hirable === true}
-              ringColor="#0f172a"
             />
           </div>
 
@@ -424,12 +398,13 @@ export default function Profile() {
                 {userProfile?.is_pro === true && (
                   <span style={{
                     fontSize: isMobile ? 10 : 11,
-                    fontWeight: 700,
+                    fontWeight: 800,
                     padding: "4px 8px",
-                    borderRadius: 6,
-                    backgroundColor: "#0f172a",
-                    color: "#fff",
-                    letterSpacing: "0.02em",
+                    borderRadius: "1px",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
+                    letterSpacing: "0.1em",
+                    fontFamily: "var(--font-mono)"
                   }}>PRO</span>
                 )}
               </h1>
@@ -460,73 +435,77 @@ export default function Profile() {
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 style={{
-                  padding: "10px",
-                  borderRadius: "30px",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#ffffff",
-                  color: "#1e293b",
+                  padding: "8px 16px",
+                  borderRadius: "2px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  fontFamily: "var(--font-mono)",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-page)",
+                  color: "var(--text-primary)",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   gap: "8px",
                   whiteSpace: "nowrap",
-                  transition: "all 0.2s ease",
+                  transition: "all 0.15s ease",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em"
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
               >
-                <HugeiconsIcon icon={Pen01Icon} size={16} />
-                Edit Profile
+                <PencilSimple size={16} weight="thin" />
+                EDIT PROFILE
               </button>
               {userProfile?.is_pro && (
                 <button
                   onClick={() => navigate("/analytics")}
                   style={{
-                    padding: "10px 18px",
-                    borderRadius: "30px",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    border: "1px solid #e2e8f0",
-                    backgroundColor: "#ffffff",
-                    color: "#1e293b",
+                    padding: "8px 16px",
+                    borderRadius: "2px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    fontFamily: "var(--font-mono)",
+                    border: "0.5px solid var(--border-hairline)",
+                    backgroundColor: "transparent",
+                    color: "var(--text-primary)",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
                     whiteSpace: "nowrap",
-                    transition: "all 0.2s ease",
+                    transition: "all 0.15s ease",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
-                  <HugeiconsIcon icon={ChartBarLineIcon} size={16} />
-                  Analytics
-                  <span style={{ fontSize: '9px', backgroundColor: '#000', color: '#fff', padding: '2px 5px', borderRadius: '4px', fontWeight: 900 }}>PRO</span>
+                  <ChartBar size={16} weight="thin" />
+                  ANALYTICS
+                  <span style={{ fontSize: '9px', backgroundColor: 'var(--text-primary)', color: 'var(--bg-page)', padding: '2px 4px', borderRadius: '1px', fontWeight: 700 }}>PRO</span>
                 </button>
               )}
               <button
                 onClick={() => setIsIDCardModalOpen(true)}
                 style={{
-                  padding: "10px",
-                  borderRadius: "30px",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#ffffff",
-                  color: "#1e293b",
+                  padding: "8px",
+                  borderRadius: "2px",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-page)",
+                  color: "var(--text-primary)",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.2s ease",
+                  justifyContent: "center",
+                  transition: "all 0.15s ease",
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
+                title="View ID card"
               >
-                <HugeiconsIcon icon={IdIcon} size={20} />
+                <IdentificationCard size={18} weight="thin" />
               </button>
             </div>
 
@@ -545,48 +524,37 @@ export default function Profile() {
                   navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
                 }}
                 style={{
-                  padding: "10px",
-                  borderRadius: "30px",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#ffffff",
-                  color: "#1e293b",
+                  padding: "8px",
+                  borderRadius: "2px",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-page)",
+                  color: "var(--text-primary)",
                   cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.2s ease",
+                  transition: "all 0.15s ease",
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
-                title="Share"
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
+                title="Share profile"
               >
-                <HugeiconsIcon icon={Share01Icon} size={18} />
+                <ShareNetwork size={18} weight="thin" />
               </button>
               <div style={{ position: "relative" }}>
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
                   style={{
-                    padding: "10px",
-                    borderRadius: "30px",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    border: "1px solid #e2e8f0",
-                    backgroundColor: "#ffffff",
-                    color: "#1e293b",
+                    padding: "8px",
+                    borderRadius: "2px",
+                    border: "0.5px solid var(--border-hairline)",
+                    backgroundColor: "var(--bg-page)",
+                    color: "var(--text-primary)",
                     cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    whiteSpace: "nowrap",
-                    transition: "all 0.2s ease",
+                    transition: "all 0.15s ease",
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#ffffff"}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
+                  title="More options"
                 >
-                  <HugeiconsIcon icon={MoreVerticalIcon} size={18} />
+                  <DotsThreeVertical size={18} weight="thin" />
                 </button>
                 {isMenuOpen && createPortal(
                   <>
@@ -609,47 +577,51 @@ export default function Profile() {
                       width: isMobile ? "100%" : "280px",
                       zIndex: 10001,
                       padding: "12px",
-                      backgroundColor: "#fff",
-                      borderRadius: isMobile ? "16px 16px 0 0" : "12px",
-                      boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
+                      backgroundColor: "var(--bg-page)",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
+                      boxShadow: "none",
                     }} onClick={(e) => e.stopPropagation()}>
-                      <button
+                       <button
                         style={{
                           width: "100%",
-                          padding: "12px 16px",
+                          padding: "10px 14px",
                           border: "none",
                           background: "none",
-                          borderRadius: "8px",
+                          borderRadius: "2px",
                           textAlign: "left",
                           cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
                           gap: "12px",
                           fontWeight: 600,
+                          fontSize: "13px",
+                          color: "var(--text-primary)",
                         }}
                         onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }}
                       >
-                        <HugeiconsIcon icon={Key01Icon} size={20} />
+                        <Key size={18} weight="thin" />
                         Reset Password
                       </button>
                       <button
                         style={{
                           width: "100%",
-                          padding: "12px 16px",
+                          padding: "10px 14px",
                           border: "none",
                           background: "none",
-                          borderRadius: "8px",
+                          borderRadius: "2px",
                           textAlign: "left",
                           cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
                           gap: "12px",
                           fontWeight: 600,
-                          color: "#dc2626",
+                          fontSize: "13px",
+                          color: "#ef4444",
                         }}
                         onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                       >
-                        <HugeiconsIcon icon={Logout01Icon} size={20} />
+                        <SignOut size={18} weight="thin" />
                         Sign Out
                       </button>
                     </div>
@@ -660,12 +632,12 @@ export default function Profile() {
             </div>
           </div>
 
-          <span style={{ fontSize: "15px", color: "#64748b", display: "block", marginBottom: "12px" }}>
+          <span style={{ fontSize: "14px", color: "var(--text-tertiary)", display: "block", marginBottom: "16px", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
             @{userProfile?.username || user?.username}
           </span>
 
           {userProfile?.bio && (
-            <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#334155", margin: "0 0 12px 0" }}>
+            <p style={{ fontSize: "15px", lineHeight: 1.6, color: "var(--text-secondary)", margin: "0 0 24px 0" }}>
               <BioRenderer bio={userProfile.bio} />
             </p>
           )}
@@ -674,15 +646,17 @@ export default function Profile() {
           <div style={{
             display: "flex",
             flexWrap: "wrap",
-            gap: "16px 24px",
+            gap: "20px",
             alignItems: "center",
-            color: "#64748b",
-            fontSize: "14px",
-            marginBottom: "12px",
+            color: "var(--text-tertiary)",
+            fontSize: "11px",
+            fontFamily: "var(--font-mono)",
+            marginBottom: "20px",
+            textTransform: "uppercase"
           }}>
             {userProfile?.location && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <HugeiconsIcon icon={Location01Icon} size={16} />
+                <MapPin size={14} weight="thin" />
                 {userProfile.location}
               </span>
             )}
@@ -695,18 +669,18 @@ export default function Profile() {
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
-                  color: "#2563eb",
-                  textDecoration: "underline",
+                  color: "var(--text-primary)",
+                  textDecoration: "none",
                 }}
               >
-                <HugeiconsIcon icon={Link02Icon} size={16} />
+                <LinkIcon size={14} weight="thin" />
                 {userProfile.website_url.replace(/^https?:\/\//, "")}
               </a>
             )}
             {userProfile?.created_at && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <HugeiconsIcon icon={Calendar03Icon} size={16} />
-                Joined {formatProfileJoinDate(userProfile.created_at)}
+                <CalendarBlank size={14} weight="thin" />
+                JOINED {formatProfileJoinDate(userProfile.created_at).toUpperCase()}
               </span>
             )}
           </div>
@@ -717,28 +691,23 @@ export default function Profile() {
               display: "flex",
               flexWrap: "wrap",
               gap: "8px",
-              marginBottom: "16px",
+              marginBottom: "32px",
             }}>
               {userProfile.skills.map((skill, index) => (
                 <span
                   key={index}
                   style={{
-                    fontSize: "13px",
-                    fontWeight: 600,
+                    fontSize: "10px",
+                    fontWeight: 800,
+                    fontFamily: "var(--font-mono)",
                     padding: "6px 14px",
-                    backgroundColor: "#f1f5f9",
-                    color: "#475569",
-                    borderRadius: "100px",
-                    border: "1px solid #e2e8f0",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#e2e8f0";
-                    e.currentTarget.style.color = "#0f172a";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f1f5f9";
-                    e.currentTarget.style.color = "#475569";
+                    backgroundColor: "var(--bg-hover)",
+                    color: "var(--text-primary)",
+                    borderRadius: "2px",
+                    border: "0.5px solid var(--border-hairline)",
+                    transition: "all 0.15s ease",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em"
                   }}
                 >
                   {skill}
@@ -754,7 +723,7 @@ export default function Profile() {
             alignItems: "center",
             gap: "20px",
           }}>
-            <div style={{ display: "flex", gap: "16px" }}>
+            <div style={{ display: "flex", gap: "24px" }}>
               <button
                 onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }}
                 style={{
@@ -762,12 +731,15 @@ export default function Profile() {
                   background: "none",
                   cursor: "pointer",
                   padding: 0,
-                  fontSize: "15px",
-                  color: "#0f172a",
-                  fontWeight: 600,
+                  fontSize: "14px",
+                  color: "var(--text-primary)",
+                  fontWeight: 800,
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em"
                 }}
               >
-                {userProfile?.follower_count ?? 0} <span style={{ color: "#64748b", fontWeight: 500 }}>followers</span>
+                {userProfile?.follower_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>FOLLOWERS</span>
               </button>
               <button
                 onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
@@ -776,33 +748,36 @@ export default function Profile() {
                   background: "none",
                   cursor: "pointer",
                   padding: 0,
-                  fontSize: "15px",
-                  color: "#0f172a",
-                  fontWeight: 600,
+                  fontSize: "14px",
+                  color: "var(--text-primary)",
+                  fontWeight: 800,
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em"
                 }}
               >
-                {userProfile?.following_count ?? 0} <span style={{ color: "#64748b", fontWeight: 500 }}>following</span>
+                {userProfile?.following_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>FOLLOWING</span>
               </button>
             </div>
             <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
               {userProfile?.twitter_url && (
-                <a href={userProfile.twitter_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="Twitter">
-                  <HugeiconsIcon icon={TwitterIcon} size={20} />
+                <a href={userProfile.twitter_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)" }} aria-label="Twitter">
+                  <TwitterLogo size={20} weight="thin" />
                 </a>
               )}
               {userProfile?.linkedin_url && (
-                <a href={userProfile.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="LinkedIn">
-                  <HugeiconsIcon icon={Linkedin01Icon} size={20} />
+                <a href={userProfile.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)" }} aria-label="LinkedIn">
+                  <LinkedinLogo size={20} weight="thin" />
                 </a>
               )}
               {userProfile?.github_url && (
-                <a href={userProfile.github_url} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="GitHub">
-                  <HugeiconsIcon icon={GithubIcon} size={20} />
+                <a href={userProfile.github_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)" }} aria-label="GitHub">
+                  <GithubLogo size={20} weight="thin" />
                 </a>
               )}
-              {userProfile?.website_url && (
-                <a href={userProfile.website_url.startsWith("http") ? userProfile.website_url : `https://${userProfile.website_url}`} target="_blank" rel="noreferrer" style={{ color: "#0f172a" }} aria-label="Website">
-                  <HugeiconsIcon icon={Link02Icon} size={20} />
+               {userProfile?.website_url && (
+                <a href={userProfile.website_url.startsWith("http") ? userProfile.website_url : `https://${userProfile.website_url}`} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)" }} aria-label="Website">
+                  <LinkIcon size={20} weight="thin" />
                 </a>
               )}
             </div>
@@ -820,113 +795,86 @@ export default function Profile() {
         {/* Tabs + Content */}
         <div style={{
           padding: `0 ${innerPaddingX}px`,
-          borderTop: "1px solid #e2e8f0",
+          borderTop: "0.5px solid var(--border-hairline)",
         }}>
           <div className="tabs-row" style={{
             display: "flex",
-            gap: "0px",
+            gap: "32px",
             marginBottom: "0px",
-            marginTop: "8px",
+            marginTop: "0",
             overflowX: "auto",
             WebkitOverflowScrolling: "touch",
-            borderBottom: "1px solid #e2e8f0",
+            borderBottom: "0.5px solid var(--border-hairline)",
             position: "relative",
           }}>
             <button
               onClick={() => setActiveTab("posts")}
               style={{
-                flex: isMobile ? "1" : "none",
-                minWidth: isMobile ? "0" : "100px",
-                padding: "16px 20px",
-                fontSize: "15px",
-                fontWeight: activeTab === "posts" ? 700 : 600,
-                color: activeTab === "posts" ? "#0f172a" : "#64748b",
+                flex: "none",
+                padding: "20px 0",
+                fontSize: "12px",
+                fontWeight: 600,
+                fontFamily: "var(--font-mono)",
+                color: activeTab === "posts" ? "var(--text-primary)" : "var(--text-tertiary)",
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 position: "relative",
                 transition: "all 0.2s ease",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                borderBottom: activeTab === "posts" ? "2px solid var(--text-primary)" : "2px solid transparent",
+                borderRadius: "0"
               }}
-              onMouseEnter={(e) => { if (activeTab !== "posts") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
-              Posts
-              {activeTab === "posts" && (
-                <div style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: "25%",
-                  right: "25%",
-                  height: "3px",
-                  backgroundColor: "#0f172a",
-                  borderRadius: "2px 2px 0 0"
-                }} />
-              )}
+              POSTS
             </button>
             <button
               onClick={() => setActiveTab("projects")}
               style={{
-                flex: isMobile ? "1" : "none",
-                minWidth: isMobile ? "0" : "100px",
-                padding: "16px 20px",
-                fontSize: "15px",
-                fontWeight: activeTab === "projects" ? 700 : 600,
-                color: activeTab === "projects" ? "#0f172a" : "#64748b",
+                flex: "none",
+                padding: "20px 0",
+                fontSize: "12px",
+                fontWeight: 600,
+                fontFamily: "var(--font-mono)",
+                color: activeTab === "projects" ? "var(--text-primary)" : "var(--text-tertiary)",
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 position: "relative",
                 transition: "all 0.2s ease",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                borderBottom: activeTab === "projects" ? "2px solid var(--text-primary)" : "2px solid transparent",
+                borderRadius: "0"
               }}
-              onMouseEnter={(e) => { if (activeTab !== "projects") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
-              Projects
-              {activeTab === "projects" && (
-                <div style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: "25%",
-                  right: "25%",
-                  height: "3px",
-                  backgroundColor: "#0f172a",
-                  borderRadius: "2px 2px 0 0"
-                }} />
-              )}
+              PROJECTS
             </button>
             <button
               onClick={() => setActiveTab("saved")}
               style={{
-                flex: isMobile ? "1" : "none",
-                minWidth: isMobile ? "0" : "100px",
-                padding: "16px 20px",
-                fontSize: "15px",
-                fontWeight: activeTab === "saved" ? 700 : 600,
-                color: activeTab === "saved" ? "#0f172a" : "#64748b",
+                flex: "none",
+                padding: "20px 0",
+                fontSize: "12px",
+                fontWeight: 600,
+                fontFamily: "var(--font-mono)",
+                color: activeTab === "saved" ? "var(--text-primary)" : "var(--text-tertiary)",
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 position: "relative",
                 transition: "all 0.2s ease",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                borderBottom: activeTab === "saved" ? "2px solid var(--text-primary)" : "2px solid transparent",
+                borderRadius: "0"
               }}
-              onMouseEnter={(e) => { if (activeTab !== "saved") e.currentTarget.style.backgroundColor = "#f8fafc"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
-              Saved
-              {activeTab === "saved" && (
-                <div style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: "25%",
-                  right: "25%",
-                  height: "3px",
-                  backgroundColor: "#0f172a",
-                  borderRadius: "2px 2px 0 0"
-                }} />
-              )}
+              SAVED
             </button>
           </div>
 
@@ -934,17 +882,17 @@ export default function Profile() {
             {activeTab === "posts" && (
               <div className="tab-content-enter">
                 {posts.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "60px 20px" }}>
-                    <HugeiconsIcon icon={Layers01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
-                    <p style={{ color: "#64748b", fontWeight: 700 }}>Share your first post with the community.</p>
+                  <div style={{ textAlign: "center", padding: "80px 20px" }}>
+                    <SquaresFour size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                    <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No posts yet.</p>
                   </div>
                 ) : (
                   posts.map((p) => (
                     <div key={p.id} style={{ position: "relative" }}>
                       {userProfile?.pinned_post_id === p.id && (
-                        <div style={{ padding: "12px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "#64748b", fontSize: "13px", fontWeight: 700 }}>
-                          <HugeiconsIcon icon={PushpinIcon} size={14} />
-                          Pinned Post
+                        <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "10px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                          <PushPin size={12} weight="fill" />
+                          PINNED
                         </div>
                       )}
                       <PostCard post={p} onUpdated={fetchUserPosts} />
@@ -957,24 +905,27 @@ export default function Profile() {
             {activeTab === "projects" && (
               <div className="tab-content-enter">
                 {projects.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "60px 20px" }}>
-                    <HugeiconsIcon icon={Rocket01Icon} size={48} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
-                    <p style={{ color: "#64748b", fontWeight: 700 }}>Showcase your best projects.</p>
+                  <div style={{ textAlign: "center", padding: "80px 20px" }}>
+                    <Rocket size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                    <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px", marginBottom: "24px" }}>No projects added yet.</p>
                     <button
                       onClick={() => setIsProjectModalOpen(true)}
                       style={{
-                        margin: "16px auto",
-                        padding: "10px 20px",
-                        borderRadius: "8px",
-                        fontSize: "14px",
+                        margin: "0 auto",
+                        padding: "10px 24px",
+                        borderRadius: "2px",
+                        fontSize: "12px",
                         fontWeight: 600,
+                        backgroundColor: "var(--text-primary)",
+                        color: "var(--bg-page)",
                         border: "none",
-                        backgroundColor: "#0f172a",
-                        color: "#fff",
                         cursor: "pointer",
+                        fontFamily: "var(--font-mono)",
+                        textTransform: "uppercase"
                       }}
                     >
-                      Add Project
+                      <Plus size={14} weight="bold" style={{ marginRight: '8px' }} />
+                      NEW PROJECT
                     </button>
                   </div>
                 ) : (
@@ -988,57 +939,59 @@ export default function Profile() {
 
             {activeTab === "saved" && (
               <div className="tab-content-enter">
-                <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "32px", marginTop: "12px" }}>
                   <button
                     onClick={() => setSavedSubTab("posts")}
                     style={{
-                      padding: "8px 16px",
-                      fontSize: "12px",
-                      fontWeight: 800,
-                      borderRadius: "100px",
-                      border: "1px solid",
-                      borderColor: savedSubTab === "posts" ? "#0f172a" : "#e2e8f0",
-                      backgroundColor: savedSubTab === "posts" ? "#0f172a" : "white",
-                      color: savedSubTab === "posts" ? "white" : "#64748b",
+                      padding: "6px 14px",
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      fontFamily: "var(--font-mono)",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
+                      backgroundColor: savedSubTab === "posts" ? "var(--text-primary)" : "transparent",
+                      color: savedSubTab === "posts" ? "var(--bg-page)" : "var(--text-tertiary)",
                       cursor: "pointer",
-                      transition: "all 0.2s"
+                      transition: "all 0.2s",
+                      textTransform: "uppercase"
                     }}
                   >
-                    Saved Posts
+                    POSTS
                   </button>
                   <button
                     onClick={() => setSavedSubTab("projects")}
                     style={{
-                      padding: "8px 16px",
-                      fontSize: "12px",
-                      fontWeight: 800,
-                      borderRadius: "100px",
-                      border: "1px solid",
-                      borderColor: savedSubTab === "projects" ? "#0f172a" : "#e2e8f0",
-                      backgroundColor: savedSubTab === "projects" ? "#0f172a" : "white",
-                      color: savedSubTab === "projects" ? "white" : "#64748b",
+                      padding: "6px 14px",
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      fontFamily: "var(--font-mono)",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
+                      backgroundColor: savedSubTab === "projects" ? "var(--text-primary)" : "transparent",
+                      color: savedSubTab === "projects" ? "var(--bg-page)" : "var(--text-tertiary)",
                       cursor: "pointer",
-                      transition: "all 0.2s"
+                      transition: "all 0.2s",
+                      textTransform: "uppercase"
                     }}
                   >
-                    Saved Projects
+                    PROJECTS
                   </button>
                 </div>
 
                 {savedSubTab === "posts" ? (
                   savedPosts.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "64px" }}>
-                      <HugeiconsIcon icon={Bookmark01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px" }} />
-                      <p style={{ color: "#64748b", fontWeight: 600 }}>No saved posts yet.</p>
+                    <div style={{ textAlign: "center", padding: "80px 20px" }}>
+                      <BookmarkSimple size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                      <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No saved posts.</p>
                     </div>
                   ) : (
                     savedPosts.map((p) => <PostCard key={p.id} post={p} onUpdated={fetchSavedPosts} />)
                   )
                 ) : (
                   savedProjects.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "64px" }}>
-                      <HugeiconsIcon icon={Bookmark01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px" }} />
-                      <p style={{ color: "#64748b", fontWeight: 600 }}>No saved projects yet.</p>
+                    <div style={{ textAlign: "center", padding: "80px 20px" }}>
+                      <BookmarkSimple size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                      <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No saved projects.</p>
                     </div>
                   ) : (
                     savedProjects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />)
@@ -1096,9 +1049,9 @@ export default function Profile() {
             username: userProfile.username,
             avatar_url: userProfile.avatar_url,
             created_at: userProfile.created_at,
-            skills: userProfile.skills,
-            is_pro: userProfile.is_pro,
-            bio: userProfile.bio
+            skills: userProfile.skills || [],
+            is_pro: userProfile.is_pro || false,
+            bio: userProfile.bio || ""
           }}
           projectsCount={projects.length}
         />

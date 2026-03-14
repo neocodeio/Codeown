@@ -11,9 +11,7 @@ import {
   faHeading,
   faQuoteRight,
   faListUl,
-  faLink,
-  faEye,
-  faEdit
+  faLink
 } from "@fortawesome/free-solid-svg-icons";
 import MentionInput from "./MentionInput";
 import ContentRenderer from "./ContentRenderer";
@@ -216,16 +214,17 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
       <div
         className="modal-content-wrapper"
         style={{
-          backgroundColor: "#ffffff",
-          borderRadius: "24px",
+          backgroundColor: "var(--bg-page)",
+          borderRadius: "2px",
           width: "100%",
-          maxWidth: "600px",
+          maxWidth: "700px",
           maxHeight: "90vh",
           display: "flex",
           flexDirection: "column",
-          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+          boxShadow: "none",
+          border: "0.5px solid var(--border-hairline)",
           overflow: "hidden",
-          animation: "modalSlideIn 0.3s ease-out",
+          animation: "modalSlideIn 0.2s ease-out",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -235,36 +234,40 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
             to { opacity: 1; transform: translateY(0); }
           }
           .toolbar-btn {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
-            border: none;
+            borderRadius: 2px;
+            border: 0.5px solid transparent;
             background: transparent;
-            color: #64748b;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
           }
           .toolbar-btn:hover {
-            background-color: #f1f5f9;
-            color: #0f172a;
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hairline);
           }
           .tab-btn {
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 10px 20px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: var(--font-mono);
             border: none;
             background: transparent;
-            color: #64748b;
+            color: var(--text-tertiary);
             cursor: pointer;
             border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            transition: all 0.15s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
           }
           .tab-btn.active {
-            color: #212121;
-            border-bottom-color: #212121;
+            color: var(--text-primary);
+            border-bottom-color: var(--text-primary);
           }
           
           @media (max-width: 640px) {
@@ -273,62 +276,26 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               max-width: 100vw !important;
               height: 100% !important;
               width: 100% !important;
-              border-radius: 25px !important;
+              border-radius: 2px !important;
+              border: none !important;
               margin: 0 !important;
-            }
-            .modal-header {
-              padding: 16px !important;
-            }
-            .modal-body {
-              padding: 16px !important;
-            }
-            .modal-footer {
-              padding: 12px 16px !important;
-              flex-direction: column-reverse !important;
-              gap: 8px !important;
-            }
-            .modal-footer button {
-              width: 100% !important;
-              padding: 12px !important;
-            }
-            .title-input {
-              font-size: 20px !important;
-            }
-            .toolbar-container {
-              gap: 2px !important;
-              padding: 2px !important;
-            }
-            .toolbar-btn {
-              width: 30px !important;
-              height: 30px !important;
-            }
-            .divider {
-              height: 16px !important;
-              margin: 7px 2px !important;
-            }
-            .tags-label {
-              font-size: 13px !important;
-            }
-            .tag-input {
-              padding: 12px 14px !important;
-              font-size: 13px !important;
             }
           }
         `}</style>
 
         {/* Header */}
-        <div className="modal-header" style={{ padding: "20px 24px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 700, color: "#0f172a" }}>Create Post</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "24px", color: "#94a3b8", cursor: "pointer" }}>&times;</button>
+        <div className="modal-header" style={{ padding: "32px 40px", borderBottom: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Create Post</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "24px", color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "4px" }}>&times;</button>
         </div>
 
         {/* Body */}
-        <div className="modal-body" style={{ padding: "24px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="modal-body" style={{ padding: "40px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
           {/* Title Input */}
           <input
             type="text"
             className="title-input"
-            placeholder="Give your post a title..."
+            placeholder="POST TITLE..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             style={{
@@ -338,32 +305,34 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               border: "none",
               outline: "none",
               padding: "0",
-              color: "#0f172a",
+              color: "var(--text-primary)",
               backgroundColor: "transparent",
+              letterSpacing: "-0.04em",
+              textTransform: "uppercase"
             }}
           />
 
           {/* Tabs */}
-          <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid #f1f5f9" }}>
+          <div style={{ display: "flex", gap: "8px", borderBottom: "0.5px solid var(--border-hairline)" }}>
             <button className={`tab-btn ${activeTab === "write" ? "active" : ""}`} onClick={() => setActiveTab("write")}>
-              <FontAwesomeIcon icon={faEdit} style={{ marginRight: "6px" }} /> Write
+              Write
             </button>
             <button className={`tab-btn ${activeTab === "preview" ? "active" : ""}`} onClick={() => setActiveTab("preview")}>
-              <FontAwesomeIcon icon={faEye} style={{ marginRight: "6px" }} /> Preview
+              Preview
             </button>
           </div>
 
           {activeTab === "write" ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {/* Toolbar */}
-              <div className="toolbar-container" style={{ display: "flex", gap: "4px", padding: "4px", backgroundColor: "#f8fafc", borderRadius: "12px", flexWrap: "wrap", alignItems: "center" }}>
+               <div className="toolbar-container" style={{ display: "flex", gap: "6px", padding: "6px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", flexWrap: "wrap", alignItems: "center" }}>
                 <button className="toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><FontAwesomeIcon icon={faBold} /></button>
                 <button className="toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><FontAwesomeIcon icon={faItalic} /></button>
                 <button className="toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><FontAwesomeIcon icon={faHeading} /></button>
-                <div className="divider" style={{ width: "1px", height: "20px", backgroundColor: "#e2e8f0", margin: "0 4px" }} />
+                <div className="divider" style={{ width: "1px", height: "20px", backgroundColor: "var(--border-hairline)", margin: "0 6px" }} />
                 <button className="toolbar-btn" title="Quote" onClick={() => insertBlockMarkdown("> ")}><FontAwesomeIcon icon={faQuoteRight} /></button>
                 <button className="toolbar-btn" title="Bullet List" onClick={() => insertBlockMarkdown("- ")}><FontAwesomeIcon icon={faListUl} /></button>
-                <div className="divider" style={{ width: "1px", height: "20px", backgroundColor: "#e2e8f0", margin: "0 4px" }} />
+                <div className="divider" style={{ width: "1px", height: "20px", backgroundColor: "var(--border-hairline)", margin: "0 6px" }} />
                 <button className="toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><FontAwesomeIcon icon={faLink} /></button>
                 <button className="toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><FontAwesomeIcon icon={faCode} /></button>
                 <button className="toolbar-btn" title="Code Block" onClick={() => insertMarkdown("\n```javascript\n", "\n```\n")}><FontAwesomeIcon icon={faCode} style={{ fontSize: "12px" }} /></button>
@@ -379,24 +348,24 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               />
             </div>
           ) : (
-            <div style={{ minHeight: "200px", padding: "16px", backgroundColor: "#f8fafc", borderRadius: "16px", border: "1px solid #f1f5f9", overflowY: "auto" }}>
+             <div style={{ minHeight: "200px", padding: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", overflowY: "auto" }}>
               {content ? (
                 <ContentRenderer content={content} />
               ) : (
-                <div style={{ color: "#94a3b8", textAlign: "center", marginTop: "40px" }}>Nothing to preview yet...</div>
+                <div style={{ color: "var(--text-tertiary)", textAlign: "center", marginTop: "40px", fontSize: "12px", fontFamily: "var(--font-mono)", fontWeight: 700 }}>VOID...</div>
               )}
             </div>
           )}
 
           {/* Images */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+           <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
             {images.map((img, idx) => (
-              <div key={idx} style={{ position: "relative", width: "80px", height: "80px" }}>
-                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "12px", border: "1px solid #e2e8f0" }} />
-                <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "10px", backgroundColor: "#ef4444", color: "#fff", border: "none", fontSize: "12px", cursor: "pointer" }}>&times;</button>
+              <div key={idx} style={{ position: "relative", width: "100px", height: "100px" }}>
+                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} />
+                <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "4px", right: "4px", width: "24px", height: "24px", borderRadius: "2px", backgroundColor: "var(--bg-page)", color: "#ef4444", border: "0.5px solid var(--border-hairline)", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
               </div>
             ))}
-            <label style={{ width: "80px", height: "80px", borderRadius: "12px", border: "2px dashed #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#64748b" }}>
+            <label style={{ width: "100px", height: "100px", borderRadius: "2px", border: "0.5px dashed var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", transition: "all 0.15s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}>
               <FontAwesomeIcon icon={faImage} />
               <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
             </label>
@@ -404,28 +373,31 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
 
           {/* Tags Section */}
           <div className="tags-section" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "4px" }}>
-            <label className="tags-label" style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a" }}>Tags / Hashtags (Optional)</label>
+            <label className="tags-label" style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Tags / Hashtags (Optional)</label>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
               {tags.map((tag, idx) => (
                 <span
                   key={idx}
                   style={{
-                    backgroundColor: "#f1f5f9",
-                    color: "#2563eb",
-                    padding: "4px 12px",
-                    borderRadius: "12px",
-                    fontSize: "13px",
-                    fontWeight: 600,
+                    backgroundColor: "var(--bg-hover)",
+                    color: "var(--text-primary)",
+                    padding: "6px 14px",
+                    borderRadius: "2px",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    fontFamily: "var(--font-mono)",
                     display: "flex",
                     alignItems: "center",
-                    gap: "6px"
+                    gap: "8px",
+                    border: "0.5px solid var(--border-hairline)",
+                    textTransform: "uppercase"
                   }}
                 >
                   #{tag}
                   <button
                     onClick={() => setTags(tags.filter((_, i) => i !== idx))}
-                    style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: "16px", padding: 0, lineHeight: 1 }}
+                    style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", fontSize: "16px", padding: 0, lineHeight: 1, display: "flex", alignItems: "center" }}
                   >
                     &times;
                   </button>
@@ -433,10 +405,10 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               ))}
             </div>
 
-            <input
+             <input
               type="text"
               className="tag-input"
-              placeholder="Add tags... (Enter or comma)"
+              placeholder="ADD TAGS... (ENTER OR COMMA)"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) => {
@@ -450,39 +422,48 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 }
               }}
               style={{
-                width: "94%",
-                padding: "10px 16px",
-                borderRadius: "12px",
-                border: "1px solid #e2e8f0",
-                fontSize: "14px",
+                width: "100%",
+                padding: "14px 18px",
+                borderRadius: "2px",
+                border: "0.5px solid var(--border-hairline)",
+                fontSize: "11px",
+                fontFamily: "var(--font-mono)",
+                fontWeight: 700,
                 outline: "none",
-                backgroundColor: "#f8fafc"
+                backgroundColor: "var(--bg-hover)",
+                color: "var(--text-primary)",
+                letterSpacing: "0.05em"
               }}
             />
-            <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-              {tags.length}/10 tags. Use #hashtag in your post to add them automatically.
+             <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.05em" }}>
+              {tags.length.toString().padStart(2, '0')}/10 TAGS. USE #HASHTAG TO AUTO-ADD.
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="modal-footer" style={{ padding: "20px 24px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-          <button onClick={onClose} style={{ padding: "10px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", background: "white", color: "#64748b", fontWeight: 600, cursor: "pointer" }}>Cancel</button>
+         <div className="modal-footer" style={{ padding: "32px 40px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", gap: "16px" }}>
+          <button onClick={onClose} style={{ padding: "12px 24px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", background: "transparent", color: "var(--text-tertiary)", fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.1em" }}>CANCEL</button>
           <button
             onClick={submit}
             disabled={!content.trim() || isSubmitting}
             style={{
-              padding: "10px 24px",
-              borderRadius: "12px",
+              padding: "12px 32px",
+              borderRadius: "2px",
               border: "none",
-              background: "#212121",
-              color: "white",
-              fontWeight: 700,
+              background: "var(--text-primary)",
+              color: "var(--bg-page)",
+              fontWeight: 800,
+              fontSize: "11px",
+              fontFamily: "var(--font-mono)",
               cursor: (!content.trim() || isSubmitting) ? "not-allowed" : "pointer",
-              opacity: (!content.trim() || isSubmitting) ? 0.5 : 1
+              opacity: (!content.trim() || isSubmitting) ? 0.3 : 1,
+              textTransform: "uppercase",
+              letterSpacing: "0.15em",
+              transition: "all 0.15s ease"
             }}
           >
-            {isSubmitting ? "Posting..." : "Post it"}
+            {isSubmitting ? "POSTING..." : "POST IT"}
           </button>
         </div>
       </div>

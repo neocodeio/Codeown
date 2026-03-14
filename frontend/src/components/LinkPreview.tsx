@@ -48,16 +48,17 @@ export default function LinkPreview({ url }: { url: string }) {
     if (loading) {
         return (
             <div style={{
-                marginTop: "12px",
+                marginTop: "16px",
                 height: "100px",
-                backgroundColor: "#f8fafc",
-                borderRadius: "16px",
-                border: "1px solid #eff3f4",
+                backgroundColor: "var(--bg-hover)",
+                borderRadius: "2px",
+                border: "0.5px solid var(--border-hairline)",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                animation: "pulse 1.5s ease-in-out infinite"
             }}>
-                <div className="spinner-small" style={{ width: "20px", height: "20px", border: "2px solid #e2e8f0", borderTopColor: "#0f172a", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+                <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.05em" }}>UNFURLING...</div>
             </div>
         );
     }
@@ -70,19 +71,19 @@ export default function LinkPreview({ url }: { url: string }) {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-                marginTop: "12px",
+                marginTop: "16px",
                 display: "flex",
-                borderRadius: "16px",
-                border: "1px solid #eff3f4",
+                borderRadius: "2px",
+                border: "0.5px solid var(--border-hairline)",
                 overflow: "hidden",
                 textDecoration: "none",
                 color: "inherit",
-                transition: "background-color 0.2s",
-                backgroundColor: "#fff",
+                transition: "background-color 0.15s ease",
+                backgroundColor: "var(--bg-page)",
                 maxWidth: "100%"
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fcfcfc"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#fff"}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
             onClick={(e) => e.stopPropagation()}
         >
             <div style={{
@@ -94,42 +95,43 @@ export default function LinkPreview({ url }: { url: string }) {
                 minWidth: 0
             }}>
                 <div style={{
-                    fontSize: "15px",
+                    fontSize: "14px",
                     fontWeight: 700,
-                    color: "#0f172a",
-                    marginBottom: "4px",
+                    color: "var(--text-primary)",
+                    marginBottom: "6px",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
-                    textOverflow: "ellipsis"
+                    textOverflow: "ellipsis",
+                    letterSpacing: "-0.01em"
                 }}>
                     {metadata.title}
                 </div>
-
+ 
                 {metadata.description && (
                     <div style={{
-                        fontSize: "14px",
-                        color: "#64748b",
-                        lineHeight: "1.4",
+                        fontSize: "13px",
+                        color: "var(--text-secondary)",
+                        lineHeight: "1.5",
                         display: "-webkit-box",
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
-                        marginBottom: "8px"
+                        marginBottom: "12px"
                     }}>
                         {metadata.description}
                     </div>
                 )}
 
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     {metadata.favicon && (
                         <img
                             src={metadata.favicon}
                             alt=""
-                            style={{ width: "16px", height: "16px", borderRadius: "3px" }}
+                            style={{ width: "14px", height: "14px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}
                             onError={(e) => (e.currentTarget.style.display = "none")}
                         />
                     )}
-                    <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                    <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>
                         {metadata.hostname}
                     </span>
                 </div>
@@ -137,12 +139,12 @@ export default function LinkPreview({ url }: { url: string }) {
 
             {metadata.image && (
                 <div style={{
-                    width: window.innerWidth < 500 ? "80px" : "140px",
+                    width: "160px",
                     height: "auto",
                     minHeight: "100%",
                     flexShrink: 0,
-                    backgroundColor: "#f8fafc",
-                    borderLeft: "1px solid #eff3f4",
+                    backgroundColor: "var(--bg-hover)",
+                    borderLeft: "0.5px solid var(--border-hairline)",
                     display: "flex"
                 }}>
                     <img

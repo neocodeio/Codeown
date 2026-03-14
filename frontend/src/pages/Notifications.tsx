@@ -2,19 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-    ArrowLeft01Icon,
-    Notification01Icon,
-    ViewIcon,
-    FavouriteIcon,
-    Comment01Icon,
-    UserAdd01Icon,
-    AtIcon,
-    Bookmark01Icon,
-    Mail01Icon,
-    CircleArrowUp01Icon,
-} from "@hugeicons/core-free-icons";
+import { 
+  CaretLeft,
+  Bell,
+  Eye,
+  Heart,
+  ChatTeardropText,
+  UserPlus,
+  ArrowUp,
+  At,
+  BookmarkSimple,
+  EnvelopeSimple,
+} from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
@@ -45,29 +44,30 @@ export default function NotificationsPage() {
     };
 
     const getNotificationIcon = (notification: Notification) => {
+        const size = 18;
+        const weight = "thin";
         switch (notification.type) {
             case "like":
-                // Use arrow-up icon for project upvotes, heart for post likes
                 if (notification.project_id) {
-                    return { icon: CircleArrowUp01Icon, color: "#0f766e" };
+                    return { icon: <ArrowUp size={size} weight={weight} />, color: "var(--text-primary)" };
                 }
-                return { icon: FavouriteIcon, color: "#f91880" };
+                return { icon: <Heart size={size} weight={weight} />, color: "var(--text-primary)" };
             case "comment":
             case "reply":
-                return { icon: Comment01Icon, color: "#3b82f6" };
+                return { icon: <ChatTeardropText size={size} weight={weight} />, color: "var(--text-primary)" };
             case "follow":
-                return { icon: UserAdd01Icon, color: "#8b5cf6" };
+                return { icon: <UserPlus size={size} weight={weight} />, color: "var(--text-primary)" };
             case "mention":
-                return { icon: AtIcon, color: "#06b6d4" };
+                return { icon: <At size={size} weight={weight} />, color: "var(--text-primary)" };
             case "save":
-                return { icon: Bookmark01Icon, color: "#f59e0b" };
+                return { icon: <BookmarkSimple size={size} weight={weight} />, color: "var(--text-primary)" };
             case "message":
-                return { icon: Mail01Icon, color: "#00ba7c" };
+                return { icon: <EnvelopeSimple size={size} weight={weight} />, color: "var(--text-primary)" };
             case "profile_view":
             case "project_view":
-                return { icon: ViewIcon, color: "#6366f1" };
+                return { icon: <Eye size={size} weight={weight} />, color: "var(--text-primary)" };
             default:
-                return { icon: Notification01Icon, color: "#94a3b8" };
+                return { icon: <Bell size={size} weight={weight} />, color: "var(--text-primary)" };
         }
     };
 
@@ -76,7 +76,7 @@ export default function NotificationsPage() {
         const username = notification.actor?.username;
 
         const nameWrapper = (
-            <span style={{ fontWeight: 800, display: "inline-flex", alignItems: "center", color: "#0f172a", marginRight: "4px" }}>
+            <span style={{ fontWeight: 700, display: "inline-flex", alignItems: "center", color: "var(--text-primary)", marginRight: "4px", textTransform: "uppercase", fontSize: "14px" }}>
                 {actorName}
                 <VerifiedBadge username={username} size="14px" />
             </span>
@@ -111,9 +111,9 @@ export default function NotificationsPage() {
     }
 
     return (
-        <main style={{ padding: 0, backgroundColor: "#fff", width: "100%" }}>
+        <main style={{ padding: 0, backgroundColor: "var(--bg-page)", width: "100%" }}>
             <SEO
-                title="Notifications - Codeown"
+                title="NOTIFICATIONS"
                 description="Stay updated with your latest interactions on Codeown."
             />
 
@@ -121,7 +121,7 @@ export default function NotificationsPage() {
                 display: "grid",
                 gridTemplateColumns: width >= 1400 ? "1fr 600px 1fr" : width >= 1280 ? "100px 600px 1fr" : "1fr",
                 width: "100%",
-                backgroundColor: "#fff",
+                backgroundColor: "var(--bg-page)",
             }}>
                 {/* Left Balance Spacer (only desktop) */}
                 {width >= 1280 && <div />}
@@ -129,9 +129,9 @@ export default function NotificationsPage() {
                 <div style={{
                     maxWidth: width >= 1024 ? "600px" : "100%",
                     width: "100%",
-                    backgroundColor: "#fff",
-                    borderLeft: width >= 1024 ? "1px solid #eff3f4" : "none",
-                    borderRight: width >= 1024 ? "1px solid #eff3f4" : "none",
+                    backgroundColor: "var(--bg-page)",
+                    borderLeft: width >= 1024 ? "0.5px solid var(--border-hairline)" : "none",
+                    borderRight: width >= 1024 ? "0.5px solid var(--border-hairline)" : "none",
                     minHeight: "100vh",
                     margin: width >= 1280 ? "0" : "0 auto"
                 }}>
@@ -139,14 +139,13 @@ export default function NotificationsPage() {
                     <header style={{
                         position: "sticky",
                         top: 0,
-                        backgroundColor: "rgba(255, 255, 255, 0.85)",
-                        backdropFilter: "blur(12px)",
+                        backgroundColor: "var(--bg-page)",
                         zIndex: 100,
-                        padding: "16px 20px",
+                        padding: "20px 24px",
                         display: "flex",
                         alignItems: "center",
                         gap: "24px",
-                        borderBottom: "1px solid rgba(0, 0, 0, 0.04)"
+                        borderBottom: "0.5px solid var(--border-hairline)"
                     }}>
                         <button
                             onClick={() => navigate("/")}
@@ -154,28 +153,28 @@ export default function NotificationsPage() {
                                 background: "none",
                                 border: "none",
                                 cursor: "pointer",
-                                padding: "8px",
-                                borderRadius: "50%",
+                                padding: "4px",
+                                borderRadius: "2px",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                transition: "background-color 0.2s",
+                                transition: "all 0.15s ease",
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#eff3f4"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                         >
-                            <HugeiconsIcon icon={ArrowLeft01Icon} style={{ fontSize: "20px", color: "#0f172a" }} />
+                            <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
                         </button>
 
                         <div style={{ flex: 1 }}>
                             <h1 style={{
-                                fontSize: "20px",
-                                fontWeight: 800,
-                                color: "#0f172a",
+                                fontSize: "14px",
+                                fontWeight: 700,
+                                color: "var(--text-primary)",
                                 margin: 0,
-                                letterSpacing: "-0.02em"
+                                letterSpacing: "0.05em",
+                                fontFamily: "var(--font-mono)",
+                                textTransform: "uppercase"
                             }}>
-                                Notifications
+                                NOTIFICATIONS
                             </h1>
                         </div>
 
@@ -183,23 +182,27 @@ export default function NotificationsPage() {
                             <button
                                 onClick={() => markAsRead("all")}
                                 style={{
-                                    background: "none",
-                                    border: "1px solid #e2e8f0",
-                                    color: "#64748b",
-                                    padding: "8px 16px",
-                                    borderRadius: "12px",
-                                    fontSize: "13px",
+                                    background: "transparent",
+                                    border: "0.5px solid var(--border-hairline)",
+                                    color: "var(--text-secondary)",
+                                    padding: "6px 14px",
+                                    borderRadius: "2px",
+                                    fontSize: "11px",
                                     fontWeight: 700,
+                                    fontFamily: "var(--font-mono)",
+                                    textTransform: "uppercase",
                                     cursor: "pointer",
-                                    transition: "all 0.2s"
+                                    transition: "all 0.15s ease"
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = "#f8fafc";
-                                    e.currentTarget.style.color = "#0f172a";
+                                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                    e.currentTarget.style.borderColor = "var(--text-primary)";
+                                    e.currentTarget.style.color = "var(--text-primary)";
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.backgroundColor = "transparent";
-                                    e.currentTarget.style.color = "#64748b";
+                                    e.currentTarget.style.borderColor = "var(--border-hairline)";
+                                    e.currentTarget.style.color = "var(--text-secondary)";
                                 }}
                             >
                                 Mark all read
@@ -210,8 +213,8 @@ export default function NotificationsPage() {
                     {/* Notifications List */}
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         {loading && (
-                            <div style={{ padding: "40px", textAlign: "center", color: "#64748b", fontWeight: 500 }}>
-                                Searching for updates...
+                            <div style={{ padding: "48px", textAlign: "center", color: "var(--text-tertiary)", fontWeight: 600, fontSize: "12px", fontFamily: "var(--font-mono)" }}>
+                                SYNCING...
                             </div>
                         )}
 
@@ -227,18 +230,19 @@ export default function NotificationsPage() {
                                 <div style={{
                                     width: "64px",
                                     height: "64px",
-                                    borderRadius: "20px",
-                                    backgroundColor: "#f8fafc",
+                                    borderRadius: "2px",
+                                    backgroundColor: "var(--bg-hover)",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    color: "#94a3b8"
+                                    color: "var(--text-tertiary)",
+                                    border: "0.5px solid var(--border-hairline)"
                                 }}>
-                                    <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "32px", opacity: 0.5 }} />
+                                    <Bell size={32} weight="thin" style={{ opacity: 0.5 }} />
                                 </div>
-                                <h2 style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", margin: 0 }}>Nothing yet</h2>
-                                <p style={{ fontSize: "14px", color: "#64748b", margin: 0, maxWidth: "260px", lineHeight: 1.6 }}>
-                                    Interaction is the heartbeat of Codeown. Build, share, and connect to see updates here!
+                                <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Nothing yet</h2>
+                                <p style={{ fontSize: "13px", color: "var(--text-tertiary)", margin: 0, maxWidth: "260px", lineHeight: 1.6 }}>
+                                    Interaction is the heartbeat of Codeown. Build, share, and connect to see updates here.
                                 </p>
                             </div>
                         )}
@@ -250,17 +254,17 @@ export default function NotificationsPage() {
                                     key={notification.id}
                                     onClick={() => handleNotificationClick(notification)}
                                     style={{
-                                        padding: "16px 20px",
+                                        padding: "24px",
                                         display: "flex",
-                                        gap: "16px",
+                                        gap: "24px",
                                         cursor: "pointer",
-                                        transition: "background-color 0.2s",
-                                        backgroundColor: notification.read ? "#fff" : "rgba(59, 130, 246, 0.02)",
-                                        borderBottom: "1px solid rgba(0, 0, 0, 0.04)",
+                                        transition: "all 0.15s ease",
+                                        backgroundColor: notification.read ? "var(--bg-page)" : "var(--bg-hover)",
+                                        borderBottom: "0.5px solid var(--border-hairline)",
                                         position: "relative"
                                     }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = notification.read ? "#fcfcfc" : "rgba(59, 130, 246, 0.04)"}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = notification.read ? "#fff" : "rgba(59, 130, 246, 0.02)"}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = notification.read ? "var(--bg-page)" : "var(--bg-hover)"}
                                 >
                                     {/* Status Dot for Unread */}
                                     {!notification.read && (
@@ -269,8 +273,8 @@ export default function NotificationsPage() {
                                             left: 0,
                                             top: 0,
                                             bottom: 0,
-                                            width: "3px",
-                                            backgroundColor: "#3b82f6"
+                                            width: "2px",
+                                            backgroundColor: "var(--text-primary)"
                                         }} />
                                     )}
 
@@ -282,7 +286,7 @@ export default function NotificationsPage() {
                                         paddingTop: "4px",
                                         flexShrink: 0
                                     }}>
-                                        <HugeiconsIcon icon={itemStyle.icon} style={{ fontSize: "18px", color: itemStyle.color }} />
+                                        {itemStyle.icon}
                                     </div>
 
                                     {/* Left-Middle: Avatar */}
@@ -291,11 +295,12 @@ export default function NotificationsPage() {
                                             src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
                                             alt=""
                                             style={{
-                                                width: "36px",
-                                                height: "36px",
-                                                borderRadius: "10px",
+                                                width: "40px",
+                                                height: "40px",
+                                                borderRadius: "2px",
                                                 objectFit: "cover",
-                                                backgroundColor: "#f1f5f9"
+                                                border: "0.5px solid var(--border-hairline)",
+                                                backgroundColor: "var(--bg-hover)"
                                             }}
                                         />
                                     </div>
@@ -304,19 +309,21 @@ export default function NotificationsPage() {
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <p style={{
                                             margin: 0,
-                                            fontSize: "15px",
-                                            color: "#1e293b",
+                                            fontSize: "14px",
+                                            color: "var(--text-primary)",
                                             lineHeight: 1.5,
-                                            fontWeight: notification.read ? 500 : 700,
-                                            letterSpacing: "-0.01em"
+                                            fontWeight: notification.read ? 400 : 700,
                                         }}>
                                             {getNotificationMessage(notification)}
                                         </p>
                                         <p style={{
-                                            margin: "4px 0 0",
-                                            fontSize: "13px",
-                                            color: "#94a3b8",
-                                            fontWeight: 500
+                                            margin: "6px 0 0",
+                                            fontSize: "11px",
+                                            color: "var(--text-tertiary)",
+                                            fontWeight: 700,
+                                            fontFamily: "var(--font-mono)",
+                                            textTransform: "uppercase",
+                                            letterSpacing: "0.05em"
                                         }}>
                                             {formatRelativeDate(notification.created_at)}
                                         </p>

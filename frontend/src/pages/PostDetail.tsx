@@ -14,18 +14,13 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import { useWindowSize } from "../hooks/useWindowSize";
 import ShareModal from "../components/ShareModal";
-import { HugeiconsIcon } from '@hugeicons/react';
-import {
-  Share01Icon,
-  FavouriteIcon,
-  Comment02Icon,
-  Bookmark01Icon,
-  Bookmark02Icon,
-  // Delete01Icon,
-  // Pen01Icon,
-  ArrowLeft01Icon,
-  // PinIcon,
-} from '@hugeicons/core-free-icons';
+import { 
+  CaretLeft,
+  ChatTeardropText,
+  Heart,
+  ShareNetwork,
+  BookmarkSimple,
+} from "phosphor-react";
 
 interface Post {
   id: number;
@@ -153,8 +148,8 @@ export default function PostDetail() {
   const isMobile = width < 768;
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-      <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
+      <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "2px", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
@@ -165,7 +160,7 @@ export default function PostDetail() {
   const avatarUrl = post.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=212121&color=ffffff&bold=true`;
 
   return (
-    <main style={{ backgroundColor: "#fff", minHeight: "100vh" }}>
+    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
       <SEO
         title={post.title || (post.content.length > 30 ? post.content.substring(0, 30) + "..." : post.content)}
         description={post.content.length > 160 ? post.content.substring(0, 157) + "..." : post.content}
@@ -193,51 +188,51 @@ export default function PostDetail() {
       <div style={{
         maxWidth: "600px",
         margin: "0 auto",
-        backgroundColor: "#fff",
-        borderLeft: isMobile ? "none" : "1px solid #f1f5f9",
-        borderRight: isMobile ? "none" : "1px solid #f1f5f9",
+        backgroundColor: "var(--bg-page)",
+        borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+        borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
         minHeight: "100vh"
       }}>
         {/* Header: Back Button */}
         <div style={{
-          height: "53px",
+          height: "56px",
           display: "flex",
           alignItems: "center",
-          padding: "0 16px",
+          padding: "0 24px",
           position: "sticky",
           top: 0,
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--bg-page)", // Removed blur for flat look or kept very subtle
           zIndex: 10,
-          borderBottom: "1px solid #f1f5f9"
+          borderBottom: "0.5px solid var(--border-hairline)"
         }}>
           <button
             onClick={() => navigate(-1)}
             style={{
-              width: "34px",
-              height: "34px",
-              borderRadius: "50%",
+              padding: "4px",
+              borderRadius: "2px",
               border: "none",
               background: "none",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
+              transition: "all 0.15s ease",
             }}
           >
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={28} style={{ width: 28, height: 28, flexShrink: 0, color: "#1a1a1a" }} />
+            <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
           </button>
-          <span style={{ marginLeft: "20px", fontSize: "18px", fontWeight: 700, color: "#1a1a1a" }}>Post</span>
+          <span style={{ marginLeft: "20px", fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>POST</span>
         </div>
 
         {/* Post Content */}
-        <article style={{ padding: isMobile ? "16px" : "24px", display: "flex", gap: "12px" }}>
+        <article style={{ padding: isMobile ? "24px 16px" : "32px 24px", display: "flex", gap: "16px" }}>
           {/* Left Column: Avatar */}
           {!isMobile && (
             <div style={{ flexShrink: 0 }}>
               <img
                 src={avatarUrl}
                 alt={userName}
-                style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover" }}
+                style={{ width: "48px", height: "48px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
               />
             </div>
           )}
@@ -245,22 +240,22 @@ export default function PostDetail() {
           {/* Right Column: Content */}
           <div style={{ flex: 1, minWidth: 0 }}>
             {/* User Info Line */}
-            <div style={{ marginBottom: "16px", display: "flex", gap: "12px", alignItems: "center" }}>
+            <div style={{ marginBottom: "20px", display: "flex", gap: "12px", alignItems: "center" }}>
               {isMobile && (
                 <img
                   src={avatarUrl}
                   alt={userName}
-                  style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }}
+                  style={{ width: "36px", height: "36px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
                 />
               )}
               <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                  <span style={{ fontSize: "14px", fontWeight: 700, color: "#1a1a1a" }}>
-                    {userName.toUpperCase()}
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>
+                    {userName}
                   </span>
                   <VerifiedBadge username={post.user?.username} size="12px" />
                 </div>
-                <div style={{ fontSize: "13px", color: "#666" }}>
+                <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", marginTop: "2px", fontWeight: 600 }}>
                   @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}
                 </div>
               </div>
@@ -268,18 +263,18 @@ export default function PostDetail() {
 
             {/* Content Text */}
             <div dir="auto" style={{
-              fontSize: isMobile ? "15px" : "16px",
-              lineHeight: "1.5",
-              color: "#1a1a1a",
+              fontSize: "15px",
+              lineHeight: "1.6",
+              color: "var(--text-primary)",
               wordBreak: "break-word",
-              marginBottom: "16px"
+              marginBottom: "32px"
             }}>
               <ContentRenderer content={post.content} />
             </div>
 
             {/* Media/Images */}
             {post.images && post.images.length > 0 && (
-              <div style={{ marginBottom: "16px", borderRadius: "8px", overflow: "hidden" }}>
+              <div style={{ marginBottom: "24px", borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                 <ImageSlider images={post.images} />
               </div>
             )}
@@ -290,9 +285,9 @@ export default function PostDetail() {
               alignItems: "center",
               justifyContent: "space-between",
               maxWidth: "400px",
-              marginTop: "16px",
-              borderBottom: "1px solid #f1f5f9",
-              paddingBottom: "10px"
+              marginTop: "32px",
+              borderTop: "0.5px solid var(--border-hairline)",
+              paddingTop: "16px"
             }}>
               {/* Comment */}
               <button
@@ -300,36 +295,36 @@ export default function PostDetail() {
                   const replyBox = document.querySelector('textarea');
                   if (replyBox) replyBox.focus();
                 }}
-                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#666", cursor: "pointer", fontSize: "13px" }}
+                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 600 }}
               >
-                <HugeiconsIcon icon={Comment02Icon} style={{ fontSize: "16px" }} />
-                {comments.length > 0 && <span>{comments.length}</span>}
+                <ChatTeardropText size={18} weight="thin" />
+                {comments.length > 0 && <span style={{ fontFamily: "var(--font-mono)" }}>{comments.length}</span>}
               </button>
 
               {/* Like */}
               <button
                 onClick={toggleLike}
                 disabled={likeLoading}
-                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "#ef4444" : "#666", cursor: "pointer", fontSize: "13px" }}
+                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 600 }}
               >
-                <HugeiconsIcon icon={isLiked ? FavouriteIcon : FavouriteIcon} style={{ fontSize: "12px", opacity: isLiked ? 1 : 0.6 }} />
-                {likeCount > 0 && <span>{likeCount}</span>}
+                <Heart size={18} weight={isLiked ? "fill" : "thin"} />
+                {likeCount > 0 && <span style={{ fontFamily: "var(--font-mono)" }}>{likeCount}</span>}
               </button>
 
               {/* Share */}
               <button
                 onClick={handleShare}
-                style={{ background: "none", border: "none", color: "#666", cursor: "pointer", padding: "4px" }}
+                style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}
               >
-                <HugeiconsIcon icon={Share01Icon} style={{ fontSize: "12px" }} />
+                <ShareNetwork size={18} weight="thin" />
               </button>
 
               {/* Save */}
               <button
                 onClick={toggleSave}
-                style={{ background: "none", border: "none", color: isSaved ? "#1a1a1a" : "#666", cursor: "pointer", padding: "4px" }}
+                style={{ background: "none", border: "none", color: isSaved ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", padding: "4px" }}
               >
-                <HugeiconsIcon icon={isSaved ? Bookmark01Icon : Bookmark02Icon} style={{ fontSize: "12px" }} />
+                <BookmarkSimple size={18} weight={isSaved ? "fill" : "thin"} />
               </button>
             </div>
           </div>
@@ -338,15 +333,15 @@ export default function PostDetail() {
         {/* Comment Composer */}
         {isSignedIn && (
           <div style={{
-            padding: isMobile ? "12px 16px" : "24px",
-            borderBottom: "1px solid #f1f5f9",
+            padding: isMobile ? "24px 16px" : "40px 24px",
+            borderBottom: "0.5px solid var(--border-hairline)",
             display: "flex",
-            gap: "12px"
+            gap: "20px"
           }}>
             <img
               src={user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "User")}&background=212121&color=ffffff&bold=true`}
               alt="My Avatar"
-              style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
+              style={{ width: "32px", height: "32px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
             />
             <div style={{ flex: 1 }}>
               <MentionInput
@@ -356,22 +351,25 @@ export default function PostDetail() {
                 transparent={true}
                 minHeight="40px"
               />
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
                 <button
                   onClick={handleSubmitComment}
                   disabled={!commentContent.trim() || isSubmitting}
                   style={{
-                    padding: "6px 20px",
-                    backgroundColor: commentContent.trim() && !isSubmitting ? "#1a1a1a" : "#ccc",
-                    color: "#fff",
+                    padding: "8px 20px",
+                    backgroundColor: commentContent.trim() && !isSubmitting ? "var(--text-primary)" : "var(--border-hairline)",
+                    color: commentContent.trim() && !isSubmitting ? "var(--bg-page)" : "var(--text-tertiary)",
                     border: "none",
-                    borderRadius: "4px",
-                    fontWeight: 600,
-                    fontSize: "13px",
+                    borderRadius: "2px",
+                    fontWeight: 700,
+                    fontSize: "11px",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase",
                     cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
+                    transition: "all 0.15s ease"
                   }}
                 >
-                  Reply
+                  POST REPLY
                 </button>
               </div>
             </div>
@@ -379,20 +377,23 @@ export default function PostDetail() {
         )}
 
         {/* Comments Section Container */}
-        <section style={{ padding: isMobile ? "0 12px" : "0 16px" }}>
+        <section style={{ padding: "0" }}>
           {comments.length === 0 ? (
             <div style={{
-              padding: "40px 20px",
+              padding: "64px 24px",
               textAlign: "center",
-              color: "#64748b",
-              fontSize: "15px"
+              color: "var(--text-tertiary)",
+              fontSize: "13px",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em"
             }}>
-              No comments yet. Be the first to comment!
+              No comments yet
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column" }}>
               {buildTree(comments).map(c => (
-                <div key={c.id} style={{ borderBottom: "1px solid #eff3f4" }}>
+                <div key={c.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                   <CommentBlock comment={c} depth={0} onReply={handleReply} />
                 </div>
               ))}
@@ -409,7 +410,7 @@ export default function PostDetail() {
       />
 
       <style>{`
-        body { background-color: #fff !important; }
+        body { background-color: var(--bg-page) !important; }
       `}</style>
     </main>
   );

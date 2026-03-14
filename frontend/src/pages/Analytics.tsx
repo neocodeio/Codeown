@@ -3,17 +3,16 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useNavigate } from "react-router-dom";
-import { HugeiconsIcon } from '@hugeicons/react';
-import {
-    ViewIcon,
-    CursorPointer01Icon,
-    ArrowLeft01Icon,
-    ChartBarLineIcon,
-    UserIcon,
-    Time02Icon,
-    Rocket01Icon,
-    File01Icon
-} from '@hugeicons/core-free-icons';
+import { 
+    Eye,
+    MouseSimple,
+    CaretLeft,
+    ChartBar,
+    User,
+    Clock,
+    Rocket,
+    FileText
+} from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import { SEO } from "../components/SEO";
 
@@ -52,27 +51,30 @@ export default function Analytics() {
 
     if (loading) {
         return (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
-                <div className="spinner"></div>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
+                <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "2px", animation: "spin 0.6s linear infinite" }} />
             </div>
         );
     }
 
     if (error) {
         return (
-            <div style={{ padding: "80px 20px", textAlign: "center", maxWidth: "400px", margin: "0 auto" }}>
-                <HugeiconsIcon icon={ChartBarLineIcon} size={64} style={{ color: "#e2e8f0", marginBottom: "24px" }} />
-                <h1 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "16px" }}>Analytics</h1>
-                <p style={{ color: "#64748b", marginBottom: "32px", lineHeight: 1.6 }}>{error}</p>
+            <div style={{ padding: "80px 24px", textAlign: "center", maxWidth: "400px", margin: "0 auto", backgroundColor: "var(--bg-page)", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <ChartBar size={48} weight="thin" color="var(--border-hairline)" style={{ marginBottom: "24px" }} />
+                <h1 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "16px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Analytics Access</h1>
+                <p style={{ color: "var(--text-tertiary)", marginBottom: "32px", fontSize: "14px", lineHeight: 1.6 }}>{error}</p>
                 <button
                     onClick={() => navigate("/profile")}
                     style={{
-                        padding: "12px 24px",
-                        backgroundColor: "#000",
-                        color: "#fff",
+                        padding: "10px 24px",
+                        backgroundColor: "var(--text-primary)",
+                        color: "var(--bg-page)",
                         border: "none",
-                        borderRadius: "12px",
+                        borderRadius: "2px",
                         fontWeight: 700,
+                        fontFamily: "var(--font-mono)",
+                        textTransform: "uppercase",
+                        fontSize: "12px",
                         cursor: "pointer"
                     }}
                 >
@@ -83,10 +85,10 @@ export default function Analytics() {
     }
 
     return (
-        <main style={{ backgroundColor: "#ffffff", minHeight: "100vh", padding: "40px 20px" }}>
+        <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", padding: "40px 24px" }}>
             <SEO title="Analytics | Codeown" description="Track your project views and opportunities." />
 
-            <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+            <div style={{ maxWidth: "800px", margin: "0 auto" }}>
                 <button
                     onClick={() => navigate(-1)}
                     style={{
@@ -95,22 +97,28 @@ export default function Analytics() {
                         gap: "8px",
                         background: "none",
                         border: "none",
-                        color: "#64748b",
+                        color: "var(--text-tertiary)",
                         fontWeight: 700,
+                        fontFamily: "var(--font-mono)",
+                        textTransform: "uppercase",
+                        fontSize: "11px",
                         cursor: "pointer",
                         marginBottom: "32px",
-                        padding: 0
+                        padding: 0,
+                        transition: "all 0.15s ease"
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                    onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
                 >
-                    <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
+                    <CaretLeft size={16} weight="bold" />
                     BACK
                 </button>
 
-                <div style={{ marginBottom: "40px" }}>
-                    <h1 style={{ fontSize: "36px", fontWeight: 900, color: "#0f172a", marginBottom: "8px", letterSpacing: "-0.04em" }}>
-                        Analytics
+                <div style={{ marginBottom: "56px" }}>
+                    <h1 style={{ fontSize: "32px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
+                        ANALYTICS
                     </h1>
-                    <p style={{ color: "#64748b", fontSize: "16px" }}>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "15px", maxWidth: "500px", lineHeight: 1.6 }}>
                         Track your performance and see who's interested in your work.
                     </p>
                 </div>
@@ -124,84 +132,82 @@ export default function Analytics() {
                 }}>
                     <div style={{
                         padding: "32px",
-                        backgroundColor: "#fff",
-                        borderRadius: "24px",
-                        border: "1px solid #f1f5f9",
-                        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02)"
+                        backgroundColor: "var(--bg-page)",
+                        borderRadius: "2px",
+                        border: "0.5px solid var(--border-hairline)",
+                        transition: "all 0.2s ease"
                     }}>
                         <div style={{
-                            width: "48px",
-                            height: "48px",
-                            borderRadius: "14px",
-                            backgroundColor: "#f8fafc",
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "2px",
+                            backgroundColor: "var(--bg-hover)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             marginBottom: "20px",
-                            color: "#0f172a"
+                            color: "var(--text-primary)"
                         }}>
-                            <HugeiconsIcon icon={ViewIcon} size={24} />
+                            <Eye size={18} weight="thin" />
                         </div>
-                        <p style={{ fontSize: "14px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>
+                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", fontFamily: "var(--font-mono)" }}>
                             Project Views
                         </p>
-                        <h2 style={{ fontSize: "32px", fontWeight: 800, color: "#0f172a" }}>
+                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>
                             {stats?.summary?.total_project_views || 0}
                         </h2>
                     </div>
 
                     <div style={{
                         padding: "32px",
-                        backgroundColor: "#fff",
-                        borderRadius: "24px",
-                        border: "1px solid #f1f5f9",
-                        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02)"
+                        backgroundColor: "var(--bg-page)",
+                        borderRadius: "2px",
+                        border: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
-                            width: "48px",
-                            height: "48px",
-                            borderRadius: "14px",
-                            backgroundColor: "#f8fafc",
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "2px",
+                            backgroundColor: "var(--bg-hover)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             marginBottom: "20px",
-                            color: "#0f172a"
+                            color: "var(--text-primary)"
                         }}>
-                            <HugeiconsIcon icon={File01Icon} size={24} />
+                            <FileText size={18} weight="thin" />
                         </div>
-                        <p style={{ fontSize: "14px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>
+                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", fontFamily: "var(--font-mono)" }}>
                             Post Views
                         </p>
-                        <h2 style={{ fontSize: "32px", fontWeight: 800, color: "#0f172a" }}>
+                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>
                             {stats?.summary?.total_post_views || 0}
                         </h2>
                     </div>
 
                     <div style={{
                         padding: "32px",
-                        backgroundColor: "#fff",
-                        borderRadius: "24px",
-                        border: "1px solid #f1f5f9",
-                        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02)"
+                        backgroundColor: "var(--bg-page)",
+                        borderRadius: "2px",
+                        border: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
-                            width: "48px",
-                            height: "48px",
-                            borderRadius: "14px",
-                            backgroundColor: "#f8fafc",
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "2px",
+                            backgroundColor: "var(--bg-hover)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             marginBottom: "20px",
-                            color: "#0f172a"
+                            color: "var(--text-primary)"
                         }}>
-                            <HugeiconsIcon icon={CursorPointer01Icon} size={24} />
+                            <MouseSimple size={18} weight="thin" />
                         </div>
-                        <p style={{ fontSize: "14px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>
-                            Opportunity Clicks
+                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", fontFamily: "var(--font-mono)" }}>
+                            Opp. Clicks
                         </p>
-                        <h2 style={{ fontSize: "32px", fontWeight: 800, color: "#0f172a" }}>
+                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>
                             {stats?.summary?.total_opportunity_clicks || 0}
                         </h2>
                     </div>
@@ -209,68 +215,73 @@ export default function Analytics() {
 
                 {/* Recent Activities */}
                 <div>
-                    <h3 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "24px", display: "flex", alignItems: "center", gap: "10px" }}>
-                        <HugeiconsIcon icon={Time02Icon} size={20} />
-                        Recent Activity
+                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "32px", display: "flex", alignItems: "center", gap: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                        <Clock size={18} weight="thin" />
+                        RECENT ACTIVITY
                     </h3>
 
                     {stats?.recent_events?.length === 0 ? (
                         <div style={{
-                            padding: "60px 20px",
+                            padding: "64px 24px",
                             textAlign: "center",
-                            backgroundColor: "#f8fafc",
-                            borderRadius: "24px",
-                            border: "1px dashed #e2e8f0"
+                            backgroundColor: "var(--bg-page)",
+                            borderRadius: "2px",
+                            border: "0.5px dashed var(--border-hairline)"
                         }}>
-                            <p style={{ color: "#64748b", fontWeight: 600 }}>No recent activity to show.</p>
+                            <p style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>No recent activity to show.</p>
                         </div>
                     ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                             {stats.recent_events.map((event: any, idx: number) => (
                                 <div key={idx} style={{
-                                    padding: "20px",
-                                    backgroundColor: "#fff",
-                                    borderRadius: "20px",
-                                    border: "1px solid #f1f5f9",
+                                    padding: "20px 24px",
+                                    backgroundColor: "var(--bg-page)",
+                                    borderRadius: "2px",
+                                    borderBottom: "0.5px solid var(--border-hairline)",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "space-between",
-                                    gap: "16px"
-                                }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                                    gap: "16px",
+                                    transition: "all 0.15s ease"
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                >
+                                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                                         <div style={{
-                                            width: "40px",
-                                            height: "40px",
-                                            borderRadius: "12px",
-                                            backgroundColor: "#f1f5f9",
+                                            width: "32px",
+                                            height: "32px",
+                                            borderRadius: "2px",
+                                            backgroundColor: "var(--bg-hover)",
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            flexShrink: 0
+                                            flexShrink: 0,
+                                            color: "var(--text-tertiary)"
                                         }}>
                                             {event.event_type === "project_view" ? (
-                                                <HugeiconsIcon icon={Rocket01Icon} size={18} style={{ color: "#64748b" }} />
+                                                <Rocket size={16} weight="thin" />
                                             ) : (
-                                                <HugeiconsIcon icon={UserIcon} size={18} style={{ color: "#64748b" }} />
+                                                <User size={16} weight="thin" />
                                             )}
                                         </div>
                                         <div>
-                                            <p style={{ margin: 0, fontSize: "15px", color: "#0f172a", fontWeight: 600 }}>
+                                            <p style={{ margin: 0, fontSize: "14px", color: "var(--text-primary)", fontWeight: 600 }}>
                                                 {event.event_type === "project_view" ? (
-                                                    <>Viewed your project <span style={{ color: "#2563eb" }}>{event.project?.title}</span></>
+                                                    <>Viewed your project <span style={{ color: "var(--text-primary)", textDecoration: "underline" }}>{event.project?.title}</span></>
                                                 ) : event.event_type === "post_view" ? (
-                                                    <>Viewed your <span style={{ color: "#2563eb" }}>post</span></>
+                                                    <>Viewed your <span style={{ textDecoration: "underline" }}>post</span></>
                                                 ) : event.event_type === "post_created" ? (
-                                                    <>You shared a new <span style={{ color: "#059669" }}>post</span></>
+                                                    <>You shared a new <span style={{ textDecoration: "underline" }}>post</span></>
                                                 ) : event.event_type === "project_created" ? (
-                                                    <>You launched <span style={{ color: "#059669" }}>{event.project?.title || "a new project"}</span></>
+                                                    <>You launched <span style={{ textDecoration: "underline" }}>{event.project?.title || "a new project"}</span></>
                                                 ) : event.event_type === "opportunity_click" ? (
-                                                    <>Clicked your <span style={{ fontWeight: 800 }}>"Open to Opportunities"</span></>
+                                                    <>Clicked your <span style={{ fontWeight: 800 }}>"OPEN TO OPPORTUNITIES"</span></>
                                                 ) : (
                                                     <>Interacted with your profile</>
                                                 )}
                                             </p>
-                                            <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8" }}>
+                                            <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", fontWeight: 700 }}>
                                                 {formatRelativeDate(event.created_at)}
                                             </p>
                                         </div>
@@ -279,21 +290,27 @@ export default function Analytics() {
                                     {event.actor ? (
                                         <div
                                             onClick={() => navigate(`/${event.actor.username}`)}
-                                            style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 12px", borderRadius: "10px", backgroundColor: "#f8fafc", cursor: "pointer", transition: "all 0.2s" }}
-                                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
-                                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                                            style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 12px", borderRadius: "2px", backgroundColor: "var(--bg-hover)", cursor: "pointer", transition: "all 0.15s ease", border: "0.5px solid var(--border-hairline)" }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                                                e.currentTarget.style.borderColor = "var(--text-primary)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                                e.currentTarget.style.borderColor = "var(--border-hairline)";
+                                            }}
                                         >
                                             <img
                                                 src={event.actor.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(event.actor.name)}&background=212121&color=ffffff&bold=true`}
                                                 alt={event.actor.name}
-                                                style={{ width: "24px", height: "24px", borderRadius: "50%" }}
+                                                style={{ width: "20px", height: "20px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}
                                             />
-                                            <span style={{ fontSize: "13px", fontWeight: 700, color: "#334155" }}>{event.actor.name}</span>
+                                            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{event.actor.username}</span>
                                         </div>
                                     ) : (
-                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px", borderRadius: "10px", backgroundColor: "#f8fafc", opacity: 0.7 }}>
-                                            <HugeiconsIcon icon={UserIcon} size={14} style={{ color: "#64748b" }} />
-                                            <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748b" }}>Anonymous Visitor</span>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", opacity: 0.5 }}>
+                                            <User size={14} weight="thin" />
+                                            <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Anonymous</span>
                                         </div>
                                     )}
                                 </div>
@@ -303,14 +320,6 @@ export default function Analytics() {
                 </div>
             </div>
             <style>{`
-                .spinner {
-                    width: 40px;
-                    height: 40px;
-                    border: 4px solid #f3f4f6;
-                    border-top: 4px solid #000;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                }
                 @keyframes spin {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }

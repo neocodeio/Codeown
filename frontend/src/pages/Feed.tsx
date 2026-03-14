@@ -92,25 +92,25 @@ export default function Feed() {
         (feedType === "projects" && projectsLoading && projects.length === 0);
 
     return (
-        <main style={{ padding: 0, backgroundColor: "#fff", minHeight: "100vh" }}>
+        <main style={{ padding: 0, backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
             <SEO title="Discover" description="Connect with builders worldwide." />
 
             <div style={{
                 display: "flex",
                 justifyContent: "center",
                 width: "100%",
-                maxWidth: isDesktop ? "1300px" : "100%",
+                maxWidth: "1100px",
                 margin: "0 auto",
-                padding: isDesktop ? "0 32px" : "0",
+                padding: isDesktop ? "0 20px" : "0",
             }}>
                 {/* ── Main Feed Column ── */}
                 <div style={{
-                    width: "100%",
-                    maxWidth: isDesktop ? "700px" : "100%",
+                    width: isDesktop ? "var(--feed-width)" : "100%",
                     flexShrink: 0,
-                    border: isDesktop ? "2px solid #f1f5f9" : "none",
+                    border: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
                     minHeight: "100vh",
-                    position: "relative"
+                    position: "relative",
+                    backgroundColor: "var(--bg-page)"
                 }}>
 
                     {/* ── Minimal Apple-Style Header ── */}
@@ -118,23 +118,22 @@ export default function Feed() {
                         position: "sticky",
                         top: 0,
                         zIndex: 100,
-                        backgroundColor: "rgba(255, 255, 255, 0.95)",
-                        backdropFilter: "blur(20px)",
-                        borderBottom: "3px solid #f1f5f9",
+                        backgroundColor: "var(--bg-page)",
+                        borderBottom: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "space-between",
-                            height: isMobile ? "56px" : "64px",
-                            padding: isMobile ? "0 16px" : "0 24px",
+                            height: "64px",
+                            padding: "0 24px",
                             gap: "8px"
                         }}>
                             {/* Tabs Column */}
-                            <div style={{ 
-                                display: "flex", 
-                                gap: isMobile ? "16px" : "28px", 
-                                height: "100%", 
+                            <div style={{
+                                display: "flex",
+                                gap: isMobile ? "16px" : "28px",
+                                height: "100%",
                                 overflowX: "auto",
                                 scrollbarWidth: "none"
                             }} className="no-scrollbar">
@@ -148,38 +147,44 @@ export default function Feed() {
                                         style={{
                                             background: "none", border: "none", padding: "0",
                                             height: "100%", position: "relative", cursor: "pointer",
-                                            fontSize: isMobile ? "14px" : "15px",
-                                            fontWeight: feedFilter === tab.id ? "700" : "500",
-                                            color: feedFilter === tab.id ? "#0f172a" : "#94a3b8",
-                                            transition: "all 0.2s ease", whiteSpace: "nowrap"
+                                            fontSize: "12px",
+                                            fontWeight: feedFilter === tab.id ? "600" : "500",
+                                            color: feedFilter === tab.id ? "var(--text-primary)" : "var(--text-tertiary)",
+                                            transition: "all 0.15s ease",
+                                            whiteSpace: "nowrap",
+                                            fontFamily: "var(--font-mono)",
+                                            textTransform: "uppercase",
+                                            letterSpacing: "0.1em"
                                         }}
                                     >
                                         {tab.label}
                                         {feedFilter === tab.id && (
                                             <div style={{
-                                                position: "absolute", bottom: "-1px", left: 0, right: 0,
-                                                height: "2px", backgroundColor: "#0f172a",
+                                                position: "absolute", bottom: "-0.5px", left: 0, right: 0,
+                                                height: "1px", backgroundColor: "var(--text-primary)",
                                             }} />
                                         )}
                                     </button>
                                 ))}
                             </div>
-                            
+
                             {/* Feed Type Switcher */}
-                            <div style={{ display: "flex", gap: "2px", flexShrink: 0, backgroundColor: "#f8fafc", padding: "2px", borderRadius: "100px", border: "1px solid #e2e8f0" }}>
+                            <div style={{ display: "flex", gap: "2px", flexShrink: 0, backgroundColor: "var(--bg-input)", padding: "3px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}>
                                 <button
                                     onClick={() => updateParams({ type: "posts" })}
                                     style={{
-                                        background: feedType === "posts" ? "#fff" : "none",
-                                        border: feedType === "posts" ? "1px solid #e2e8f0" : "none",
-                                        padding: isMobile ? "6px 12px" : "8px 16px",
-                                        borderRadius: "100px",
-                                        fontSize: isMobile ? "11px" : "13px",
-                                        fontWeight: "700",
-                                        color: feedType === "posts" ? "#0f172a" : "#94a3b8",
+                                        background: feedType === "posts" ? "var(--text-primary)" : "none",
+                                        border: "none",
+                                        padding: "8px 16px",
+                                        borderRadius: "1px",
+                                        fontSize: "11px",
+                                        fontWeight: "800",
+                                        fontFamily: "var(--font-mono)",
+                                        color: feedType === "posts" ? "var(--bg-page)" : "var(--text-tertiary)",
                                         cursor: "pointer",
-                                        boxShadow: feedType === "posts" ? "0 1px 3px rgba(0,0,0,0.05)" : "none",
-                                        transition: "all 0.2s"
+                                        transition: "all 0.15s ease",
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.05em"
                                     }}
                                 >
                                     Posts
@@ -187,16 +192,18 @@ export default function Feed() {
                                 <button
                                     onClick={() => updateParams({ type: "projects" })}
                                     style={{
-                                        background: feedType === "projects" ? "#fff" : "none",
-                                        border: feedType === "projects" ? "1px solid #e2e8f0" : "none",
-                                        padding: isMobile ? "6px 12px" : "8px 16px",
-                                        borderRadius: "100px",
-                                        fontSize: isMobile ? "11px" : "13px",
-                                        fontWeight: "700",
-                                        color: feedType === "projects" ? "#0f172a" : "#94a3b8",
+                                        background: feedType === "projects" ? "var(--text-primary)" : "none",
+                                        border: "none",
+                                        padding: "8px 16px",
+                                        borderRadius: "1px",
+                                        fontSize: "11px",
+                                        fontWeight: "800",
+                                        fontFamily: "var(--font-mono)",
+                                        color: feedType === "projects" ? "var(--bg-page)" : "var(--text-tertiary)",
                                         cursor: "pointer",
-                                        boxShadow: feedType === "projects" ? "0 1px 3px rgba(0,0,0,0.05)" : "none",
-                                        transition: "all 0.2s"
+                                        transition: "all 0.15s ease",
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.05em"
                                     }}
                                 >
                                     Projects
@@ -207,10 +214,11 @@ export default function Feed() {
                         {feedType === "projects" && (
                             <div style={{
                                 display: "flex",
-                                gap: "8px",
-                                padding: "10px 16px",
+                                gap: "10px",
+                                padding: "12px 24px",
                                 overflowX: "auto",
-                                borderTop: "1px solid #f8fafc"
+                                borderTop: "0.5px solid var(--border-hairline)",
+                                backgroundColor: "var(--bg-page)"
                             }} className="no-scrollbar">
                                 {["All", "React", "TypeScript", "Next.js", "Node.js", "Python", "Tailwind"].map(tag => {
                                     const isSelected = (tag === "All" && !selectedTag) || selectedTag === tag;
@@ -219,13 +227,16 @@ export default function Feed() {
                                             key={tag}
                                             onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
                                             style={{
-                                                flexShrink: 0, padding: "6px 14px", borderRadius: "100px",
-                                                border: "1px solid",
-                                                borderColor: isSelected ? "#0f172a" : "#f1f5f9",
-                                                backgroundColor: isSelected ? "#0f172a" : "#fff",
-                                                color: isSelected ? "#fff" : "#64748b",
-                                                fontSize: "12px", fontWeight: "600", cursor: "pointer",
-                                                transition: "all 0.2s"
+                                                flexShrink: 0, padding: "8px 16px", borderRadius: "2px",
+                                                border: "0.5px solid",
+                                                borderColor: isSelected ? "var(--text-primary)" : "var(--border-hairline)",
+                                                backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
+                                                color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
+                                                fontSize: "12px", fontWeight: "700", cursor: "pointer",
+                                                transition: "all 0.15s ease",
+                                                fontFamily: "var(--font-mono)",
+                                                textTransform: "uppercase",
+                                                letterSpacing: "0.05em"
                                             }}
                                         >
                                             {tag}
@@ -239,7 +250,7 @@ export default function Feed() {
                     {/* ── Content ── */}
                     <div style={{ minHeight: "100vh" }}>
                         {feedType === "posts" && (
-                            <div style={{ borderBottom: "1px solid #f1f5f9" }}>
+                            <div style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                                 <FeedPostComposer onCreated={handlePostCreated} />
                             </div>
                         )}
@@ -254,25 +265,25 @@ export default function Feed() {
                             </div>
                         ) : currentItems.length === 0 && !loading ? (
                             <div style={{ padding: "120px 24px", textAlign: "center" }}>
-                                <div style={{ marginBottom: "16px", fontSize: "48px" }}>🧊</div>
-                                <h3 style={{ fontSize: "17px", fontWeight: "800", color: "#0f172a", marginBottom: "8px", letterSpacing: "-0.01em" }}>Quiet in here...</h3>
-                                <p style={{ fontSize: "14px", color: "#94a3b8", fontWeight: "500" }}>Be the first to share something amazing with the community.</p>
+                                <div style={{ marginBottom: "20px", fontSize: "32px", opacity: 0.1 }}>🧊</div>
+                                <h3 style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "8px", letterSpacing: "0.05em", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Quiet in here</h3>
+                                <p style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>Be the first to share something amazing with the community.</p>
                             </div>
                         ) : (
                             <div>
                                 {feedType === "posts"
                                     ? (currentItems as any[]).map(p => (
-                                        <div key={p.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                                        <div key={p.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                                             <PostCard post={p} onUpdated={() => fetchPosts(undefined, false)} />
                                         </div>
                                     ))
                                     : (currentItems as any[]).map(p => (
-                                        <div key={p.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                                        <div key={p.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                                             <ProjectCard project={p} onUpdated={() => fetchProjects(undefined, false)} />
                                         </div>
                                     ))
                                 }
-                                {loading && <div style={{ padding: "32px", textAlign: "center", color: "#94a3b8", fontSize: "14px", fontWeight: "600" }}>Loading more...</div>}
+                                {loading && <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontWeight: "600", fontFamily: "var(--font-mono)" }}>LOADING...</div>}
                             </div>
                         )}
                     </div>
@@ -280,18 +291,17 @@ export default function Feed() {
 
                 {/* ── Right Sidebar ── */}
                 {isDesktop && (
-                    <div style={{
-                        width: "350px",
-                        paddingLeft: "32px",
+                    <aside style={{
+                        width: "340px",
+                        paddingLeft: "12px",
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
-                        borderLeft: "1px solid #f1f5f9",
                         flexShrink: 0,
-                        zIndex: 1
+                        zIndex: 1,
                     }}>
                         <RecommendedUsersSidebar />
-                    </div>
+                    </aside>
                 )}
             </div>
             <style>{`

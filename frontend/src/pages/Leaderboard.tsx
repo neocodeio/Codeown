@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-    ChartBarLineIcon,
-    Tick01Icon,
-    Rocket01Icon,
-    DashboardSpeed01Icon
-} from "@hugeicons/core-free-icons";
+import { 
+  ChartBar, 
+  Rocket, 
+  Trophy, 
+  TrendUp,
+  Flame,
+  CaretRight
+} from "phosphor-react";
 import { useWindowSize } from "../hooks/useWindowSize";
-import flameGif from "../assets/flame.gif";
+import VerifiedBadge from "../components/VerifiedBadge";
 
 interface LeaderboardUser {
     id: string;
@@ -17,15 +18,9 @@ interface LeaderboardUser {
     username: string;
     avatar_url: string;
     streak_count: number;
-    is_pro: boolean;
-    last_active_at: string;
     pulse_score: number;
     tier: string;
-    engagement: {
-        likes: number;
-        views: number;
-        comments: number;
-    };
+    is_pro: boolean;
     latest_project: any;
 }
 
@@ -51,8 +46,15 @@ export default function Leaderboard() {
 
     if (loading) {
         return (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh", color: "#64748b" }}>
-                <div style={{ width: "48px", height: "48px", border: "2px solid #f1f5f9", borderTopColor: "#000", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
+                <div style={{ 
+                  width: "32px", 
+                  height: "32px", 
+                  border: "0.5px solid var(--border-hairline)", 
+                  borderTopColor: "var(--text-primary)", 
+                  borderRadius: "50%", 
+                  animation: "spin 0.8s linear infinite" 
+                }} />
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
         );
@@ -63,23 +65,36 @@ export default function Leaderboard() {
 
     return (
         <div style={{
-            padding: isMobile ? "20px 16px" : "40px 24px",
-            maxWidth: "1100px",
+            padding: isMobile ? "24px 16px" : "48px 24px",
+            maxWidth: "1000px",
             margin: "0 auto",
-            backgroundColor: "#fff",
-            color: "#000",
-            minHeight: "100vh",
-            fontFamily: "'Inter', sans-serif"
+            backgroundColor: "var(--bg-page)",
+            color: "var(--text-primary)",
+            minHeight: "100vh"
         }}>
             {/* Header */}
-            <div style={{ marginBottom: "48px", textAlign: "center" }}>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#f8fafc", padding: "8px 16px", borderRadius: "100px", color: "#000", fontSize: "14px", fontWeight: 700, marginBottom: "16px", border: "1px solid #f1f5f9" }}>
-                    <HugeiconsIcon icon={Rocket01Icon} size={16} /> Global Status
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#000", opacity: 0.6, animation: "pulse-indicator 2s infinite" }} />
+            <div style={{ marginBottom: "80px", textAlign: isMobile ? "center" : "left" }}>
+                <div style={{ 
+                  display: "inline-flex", 
+                  alignItems: "center", 
+                  gap: "8px", 
+                  background: "transparent", 
+                  padding: "6px 14px", 
+                  borderRadius: "2px", 
+                  color: "var(--text-primary)", 
+                  fontSize: "10px", 
+                  fontWeight: 800, 
+                  marginBottom: "24px", 
+                  border: "0.5px solid var(--border-hairline)",
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em"
+                }}>
+                    <Rocket size={14} weight="thin" /> GLOBAL PULSE
                 </div>
-                <h1 style={{ fontSize: isMobile ? "32px" : "44px", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.04em" }}>Leaderboard</h1>
-                <p style={{ color: "#64748b", fontSize: "16px", maxWidth: "600px", margin: "0 auto" }}>
-                    Community rankings based on activity, consistency, and engagement.
+                <h1 style={{ fontSize: isMobile ? "32px" : "56px", fontWeight: 700, marginBottom: "20px", letterSpacing: "-0.04em", textTransform: "uppercase" }}>LEADERBOARD</h1>
+                <p style={{ color: "var(--text-secondary)", fontSize: "15px", maxWidth: "600px", lineHeight: "1.6" }}>
+                    Global developer community rankings based on consistency, and meaningful contributions.
                 </p>
             </div>
 
@@ -90,54 +105,56 @@ export default function Leaderboard() {
                 gap: "16px",
                 marginBottom: "48px"
             }}>
-                {/* Rank #1 - Clean Dark Component */}
+                {/* Rank #1 - Pure Black Minimalist */}
                 {top3[0] && (
                     <div style={{
                         gridRow: isMobile ? "auto" : "span 2",
-                        background: "#111",
-                        borderRadius: "24px",
-                        padding: isMobile ? "24px" : "40px",
+                        background: "var(--text-primary)",
+                        borderRadius: "2px",
+                        padding: isMobile ? "32px" : "56px",
                         position: "relative",
                         overflow: "hidden",
-                        color: "#fff",
-                        boxShadow: "0 20px 40px rgba(0,0,0,0.08)"
+                        color: "var(--bg-page)",
+                        border: "0.5px solid var(--text-primary)"
                     }}>
                         <div style={{ position: "relative", zIndex: 1 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px" }}>
-                                <div style={{ background: "rgba(255,255,255,0.05)", width: "56px", height: "56px", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <HugeiconsIcon icon={Rocket01Icon} size={28} color="#facc15" />
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "48px" }}>
+                                <div style={{ border: "0.5px solid rgba(255,255,255,0.2)", width: "48px", height: "48px", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <Trophy size={28} weight="thin" color="currentColor" />
                                 </div>
                                 <div style={{ textAlign: "right" }}>
-                                    <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>Pulse Score</div>
-                                    <div style={{ fontSize: "36px", fontWeight: 800, color: "#fff" }}>{top3[0].pulse_score.toLocaleString()}</div>
+                                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.6)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "var(--font-mono)" }}>PULSE SCORE</div>
+                                    <div style={{ fontSize: "40px", fontWeight: 800, color: "var(--bg-page)", fontFamily: "var(--font-mono)", marginTop: "4px" }}>{top3[0].pulse_score.toLocaleString()}P</div>
                                 </div>
                             </div>
 
-                            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "32px" }}>
-                                <img src={top3[0].avatar_url || `https://ui-avatars.com/api/?name=${top3[0].name}&background=random`} style={{ width: "72px", height: "72px", borderRadius: "50%", border: "3px solid rgba(255,255,255,0.1)" }} alt="" />
-                                <div>
-                                    <h2 style={{ fontSize: "24px", fontWeight: 700, margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "24px", marginBottom: "48px" }}>
+                                <img src={top3[0].avatar_url || `https://ui-avatars.com/api/?name=${top3[0].name}&background=random`} style={{ width: "80px", height: "80px", borderRadius: "2px", border: "0.5px solid rgba(255,255,255,0.2)" }} alt="" />
+                                <div style={{ minWidth: 0 }}>
+                                    <h2 style={{ fontSize: "24px", fontWeight: 800, margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
                                         {top3[0].name}
-                                        {top3[0].is_pro && <span title="PRO" style={{ color: "#fff" }}><HugeiconsIcon icon={Tick01Icon} size={18} /></span>}
+                                        <VerifiedBadge username={top3[0].username} size="18px" />
                                     </h2>
-                                    <Link to={`/${top3[0].username}`} style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: "16px" }}>@{top3[0].username}</Link>
+                                    <Link to={`/${top3[0].username}`} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "14px", fontFamily: "var(--font-mono)", marginTop: "4px", display: "block" }}>@{top3[0].username}</Link>
                                 </div>
                             </div>
 
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "32px" }}>
-                                <StatItem icon={<img src={flameGif} style={{ width: "16px", height: "16px", objectFit: "contain" }} alt="fire" />} label="Streak" value={`${top3[0].streak_count}d`} isDark={true} />
-                                <StatItem icon={<HugeiconsIcon icon={ChartBarLineIcon} size={16} />} label="Rank" value="#1" isDark={true} />
-                                <StatItem icon={<HugeiconsIcon icon={DashboardSpeed01Icon} size={16} />} label="Tier" value={top3[0].tier} isDark={true} />
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "48px" }}>
+                                <StatItem icon={<Flame size={14} weight="thin" />} label="Streak" value={`${top3[0].streak_count.toString().padStart(2, '0')}D`} isDark={true} />
+                                <StatItem icon={<ChartBar size={14} weight="thin" />} label="Rank" value="#01" isDark={true} />
+                                <StatItem icon={<TrendUp size={14} weight="thin" />} label="Tier" value={top3[0].tier.toUpperCase()} isDark={true} />
                             </div>
 
                             {top3[0].latest_project && (
-                                <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "16px", padding: "16px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                                    <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", fontWeight: 700, marginBottom: "12px", textTransform: "uppercase" }}>Masterpiece Preview</div>
-                                    <div style={{ display: "flex", gap: "12px" }}>
-                                        <img src={top3[0].latest_project.cover_image || "/placeholder.png"} style={{ width: "70px", height: "45px", objectFit: "cover", borderRadius: "6px" }} alt="" />
-                                        <div>
-                                            <div style={{ fontSize: "14px", fontWeight: 600 }}>{top3[0].latest_project.title}</div>
-                                            <Link to={`/project/${top3[0].latest_project.id}`} style={{ fontSize: "12px", color: "#fff", textDecoration: "underline", opacity: 0.8 }}>View project →</Link>
+                                <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "2px", padding: "24px", border: "0.5px solid rgba(255,255,255,0.1)" }}>
+                                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", fontWeight: 700, marginBottom: "16px", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>Latest Project</div>
+                                    <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                                        <div style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "2px", border: "0.5px solid rgba(255,255,255,0.1)", overflow: "hidden" }}>
+                                            <img src={top3[0].latest_project.cover_image || "/placeholder.png"} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
+                                        </div>
+                                        <div style={{ minWidth: 0 }}>
+                                            <div style={{ fontSize: "15px", fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{top3[0].latest_project.title}</div>
+                                            <Link to={`/project/${top3[0].latest_project.id}`} style={{ fontSize: "11px", color: "currentColor", opacity: 0.6, display: "flex", alignItems: "center", gap: "4px", marginTop: "6px", textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)", textDecoration: "none" }}>View Project <CaretRight size={10} /></Link>
                                         </div>
                                     </div>
                                 </div>
@@ -150,60 +167,61 @@ export default function Leaderboard() {
                 <div style={{ display: "grid", gap: "16px" }}>
                     {top3.slice(1).map((user, idx) => (
                         <div key={user.id} style={{
-                            background: "#f8fafc",
-                            borderRadius: "20px",
-                            padding: isMobile ? "20px" : "24px",
-                            border: "1px solid #f1f5f9",
+                            background: "var(--bg-page)",
+                            borderRadius: "2px",
+                            padding: "32px 24px",
+                            border: "0.5px solid var(--border-hairline)",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
                             position: "relative"
                         }}>
-                            <div style={{ position: "absolute", top: "16px", right: "20px", background: "rgba(0,0,0,0.05)", padding: "4px 10px", borderRadius: "100px", fontSize: "11px", fontWeight: 800, color: "#64748b" }}>
-                                #{idx + 2}
+                            <div style={{ position: "absolute", top: "16px", right: "20px", border: "0.5px solid var(--border-hairline)", padding: "4px 10px", borderRadius: "2px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+                                RANK #{idx + 2}
                             </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
-                                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: isMobile ? "44px" : "52px", height: isMobile ? "44px" : "52px", borderRadius: "14px" }} alt="" />
+                            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+                                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "56px", height: "56px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} alt="" />
                                 <div>
-                                    <h3 style={{ fontSize: isMobile ? "16px" : "18px", fontWeight: 700, margin: 0 }}>{user.name}</h3>
-                                    <div style={{ fontSize: "14px", color: "#64748b", fontWeight: 600 }}>{user.pulse_score.toLocaleString()} points</div>
+                                    <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: "-0.01em" }}>{user.name}</h3>
+                                    <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 800, fontFamily: "var(--font-mono)", marginTop: "2px" }}>{user.pulse_score.toString().padStart(4, '0')}P</div>
                                 </div>
                             </div>
-                            <div style={{ display: "flex", gap: "16px" }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#64748b", fontSize: "12px", fontWeight: 500 }}>
-                                    <img src={flameGif} style={{ width: "13px", height: "13px", objectFit: "contain" }} alt="fire" /> {user.streak_count}d
+                            <div style={{ display: "flex", gap: "24px" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-secondary)", fontSize: "10px", fontWeight: 800, fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
+                                    <Flame size={14} weight="thin" /> {user.streak_count.toString().padStart(2, '0')}D STREAK
                                 </div>
-                                <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#64748b", fontSize: "12px", fontWeight: 500 }}>
-                                    <HugeiconsIcon icon={ChartBarLineIcon} size={13} /> {user.tier}
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-secondary)", fontSize: "10px", fontWeight: 800, fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
+                                    <TrendUp size={14} weight="thin" /> {user.tier.toUpperCase()} TIER
                                 </div>
                             </div>
                         </div>
                     ))}
 
                     {/* Simple Info Block */}
-                    <div style={{ background: "#000", borderRadius: "20px", padding: "24px", color: "#fff", display: "flex", alignItems: "center", gap: "16px" }}>
-                        <img src={flameGif} style={{ width: "28px", height: "28px", objectFit: "contain" }} alt="fire" />
+                    <div style={{ background: "var(--bg-hover)", borderRadius: "2px", padding: "32px 24px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "20px", border: "0.5px solid var(--border-hairline)" }}>
+                        <Flame size={32} weight="thin" />
                         <div>
-                            <div style={{ fontWeight: 700, fontSize: "14px" }}>Active Daily</div>
-                            <div style={{ fontSize: "12px", opacity: 0.6 }}>Consistent activity yields the highest Pulse multipliers.</div>
+                            <div style={{ fontWeight: 800, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Persistence Pays</div>
+                            <div style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "4px", lineHeight: "1.5" }}>Consistent daily activity unlocks advanced Pulse multipliers and exclusive badges.</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* The List */}
-            <div style={{ marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <h2 style={{ fontSize: "18px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>World Ranking</h2>
-                <span style={{ fontSize: "13px", color: "#94a3b8" }}>{theRest.length} developers active</span>
+            <div style={{ marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                <h2 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.15em", fontFamily: "var(--font-mono)" }}>World Ranking</h2>
+                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>{theRest.length} ACTIVE DEVELOPERS</span>
             </div>
 
-            <div style={{ background: "#fff", borderRadius: "20px", border: "1px solid #f1f5f9", marginBottom: "40px" }}>
+            <div style={{ background: "var(--bg-page)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", marginBottom: "48px" }}>
                 {theRest.length === 0 ? (
-                    <div style={{ padding: "60px", textAlign: "center", color: "#94a3b8" }}>
-                        The rankings are heating up.
+                    <div style={{ padding: "120px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
+                        <ChartBar size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "24px", display: "block", margin: "0 auto" }} />
+                        <p style={{ fontSize: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>The rankings are heating up.</p>
                     </div>
                 ) : (
-                    <div>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
                         {theRest.map((user, idx) => (
                             <LeaderboardRow key={user.id} user={user} rank={idx + 4} isMobile={isMobile} />
                         ))}
@@ -222,7 +240,7 @@ export default function Leaderboard() {
           100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
         }
         .leaderboard-row:hover {
-          background: #f8fafc;
+          background: var(--bg-hover);
         }
       `}</style>
         </div>
@@ -232,15 +250,15 @@ export default function Leaderboard() {
 function StatItem({ icon, label, value, isDark = false }: { icon: any, label: string, value: string, isDark?: boolean }) {
     return (
         <div style={{
-            background: isDark ? "rgba(255,255,255,0.05)" : "#f8fafc",
-            padding: "12px",
-            borderRadius: "12px",
-            border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid #f1f5f9"
+            background: isDark ? "rgba(255,255,255,0.03)" : "var(--bg-hover)",
+            padding: "16px",
+            borderRadius: "2px",
+            border: isDark ? "0.5px solid rgba(255,255,255,0.08)" : "0.5px solid var(--border-hairline)"
         }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", color: isDark ? "rgba(255,255,255,0.4)" : "#94a3b8", fontSize: "10px", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: isDark ? "rgba(255,255,255,0.4)" : "var(--text-tertiary)", fontSize: "9px", fontWeight: 800, textTransform: "uppercase", marginBottom: "8px", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
                 {icon} {label}
             </div>
-            <div style={{ fontSize: "15px", fontWeight: 800, color: isDark ? "#fff" : "#000" }}>{value}</div>
+            <div style={{ fontSize: "16px", fontWeight: 800, color: isDark ? "var(--bg-page)" : "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{value}</div>
         </div>
     );
 }
@@ -256,33 +274,33 @@ function LeaderboardRow({ user, rank, isMobile }: { user: LeaderboardUser, rank:
             style={{
                 display: "flex",
                 alignItems: "center",
-                padding: isMobile ? "12px 16px" : "16px 24px",
-                borderBottom: "1px solid #f1f5f9",
+                padding: isMobile ? "20px 16px" : "24px 32px",
+                borderBottom: "0.5px solid var(--border-hairline)",
                 transition: "all 0.15s ease",
                 position: "relative",
                 cursor: "pointer"
             }}
         >
-            <div style={{ width: "40px", fontSize: "13px", fontWeight: 800, color: "#94a3b8" }}>{rank}</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
-                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "40px", height: "40px", borderRadius: "10px" }} alt="" />
+            <div style={{ width: "40px", fontSize: "12px", fontWeight: 800, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>{rank.toString().padStart(2, '0')}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1 }}>
+                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "40px", height: "40px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} alt="" />
                 <div>
-                    <div style={{ fontWeight: 700, fontSize: "15px", color: "#000", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div style={{ fontWeight: 800, fontSize: "14px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px", textTransform: "uppercase" }}>
                         {user.name}
-                        {user.is_pro && <HugeiconsIcon icon={Tick01Icon} size={14} color="#000" />}
+                        <VerifiedBadge username={user.username} size="14px" />
                     </div>
-                    <div style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>{user.tier}</div>
+                    <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", marginTop: "2px" }}>{user.tier} TIER</div>
                 </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b" }}>
-                    <img src={flameGif} style={{ width: "16px", height: "16px", objectFit: "contain" }} alt="fire" />
-                    <span style={{ fontSize: "14px", fontWeight: 700 }}>{user.streak_count}d</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>
+                    <Flame size={16} weight="thin" />
+                    <span style={{ fontSize: "13px", fontWeight: 800 }}>{user.streak_count.toString().padStart(2, '0')}D</span>
                 </div>
-                <div style={{ width: "80px", textAlign: "right" }}>
-                    <div style={{ fontSize: "15px", fontWeight: 800, color: "#000" }}>{user.pulse_score.toLocaleString()}</div>
-                    <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Pulse</div>
+                <div style={{ width: "120px", textAlign: "right" }}>
+                    <div style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{user.pulse_score.toString().padStart(4, '0')}P</div>
+                    <div style={{ fontSize: "9px", color: "var(--text-tertiary)", fontWeight: 800, textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.1em" }}>PULSE SCORE</div>
                 </div>
             </div>
 
@@ -290,37 +308,27 @@ function LeaderboardRow({ user, rank, isMobile }: { user: LeaderboardUser, rank:
             {isHovered && user.latest_project && !isMobile && (
                 <div style={{
                     position: "absolute",
-                    bottom: "calc(100% + 12px)", // Fixed: Attached precisely above the row
+                    bottom: "calc(100% + 12px)",
                     left: "50%",
                     transform: "translateX(-50%)",
                     zIndex: 100,
-                    background: "#111",
-                    borderRadius: "12px",
-                    padding: "8px 12px",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "var(--text-primary)",
+                    borderRadius: "2px",
+                    padding: "10px 14px",
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+                    border: "0.5px solid var(--text-primary)",
                     pointerEvents: "none",
                     display: "flex",
                     alignItems: "center",
-                    gap: "10px",
+                    gap: "12px",
                     whiteSpace: "nowrap",
-                    animation: "tooltip-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+                    animation: "tooltip-pop 0.2s ease-out"
                 }}>
-                    <img src={user.latest_project.cover_image || "/placeholder.png"} style={{ width: "40px", height: "30px", objectFit: "cover", borderRadius: "4px" }} alt="" />
+                    <img src={user.latest_project.cover_image || "/placeholder.png"} style={{ width: "48px", height: "30px", objectFit: "cover", borderRadius: "2px", border: "0.5px solid rgba(255,255,255,0.1)" }} alt="" />
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                        <div style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Masterpiece</div>
-                        <div style={{ fontSize: "13px", fontWeight: 600, color: "#fff" }}>{user.latest_project.title}</div>
+                        <div style={{ fontSize: "9px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>MASTERPIECE</div>
+                        <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--bg-page)" }}>{user.latest_project.title}</div>
                     </div>
-                    <div style={{
-                        width: 0, height: 0,
-                        borderLeft: "6px solid transparent",
-                        borderRight: "6px solid transparent",
-                        borderTop: "6px solid #111",
-                        position: "absolute",
-                        bottom: "-6px",
-                        left: "50%",
-                        transform: "translateX(-50%)"
-                    }} />
                 </div>
             )}
         </div>

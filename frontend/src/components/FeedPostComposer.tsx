@@ -4,8 +4,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Image as ImageIcon, X } from "phosphor-react";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
 import { validateImageSize } from "../constants/upload";
@@ -129,29 +128,30 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
     return (
         <div style={{
-            padding: isMobile ? "16px" : "20px 24px",
-            borderBottom: "1px solid #e2e8f0",
-            backgroundColor: "#fff",
+            padding: isMobile ? "24px 16px" : "24px 40px",
+            borderBottom: "0.5px solid var(--border-hairline)",
+            backgroundColor: "var(--bg-page)",
             display: "flex",
-            gap: "12px",
+            gap: "24px",
         }}>
             <img
                 src={avatarUrl}
                 alt="Profile"
                 style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    objectFit: "cover"
+                    width: "44px",
+                    height: "44px",
+                    borderRadius: "2px",
+                    objectFit: "cover",
+                    border: "0.5px solid var(--border-hairline)"
                 }}
             />
             <div style={{ flex: 1 }}>
-                <div style={{ marginBottom: "12px" }}>
+                <div style={{ marginBottom: "20px" }}>
                     <MentionInput
                         value={content}
                         onChange={setContent}
                         placeholder={placeholderText}
-                        minHeight="60px"
+                        minHeight="40px"
                         transparent={true}
                     />
                 </div>
@@ -170,11 +170,11 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     <div style={{
                         display: "grid",
                         gridTemplateColumns: images.length === 1 ? "1fr" : "1fr 1fr",
-                        gap: "8px",
-                        marginBottom: "12px",
-                        borderRadius: "16px",
+                        gap: "10px",
+                        marginBottom: "16px",
+                        borderRadius: "2px",
                         overflow: "hidden",
-                        border: "1px solid #eff3f4"
+                        border: "0.5px solid var(--border-hairline)"
                     }}>
                         {images.map((img, index) => (
                             <div key={index} style={{ position: "relative", aspectRatio: images.length === 1 ? "16/9" : "1/1" }}>
@@ -189,20 +189,19 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         position: "absolute",
                                         top: "8px",
                                         right: "8px",
-                                        backgroundColor: "rgba(15, 23, 42, 0.75)",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "50%",
-                                        width: "28px",
-                                        height: "28px",
+                                        backgroundColor: "var(--bg-page)",
+                                        color: "var(--text-primary)",
+                                        border: "0.5px solid var(--border-hairline)",
+                                        borderRadius: "1px",
+                                        width: "24px",
+                                        height: "24px",
                                         cursor: "pointer",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        backdropFilter: "blur(4px)"
                                     }}
                                 >
-                                    <FontAwesomeIcon icon={faTimes} style={{ fontSize: "14px" }} />
+                                    <X size={14} weight="bold" />
                                 </button>
                             </div>
                         ))}
@@ -213,10 +212,10 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    paddingTop: "12px",
-                    borderTop: (content.length > 0 || images.length > 0) ? "1px solid #eff3f4" : "none"
+                    paddingTop: "20px",
+                    borderTop: (content.length > 0 || images.length > 0) ? "0.5px solid var(--border-hairline)" : "none"
                 }}>
-                    <div style={{ display: "flex", gap: "10px", color: "#212121" }}>
+                    <div style={{ display: "flex", gap: "10px", color: "var(--text-tertiary)" }}>
                         <input
                             type="file"
                             multiple
@@ -233,44 +232,46 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 color: "inherit",
                                 cursor: "pointer",
                                 padding: "8px",
-                                borderRadius: "50%",
-                                transition: "background 0.2s"
+                                borderRadius: "2px",
+                                transition: "all 0.15s"
                             }}
+                            onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
+                            onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
                         >
-                            <FontAwesomeIcon icon={faImage} style={{ fontSize: "18px" }} />
+                            <ImageIcon size={22} weight="thin" />
                         </button>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
                         <span style={{
-                            fontSize: "13px",
-                            color: content.length > charLimit ? "#ef4444" : "#64748b",
+                            fontSize: "11px",
+                            fontFamily: "var(--font-mono)",
+                            color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
                             opacity: content.length > 0 ? 1 : 0,
-                            transition: "opacity 0.2s"
+                            transition: "opacity 0.2s",
+                            fontWeight: 700,
+                            letterSpacing: "0.05em"
                         }}>
-                            {content.length} / {charLimit}
+                            {content.length.toString().padStart(3, '0')} / {charLimit}
                         </span>
                         <button
                             onClick={handleSubmit}
                             disabled={(!content.trim() && images.length === 0) || isSubmitting || content.length > charLimit}
                             style={{
-                                padding: "8px 20px",
-                                backgroundColor: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "#0f172a" : "#cbd5e1",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "100px",
-                                fontWeight: 700,
-                                fontSize: "15px",
+                                padding: "8px 24px",
+                                backgroundColor: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "transparent",
+                                color: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
+                                border: "0.5px solid var(--border-hairline)",
+                                borderRadius: "2px",
+                                fontWeight: 800,
+                                fontSize: "11px",
+                                fontFamily: "var(--font-mono)",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.1em",
                                 cursor: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
-                                transition: "all 0.2s"
-                            }}
-                            onMouseEnter={e => {
-                                if ((content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit) e.currentTarget.style.backgroundColor = "#1e293b";
-                            }}
-                            onMouseLeave={e => {
-                                if ((content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit) e.currentTarget.style.backgroundColor = "#0f172a";
+                                transition: "all 0.15s ease"
                             }}
                         >
-                            {isSubmitting ? "Post..." : "Post"}
+                            {isSubmitting ? "WAIT..." : "POST"}
                         </button>
                     </div>
                 </div>

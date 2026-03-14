@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
+import { Star, Check, CaretLeft } from "phosphor-react";
 
 const PRO_CHECKOUT_PRODUCT_ID = "pdt_0NZynf5GNfjz9K6ddEmO0";
 
@@ -55,8 +56,8 @@ export default function Billing() {
 
   if (!isLoaded || loadingProfile) {
     return (
-      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f8fafc" }}>
-        <div style={{ width: 32, height: 32, border: "3px solid #e2e8f0", borderTopColor: "#0f172a", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--bg-page)" }}>
+        <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "2px", animation: "spin 0.8s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </main>
     );
@@ -76,8 +77,8 @@ export default function Billing() {
   return (
     <main style={{
       minHeight: "100vh",
-      backgroundColor: "#f8fafc",
-      padding: isMobile ? "24px 16px" : "48px 24px",
+      backgroundColor: "var(--bg-page)",
+      padding: isMobile ? "32px 24px" : "64px 24px",
     }}>
       <div style={{
         maxWidth: "560px",
@@ -85,59 +86,54 @@ export default function Billing() {
       }}>
         {/* Card */}
         <div style={{
-          backgroundColor: "#fff",
-          borderRadius: "16px",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+          backgroundColor: "var(--bg-page)",
+          borderRadius: "2px",
+          border: "0.5px solid var(--border-hairline)",
           overflow: "hidden",
-          border: "1px solid #e2e8f0",
         }}>
           {/* Header */}
           <div style={{
-            padding: isMobile ? "28px 20px" : "36px 32px",
+            padding: isMobile ? "32px 24px" : "48px 40px",
             textAlign: "center",
-            borderBottom: "1px solid #f1f5f9",
+            borderBottom: "0.5px solid var(--border-hairline)",
           }}>
             <div style={{
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: 48,
-              height: 48,
-              borderRadius: "12px",
-              backgroundColor: "#0f172a",
-              color: "#fff",
-              fontSize: 24,
-              marginBottom: 16,
+              width: 40,
+              height: 40,
+              borderRadius: "2px",
+              backgroundColor: "var(--text-primary)",
+              color: "var(--bg-page)",
+              marginBottom: 20,
             }}>
-              ★
+              <Star size={20} weight="fill" />
             </div>
             <h1 style={{
               margin: 0,
-              fontSize: isMobile ? 22 : 26,
+              fontSize: "14px",
               fontWeight: 700,
-              color: "#0f172a",
-              letterSpacing: "-0.02em",
+              color: "var(--text-primary)",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
             }}>
-              Pro Profile (Beta)
+              PRO MEMBERSHIP
             </h1>
             <p style={{
-              margin: "8px 0 0",
-              fontSize: 15,
-              color: "#64748b",
-              lineHeight: 1.5,
+              margin: "12px 0 0",
+              fontSize: 14,
+              color: "var(--text-secondary)",
+              lineHeight: 1.6,
             }}>
-              Upgrade your account to get better visibility, unlock advanced analytics, and get the "Open to opportunities" badge.
-              <br />
-              <br />
-              <span style={{ fontSize: 14, color: "#94a3b8" }}>
-                Note: This is not ready yet, we are working on it.
-              </span>
+              Upgrade your account to unlock advanced tools and premium visibility.
             </p>
           </div>
 
           {/* Features */}
           <div style={{
-            padding: isMobile ? "20px" : "24px 32px",
+            padding: isMobile ? "24px" : "32px 40px",
           }}>
             <ul style={{
               listStyle: "none",
@@ -150,14 +146,16 @@ export default function Billing() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 12,
-                    padding: "10px 0",
-                    fontSize: 14,
-                    color: "#334155",
+                    gap: 16,
+                    padding: "8px 0",
+                    fontSize: 13,
+                    color: "var(--text-secondary)",
                     lineHeight: 1.4,
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
                 >
-                  <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span>
+                  <Check size={14} weight="bold" color="var(--text-primary)" />
                   {text}
                 </li>
               ))}
@@ -166,67 +164,85 @@ export default function Billing() {
 
           {/* CTA */}
           <div style={{
-            padding: isMobile ? "20px" : "24px 32px 32px",
+            padding: isMobile ? "24px" : "0 40px 40px",
           }}>
             <button
               onClick={handleUpgrade}
               disabled={isPro}
               style={{
                 width: "100%",
-                padding: "14px 24px",
-                fontSize: 16,
-                fontWeight: 600,
-                color: "#fff",
-                backgroundColor: isPro ? "#10b981" : "#0f172a",
-                border: "none",
-                borderRadius: "12px",
+                padding: "12px 24px",
+                fontSize: "13px",
+                fontWeight: 700,
+                color: isPro ? "var(--text-primary)" : "var(--bg-page)",
+                backgroundColor: isPro ? "var(--bg-hover)" : "var(--text-primary)",
+                border: isPro ? "0.5px solid var(--border-hairline)" : "none",
+                borderRadius: "2px",
                 cursor: isPro ? "default" : "pointer",
-                transition: "all 0.2s",
-                opacity: isPro ? 1 : undefined,
+                transition: "all 0.15s ease",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "8px",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase"
               }}
             >
               {isPro ? (
                 <>
-                  <span style={{ fontSize: "18px" }}>✓</span>
-                  You are a Pro member
+                  <Check size={16} weight="bold" />
+                  ACTIVE SUBSCRIPTION
                 </>
               ) : (
-                "Upgrade to Pro (Beta)"
+                "UPGRADE TO PRO"
               )}
             </button>
             {isPro && (
               <p style={{
                 textAlign: "center",
-                marginTop: "12px",
-                fontSize: "13px",
-                color: "#64748b"
+                marginTop: "16px",
+                fontSize: "11px",
+                color: "var(--text-tertiary)",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase"
               }}>
-                You already have a Pro account. Thank you for your support!
+                Thank you for supporting Codeown.
               </p>
             )}
             <p style={{
-              margin: "12px 0 0",
-              fontSize: 12,
-              color: "#94a3b8",
+              margin: "16px 0 0",
+              fontSize: 11,
+              color: "var(--text-tertiary)",
               textAlign: "center",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em"
             }}>
-              Secure checkout via Dodo Payments. Cancel anytime.
+              Secure checkout via Dodo Payments.
             </p>
           </div>
         </div>
 
         <p style={{
-          marginTop: 24,
-          fontSize: 14,
-          color: "#64748b",
+          marginTop: 32,
+          fontSize: 12,
           textAlign: "center",
         }}>
-          <Link to="/profile" style={{ color: "#0f172a", fontWeight: 600, textDecoration: "none" }}>
-            ← Back to profile
+          <Link to="/profile" style={{ 
+            color: "var(--text-tertiary)", 
+            fontWeight: 700, 
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
+            transition: "all 0.15s ease"
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+          onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+          >
+            <CaretLeft size={16} weight="bold" /> BACK TO PROFILE
           </Link>
         </p>
       </div>

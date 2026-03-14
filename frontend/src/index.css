@@ -1,66 +1,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Modernism Palette */
+  /* Minimalist Monochromic Palette */
   --bg-page: #ffffff;
   --bg-card: #ffffff;
-  --bg-elevated: #f4f4f5;
-  --bg-hover: #f4f4f5;
-  --bg-input: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #fcfcfc;
+  --bg-input: #fcfcfc;
 
-  --text-primary: #212121;
-  --text-secondary: #52525b;
-  --text-tertiary: #a1a1aa;
+  --text-primary: #000000;
+  --text-secondary: #525252;
+  --text-tertiary: #a1a1a1;
 
-  --primary: #212121;
+  --primary: #000000;
   --primary-contrast: #ffffff;
-  --accent: #1d4ed8;
-  /* Electric Blue */
+  --accent: #000000;
 
-  --border-color: #212121;
-  --border-light: #e4e4e7;
-  --border-strong: #212121;
+  /* No heavy shadows, use 0.5px hairline borders */
+  --border-light: #e5e5e5;
+  --border-hairline: rgba(0, 0, 0, 0.08);
+  --border-strong: #000000;
 
-  /* Modernism emphasizes grid and lines, not shadows */
   --shadow: none;
   --shadow-sm: none;
   --shadow-md: none;
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-lg: none;
 
-  /* Small radius for a "sharp but professional" look */
+  /* Sharp corners */
   --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
+  --radius-sm: 2px;
+  --radius-md: 2px;
   --radius-lg: 0px;
-  /* Sharp corners for cards */
 
-  --max-width: 1100px;
-  --feed-width: 640px;
+  --max-width: 1200px;
+  --feed-width: 680px;
 
-  /* Animation Timings */
-  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Typography */
+  --font-main: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ease-smooth: cubic-bezier(0.2, 0, 0, 1);
+  
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
 }
 
 .dark {
-  --bg-page: #09090b;
-  --bg-card: #09090b;
-  --bg-elevated: #18181b;
-  --bg-hover: #18181b;
-  --bg-input: #09090b;
+  --bg-page: #000000;
+  --bg-card: #000000;
+  --bg-elevated: #000000;
+  --bg-hover: #0a0a0a;
+  --bg-input: #0a0a0a;
 
   --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-tertiary: #52525b;
+  --text-secondary: #888888;
+  --text-tertiary: #444444;
 
   --primary: #ffffff;
   --primary-contrast: #000000;
-  --accent: #3b82f6;
+  --accent: #ffffff;
 
-  --border-color: #ffffff;
-  --border-light: #27272a;
+  --border-light: #222222;
+  --border-hairline: rgba(255, 255, 255, 0.1);
   --border-strong: #ffffff;
 }
 
@@ -76,34 +77,27 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  transition: background-color 0.3s var(--ease-smooth), color 0.3s var(--ease-smooth);
+  transition: background-color 0.2s var(--ease-smooth);
   overflow-x: hidden;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-  line-height: 1.1;
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 button {
   cursor: pointer;
-  font-family: inherit;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 12px;
-  transition: all 0.2s var(--ease-smooth);
-  border: 1px solid var(--border-color);
+  font-family: var(--font-main);
+  font-weight: 500;
+  font-size: 13px;
+  transition: all 0.15s var(--ease-smooth);
+  border: 0.5px solid var(--border-hairline);
   background: transparent;
   padding: 8px 16px;
   color: var(--text-primary);
+  border-radius: var(--radius-xs);
 }
 
 button:active {
@@ -111,14 +105,13 @@ button:active {
 }
 
 button.primary {
-  background: var(--text-primary);
-  color: var(--bg-page);
+  background: var(--primary);
+  color: var(--primary-contrast);
+  border-color: var(--primary);
 }
 
 button.primary:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.85;
 }
 
 a {
@@ -133,47 +126,46 @@ a:hover {
 
 input,
 textarea {
-  font-family: inherit;
-  border: 1px solid var(--border-color);
+  font-family: var(--font-main);
+  border: 0.5px solid var(--border-hairline);
   background: var(--bg-input);
-  padding: 12px;
+  padding: 14px;
   color: var(--text-primary);
   border-radius: var(--radius-xs);
   width: 100%;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 input:focus,
 textarea:focus {
   outline: none;
-  border-width: 2px;
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+  border-color: var(--text-primary);
 }
 
 /* Layout Utilities */
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 40px;
 }
 
 .card {
-  border: 1px solid var(--border-color);
-  padding: 24px;
+  border: 0.5px solid var(--border-hairline);
+  padding: 32px;
   background: var(--bg-card);
-  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
+  transition: border-color 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  border-color: var(--text-tertiary);
 }
 
 /* Typography Scale */
 .text-xs {
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 
 .text-sm {
@@ -185,13 +177,13 @@ textarea:focus {
 }
 
 .text-lg {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 500;
 }
 
 .text-xl {
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 500;
 }
 
 /* Grid System */

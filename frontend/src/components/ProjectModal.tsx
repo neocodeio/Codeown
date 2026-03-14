@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import type { Project, ProjectFormData } from "../types/project";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { X, Check } from "phosphor-react";
 import VerifiedBadge from "./VerifiedBadge";
 import { validateImageSize } from "../constants/upload";
 import confetti from "canvas-confetti";
@@ -265,144 +264,134 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: "rgba(15, 23, 42, 0.6)",
+                backgroundColor: "rgba(0, 0, 0, 0.4)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 zIndex: 10000,
                 padding: "0",
-                backdropFilter: "blur(8px)",
+                backdropFilter: "blur(4px)",
             }}
             onClick={onClose}
         >
             <style>{`
         @keyframes modalEnter {
-          from { opacity: 0; transform: scale(0.95) translateY(10px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         .modal-content {
-          animation: modalEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @media (max-width: 640px) {
-          .modal-content {
-            padding: 20px !important;
-            border-radius: 16px !important;
-          }
-          .modal-header-title {
-            font-size: 22px !important;
-            margin-bottom: 20px !important;
-          }
-          .form-item-label {
-            font-size: 14px !important;
-          }
-          .form-input, .form-textarea, .form-select {
-            padding: 10px !important;
-            font-size: 14px !important;
-          }
-          .add-button-text {
-            display: none;
-          }
-          .add-button-icon {
-            display: block !important;
-          }
-          .responsive-grid {
-            grid-template-columns: 1fr !important;
-            gap: 16px !important;
-          }
+          animation: modalEnter 0.2s ease-out;
         }
         .form-input, .form-textarea, .form-select {
           width: 100%;
-          padding: 12px;
-          border: 1px solid #e2e8f0;
-          borderRadius: 12px;
-          fontSize: 16px;
-          transition: all 0.2s ease;
-          background-color: #f8fafc;
+          padding: 14px 18px;
+          border: 0.5px solid var(--border-hairline);
+          borderRadius: 2px;
+          fontSize: 14px;
+          transition: all 0.15s ease;
+          background-color: var(--bg-hover);
           box-sizing: border-box;
           outline: none;
-          font-family: inherit;
+          font-family: var(--font-main);
+          color: var(--text-primary);
         }
         .form-input:focus, .form-textarea:focus, .form-select:focus {
-          border-color: #212121;
-          box-shadow: 0 0 0 4px rgba(33, 33, 33, 0.1);
-          background-color: #fff;
+          border-color: var(--text-primary);
+          background-color: var(--bg-page);
+        }
+        .form-item-label {
+          display: block;
+          margin-bottom: 10px;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          font-weight: 700;
+          color: var(--text-tertiary);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
         .responsive-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 20px;
-          margin-bottom: 20px;
+          gap: 24px;
+          margin-bottom: 24px;
+        }
+        @media (max-width: 640px) {
+          .responsive-grid {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
             <div
                 className="modal-content"
                 style={{
-                    backgroundColor: "#fff",
-                    borderRadius: "24px",
+                    backgroundColor: "var(--bg-page)",
+                    borderRadius: "0",
                     width: "100%",
-                    maxWidth: "520px",
+                    maxWidth: "600px",
                     maxHeight: "90vh",
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
-                    boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+                    border: "0.5px solid var(--border-hairline)",
+                    boxShadow: "none",
                     overflow: "hidden",
                     margin: "16px"
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Fixed Header */}
-                <div style={{ padding: "24px 32px 16px", borderBottom: "1px solid #f1f5f9", position: "relative" }}>
+                <div style={{ padding: "32px 40px 24px", borderBottom: "0.5px solid var(--border-hairline)", position: "relative" }}>
                     <button
                         onClick={onClose}
                         style={{
                             position: "absolute",
-                            top: "20px",
-                            right: "20px",
-                            background: "#f1f5f9",
+                            top: "32px",
+                            right: "32px",
+                            background: "transparent",
                             border: "none",
                             width: "32px",
                             height: "32px",
-                            borderRadius: "50%",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            fontSize: "18px",
                             cursor: "pointer",
-                            color: "#64748b",
-                            transition: "all 0.2s ease",
+                            color: "var(--text-tertiary)",
+                            transition: "all 0.15s ease",
                             zIndex: 10,
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e2e8f0")}
-                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#f1f5f9")}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-tertiary)")}
                     >
-                        <FontAwesomeIcon icon={faTimes} />
+                        <X size={20} weight="thin" />
                     </button>
-                    <h2 className="modal-header-title" style={{ margin: 0, fontSize: "24px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.025em" }}>
-                        {project ? "Edit Project" : "Add New Project"}
+                    <h2 className="modal-header-title" style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                        {project ? "EDIT PROJECT" : "NEW PROJECT"}
                     </h2>
                 </div>
 
                 {/* Scrolling Content */}
-                <div style={{ padding: "24px 32px", overflowY: "auto", flex: 1 }}>
+                <div style={{ padding: "40px", overflowY: "auto", flex: 1 }}>
                     {error && (
                         <div style={{
-                            backgroundColor: "#fee2e2",
-                            color: "#991b1b",
-                            padding: "12px 16px",
-                            borderRadius: "12px",
-                            marginBottom: "20px",
-                            fontSize: "14px",
-                            fontWeight: 500,
-                            border: "1px solid #fecaca",
+                            backgroundColor: "transparent",
+                            color: "#ef4444",
+                            padding: "16px 20px",
+                            borderRadius: "2px",
+                            marginBottom: "32px",
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            fontFamily: "var(--font-mono)",
+                            border: "0.5px solid #ef4444",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em"
                         }}>
                             {error}
                         </div>
                     )}
 
                     <form id="project-form" onSubmit={handleSubmit}>
-                        <div style={{ marginBottom: "20px" }}>
-                            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                        <div style={{ marginBottom: "32px" }}>
+                            <label className="form-item-label">
                                 Project Name *
                             </label>
                             <input
@@ -410,19 +399,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 name="title"
                                 value={formData.title}
                                 onChange={handleInputChange}
-                                style={{
-                                    border: "1px solid #ddd",
-                                    borderRadius: "10px",
-                                    fontSize: "13px",
-                                }}
                                 required
                                 className="form-input"
-                                placeholder="e.g. My Awesome App"
+                                placeholder="Give it a name..."
                             />
                         </div>
 
-                        <div style={{ marginBottom: "20px" }}>
-                            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                        <div style={{ marginBottom: "32px" }}>
+                            <label className="form-item-label">
                                 Project Description *
                             </label>
                             <textarea
@@ -431,67 +415,62 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 onChange={handleInputChange}
                                 required
                                 rows={3}
-                                style={{
-                                    border: "1px solid #ddd",
-                                    borderRadius: "10px",
-                                    fontSize: "13px",
-                                }}
                                 className="form-textarea"
-                                placeholder="A short punchy intro for your project..."
+                                placeholder="What is this about?"
                             />
                         </div>
 
-                        <div style={{ marginBottom: "20px" }}>
-                            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                        <div style={{ marginBottom: "32px" }}>
+                            <label className="form-item-label">
                                 Technologies Used *
                             </label>
-                            <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                            <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
                                 <input
                                     type="text"
                                     value={techInput}
                                     onChange={(e) => setTechInput(e.target.value)}
                                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
                                     placeholder="e.g. React, Node.js"
-                                    style={{
-                                        border: "1px solid #ddd",
-                                        borderRadius: "10px",
-                                        fontSize: "13px",
-                                    }}
                                     className="form-input"
                                 />
                                 <button
                                     type="button"
                                     onClick={handleAddTech}
                                     style={{
-                                        padding: "12px 20px",
-                                        backgroundColor: "#212121",
-                                        color: "#fff",
+                                        padding: "0 24px",
+                                        backgroundColor: "var(--text-primary)",
+                                        color: "var(--bg-page)",
                                         border: "none",
-                                        borderRadius: "8px",
+                                        borderRadius: "2px",
                                         cursor: "pointer",
-                                        fontWeight: 600,
+                                        fontWeight: 800,
+                                        fontSize: "11px",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        minWidth: "60px",
+                                        textTransform: "uppercase",
+                                        fontFamily: "var(--font-mono)",
+                                        letterSpacing: "0.1em"
                                     }}
                                 >
-                                    <span className="add-button-text">Add</span>
-                                    <span className="add-button-icon" style={{ display: "none" }}><FontAwesomeIcon icon={faPlus} /></span>
+                                    <span>ADD</span>
                                 </button>
                             </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                                 {formData.technologies_used.map((tech, index) => (
                                     <span
                                         key={index}
                                         style={{
-                                            backgroundColor: "#f0f0f0",
+                                            border: "0.5px solid var(--border-hairline)",
                                             padding: "6px 12px",
-                                            borderRadius: "20px",
-                                            fontSize: "14px",
+                                            borderRadius: "2px",
+                                            fontSize: "11px",
                                             display: "flex",
                                             alignItems: "center",
                                             gap: "8px",
+                                            fontFamily: "var(--font-mono)",
+                                            textTransform: "uppercase",
+                                            color: "var(--text-tertiary)"
                                         }}
                                     >
                                         {tech}
@@ -502,11 +481,12 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                                 background: "none",
                                                 border: "none",
                                                 cursor: "pointer",
-                                                color: "#666",
-                                                fontSize: "16px",
+                                                color: "var(--text-tertiary)",
+                                                fontSize: "14px",
+                                                display: "flex", alignItems: "center"
                                             }}
                                         >
-                                            ×
+                                            <X size={12} />
                                         </button>
                                     </span>
                                 ))}
@@ -514,11 +494,11 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         </div>
 
 
-                        <div style={{ marginBottom: "20px" }}>
-                            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                        <div style={{ marginBottom: "32px" }}>
+                            <label className="form-item-label">
                                 Contributors (Usernames)
                             </label>
-                            <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                            <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
                                 <input
                                     type="text"
                                     value={contributorInput}
@@ -526,51 +506,49 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddContributor())}
                                     placeholder="Enter username"
                                     className="form-input"
-                                    style={{
-                                        border: "1px solid #ddd",
-                                        borderRadius: "10px",
-                                        fontSize: "13px",
-                                    }}
                                 />
                                 <button
                                     type="button"
                                     onClick={handleAddContributor}
                                     style={{
-                                        padding: "12px 20px",
-                                        backgroundColor: "#212121",
-                                        color: "#fff",
+                                        padding: "0 24px",
+                                        backgroundColor: "var(--text-primary)",
+                                        color: "var(--bg-page)",
                                         border: "none",
-                                        borderRadius: "8px",
+                                        borderRadius: "2px",
                                         cursor: "pointer",
-                                        fontWeight: 600,
+                                        fontWeight: 800,
+                                        fontSize: "11px",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        minWidth: "60px",
+                                        textTransform: "uppercase",
+                                        fontFamily: "var(--font-mono)",
+                                        letterSpacing: "0.1em"
                                     }}
                                 >
-                                    <span className="add-button-text">Add</span>
-                                    <span className="add-button-icon" style={{ display: "none" }}><FontAwesomeIcon icon={faPlus} /></span>
+                                    <span>ADD</span>
                                 </button>
                             </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                                 {(formData.contributors || []).map((contributor, index) => (
                                     <span
                                         key={index}
                                         style={{
-                                            backgroundColor: "#e0f2fe",
-                                            color: "#0369a1",
+                                            border: "0.5px solid var(--border-hairline)",
                                             padding: "6px 12px",
-                                            borderRadius: "20px",
-                                            fontSize: "14px",
+                                            borderRadius: "2px",
+                                            fontSize: "11px",
                                             display: "flex",
                                             alignItems: "center",
                                             gap: "8px",
-                                            fontWeight: 500
+                                            fontFamily: "var(--font-mono)",
+                                            textTransform: "uppercase",
+                                            color: "var(--text-tertiary)"
                                         }}
                                     >
                                         @{contributor}
-                                        <VerifiedBadge username={contributor} size="14px" />
+                                        <VerifiedBadge username={contributor} size="12px" />
                                         <button
                                             type="button"
                                             onClick={() => handleRemoveContributor(contributor)}
@@ -578,19 +556,20 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                                 background: "none",
                                                 border: "none",
                                                 cursor: "pointer",
-                                                color: "#0369a1",
-                                                fontSize: "16px",
+                                                color: "var(--text-tertiary)",
+                                                fontSize: "14px",
+                                                display: "flex", alignItems: "center"
                                             }}
                                         >
-                                            ×
+                                            <X size={12} />
                                         </button>
                                     </span>
                                 ))}
                             </div>
                         </div>
 
-                        <div style={{ marginBottom: "20px" }}>
-                            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                        <div style={{ marginBottom: "32px" }}>
+                            <label className="form-item-label">
                                 Project Status *
                             </label>
                             <select
@@ -599,38 +578,43 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 onChange={handleInputChange}
                                 required
                                 className="form-select"
-                                style={{
-                                    border: "1px solid #ddd",
-                                    borderRadius: "10px",
-                                    fontSize: "13px",
-                                }}
                             >
                                 <option value="in_progress">In Progress</option>
                                 <option value="completed">Completed</option>
                                 <option value="paused">Paused</option>
                             </select>
-
                         </div>
 
-                        <div style={{ marginBottom: "20px" }}>
-                            <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-                                <input
-                                    type="checkbox"
-                                    name="looking_for_contributors"
-                                    checked={formData.looking_for_contributors || false}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, looking_for_contributors: e.target.checked }))}
-                                    style={{ width: "20px", height: "20px" }}
-                                />
-                                <span style={{ fontWeight: 600 }}>Looking for Contributors</span>
+                        <div style={{ marginBottom: "32px" }}>
+                            <label style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}>
+                                <div style={{ position: "relative", width: "18px", height: "18px" }}>
+                                    <input
+                                        type="checkbox"
+                                        name="looking_for_contributors"
+                                        checked={formData.looking_for_contributors || false}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, looking_for_contributors: e.target.checked }))}
+                                        style={{ position: "absolute", opacity: 0, width: "100%", height: "100%", cursor: "pointer" }}
+                                    />
+                                    <div style={{
+                                        width: "100%", height: "100%",
+                                        border: "0.5px solid var(--border-hairline)",
+                                        borderRadius: "2px",
+                                        backgroundColor: formData.looking_for_contributors ? "var(--text-primary)" : "transparent",
+                                        display: "flex", alignItems: "center", justifyContent: "center"
+                                    }}>
+                                        {formData.looking_for_contributors && <Check size={12} weight="bold" color="var(--bg-page)" />}
+                                    </div>
+                                </div>
+                                <span style={{ fontWeight: 700, fontSize: "13px", color: "var(--text-primary)", letterSpacing: "-0.01em" }}>Looking for Contributors</span>
                             </label>
-                            <p style={{ fontSize: "14px", color: "var(--text-tertiary)", marginTop: "4px", marginLeft: "30px" }}>
-                                Check this if you want to invite others to help with your project.
+                            <p style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "8px", marginLeft: "30px", lineHeight: 1.5, letterSpacing: "-0.01em" }}>
+                                Enable this to let other developers know you're open to collaboration.
                             </p>
                         </div>
 
                         <div className="responsive-grid">
                             <div>
-                                <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                                <label className="form-item-label">
                                     GitHub Repository
                                 </label>
                                 <input
@@ -638,18 +622,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     name="github_repo"
                                     value={formData.github_repo}
                                     onChange={handleInputChange}
-                                    placeholder="https://github.com/username/repo"
+                                    placeholder="https://github.com/..."
                                     className="form-input"
-                                    style={{
-                                        border: "1px solid #ddd",
-                                        borderRadius: "10px",
-                                        fontSize: "13px",
-                                    }}
                                 />
                             </div>
 
                             <div>
-                                <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                                <label className="form-item-label">
                                     Live Demo
                                 </label>
                                 <input
@@ -657,23 +636,18 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     name="live_demo"
                                     value={formData.live_demo}
                                     onChange={handleInputChange}
-                                    placeholder="https://example.com"
+                                    placeholder="https://..."
                                     className="form-input"
-                                    style={{
-                                        border: "1px solid #ddd",
-                                        borderRadius: "10px",
-                                        fontSize: "13px",
-                                    }}
                                 />
                             </div>
                         </div>
 
-                        <div style={{ marginBottom: "20px" }}>
-                            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                        <div style={{ marginBottom: "32px" }}>
+                            <label className="form-item-label">
                                 Cover Image
                             </label>
                             {formData.cover_image && (
-                                <div style={{ marginBottom: "10px" }}>
+                                <div style={{ marginBottom: "16px", borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                                     <img
                                         src={formData.cover_image}
                                         alt="Cover"
@@ -681,27 +655,23 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                             width: "100%",
                                             maxHeight: "200px",
                                             objectFit: "cover",
-                                            borderRadius: "8px",
                                         }}
                                     />
                                 </div>
                             )}
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                style={{
-                                    width: "100%",
-                                    padding: "8px",
-                                    border: "1px solid #ddd",
-                                    borderRadius: "10px",
-                                    fontSize: "14px",
-                                }}
-                            />
+                            <div style={{ position: "relative" }}>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    className="form-input"
+                                    style={{ padding: "12px" }}
+                                />
+                            </div>
                         </div>
 
-                        <div style={{ marginBottom: "30px" }}>
-                            <label className="form-item-label" style={{ display: "block", marginBottom: "8px", fontWeight: 600 }}>
+                        <div style={{ marginBottom: "40px" }}>
+                            <label className="form-item-label">
                                 Project Details *
                             </label>
                             <textarea
@@ -709,57 +679,66 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 value={formData.project_details}
                                 onChange={handleInputChange}
                                 required
-                                rows={6}
+                                rows={8}
                                 className="form-textarea"
-                                style={{
-                                    border: "1px solid #ddd",
-                                    borderRadius: "10px",
-                                    fontSize: "13px",
-                                }}
-                                placeholder="Describe your project in detail..."
+                                placeholder="Deep dive into the technical details..."
                             />
                         </div>
                     </form>
                 </div>
 
                 {/* Fixed Footer */}
-                <div style={{ padding: "20px 32px", backgroundColor: "#f8fafc", borderTop: "1px solid #f1f5f9", display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                <div style={{ padding: "32px 40px", backgroundColor: "var(--bg-page)", borderTop: "0.5px solid var(--border-hairline)", display: "flex", gap: "16px", justifyContent: "flex-end" }}>
                     <button
                         type="button"
                         onClick={onClose}
                         style={{
-                            padding: "12px 24px",
+                            padding: "0 24px",
+                            height: "44px",
                             backgroundColor: "transparent",
-                            color: "#64748b",
-                            border: "1px solid #e2e8f0",
-                            borderRadius: "14px",
+                            color: "var(--text-tertiary)",
+                            border: "0.5px solid var(--border-hairline)",
+                            borderRadius: "2px",
                             cursor: "pointer",
-                            fontWeight: 700,
-                            fontSize: "15px",
-                            transition: "all 0.2s ease"
+                            fontWeight: 800,
+                            fontSize: "11px",
+                            fontFamily: "var(--font-mono)",
+                            transition: "all 0.15s ease",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em"
                         }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "#f1f5f9"}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                            e.currentTarget.style.color = "var(--text-primary)";
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.backgroundColor = "transparent";
+                            e.currentTarget.style.color = "var(--text-tertiary)";
+                        }}
                     >
-                        Cancel
+                        CANCEL
                     </button>
                     <button
                         type="submit"
                         form="project-form"
                         disabled={loading}
                         style={{
-                            padding: "12px 24px",
-                            backgroundColor: loading ? "#444" : "#212121",
-                            color: "#fff",
+                            padding: "0 32px",
+                            height: "44px",
+                            backgroundColor: loading ? "var(--bg-hover)" : "var(--text-primary)",
+                            color: loading ? "var(--text-tertiary)" : "var(--bg-page)",
                             border: "none",
-                            borderRadius: "14px",
+                            borderRadius: "2px",
                             cursor: loading ? "not-allowed" : "pointer",
-                            fontWeight: 700,
-                            fontSize: "15px",
-                            transition: "all 0.2s ease"
+                            fontWeight: 800,
+                            fontSize: "11px",
+                            fontFamily: "var(--font-mono)",
+                            transition: "all 0.15s ease",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em"
                         }}
                     >
-                        {loading ? "Saving..." : (project ? "Update Project" : "Create Project")}
+                        {loading ? "SHIPPING..." : (project ? "UPDATE" : "LAUNCH")}
                     </button>
                 </div>
             </div>

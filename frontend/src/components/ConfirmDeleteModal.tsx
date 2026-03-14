@@ -40,12 +40,13 @@ export default function ConfirmDeleteModal({
       style={{
         position: "fixed",
         inset: 0,
-        backgroundColor: "rgba(15, 23, 42, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        backdropFilter: "blur(2px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
-        zIndex: 5000,
+        zIndex: 5100,
         boxSizing: "border-box",
       }}
       onClick={onClose}
@@ -57,31 +58,35 @@ export default function ConfirmDeleteModal({
         style={{
           width: "100%",
           maxWidth: "400px",
-          borderRadius: "16px",
-          backgroundColor: "#fff",
-          boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
-          padding: "24px",
+          borderRadius: "2px",
+          backgroundColor: "var(--bg-page)",
+          border: "0.5px solid var(--border-hairline)",
+          padding: "32px",
           boxSizing: "border-box",
+          position: "relative",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <h2
           id="confirm-delete-title"
           style={{
-            margin: "0 0 8px",
-            fontSize: "18px",
-            fontWeight: 700,
-            color: "#0f172a",
+            margin: "0 0 16px",
+            fontSize: "14px",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
+            letterSpacing: "0.1em"
           }}
         >
           {title}
         </h2>
         <p
           style={{
-            margin: "0 0 24px",
-            fontSize: "15px",
-            lineHeight: 1.5,
-            color: "#64748b",
+            margin: "0 0 32px",
+            fontSize: "14px",
+            lineHeight: 1.6,
+            color: "var(--text-secondary)",
           }}
         >
           {message}
@@ -91,44 +96,56 @@ export default function ConfirmDeleteModal({
             display: "flex",
             gap: "12px",
             justifyContent: "flex-end",
-            flexWrap: "wrap",
           }}
         >
           <button
             onClick={onClose}
             disabled={isLoading}
             style={{
-              padding: "10px 20px",
-              borderRadius: "999px",
-              border: "1px solid #e0e0e0",
-              backgroundColor: "#fff",
-              fontSize: "14px",
-              fontWeight: 600,
-              color: "#64748b",
+              padding: "10px 24px",
+              borderRadius: "2px",
+              border: "0.5px solid var(--border-hairline)",
+              backgroundColor: "transparent",
+              fontSize: "12px",
+              fontWeight: 800,
+              color: "var(--text-tertiary)",
               cursor: isLoading ? "not-allowed" : "pointer",
-              opacity: isLoading ? 0.7 : 1,
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "all 0.15s ease",
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#fff"}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+              e.currentTarget.style.color = "var(--text-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--text-tertiary)";
+            }}
           >
-            Cancel
+            CANCEL
           </button>
           <button
             onClick={handleConfirm}
             disabled={isLoading}
             style={{
-              padding: "10px 20px",
-              borderRadius: "999px",
+              padding: "10px 24px",
+              borderRadius: "2px",
               border: "none",
               backgroundColor: "#ef4444",
-              fontSize: "14px",
-              fontWeight: 600,
+              fontSize: "12px",
+              fontWeight: 800,
               color: "#fff",
               cursor: isLoading ? "not-allowed" : "pointer",
-              opacity: isLoading ? 0.8 : 1,
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "opacity 0.15s ease",
+              opacity: isLoading ? 0.6 : 1,
             }}
           >
-            {isLoading ? "Deleting..." : confirmLabel}
+            {isLoading ? "DELETING..." : confirmLabel.toUpperCase()}
           </button>
         </div>
       </div>

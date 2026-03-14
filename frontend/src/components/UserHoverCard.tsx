@@ -151,13 +151,13 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
         left: position.left,
         width: CARD_WIDTH,
         maxWidth: "calc(100vw - 24px)",
-        backgroundColor: "#fff",
-        borderRadius: "16px",
-        boxShadow: "0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)",
-        border: "1px solid #e2e8f0",
+        backgroundColor: "var(--bg-page)",
+        borderRadius: "2px",
+        boxShadow: "none",
+        border: "0.5px solid var(--border-hairline)",
         overflow: "hidden",
         zIndex: 9999,
-        animation: "userHoverFadeIn 0.2s ease-out",
+        animation: "userHoverFadeIn 0.15s ease-out",
       }}
     >
       <style>{`
@@ -167,17 +167,17 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
         }
       `}</style>
       {loading ? (
-        <div style={{ padding: "24px", textAlign: "center", color: "#94a3b8", fontSize: "14px" }}>
-          Loading...
+        <div style={{ padding: "32px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)" }}>
+          LOADING...
         </div>
       ) : user ? (
         <>
           <div style={{ padding: "20px 20px 16px" }}>
             <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
               <img
-                src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=56`}
+                src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
                 alt=""
-                style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+                style={{ width: 48, height: 48, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div
@@ -190,23 +190,12 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                     flexWrap: "wrap",
                   }}
                 >
-                  <span style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a" }}>
+                  <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)" }}>
                     {user.name}
                   </span>
-                  <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
-                  {user.is_pro && (
-                    <span style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      padding: "2px 6px",
-                      borderRadius: 4,
-                      backgroundColor: "#0f172a",
-                      color: "#fff",
-                      letterSpacing: "0.02em",
-                    }}>PRO</span>
-                  )}
+                  <VerifiedBadge username={user.username} isPro={user.is_pro} size="12px" />
                 </div>
-                <span style={{ fontSize: "14px", color: "#64748b" }}>
+                <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
                   @{user.username || "user"}
                 </span>
               </div>
@@ -215,11 +204,11 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
               <p
                 style={{
                   fontSize: "13px",
-                  lineHeight: 1.5,
-                  color: "#64748b",
-                  margin: "12px 0 0",
+                  lineHeight: 1.6,
+                  color: "var(--text-secondary)",
+                  margin: "16px 0 0",
                   display: "-webkit-box",
-                  WebkitLineClamp: 3,
+                  WebkitLineClamp: 2,
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                 }}
@@ -232,44 +221,47 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "16px",
-              padding: "12px 20px 16px",
-              borderTop: "1px solid #f1f5f9",
+              gap: "20px",
+              padding: "16px 20px",
+              borderTop: "0.5px solid var(--border-hairline)",
             }}
           >
-            <span style={{ fontSize: "13px", color: "#64748b" }}>
-              <strong style={{ color: "#0f172a" }}>{followerCount ?? user.follower_count ?? 0}</strong> followers
+            <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 800, letterSpacing: "0.05em" }}>
+              <span style={{ color: "var(--text-primary)", fontWeight: 800 }}>{followerCount ?? user.follower_count ?? 0}</span> FOLLOWERS
             </span>
-            <span style={{ fontSize: "13px", color: "#64748b" }}>
-              <strong style={{ color: "#0f172a" }}>{followingCount ?? user.following_count ?? 0}</strong> following
+            <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 800, letterSpacing: "0.05em" }}>
+              <span style={{ color: "var(--text-primary)", fontWeight: 800 }}>{followingCount ?? user.following_count ?? 0}</span> FOLLOWING
             </span>
           </div>
           {!isOwnProfile && (
             <div style={{ padding: "0 20px 20px" }}>
-              <button
+                <button
                 onClick={handleFollowClick}
                 disabled={followLoading}
                 style={{
                   width: "100%",
                   padding: "10px 16px",
-                  borderRadius: "10px",
-                  border: "none",
-                  fontSize: "14px",
-                  fontWeight: 600,
+                  borderRadius: "2px",
+                  border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
+                  fontSize: "11px",
+                  fontWeight: 800,
+                  fontFamily: "var(--font-mono)",
                   cursor: followLoading ? "wait" : "pointer",
-                  backgroundColor: isFollowing ? "#f1f5f9" : "#0f172a",
-                  color: isFollowing ? "#475569" : "#fff",
-                  transition: "all 0.2s ease",
+                  backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
+                  color: isFollowing ? "var(--text-primary)" : "var(--bg-page)",
+                  transition: "all 0.15s ease",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
                 }}
               >
-                {followLoading ? "..." : isFollowing ? "Following" : "Follow"}
+                {followLoading ? "..." : isFollowing ? "FOLLOWING" : "FOLLOW"}
               </button>
             </div>
           )}
         </>
       ) : (
-        <div style={{ padding: "24px", textAlign: "center", color: "#94a3b8", fontSize: "14px" }}>
-          User not found
+        <div style={{ padding: "32px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)" }}>
+          USER NOT FOUND
         </div>
       )}
     </div>

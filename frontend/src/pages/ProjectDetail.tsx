@@ -9,31 +9,13 @@ import { formatRelativeDate } from "../utils/date";
 import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrash,
-  faPen,
-  faExternalLinkAlt,
-  faArrowLeft,
-  faPlay,
-  faPause,
-  faCheck,
-  faStar,
-  // faEye
-} from "@fortawesome/free-solid-svg-icons";
-import { faGithub as faGithubBrand } from "@fortawesome/free-brands-svg-icons";
-import { HugeiconsIcon } from '@hugeicons/react';
-import {
-  Share01Icon,
-  FavouriteIcon,
-  Bookmark01Icon,
-  Bookmark02Icon,
-} from '@hugeicons/core-free-icons';
+import { ArrowLeft, PencilSimple, Trash, Globe, GithubLogo, Star, ShareNetwork, BookmarkSimple } from "phosphor-react";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
 import ProjectChangelog from "../components/ProjectChangelog";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import AvailabilityBadge from "../components/AvailabilityBadge";
 import { toast } from "react-toastify";
 
 export default function ProjectDetail() {
@@ -116,28 +98,21 @@ export default function ProjectDetail() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return '#28a745';
-      case 'in_progress': return '#007bff';
-      case 'paused': return '#ffc107';
-      default: return '#6c757d';
+      case 'completed': return 'var(--text-primary)';
+      case 'in_progress': return 'var(--text-primary)';
+      case 'paused': return 'var(--text-tertiary)';
+      default: return 'var(--text-tertiary)';
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return faCheck;
-      case 'in_progress': return faPlay;
-      case 'paused': return faPause;
-      default: return faCheck;
-    }
-  };
+
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'completed': return 'Completed';
-      case 'in_progress': return 'In Progress';
-      case 'paused': return 'Paused';
-      default: return status;
+      case 'completed': return 'COMPLETED';
+      case 'in_progress': return 'IN PROGRESS';
+      case 'paused': return 'PAUSED';
+      default: return status.toUpperCase();
     }
   };
 
@@ -259,8 +234,16 @@ export default function ProjectDetail() {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-        <div style={{ width: "24px", height: "24px", border: "2px solid var(--border-light)", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
+        <div style={{ 
+          width: "24px", 
+          height: "24px", 
+          border: "0.5px solid var(--border-hairline)", 
+          borderTopColor: "var(--text-primary)", 
+          borderRadius: "2px", 
+          animation: "spin 0.8s linear infinite" 
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -279,7 +262,7 @@ export default function ProjectDetail() {
   const avatarUrl = project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "U")}&background=212121&color=ffffff&bold=true`;
 
   return (
-    <main className="container" style={{ padding: "60px 20px" }}>
+    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", padding: isMobile ? "20px 0 100px 0" : "60px 20px" }}>
       <SEO
         title={`${project.title} by ${userName}`}
         description={project.description && project.description.length > 160 ? project.description.substring(0, 157) + "..." : (project.description || `Check out ${project.title} on Codeown.`)}
@@ -303,35 +286,48 @@ export default function ProjectDetail() {
           "runtimePlatform": project.technologies_used?.join(", ") || ""
         }}
       />
-      <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 20px" }}>
         <button
           onClick={() => navigate(-1)}
           style={{
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            marginBottom: "30px",
-            padding: "10px 16px",
-            backgroundColor: "#f5f5f5",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
+            marginBottom: "40px",
+            padding: "8px 0",
+            backgroundColor: "transparent",
+            border: "none",
             cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: 600,
+            fontSize: "12px",
+            fontWeight: 800,
+            fontFamily: "var(--font-mono)",
+            color: "var(--text-tertiary)",
+            textTransform: "uppercase",
+            letterSpacing: "0.1em"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--text-primary)";
+            e.currentTarget.style.transform = "translateX(-4px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--text-tertiary)";
+            e.currentTarget.style.transform = "translateX(0)";
           }}
         >
-          <FontAwesomeIcon icon={faArrowLeft} />
-          Back
+          <ArrowLeft size={16} weight="thin" />
+          BACK
         </button>
 
         {project.cover_image && (
           <div style={{
             width: "100%",
-            height: "400px",
+            height: isMobile ? "240px" : "560px",
             overflow: "hidden",
-            borderRadius: "20px",
-            marginBottom: "40px",
-            position: "relative"
+            borderRadius: "2px",
+            border: "0.5px solid var(--border-hairline)",
+            marginBottom: "56px",
+            position: "relative",
+            backgroundColor: "var(--bg-hover)"
           }}>
             <img
               src={project.cover_image}
@@ -346,19 +342,20 @@ export default function ProjectDetail() {
               position: "absolute",
               top: "20px",
               right: "20px",
-              backgroundColor: getStatusColor(project.status),
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "20px",
-              fontSize: "14px",
-              fontWeight: 700,
+              backgroundColor: "var(--bg-page)",
+              color: "var(--text-primary)",
+              padding: "6px 12px",
+              borderRadius: "0",
+              border: "0.5px solid var(--border-hairline)",
+              fontSize: "10px",
+              fontFamily: "var(--font-mono)",
+              fontWeight: 800,
               display: "flex",
               alignItems: "center",
               gap: "8px",
+              textTransform: "uppercase"
             }}>
-              {getStatusIcon(project.status) && (
-                <FontAwesomeIcon icon={getStatusIcon(project.status)} />
-              )}
+              <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: getStatusColor(project.status) }} />
               {getStatusText(project.status)}
             </div>
           </div>
@@ -376,15 +373,17 @@ export default function ProjectDetail() {
             <h1 style={{
               fontSize: width < 768 ? "32px" : "48px",
               fontWeight: 800,
-              marginBottom: "16px",
-              lineHeight: "1.2",
+              marginBottom: "24px",
+              lineHeight: "1.1",
+              letterSpacing: "-0.04em",
               overflowWrap: "anywhere",
-              wordBreak: "break-word"
+              wordBreak: "break-word",
+              textTransform: "uppercase"
             }}>
               {project.title}
             </h1>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
               <div
                 onClick={handleUserClick}
                 style={{
@@ -394,40 +393,34 @@ export default function ProjectDetail() {
                   cursor: "pointer",
                 }}
               >
-                <div style={{
-                  width: "48px",
-                  height: "48px",
-                  backgroundColor: "#212121",
-                  border: "1px solid var(--border-color)",
-                  overflow: "hidden",
-                  borderRadius: "50%",
-                }}>
-                  <img
-                    src={avatarUrl}
-                    alt={userName}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                </div>
+                <AvailabilityBadge
+                  avatarUrl={project.user?.avatar_url || null}
+                  name={userName}
+                  size={isMobile ? 44 : 52}
+                  isOpenToOpportunities={project.user?.is_pro === true && project.user?.is_hirable === true}
+                />
                 <div>
                   <div style={{
                     fontSize: "16px",
-                    fontWeight: 800,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
+                    fontWeight: 700,
+                    letterSpacing: "-0.01em",
                     display: "flex",
-                    alignItems: "center"
+                    alignItems: "center",
+                    gap: "6px",
+                    color: "var(--text-primary)"
                   }}>
                     {userName}
-                    <VerifiedBadge username={project.user?.username} size="14px" />
+                    <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="16px" />
                   </div>
-                  <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.1em", display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 400, fontFamily: "var(--font-mono)", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <span>@{project.user?.username || 'user'}</span>
+                    <span>•</span>
                     <span>{formatRelativeDate(project.created_at).toUpperCase()}</span>
                     {project.view_count !== undefined && (
-                      <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                        {/* <FontAwesomeIcon icon={faEye} style={{ fontSize: "10px" }} /> */}
-                        {/* <span>{project.view_count} VIEWS</span> */}
-                        <span>{project.view_count} VIEWS</span>
-                      </span>
+                      <>
+                        <span>•</span>
+                        <span>{project.view_count.toString().padStart(2, '0')} VIEWS</span>
+                      </>
                     )}
                   </div>
                 </div>
@@ -444,30 +437,35 @@ export default function ProjectDetail() {
             </p>
 
             {project.technologies_used && project.technologies_used.length > 0 && (
-              <div style={{ marginBottom: "30px" }}>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px" }}>Technologies Used</h3>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ marginBottom: "40px" }}>
+                <h3 style={{ fontSize: "12px", fontWeight: 600, marginBottom: "16px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Tech Stack</h3>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {project.technologies_used.map((tech, idx) => (
                     <span
                       key={idx}
                       onClick={() => navigate(`/search?q=${encodeURIComponent(tech)}`)}
                       style={{
-                        fontSize: "14px",
+                        fontSize: "11px",
                         padding: "6px 14px",
-                        backgroundColor: "#e9ecef",
-                        color: "#495057",
-                        borderRadius: "20px",
-                        fontWeight: 600,
+                        backgroundColor: "var(--bg-page)",
+                        color: "var(--text-secondary)",
+                        borderRadius: "0",
+                        border: "0.5px solid var(--border-hairline)",
+                        fontWeight: 500,
+                        fontFamily: "var(--font-mono)",
                         cursor: "pointer",
-                        transition: "background-color 0.2s ease",
+                        transition: "all 0.15s ease",
+                        textTransform: "uppercase"
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#dee2e6";
-                        e.currentTarget.style.color = "#212121";
+                        e.currentTarget.style.borderColor = "var(--text-primary)";
+                        e.currentTarget.style.color = "var(--text-primary)";
+                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#e9ecef";
-                        e.currentTarget.style.color = "#495057";
+                        e.currentTarget.style.borderColor = "var(--border-hairline)";
+                        e.currentTarget.style.color = "var(--text-secondary)";
+                        e.currentTarget.style.backgroundColor = "var(--bg-page)";
                       }}
                     >
                       {tech}
@@ -478,9 +476,9 @@ export default function ProjectDetail() {
             )}
 
             {project.contributors && project.contributors.length > 0 && (
-              <div style={{ marginBottom: "30px" }}>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px" }}>Contributors</h3>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ marginBottom: "40px" }}>
+                <h3 style={{ fontSize: "12px", fontWeight: 600, marginBottom: "16px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Contributors</h3>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
                   {project.contributors.map((contrib) => (
                     <div
                       key={contrib.user_id}
@@ -489,21 +487,24 @@ export default function ProjectDetail() {
                         display: "flex",
                         alignItems: "center",
                         gap: "10px",
-                        padding: "8px 12px",
-                        backgroundColor: "#f8f9fa",
-                        borderRadius: "30px",
+                        padding: "10px 16px 10px 10px",
+                        backgroundColor: "var(--bg-page)",
+                        borderRadius: "2px",
                         cursor: "pointer",
-                        border: "1px solid var(--border-light)"
+                        border: "0.5px solid var(--border-hairline)",
+                        transition: "all 0.15s ease"
                       }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
                     >
                       <img
                         src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=212121&color=ffffff&bold=true`}
                         alt={contrib.username}
-                        style={{ width: "32px", height: "32px", borderRadius: "50%" }}
+                        style={{ width: "28px", height: "28px", borderRadius: "2px" }}
                       />
-                      <span style={{ fontWeight: 600, fontSize: "14px", display: "flex", alignItems: "center" }}>
+                      <span style={{ fontWeight: 700, fontSize: "13px", display: "flex", alignItems: "center", color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
                         {contrib.name || contrib.username}
-                        <VerifiedBadge username={contrib.username} size="14px" />
+                        <VerifiedBadge username={contrib.username} size="12px" />
                       </span>
                     </div>
                   ))}
@@ -511,9 +512,9 @@ export default function ProjectDetail() {
               </div>
             )}
 
-            <div style={{ marginBottom: "30px" }}>
-              <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px" }}>Rate this Project</h3>
-              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <div style={{ marginBottom: "40px" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 600, marginBottom: "16px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Community Rating</h3>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
@@ -524,21 +525,21 @@ export default function ProjectDetail() {
                       background: "none",
                       border: "none",
                       cursor: "pointer",
-                      fontSize: "24px",
-                      color: (hoverRating || userRating) >= star ? "#f57f17" : "#e0e0e0",
-                      transition: "color 0.2s"
+                      padding: 0,
+                      color: (hoverRating || userRating) >= star ? "var(--text-primary)" : "var(--border-hairline)",
+                      transition: "color 0.15s"
                     }}
                   >
-                    <FontAwesomeIcon icon={faStar} />
+                    <Star size={20} weight={(hoverRating || userRating) >= star ? "fill" : "thin"} />
                   </button>
                 ))}
-                <span style={{ fontSize: "14px", color: "var(--text-secondary)", marginLeft: "10px", fontWeight: 600 }}>
-                  {project.rating ? `${project.rating.toFixed(1)} (${project.rating_count} ratings)` : "No ratings yet"}
+                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", marginLeft: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
+                  {project.rating ? `${project.rating.toFixed(1)} / ${(project.rating_count || 0).toString().padStart(2, '0')} RATINGS` : "NO RATINGS YET"}
                 </span>
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: "16px", marginBottom: "30px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "40px" }}>
               {project.github_repo && (
                 <a
                   href={project.github_repo}
@@ -547,25 +548,23 @@ export default function ProjectDetail() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "8px",
-                    padding: "12px 20px",
-                    backgroundColor: "#212121",
-                    color: "#fff",
-                    borderRadius: "8px",
+                    gap: "10px",
+                    padding: "12px 24px",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
+                    borderRadius: "2px",
                     textDecoration: "none",
-                    fontSize: "16px",
+                    fontSize: "13px",
                     fontWeight: 600,
-                    transition: "background-color 0.2s ease",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    transition: "opacity 0.2s ease",
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#444";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#212121";
-                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                 >
-                  <FontAwesomeIcon icon={faGithubBrand} />
-                  GitHub Repository
+                  <GithubLogo size={18} weight="thin" />
+                  Source Code
                 </a>
               )}
               {project.live_demo && (
@@ -576,64 +575,87 @@ export default function ProjectDetail() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "8px",
-                    padding: "12px 20px",
-                    backgroundColor: "#28a745",
-                    color: "#fff",
-                    borderRadius: "8px",
+                    gap: "10px",
+                    padding: "12px 24px",
+                    backgroundColor: "transparent",
+                    color: "var(--text-primary)",
+                    borderRadius: "2px",
+                    border: "0.5px solid var(--border-hairline)",
                     textDecoration: "none",
-                    fontSize: "16px",
+                    fontSize: "13px",
                     fontWeight: 600,
-                    transition: "background-color 0.2s ease",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#218838";
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.borderColor = "var(--text-primary)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#28a745";
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.borderColor = "var(--border-hairline)";
                   }}
                 >
-                  <FontAwesomeIcon icon={faExternalLinkAlt} />
-                  Live Demo
+                  <Globe size={18} weight="thin" />
+                  Live Preview
                 </a>
               )}
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", gap: "12px", marginBottom: isMobile ? "40px" : "0" }}>
             {isOwnProject && (
               <>
                 <button
                   onClick={handleEditClick}
                   style={{
-                    padding: "12px 20px",
-                    backgroundColor: "#212121",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
+                    flex: 1,
+                    padding: "10px 16px",
+                    backgroundColor: "transparent",
+                    color: "var(--text-primary)",
+                    border: "0.5px solid var(--border-hairline)",
+                    borderRadius: "2px",
                     cursor: "pointer",
                     fontWeight: 600,
-                    fontSize: "14px",
+                    fontSize: "12px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
-                  <FontAwesomeIcon icon={faPen} style={{ marginRight: "8px" }} />
-                  Edit Project
+                  <PencilSimple size={16} weight="thin" />
+                  EDIT
                 </button>
                 <button
                   onClick={handleDeleteClick}
                   style={{
-                    padding: "12px 20px",
-                    backgroundColor: "#dc3545",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
+                    flex: 1,
+                    padding: "10px 16px",
+                    backgroundColor: "transparent",
+                    color: "#ef4444",
+                    border: "0.5px solid #ef4444",
+                    borderRadius: "2px",
                     cursor: isDeleting ? "not-allowed" : "pointer",
                     fontWeight: 600,
-                    fontSize: "14px",
+                    fontSize: "12px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.05)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
-                  <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px" }} />
-                  Delete Project
+                  <Trash size={16} weight="thin" />
+                  DELETE
                 </button>
               </>
             )}
@@ -642,12 +664,13 @@ export default function ProjectDetail() {
 
         <div style={{
           display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          gap: isMobile ? "12px" : "16px",
-          padding: isMobile ? "10px" : "20px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "12px",
-          marginBottom: "40px",
+          flexDirection: isMobile ? "row" : "row",
+          gap: isMobile ? "8px" : "16px",
+          padding: isMobile ? "12px" : "20px",
+          backgroundColor: "var(--bg-page)",
+          border: "0.5px solid var(--border-hairline)",
+          borderRadius: "2px",
+          marginBottom: "64px",
         }}>
           <button
             onClick={handleLike}
@@ -655,22 +678,25 @@ export default function ProjectDetail() {
             style={{
               flex: 1,
               padding: "16px",
-              border: "none",
-              borderRadius: "8px",
-              backgroundColor: isLiked ? "#ff6b6b" : "#fff",
-              color: isLiked ? "#fff" : "var(--text-primary)",
+              border: "0.5px solid var(--border-hairline)",
+              borderRadius: "2px",
+              backgroundColor: isLiked ? "var(--text-primary)" : "transparent",
+              color: isLiked ? "var(--bg-page)" : "var(--text-primary)",
               cursor: currentUser ? "pointer" : "not-allowed",
-              fontWeight: 600,
-              fontSize: "16px",
+              fontWeight: 800,
+              fontSize: "12px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "8px",
-              transition: "all 0.2s ease",
+              gap: "10px",
+              transition: "all 0.15s ease",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em"
             }}
           >
-            <HugeiconsIcon icon={FavouriteIcon} />
-            {likeCount > 0 ? `${likeCount} ` : ""}Likes
+            <Star size={20} weight={isLiked ? "fill" : "thin"} />
+            {likeCount > 0 ? `${likeCount.toString().padStart(2, '0')} ` : ""}UPVOTE
           </button>
 
           <button
@@ -679,28 +705,28 @@ export default function ProjectDetail() {
             style={{
               flex: 1,
               padding: "16px",
-              border: "none",
-              borderRadius: "8px",
-              backgroundColor: isSaved ? "#212121" : "#fff",
-              color: isSaved ? "#fff" : "var(--text-primary)",
+              border: "0.5px solid var(--border-hairline)",
+              borderRadius: "2px",
+              backgroundColor: isSaved ? "var(--text-primary)" : "transparent",
+              color: isSaved ? "var(--bg-page)" : "var(--text-primary)",
               cursor: currentUser ? "pointer" : "not-allowed",
-              fontWeight: 600,
-              fontSize: "16px",
+              fontWeight: 800,
+              fontSize: "12px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "8px",
-              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              gap: "10px",
+              transition: "all 0.15s ease",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em"
             }}
           >
-            <HugeiconsIcon
-              icon={isSaved ? Bookmark01Icon : Bookmark02Icon}
-              style={{
-                transform: isSaved ? "scale(1.2)" : "scale(1)",
-                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)"
-              }}
+            <BookmarkSimple
+              size={20}
+              weight={isSaved ? "fill" : "thin"}
             />
-            {isSaved ? "Saved" : "Save"}
+            {isSaved ? "SAVED" : "SAVE"}
           </button>
 
           <button
@@ -708,32 +734,38 @@ export default function ProjectDetail() {
             style={{
               flex: 1,
               padding: "16px",
-              border: "none",
-              borderRadius: "8px",
-              backgroundColor: "#fff",
+              border: "0.5px solid var(--border-hairline)",
+              borderRadius: "2px",
+              backgroundColor: "transparent",
               color: "var(--text-primary)",
               cursor: "pointer",
-              fontWeight: 600,
-              fontSize: "16px",
+              fontWeight: 800,
+              fontSize: "12px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "8px",
-              transition: "all 0.2s ease",
+              gap: "10px",
+              transition: "all 0.15s ease",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em"
             }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
           >
-            <HugeiconsIcon icon={Share01Icon} />
-            Share
+            <ShareNetwork size={20} weight="thin" />
+            SHARE
           </button>
         </div>
 
-        <div style={{ marginBottom: "40px" }}>
+        <div style={{ marginBottom: "64px" }}>
           {/* Custom Tabs */}
           <div style={{
             display: "flex",
             gap: "32px",
-            borderBottom: "1px solid #e2e8f0",
-            marginBottom: "24px"
+            borderBottom: "0.5px solid var(--border-hairline)",
+            marginBottom: "32px",
+            overflowX: "auto"
           }}>
             <button
               onClick={() => setActiveTab("details")}
@@ -741,15 +773,18 @@ export default function ProjectDetail() {
                 background: "transparent",
                 border: "none",
                 padding: "12px 0",
-                fontSize: "16px",
-                fontWeight: 700,
-                color: activeTab === "details" ? "#0f172a" : "#64748b",
-                borderBottom: activeTab === "details" ? "2px solid #0f172a" : "2px solid transparent",
+                fontSize: "11px",
+                fontWeight: 800,
+                fontFamily: "var(--font-mono)",
+                color: activeTab === "details" ? "var(--text-primary)" : "var(--text-tertiary)",
+                borderBottom: activeTab === "details" ? "1px solid var(--text-primary)" : "1px solid transparent",
                 cursor: "pointer",
-                transition: "all 0.2s"
+                transition: "all 0.2s",
+                textTransform: "uppercase",
+                letterSpacing: "0.15em"
               }}
             >
-              Overview
+              OVERVIEW
             </button>
             <button
               onClick={() => setActiveTab("changelog")}
@@ -757,15 +792,18 @@ export default function ProjectDetail() {
                 background: "transparent",
                 border: "none",
                 padding: "12px 0",
-                fontSize: "16px",
-                fontWeight: 700,
-                color: activeTab === "changelog" ? "#0f172a" : "#64748b",
-                borderBottom: activeTab === "changelog" ? "2px solid #0f172a" : "2px solid transparent",
+                fontSize: "11px",
+                fontWeight: 800,
+                fontFamily: "var(--font-mono)",
+                color: activeTab === "changelog" ? "var(--text-primary)" : "var(--text-tertiary)",
+                borderBottom: activeTab === "changelog" ? "1px solid var(--text-primary)" : "1px solid transparent",
                 cursor: "pointer",
-                transition: "all 0.2s"
+                transition: "all 0.2s",
+                textTransform: "uppercase",
+                letterSpacing: "0.15em"
               }}
             >
-              Changelog
+              CHANGELOG
             </button>
           </div>
 
@@ -785,7 +823,7 @@ export default function ProjectDetail() {
         </div>
 
         <div>
-          <h2 style={{ fontSize: "32px", fontWeight: 800, marginBottom: "24px" }}>Comments</h2>
+          <h2 style={{ fontSize: "11px", fontWeight: 800, marginBottom: "32px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.15em" }}>Discussions</h2>
           <CommentsSection
             resourceId={project.id}
             resourceType="project"

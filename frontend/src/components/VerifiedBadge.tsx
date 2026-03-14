@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { CircleWavyCheck } from "phosphor-react";
 
 interface VerifiedBadgeProps {
     username?: string | null;
@@ -25,17 +24,15 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
             >
-                <FontAwesomeIcon
-                    icon={faCheckCircle}
+                <CircleWavyCheck
+                    size={size}
+                    weight="fill"
                     aria-label="Verified Official Account"
                     style={{
-                        fontSize: size,
-                        color: isPro ? "#d4a853" : "#2B7FFF", // Gold for Pro, Blue for others
+                        color: isPro ? "var(--text-primary)" : "var(--text-tertiary)",
                         marginLeft: "6px",
                         verticalAlign: "middle",
                         flexShrink: 0,
-                        transition: "transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                        transform: showTooltip ? "scale(1.15)" : "scale(1)"
                     }}
                 />
 
@@ -45,18 +42,21 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                             position: "absolute",
                             bottom: "100%",
                             left: "50%",
-                            transform: "translateX(-50%) translateY(-8px)",
-                            backgroundColor: "#0f172a",
-                            color: "#fff",
-                            padding: "6px 12px",
-                            borderRadius: "8px",
-                            fontSize: "11px",
-                            fontWeight: 600,
+                            transform: "translateX(-50%) translateY(-12px)",
+                            backgroundColor: "var(--bg-page)",
+                            color: "var(--text-primary)",
+                            padding: "6px 10px",
+                            border: "0.5px solid var(--border-hairline)",
+                            borderRadius: "2px",
+                            fontSize: "10px",
+                            fontFamily: "var(--font-mono)",
+                            fontWeight: 500,
                             whiteSpace: "nowrap",
-                            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
                             zIndex: 1000,
                             pointerEvents: "none",
-                            animation: "tooltipFadeIn 0.2s ease"
+                            animation: "tooltipFadeIn 0.15s ease",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em"
                         }}
                     >
                         <style>{`
@@ -74,9 +74,9 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                             transform: "translateX(-50%)",
                             width: "0",
                             height: "0",
-                            borderLeft: "5px solid transparent",
-                            borderRight: "5px solid transparent",
-                            borderTop: "5px solid #0f172a",
+                            borderLeft: "4px solid transparent",
+                            borderRight: "4px solid transparent",
+                            borderTop: "4px solid var(--border-hairline)",
                         }} />
                     </div>
                 )}

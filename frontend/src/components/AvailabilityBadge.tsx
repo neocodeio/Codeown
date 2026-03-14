@@ -1,5 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBriefcase } from "@fortawesome/free-solid-svg-icons";
+import { Briefcase } from "phosphor-react";
 
 interface AvailabilityBadgeProps {
     avatarUrl: string | null;
@@ -7,7 +6,6 @@ interface AvailabilityBadgeProps {
     size?: number;
     isOpenToOpportunities?: boolean;
     tooltipText?: string;
-    ringColor?: string;
 }
 
 export default function AvailabilityBadge({
@@ -16,7 +14,6 @@ export default function AvailabilityBadge({
     size = 40,
     isOpenToOpportunities = false,
     tooltipText = "Open to opportunities",
-    ringColor = "#3b82f6"
 }: AvailabilityBadgeProps) {
     const showBadge = isOpenToOpportunities === true;
     // scale icon bg size: 35% of avatar size
@@ -41,21 +38,20 @@ export default function AvailabilityBadge({
                 style={{
                     width: "100%",
                     height: "100%",
-                    borderRadius: "50%",
+                    borderRadius: "var(--radius-xs)",
                     position: "relative",
                     overflow: "hidden",
-                    backgroundColor: "#f1f5f9",
+                    backgroundColor: "var(--bg-hover)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    // The ring is now part of the border to ensure it's visible and doesn't shrink content
-                    border: showBadge ? `2.5px solid ${ringColor}` : "1px solid rgba(0,0,0,0.08)",
+                    border: showBadge ? `1px solid var(--text-primary)` : "0.5px solid var(--border-hairline)",
                     boxSizing: "border-box",
                     zIndex: 1
                 }}
             >
                 <img
-                    src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "U")}&background=212121&color=ffffff&bold=true`}
+                    src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "U")}&background=000&color=fff&bold=true`}
                     alt={name}
                     style={{
                         width: "100%",
@@ -70,25 +66,23 @@ export default function AvailabilityBadge({
                 <div
                     style={{
                         position: "absolute",
-                        bottom: "-2px",
-                        right: "-2px",
+                        bottom: "-4px",
+                        right: "-4px",
                         width: briefcaseBgSize,
                         height: briefcaseBgSize,
-                        backgroundColor: "#fff",
-                        borderRadius: "50%",
+                        backgroundColor: "var(--text-primary)",
+                        color: "var(--bg-page)",
+                        borderRadius: "0",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.2), 0 0 0 1.5px #fff",
+                        border: "1px solid var(--bg-page)",
                         zIndex: 10,
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faBriefcase}
-                        style={{
-                            fontSize: briefcaseIconSize,
-                            color: ringColor,
-                        }}
+                    <Briefcase
+                        size={briefcaseIconSize}
+                        weight="fill"
                     />
                 </div>
             )}

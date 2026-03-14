@@ -153,7 +153,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
   }, [showSuggestions, suggestions, selectedIndex, insertMention]);
 
   const getAvatarUrl = (name: string) => {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=212121&color=ffffff&size=64&bold=true&font-size=0.5`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=000&color=fff&size=64&bold=true&font-size=0.5`;
   };
 
   // Close suggestions when clicking outside
@@ -186,19 +186,19 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
         style={{
           width: "100%",
           minHeight,
-          padding: transparent ? "0" : "12px 16px",
-          border: transparent ? "none" : "1px solid #e4e7eb",
-          borderRadius: transparent ? "0" : "25px",
-          fontSize: transparent ? "20px" : "16px",
-          fontFamily: "inherit",
+          padding: transparent ? "0" : "16px",
+          border: transparent ? "none" : "0.5px solid var(--border-hairline)",
+          borderRadius: "2px",
+          fontSize: transparent ? "18px" : "14px",
+          fontFamily: "var(--font-main)",
           resize: "none",
           outline: "none",
           transition: "all 0.15s",
-          color: "#0f172a",
-          backgroundColor: transparent ? "transparent" : "#ffffff",
+          color: "var(--text-primary)",
+          backgroundColor: transparent ? "transparent" : "var(--bg-input)",
           boxSizing: "border-box",
-          lineHeight: 1.5,
-          fontWeight: transparent ? 500 : 400,
+          lineHeight: 1.6,
+          fontWeight: 400,
           ...style,
         }}
       />
@@ -212,23 +212,23 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
             top: "100%",
             left: 0,
             right: 0,
-            marginTop: "4px",
-            backgroundColor: "#ffffff",
-            borderRadius: "16px",
-            border: "1px solid #e4e7eb",
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
-            maxHeight: "240px",
+            marginTop: "8px",
+            backgroundColor: "var(--bg-page)",
+            borderRadius: "2px",
+            border: "0.5px solid var(--border-hairline)",
+            boxShadow: "none",
+            maxHeight: "300px",
             overflowY: "auto",
             zIndex: 100,
           }}
         >
           {loading ? (
-            <div style={{ padding: "16px", textAlign: "center", color: "#64748b" }}>
-              Loading...
+            <div style={{ padding: "16px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.05em" }}>
+              LOADING...
             </div>
           ) : suggestions.length === 0 ? (
-            <div style={{ padding: "16px", textAlign: "center", color: "#64748b" }}>
-              {searchQuery ? "No users found" : "Type to search users"}
+            <div style={{ padding: "16px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.05em" }}>
+              {searchQuery ? "NO USERS FOUND" : "TYPE TO SEARCH"}
             </div>
           ) : (
             suggestions.map((user, index) => (
@@ -239,22 +239,22 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                   display: "flex",
                   alignItems: "center",
                   gap: "12px",
-                  padding: "10px 16px",
+                  padding: "12px 16px",
                   cursor: "pointer",
-                  backgroundColor: index === selectedIndex ? "#f0f0f0" : "transparent",
-                  transition: "background-color 0.1s",
+                  backgroundColor: index === selectedIndex ? "var(--bg-hover)" : "transparent",
+                  transition: "background-color 0.15s",
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
-                <img
+                  <img
                   src={user.avatar_url || getAvatarUrl(user.name)}
                   alt={user.name}
                   style={{
                     width: "36px",
                     height: "36px",
-                    borderRadius: "50%",
+                    borderRadius: "2px",
                     objectFit: "cover",
-                    border: "2px solid #e4e7eb",
+                    border: "0.5px solid var(--border-hairline)",
                   }}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -262,7 +262,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                     style={{
                       fontSize: "14px",
                       fontWeight: 600,
-                      color: "#1a1a1a",
+                      color: "var(--text-primary)",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
@@ -270,14 +270,17 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                   >
                     {user.name}
                   </div>
-                  {user.username && (
+                   {user.username && (
                     <div
                       style={{
-                        fontSize: "12px",
-                        color: "#212121",
+                        fontSize: "11px",
+                        color: "var(--text-tertiary)",
+                        fontFamily: "var(--font-mono)",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
+                        textTransform: "uppercase",
+                        fontWeight: 700
                       }}
                     >
                       @{user.username}
