@@ -166,6 +166,21 @@ export default function RecommendedUsersSidebar() {
                                             <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
                                                 @{user.username}
                                             </span>
+                                            {user.bio && (
+                                                <span style={{ 
+                                                    fontSize: "11px", 
+                                                    color: "var(--text-secondary)", 
+                                                    marginTop: "4px",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                    display: "block",
+                                                    lineHeight: 1.4,
+                                                    fontWeight: 500
+                                                }}>
+                                                    {user.bio.split("\n")[0]}
+                                                </span>
+                                            )}
                                         </div>
                                     </Link>
                                 </UserHoverCard>
