@@ -244,7 +244,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                 onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
               >
-                <DotsThree size={20} weight="thin" />
+                <DotsThree size={22} weight="thin" />
               </button>
 
                 {isMenuOpen && (
@@ -380,7 +380,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                 e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
               }}
             >
-               <action.icon size={20} weight={action.weight || "thin"} />
+               <action.icon size={22} weight={action.weight || "thin"} />
               {action.count !== undefined && action.count > 0 && (
                 <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count.toString().padStart(2, '0')}</span>
               )}
