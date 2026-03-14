@@ -129,7 +129,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     return (
         <div style={{
             padding: isMobile ? "24px 16px" : "24px 40px",
-            borderBottom: "0.5px solid var(--border-hairline)",
+            borderBottom: "0.7px solid var(--border-hairline)",
             backgroundColor: "var(--bg-page)",
             display: "flex",
             gap: "24px",
@@ -260,7 +260,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 padding: "8px 24px",
                                 backgroundColor: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "transparent",
                                 color: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
-                                border: "0.5px solid var(--border-hairline)",
+                                border: "1.50px solid var(--border-hairline)",
                                 borderRadius: "2px",
                                 fontWeight: 800,
                                 fontSize: "11px",
