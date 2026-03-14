@@ -9,8 +9,9 @@ import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
 import { useFaviconNotification } from "../hooks/useFaviconNotification";
 import api from "../api/axios";
-import { House, MagnifyingGlass, ChatCircle, Rocket, User as UserIcon, Bell, Plus, SignOut, DotsThreeOutline, SignIn, Users } from "phosphor-react";
+import { House, MagnifyingGlass, ChatCircle, Rocket, User as UserIcon, Bell, Plus, SignOut, DotsThreeOutline, SignIn, Users, IdentificationCard } from "phosphor-react";
 import logo from "../assets/icon-removebg.png";
+import DeveloperIDCardModal from "./DeveloperIDCardModal";
 
 
 export default function Navbar() {
@@ -29,6 +30,8 @@ export default function Navbar() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const { unreadCount, messageUnreadCount } = useNotifications();
   const [profile, setProfile] = useState<any>(null);
+  const [projectsCount, setProjectsCount] = useState(0);
+  const [isIDCardOpen, setIsIDCardOpen] = useState(false);
   const { getToken } = useClerkAuth();
 
   useEffect(() => {
@@ -36,10 +39,12 @@ export default function Navbar() {
       if (isSignedIn && user?.id) {
         try {
           const token = await getToken();
-          const res = await api.get(`/users/${user.id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setProfile(res.data);
+          const [userRes, projectsRes] = await Promise.all([
+            api.get(`/users/${user.id}`, { headers: { Authorization: `Bearer ${token}` } }),
+            api.get(`/projects/user/${user.id}`, { headers: { Authorization: `Bearer ${token}` } })
+          ]);
+          setProfile(userRes.data);
+          setProjectsCount(projectsRes.data?.length || 0);
         } catch (err) {
           console.error("Navbar profile fetch failed", err);
         }
@@ -478,6 +483,24 @@ export default function Navbar() {
             </span>
           </Link>
         </div>
+
+        {isSignedIn && (
+          <button
+            onClick={() => setIsIDCardOpen(true)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--text-primary)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "4px"
+            }}
+          >
+            <IdentificationCard size={24} weight="thin" />
+          </button>
+        )}
       </div>
 
       {/* Mobile Bottom Tab Bar */}
@@ -663,8 +686,22 @@ export default function Navbar() {
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
 
-
-
+      {isSignedIn && profile && (
+        <DeveloperIDCardModal 
+          isOpen={isIDCardOpen}
+          onClose={() => setIsIDCardOpen(false)}
+          user={{
+            name: profile.name || user?.fullName || "Developer",
+            username: profile.username || user?.username || null,
+            avatar_url: profile.avatar_url || user?.imageUrl || null,
+            created_at: profile.created_at || null,
+            skills: profile.skills || [],
+            is_pro: profile.is_pro || false,
+            bio: profile.bio || null
+          }}
+          projectsCount={projectsCount}
+        />
+      )}
     </>
   );
 }
