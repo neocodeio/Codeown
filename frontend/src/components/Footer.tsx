@@ -1,10 +1,14 @@
+import { useTheme } from "../context/ThemeContext";
+
 export default function Footer() {
+    const { theme } = useTheme();
+    
     return (
         <footer style={{
             marginTop: "0px",
             padding: "40px 20px",
-            backgroundColor: "#f8fafc",
-            borderTop: "1px solid #e2e8f0",
+            backgroundColor: "var(--bg-hover)",
+            borderTop: "0.5px solid var(--border-hairline)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -25,7 +29,7 @@ export default function Footer() {
                         alt="Codeown - A social platform for developers to share projects and ideas | Product Hunt"
                         width="250"
                         height="54"
-                        src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1072186&theme=light&t=1770201427808"
+                        src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1072186&theme=${theme === 'dark' ? 'dark' : 'light'}&t=1770201427808`}
                     />
                 </a>
             </div>
@@ -43,23 +47,28 @@ export default function Footer() {
             {/* Footer Text */}
             <div style={{
                 textAlign: "center",
-                color: "#64748b",
-                fontSize: "14px"
+                color: "var(--text-tertiary)",
+                fontSize: "14px",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em"
             }}>
-                <p style={{ margin: "0 0 8px 0" }}>
-                    © {new Date().getFullYear()} Codeown. All rights reserved.
+                <p style={{ margin: "0 0 8px 0", fontWeight: 700 }}>
+                    © {new Date().getFullYear()} Codeown.
                 </p>
                 <div style={{
                     display: "flex",
                     gap: "16px",
                     justifyContent: "center",
-                    flexWrap: "wrap"
+                    flexWrap: "wrap",
+                    fontSize: "11px",
+                    fontWeight: 700
                 }}>
-                    <a href="/privacy" style={{ color: "#64748b", textDecoration: "none" }}>Privacy Policy</a>
-                    <span>•</span>
-                    <a href="/terms" style={{ color: "#64748b", textDecoration: "none" }}>Terms of Service</a>
-                    <span>•</span>
-                    <a href="/about" style={{ color: "#64748b", textDecoration: "none" }}>About Us</a>
+                    <a href="/privacy" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>PRIVACY</a>
+                    <span style={{ color: "var(--border-hairline)" }}>•</span>
+                    <a href="/terms" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>TERMS</a>
+                    <span style={{ color: "var(--border-hairline)" }}>•</span>
+                    <a href="/about" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>ABOUT</a>
                 </div>
             </div>
         </footer>

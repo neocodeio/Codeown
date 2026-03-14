@@ -512,19 +512,38 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {isSignedIn && (
-          <div
-            onClick={() => setIsIDCardOpen(true)}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
             style={{
-              padding: "4px",
+              background: "none",
+              border: "none",
               cursor: "pointer",
+              color: "var(--text-primary)",
               display: "flex",
-              alignItems: "center"
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "4px"
             }}
           >
-            <StreakBadge count={profile?.streak_count || 0} />
-          </div>
-        )}
+            {theme === 'light' ? <Moon size={22} weight="thin" /> : <Sun size={22} weight="thin" />}
+          </button>
+
+          {isSignedIn && (
+            <div
+              onClick={() => setIsIDCardOpen(true)}
+              style={{
+                padding: "4px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center"
+              }}
+            >
+              <StreakBadge count={profile?.streak_count || 0} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Mobile Bottom Tab Bar */}
