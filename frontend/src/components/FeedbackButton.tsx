@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faComment } from "@fortawesome/free-solid-svg-icons";
+import { ChatTeardropDots, X, CheckCircle } from "phosphor-react";
 import { useUser } from "@clerk/clerk-react";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ChatFeedbackIcon } from "@hugeicons/core-free-icons";
-
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
@@ -31,7 +27,6 @@ export default function FeedbackButton() {
     setSent(false);
     setError("");
   };
-
 
   const handleClose = () => {
     setOpen(false);
@@ -87,7 +82,7 @@ export default function FeedbackButton() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
       }}
       onClick={(e) => e.target === e.currentTarget && handleClose()}
     >
@@ -97,157 +92,160 @@ export default function FeedbackButton() {
           maxWidth: "400px",
           maxHeight: "90vh",
           overflowY: "auto",
-          backgroundColor: "#fff",
-          borderRadius: "24px",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+          backgroundColor: "var(--bg-page)",
+          borderRadius: "2px",
+          border: "0.5px solid var(--border-hairline)",
+          boxShadow: "0 25px 50px rgba(0, 0, 0, 0.2)",
           padding: "32px",
           position: "relative"
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-          <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 800, color: "#1e293b" }}>Feedback</h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+          <h2 style={{ 
+            margin: 0, 
+            fontSize: "14px", 
+            fontWeight: 800, 
+            color: "var(--text-primary)", 
+            fontFamily: "var(--font-mono)",
+            textTransform: "uppercase",
+            letterSpacing: "0.1em"
+          }}>Submit Feedback</h2>
           <button
             type="button"
             onClick={handleClose}
             style={{
-              background: "#f1f5f9",
+              background: "transparent",
               border: "none",
-              color: "#64748b",
+              color: "var(--text-tertiary)",
               cursor: "pointer",
-              width: "32px",
-              height: "32px",
-              borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              transition: "all 0.2s"
+              transition: "all 0.1s"
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#e2e8f0"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
+            className="btn-modal-close"
           >
-            <FontAwesomeIcon icon={faTimes} />
+            <X size={18} weight="thin" />
           </button>
         </div>
 
         {sent ? (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <div style={{ width: "60px", height: "60px", background: "#dcfce7", color: "#166534", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-              <FontAwesomeIcon icon={faComment} style={{ fontSize: "24px" }} />
+            <div style={{ width: "48px", height: "48px", background: "var(--bg-hover)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
+              <CheckCircle size={24} weight="thin" />
             </div>
-            <h3 style={{ margin: "0 0 8px", color: "#1e293b", fontSize: "18px" }}>Thank You!</h3>
-            <p style={{ margin: 0, color: "#64748b", lineHeight: "1.5" }}>Your feedback helps us improve Codeown.</p>
+            <h3 style={{ margin: "0 0 8px", color: "var(--text-primary)", fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", fontWeight: 800 }}>Feedback Received</h3>
+            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Analysis complete. Thank you.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#475569" }}>Full Name</label>
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Identity Name</label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="John Doe"
+                placeholder="NAME"
                 style={{
                   width: "100%",
                   padding: "12px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#f8fafc",
-                  color: "#1e293b",
-                  fontSize: "14px",
+                  borderRadius: "2px",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-input)",
+                  color: "var(--text-primary)",
+                  fontSize: "12px",
                   outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  boxSizing: "border-box",
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#212121"}
-                onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
               />
             </div>
 
-            <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#475569" }}>Email Address</label>
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Communication Channel</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="john@example.com"
+                placeholder="EMAIL ADDRESS"
                 style={{
                   width: "100%",
                   padding: "12px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#f8fafc",
-                  color: "#1e293b",
-                  fontSize: "14px",
+                  borderRadius: "2px",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-input)",
+                  color: "var(--text-primary)",
+                  fontSize: "12px",
                   outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  boxSizing: "border-box",
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#212121"}
-                onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
               />
             </div>
 
-            <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#475569" }}>Username <span style={{ fontWeight: 400, opacity: 0.6 }}>(Optional)</span></label>
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Username (Optional)</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="@username"
+                placeholder="@UID"
                 style={{
                   width: "100%",
                   padding: "12px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#f8fafc",
-                  color: "#1e293b",
-                  fontSize: "14px",
+                  borderRadius: "2px",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-input)",
+                  color: "var(--text-primary)",
+                  fontSize: "12px",
                   outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  boxSizing: "border-box",
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#212121"}
-                onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
               />
             </div>
 
-            <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#475569" }}>Message</label>
+            <div style={{ marginBottom: "32px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Report / Message</label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="What's on your mind?"
+                placeholder="DESCRIBE OBSERVATIONS..."
                 rows={4}
                 style={{
                   width: "100%",
                   padding: "12px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid #e2e8f0",
-                  backgroundColor: "#f8fafc",
-                  color: "#1e293b",
-                  fontSize: "14px",
+                  borderRadius: "2px",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-input)",
+                  color: "var(--text-primary)",
+                  fontSize: "12px",
                   outline: "none",
                   resize: "vertical",
                   minHeight: "100px",
-                  fontFamily: "inherit",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  boxSizing: "border-box",
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#212121"}
-                onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}
               />
             </div>
 
             {error && (
               <div style={{
                 padding: "12px",
-                backgroundColor: "#fee2e2",
+                border: "0.5px solid var(--border-hairline)",
+                backgroundColor: "rgba(239, 68, 68, 0.1)",
                 color: "#ef4444",
-                borderRadius: "8px",
-                fontSize: "13px",
-                marginBottom: "16px",
-                textAlign: "center"
+                borderRadius: "2px",
+                fontSize: "10px",
+                fontFamily: "var(--font-mono)",
+                marginBottom: "20px",
+                textAlign: "center",
+                textTransform: "uppercase"
               }}>
                 {error}
               </div>
@@ -259,25 +257,29 @@ export default function FeedbackButton() {
               style={{
                 width: "100%",
                 padding: "14px",
-                backgroundColor: "#212121",
-                color: "#fff",
+                backgroundColor: "var(--text-primary)",
+                color: "var(--bg-page)",
                 border: "none",
-                borderRadius: "12px",
-                fontWeight: 700,
-                fontSize: "15px",
+                borderRadius: "2px",
+                fontWeight: 800,
+                fontSize: "12px",
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
                 cursor: sending ? "not-allowed" : "pointer",
                 transition: "all 0.2s",
                 opacity: sending ? 0.7 : 1,
                 boxSizing: "border-box"
               }}
-              onMouseEnter={(e) => !sending && (e.currentTarget.style.transform = "translateY(-1px)")}
-              onMouseLeave={(e) => !sending && (e.currentTarget.style.transform = "translateY(0)")}
             >
-              {sending ? "Sending Feedback..." : "Send Feedback"}
+              {sending ? "TRANSMITTING..." : "SUBMIT FEEDBACK"}
             </button>
           </form>
         )}
       </div>
+      <style>{`
+        .btn-modal-close:hover { background-color: var(--bg-hover); }
+      `}</style>
     </div>,
     document.body
   );
@@ -292,40 +294,34 @@ export default function FeedbackButton() {
         style={{
           position: "fixed",
           bottom: isMobile ? "88px" : "32px",
-          right: isMobile ? "16px" : "32px",
+          right: isMobile ? "24px" : "32px",
           zIndex: 900,
           width: isMobile ? "48px" : "56px",
           height: isMobile ? "48px" : "56px",
-          borderRadius: "50%",
-          backgroundColor: "#0f172a",
-          color: "#fff",
-          border: "none",
+          borderRadius: "2px",
+          backgroundColor: isMobile ? "var(--text-primary)" : "var(--bg-page)",
+          color: isMobile ? "var(--bg-page)" : "var(--text-primary)",
+          border: "0.5px solid var(--border-hairline)",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: isMobile
-            ? "0 4px 12px rgba(0, 0, 0, 0.15)"
-            : "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.2)",
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
-        onMouseEnter={(e) => {
-          if (!isMobile) {
-            e.currentTarget.style.transform = "translateY(-2px)";
-            e.currentTarget.style.backgroundColor = "#1e293b";
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!isMobile) {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.backgroundColor = "#0f172a";
-          }
-        }}
+        className="btn-feedback-trigger"
         aria-label="Feedback"
       >
-        <HugeiconsIcon icon={ChatFeedbackIcon} size={isMobile ? 20 : 24} />
+        <ChatTeardropDots size={isMobile ? 22 : 24} weight="thin" />
       </button>
-      {modal}
+      {modal && createPortal(modal, document.body)}
+      <style>{`
+        .btn-feedback-trigger:hover {
+          background-color: var(--text-primary);
+          color: var(--bg-page);
+          transform: translateY(-2px);
+        }
+      `}</style>
     </>
   );
 }

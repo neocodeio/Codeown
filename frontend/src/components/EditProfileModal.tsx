@@ -318,7 +318,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
         left: 0,
         width: "100%",
         height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -389,22 +389,22 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
             {/* Banner Section */}
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", marginLeft: "4px" }}>Profile Banner</label>
+              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", fontFamily: "var(--font-mono)" }}>Profile Banner</label>
               <label style={{ cursor: "pointer", position: "relative", width: "100%" }}>
                 <div style={{
                   width: "100%",
                   height: "120px",
-                  borderRadius: "16px",
+                  borderRadius: "2px",
                   overflow: "hidden",
-                  border: "2px solid #f1f5f9",
-                  backgroundColor: "#f8fafc",
+                  border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-hover)",
                   position: "relative"
                 }}>
                   {bannerPreview ? (
                     <img src={bannerPreview} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Banner Preview" />
                   ) : (
-                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8", fontSize: "14px", fontWeight: 600 }}>
-                      No banner image set
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)", fontWeight: 800 }}>
+                      NO BANNER DATA
                     </div>
                   )}
                   <div style={{
@@ -417,8 +417,10 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                     opacity: 0,
                     transition: "opacity 0.2s",
                     color: "white",
-                    fontSize: "13px",
-                    fontWeight: 800
+                    fontSize: "10px",
+                    fontWeight: 800,
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = "1"}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = "0"}
@@ -428,7 +430,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                 </div>
                 <input type="file" accept="image/*" onChange={handleBannerChange} style={{ display: "none" }} />
               </label>
-              <span style={{ fontSize: "11px", color: "#94a3b8", marginLeft: "4px" }}>Recommended size: 1500x500px</span>
+              <span style={{ fontSize: "9px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Recommended size: 1500x500px</span>
             </div>
 
             {/* Form Fields */}

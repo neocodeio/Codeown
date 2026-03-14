@@ -1,9 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-    Search01Icon,
-    Cancel01Icon,
-} from "@hugeicons/core-free-icons";
+import { MagnifyingGlass, X } from "phosphor-react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import VerifiedBadge from "./VerifiedBadge";
@@ -82,36 +78,39 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
             alignItems: "center",
             justifyContent: "center",
             zIndex: 3000,
-            backdropFilter: "blur(4px)",
             padding: "20px"
         }}>
             <div
                 ref={modalRef}
                 style={{
-                    backgroundColor: "#fff",
-                    borderRadius: "24px",
+                    backgroundColor: "var(--bg-page)",
+                    borderRadius: "2px",
+                    border: "0.5px solid var(--border-hairline)",
                     width: "100%",
                     maxWidth: "500px",
                     maxHeight: "80vh",
                     display: "flex",
                     flexDirection: "column",
-                    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
                     overflow: "hidden"
                 }}
             >
                 {/* Header */}
                 <div style={{
-                    padding: "24px",
+                    padding: "24px 32px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    borderBottom: "1px solid #f1f5f9"
+                    borderBottom: "0.5px solid var(--border-hairline)"
                 }}>
                     <h2 style={{
                         margin: 0,
-                        fontSize: "24px",
+                        fontSize: "14px",
                         fontWeight: 800,
-                        color: "#1e293b",
+                        color: "var(--text-primary)",
+                        fontFamily: "var(--font-mono)",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em"
                     }}>New message</h2>
                     <button
                         onClick={onClose}
@@ -120,36 +119,34 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                             border: "none",
                             padding: "8px",
                             cursor: "pointer",
-                            color: "#64748b",
+                            color: "var(--text-tertiary)",
                             display: "flex",
                             alignItems: "center",
-                            borderRadius: "50%",
-                            transition: "background-color 0.2s"
+                            borderRadius: "2px",
+                            transition: "all 0.1s"
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                        className="btn-modal-close"
                     >
-                        <HugeiconsIcon icon={Cancel01Icon} style={{ fontSize: "20px" }} />
+                        <X size={18} weight="thin" />
                     </button>
                 </div>
 
                 {/* Search Bar */}
-                <div style={{ padding: "16px 24px" }}>
+                <div style={{ padding: "24px 32px" }}>
                     <div style={{
                         display: "flex",
                         alignItems: "center",
                         gap: "12px",
-                        backgroundColor: "#f8fafc",
-                        padding: "10px 16px",
-                        borderRadius: "16px",
-                        border: "1px solid #e2e8f0",
-                        transition: "all 0.2s"
+                        backgroundColor: "var(--bg-input)",
+                        padding: "12px 16px",
+                        borderRadius: "2px",
+                        border: "0.5px solid var(--border-hairline)",
                     }}>
-                        <HugeiconsIcon icon={Search01Icon} style={{ color: "#94a3b8", fontSize: "18px" }} />
+                        <MagnifyingGlass size={18} weight="thin" style={{ color: "var(--text-tertiary)" }} />
                         <input
                             autoFocus
                             type="text"
-                            placeholder="Search people"
+                            placeholder="SEARCH PEOPLE..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{
@@ -157,8 +154,11 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                 background: "none",
                                 flex: 1,
                                 outline: "none",
-                                fontSize: "15px",
-                                color: "#1e293b"
+                                fontSize: "12px",
+                                color: "var(--text-primary)",
+                                fontFamily: "var(--font-mono)",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.05em"
                             }}
                         />
                     </div>
@@ -172,10 +172,10 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                 }}>
                     {loading ? (
                         <div style={{ padding: "40px", display: "flex", justifyContent: "center" }}>
-                            <div style={{ width: "24px", height: "24px", border: "2px solid #eee", borderTopColor: "#212121", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+                            <div style={{ width: "24px", height: "24px", border: "1px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
                         </div>
                     ) : searchQuery.length > 0 && users.length === 0 ? (
-                        <div style={{ padding: "40px", textAlign: "center", color: "#64748b" }}>
+                        <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
                             No users found for "{searchQuery}"
                         </div>
                     ) : (
@@ -187,31 +187,37 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "16px",
-                                    padding: "12px 16px",
-                                    borderRadius: "16px",
+                                    padding: "12px 20px",
+                                    borderRadius: "2px",
                                     cursor: "pointer",
-                                    transition: "all 0.15s ease"
+                                    transition: "all 0.15s ease",
+                                    border: "0.5px solid transparent",
+                                    marginBottom: "4px"
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                className="user-select-row"
                             >
                                 <img
-                                    src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=random&color=fff`}
+                                    src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=212121&color=fff`}
                                     alt=""
-                                    style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover" }}
+                                    style={{ width: "40px", height: "40px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
                                 />
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontWeight: 700, fontSize: "15px", color: "#0f172a", display: "flex", alignItems: "center" }}>
+                                    <div style={{ fontWeight: 800, fontSize: "14px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
                                         {u.name}
                                         <VerifiedBadge username={u.username} size="14px" />
                                     </div>
-                                    <div style={{ color: "#64748b", fontSize: "13px" }}>@{u.username}</div>
+                                    <div style={{ color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase", fontWeight: 700 }}>@{u.username}</div>
                                 </div>
                             </div>
                         ))
                     )}
                 </div>
             </div>
+            <style>{`
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .btn-modal-close:hover { background-color: var(--bg-hover); }
+                .user-select-row:hover { background-color: var(--bg-hover); border-color: var(--border-hairline); }
+            `}</style>
         </div>
     );
 }

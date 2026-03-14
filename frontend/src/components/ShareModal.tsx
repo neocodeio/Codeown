@@ -47,7 +47,7 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
       style={{
         position: "fixed",
         inset: 0,
-        backgroundColor: "rgba(15, 23, 42, 0.45)",
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -63,22 +63,25 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
         style={{
           width: "100%",
           maxWidth: "380px",
-          borderRadius: "16px",
-          backgroundColor: "#ffffff",
-          boxShadow: "0 18px 45px rgba(15, 23, 42, 0.18)",
-          padding: "18px 18px 16px",
+          borderRadius: "2px",
+          backgroundColor: "var(--bg-page)",
+          border: "0.5px solid var(--border-hairline)",
+          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
+          padding: "24px",
           boxSizing: "border-box",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <h2
             style={{
               margin: 0,
-              fontSize: "16px",
-              fontWeight: 700,
-              color: "#0f172a",
-              letterSpacing: "-0.02em",
+              fontSize: "14px",
+              fontWeight: 800,
+              color: "var(--text-primary)",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
             }}
           >
             {title}
@@ -88,11 +91,14 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
             style={{
               border: "none",
               background: "transparent",
-              color: "#94a3b8",
+              color: "var(--text-tertiary)",
               cursor: "pointer",
               fontSize: "18px",
               lineHeight: 1,
               padding: "4px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
             }}
             aria-label="Close"
           >
@@ -100,63 +106,84 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
           </button>
         </div>
 
-        <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 10px 0" }}>
-          Copy a link you can share anywhere.
+        <p style={{ 
+          fontSize: "12px", 
+          color: "var(--text-secondary)", 
+          margin: "0 0 16px 0",
+          fontFamily: "var(--font-mono)",
+          lineHeight: "1.5"
+        }}>
+          Copy the unique link below to share this content.
         </p>
 
         <div
           style={{
-            borderRadius: "10px",
-            border: "1px solid #e2e8f0",
-            padding: "8px 10px",
+            borderRadius: "2px",
+            border: "0.5px solid var(--border-hairline)",
+            padding: "12px",
             fontSize: "12px",
-            color: "#0f172a",
-            backgroundColor: "#f8fafc",
-            marginBottom: "12px",
+            color: "var(--text-primary)",
+            backgroundColor: "var(--bg-input)",
+            marginBottom: "20px",
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
+            fontFamily: "var(--font-mono)",
           }}
           title={url}
         >
           {url}
         </div>
 
-        <button
-          onClick={handleCopy}
-          style={{
-            width: "100%",
-            padding: "10px 16px",
-            borderRadius: "999px",
-            border: "none",
-            backgroundColor: copied ? "#16a34a" : "#0f172a",
-            color: "#ffffff",
-            fontSize: "14px",
-            fontWeight: 700,
-            cursor: "pointer",
-            marginBottom: "6px",
-            transition: "background-color 0.15s ease, transform 0.05s ease",
-          }}
-        >
-          {copied ? "Copied" : "Copy link"}
-        </button>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <button
+            onClick={handleCopy}
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: "2px",
+              border: "0.5px solid var(--border-hairline)",
+              backgroundColor: "var(--text-primary)",
+              color: "var(--bg-page)",
+              fontSize: "12px",
+              fontWeight: 800,
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em"
+            }}
+          >
+            {copied ? "COPIED TO CLIPBOARD" : "COPY LINK"}
+          </button>
 
-        <button
-          onClick={onClose}
-          style={{
-            width: "100%",
-            padding: "8px 12px",
-            borderRadius: "999px",
-            border: "none",
-            backgroundColor: "transparent",
-            color: "#64748b",
-            fontSize: "12px",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Close
-        </button>
+          <button
+            onClick={onClose}
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: "2px",
+              border: "0.5px solid var(--border-hairline)",
+              backgroundColor: "transparent",
+              color: "var(--text-primary)",
+              fontSize: "12px",
+              fontWeight: 800,
+              cursor: "pointer",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "all 0.1s ease"
+            }}
+            className="cancel-button"
+          >
+            CANCEL
+          </button>
+        </div>
+        <style>{`
+          .cancel-button:hover {
+            background-color: var(--bg-hover);
+          }
+        `}</style>
       </div>
     </div>
   );

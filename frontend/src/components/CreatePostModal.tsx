@@ -201,9 +201,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
       style={{
         position: "fixed",
         inset: 0,
-        backgroundColor: "rgba(15, 23, 42, 0.6)",
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
         zIndex: 10000,
-        backdropFilter: "blur(8px)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
