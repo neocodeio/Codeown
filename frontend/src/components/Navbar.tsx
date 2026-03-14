@@ -146,7 +146,7 @@ export default function Navbar() {
       display: "flex",
       alignItems: "center",
       gap: "14px",
-      padding: "12px 16px",
+      padding: "10px 16px",
       borderRadius: "2px",
       textDecoration: "none",
       color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
@@ -154,7 +154,7 @@ export default function Navbar() {
       fontWeight: 800,
       fontSize: "13px",
       transition: "all 0.15s ease",
-      marginBottom: "2px",
+      marginBottom: "0px",
       border: isActive ? "0.5px solid var(--border-hairline)" : "0.5px solid transparent",
       textTransform: "uppercase",
       letterSpacing: "0.05em",
@@ -162,9 +162,9 @@ export default function Navbar() {
     };
   };
   const SidebarContent = () => (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", padding: "0 12px" }}>
       {/* Logo */}
-      <div style={{ padding: "40px 20px 48px 24px" }}>
+      <div style={{ padding: "32px 20px 24px 24px" }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
           <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "36px", width: "auto" }} />
           <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -335,8 +335,8 @@ export default function Navbar() {
                 display: "flex",
                 alignItems: "center",
                 gap: "12px",
-                padding: "20px 12px",
-                marginTop: "12px",
+                padding: "12px 12px",
+                marginTop: "8px",
                 backgroundColor: "transparent",
                 position: "relative",
                 cursor: "pointer",
@@ -458,18 +458,19 @@ export default function Navbar() {
   if (!isMobile) {
     return (
       <>
-        <div style={{
+        <nav style={{
           width: width < 1024 ? "240px" : "300px",
           height: "100vh",
-          padding: "0 12px",
           position: "sticky",
           top: 0,
           borderRight: "0.5px solid var(--border-hairline)",
           backgroundColor: "var(--bg-page)",
-          zIndex: 50
+          zIndex: 50,
+          display: "flex",
+          flexDirection: "column"
         }}>
           <SidebarContent />
-        </div>
+        </nav>
 
         {/* Modals */}
         <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
