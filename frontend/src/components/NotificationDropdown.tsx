@@ -103,9 +103,9 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
     const username = notification.actor?.username;
 
     const nameWrapper = (
-      <span style={{ fontWeight: 700, display: "inline-flex", alignItems: "center", color: "#0f172a" }}>
+      <span style={{ fontWeight: 800, display: "inline-flex", alignItems: "center", color: "var(--text-primary)", letterSpacing: "-0.01em", textTransform: "uppercase", fontSize: "13px", fontFamily: "var(--font-mono)" }}>
         {username ? `@${username}` : actorName}
-        <VerifiedBadge username={username} size="14px" />
+        <VerifiedBadge username={username} size="12px" />
       </span>
     );
 
@@ -152,15 +152,15 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
             style={{
               position: "relative",
               padding: "9px",
-              backgroundColor: "#fff",
-              border: "none",
+              backgroundColor: "var(--bg-page)",
+              border: "0.5px solid var(--border-hairline)",
               cursor: "pointer",
-              borderRadius: "12px",
+              borderRadius: "2px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: "20px",
-              color: "#212121",
+              color: "var(--text-primary)",
             }}
           >
             <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "20px" }} />
@@ -170,16 +170,17 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                   position: "absolute",
                   top: "-8px",
                   right: "-8px",
-                  backgroundColor: "#212121",
-                  color: "#fff",
-                  borderRadius: "50%",
-                  width: "18px",
-                  height: "18px",
-                  fontSize: "11px",
+                  backgroundColor: "var(--text-primary)",
+                  color: "var(--bg-page)",
+                  borderRadius: "2px",
+                  width: "16px",
+                  height: "16px",
+                  fontSize: "9px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontWeight: 600,
+                  fontWeight: 900,
+                  fontFamily: "var(--font-mono)",
                 }}
               >
                 {unreadCount > 9 ? "9+" : unreadCount}
@@ -197,7 +198,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               to { opacity: 1; transform: translateY(0) scale(1); }
             }
             .notification-item:hover {
-              background-color: #fcfcfc !important;
+              background-color: var(--bg-hover) !important;
             }
             .notification-dropdown {
               animation: dropdownShow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -209,11 +210,12 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               background: transparent;
             }
             .notification-dropdown-list::-webkit-scrollbar-thumb {
-              background: #e2e8f0;
-              borderRadius: 10px;
+              background: var(--text-tertiary);
+              borderRadius: 2px;
+              opacity: 0.3;
             }
             .notification-dropdown-list::-webkit-scrollbar-thumb:hover {
-              background: #cbd5e1;
+              background: var(--text-secondary);
             }
           `}</style>
           <div
@@ -228,10 +230,10 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               width: isMobile ? "100%" : "400px",
               height: isMobile ? "100%" : "auto",
               maxHeight: isMobile ? "100vh" : "600px",
-              backgroundColor: "#ffffff",
-              borderRadius: isMobile ? "0" : "24px",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
-              border: isMobile ? "none" : "1px solid #f1f5f9",
+              backgroundColor: "var(--bg-page)",
+              borderRadius: "0",
+              boxShadow: "none",
+              border: "0.5px solid var(--border-hairline)",
               zIndex: 9999,
               overflow: "hidden",
               display: "flex",
@@ -241,19 +243,19 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
             {/* Header */}
             <div style={{
               padding: "24px",
-              borderBottom: "1px solid rgba(0, 0, 0, 0.04)",
+              borderBottom: "0.5px solid var(--border-hairline)",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              background: "#fff",
+              background: "var(--bg-page)",
               position: "sticky",
               top: 0,
               zIndex: 10
             }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: "#0f172a", letterSpacing: "-0.02em" }}>Notifications</h3>
-                <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#94a3b8", fontWeight: "600" }}>
-                  {unreadCount > 0 ? `You have ${unreadCount} unread` : "You're all caught up"}
+                <h3 style={{ margin: 0, fontSize: "14px", fontWeight: "800", color: "var(--text-primary)", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Notifications</h3>
+                <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-tertiary)", fontWeight: "700", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  {unreadCount > 0 ? `${unreadCount.toString().padStart(2, '0')} UNREAD` : "SYSTEMS NOMINAL"}
                 </p>
               </div>
               <div style={{ display: "flex", gap: "8px" }}>
@@ -265,20 +267,22 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                     }}
                     style={{
                       background: "none",
-                      border: "1px solid #e2e8f0",
-                      color: "#0f172a",
+                      border: "0.5px solid var(--border-hairline)",
+                      color: "var(--text-primary)",
                       padding: "8px 14px",
-                      borderRadius: "12px",
-                      fontSize: "12px",
-                      fontWeight: "700",
+                      borderRadius: "2px",
+                      fontSize: "11px",
+                      fontWeight: "800",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
                       gap: "6px",
-                      transition: "all 0.2s"
+                      transition: "all 0.2s",
+                      fontFamily: "var(--font-mono)",
+                      textTransform: "uppercase"
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.backgroundColor = "#f8fafc";
+                      e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                     }}
                     onMouseLeave={e => {
                       e.currentTarget.style.backgroundColor = "transparent";
@@ -291,9 +295,9 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                 {isMobile && (
                   <button
                     onClick={() => setIsOpen(false)}
-                    style={{ background: "#0f172a", border: "none", color: "#fff", padding: "8px 14px", borderRadius: "12px", fontWeight: "700", fontSize: "12px" }}
+                    style={{ background: "var(--text-primary)", border: "none", color: "var(--bg-page)", padding: "8px 14px", borderRadius: "2px", fontWeight: "800", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
                   >
-                    Close
+                    CLOSE
                   </button>
                 )}
               </div>
@@ -304,21 +308,22 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               {notifications.length === 0 ? (
                 <div style={{ padding: "80px 40px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
                   <div style={{
-                    width: "64px",
-                    height: "64px",
-                    borderRadius: "20px",
-                    backgroundColor: "#f8fafc",
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "2px",
+                    backgroundColor: "var(--bg-hover)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     marginBottom: "16px",
-                    color: "#94a3b8"
+                    color: "var(--text-tertiary)",
+                    border: "0.5px solid var(--border-hairline)"
                   }}>
-                    <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "32px", opacity: 0.5 }} />
+                    <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "24px" }} />
                   </div>
-                  <h4 style={{ margin: "0 0 8px", fontSize: "16px", fontWeight: 700, color: "#1e293b" }}>All quiet for now</h4>
-                  <p style={{ margin: 0, fontSize: "14px", color: "#64748b", lineHeight: "1.5" }}>
-                    When you get notifications, they'll show up here.
+                  <h4 style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>All quiet</h4>
+                  <p style={{ margin: 0, fontSize: "11px", color: "var(--text-tertiary)", lineHeight: "1.5", fontWeight: 700, textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>
+                    NO NEW DATA PACKETS RECEIVED.
                   </p>
                 </div>
               ) : (
@@ -332,22 +337,22 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       style={{
                         padding: "16px 20px",
                         margin: "2px 0",
-                        borderRadius: "14px",
+                        borderRadius: "2px",
                         cursor: "pointer",
-                        backgroundColor: notification.read ? "#fff" : "rgba(59, 130, 246, 0.02)",
+                        backgroundColor: notification.read ? "var(--bg-page)" : "var(--bg-hover)",
                         transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                         display: "flex",
                         gap: "14px",
                         alignItems: "center",
                         position: "relative",
-                        borderBottom: "1px solid rgba(0, 0, 0, 0.02)"
+                        borderBottom: "0.5px solid var(--border-hairline)"
                       }}
                     >
                       <div style={{ position: "relative", flexShrink: 0 }}>
                         <img
                           src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
                           alt=""
-                          style={{ width: "42px", height: "42px", borderRadius: "12px", objectFit: "cover", backgroundColor: "#f1f5f9" }}
+                          style={{ width: "42px", height: "42px", borderRadius: "1px", objectFit: "cover", backgroundColor: "var(--bg-hover)", border: "0.5px solid var(--border-hairline)" }}
                         />
                         <div style={{
                           position: "absolute",
@@ -356,29 +361,29 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                           width: "20px",
                           height: "20px",
                           borderRadius: "6px",
-                          backgroundColor: "#fff",
+                          backgroundColor: "var(--bg-page)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          border: "1px solid #f1f5f9",
+                          border: "0.5px solid var(--border-hairline)",
                           color: itemIcon.color,
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
+                          boxShadow: "none"
                         }}>
                           <HugeiconsIcon icon={itemIcon.icon} style={{ fontSize: "11px" }} />
                         </div>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{
-                          margin: "0 0 2px",
-                          fontSize: "14px",
-                          color: "#1e293b",
-                          lineHeight: "1.4",
+                          margin: "0 0 4px",
+                          fontSize: "13px",
+                          color: "var(--text-primary)",
+                          lineHeight: "1.5",
                           fontWeight: notification.read ? 600 : 800,
                           letterSpacing: "-0.01em"
                         }}>
                           {getNotificationMessage(notification)}
                         </p>
-                        <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8", fontWeight: "600" }}>
+                        <p style={{ margin: 0, fontSize: "11px", color: "var(--text-tertiary)", fontWeight: "800", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
                           {formatCompactRelativeDate(notification.created_at)}
                         </p>
                       </div>
@@ -387,7 +392,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                           width: "6px",
                           height: "6px",
                           borderRadius: "50%",
-                          backgroundColor: "#3b82f6",
+                          backgroundColor: "var(--text-primary)",
                           flexShrink: 0
                         }} />
                       )}

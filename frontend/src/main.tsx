@@ -3,6 +3,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react"
 import App from "./App";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import { BrowserRouter } from "react-router-dom";
 import { ClerkWrapper } from "./lib/ClerkWrapper";
 import "@fortawesome/fontawesome-svg-core/styles.css";
@@ -37,36 +38,50 @@ const queryClient = new QueryClient({
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
+const AppWrapper = () => {
+  const { theme } = useTheme();
+  
+  return (
+    <>
+      <App />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={theme}
+        toastStyle={{
+          borderRadius: '2px',
+          fontSize: '13px',
+          fontWeight: 800,
+          fontFamily: 'var(--font-mono)',
+          boxShadow: 'none',
+          border: '0.5px solid var(--border-hairline)',
+          backgroundColor: 'var(--bg-page)',
+          color: 'var(--text-primary)',
+          textTransform: 'uppercase'
+        }}
+      />
+      <SpeedInsights />
+      <Analytics />
+    </>
+  );
+};
+
 root.render(
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <ClerkWrapper>
-          <App />
-          <ToastContainer
-            position="bottom-right"
-            autoClose={3000}
-            hideProgressBar={true}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            toastStyle={{
-              borderRadius: '16px',
-              fontSize: '14px',
-              fontWeight: 700,
-              fontFamily: 'Outfit, Inter, sans-serif',
-              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
-              border: '1px solid #f1f5f9',
-              color: '#0f172a'
-            }}
-          />
-          <SpeedInsights />
-          <Analytics />
-        </ClerkWrapper>
+        <ThemeProvider>
+          <ClerkWrapper>
+            <AppWrapper />
+          </ClerkWrapper>
+        </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </HelmetProvider>

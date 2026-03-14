@@ -65,7 +65,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
 
     return {
       paddingLeft: basePadding,
-      borderLeft: effectiveDepth > 0 ? "1px solid #f1f5f9" : "none"
+      borderLeft: effectiveDepth > 0 ? "0.5px solid var(--border-hairline)" : "none"
     };
   };
 
@@ -112,7 +112,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 if (comment.user?.username) navigate(`/${comment.user.username}`);
                 else if (comment.user_id) navigate(`/user/${comment.user_id}`);
               }}
-              style={{ fontSize: "14px", fontWeight: 700, color: "#1a1a1a", cursor: "pointer", display: "flex", alignItems: "center", gap: "2px" }}
+              style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "2px", textTransform: "uppercase", letterSpacing: "-0.01em" }}
             >
               {name}
               <VerifiedBadge username={comment.user?.username} size="12px" />
@@ -122,23 +122,24 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                   fontWeight: "800",
                   padding: "1px 4px",
                   borderRadius: "3px",
-                  backgroundColor: "#0f172a",
-                  color: "#fff",
-                  letterSpacing: "0.02em",
-                  marginLeft: "2px"
+                  backgroundColor: "var(--text-primary)",
+                  color: "var(--bg-page)",
+                  letterSpacing: "0.05em",
+                  marginLeft: "4px",
+                  fontFamily: "var(--font-mono)"
                 }}>PRO</span>
               )}
             </span>
-            <span style={{ fontSize: "12px", color: "#666" }}>
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
               • {formatRelativeDate(comment.created_at)}
             </span>
           </div>
 
           {/* Comment Text */}
           <div style={{
-            fontSize: "15px",
-            lineHeight: "1.5",
-            color: "#333",
+            fontSize: "14px",
+            lineHeight: "1.6",
+            color: "var(--text-secondary)",
             wordBreak: "break-word",
             marginBottom: "8px"
           }}>
@@ -157,10 +158,12 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                 background: "none",
                 border: "none",
                 padding: 0,
-                color: isLiked ? "#ef4444" : "#666",
-                fontSize: "13px",
-                fontWeight: 500,
-                cursor: "pointer"
+                color: isLiked ? "#ef4444" : "var(--text-tertiary)",
+                fontSize: "12px",
+                fontWeight: 700,
+                fontFamily: "var(--font-mono)",
+                cursor: "pointer",
+                textTransform: "uppercase"
               }}
             >
               <FontAwesomeIcon
@@ -177,10 +180,12 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                   background: "none",
                   border: "none",
                   padding: 0,
-                  color: "#666",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  cursor: "pointer"
+                  color: "var(--text-tertiary)",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  fontFamily: "var(--font-mono)",
+                  cursor: "pointer",
+                  textTransform: "uppercase"
                 }}
               >
                 Reply
@@ -204,12 +209,14 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                   style={{
                     padding: "6px 12px",
                     backgroundColor: "transparent",
-                    color: "#666",
+                    color: "var(--text-tertiary)",
                     border: "none",
-                    borderRadius: "4px",
-                    fontWeight: 500,
+                    borderRadius: "2px",
+                    fontWeight: 800,
                     cursor: "pointer",
-                    fontSize: "13px"
+                    fontSize: "11px",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
                 >
                   Cancel
@@ -219,13 +226,15 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                   disabled={!replyContent.trim() || submitting}
                   style={{
                     padding: "6px 16px",
-                    backgroundColor: "#1a1a1a",
-                    color: "#fff",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
                     border: "none",
-                    borderRadius: "4px",
-                    fontWeight: 600,
+                    borderRadius: "2px",
+                    fontWeight: 800,
                     cursor: submitting ? "not-allowed" : "pointer",
-                    fontSize: "13px"
+                    fontSize: "11px",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
                 >
                   {submitting ? "..." : "Reply"}

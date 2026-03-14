@@ -46,23 +46,33 @@
 }
 
 .dark {
-  --bg-page: #000000;
-  --bg-card: #000000;
-  --bg-elevated: #000000;
-  --bg-hover: #0a0a0a;
+  --bg-page: #050505;
+  --bg-card: #0a0a0a;
+  --bg-elevated: #111111;
+  --bg-hover: #161616;
   --bg-input: #0a0a0a;
 
   --text-primary: #ffffff;
-  --text-secondary: #888888;
-  --text-tertiary: #444444;
+  --text-secondary: #a1a1a1;
+  --text-tertiary: #666666;
 
   --primary: #ffffff;
   --primary-contrast: #000000;
   --accent: #ffffff;
 
-  --border-light: #222222;
-  --border-hairline: rgba(255, 255, 255, 0.1);
+  --border-light: #1f1f1f;
+  --border-hairline: rgba(255, 255, 255, 0.08);
   --border-strong: #ffffff;
+}
+
+/* Global transitions for theme switching */
+*, *::before, *::after {
+  transition: background-color 0.3s var(--ease-smooth), border-color 0.3s var(--ease-smooth), color 0.1s linear;
+}
+
+/* Override for images and heavy transitions */
+img, video, .no-transition {
+  transition: none !important;
 }
 
 * {
@@ -363,4 +373,29 @@ textarea:focus {
     display: inline-flex;
     align-items: center;
   }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-light) var(--bg-page);
 }

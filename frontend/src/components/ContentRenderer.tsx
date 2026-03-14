@@ -159,7 +159,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
       // Quote
       if (line.startsWith("> ")) {
         elements.push(
-          <blockquote key={`q-${key++}`} style={{ borderLeft: "4px solid #e2e8f0", paddingLeft: "16px", color: "#64748b", fontStyle: "italic", margin: "12px 0" }}>
+          <blockquote key={`q-${key++}`} style={{ borderLeft: "4px solid var(--border-hairline)", paddingLeft: "16px", color: "var(--text-secondary)", fontStyle: "italic", margin: "12px 0" }}>
             {parseInline(line.slice(2))}
           </blockquote>
         );
@@ -236,7 +236,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         while ((match = regex.exec(p)) !== null) {
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
           res.push(
-            <code key={`ic-${key++}`} style={{ backgroundColor: "#f1f5f9", padding: "2px 4px", borderRadius: "4px", color: "#e11d48", fontSize: "0.9em" }}>
+            <code key={`ic-${key++}`} style={{ backgroundColor: "var(--bg-hover)", padding: "2px 6px", borderRadius: "2px", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", fontSize: "0.9em", fontFamily: "var(--font-mono)" }}>
               {match[1]}
             </code>
           );
@@ -257,7 +257,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
           const username = match[1];
           res.push(
-            <span key={`m-${key++}`} onClick={(e) => handleMentionClick(username, e)} style={{ color: "#2563eb", cursor: "pointer", fontWeight: 500 }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+            <span key={`m-${key++}`} onClick={(e) => handleMentionClick(username, e)} style={{ color: "var(--text-primary)", cursor: "pointer", fontWeight: 700, textDecoration: "underline", textDecorationColor: "var(--border-hairline)" }} onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'var(--border-hairline)'}>
               @{username}
             </span>
           );
@@ -279,7 +279,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
           const url = match[2];
           if (!firstUrl) firstUrl = url;
           res.push(
-            <a key={`l-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+            <a key={`l-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-primary)", fontWeight: 700, textDecoration: "underline", textDecorationColor: "var(--border-hairline)" }} onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'var(--border-hairline)'}>
               {match[1]}
             </a>
           );
@@ -301,7 +301,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
           const url = match[1];
           if (!firstUrl) firstUrl = url;
           res.push(
-            <a key={`lu-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 600, textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>
+            <a key={`lu-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-primary)", fontWeight: 700, textDecoration: "underline", textDecorationColor: "var(--border-hairline)" }} onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'var(--border-hairline)'}>
               {url.length > 40 ? url.substring(0, 37) + "..." : url}
             </a>
           );
@@ -319,7 +319,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
     <div
       ref={contentRef}
       style={{
-        color: "#0f172a",
+        color: "var(--text-primary)",
         fontSize,
         lineHeight: 1.6,
         whiteSpace: "pre-wrap",

@@ -9,7 +9,22 @@ import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
 import { useFaviconNotification } from "../hooks/useFaviconNotification";
 import api from "../api/axios";
-import { House, MagnifyingGlass, ChatCircle, Rocket, User as UserIcon, Bell, Plus, SignOut, DotsThreeOutline, SignIn, UsersThree } from "phosphor-react";
+import { 
+  House, 
+  MagnifyingGlass, 
+  ChatCircle, 
+  Rocket, 
+  User as UserIcon, 
+  Bell, 
+  Plus, 
+  SignOut, 
+  DotsThreeOutline, 
+  SignIn, 
+  UsersThree,
+  Sun,
+  Moon
+} from "phosphor-react";
+import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
 import DeveloperIDCardModal from "./DeveloperIDCardModal";
 import StreakBadge from "./StreakBadge";
@@ -19,6 +34,7 @@ import StreakBadge from "./StreakBadge";
 export default function Navbar() {
   const { isSignedIn, user } = useClerkUser();
   const { signOut } = useClerkAuth();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
@@ -295,7 +311,16 @@ export default function Navbar() {
       <div style={{ flex: 1 }}></div>
 
       {/* Footer Links & Profile */}
-      <div style={{ padding: "0 16px 20px 16px", borderTop: "1px solid #e2e8f0" }}>
+      <div style={{ padding: "0 16px 20px 16px", borderTop: "0.5px solid var(--border-hairline)" }}>
+        {/* Theme Toggle */}
+        <div
+          onClick={toggleTheme}
+          style={{ ...linkStyle(""), cursor: "pointer", marginTop: "16px", marginBottom: "16px" }}
+        >
+          {theme === 'light' ? <Moon size={20} weight="thin" /> : <Sun size={20} weight="thin" />}
+          {theme === 'light' ? 'DARK MODE' : 'LIGHT MODE'}
+        </div>
+
         {/* Profile Card */}
         {isSignedIn && user ? (
           <>

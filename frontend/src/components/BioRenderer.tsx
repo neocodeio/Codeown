@@ -35,12 +35,14 @@ export default function BioRenderer({ bio }: BioRendererProps) {
                         key={`mention-${localKey++}`}
                         onClick={(e) => handleMentionClick(username, e)}
                         style={{
-                            color: "#212121",
-                            fontWeight: 600,
+                            color: "var(--text-primary)",
+                            fontWeight: 700,
                             cursor: "pointer",
+                            textDecoration: "underline",
+                            textDecorationColor: "var(--border-hairline)"
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-                        onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+                        onMouseEnter={(e) => (e.currentTarget.style.textDecorationColor = "var(--text-primary)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.textDecorationColor = "var(--border-hairline)")}
                     >
                         @{username}
                     </span>
@@ -56,12 +58,13 @@ export default function BioRenderer({ bio }: BioRendererProps) {
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                            color: "#212121",
-                            textDecoration: "none",
-                            fontWeight: "600",
+                            color: "var(--text-primary)",
+                            textDecoration: "underline",
+                            textDecorationColor: "var(--border-hairline)",
+                            fontWeight: "700",
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-                        onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+                        onMouseEnter={(e) => (e.currentTarget.style.textDecorationColor = "var(--text-primary)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.textDecorationColor = "var(--border-hairline)")}
                     >
                         {url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
                     </a>
@@ -80,7 +83,7 @@ export default function BioRenderer({ bio }: BioRendererProps) {
     };
 
     return (
-        <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+        <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", color: "var(--text-primary)" }}>
             {parseBio(bio)}
         </div>
     );

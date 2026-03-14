@@ -126,10 +126,10 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         <div className="loading-spinner" style={{
           width: "32px",
           height: "32px",
-          border: "3px solid rgba(33, 33, 33, 0.1)",
-          borderTopColor: "#212121",
+          border: "2px solid var(--border-hairline)",
+          borderTopColor: "var(--text-primary)",
           borderRadius: "50%",
-          animation: "spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite",
+          animation: "spin 0.8s linear infinite",
           margin: "0 auto"
         }} />
       </div>
@@ -145,15 +145,18 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         justifyContent: "space-between",
         marginBottom: "20px",
         paddingBottom: "12px",
-        borderBottom: "1px solid #f1f5f9"
+        borderBottom: "0.5px solid var(--border-hairline)"
       }}>
         <h3 style={{
-          fontSize: "16px",
-          fontWeight: 700,
-          color: "#1a1a1a",
+          fontSize: "14px",
+          fontWeight: 800,
+          color: "var(--text-primary)",
           margin: 0,
+          fontFamily: "var(--font-mono)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em"
         }}>
-          Comments ({comments.length})
+          Comments ({comments.length.toString().padStart(2, '0')})
         </h3>
       </div>
 
@@ -168,7 +171,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           <img
             src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=212121&color=ffffff&bold=true`}
             alt={currentUser.fullName || "User"}
-            style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }}
+            style={{ width: "36px", height: "36px", borderRadius: "1px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
           />
           <div style={{ flex: 1 }}>
             <textarea
@@ -188,9 +191,9 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                 fontWeight: 500,
                 resize: "none",
                 fontFamily: "inherit",
-                color: "#1a1a1a",
+                color: "var(--text-primary)",
                 backgroundColor: "transparent",
-                borderBottom: isFocused ? "1px solid #1a1a1a" : "1px solid #f1f5f9",
+                borderBottom: isFocused ? "1px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
                 transition: "border-color 0.2s"
               }}
             />
@@ -220,14 +223,16 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                   onClick={handleSubmitComment}
                   disabled={!newComment.trim() || submitting}
                   style={{
-                    padding: "6px 20px",
-                    backgroundColor: newComment.trim() && !submitting ? "#1a1a1a" : "#ccc",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
+                    padding: "8px 20px",
+                    backgroundColor: newComment.trim() && !submitting ? "var(--text-primary)" : "transparent",
+                    color: newComment.trim() && !submitting ? "var(--bg-page)" : "var(--text-tertiary)",
+                    border: "0.5px solid var(--border-hairline)",
+                    borderRadius: "2px",
                     cursor: newComment.trim() && !submitting ? "pointer" : "not-allowed",
-                    fontWeight: 600,
-                    fontSize: "13px"
+                    fontWeight: 800,
+                    fontSize: "11px",
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
                   }}
                 >
                   {submitting ? "..." : "Post"}
@@ -244,33 +249,35 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           <div style={{
             textAlign: "center",
             padding: "80px 40px",
-            backgroundColor: "#f8fafc",
-            borderRadius: "32px",
-            border: "2px dashed #e2e8f0",
+            backgroundColor: "var(--bg-hover)",
+            borderRadius: "2px",
+            border: "0.5px solid var(--border-hairline)",
           }}>
             <div style={{
-              width: "64px",
-              height: "64px",
-              backgroundColor: "#fff",
-              borderRadius: "20px",
+              width: "48px",
+              height: "48px",
+              backgroundColor: "var(--bg-hover)",
+              borderRadius: "2px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              margin: "0 auto 20px",
-              boxShadow: "0 10px 20px rgba(0,0,0,0.03)",
-              color: "#212121"
+              margin: "0 auto 24px",
+              border: "0.5px solid var(--border-hairline)",
+              color: "var(--text-primary)"
             }}>
               <FontAwesomeIcon icon={faComment} style={{ fontSize: "28px" }} />
             </div>
             <div style={{
-              fontSize: "18px",
-              fontWeight: 700,
-              color: "#0f172a",
-              marginBottom: "8px"
+              fontSize: "16px",
+              fontWeight: 800,
+              color: "var(--text-primary)",
+              marginBottom: "12px",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase"
             }}>
-              No comments yet
+              No replies yet
             </div>
-            <div style={{ color: "#64748b", fontSize: "14px", maxWidth: "260px", margin: "0 auto" }}>
+            <div style={{ color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 700, maxWidth: "300px", margin: "0 auto", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
               Be the first to share your thoughts and start the conversation!
             </div>
           </div>
