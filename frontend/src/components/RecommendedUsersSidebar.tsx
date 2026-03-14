@@ -140,52 +140,35 @@ export default function RecommendedUsersSidebar() {
                                 }}
                                 className="sidebar-item"
                             >
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                    <UserHoverCard userId={user.id}>
-                                        <Link
-                                            to={user.username ? `/${user.username}` : `/user/${user.id}`}
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "flex-start",
-                                                gap: "10px",
-                                                textDecoration: "none",
-                                                width: "100%"
-                                            }}
-                                        >
-                                            <img
-                                                src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
-                                                alt=""
-                                                style={{ width: 44, height: 44, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
-                                            />
-                                            <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px", flex: 1 }}>
-                                                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-                                                        {(user.name || "User").split(" ")[0]}
-                                                    </span>
-                                                </div>
-                                                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
-                                                    @{user.username}
+                                <UserHoverCard userId={user.id}>
+                                    <Link
+                                        to={user.username ? `/${user.username}` : `/user/${user.id}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "flex-start",
+                                            gap: "10px",
+                                            textDecoration: "none",
+                                            flex: 1,
+                                            minWidth: 0
+                                        }}
+                                    >
+                                        <img
+                                            src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
+                                            alt=""
+                                            style={{ width: 48, height: 48, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
+                                        />
+                                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                                <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+                                                    {(user.name || "User").split(" ")[0]}
                                                 </span>
-                                                {user.bio && (
-                                                    <span style={{ 
-                                                        fontSize: "11px", 
-                                                        color: "var(--text-secondary)", 
-                                                        marginTop: "4px",
-                                                        overflow: "hidden",
-                                                        textOverflow: "ellipsis",
-                                                        whiteSpace: "nowrap",
-                                                        display: "block",
-                                                        lineHeight: 1.4,
-                                                        fontWeight: 500,
-                                                        width: "100%"
-                                                    }}>
-                                                        {user.bio.split("\n")[0]}
-                                                    </span>
-                                                )}
                                             </div>
-                                        </Link>
-                                    </UserHoverCard>
-                                </div>
+                                            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
+                                                @{user.username}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </UserHoverCard>
                                 <button
                                     onClick={() => handleFollow(user.id, user.isFollowing)}
                                     style={{
@@ -220,7 +203,7 @@ export default function RecommendedUsersSidebar() {
                             <Star size={14} weight="thin" />
                             LEADERBOARD
                         </h3>
-                            <Link
+                        <Link
                             to="/leaderboard"
                             style={{
                                 fontSize: "10px",
@@ -249,118 +232,118 @@ export default function RecommendedUsersSidebar() {
                             const ordered = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3;
                             return ordered.map((user: any, idx: number) => {
                                 const rank = top3.length >= 3 ? (idx === 0 ? 2 : idx === 1 ? 1 : 3) : idx + 1;
-                            const firstName = (user?.name || "User").split(" ")[0];
-                            const initials = (user?.name || "U")
-                                .split(" ")
-                                .filter(Boolean)
-                                .slice(0, 2)
-                                .map((p: string) => p[0]?.toUpperCase())
-                                .join("");
+                                const firstName = (user?.name || "User").split(" ")[0];
+                                const initials = (user?.name || "U")
+                                    .split(" ")
+                                    .filter(Boolean)
+                                    .slice(0, 2)
+                                    .map((p: string) => p[0]?.toUpperCase())
+                                    .join("");
 
-                            return (
-                                <Link
-                                    key={user.id}
-                                    to={`/${user.username}`}
-                                    style={{
-                                        textDecoration: "none",
-                                        color: "inherit",
-                                        textAlign: "center",
-                                        flex: 1,
-                                        minWidth: 0,
-                                    }}
-                                    className="sidebar-item"
-                                >
-                                    <div
+                                return (
+                                    <Link
+                                        key={user.id}
+                                        to={`/${user.username}`}
                                         style={{
-                                            position: "relative",
-                                            width: "48px",
-                                            height: "48px",
-                                            margin: "0 auto 8px",
+                                            textDecoration: "none",
+                                            color: "inherit",
+                                            textAlign: "center",
+                                            flex: 1,
+                                            minWidth: 0,
                                         }}
+                                        className="sidebar-item"
                                     >
-                                        {user.avatar_url ? (
-                                            <img
-                                                src={user.avatar_url}
-                                                alt=""
-                                                style={{
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    borderRadius: "2px",
-                                                    objectFit: "cover",
-                                                    border: "0.5px solid var(--border-hairline)",
-                                                    backgroundColor: "var(--bg-hover)",
-                                                }}
-                                            />
-                                        ) : (
+                                        <div
+                                            style={{
+                                                position: "relative",
+                                                width: "48px",
+                                                height: "48px",
+                                                margin: "0 auto 8px",
+                                            }}
+                                        >
+                                            {user.avatar_url ? (
+                                                <img
+                                                    src={user.avatar_url}
+                                                    alt=""
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        borderRadius: "2px",
+                                                        objectFit: "cover",
+                                                        border: "0.5px solid var(--border-hairline)",
+                                                        backgroundColor: "var(--bg-hover)",
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        borderRadius: "2px",
+                                                        backgroundColor: "var(--bg-hover)",
+                                                        border: "0.5px solid var(--border-hairline)",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        fontSize: "12px",
+                                                        fontWeight: 500,
+                                                        color: "var(--text-primary)",
+                                                    }}
+                                                >
+                                                    {initials || "U"}
+                                                </div>
+                                            )}
+
                                             <div
                                                 style={{
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    borderRadius: "2px",
-                                                    backgroundColor: "var(--bg-hover)",
-                                                    border: "0.5px solid var(--border-hairline)",
+                                                    position: "absolute",
+                                                    top: "-4px",
+                                                    left: "-4px",
+                                                    padding: "2px 6px",
+                                                    backgroundColor: "var(--text-primary)",
+                                                    color: "var(--bg-page)",
                                                     display: "flex",
                                                     alignItems: "center",
                                                     justifyContent: "center",
-                                                    fontSize: "12px",
-                                                    fontWeight: 500,
-                                                    color: "var(--text-primary)",
+                                                    fontSize: "10px",
+                                                    fontFamily: "var(--font-mono)",
+                                                    fontWeight: 800,
+                                                    letterSpacing: "0.05em",
+                                                    borderRadius: "1px"
                                                 }}
                                             >
-                                                {initials || "U"}
+                                                {rank.toString().padStart(2, '0')}
                                             </div>
-                                        )}
+                                        </div>
 
                                         <div
                                             style={{
-                                                position: "absolute",
-                                                top: "-4px",
-                                                left: "-4px",
-                                                padding: "2px 6px",
-                                                backgroundColor: "var(--text-primary)",
-                                                color: "var(--bg-page)",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                fontSize: "10px",
-                                                fontFamily: "var(--font-mono)",
+                                                fontSize: "13px",
+                                                fontWeight: 700,
+                                                color: "var(--text-primary)",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "nowrap",
+                                                letterSpacing: "-0.01em"
+                                            }}
+                                            title={firstName}
+                                        >
+                                            {firstName}
+                                        </div>
+
+                                        <div
+                                            style={{
+                                                marginTop: "4px",
+                                                fontSize: "11px",
                                                 fontWeight: 800,
-                                                letterSpacing: "0.05em",
-                                                borderRadius: "1px"
+                                                color: "var(--text-secondary)",
+                                                fontFamily: "var(--font-mono)",
                                             }}
                                         >
-                                            {rank.toString().padStart(2, '0')}
+                                            {user.pulse_score.toString().padStart(3, '0')}P
                                         </div>
-                                    </div>
-
-                                    <div
-                                        style={{
-                                            fontSize: "13px",
-                                            fontWeight: 700,
-                                            color: "var(--text-primary)",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            whiteSpace: "nowrap",
-                                            letterSpacing: "-0.01em"
-                                        }}
-                                        title={firstName}
-                                    >
-                                        {firstName}
-                                    </div>
-
-                                    <div
-                                        style={{
-                                            marginTop: "4px",
-                                            fontSize: "11px",
-                                            fontWeight: 800,
-                                            color: "var(--text-secondary)",
-                                            fontFamily: "var(--font-mono)",
-                                        }}
-                                    >
-                                        {user.pulse_score.toString().padStart(3, '0')}P
-                                    </div>
-                                </Link>
-                            );
+                                    </Link>
+                                );
                             });
                         })()}
                     </div>
@@ -378,7 +361,7 @@ export default function RecommendedUsersSidebar() {
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         {projects.map(project => (
-                             <Link key={project.id} to={`/project/${project.id}`} style={{ display: "flex", gap: "16px", textDecoration: "none" }} className="sidebar-item">
+                            <Link key={project.id} to={`/project/${project.id}`} style={{ display: "flex", gap: "16px", textDecoration: "none" }} className="sidebar-item">
                                 <div style={{ width: "44px", height: "44px", borderRadius: "2px", overflow: "hidden", backgroundColor: "var(--bg-hover)", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}>
                                     {project.cover_image ? (
                                         <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
@@ -396,5 +379,7 @@ export default function RecommendedUsersSidebar() {
                 </div>
             )}
         </div>
+    );
+}
     );
 }

@@ -388,7 +388,7 @@ export default function PostDetail() {
               textTransform: "uppercase",
               letterSpacing: "0.05em"
             }}>
-              No comments yet
+              No replies yet — ask them something about this
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column" }}>
