@@ -128,7 +128,8 @@ export async function markNotificationRead(req: Request, res: Response) {
         .from("notifications")
         .update({ read: true })
         .eq("user_id", userId)
-        .eq("read", false);
+        .eq("read", false)
+        .neq("type", "message");
 
       if (error) {
         console.error("Error marking all notifications as read:", error);

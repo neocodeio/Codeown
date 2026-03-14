@@ -26,7 +26,7 @@ export function useNotifications() {
 
   // Fetch full notifications list
   const {
-    data: notifications = [],
+    data: allNotifications = [],
     isLoading,
     refetch: fetchNotifications
   } = useQuery({
@@ -60,7 +60,8 @@ export function useNotifications() {
       // Optimistically update local cache so badges drop immediately
       queryClient.setQueryData<Notification[]>(["notifications"], (old = []) => {
         if (_notificationId === "all") {
-          return old.map((n) => ({ ...n, read: true }));
+          // Only mark non-message notifications as read in cache
+          return old.map((n) => (n.type !== "message" ? { ...n, read: true } : n));
         }
         return old.map((n) =>
           n.id === _notificationId ? { ...n, read: true } : n
@@ -69,6 +70,12 @@ export function useNotifications() {
     },
   });
 
+  // Filter out message notifications for the general UI
+  const notifications = useMemo(
+    () => allNotifications.filter((n: Notification) => n.type !== "message"),
+    [allNotifications]
+  );
+
   const unreadCount = useMemo(
     () => notifications.filter((n: Notification) => !n.read).length,
     [notifications]
@@ -76,10 +83,10 @@ export function useNotifications() {
 
   const messageUnreadCount = useMemo(
     () =>
-      notifications.filter(
+      allNotifications.filter(
         (n: Notification) => !n.read && n.type === "message"
       ).length,
-    [notifications]
+    [allNotifications]
   );
 
   // Memoize return object to prevent unnecessary re-renders
