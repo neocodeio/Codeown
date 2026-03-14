@@ -82,20 +82,21 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                 <div
                     ref={cardRef}
                     style={{
-                        width: "min(380px, 90vw)",
-                        height: "min(560px, 80vh)",
-                        background: "#020617", // Deeper solid base for better element contrast
-                        borderRadius: "40px",
+                        width: "min(640px, 95vw)",     // Wider for horizontal
+                        height: "min(360px, 60vh)",    // Shorter height
+                        background: "#020617",
+                        borderRadius: "24px",          // Slightly smaller radius to fit horizontal layout better
                         border: "1px solid rgba(255, 255, 255, 0.15)",
                         boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
-                        padding: "min(32px, 4vw)",
+                        padding: "min(24px, 4vw)",     // Adjust padding
                         display: "flex",
-                        flexDirection: "column",
+                        flexDirection: "row",          // Horizontal Layout
                         alignItems: "center",
                         position: "relative",
                         overflow: "hidden",
                         color: "#fff",
-                        fontFamily: "'Inter', sans-serif"
+                        fontFamily: "'Inter', sans-serif",
+                        gap: "min(24px, 4vw)"          // Gap between left and right sections
                     }}
                 >
                     {/* Holographic Shimmer Effect */}
@@ -157,16 +158,21 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                         zIndex: 2
                     }} />
 
-                    {/* Content Container - Above All Background Layers */}
-                    <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", width: "100%", height: "100%" }}>
-                        {/* Branding Top */}
-                        <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
-                            <div style={{ fontSize: "18px", fontWeight: 700, }}>Codeown</div>
-                            <div style={{ fontSize: "14px", fontWeight: 600, opacity: 0.6, textTransform: "uppercase" }}>Developer ID</div>
-                        </div>
-
+                    {/* LEFT COLUMN: Avatar & Profile Info */}
+                    <div style={{ 
+                        position: "relative", 
+                        zIndex: 3, 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        alignItems: "center", 
+                        width: "40%", 
+                        height: "100%",
+                        justifyContent: "center",
+                        borderRight: "1px solid rgba(255,255,255,0.1)",
+                        paddingRight: "min(24px, 4vw)"
+                    }}>
                         {/* Avatar */}
-                        <div style={{ position: "relative", marginBottom: "min(20px, 4vw)" }}>
+                        <div style={{ position: "relative", marginBottom: "min(12px, 2vw)" }}>
                             <img
                                 src={avatarUrl}
                                 alt={user.name}
@@ -196,68 +202,76 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             )}
                         </div>
 
-                        {/* User Info */}
-                        <h2 style={{ fontSize: "min(24px, 6vw)", fontWeight: 800, margin: "0 0 4px 0", letterSpacing: "-0.5px", textAlign: "center" }}>
+                        <h2 style={{ fontSize: "min(20px, 4.5vw)", fontWeight: 800, margin: "0 0 2px 0", letterSpacing: "-0.5px", textAlign: "center" }}>
                             {user.name}
                         </h2>
-                        <p style={{ fontSize: "min(15px, 4vw)", color: "rgba(255,255,255,0.6)", margin: "0 0 8px 0", fontWeight: 500 }}>
+                        <p style={{ fontSize: "min(13px, 3.5vw)", color: "rgba(255,255,255,0.6)", margin: "0 0 8px 0", fontWeight: 500 }}>
                             @{user.username || "developer"}
                         </p>
                         {firstLineBio && (
                             <p style={{ 
-                                fontSize: "min(13px, 3.5vw)", 
+                                fontSize: "min(11px, 2.5vw)", 
                                 color: "rgba(255,255,255,0.45)", 
-                                margin: "0 0 min(24px, 4vw) 0", 
+                                margin: "0", 
                                 fontWeight: 400,
                                 textAlign: "center",
-                                maxWidth: "280px",
+                                maxWidth: "100%",
                                 overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap"
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical"
                             }}>
                                 {firstLineBio}
                             </p>
                         )}
+                    </div>
 
-                        {/* Stats */}
+                    {/* RIGHT COLUMN: Details */}
+                    <div style={{ position: "relative", zIndex: 3, display: "flex", flexDirection: "column", width: "60%", height: "100%", justifyContent: "space-between" }}>
+                        {/* Branding Header inside right column */}
+                        <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                            <div style={{ fontSize: "18px", fontWeight: 700, }}>Codeown</div>
+                            <div style={{ fontSize: "12px", fontWeight: 600, opacity: 0.6, textTransform: "uppercase", letterSpacing: "1px" }}>Developer ID</div>
+                        </div>
+
+                        {/* Stats Array */}
                         <div style={{
                             display: "flex",
                             width: "100%",
                             justifyContent: "space-around",
                             background: "rgba(0,0,0,0.3)",
-                            padding: "min(16px, 3vw)",
-                            borderRadius: "16px",
-                            marginBottom: "min(24px, 4vw)",
-                            border: "1px solid rgba(255,255,255,0.05)"
+                            padding: "min(12px, 2.5vw)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(255,255,255,0.05)",
+                            marginBottom: "16px"
                         }}>
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontSize: "min(11px, 3vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>Joined</div>
-                                <div style={{ fontSize: "min(14px, 4vw)", fontWeight: 700 }}>{joinDate}</div>
+                                <div style={{ fontSize: "min(10px, 2.5vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", marginBottom: "2px" }}>Joined</div>
+                                <div style={{ fontSize: "min(13px, 3.5vw)", fontWeight: 700 }}>{joinDate}</div>
                             </div>
                             <div style={{ width: "1px", background: "rgba(255,255,255,0.1)" }} />
                             <div style={{ textAlign: "center" }}>
-                                <div style={{ fontSize: "min(11px, 3vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>Projects</div>
-                                <div style={{ fontSize: "min(16px, 4.5vw)", fontWeight: 800 }}>{projectsCount}</div>
+                                <div style={{ fontSize: "min(10px, 2.5vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase", marginBottom: "2px" }}>Projects</div>
+                                <div style={{ fontSize: "min(14px, 4vw)", fontWeight: 800 }}>{projectsCount}</div>
                             </div>
                         </div>
 
-                        {/* Tech Stacks Area & QR Code Side-by-Side */}
+                        {/* Tech Stack & QR */}
                         <div style={{
                             display: "flex",
                             width: "100%",
                             justifyContent: "space-between",
                             alignItems: "flex-end",
-                            marginTop: "auto",
-                            gap: "min(16px, 3vw)"
+                            gap: "12px"
                         }}>
-                            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "min(8px, 2vw)" }}>
-                                <div style={{ fontSize: "min(11px, 3vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase" }}>Tech Stack</div>
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: "min(6px, 1.5vw)" }}>
+                            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+                                <div style={{ fontSize: "min(10px, 2.5vw)", color: "rgba(255,255,255,0.5)", fontWeight: 700, textTransform: "uppercase" }}>Tech Stack</div>
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                                     {techStacks.length > 0 ? techStacks.map((skill, idx) => (
                                         <span key={idx} style={{
-                                            fontSize: "min(12px, 3.5vw)",
+                                            fontSize: "min(11px, 2.8vw)",
                                             fontWeight: 600,
-                                            padding: "min(4px, 1vw) min(10px, 2.5vw)",
+                                            padding: "4px 10px",
                                             backgroundColor: "rgba(255,255,255,0.1)",
                                             border: "1px solid rgba(255,255,255,0.15)",
                                             borderRadius: "100px",
@@ -266,25 +280,25 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                             {skill}
                                         </span>
                                     )) : (
-                                        <span style={{ fontSize: "min(13px, 4vw)", color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>Developer</span>
+                                        <span style={{ fontSize: "min(12px, 3vw)", color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>Developer</span>
                                     )}
                                 </div>
                             </div>
 
                             <div style={{
                                 background: "#fff",
-                                padding: "min(6px, 1.5vw)",
-                                borderRadius: "15px",
-                                boxShadow: "0 10px 20px rgba(0,0,0,0.3)"
+                                padding: "6px",
+                                borderRadius: "10px",
+                                boxShadow: "0 5px 15px rgba(0,0,0,0.3)"
                             }}>
                                 <img
                                     src={qrCodeUrl}
                                     alt="Profile QR Code"
                                     style={{ 
-                                        width: "min(70px, 18vw)", 
-                                        height: "min(70px, 18vw)", 
+                                        width: "min(60px, 12vw)", 
+                                        height: "min(60px, 12vw)", 
                                         display: "block", 
-                                        borderRadius: "6px" 
+                                        borderRadius: "4px" 
                                     }}
                                     crossOrigin="anonymous"
                                 />
