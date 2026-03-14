@@ -419,7 +419,7 @@ export default function ProjectDetail() {
                     {project.view_count !== undefined && (
                       <>
                         <span>•</span>
-                        <span>{project.view_count.toString().padStart(2, '0')} VIEWS</span>
+                        <span>{project.view_count} VIEWS</span>
                       </>
                     )}
                   </div>
@@ -534,7 +534,7 @@ export default function ProjectDetail() {
                   </button>
                 ))}
                 <span style={{ fontSize: "11px", color: "var(--text-tertiary)", marginLeft: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
-                  {project.rating ? `${project.rating.toFixed(1)} / ${(project.rating_count || 0).toString().padStart(2, '0')} RATINGS` : "NO RATINGS YET"}
+                  {project.rating ? `${project.rating.toFixed(1)} / ${project.rating_count || 0} RATINGS` : "NO RATINGS YET"}
                 </span>
               </div>
             </div>
@@ -696,7 +696,7 @@ export default function ProjectDetail() {
             }}
           >
             <Star size={20} weight={isLiked ? "fill" : "thin"} />
-            {likeCount > 0 ? `${likeCount.toString().padStart(2, '0')} ` : ""}UPVOTE
+            {likeCount > 0 ? `${likeCount} ` : ""}UPVOTE
           </button>
 
           <button

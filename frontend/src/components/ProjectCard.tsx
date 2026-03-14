@@ -382,7 +382,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
             >
                <action.icon size={22} weight={action.weight || "thin"} />
               {action.count !== undefined && action.count > 0 && (
-                <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count.toString().padStart(2, '0')}</span>
+                <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count}</span>
               )}
             </button>
           ))}
