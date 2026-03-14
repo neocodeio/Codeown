@@ -571,7 +571,7 @@ export default function Messages() {
                         "No messages yet"
                       )}
                     </div>
-                    {convo.unread_count && convo.unread_count > 0 && (
+                    {(convo.unread_count ?? 0) > 0 && (
                       <div style={{
                         width: "6px",
                         height: "6px",
