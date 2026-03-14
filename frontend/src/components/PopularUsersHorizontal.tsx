@@ -74,7 +74,8 @@ export default function PopularUsersHorizontal() {
                 <h3 style={{
                     fontSize: "16px",
                     fontWeight: 800,
-                    color: "#0f172a",
+
+                    color: "var(--text-primary)",
                     margin: "0 0 12px 0",
                     letterSpacing: "-0.02em"
                 }}>
@@ -125,7 +126,8 @@ export default function PopularUsersHorizontal() {
                 <h3 style={{
                     fontSize: "18px",
                     fontWeight: 800,
-                    color: "#0f172a",
+
+                    color: "var(--text-primary)",
                     margin: 0,
                     letterSpacing: "-0.02em"
                 }}>
@@ -210,7 +212,8 @@ export default function PopularUsersHorizontal() {
                                     <span style={{
                                         fontSize: "14px",
                                         fontWeight: 700,
-                                        color: "#0f172a",
+                    
+                    color: "var(--text-primary)",
                                         whiteSpace: "nowrap",
                                         overflow: "hidden",
                                         textOverflow: "ellipsis",
@@ -225,7 +228,7 @@ export default function PopularUsersHorizontal() {
                                             fontWeight: "800",
                                             padding: "1px 4px",
                                             borderRadius: "3px",
-                                            backgroundColor: "#0f172a",
+                                            backgroundColor: "var(--text-primary)",
                                             color: "#fff",
                                             letterSpacing: "0.02em",
                                             marginLeft: "2px"
@@ -249,8 +252,8 @@ export default function PopularUsersHorizontal() {
                                 padding: "8px 12px",
                                 borderRadius: "100px",
                                 border: user.isFollowing ? "1.5px solid #cbd5e1" : "none",
-                                backgroundColor: user.isFollowing ? "#fff" : "#0f172a",
-                                color: user.isFollowing ? "#475569" : "#fff",
+                                backgroundColor: user.isFollowing ? "var(--bg-page)" : "var(--text-primary)",
+                                color: user.isFollowing ? "var(--text-primary)" : "var(--bg-page)",
                                 fontSize: "13px",
                                 fontWeight: 700,
                                 cursor: "pointer",

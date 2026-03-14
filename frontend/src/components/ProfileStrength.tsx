@@ -58,7 +58,7 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
         <div>
-          <h3 style={{ fontSize: "15px", fontWeight: 800, color: "#0f172a", margin: 0 }}>Profile Strength</h3>
+          <h3 style={{ fontSize: "15px", fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>Profile Strength</h3>
           <p style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>
             Complete your profile to get discovered more.
           </p>

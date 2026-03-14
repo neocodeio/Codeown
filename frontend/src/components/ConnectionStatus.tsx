@@ -117,7 +117,7 @@ export default function ConnectionStatus() {
                         </div>
 
                         <div>
-                            <h2 style={{ fontSize: "32px", fontWeight: 900, color: "#0f172a", marginBottom: "16px", letterSpacing: "-0.04em" }}>
+                            <h2 style={{ fontSize: "32px", fontWeight: 900, color: "var(--text-primary)", marginBottom: "16px", letterSpacing: "-0.04em" }}>
                                 Connection Lost
                             </h2>
                             <p style={{ color: "#64748b", fontSize: "17px", lineHeight: "1.7", fontWeight: 500, margin: 0 }}>

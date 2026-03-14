@@ -413,7 +413,7 @@ export default function Profile() {
               <h1 style={{
                 fontSize: isMobile ? "22px" : "28px",
                 fontWeight: 700,
-                color: "#0f172a",
+                color: "var(--text-primary)",
                 margin: 0,
                 textTransform: "uppercase",
                 letterSpacing: "-0.02em",
@@ -448,9 +448,9 @@ export default function Profile() {
                     borderRadius: "30px",
                     fontSize: "14px",
                     fontWeight: 800,
-                    backgroundColor: "#0f172a",
-                    color: "#fff",
-                    textDecoration: "none",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
+                    border: "none",
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "8px",
@@ -459,7 +459,7 @@ export default function Profile() {
                     boxShadow: "0 4px 12px rgba(15, 23, 42, 0.1)"
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.backgroundColor = "#1e293b"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.backgroundColor = "#0f172a"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.backgroundColor = "var(--text-primary)"; }}
                 >
                   Upgrade to Pro
                 </Link>

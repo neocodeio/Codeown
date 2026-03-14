@@ -1,10 +1,10 @@
+
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../api/axios";
 import { formatRelativeDate } from "../utils/date";
 
 export default function RecentProjectLaunches() {
-    // Use React Query with caching to avoid duplicate requests
     const { data: projects = [], isLoading: loading } = useQuery({
         queryKey: ["recentProjects", "sidebar"],
         queryFn: async () => {
@@ -12,28 +12,26 @@ export default function RecentProjectLaunches() {
             const projectsData = response.data.projects || (Array.isArray(response.data) ? response.data : (response.data.data || []));
             return projectsData.slice(0, 5);
         },
-        staleTime: 10 * 60 * 1000, // 10 minutes cache
+        staleTime: 10 * 60 * 1000,
         refetchOnWindowFocus: false,
     });
 
     if (loading) {
         return (
             <div style={{
-                backgroundColor: "#000",
-                // borderRadius: "32px",
-                border: "1px solid #e5e7eb",
-                padding: "26px",
+                backgroundColor: "var(--bg-card)",
+                border: "0.5px solid var(--border-hairline)",
+                padding: "24px",
                 marginTop: "20px",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
             }}>
-                <div style={{ width: "150px", height: "18px", backgroundColor: "#f1f5f9", borderRadius: "4px", marginBottom: "24px" }} />
-                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", marginBottom: "20px" }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     {[...Array(3)].map((_, i) => (
                         <div key={i} style={{ display: "flex", gap: "12px" }}>
-                            <div style={{ width: "48px", height: "48px", borderRadius: "12px", backgroundColor: "#f1f5f9" }} />
+                            <div style={{ width: "40px", height: "40px", borderRadius: "2px", backgroundColor: "var(--bg-hover)" }} />
                             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
-                                <div style={{ width: "80%", height: "14px", backgroundColor: "#f1f5f9", borderRadius: "4px" }} />
-                                <div style={{ width: "40%", height: "12px", backgroundColor: "#f1f5f9", borderRadius: "4px" }} />
+                                <div style={{ width: "70%", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "1px" }} />
+                                <div style={{ width: "30%", height: "8px", backgroundColor: "var(--bg-hover)", borderRadius: "1px" }} />
                             </div>
                         </div>
                     ))}
@@ -46,32 +44,30 @@ export default function RecentProjectLaunches() {
 
     return (
         <div style={{
-            backgroundColor: "#fff",
-            // borderRadius: "32px",
-            border: "1px solid #e5e7eb",
-            padding: "26px",
-            marginTop: "-3%",
-            marginBottom: "5%",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
+            backgroundColor: "var(--bg-card)",
+            border: "0.5px solid var(--border-hairline)",
+            padding: "24px",
+            marginTop: "12px",
+            marginBottom: "24px",
         }}>
             <style>{`
                 .project-launch-item:hover .project-launch-title {
-                    color: #0f172a !important;
                     text-decoration: underline;
                 }
             `}</style>
             <h3 style={{
-                fontSize: "20px",
-                fontWeight: 900,
-                color: "#0f172a",
-                margin: "0 0 24px 0",
-                letterSpacing: "-0.04em",
-                lineHeight: 1.1
+                fontSize: "13px",
+                fontWeight: 800,
+                color: "var(--text-primary)",
+                margin: "0 0 20px 0",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                fontFamily: "var(--font-mono)"
             }}>
                 Recent Launches
             </h3>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {projects.map(project => (
                     <Link
                         key={project.id}
@@ -84,13 +80,13 @@ export default function RecentProjectLaunches() {
                         className="project-launch-item"
                     >
                         <div style={{
-                            width: "48px",
-                            height: "48px",
-                            borderRadius: "12px",
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "2px",
                             overflow: "hidden",
-                            backgroundColor: "#f1f5f9",
+                            backgroundColor: "var(--bg-hover)",
                             flexShrink: 0,
-                            border: "1px solid #eff3f4"
+                            border: "0.5px solid var(--border-hairline)"
                         }}>
                             {project.cover_image ? (
                                 <img
@@ -105,29 +101,30 @@ export default function RecentProjectLaunches() {
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    fontSize: "18px"
+                                    fontSize: "14px"
                                 }}>
                                     🚀
                                 </div>
                             )}
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center" }}>
                             <span
                                 className="project-launch-title"
                                 style={{
-                                    fontSize: "14px",
+                                    fontSize: "13px",
                                     fontWeight: 700,
-                                    color: "#0f172a",
+                                    color: "var(--text-primary)",
                                     whiteSpace: "nowrap",
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
-                                    transition: "color 0.2s"
+                                    textTransform: "uppercase",
+                                    letterSpacing: "-0.01em"
                                 }}
                             >
                                 {project.title}
                             </span>
-                            <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
-                                by {project.user?.name || "Unknown"} • {formatRelativeDate(project.created_at)}
+                            <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                                {formatRelativeDate(project.created_at).toUpperCase()}
                             </span>
                         </div>
                     </Link>
@@ -138,17 +135,19 @@ export default function RecentProjectLaunches() {
                 to="/?type=projects"
                 style={{
                     display: "block",
-                    marginTop: "24px",
-                    fontSize: "14px",
+                    marginTop: "20px",
+                    fontSize: "11px",
                     fontWeight: 800,
-                    color: "#0f172a",
+                    color: "var(--text-primary)",
                     textDecoration: "none",
-                    transition: "opacity 0.2s"
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em"
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = "0.7"}
                 onMouseLeave={e => e.currentTarget.style.opacity = "1"}
             >
-                Show more &rarr;
+                View all launches &rarr;
             </Link>
         </div>
     );

@@ -25,7 +25,7 @@ export const editProfileModalStyles = `
     font-size: 16px;
     transition: all 0.2s ease;
     background: #f8fafc;
-    color: #0f172a;
+    color: var(--text-primary);
     outline: none;
     box-sizing: border-box;
   }
@@ -96,7 +96,7 @@ export const editProfileModalStyles = `
     align-items: center;
     gap: 6px;
     background: #f1f5f9;
-    color: #0f172a;
+    color: var(--text-primary);
     padding: 6px 10px;
     border-radius: 8px;
     font-size: 13px;
