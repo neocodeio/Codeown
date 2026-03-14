@@ -769,7 +769,31 @@ export default function Messages() {
                           wordBreak: "break-word"
                         }}
                       >
-                        {msg.content}
+                        {(() => {
+                           const urlRegex = /(https?:\/\/[^\s]+)/g;
+                           const parts = msg.content.split(urlRegex);
+                           return parts.map((part, i) => {
+                             if (part.match(urlRegex)) {
+                               return (
+                                 <a
+                                   key={i}
+                                   href={part}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   style={{
+                                     color: isMine ? "inherit" : "var(--text-primary)",
+                                     textDecoration: "underline",
+                                     fontWeight: 700,
+                                     cursor: "pointer"
+                                   }}
+                                 >
+                                   {part}
+                                 </a>
+                               );
+                             }
+                             return part;
+                           });
+                        })()}
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
                         <span
