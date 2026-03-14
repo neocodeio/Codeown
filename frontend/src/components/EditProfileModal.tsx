@@ -6,6 +6,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { updateAvatarCache } from "../hooks/useAvatar";
 import { validateImageSize } from "../constants/upload";
+import { Camera } from "phosphor-react";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -367,16 +368,18 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                     right: "-4px",
                     background: "var(--text-primary)",
                     color: "var(--bg-page)",
-                    padding: "4px 8px",
-                    borderRadius: "1px",
+                    padding: "8px",
+                    borderRadius: "50%",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "10px",
+                    fontSize: "12px",
                     fontWeight: 800,
-                    fontFamily: "var(--font-mono)"
+                    fontFamily: "var(--font-mono)",
+                    border: "2px solid var(--bg-page)",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
                   }}>
-                    UP
+                    <Camera size={16} weight="bold" />
                   </div>
                   <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: "none" }} />
                 </label>

@@ -14,7 +14,6 @@ import EditProfileModal from "../components/EditProfileModal";
 import ProjectModal from "../components/ProjectModal";
 import FollowersModal from "../components/FollowersModal";
 import BioRenderer from "../components/BioRenderer";
-import Lightbox from "../components/Lightbox";
 import { formatProfileJoinDate } from "../utils/date";
 import api from "../api/axios";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -99,8 +98,6 @@ export default function Profile() {
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState("");
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
 
   const handleProfileUpdated = useCallback(async (updatedUser?: Record<string, unknown>) => {
@@ -312,22 +309,33 @@ export default function Profile() {
             title="Change banner"
             style={{
               position: "absolute",
-              top: "16px",
-              right: "16px",
-              width: "36px",
-              height: "36px",
-              borderRadius: "2px",
-              border: "0.5px solid var(--border-hairline)",
-              backgroundColor: "var(--bg-page)",
-              color: "var(--text-secondary)",
+              top: "20px",
+              right: "20px",
+              width: "44px",
+              height: "44px",
+              borderRadius: "50%",
+              border: "1.5px solid rgba(255, 255, 255, 0.4)",
+              backgroundColor: "rgba(15, 23, 42, 0.6)",
+              color: "#fff",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              backdropFilter: "blur(4px)",
+              backdropFilter: "blur(8px)",
+              transition: "all 0.2s ease",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              zIndex: 10
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(15, 23, 42, 0.8)";
+              e.currentTarget.style.transform = "scale(1.05)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(15, 23, 42, 0.6)";
+              e.currentTarget.style.transform = "scale(1)";
             }}
           >
-            <Camera size={20} weight="thin" />
+            <Camera size={22} weight="bold" />
           </button>
         </div>
 
@@ -340,7 +348,7 @@ export default function Profile() {
         }}>
           {/* Avatar - overlapping banner */}
           <div
-            onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }}
+            onClick={() => setIsEditModalOpen(true)}
             style={{
               width: isMobile ? "96px" : "120px",
               height: isMobile ? "96px" : "120px",
@@ -351,6 +359,7 @@ export default function Profile() {
               flexShrink: 0,
               marginBottom: "20px",
               position: "relative",
+              overflow: "visible",
             }}
           >
             <AvailabilityBadge
@@ -359,6 +368,29 @@ export default function Profile() {
               size={isMobile ? 96 : 120}
               isOpenToOpportunities={userProfile?.is_pro === true && userProfile?.is_hirable === true}
             />
+            {/* Camera Overlay for Avatar */}
+            <div style={{
+              position: "absolute",
+              bottom: "8px",
+              right: "8px",
+              width: "32px",
+              height: "32px",
+              backgroundColor: "var(--text-primary)",
+              color: "var(--bg-page)",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "2px solid var(--bg-page)",
+              zIndex: 20,
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+              transition: "transform 0.2s ease"
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+            >
+              <Camera size={18} weight="bold" />
+            </div>
           </div>
 
           {/* Name + Edit Profile row */}
@@ -1033,11 +1065,6 @@ export default function Profile() {
         )
       }
 
-      <Lightbox
-        isOpen={lightboxOpen}
-        onClose={() => setLightboxOpen(false)}
-        imageSrc={lightboxImage}
-      />
 
       <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
       {userProfile && (
