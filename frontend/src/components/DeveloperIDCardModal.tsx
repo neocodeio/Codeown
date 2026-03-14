@@ -159,7 +159,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                         </div>
                         <div>
                             <div style={{ fontSize: "6px", opacity: 0.3, textTransform: "uppercase", marginBottom: "2px" }}>Units</div>
-                            <div style={{ fontSize: "10px", fontWeight: 800 }}>{projectsCount.toString().padStart(3, '0')} REPOS</div>
+                            <div style={{ fontSize: "10px", fontWeight: 800 }}>{projectsCount.toString().padStart(3, '0')} PROJECTS</div>
                         </div>
                         <div style={{ gridColumn: "span 2" }}>
                             <div style={{ fontSize: "6px", opacity: 0.3, textTransform: "uppercase", marginBottom: "6px" }}>Tech.Stacks</div>
