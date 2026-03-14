@@ -140,50 +140,52 @@ export default function RecommendedUsersSidebar() {
                                 }}
                                 className="sidebar-item"
                             >
-                                <UserHoverCard userId={user.id}>
-                                    <Link
-                                        to={user.username ? `/${user.username}` : `/user/${user.id}`}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "flex-start",
-                                            gap: "10px",
-                                            textDecoration: "none",
-                                            flex: 1,
-                                            minWidth: 0
-                                        }}
-                                    >
-                                        <img
-                                            src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
-                                            alt=""
-                                            style={{ width: 48, height: 48, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
-                                        />
-                                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                                <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-                                                    {(user.name || "User").split(" ")[0]}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <UserHoverCard userId={user.id}>
+                                        <Link
+                                            to={user.username ? `/${user.username}` : `/user/${user.id}`}
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "flex-start",
+                                                gap: "10px",
+                                                textDecoration: "none",
+                                                width: "100%"
+                                            }}
+                                        >
+                                            <img
+                                                src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
+                                                alt=""
+                                                style={{ width: 44, height: 44, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
+                                            />
+                                            <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px", flex: 1 }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+                                                        {(user.name || "User").split(" ")[0]}
+                                                    </span>
+                                                </div>
+                                                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
+                                                    @{user.username}
                                                 </span>
+                                                {user.bio && (
+                                                    <span style={{ 
+                                                        fontSize: "11px", 
+                                                        color: "var(--text-secondary)", 
+                                                        marginTop: "4px",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        whiteSpace: "nowrap",
+                                                        display: "block",
+                                                        lineHeight: 1.4,
+                                                        fontWeight: 500,
+                                                        width: "100%"
+                                                    }}>
+                                                        {user.bio.split("\n")[0]}
+                                                    </span>
+                                                )}
                                             </div>
-                                            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
-                                                @{user.username}
-                                            </span>
-                                            {user.bio && (
-                                                <span style={{ 
-                                                    fontSize: "11px", 
-                                                    color: "var(--text-secondary)", 
-                                                    marginTop: "4px",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                    whiteSpace: "nowrap",
-                                                    display: "block",
-                                                    lineHeight: 1.4,
-                                                    fontWeight: 500
-                                                }}>
-                                                    {user.bio.split("\n")[0]}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </Link>
-                                </UserHoverCard>
+                                        </Link>
+                                    </UserHoverCard>
+                                </div>
                                 <button
                                     onClick={() => handleFollow(user.id, user.isFollowing)}
                                     style={{

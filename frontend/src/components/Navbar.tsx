@@ -9,7 +9,7 @@ import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
 import { useFaviconNotification } from "../hooks/useFaviconNotification";
 import api from "../api/axios";
-import { House, MagnifyingGlass, ChatCircle, Rocket, User as UserIcon, Bell, Plus, SignOut, DotsThreeOutline, SignIn, Users } from "phosphor-react";
+import { House, MagnifyingGlass, ChatCircle, Rocket, User as UserIcon, Bell, Plus, SignOut, DotsThreeOutline, SignIn, UsersThree } from "phosphor-react";
 import logo from "../assets/icon-removebg.png";
 import DeveloperIDCardModal from "./DeveloperIDCardModal";
 import StreakBadge from "./StreakBadge";
@@ -196,7 +196,7 @@ export default function Navbar() {
           SEARCH
         </Link>
         <Link to="/leaderboard" style={linkStyle("/leaderboard")}>
-          <Users size={20} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
+          <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
           PULSE
         </Link>
         {isSignedIn && (
@@ -529,7 +529,7 @@ export default function Navbar() {
         </Link>
 
         <Link to="/leaderboard" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/leaderboard" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <Users size={22} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
+          <UsersThree size={22} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
         </Link>
 
         <div
