@@ -62,7 +62,7 @@ export default function LeaderboardSpotlight() {
                                 </div>
                             )}
                         </div>
-                        <div style={{ fontSize: "11px", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.name.split(' ')[0]}</div>
+                        <div style={{ fontSize: "11px", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(user.name || "User").split(' ')[0]}</div>
                         <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 700, marginTop: "2px" }}>
                             <HugeiconsIcon icon={ChartBarLineIcon} size={10} style={{ verticalAlign: "middle", marginRight: "2px" }} />
                             <span style={{ color: "#fff" }}>{user.pulse_score}</span>

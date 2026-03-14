@@ -124,7 +124,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
     let firstUrl: string | null = null;
 
     // Split text into lines to handle block-level elements like headings and lists
-    const lines = text.split("\n");
+    const lines = (text || "").split("\n");
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];

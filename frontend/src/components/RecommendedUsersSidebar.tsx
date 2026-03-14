@@ -160,7 +160,7 @@ export default function RecommendedUsersSidebar() {
                                         <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                                                 <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-                                                    {user.name.split(" ")[0]}
+                                                    {(user.name || "User").split(" ")[0]}
                                                 </span>
                                             </div>
                                             <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>

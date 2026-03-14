@@ -293,7 +293,7 @@ export default function UserProfile() {
     ? (user.bio.length > 160 ? user.bio.substring(0, 157) + "..." : user.bio)
     : `${user.name} is a developer on Codeown${user.job_title ? ` specializing in ${user.job_title}` : ""}. ${user.skills?.length ? `Expertise: ${user.skills.slice(0, 5).join(", ")}.` : ""}`;
 
-  const [firstName, ...lastNameParts] = user.name.split(" ");
+  const [firstName, ...lastNameParts] = (user.name || "User").split(" ");
   const lastName = lastNameParts.join(" ");
 
   return (
