@@ -26,6 +26,7 @@ import {
 } from "phosphor-react";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
+import logoWhite from "../assets/logo-white.png";
 import DeveloperIDCardModal from "./DeveloperIDCardModal";
 import StreakBadge from "./StreakBadge";
 
@@ -165,7 +166,7 @@ export default function Navbar() {
       {/* Logo */}
       <div style={{ padding: "40px 20px 48px 24px" }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
-          <img src={logo} alt="Codeown" style={{ height: "36px", width: "auto", filter: "grayscale(1) contrast(1.2)" }} />
+          <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "36px", width: "auto" }} />
           <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
@@ -497,7 +498,7 @@ export default function Navbar() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
-            <img src={logo} alt="Codeown" style={{ height: "24px", width: "auto", filter: "grayscale(1) contrast(1.2)" }} />
+            <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "24px", width: "auto" }} />
             <span style={{ 
               fontSize: "14px", 
               fontWeight: 800, 
