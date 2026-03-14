@@ -9,9 +9,11 @@ import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
 import { useFaviconNotification } from "../hooks/useFaviconNotification";
 import api from "../api/axios";
-import { House, MagnifyingGlass, ChatCircle, Rocket, User as UserIcon, Bell, Plus, SignOut, DotsThreeOutline, SignIn, Users, IdentificationCard } from "phosphor-react";
+import { House, MagnifyingGlass, ChatCircle, Rocket, User as UserIcon, Bell, Plus, SignOut, DotsThreeOutline, SignIn, Users } from "phosphor-react";
 import logo from "../assets/icon-removebg.png";
 import DeveloperIDCardModal from "./DeveloperIDCardModal";
+import StreakBadge from "./StreakBadge";
+
 
 
 export default function Navbar() {
@@ -485,21 +487,17 @@ export default function Navbar() {
         </div>
 
         {isSignedIn && (
-          <button
+          <div
             onClick={() => setIsIDCardOpen(true)}
             style={{
-              background: "none",
-              border: "none",
-              color: "var(--text-primary)",
+              padding: "4px",
               cursor: "pointer",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "4px"
+              alignItems: "center"
             }}
           >
-            <IdentificationCard size={24} weight="thin" />
-          </button>
+            <StreakBadge count={profile?.streak_count || 0} />
+          </div>
         )}
       </div>
 
@@ -687,7 +685,7 @@ export default function Navbar() {
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
 
       {isSignedIn && profile && (
-        <DeveloperIDCardModal 
+        <DeveloperIDCardModal
           isOpen={isIDCardOpen}
           onClose={() => setIsIDCardOpen(false)}
           user={{
