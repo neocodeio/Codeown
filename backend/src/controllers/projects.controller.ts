@@ -24,6 +24,7 @@ async function createProjectNotification(
 }
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { emitUpdate } from "../lib/socket.js";
 
 // Changelogs features
 export async function getProjectChangelogs(req: Request, res: Response) {
@@ -478,6 +479,12 @@ export async function createProject(req: Request, res: Response) {
       if (error) console.error("Error logging project creation analytics:", error);
     });
 
+    // Emit real-time update
+    emitUpdate("project_created", {
+      ...project,
+      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+    });
+
     return res.status(201).json({
       ...project,
       is_first: isFirstProject,
@@ -571,6 +578,12 @@ export async function updateProject(req: Request, res: Response) {
       console.error("Error fetching user for project:", userError);
     }
 
+    // Emit real-time update
+    emitUpdate("project_updated", {
+      ...project,
+      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+    });
+
     return res.json({
       ...project,
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
@@ -639,6 +652,9 @@ export async function deleteProject(req: Request, res: Response) {
 
     console.log(`[deleteProject] Successfully deleted project ${resolvedId}`);
 
+    // Emit real-time update
+    emitUpdate("project_deleted", { id: resolvedId });
+
     return res.json({ message: "Project deleted successfully" });
   } catch (error: any) {
     console.error("Error in deleteProject:", error);
@@ -692,7 +708,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
       await supabase
         .from("project_likes")
         .insert({
-          project_id: parseInt(id),
+          project_id: parseInt(id as string),
           user_id: String(userId)
         });
       isLiked = true;
@@ -713,7 +729,7 @@ export async function toggleProjectLike(req: Request, res: Response) {
               projOwner.name || "User",
               liker.name,
               'project',
-              parseInt(id)
+              parseInt(id as string)
             );
           }
         } catch (e) {
@@ -823,7 +839,7 @@ export async function toggleProjectSave(req: Request, res: Response) {
       await supabase
         .from("project_saves")
         .insert({
-          project_id: parseInt(id),
+          project_id: parseInt(id as string),
           user_id: String(userId)
         });
       isSaved = true;

@@ -8,6 +8,8 @@ import { useWindowSize } from "./hooks/useWindowSize";
 import { useClerkUser } from "./hooks/useClerkUser";
 import { useClerkAuth } from "./hooks/useClerkAuth";
 import api from "./api/axios";
+import { socket } from "./lib/socket";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Lazy load pages
 const Feed = lazy(() => import("./pages/Feed"));
@@ -65,6 +67,27 @@ export default function App() {
   const isMobile = width < 768;
   const { user, isLoaded: userLoaded, isSignedIn } = useClerkUser();
   const { getToken } = useClerkAuth();
+  const queryClient = useQueryClient();
+
+  // Global real-time updates
+  useEffect(() => {
+    socket.connect();
+
+    const handleUpdate = ({ type }: { type: string, data: any }) => {
+      console.log(`[Socket] Received update: ${type}`);
+      if (type.startsWith("post_")) {
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      } else if (type.startsWith("project_")) {
+        queryClient.invalidateQueries({ queryKey: ["projects"] });
+      }
+    };
+
+    socket.on("content_update", handleUpdate);
+    
+    return () => {
+      socket.off("content_update", handleUpdate);
+    };
+  }, [queryClient]);
 
   // Check onboarding status for signed-in users
   useEffect(() => {
