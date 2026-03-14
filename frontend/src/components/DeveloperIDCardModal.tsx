@@ -114,7 +114,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             </div>
                             <div style={{ fontSize: "7px", opacity: 0.3, marginTop: "2px" }}>CORE ARCHIVE • v4.0.0</div>
                         </div>
-                        <div style={{ fontSize: "9px", fontWeight: 800, opacity: 0.4, border: "0.5px solid rgba(255,255,255,0.2)", padding: "3px 8px", borderRadius: "2px", letterSpacing: "0.1em" }}>DEVELOPER ID</div>
+                        <div style={{ fontSize: "9px", fontWeight: 800, opacity: 0.4, border: "0.5px solid rgba(255,255,255,0.2)", padding: "7px 8px", borderRadius: "2px", letterSpacing: "0.1em" }}>DEVELOPER ID</div>
 
                     </div>
 
