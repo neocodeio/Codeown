@@ -16,7 +16,7 @@ export async function getPosts(req: Request, res: Response) {
     // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" })
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, poll, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
       .order("created_at", { ascending: false });
 
@@ -93,15 +93,36 @@ export async function getPosts(req: Request, res: Response) {
       const likedPostIds = new Set((likesRes.data || []).map(l => l.post_id));
       const savedPostIds = new Set((savesRes.data || []).map(s => s.post_id));
 
-      finalPosts = postsWithUsers.map(p => ({
-        ...p,
-        isLiked: likedPostIds.has(p.id),
-        isSaved: savedPostIds.has(p.id)
-      }));
+      finalPosts = postsWithUsers.map(p => {
+        const poll = p.poll as any;
+        return {
+          ...p,
+          isLiked: likedPostIds.has(p.id),
+          isSaved: savedPostIds.has(p.id),
+          poll: poll ? {
+            options: poll.options,
+            votes: poll.votes,
+            userVoted: poll.voters?.[currentUserId]
+          } : null
+        };
+      });
     }
 
+    // Final cleanup of polls and mapping stats
+    const finalFormattedPosts = finalPosts.map((p: any) => {
+      const poll = p.poll as any;
+      return {
+        ...p,
+        poll: poll ? {
+          options: poll.options,
+          votes: poll.votes,
+          userVoted: poll.userVoted ?? (currentUserId && poll.voters ? poll.voters[currentUserId] : undefined)
+        } : null
+      };
+    });
+
     return res.json({
-      posts: finalPosts,
+      posts: finalFormattedPosts,
       total: count || 0,
       page: pageNum,
       limit: limitNum,
@@ -166,12 +187,18 @@ export async function getPostById(req: Request, res: Response) {
     ]);
 
     const [likeRes, saveRes] = stats as any;
+    const poll = post.poll as any;
 
     return res.json({
       ...post,
       user: userData,
       isLiked: !!(likeRes?.data),
-      isSaved: !!(saveRes?.data)
+      isSaved: !!(saveRes?.data),
+      poll: poll ? {
+        options: poll.options,
+        votes: poll.votes,
+        userVoted: currentUserId ? poll.voters?.[currentUserId] : undefined
+      } : null
     });
   } catch (error) {
     console.error("Unexpected error in getPostById:", error);
@@ -193,7 +220,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Fetch posts for the user with specific columns only
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language")
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, poll")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -313,15 +340,37 @@ export async function getPostsByUser(req: Request, res: Response) {
       const likedPostIds = new Set((likesRes.data || []).map(l => l.post_id));
       const savedPostIds = new Set((savesRes.data || []).map(s => s.post_id));
 
-      postsWithStats = postsWithUsers.map(p => ({
-        ...p,
-        isLiked: likedPostIds.has(p.id),
-        isSaved: savedPostIds.has(p.id)
-      }));
+      postsWithStats = postsWithUsers.map(p => {
+        const poll = p.poll as any;
+        return {
+          ...p,
+          isLiked: likedPostIds.has(p.id),
+          isSaved: savedPostIds.has(p.id),
+          poll: poll ? {
+            options: poll.options,
+            votes: poll.votes,
+            userVoted: poll.voters?.[currentUserId]
+          } : null
+        };
+      });
     }
 
+    // Final cleanup of polls for non-logged in users/contributors if not already handled
+    const finalFormattedPosts = postsWithStats.map((p: any) => {
+      if (!p.poll) return p;
+      const poll = p.poll as any;
+      return {
+        ...p,
+        poll: {
+          options: poll.options,
+          votes: poll.votes,
+          userVoted: poll.userVoted ?? (currentUserId && poll.voters ? poll.voters[currentUserId] : undefined)
+        }
+      };
+    });
+
     return res.json({
-      posts: postsWithStats,
+      posts: finalFormattedPosts,
       total: posts.length,
       page: 1,
       limit: posts.length,
