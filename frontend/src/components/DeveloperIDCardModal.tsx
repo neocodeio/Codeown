@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
 import VerifiedBadge from "./VerifiedBadge";
-import { DownloadSimple, Fingerprint, ShieldCheck } from "phosphor-react";
+import { DownloadSimple, Fingerprint, ShieldCheck, TwitterLogo } from "phosphor-react";
 
 interface DeveloperIDCardModalProps {
     isOpen: boolean;
@@ -29,7 +29,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
     const joinDate = user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : "EST. 2024";
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${window.location.origin}/${user.username || ""}`)}&bgcolor=ffffff&color=000000`;
     const techStacks = (user.skills || []).slice(0, 4);
-    const firstLineBio = user.bio ? (user.bio.split('\n')[0] || "").trim() : "AUTHORIZED DEVELOPER";
+    const firstLineBio = user.bio ? (user.bio.split('\n')[0] || "").trim() : "DECENTRALIZED_BUILDER_IDENTITY";
     const serialNumber = `ID-${(user.username || "X").substring(0, 3).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const handleDownload = async () => {
@@ -51,6 +51,12 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
         } finally {
             setDownloading(false);
         }
+    };
+
+    const handleShareToX = () => {
+        const tweetText = `Just claimed my developer identity on codeown.space. Building in public. Thanks @amincodes ${window.location.origin}/${user.username || ""}`;
+        const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+        window.open(xUrl, "_blank");
     };
 
     return (
@@ -190,30 +196,55 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                 </div>
 
                 <div style={{ width: "100%" }}>
-                    <button
-                        onClick={handleDownload}
-                        disabled={downloading}
-                        style={{
-                            width: "100%",
-                            padding: "16px",
-                            backgroundColor: "#fff",
-                            color: "#000",
-                            border: "none",
-                            borderRadius: "8px",
-                            fontSize: "12px",
-                            fontWeight: 900,
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "10px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        <DownloadSimple size={18} weight="bold" />
-                        {downloading ? "PROCESSING..." : "Download Card"}
-                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        <button
+                            onClick={handleDownload}
+                            disabled={downloading}
+                            style={{
+                                width: "100%",
+                                padding: "16px",
+                                backgroundColor: "#fff",
+                                color: "#000",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontSize: "12px",
+                                fontWeight: 900,
+                                fontFamily: "var(--font-mono)",
+                                textTransform: "uppercase",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "10px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            <DownloadSimple size={18} weight="bold" />
+                            {downloading ? "PROCESSING..." : "Download Card"}
+                        </button>
+                        <button
+                            onClick={handleShareToX}
+                            style={{
+                                width: "100%",
+                                padding: "14px",
+                                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                                color: "#fff",
+                                border: "0.5px solid rgba(255, 255, 255, 0.2)",
+                                borderRadius: "8px",
+                                fontSize: "11px",
+                                fontWeight: 800,
+                                fontFamily: "var(--font-mono)",
+                                textTransform: "uppercase",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "10px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            <TwitterLogo size={18} weight="fill" />
+                            Share ON X
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
