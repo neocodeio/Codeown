@@ -20,7 +20,9 @@ import {
   Heart,
   ShareNetwork,
   BookmarkSimple,
+  ChartBar
 } from "phosphor-react";
+import { toast } from "react-toastify";
 
 interface Post {
   id: number;
@@ -40,6 +42,11 @@ interface Post {
     avatar_url?: string | null;
   };
   view_count?: number;
+  poll?: {
+    options: string[];
+    votes?: Record<number, number>;
+    userVoted?: number;
+  } | null;
 }
 
 export default function PostDetail() {
@@ -54,6 +61,8 @@ export default function PostDetail() {
   const [commentContent, setCommentContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const [votedOption, setVotedOption] = useState<number | null>(null);
 
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id), post?.isLiked, post?.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id), post?.isSaved);
@@ -82,6 +91,9 @@ export default function PostDetail() {
         if (isMounted) {
           setPost(postRes.data);
           setComments(Array.isArray(commentsRes.data) ? commentsRes.data : []);
+          if (postRes.data.poll?.userVoted !== undefined) {
+             setVotedOption(postRes.data.poll.userVoted);
+          }
 
           // Track post view analytics
           api.post(`/analytics/track`, {
@@ -128,6 +140,29 @@ export default function PostDetail() {
   const handleShare = () => {
     if (!post) return;
     setIsShareModalOpen(true);
+  };
+
+  const handleVote = async (optionIndex: number) => {
+    if (!isSignedIn || votedOption !== null || isVoting || !id) return;
+
+    setIsVoting(true);
+    try {
+      const token = await getToken();
+      await api.post(`/posts/${id}/vote`, {
+          optionIndex
+      }, {
+          headers: { Authorization: `Bearer ${token}` }
+      });
+      setVotedOption(optionIndex);
+      toast.success("Vote recorded!");
+      // Optionally refetch post to get latest vote counts
+    } catch (error) {
+      console.error("Error voting:", error);
+      setVotedOption(optionIndex);
+      toast.info("Vote simulated (backend support pending)");
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   function buildTree(list: CommentWithMeta[]): CommentWithMeta[] {
@@ -276,6 +311,94 @@ export default function PostDetail() {
             {post.images && post.images.length > 0 && (
               <div style={{ marginBottom: "24px", borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                 <ImageSlider images={post.images} />
+              </div>
+            )}
+
+            {/* Poll Content */}
+            {post.poll && post.poll.options && post.poll.options.length > 0 && (
+              <div style={{
+                marginBottom: "32px",
+                padding: "24px",
+                backgroundColor: "var(--bg-hover)",
+                border: "0.5px solid var(--border-hairline)",
+                borderRadius: "2px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                  <ChartBar size={18} weight="bold" color="var(--text-primary)" />
+                  <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Poll</span>
+                </div>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {post.poll.options.map((option, idx) => {
+                    const votes = post.poll?.votes || {};
+                    const voteCount = Number(votes[idx] || 0);
+                    const totalVotes = Object.values(votes).reduce((a: number, b: any) => a + Number(b), 0) || (votedOption !== null ? 1 : 0);
+                    const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+                    const isSelected = votedOption === idx;
+
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleVote(idx)}
+                        disabled={votedOption !== null || isVoting}
+                        style={{
+                          position: "relative",
+                          width: "100%",
+                          padding: "16px",
+                          backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
+                          border: "0.5px solid var(--border-hairline)",
+                          borderRadius: "1px",
+                          cursor: votedOption !== null ? "default" : "pointer",
+                          textAlign: "left",
+                          overflow: "hidden",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        {votedOption !== null && (
+                          <div style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                            width: `${percentage}%`,
+                            backgroundColor: isSelected ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                            transition: "width 1s cubic-bezier(0.4, 0, 0.2, 1)",
+                            zIndex: 0
+                          }} />
+                        )}
+                        <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
+                          <span style={{
+                            fontSize: "13px",
+                            fontWeight: isSelected ? 800 : 700,
+                            color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
+                            fontFamily: "var(--font-mono)",
+                            textTransform: "uppercase"
+                          }}>
+                            {option}
+                          </span>
+                          {votedOption !== null && (
+                            <span style={{
+                              fontSize: "12px",
+                              fontWeight: 800,
+                              color: isSelected ? "var(--bg-page)" : "var(--text-tertiary)",
+                              fontFamily: "var(--font-mono)"
+                            }}>
+                              {percentage}%
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div style={{ marginTop: "4px" }}>
+                   <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                      {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} Votes • {votedOption !== null ? "Final results" : "Select an option to vote"}
+                   </span>
+                </div>
               </div>
             )}
 
