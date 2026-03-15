@@ -16,7 +16,7 @@ export async function getPosts(req: Request, res: Response) {
     // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, poll, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" })
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, poll, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_early_adopter)", { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
       .order("created_at", { ascending: false });
 
@@ -73,7 +73,8 @@ export async function getPosts(req: Request, res: Response) {
           avatar_url: user?.avatar_url || null,
           username: user?.username || null,
           is_hirable: user?.is_hirable || false,
-          is_pro: user?.is_pro ?? false
+          is_pro: user?.is_pro ?? false,
+          is_early_adopter: user?.is_early_adopter ?? false
         }
       };
     });
@@ -148,7 +149,7 @@ export async function getPostById(req: Request, res: Response) {
     // Fetch the post and user data in one join query
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro)")
+      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_early_adopter)")
       .eq("id", id)
       .single();
 
@@ -163,6 +164,7 @@ export async function getPostById(req: Request, res: Response) {
       avatar_url: rawUser?.avatar_url || null,
       username: rawUser?.username || null,
       is_pro: rawUser?.is_pro ?? false,
+      is_early_adopter: rawUser?.is_early_adopter ?? false,
     };
 
     // Parallelize non-blocking updates and additional data fetching
@@ -239,7 +241,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Get user data for the post author (we already know it's the same user)
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, avatar_url, username, is_hirable, is_pro")
+      .select("id, name, avatar_url, username, is_hirable, is_pro, is_early_adopter")
       .eq("id", userId)
       .single();
 
@@ -280,7 +282,8 @@ export async function getPostsByUser(req: Request, res: Response) {
           avatar_url: clerkUser.imageUrl || null,
           username: clerkUser.username || null,
           is_hirable: false,
-          is_pro: false
+          is_pro: false,
+          is_early_adopter: false
         };
 
         // Sync user to Supabase for future requests
@@ -309,13 +312,16 @@ export async function getPostsByUser(req: Request, res: Response) {
           avatar_url: (userData as any).avatar_url || null,
           username: (userData as any).username || null,
           is_pro: (userData as any).is_pro ?? false,
+          is_early_adopter: (userData as any).is_early_adopter ?? false,
         };
       } else {
         // No user data found
         userDisplayData = {
           name: "User",
           avatar_url: null,
+          username: null,
           is_pro: false,
+          is_early_adopter: false,
         };
       }
 
