@@ -25,6 +25,7 @@ export interface Project {
     email: string | null;
     is_hirable?: boolean;
     is_pro?: boolean;
+    is_early_adopter?: boolean;
   };
   rating?: number;
   rating_count?: number;

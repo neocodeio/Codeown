@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
 import VerifiedBadge from "./VerifiedBadge";
+import EarlyAdopterBadge from "./EarlyAdopterBadge";
 import { DownloadSimple, Fingerprint, ShieldCheck } from "phosphor-react";
 
 interface DeveloperIDCardModalProps {
@@ -13,6 +14,7 @@ interface DeveloperIDCardModalProps {
         created_at: string | null;
         skills: string[] | null;
         is_pro: boolean;
+        is_early_adopter?: boolean;
         bio: string | null;
     };
     projectsCount: number;
@@ -140,9 +142,17 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                     <VerifiedBadge username={user.username} isPro={true} size="16px" />
                                 </div>
                             )}
+                            {user.is_early_adopter && !user.is_pro && (
+                                <div style={{ position: "absolute", top: "-6px", right: "-6px", background: "#000", padding: "3px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.2)" }}>
+                                    <EarlyAdopterBadge isEarlyAdopter={true} size="16px" />
+                                </div>
+                            )}
                         </div>
-                        <div style={{ textAlign: "center", marginTop: "12px" }}>
-                            <div style={{ fontSize: "15px", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>{nameFallback}</div>
+                        <div style={{ textAlign: "center", marginTop: "12px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                <div style={{ fontSize: "15px", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>{nameFallback}</div>
+                                {user.is_early_adopter && user.is_pro && <EarlyAdopterBadge isEarlyAdopter={true} size="14px" />}
+                            </div>
                             <div style={{ fontSize: "9px", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>@{user.username || "ANON"}</div>
                         </div>
                     </div>

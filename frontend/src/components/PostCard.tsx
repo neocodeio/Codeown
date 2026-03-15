@@ -13,6 +13,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
+import EarlyAdopterBadge from "./EarlyAdopterBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import ShareModal from "./ShareModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
@@ -209,7 +210,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             >
               {userName}
             </span>
-            <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
+            <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} />
+            <EarlyAdopterBadge isEarlyAdopter={post.user?.is_early_adopter} />
             <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
               @{post.user?.username || 'user'}
             </span>

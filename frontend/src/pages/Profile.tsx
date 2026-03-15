@@ -17,6 +17,7 @@ import BioRenderer from "../components/BioRenderer";
 import { formatProfileJoinDate } from "../utils/date";
 import api from "../api/axios";
 import VerifiedBadge from "../components/VerifiedBadge";
+import EarlyAdopterBadge from "../components/EarlyAdopterBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
@@ -73,6 +74,7 @@ interface UserProfile {
   created_at: string | null;
   // streak_count: number;
   onboarding_completed: boolean;
+  is_early_adopter?: boolean;
 }
 
 export default function Profile() {
@@ -426,6 +428,7 @@ export default function Profile() {
               }}>
                 {(userProfile?.name || user?.fullName || "").toUpperCase()}
                 <VerifiedBadge username={userProfile?.username || user?.username} isPro={userProfile?.is_pro} size={isMobile ? "18px" : "22px"} />
+                <EarlyAdopterBadge isEarlyAdopter={userProfile?.is_early_adopter} size={isMobile ? "18px" : "22px"} />
                 {/* {userProfile && userProfile.streak_count > 0 && <StreakBadge count={userProfile.streak_count} />} */}
                 {userProfile?.is_pro === true && (
                   <span style={{
@@ -1078,6 +1081,7 @@ export default function Profile() {
             created_at: userProfile.created_at,
             skills: userProfile.skills || [],
             is_pro: userProfile.is_pro || false,
+            is_early_adopter: userProfile.is_early_adopter || false,
             bio: userProfile.bio || ""
           }}
           projectsCount={projects.length}

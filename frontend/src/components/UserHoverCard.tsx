@@ -6,6 +6,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useFollow } from "../hooks/useFollow";
 import VerifiedBadge from "./VerifiedBadge";
+import EarlyAdopterBadge from "./EarlyAdopterBadge";
 
 interface UserProfile {
   id: string;
@@ -16,6 +17,7 @@ interface UserProfile {
   follower_count: number;
   following_count: number;
   is_pro: boolean;
+  is_early_adopter?: boolean;
 }
 
 interface UserHoverCardProps {
@@ -194,6 +196,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                     {user.name}
                   </span>
                   <VerifiedBadge username={user.username} isPro={user.is_pro} size="12px" />
+                  <EarlyAdopterBadge isEarlyAdopter={user.is_early_adopter} size="12px" />
                 </div>
                 <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
                   @{user.username || "user"}

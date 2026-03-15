@@ -30,6 +30,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
+import EarlyAdopterBadge from "../components/EarlyAdopterBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import Lightbox from "../components/Lightbox";
@@ -62,6 +63,7 @@ interface User {
   banner_url: string | null;
   // streak_count: number;
   created_at: string | null;
+  is_early_adopter?: boolean;
 }
 
 export default function UserProfile() {
@@ -419,6 +421,7 @@ export default function UserProfile() {
             }}>
               {user.name}
               <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
+              <EarlyAdopterBadge isEarlyAdopter={user.is_early_adopter} size={isMobile ? "16px" : "20px"} />
               {user.is_pro === true && (
                 <span style={{
                   fontSize: isMobile ? 10 : 11,
@@ -865,7 +868,7 @@ export default function UserProfile() {
 
       <div style={{ height: "60px" }} />
 
-      {user.id && (
+      {user?.id && (
         <FollowersModal
           isOpen={followersModalOpen}
           onClose={() => setFollowersModalOpen(false)}
@@ -891,6 +894,7 @@ export default function UserProfile() {
             created_at: user.created_at,
             skills: user.skills,
             is_pro: user.is_pro,
+            is_early_adopter: user.is_early_adopter,
             bio: user.bio
           }}
           projectsCount={projects.length}

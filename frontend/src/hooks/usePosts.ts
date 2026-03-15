@@ -23,6 +23,7 @@ export interface Post {
     username?: string | null;
     is_hirable?: boolean;
     is_pro?: boolean;
+    is_early_adopter?: boolean;
   };
   isLiked?: boolean;
   isSaved?: boolean;

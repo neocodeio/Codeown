@@ -11,6 +11,7 @@ import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
 import { ArrowLeft, PencilSimple, Trash, Globe, GithubLogo, Star, ShareNetwork, BookmarkSimple } from "phosphor-react";
 import VerifiedBadge from "../components/VerifiedBadge";
+import EarlyAdopterBadge from "../components/EarlyAdopterBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
 import ProjectChangelog from "../components/ProjectChangelog";
@@ -411,6 +412,7 @@ export default function ProjectDetail() {
                   }}>
                     {userName}
                     <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="16px" />
+                    <EarlyAdopterBadge isEarlyAdopter={project.user?.is_early_adopter} size="14px" />
                   </div>
                   <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 400, fontFamily: "var(--font-mono)", display: "flex", alignItems: "center", gap: "12px" }}>
                     <span>@{project.user?.username || 'user'}</span>

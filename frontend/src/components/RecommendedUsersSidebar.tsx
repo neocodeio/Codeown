@@ -7,6 +7,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { Rocket, Users, Star } from "phosphor-react";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
+import EarlyAdopterBadge from "./EarlyAdopterBadge";
 import { formatRelativeDate } from "../utils/date";
 
 export default function RecommendedUsersSidebar() {
@@ -170,6 +171,7 @@ export default function RecommendedUsersSidebar() {
                                                 }}>
                                                     {(user.name || "User").split(" ")[0]}
                                                 </span>
+                                                <EarlyAdopterBadge isEarlyAdopter={user.is_early_adopter} size="12px" />
                                                 {user.streak_count > 0 && (
                                                     <div style={{ flexShrink: 0 }}>
                                                         <StreakBadge count={user.streak_count} mini />

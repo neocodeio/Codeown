@@ -11,6 +11,7 @@ import type { Project } from "../types/project";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import VerifiedBadge from "../components/VerifiedBadge";
+import EarlyAdopterBadge from "../components/EarlyAdopterBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 
 interface SearchUser {
@@ -22,6 +23,7 @@ interface SearchUser {
   is_organization?: boolean;
   is_hirable?: boolean;
   is_pro?: boolean;
+  is_early_adopter?: boolean;
 }
 
 interface SearchPost {
@@ -620,7 +622,8 @@ export default function Search() {
 
                     <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
                       {user.name}
-                      <VerifiedBadge username={user.username} size="14px" />
+                      <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
+                      <EarlyAdopterBadge isEarlyAdopter={user.is_early_adopter} size="14px" />
                     </h3>
                     <p style={{ margin: "0 0 24px", fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>@{user.username || "user"}</p>
 

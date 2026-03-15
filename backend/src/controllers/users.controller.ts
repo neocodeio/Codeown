@@ -380,9 +380,17 @@ export async function ensureUserExists(userId: string, userData?: any) {
         }
         return existingUser;
     }
-
+    
     // Create new user
     console.log("Creating new user in Supabase:", { userId, userInfo });
+
+    // Check if user should be an early adopter (first 100)
+    const { count: userCount } = await supabase
+        .from("users")
+        .select("*", { count: "exact", head: true });
+    
+    const isEarlyAdopter = (userCount || 0) < 100;
+
     const { data: newUser, error } = await supabase
         .from("users")
         .insert({
@@ -392,6 +400,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
             avatar_url: userInfo.avatar_url,
             username: userInfo.username,
             onboarding_completed: false,
+            is_early_adopter: isEarlyAdopter,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
         })
@@ -458,7 +467,7 @@ export async function getUserProfile(req: Request, res: Response) {
         // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_early_adopter, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
             .eq(field, userId)
             .single();
 
@@ -903,7 +912,7 @@ export async function getRecommendedUsers(req: Request, res: Response) {
         // Fetch users with highest streaks
         let usersQuery = supabase
             .from("users")
-            .select("id, name, username, avatar_url, streak_count, is_pro, skills")
+            .select("id, name, username, avatar_url, streak_count, is_pro, is_early_adopter, skills")
             .order("streak_count", { ascending: false })
             .limit(Number(limit));
 

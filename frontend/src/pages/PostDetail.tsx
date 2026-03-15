@@ -11,6 +11,7 @@ import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
+import EarlyAdopterBadge from "../components/EarlyAdopterBadge";
 import { SEO } from "../components/SEO";
 import { useWindowSize } from "../hooks/useWindowSize";
 import ShareModal from "../components/ShareModal";
@@ -40,6 +41,8 @@ interface Post {
     email: string | null;
     username?: string | null;
     avatar_url?: string | null;
+    is_pro?: boolean;
+    is_early_adopter?: boolean;
   };
   view_count?: number;
   poll?: {
@@ -288,7 +291,8 @@ export default function PostDetail() {
                   <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>
                     {userName}
                   </span>
-                  <VerifiedBadge username={post.user?.username} size="12px" />
+                  <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="16px" />
+                  <EarlyAdopterBadge isEarlyAdopter={post.user?.is_early_adopter} size="14px" />
                 </div>
                 <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", marginTop: "2px", fontWeight: 600 }}>
                   @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}
