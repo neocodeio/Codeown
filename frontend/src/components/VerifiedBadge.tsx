@@ -30,7 +30,7 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                     aria-label="Verified Official Account"
                     style={{
                         color: isPro ? "var(--text-primary)" : "var(--text-tertiary)",
-                        marginLeft: "6px",
+                        marginLeft: "-4px",
                         verticalAlign: "middle",
                         flexShrink: 0,
                     }}
