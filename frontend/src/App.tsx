@@ -32,6 +32,7 @@ const Billing = lazy(() => import("./pages/Billing"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+const Changelog = lazy(() => import("./pages/Changelog"));
 
 // Basic loading fallback
 const PageLoader = () => (
@@ -181,6 +182,7 @@ export default function App() {
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/founder-story" element={<FounderStory />} />
+                <Route path="/changelog" element={<Changelog />} />
                 <Route path="/:username" element={<UserProfile />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

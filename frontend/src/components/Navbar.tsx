@@ -22,7 +22,8 @@ import {
   SignIn, 
   UsersThree,
   Sun,
-  Moon
+  Moon,
+  Scroll
 } from "phosphor-react";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -215,6 +216,10 @@ export default function Navbar() {
         <Link to="/leaderboard" style={linkStyle("/leaderboard")}>
           <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
           PULSE
+        </Link>
+        <Link to="/changelog" style={linkStyle("/changelog")}>
+          <Scroll size={20} weight={location.pathname === "/changelog" ? "bold" : "thin"} />
+          CHANGELOG
         </Link>
         {isSignedIn && (
           <>

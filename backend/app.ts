@@ -22,6 +22,7 @@ import metadataRoutes from "./src/routes/metadata.routes.js";
 import seoRoutes from "./src/routes/seo.routes.js";
 import analyticsRoutes from "./src/routes/analytics.routes.js";
 import leaderboardRoutes from "./src/routes/leaderboard.routes.js";
+import changelogsRoutes from "./src/routes/changelogs.routes.js";
 import { handleDodoWebhook, handleClerkWebhook } from "./src/controllers/webhooks.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -124,6 +125,7 @@ app.use("/image-proxy", imageProxyRoutes);
 app.use("/metadata", metadataRoutes);
 app.use("/analytics", analyticsRoutes);
 app.use("/leaderboard", leaderboardRoutes);
+app.use("/changelogs", changelogsRoutes);
 
 // Static assets should be served first (except index.html)
 app.use(express.static(path.join(__dirname, "../frontend/dist"), { index: false }));
