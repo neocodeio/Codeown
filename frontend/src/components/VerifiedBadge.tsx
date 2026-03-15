@@ -31,6 +31,7 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                     style={{
                         color: isPro ? "var(--text-primary)" : "var(--text-tertiary)",
                         marginLeft: "-4px",
+                        marginRight: "4.5px",
                         verticalAlign: "middle",
                         flexShrink: 0,
                     }}
