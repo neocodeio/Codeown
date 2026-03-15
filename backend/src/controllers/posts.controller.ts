@@ -339,7 +339,7 @@ export async function getPostsByUser(req: Request, res: Response) {
 export async function createPost(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { title, content, images, tags, language } = req.body;
+    const { title, content, images, tags, language, poll } = req.body;
 
     // Validate input - Title is now optional
     const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
@@ -435,6 +435,7 @@ export async function createPost(req: Request, res: Response) {
       images: imageUrls.length > 0 ? imageUrls : null,
       tags: allTags.length > 0 ? allTags : null,
       language: langCode,
+      poll: poll || null,
     }).select().single();
 
     if (error) {
@@ -612,5 +613,67 @@ export async function deletePost(req: Request, res: Response) {
       error: "Internal server error",
       details: error?.message
     });
+  }
+}
+
+export async function votePost(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { optionIndex } = req.body;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // Fetch the current post
+    const { data: post, error: fetchError } = await supabase
+      .from("posts")
+      .select("poll")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !post || !post.poll) {
+      return res.status(404).json({ error: "Post or poll not found" });
+    }
+
+    const poll = post.poll as any;
+    const voters = poll.voters || {};
+    const votes = poll.votes || {};
+
+    // Check if user already voted
+    if (voters[userId] !== undefined) {
+      return res.status(400).json({ error: "User already voted" });
+    }
+
+    // Update poll data
+    voters[userId] = optionIndex;
+    votes[optionIndex] = (votes[optionIndex] || 0) + 1;
+
+    const updatedPoll = {
+      ...poll,
+      voters,
+      votes
+    };
+
+    const { data: updatedPost, error: updateError } = await supabase
+      .from("posts")
+      .update({ poll: updatedPoll })
+      .eq("id", id)
+      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro)")
+      .single();
+
+    if (updateError) {
+      console.error("Error updating vote:", updateError);
+      return res.status(500).json({ error: "Failed to update vote" });
+    }
+
+    // Emit real-time update
+    emitUpdate("post_updated", updatedPost);
+
+    return res.json({ success: true, data: updatedPost });
+  } catch (error: any) {
+    console.error("Unexpected error in votePost:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }

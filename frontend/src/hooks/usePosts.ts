@@ -28,6 +28,11 @@ export interface Post {
   isSaved?: boolean;
   view_count?: number;
   language?: "en" | "ar";
+  poll?: {
+    options: string[];
+    votes?: Record<number, number>;
+    userVoted?: number;
+  } | null;
 }
 
 export type FeedFilter = "all" | "following" | "contributors";

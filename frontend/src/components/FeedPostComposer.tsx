@@ -4,7 +4,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Image as ImageIcon, X } from "phosphor-react";
+import { Image as ImageIcon, X, ListPlus, PlusCircle, MinusCircle } from "phosphor-react";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
 import { validateImageSize } from "../constants/upload";
@@ -18,6 +18,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const isMobile = width < 768;
     const [content, setContent] = useState("");
     const [images, setImages] = useState<string[]>([]);
+    const [isPoll, setIsPoll] = useState(false);
+    const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { getToken, isLoaded } = useClerkAuth();
@@ -97,8 +99,37 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         setImages((prev) => prev.filter((_, i) => i !== index));
     };
 
+    const addPollOption = () => {
+        if (pollOptions.length < 4) {
+            setPollOptions([...pollOptions, ""]);
+        }
+    };
+
+    const removePollOption = (index: number) => {
+        if (pollOptions.length > 2) {
+            setPollOptions(pollOptions.filter((_, i) => i !== index));
+        }
+    };
+
+    const updatePollOption = (index: number, value: string) => {
+        const newOptions = [...pollOptions];
+        newOptions[index] = value;
+        setPollOptions(newOptions);
+    };
+
     const handleSubmit = async () => {
-        if ((!content.trim() && images.length === 0) || isSubmitting || !isLoaded) return;
+        if ((!content.trim() && images.length === 0 && !isPoll) || isSubmitting || !isLoaded) return;
+
+        if (isPoll) {
+            if (!content.trim()) {
+                alert("Please enter a question for your poll.");
+                return;
+            }
+            if (pollOptions.filter(o => o.trim() !== "").length < 2) {
+                alert("Please provide at least 2 options for the poll.");
+                return;
+            }
+        }
 
         setIsSubmitting(true);
         try {
@@ -108,6 +139,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             await api.post("/posts", {
                 content: content.trim(),
                 images: images.length > 0 ? images : null,
+                poll: isPoll ? { options: pollOptions.filter(o => o.trim() !== "") } : null,
                 language: "en"
             }, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -115,6 +147,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
             setContent("");
             setImages([]);
+            setIsPoll(false);
+            setPollOptions(["", ""]);
             onCreated();
         } catch (error) {
             console.error("Failed to post:", error);
@@ -147,10 +181,15 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             />
             <div style={{ flex: 1 }}>
                 <div style={{ marginBottom: "20px" }}>
+                    {isPoll && (
+                        <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", marginBottom: "8px", letterSpacing: "0.05em" }}>
+                            Question
+                        </div>
+                    )}
                     <MentionInput
                         value={content}
                         onChange={setContent}
-                        placeholder={placeholderText}
+                        placeholder={isPoll ? "Ask a question..." : placeholderText}
                         minHeight="40px"
                         transparent={true}
                     />
@@ -208,12 +247,88 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     </div>
                 )}
 
+                {isPoll && (
+                    <div style={{
+                        marginTop: "12px",
+                        marginBottom: "20px",
+                        padding: "20px",
+                        backgroundColor: "var(--bg-hover)",
+                        border: "0.5px solid var(--border-hairline)",
+                        borderRadius: "2px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "12px"
+                    }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                            <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Poll Options</span>
+                            <button 
+                                onClick={() => setIsPoll(false)}
+                                style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center" }}
+                            >
+                                <X size={14} weight="bold" />
+                            </button>
+                        </div>
+                        {pollOptions.map((option, index) => (
+                            <div key={index} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                <input
+                                    value={option}
+                                    onChange={(e) => updatePollOption(index, e.target.value)}
+                                    placeholder={`Option ${index + 1}`}
+                                    maxLength={30}
+                                    style={{
+                                        flex: 1,
+                                        padding: "10px 14px",
+                                        backgroundColor: "var(--bg-page)",
+                                        border: "0.5px solid var(--border-hairline)",
+                                        color: "var(--text-primary)",
+                                        fontSize: "13px",
+                                        fontFamily: "var(--font-mono)",
+                                        outline: "none",
+                                        borderRadius: "1px"
+                                    }}
+                                />
+                                {pollOptions.length > 2 && (
+                                    <button 
+                                        onClick={() => removePollOption(index)}
+                                        style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}
+                                    >
+                                        <MinusCircle size={20} weight="thin" />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        {pollOptions.length < 4 && (
+                            <button
+                                onClick={addPollOption}
+                                style={{
+                                    alignSelf: "flex-start",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    background: "none",
+                                    border: "none",
+                                    color: "var(--text-primary)",
+                                    fontSize: "11px",
+                                    fontWeight: 700,
+                                    cursor: "pointer",
+                                    marginTop: "4px",
+                                    fontFamily: "var(--font-mono)",
+                                    textTransform: "uppercase"
+                                }}
+                            >
+                                <PlusCircle size={18} weight="thin" />
+                                Add Option
+                            </button>
+                        )}
+                    </div>
+                )}
+
                 <div style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                     paddingTop: "20px",
-                    borderTop: (content.length > 0 || images.length > 0) ? "0.5px solid var(--border-hairline)" : "none"
+                    borderTop: (content.length > 0 || images.length > 0 || isPoll) ? "0.5px solid var(--border-hairline)" : "none"
                 }}>
                     <div style={{ display: "flex", gap: "10px", color: "var(--text-tertiary)" }}>
                         <input
@@ -240,6 +355,23 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         >
                             <ImageIcon size={22} weight="thin" />
                         </button>
+                        <button
+                            onClick={() => setIsPoll(!isPoll)}
+                            style={{
+                                background: isPoll ? "var(--bg-hover)" : "none",
+                                border: "none",
+                                color: isPoll ? "var(--text-primary)" : "inherit",
+                                cursor: "pointer",
+                                padding: "8px",
+                                borderRadius: "2px",
+                                transition: "all 0.15s"
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
+                            onMouseLeave={e => !isPoll && (e.currentTarget.style.color = "var(--text-tertiary)")}
+                            title="Add Poll"
+                        >
+                            <ListPlus size={22} weight="thin" />
+                        </button>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
                         <span style={{
@@ -255,11 +387,11 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         </span>
                         <button
                             onClick={handleSubmit}
-                            disabled={(!content.trim() && images.length === 0) || isSubmitting || content.length > charLimit}
+                            disabled={(!content.trim() && images.length === 0 && !isPoll) || isSubmitting || content.length > charLimit}
                             style={{
                                 padding: "8px 24px",
-                                backgroundColor: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "transparent",
-                                color: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
+                                backgroundColor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "transparent",
+                                color: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "1.50px solid var(--border-hairline)",
                                 borderRadius: "2px",
                                 fontWeight: 800,
@@ -267,7 +399,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 fontFamily: "var(--font-mono)",
                                 textTransform: "uppercase",
                                 letterSpacing: "0.1em",
-                                cursor: (content.trim() || images.length > 0) && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
+                                cursor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
                                 transition: "all 0.15s ease"
                             }}
                         >

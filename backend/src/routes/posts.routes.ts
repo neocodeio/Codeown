@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getPosts, getPostById, getPostsByUser, createPost, updatePost, deletePost } from "../controllers/posts.controller.js";
+import { getPosts, getPostById, getPostsByUser, createPost, updatePost, deletePost, votePost } from "../controllers/posts.controller.js";
 import { requireAuth, optionalAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -8,6 +8,7 @@ router.get("/", optionalAuth, getPosts);
 router.get("/:id", optionalAuth, getPostById); // Get single post by ID - must be before /user/:userId
 router.get("/user/:userId", optionalAuth, getPostsByUser); // Get posts by user ID
 router.post("/", requireAuth, createPost);
+router.post("/:id/vote", requireAuth, votePost);
 router.put("/:id", requireAuth, updatePost);
 router.delete("/:id", requireAuth, deletePost);
 

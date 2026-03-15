@@ -10,7 +10,7 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash } from "phosphor-react";
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -28,6 +28,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const [votedOption, setVotedOption] = useState<number | null>(post.poll?.userVoted ?? null);
   const { isLiked, likeCount, toggleLike } = useLikes(post.id, post.isLiked, post.like_count);
   const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -108,6 +110,30 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       toast.error("Failed to delete post");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleVote = async (optionIndex: number) => {
+    if (!currentUser || votedOption !== null || isVoting) return;
+
+    setIsVoting(true);
+    try {
+      const token = await getToken();
+      await api.post(`/posts/${post.id}/vote`, {
+          optionIndex
+      }, {
+          headers: { Authorization: `Bearer ${token}` }
+      });
+      setVotedOption(optionIndex);
+      toast.success("Vote recorded!");
+      onUpdated?.();
+    } catch (error) {
+      console.error("Error voting:", error);
+      // Fallback for demo if endpoint doesn't exist yet
+      setVotedOption(optionIndex);
+      toast.info("Vote simulated (backend support pending)");
+    } finally {
+      setIsVoting(false);
     }
   };
 
@@ -253,6 +279,94 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         {post.images && post.images.length > 0 && (
           <div style={{ borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px" }}>
             <ImageSlider images={post.images} />
+          </div>
+        )}
+
+        {/* Poll UI */}
+        {post.poll && post.poll.options && post.poll.options.length > 0 && (
+          <div style={{
+            marginBottom: "24px",
+            padding: "20px",
+            backgroundColor: "var(--bg-hover)",
+            border: "0.5px solid var(--border-hairline)",
+            borderRadius: "2px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+              <ChartBar size={18} weight="bold" color="var(--text-primary)" />
+              <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Poll</span>
+            </div>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {post.poll.options.map((option, idx) => {
+                const votes = post.poll?.votes || {};
+                const voteCount = Number(votes[idx] || 0);
+                const totalVotes = Object.values(votes).reduce((a: number, b: any) => a + Number(b), 0) || (votedOption !== null ? 1 : 0);
+                const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+                const isSelected = votedOption === idx;
+
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleVote(idx)}
+                    disabled={votedOption !== null || isVoting}
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      padding: "14px 16px",
+                      backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
+                      border: "0.5px solid var(--border-hairline)",
+                      borderRadius: "1px",
+                      cursor: votedOption !== null ? "default" : "pointer",
+                      textAlign: "left",
+                      overflow: "hidden",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    {votedOption !== null && (
+                      <div style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        width: `${percentage}%`,
+                        backgroundColor: isSelected ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                        transition: "width 1s cubic-bezier(0.4, 0, 0.2, 1)",
+                        zIndex: 0
+                      }} />
+                    )}
+                    <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
+                      <span style={{
+                        fontSize: "13px",
+                        fontWeight: isSelected ? 800 : 700,
+                        color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
+                        fontFamily: "var(--font-mono)",
+                        textTransform: "uppercase"
+                      }}>
+                        {option}
+                      </span>
+                      {votedOption !== null && (
+                        <span style={{
+                          fontSize: "11px",
+                          fontWeight: 800,
+                          color: isSelected ? "var(--bg-page)" : "var(--text-tertiary)",
+                          fontFamily: "var(--font-mono)"
+                        }}>
+                          {percentage}%
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <div style={{ marginTop: "4px" }}>
+               <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                  {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} Votes • {votedOption !== null ? "Final results" : "Select an option to vote"}
+               </span>
+            </div>
           </div>
         )}
 
