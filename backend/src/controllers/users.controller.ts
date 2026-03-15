@@ -36,15 +36,21 @@ export async function updateStreak(req: Request, res: Response) {
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const lastActiveDay = new Date(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate());
             const dayDiff = Math.floor((today.getTime() - lastActiveDay.getTime()) / (1000 * 60 * 60 * 24));
+            
+            // Check for strict 24 hour rolling window break
+            const hoursSince = (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60);
 
-            if (dayDiff === 0) {
+            if (hoursSince > 24) {
+                // Gap too large, reset to 1
+                newStreak = 1;
+            } else if (dayDiff === 0) {
                 // Already active today, don't increment
                 return res.json({ streak_count: newStreak });
             } else if (dayDiff === 1) {
-                // Last active yesterday, increment streak
+                // Last active yesterday and within 24 hours, increment
                 newStreak += 1;
             } else {
-                // More than one day missed, reset streak
+                // Fallback for edge cases
                 newStreak = 1;
             }
         }
@@ -525,7 +531,7 @@ export async function getUserProfile(req: Request, res: Response) {
                         linkedin_url: null,
                         website_url: null,
                         created_at: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString()
-                    };
+                    } as any;
 
                     // Sync user to Supabase for future requests
                     try {

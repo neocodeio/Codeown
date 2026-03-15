@@ -52,43 +52,50 @@ export function initializeCronJobs() {
     }
   });
 
-  // Daily Streak Reminder (Every day at 6:00 PM)
-  const streakReminderJob = new CronJob('0 18 * * *', async () => {
-    console.log('[Cron] Running Streak Reminder Job...');
+  // Hourly Streak Monitor (Runs every hour)
+  const hourlyStreakMonitor = new CronJob('0 * * * *', async () => {
+    console.log('[Cron] Running Hourly Streak Monitor...');
     try {
-      // Fetch users with streak > 0
-      const { data: users, error: usersError } = await supabase
+      const now = new Date();
+      
+      // 1. Fetch users with active streaks
+      const { data: users, error } = await supabase
         .from('users')
         .select('id, email, name, streak_count, last_active_at')
         .gt('streak_count', 0);
 
-      if (usersError) {
-        throw usersError;
-      }
+      if (error) throw error;
+      if (!users || users.length === 0) return;
 
-      if (users && users.length > 0) {
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      let resetCount = 0;
+      let warningCount = 0;
 
-        let count = 0;
-        for (const user of users) {
-          if (!user.last_active_at || !user.email) continue;
-          
-          const lastActive = new Date(user.last_active_at);
-          const lastActiveDay = new Date(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate());
-          const dayDiff = Math.floor((today.getTime() - lastActiveDay.getTime()) / (1000 * 60 * 60 * 24));
+      for (const user of users) {
+        if (!user.last_active_at) continue;
 
-          // If dayDiff is exactly 1, they were active yesterday but haven't been active today yet
-          // They are at risk of losing their streak if they don't log in before midnight!
-          if (dayDiff === 1) {
+        const lastActive = new Date(user.last_active_at);
+        const hoursSince = (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60);
+
+        // A. BREAK STREAK: If inactive for > 24 hours
+        if (hoursSince > 24) {
+          await supabase
+            .from('users')
+            .update({ streak_count: 0 })
+            .eq('id', user.id);
+          resetCount++;
+        } 
+        // B. WARN USER: If inactive for 16-17 hours (exactly 8 hours before break)
+        else if (hoursSince >= 16 && hoursSince < 17) {
+          if (user.email) {
             await sendStreakWarningEmail(user.email, user.name || 'User', user.streak_count);
-            count++;
+            warningCount++;
           }
         }
-        console.log(`[Cron] Sent streak reminders to ${count} users.`);
       }
+
+      console.log(`[Cron] Streak Monitor: ${resetCount} streaks reset, ${warningCount} warnings sent.`);
     } catch (error) {
-      console.error('[Cron] Error in Streak Reminder Job:', error);
+      console.error('[Cron] Error in Hourly Streak Monitor:', error);
     }
   });
 
@@ -177,7 +184,7 @@ export function initializeCronJobs() {
   });
 
   weeklyDigestJob.start();
-  streakReminderJob.start();
+  hourlyStreakMonitor.start();
   personalRecapJob.start();
   console.log('[Cron] Jobs scheduled.');
 }

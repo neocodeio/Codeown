@@ -347,12 +347,15 @@ export async function sendStreakWarningEmail(email: string, userName: string, st
     await resend.emails.send({
       from: "Codeown <notifications@codeown.space>",
       to: email,
-      subject: `Don't break your ${streakCount}-day streak! 🔥`,
+      subject: `Urgent: You have 8 hours to save your ${streakCount}-day streak! 🔥`,
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
           <h2>Hey ${userName},</h2>
-          <p>You're about to lose your <strong>${streakCount}-day coding streak</strong>! Log in to claim it today before it resets.</p>
-          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/" style="padding: 10px 20px; background: #f97316; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">Claim Streak</a>
+          <p>You're about to lose your <strong>${streakCount}-day coding streak</strong>!</p>
+          <p>You haven't been active in 16 hours. You have exactly <strong>8 hours left</strong> to log in and keep your momentum going before it resets to zero.</p>
+          <div style="margin-top: 24px;">
+            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/" style="padding: 12px 24px; background: #000000; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">Save My Streak &rarr;</a>
+          </div>
         </div>
       `
     });
