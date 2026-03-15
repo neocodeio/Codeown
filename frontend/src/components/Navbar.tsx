@@ -339,6 +339,8 @@ export default function Navbar() {
               style={{
                 display: "flex",
                 alignItems: "center",
+                border: "1px solid var(--border-hairline)",
+                borderRadius: "2px",
                 gap: "12px",
                 padding: "12px 12px",
                 marginTop: "8px",
