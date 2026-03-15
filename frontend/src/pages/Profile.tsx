@@ -73,7 +73,6 @@ interface UserProfile {
   created_at: string | null;
   // streak_count: number;
   onboarding_completed: boolean;
-  is_early_adopter?: boolean;
 }
 
 export default function Profile() {
@@ -368,7 +367,6 @@ export default function Profile() {
               name={userProfile?.name || user?.fullName || "User"}
               size={isMobile ? 96 : 120}
               isOpenToOpportunities={userProfile?.is_pro === true && userProfile?.is_hirable === true}
-              isEarlyAdopter={userProfile?.is_early_adopter}
             />
             {/* Camera Overlay for Avatar */}
             <div style={{
@@ -1080,7 +1078,6 @@ export default function Profile() {
             created_at: userProfile.created_at,
             skills: userProfile.skills || [],
             is_pro: userProfile.is_pro || false,
-            is_early_adopter: userProfile.is_early_adopter || false,
             bio: userProfile.bio || ""
           }}
           projectsCount={projects.length}

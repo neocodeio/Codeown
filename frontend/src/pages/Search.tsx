@@ -22,7 +22,6 @@ interface SearchUser {
   is_organization?: boolean;
   is_hirable?: boolean;
   is_pro?: boolean;
-  is_early_adopter?: boolean;
 }
 
 interface SearchPost {
@@ -616,13 +615,12 @@ export default function Search() {
                         name={user.name}
                         size={80}
                         isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
-                        isEarlyAdopter={user.is_early_adopter}
                       />
                     </div>
 
                     <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
                       {user.name}
-                      <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
+                      <VerifiedBadge username={user.username} size="14px" />
                     </h3>
                     <p style={{ margin: "0 0 24px", fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>@{user.username || "user"}</p>
 

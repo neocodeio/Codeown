@@ -398,7 +398,6 @@ export default function ProjectDetail() {
                   name={userName}
                   size={isMobile ? 44 : 52}
                   isOpenToOpportunities={project.user?.is_pro === true && project.user?.is_hirable === true}
-                  isEarlyAdopter={project.user?.is_early_adopter}
                 />
                 <div>
                   <div style={{

@@ -339,7 +339,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     // Check if user exists - select only safe columns
     const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_early_adopter, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
         .eq("id", userId)
         .single();
 
@@ -361,21 +361,6 @@ export async function ensureUserExists(userId: string, userData?: any) {
             if (!existingUser.username && userInfo.username) updatePayload.username = userInfo.username;
             if (!existingUser.avatar_url && userInfo.avatar_url) updatePayload.avatar_url = userInfo.avatar_url;
 
-            // ENSURE EARLY ADOPTER STATUS FOR OLD USERS
-            // If they are the CEO or joined in the first 100, ensure they have the badge
-            const isCEO = userInfo.username?.toLowerCase() === "amin.ceo" || existingUser.username?.toLowerCase() === "amin.ceo";
-            
-            if (!existingUser.is_early_adopter) {
-                const { count: userCountBefore } = await supabase
-                    .from("users")
-                    .select("*", { count: "exact", head: true })
-                    .lt("created_at", existingUser.created_at || new Date().toISOString());
-                
-                if (isCEO || (userCountBefore || 0) < 100) {
-                    updatePayload.is_early_adopter = true;
-                }
-            }
-
             // Only perform update if there are fields to change
             if (Object.keys(updatePayload).length > 1) {
                 const { data: updatedUser, error: updateError } = await supabase
@@ -395,18 +380,9 @@ export async function ensureUserExists(userId: string, userData?: any) {
         }
         return existingUser;
     }
-    
+
     // Create new user
     console.log("Creating new user in Supabase:", { userId, userInfo });
-
-    // Check if user should be an early adopter (first 100)
-    const { count: userCount } = await supabase
-        .from("users")
-        .select("*", { count: "exact", head: true });
-    
-    const isCEO = userInfo.username?.toLowerCase() === "amin.ceo";
-    const isEarlyAdopter = isCEO || (userCount || 0) < 100;
-
     const { data: newUser, error } = await supabase
         .from("users")
         .insert({
@@ -416,7 +392,6 @@ export async function ensureUserExists(userId: string, userData?: any) {
             avatar_url: userInfo.avatar_url,
             username: userInfo.username,
             onboarding_completed: false,
-            is_early_adopter: isEarlyAdopter,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
         })
@@ -483,7 +458,7 @@ export async function getUserProfile(req: Request, res: Response) {
         // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_early_adopter, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
             .eq(field, userId)
             .single();
 
@@ -928,7 +903,7 @@ export async function getRecommendedUsers(req: Request, res: Response) {
         // Fetch users with highest streaks
         let usersQuery = supabase
             .from("users")
-            .select("id, name, username, avatar_url, streak_count, is_pro, is_early_adopter, skills")
+            .select("id, name, username, avatar_url, streak_count, is_pro, skills")
             .order("streak_count", { ascending: false })
             .limit(Number(limit));
 

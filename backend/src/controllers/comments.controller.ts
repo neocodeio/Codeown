@@ -60,7 +60,7 @@ export async function getComments(req: Request, res: Response) {
 
     const { data: users, error: usersError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username, is_pro, is_early_adopter")
+      .select("id, name, email, avatar_url, username, is_pro")
       .in("id", [...userIds]);
 
     if (usersError) {
@@ -109,7 +109,6 @@ export async function getComments(req: Request, res: Response) {
               avatar_url: clerkUser.imageUrl || null,
               username: clerkUser.username || null,
               is_pro: false,
-              is_early_adopter: false,
             });
 
             // Sync user to Supabase
@@ -132,17 +131,16 @@ export async function getComments(req: Request, res: Response) {
       const clerkUser = clerkUserMap.get(comment.user_id);
       const user = supabaseUser || clerkUser;
 
-      let userData: { name: string; email: string | null; avatar_url: string | null; username: string | null; is_pro: boolean; is_early_adopter: boolean };
+      let userData: { name: string; email: string | null; avatar_url: string | null; username: string | null; is_pro: boolean };
       if (user) {
         const userName = user.name || (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) || user.firstName || user.lastName || user.username || null;
         const userEmail = user.email || (user.emailAddresses?.[0]?.emailAddress) || null;
         const avatarUrl = user.avatar_url || user.imageUrl || null;
         const username = user.username || null;
         const is_pro = user.is_pro ?? false;
-        const is_early_adopter = user.is_early_adopter ?? false;
-        userData = { name: userName || (userEmail ? userEmail.split("@")[0] : "User"), email: userEmail, avatar_url: avatarUrl, username, is_pro, is_early_adopter };
+        userData = { name: userName || (userEmail ? userEmail.split("@")[0] : "User"), email: userEmail, avatar_url: avatarUrl, username, is_pro };
       } else {
-        userData = { name: "User", email: null, avatar_url: null, username: null, is_pro: false, is_early_adopter: false };
+        userData = { name: "User", email: null, avatar_url: null, username: null, is_pro: false };
       }
 
       let parent_author_name: string | null = null;

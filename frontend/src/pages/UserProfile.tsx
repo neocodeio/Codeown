@@ -62,7 +62,6 @@ interface User {
   banner_url: string | null;
   // streak_count: number;
   created_at: string | null;
-  is_early_adopter?: boolean;
 }
 
 export default function UserProfile() {
@@ -387,13 +386,12 @@ export default function UserProfile() {
               zIndex: 10
             }}
           >
-              <AvailabilityBadge
-                avatarUrl={user.avatar_url || null}
-                name={user.name || "User"}
-                size={isMobile ? 96 : 120}
-                isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
-                isEarlyAdopter={user.is_early_adopter}
-              />
+            <AvailabilityBadge
+              avatarUrl={avatarUrl}
+              name={user.name}
+              size={isMobile ? 96 : 120}
+              isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
+            />
           </div>
 
           {/* Name + Actions row */}
@@ -406,23 +404,22 @@ export default function UserProfile() {
             marginBottom: "4px",
             width: "100%",
           }}>
-                  <h1 style={{
-                    fontSize: isMobile ? "22px" : "28px",
-                    fontWeight: 700,
-                    color: "var(--text-primary)",
-                    margin: 0,
-                    textTransform: "uppercase",
-                    letterSpacing: "-0.02em",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    maxWidth: "100%",
-                    overflowWrap: "anywhere",
-                    lineHeight: 1.12,
-                  }}>
-                    {user.name?.toUpperCase() || "USER"}
-                    <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
-                    {user.is_pro === true && (
+            <h1 style={{
+              fontSize: isMobile ? "22px" : "28px",
+              fontWeight: 700,
+              color: "var(--text-primary)",
+              margin: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              maxWidth: "100%",
+              overflowWrap: "anywhere",
+              lineHeight: 1.12,
+              textTransform: "uppercase"
+            }}>
+              {user.name}
+              <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
+              {user.is_pro === true && (
                 <span style={{
                   fontSize: isMobile ? 10 : 11,
                   fontWeight: 800,
@@ -868,7 +865,7 @@ export default function UserProfile() {
 
       <div style={{ height: "60px" }} />
 
-      {user?.id && (
+      {user.id && (
         <FollowersModal
           isOpen={followersModalOpen}
           onClose={() => setFollowersModalOpen(false)}
@@ -894,7 +891,6 @@ export default function UserProfile() {
             created_at: user.created_at,
             skills: user.skills,
             is_pro: user.is_pro,
-            is_early_adopter: user.is_early_adopter,
             bio: user.bio
           }}
           projectsCount={projects.length}
