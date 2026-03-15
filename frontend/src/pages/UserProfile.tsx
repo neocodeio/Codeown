@@ -30,7 +30,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
-import EarlyAdopterBadge from "../components/EarlyAdopterBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import Lightbox from "../components/Lightbox";
@@ -388,12 +387,13 @@ export default function UserProfile() {
               zIndex: 10
             }}
           >
-            <AvailabilityBadge
-              avatarUrl={avatarUrl}
-              name={user.name}
-              size={isMobile ? 96 : 120}
-              isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
-            />
+              <AvailabilityBadge
+                avatarUrl={user.avatar_url || null}
+                name={user.name || "User"}
+                size={isMobile ? 96 : 120}
+                isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
+                isEarlyAdopter={user.is_early_adopter}
+              />
           </div>
 
           {/* Name + Actions row */}
@@ -406,23 +406,23 @@ export default function UserProfile() {
             marginBottom: "4px",
             width: "100%",
           }}>
-            <h1 style={{
-              fontSize: isMobile ? "22px" : "28px",
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              margin: 0,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              maxWidth: "100%",
-              overflowWrap: "anywhere",
-              lineHeight: 1.12,
-              textTransform: "uppercase"
-            }}>
-              {user.name}
-              <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
-              <EarlyAdopterBadge isEarlyAdopter={user.is_early_adopter} size={isMobile ? "16px" : "20px"} />
-              {user.is_pro === true && (
+                  <h1 style={{
+                    fontSize: isMobile ? "22px" : "28px",
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
+                    margin: 0,
+                    textTransform: "uppercase",
+                    letterSpacing: "-0.02em",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    maxWidth: "100%",
+                    overflowWrap: "anywhere",
+                    lineHeight: 1.12,
+                  }}>
+                    {user.name?.toUpperCase() || "USER"}
+                    <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
+                    {user.is_pro === true && (
                 <span style={{
                   fontSize: isMobile ? 10 : 11,
                   fontWeight: 800,

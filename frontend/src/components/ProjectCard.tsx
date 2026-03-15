@@ -12,7 +12,6 @@ import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, 
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
-import EarlyAdopterBadge from "./EarlyAdopterBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import { getOptimizedImageUrl } from "../utils/image";
 import ShareModal from "./ShareModal";
@@ -182,6 +181,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               name={userName}
               size={isMobile ? 40 : 44}
               isOpenToOpportunities={project.user?.is_pro === true && project.user?.is_hirable === true}
+              isEarlyAdopter={project.user?.is_early_adopter}
             />
         </div>
       </div>
@@ -209,7 +209,6 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               {userName}
             </span>
             <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="14px" />
-            <EarlyAdopterBadge isEarlyAdopter={project.user?.is_early_adopter} />
             <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
               @{project.user?.username || 'user'}
             </span>

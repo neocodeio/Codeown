@@ -7,7 +7,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { Rocket, Users, Star } from "phosphor-react";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
-import EarlyAdopterBadge from "./EarlyAdopterBadge";
+import AvailabilityBadge from "./AvailabilityBadge";
 import { formatRelativeDate } from "../utils/date";
 
 export default function RecommendedUsersSidebar() {
@@ -153,10 +153,12 @@ export default function RecommendedUsersSidebar() {
                                             minWidth: 0
                                         }}
                                     >
-                                        <img
-                                            src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
-                                            alt=""
-                                            style={{ width: 48, height: 48, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
+                                        <AvailabilityBadge
+                                            avatarUrl={user.avatar_url || null}
+                                            name={user.name || "User"}
+                                            size={48}
+                                            isEarlyAdopter={user.is_early_adopter}
+                                            isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
                                         />
                                         <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
@@ -171,7 +173,6 @@ export default function RecommendedUsersSidebar() {
                                                 }}>
                                                     {(user.name || "User").split(" ")[0]}
                                                 </span>
-                                                <EarlyAdopterBadge isEarlyAdopter={user.is_early_adopter} size="12px" />
                                                 {user.streak_count > 0 && (
                                                     <div style={{ flexShrink: 0 }}>
                                                         <StreakBadge count={user.streak_count} mini />
@@ -247,13 +248,6 @@ export default function RecommendedUsersSidebar() {
                             const ordered = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3;
                             return ordered.map((user: any, idx: number) => {
                                 const rank = top3.length >= 3 ? (idx === 0 ? 2 : idx === 1 ? 1 : 3) : idx + 1;
-                                const firstName = (user?.name || "User").split(" ")[0];
-                                const initials = (user?.name || "U")
-                                    .split(" ")
-                                    .filter(Boolean)
-                                    .slice(0, 2)
-                                    .map((p: string) => p[0]?.toUpperCase())
-                                    .join("");
 
                                 return (
                                     <Link
@@ -276,38 +270,13 @@ export default function RecommendedUsersSidebar() {
                                                 margin: "0 auto 8px",
                                             }}
                                         >
-                                            {user.avatar_url ? (
-                                                <img
-                                                    src={user.avatar_url}
-                                                    alt=""
-                                                    style={{
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        borderRadius: "2px",
-                                                        objectFit: "cover",
-                                                        border: "0.5px solid var(--border-hairline)",
-                                                        backgroundColor: "var(--bg-hover)",
-                                                    }}
-                                                />
-                                            ) : (
-                                                <div
-                                                    style={{
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        borderRadius: "2px",
-                                                        backgroundColor: "var(--bg-hover)",
-                                                        border: "0.5px solid var(--border-hairline)",
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        fontSize: "12px",
-                                                        fontWeight: 500,
-                                                        color: "var(--text-primary)",
-                                                    }}
-                                                >
-                                                    {initials || "U"}
-                                                </div>
-                                            )}
+                                            <AvailabilityBadge
+                                                avatarUrl={user.avatar_url || null}
+                                                name={user.name || "User"}
+                                                size={48}
+                                                isEarlyAdopter={user.is_early_adopter}
+                                                isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
+                                            />
 
                                             <div
                                                 style={{
@@ -341,9 +310,9 @@ export default function RecommendedUsersSidebar() {
                                                 whiteSpace: "nowrap",
                                                 letterSpacing: "-0.01em"
                                             }}
-                                            title={firstName}
+                                            title={user.name}
                                         >
-                                            {firstName}
+                                            {(user.name || "User").split(" ")[0]}
                                         </div>
 
                                         <div

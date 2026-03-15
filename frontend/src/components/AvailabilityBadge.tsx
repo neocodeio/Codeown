@@ -1,10 +1,11 @@
-import { Briefcase } from "phosphor-react";
+import { Briefcase, Rocket } from "phosphor-react";
 
 interface AvailabilityBadgeProps {
     avatarUrl: string | null;
     name: string;
     size?: number;
     isOpenToOpportunities?: boolean;
+    isEarlyAdopter?: boolean;
     tooltipText?: string;
 }
 
@@ -13,6 +14,7 @@ export default function AvailabilityBadge({
     name,
     size = 40,
     isOpenToOpportunities = false,
+    isEarlyAdopter = false,
     tooltipText = "Open to opportunities",
 }: AvailabilityBadgeProps) {
     const showBadge = isOpenToOpportunities === true;
@@ -45,9 +47,15 @@ export default function AvailabilityBadge({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    border: showBadge ? `1px solid var(--text-primary)` : "0.5px solid var(--border-hairline)",
+                    border: isEarlyAdopter
+                        ? `2px solid var(--text-primary)`
+                        : showBadge
+                            ? `1px solid var(--text-primary)`
+                            : "0.5px solid var(--border-hairline)",
                     boxSizing: "border-box",
-                    zIndex: 1
+                    zIndex: 1,
+                    // Add a subtle inner glow for early adopters
+                    boxShadow: isEarlyAdopter ? "inset 0 0 10px rgba(255, 255, 255, 0.1)" : "none"
                 }}
             >
                 <img
@@ -58,9 +66,38 @@ export default function AvailabilityBadge({
                         height: "100%",
                         objectFit: "cover",
                         display: "block",
+                        transform: isEarlyAdopter ? "scale(1.05)" : "none" // Slight zoom for premium feel
                     }}
                 />
             </div>
+
+            {/* Early Adopter Badge - Top Right */}
+            {isEarlyAdopter && (
+                <div
+                    title="Early Adopter_#001"
+                    style={{
+                        position: "absolute",
+                        top: "-4px",
+                        right: "-4px",
+                        width: briefcaseBgSize,
+                        height: briefcaseBgSize,
+                        backgroundColor: "var(--text-primary)",
+                        color: "var(--bg-page)",
+                        borderRadius: "2px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1px solid var(--bg-page)",
+                        zIndex: 10,
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
+                    }}
+                >
+                    <Rocket
+                        size={briefcaseIconSize}
+                        weight="fill"
+                    />
+                </div>
+            )}
 
             {showBadge && (
                 <div

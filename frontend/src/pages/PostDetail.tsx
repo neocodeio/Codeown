@@ -11,7 +11,7 @@ import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
-import EarlyAdopterBadge from "../components/EarlyAdopterBadge";
+import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import { useWindowSize } from "../hooks/useWindowSize";
 import ShareModal from "../components/ShareModal";
@@ -42,6 +42,7 @@ interface Post {
     username?: string | null;
     avatar_url?: string | null;
     is_pro?: boolean;
+    is_hirable?: boolean;
     is_early_adopter?: boolean;
   };
   view_count?: number;
@@ -267,10 +268,12 @@ export default function PostDetail() {
           {/* Left Column: Avatar */}
           {!isMobile && (
             <div style={{ flexShrink: 0 }}>
-              <img
-                src={avatarUrl}
-                alt={userName}
-                style={{ width: "48px", height: "48px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+              <AvailabilityBadge
+                avatarUrl={post.user?.avatar_url || null}
+                name={userName}
+                size={48}
+                isEarlyAdopter={post.user?.is_early_adopter}
+                isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
               />
             </div>
           )}
@@ -280,10 +283,12 @@ export default function PostDetail() {
             {/* User Info Line */}
             <div style={{ marginBottom: "20px", display: "flex", gap: "12px", alignItems: "center" }}>
               {isMobile && (
-                <img
-                  src={avatarUrl}
-                  alt={userName}
-                  style={{ width: "36px", height: "36px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+                <AvailabilityBadge
+                  avatarUrl={post.user?.avatar_url || null}
+                  name={userName}
+                  size={36}
+                  isEarlyAdopter={post.user?.is_early_adopter}
+                  isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
                 />
               )}
               <div>
@@ -292,7 +297,6 @@ export default function PostDetail() {
                     {userName}
                   </span>
                   <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="16px" />
-                  <EarlyAdopterBadge isEarlyAdopter={post.user?.is_early_adopter} size="14px" />
                 </div>
                 <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", marginTop: "2px", fontWeight: 600 }}>
                   @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}

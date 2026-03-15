@@ -17,7 +17,6 @@ import BioRenderer from "../components/BioRenderer";
 import { formatProfileJoinDate } from "../utils/date";
 import api from "../api/axios";
 import VerifiedBadge from "../components/VerifiedBadge";
-import EarlyAdopterBadge from "../components/EarlyAdopterBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
@@ -369,6 +368,7 @@ export default function Profile() {
               name={userProfile?.name || user?.fullName || "User"}
               size={isMobile ? 96 : 120}
               isOpenToOpportunities={userProfile?.is_pro === true && userProfile?.is_hirable === true}
+              isEarlyAdopter={userProfile?.is_early_adopter}
             />
             {/* Camera Overlay for Avatar */}
             <div style={{
@@ -428,7 +428,6 @@ export default function Profile() {
               }}>
                 {(userProfile?.name || user?.fullName || "").toUpperCase()}
                 <VerifiedBadge username={userProfile?.username || user?.username} isPro={userProfile?.is_pro} size={isMobile ? "18px" : "22px"} />
-                <EarlyAdopterBadge isEarlyAdopter={userProfile?.is_early_adopter} size={isMobile ? "18px" : "22px"} />
                 {/* {userProfile && userProfile.streak_count > 0 && <StreakBadge count={userProfile.streak_count} />} */}
                 {userProfile?.is_pro === true && (
                   <span style={{
