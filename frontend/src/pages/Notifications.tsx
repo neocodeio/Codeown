@@ -13,6 +13,7 @@ import {
   At,
   BookmarkSimple,
   EnvelopeSimple,
+  Handshake,
 } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -66,6 +67,8 @@ export default function NotificationsPage() {
             case "profile_view":
             case "project_view":
                 return { icon: <Eye size={size} weight={weight} />, color: "var(--text-primary)" };
+            case "cofounder_request":
+                return { icon: <Handshake size={size} weight={weight} />, color: "var(--text-primary)" };
             default:
                 return { icon: <Bell size={size} weight={weight} />, color: "var(--text-primary)" };
         }
@@ -100,6 +103,8 @@ export default function NotificationsPage() {
             case "profile_view":
             case "project_view":
                 return <>{nameWrapper} {notification.project_id ? "Viewed your project" : "Viewed your profile"}</>;
+            case "cofounder_request":
+                return <>{nameWrapper} Requested to be a Co-Founder for your project</>;
             default:
                 return <>New notification</>;
         }
