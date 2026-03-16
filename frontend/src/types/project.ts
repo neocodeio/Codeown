@@ -36,6 +36,21 @@ export interface Project {
     avatar_url: string | null;
     name: string;
   }[];
+  cofounderRequests?: {
+    id: number;
+    user_id: string;
+    skills: string[];
+    hours_per_week: number;
+    reason: string;
+    contribution: string;
+    created_at: string;
+    user: {
+      id: string;
+      name: string;
+      username: string | null;
+      avatar_url: string | null;
+    };
+  }[];
 }
 
 export interface ProjectFormData {

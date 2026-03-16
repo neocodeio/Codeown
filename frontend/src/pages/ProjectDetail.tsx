@@ -441,6 +441,88 @@ export default function ProjectDetail() {
               {project.description}
             </p>
 
+            {/* OWNER REVIEW SECTION */}
+            {isOwnProject && project.cofounderRequests && project.cofounderRequests.length > 0 && (
+              <div style={{
+                marginBottom: "56px",
+                border: "0.5px solid var(--border-hairline)",
+                borderRadius: "2px",
+                padding: isMobile ? "24px" : "40px",
+                backgroundColor: "rgba(255, 255, 255, 0.02)"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
+                  <Handshake size={24} weight="fill" />
+                  <h2 style={{ fontSize: "16px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>
+                    Applications ({project.cofounderRequests.length})
+                  </h2>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                  {project.cofounderRequests.map(req => (
+                    <div key={req.id} style={{
+                      padding: "24px",
+                      border: "0.5px solid var(--border-hairline)",
+                      borderRadius: "2px",
+                      backgroundColor: "var(--bg-page)"
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", gap: "16px", flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                          <img 
+                            src={req.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(req.user.name)}&background=212121&color=ffffff&bold=true`} 
+                            style={{ width: "40px", height: "40px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} 
+                          />
+                          <div>
+                            <div style={{ fontWeight: 800, fontSize: "14px" }}>{req.user.name.toUpperCase()}</div>
+                            <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>@{req.user.username}</div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const msg = `Hey ${req.user.name}, I saw your request to join ${project.title} as a Co-Founder. I'd love to chat more about your skills in ${req.skills.join(", ")}!`;
+                            navigate(`/messages?userId=${req.user_id}&message=${encodeURIComponent(msg)}`);
+                          }}
+                          style={{
+                            padding: "8px 16px",
+                            backgroundColor: "var(--text-primary)",
+                            color: "var(--bg-page)",
+                            border: "none",
+                            borderRadius: "2px",
+                            fontSize: "11px",
+                            fontWeight: 800,
+                            cursor: "pointer",
+                            fontFamily: "var(--font-mono)",
+                            textTransform: "uppercase"
+                          }}
+                        >
+                          MESSAGE APPLICANT
+                        </button>
+                      </div>
+
+                      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "20px" }}>
+                        <div>
+                          <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Skills</label>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                            {req.skills.map(s => (
+                              <span key={s} style={{ fontSize: "10px", padding: "2px 6px", border: "0.5px solid var(--border-hairline)", borderRadius: "2px", color: "var(--text-secondary)" }}>{s}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Commitment</label>
+                          <div style={{ fontSize: "12px", color: "var(--text-primary)" }}>{req.hours_per_week} HOURS/WEEK</div>
+                        </div>
+                        <div style={{ gridColumn: isMobile ? "auto" : "span 2" }}>
+                          <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Motivation & Contribution</label>
+                          <p style={{ fontSize: "13px", color: "var(--text-secondary)", margin: 0, lineHeight: "1.5" }}>{req.reason}</p>
+                          <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "8px", lineHeight: "1.5" }}><strong>What I bring:</strong> {req.contribution}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {project.looking_for_contributors && !isOwnProject && (
               <div style={{
                 backgroundColor: "rgba(255, 255, 255, 0.03)",

@@ -216,6 +216,23 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               {formatRelativeDate(project.created_at).toUpperCase()}
             </span>
             
+            {project.looking_for_contributors && (
+              <>
+                <span style={{ color: "var(--border-hairline)" }}>•</span>
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  backgroundColor: "rgba(34, 197, 94, 0.1)",
+                  border: "0.5px solid rgba(34, 197, 94, 0.2)",
+                  padding: "2px 8px",
+                  borderRadius: "2px",
+                }}>
+                  <span style={{ fontSize: "9px", fontWeight: 800, color: "#22c55e", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Seeking Co-Founder</span>
+                </div>
+              </>
+            )}
+            
             {/* Status pill inside header flow */}
             <div style={{
               marginLeft: "12px",

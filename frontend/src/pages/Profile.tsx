@@ -40,7 +40,8 @@ import {
   GithubLogo,
   ChartBar,
   IdentificationCard,
-  Plus
+  Plus,
+  Handshake
 } from "phosphor-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -92,13 +93,15 @@ export default function Profile() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "saved">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "saved" | "applications">("posts");
   const [savedSubTab, setSavedSubTab] = useState<"posts" | "projects">("posts");
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
+  const [applications, setApplications] = useState<any[]>([]);
+  const [loadingApps, setLoadingApps] = useState(false);
 
   const handleProfileUpdated = useCallback(async (updatedUser?: Record<string, unknown>) => {
     if (userId) {
@@ -178,6 +181,25 @@ export default function Profile() {
     };
     if (userId) fetchProfile();
   }, [userId, getToken]);
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      if (!userId || activeTab !== "applications") return;
+      try {
+        setLoadingApps(true);
+        const token = await getToken();
+        const res = await api.get("/projects/my/cofounder-applications", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        setApplications(res.data || []);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      } finally {
+        setLoadingApps(false);
+      }
+    };
+    fetchApplications();
+  }, [userId, getToken, activeTab]);
 
   const handleSignOut = async () => {
     try {
@@ -273,6 +295,7 @@ export default function Profile() {
         .tab-content-enter { animation: tabContentEnter 0.25s ease-out forwards; }
         .tabs-row { -ms-overflow-style: none; scrollbar-width: none; }
         .tabs-row::-webkit-scrollbar { display: none; }
+        .app-card:hover { border-color: var(--text-primary) !important; background-color: var(--bg-hover) !important; }
       `}</style>
 
       <div style={{
@@ -831,83 +854,43 @@ export default function Profile() {
         }}>
           <div className="tabs-row" style={{
             display: "flex",
-            gap: "32px",
-            marginBottom: "0px",
-            marginTop: "0",
             overflowX: "auto",
-            WebkitOverflowScrolling: "touch",
             borderBottom: "0.5px solid var(--border-hairline)",
-            position: "relative",
+            marginBottom: "32px",
+            gap: "24px",
+            padding: isMobile ? "0 16px" : "0"
           }}>
-            <button
-              onClick={() => setActiveTab("posts")}
-              style={{
-                flex: "none",
-                padding: "20px 0",
-                fontSize: "12px",
-                fontWeight: 600,
-                fontFamily: "var(--font-mono)",
-                color: activeTab === "posts" ? "var(--text-primary)" : "var(--text-tertiary)",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                position: "relative",
-                transition: "all 0.2s ease",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                borderBottom: activeTab === "posts" ? "2px solid var(--text-primary)" : "2px solid transparent",
-                borderRadius: "0"
-              }}
-            >
-              POSTS
-            </button>
-            <button
-              onClick={() => setActiveTab("projects")}
-              style={{
-                flex: "none",
-                padding: "20px 0",
-                fontSize: "12px",
-                fontWeight: 600,
-                fontFamily: "var(--font-mono)",
-                color: activeTab === "projects" ? "var(--text-primary)" : "var(--text-tertiary)",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                position: "relative",
-                transition: "all 0.2s ease",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                borderBottom: activeTab === "projects" ? "2px solid var(--text-primary)" : "2px solid transparent",
-                borderRadius: "0"
-              }}
-            >
-              PROJECTS
-            </button>
-            <button
-              onClick={() => setActiveTab("saved")}
-              style={{
-                flex: "none",
-                padding: "20px 0",
-                fontSize: "12px",
-                fontWeight: 600,
-                fontFamily: "var(--font-mono)",
-                color: activeTab === "saved" ? "var(--text-primary)" : "var(--text-tertiary)",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                position: "relative",
-                transition: "all 0.2s ease",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                borderBottom: activeTab === "saved" ? "2px solid var(--text-primary)" : "2px solid transparent",
-                borderRadius: "0"
-              }}
-            >
-              SAVED
-            </button>
+            {[
+              { id: "posts", icon: Rocket, label: "POSTS" },
+              { id: "projects", icon: SquaresFour, label: "PROJECTS" },
+              { id: "applications", icon: Handshake, label: "APPLICATIONS" },
+              { id: "saved", icon: BookmarkSimple, label: "SAVED" }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "16px 0",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  borderBottom: activeTab === tab.id ? "1.5px solid var(--text-primary)" : "1.5px solid transparent",
+                  color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)",
+                  fontSize: "12px",
+                  fontWeight: activeTab === tab.id ? 800 : 600,
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  fontFamily: "var(--font-mono)",
+                  letterSpacing: "0.05em",
+                  flexShrink: 0
+                }}
+              >
+                <tab.icon size={18} weight={activeTab === tab.id ? "fill" : "thin"} />
+                {tab.label}
+              </button>
+            ))}
           </div>
 
           <div className="tab-content" style={{ marginTop: "20px" }}>
@@ -968,6 +951,85 @@ export default function Profile() {
                 }
               </div>
             )}
+
+            {activeTab === "applications" && (
+            <div className="tab-content-enter">
+              {loadingApps ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                   {[...Array(3)].map((_, i) => (
+                    <div key={i} className="skeleton-pulse" style={{ height: "140px", width: "100%", borderRadius: "2px" }} />
+                  ))}
+                </div>
+              ) : applications.length === 0 ? (
+                <div style={{
+                  padding: "60px 24px",
+                  textAlign: "center",
+                  backgroundColor: "rgba(255,255,255,0.02)",
+                  border: "0.5px solid var(--border-hairline)",
+                  borderRadius: "2px"
+                }}>
+                  <Handshake size={32} weight="thin" style={{ color: "var(--text-tertiary)", marginBottom: "16px" }} />
+                  <p style={{ fontWeight: 800, color: "var(--text-primary)", fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>NO APPLICATIONS</p>
+                  <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginTop: "8px" }}>You haven't applied to join any projects as a co-founder yet.</p>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  {applications.map(app => (
+                    <div 
+                      key={app.id} 
+                      className="app-card"
+                      onClick={() => navigate(`/project/${app.project_id}`)}
+                      style={{
+                        padding: "24px",
+                        border: "0.5px solid var(--border-hairline)",
+                        borderRadius: "2px",
+                        backgroundColor: "var(--bg-page)",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                        display: "flex",
+                        flexDirection: isMobile ? "column" : "row",
+                        justifyContent: "space-between",
+                        alignItems: isMobile ? "flex-start" : "center",
+                        gap: "24px"
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
+                         <div style={{ width: "48px", height: "48px", flexShrink: 0, borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
+                            <img src={app.project.cover_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.title)}&background=212121&color=ffffff&bold=true`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                         </div>
+                         <div>
+                            <h3 style={{ fontSize: "14px", fontWeight: 800, margin: 0, color: "var(--text-primary)", textTransform: "uppercase" }}>{app.project.title}</h3>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                               <img src={app.project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.user?.name || "U")}&background=212121&color=ffffff&bold=true`} style={{ width: "16px", height: "16px", borderRadius: "2px" }} />
+                               <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>@{app.project.user?.username}</span>
+                            </div>
+                         </div>
+                      </div>
+
+                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <div style={{
+                          padding: "4px 10px",
+                          backgroundColor: "rgba(34, 197, 94, 0.1)",
+                          color: "#22c55e",
+                          border: "0.5px solid rgba(34, 197, 94, 0.2)",
+                          fontSize: "10px",
+                          fontWeight: 800,
+                          borderRadius: "2px",
+                          fontFamily: "var(--font-mono)",
+                          textTransform: "uppercase"
+                        }}>
+                          Applied
+                        </div>
+                        <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+                          {new Date(app.created_at).toLocaleDateString().toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
             {activeTab === "saved" && (
               <div className="tab-content-enter">

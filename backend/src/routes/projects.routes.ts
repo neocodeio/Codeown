@@ -13,7 +13,9 @@ import {
   rateProject,
   getProjectChangelogs,
   addProjectChangelog,
-  submitCofounderRequest
+  submitCofounderRequest,
+  getProjectCofounderRequests,
+  getMyCofounderApplications
 } from "../controllers/projects.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
@@ -46,7 +48,9 @@ router.post("/:id/rate", requireAuth, rateProject);
 router.get("/:id/changelogs", getProjectChangelogs);
 router.post("/:id/changelogs", requireAuth, addProjectChangelog);
 
-// Co-Founder Request route
+// Co-Founder Request routes
+router.get("/my/cofounder-applications", requireAuth, getMyCofounderApplications);
 router.post("/:id/cofounder-request", requireAuth, submitCofounderRequest);
+router.get("/:id/cofounder-requests", requireAuth, getProjectCofounderRequests);
 
 export default router;

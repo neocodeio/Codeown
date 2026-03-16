@@ -236,6 +236,31 @@ export async function getProject(req: Request, res: Response) {
       userId ? supabase.from("cofounder_requests").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null })
     ]);
 
+    // 3. IF OWNER: FETCH CO-FOUNDER REQUESTS
+    let cofounderRequests: any[] = [];
+    if (project.user_id === userId) {
+      const { data: requestsRes } = await supabase
+        .from("cofounder_requests")
+        .select("*")
+        .eq("project_id", project.id)
+        .order("created_at", { ascending: false });
+      
+      if (requestsRes && requestsRes.length > 0) {
+        // Fetch user info for each request
+        const requesterIds = requestsRes.map(r => r.user_id);
+        const { data: usersData } = await supabase
+          .from("users")
+          .select("id, name, username, avatar_url")
+          .in("id", requesterIds);
+        
+        const userMap = new Map((usersData || []).map(u => [u.id, u]));
+        cofounderRequests = requestsRes.map(r => ({
+          ...r,
+          user: userMap.get(r.user_id) || { id: r.user_id, name: "Deleted User" }
+        }));
+      }
+    }
+
     // Handle Contributors details manually (Resolved PGRST200 join error)
     let contributors: any[] = [];
     if (contribsRes && contribsRes.data && contribsRes.data.length > 0) {
@@ -277,9 +302,10 @@ export async function getProject(req: Request, res: Response) {
       rating_count: ratingCount,
       user_rating: userRating,
       contributors: contributors,
-      isLiked: !!likesRes?.data,
-      isSaved: !!savesRes?.data,
-      hasAppliedToCofounder: !!cofounderRes?.data
+      isLiked: likesRes?.data ? true : false,
+      isSaved: savesRes?.data ? true : false,
+      hasAppliedToCofounder: cofounderRes?.data ? true : false,
+      cofounderRequests: cofounderRequests // Only populated for owners
     });
   } catch (error: any) {
     console.error("[getProject] CRITICAL UNEXPECTED ERROR:", error);
@@ -1066,5 +1092,61 @@ export async function submitCofounderRequest(req: Request, res: Response) {
   } catch (error: any) {
     console.error("Error in submitCofounderRequest:", error);
     return res.status(500).json({ error: "Internal server error", details: error?.message });
+  }
+}
+
+export async function getProjectCofounderRequests(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    // Verify ownership
+    const { data: project } = await supabase.from("projects").select("user_id").eq("id", id).single();
+    if (!project || project.user_id !== userId) {
+      return res.status(403).json({ error: "Only project owner can view requests" });
+    }
+
+    const { data: requests, error } = await supabase
+      .from("cofounder_requests")
+      .select("*")
+      .eq("project_id", id)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    if (!requests || requests.length === 0) return res.json([]);
+
+    const requesterIds = requests.map(r => r.user_id);
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, name, username, avatar_url")
+      .in("id", requesterIds);
+
+    const userMap = new Map((users || []).map(u => [u.id, u]));
+    const requestsWithUsers = requests.map(r => ({
+      ...r,
+      user: userMap.get(r.user_id) || { id: r.user_id, name: "Deleted User", username: "deleted", avatar_url: null }
+    }));
+
+    res.json(requestsWithUsers);
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch requests", details: err.message });
+  }
+}
+
+export async function getMyCofounderApplications(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    const { data: applications, error } = await supabase
+      .from("cofounder_requests")
+      .select("*, project:projects(id, title, description, cover_image, user:user_id(id, name, username, avatar_url))")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    res.json(applications || []);
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch applications", details: err.message });
   }
 }
