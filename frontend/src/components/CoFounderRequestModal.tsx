@@ -7,6 +7,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 interface CoFounderRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   projectId: number;
   projectTitle: string;
 }
@@ -14,6 +15,7 @@ interface CoFounderRequestModalProps {
 export default function CoFounderRequestModal({
   isOpen,
   onClose,
+  onSuccess,
   projectId,
   projectTitle
 }: CoFounderRequestModalProps) {
@@ -52,6 +54,7 @@ export default function CoFounderRequestModal({
 
       if (response.data.success) {
         toast.success(response.data.message);
+        if (onSuccess) onSuccess();
         onClose();
       }
     } catch (error: any) {

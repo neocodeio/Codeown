@@ -54,7 +54,10 @@ export default function ProjectDetail() {
 
   const fetchProject = async () => {
     try {
-      const response = await api.get(`/projects/${id}`);
+      const token = await getToken();
+      const response = await api.get(`/projects/${id}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       setProject(response.data);
 
       setLikeCount(response.data.like_count || 0);
@@ -912,6 +915,7 @@ export default function ProjectDetail() {
       <CoFounderRequestModal
         isOpen={isCofounderModalOpen}
         onClose={() => setIsCofounderModalOpen(false)}
+        onSuccess={fetchProject}
         projectId={project.id}
         projectTitle={project.title}
       />
