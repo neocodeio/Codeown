@@ -61,7 +61,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
     if (loading) {
         return (
             <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "40px 0", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontSize: "12px", textTransform: "uppercase" }}>
-                <div style={{ width: "16px", height: "16px", border: "1px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "2px", animation: "spin 0.8s linear infinite" }} />
+                <div style={{ width: "16px", height: "16px", border: "1px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "99px", animation: "spin 0.8s linear infinite" }} />
                 FETCHING_LOGS...
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
