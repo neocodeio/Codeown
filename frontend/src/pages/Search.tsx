@@ -66,7 +66,6 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [currentUserFollowing, setCurrentUserFollowing] = useState<string[]>([]);
-  const [showOnlyHirable, setShowOnlyHirable] = useState(false);
   const [sortOption, setSortOption] = useState<SortOption>("best");
 
   const filterRef = useRef<HTMLDivElement>(null);
@@ -227,7 +226,6 @@ export default function Search() {
 
   // Derived, display-ready collections
   const peopleResults = [...users]
-    .filter((user) => !showOnlyHirable || (user.is_pro === true && user.is_hirable === true))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const postsSorted =
@@ -368,41 +366,6 @@ export default function Search() {
             </div>
           </div>
 
-          {/* Hiring Filter Toggle (only show for people filter) */}
-          {activeFilter === "people" && (
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "12px",
-              marginTop: "20px"
-            }}>
-              <label style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                cursor: "pointer",
-                fontSize: "12px",
-                fontWeight: 700,
-                color: "var(--text-secondary)",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase"
-              }}>
-                <input
-                  type="checkbox"
-                  checked={showOnlyHirable}
-                  onChange={(e) => setShowOnlyHirable(e.target.checked)}
-                  style={{
-                    width: "14px",
-                    height: "14px",
-                    cursor: "pointer",
-                    accentColor: "var(--text-primary)"
-                  }}
-                />
-                <span>SHOW ONLY OPEN TO OPPORTUNITIES</span>
-              </label>
-            </div>
-          )}
         </div>
       </div>
 
