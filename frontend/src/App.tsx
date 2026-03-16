@@ -33,6 +33,7 @@ const Analytics = lazy(() => import("./pages/Analytics"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Changelog = lazy(() => import("./pages/Changelog"));
+const Portfolio = lazy(() => import("./pages/Portfolio"));
 
 // Basic loading fallback
 const PageLoader = () => (
@@ -140,6 +141,7 @@ export default function App() {
     location.pathname.startsWith("/sign-in") ||
     location.pathname.startsWith("/sign-up") ||
     location.pathname.startsWith("/forgot-password") ||
+    location.pathname.startsWith("/portfolio") ||
     location.pathname === "/onboarding";
 
   const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
@@ -183,6 +185,7 @@ export default function App() {
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/founder-story" element={<FounderStory />} />
                 <Route path="/changelog" element={<Changelog />} />
+                <Route path="/portfolio/:username" element={<Portfolio />} />
                 <Route path="/:username" element={<UserProfile />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -487,7 +487,36 @@ export default function Profile() {
                   Upgrade to Pro
                 </Link>
               )} */}
-              <button
+                <button
+                  onClick={() => {
+                    const u = userProfile?.username || user?.username;
+                    if (u) navigate(`/portfolio/${u}`);
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "2px",
+                    fontSize: "12px",
+                    fontWeight: 800,
+                    fontFamily: "var(--font-mono)",
+                    border: "none",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.15s ease",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                >
+                  <Rocket size={16} weight="fill" />
+                  GENERATE PORTFOLIO
+                </button>
+                <button
                 onClick={() => setIsEditModalOpen(true)}
                 style={{
                   padding: "8px 16px",
