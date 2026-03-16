@@ -3,26 +3,30 @@ import { getOptimizedImageUrl, handleImageError } from "../utils/image";
 
 interface ImageSliderProps {
   images: string[];
+  onImageClick?: (index: number) => void;
 }
 
-export default function ImageSlider({ images }: ImageSliderProps) {
+export default function ImageSlider({ images, onImageClick }: ImageSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!images || images.length === 0) return null;
 
-  const goToPrevious = () => {
+  const goToPrevious = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
 
-  const goToNext = () => {
+  const goToNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setCurrentIndex((prevIndex) =>
       prevIndex === images.length - 1 ? 0 : prevIndex + 1
     );
   };
 
-  const goToSlide = (index: number) => {
+  const goToSlide = (e: React.MouseEvent, index: number) => {
+    e.stopPropagation();
     setCurrentIndex(index);
   };
 
@@ -36,7 +40,15 @@ export default function ImageSlider({ images }: ImageSliderProps) {
       backgroundColor: "#f5f7fa",
     }}>
       {/* Main Image */}
-      <div style={{ position: "relative", width: "100%", paddingTop: "56.25%" }}> {/* 16:9 aspect ratio */}
+      <div 
+        style={{ position: "relative", width: "100%", paddingTop: "56.25%", cursor: onImageClick ? "pointer" : "default" }}
+        onClick={(e) => {
+          if (onImageClick) {
+            e.stopPropagation();
+            onImageClick(currentIndex);
+          }
+        }}
+      > {/* 16:9 aspect ratio */}
         <img
           src={getOptimizedImageUrl(images[currentIndex])}
           alt={`Slide ${currentIndex + 1}`}
@@ -56,7 +68,7 @@ export default function ImageSlider({ images }: ImageSliderProps) {
         {images.length > 1 && (
           <>
             <button
-              onClick={goToPrevious}
+              onClick={(e) => goToPrevious(e)}
               style={{
                 position: "absolute",
                 left: "12px",
@@ -86,7 +98,7 @@ export default function ImageSlider({ images }: ImageSliderProps) {
               ‹
             </button>
             <button
-              onClick={goToNext}
+              onClick={(e) => goToNext(e)}
               style={{
                 position: "absolute",
                 right: "12px",
@@ -131,7 +143,7 @@ export default function ImageSlider({ images }: ImageSliderProps) {
           {images.map((_, index) => (
             <button
               key={index}
-              onClick={() => goToSlide(index)}
+              onClick={(e) => goToSlide(e, index)}
               style={{
                 width: index === currentIndex ? "24px" : "8px",
                 height: "8px",

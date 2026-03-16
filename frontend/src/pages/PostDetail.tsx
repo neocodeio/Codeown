@@ -23,6 +23,7 @@ import {
   ChartBar
 } from "phosphor-react";
 import { toast } from "react-toastify";
+import Lightbox from "../components/Lightbox";
 
 interface Post {
   id: number;
@@ -63,6 +64,8 @@ export default function PostDetail() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [votedOption, setVotedOption] = useState<number | null>(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
 
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id), post?.isLiked, post?.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id), post?.isSaved);
@@ -165,6 +168,13 @@ export default function PostDetail() {
     }
   };
 
+  const handleImageClick = (index: number) => {
+    if (post?.images && post.images[index]) {
+      setLightboxImage(post.images[index]);
+      setIsLightboxOpen(true);
+    }
+  };
+
   function buildTree(list: CommentWithMeta[]): CommentWithMeta[] {
     const map = new Map<number, CommentWithMeta & { children: CommentWithMeta[] }>();
     list.forEach(c => map.set(c.id, { ...c, children: [] }));
@@ -184,7 +194,7 @@ export default function PostDetail() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
-      <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "2px", animation: "spin 0.6s linear infinite" }} />
+      <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "999px", animation: "spin 0.6s linear infinite" }} />
     </div>
   );
 
@@ -310,7 +320,7 @@ export default function PostDetail() {
             {/* Media/Images */}
             {post.images && post.images.length > 0 && (
               <div style={{ marginBottom: "24px", borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
-                <ImageSlider images={post.images} />
+                <ImageSlider images={post.images} onImageClick={handleImageClick} />
               </div>
             )}
 
@@ -530,6 +540,11 @@ export default function PostDetail() {
         onClose={() => setIsShareModalOpen(false)}
         url={shareUrl}
         title="Share this post"
+      />
+      <Lightbox 
+        isOpen={isLightboxOpen} 
+        onClose={() => setIsLightboxOpen(false)} 
+        imageSrc={lightboxImage} 
       />
 
       <style>{`

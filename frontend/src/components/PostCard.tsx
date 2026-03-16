@@ -17,6 +17,7 @@ import AvailabilityBadge from "./AvailabilityBadge";
 import ShareModal from "./ShareModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { toast } from "react-toastify";
+import Lightbox from "./Lightbox";
 
 interface PostCardProps {
   post: Post;
@@ -36,6 +37,8 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -134,6 +137,13 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       toast.info("Vote simulated (backend support pending)");
     } finally {
       setIsVoting(false);
+    }
+  };
+
+  const handleImageClick = (index: number) => {
+    if (post.images && post.images[index]) {
+      setLightboxImage(post.images[index]);
+      setIsLightboxOpen(true);
     }
   };
 
@@ -275,10 +285,9 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
           <ContentRenderer content={post.content} />
         </div>
 
-        {/* Media */}
         {post.images && post.images.length > 0 && (
           <div style={{ borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px" }}>
-            <ImageSlider images={post.images} />
+            <ImageSlider images={post.images} onImageClick={handleImageClick} />
           </div>
         )}
 
@@ -457,6 +466,11 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         message="Are you sure you want to delete this post? This action cannot be undone."
         confirmLabel="Delete"
         isLoading={isDeleting}
+      />
+      <Lightbox 
+        isOpen={isLightboxOpen} 
+        onClose={() => setIsLightboxOpen(false)} 
+        imageSrc={lightboxImage} 
       />
       {postCardContent}
     </>
