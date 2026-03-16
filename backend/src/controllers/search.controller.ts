@@ -115,24 +115,32 @@ export async function searchPosts(req: Request, res: Response) {
 
 export async function searchProjects(req: Request, res: Response) {
   try {
-    const { q, page = "1", limit = "20" } = req.query;
+    const { q, page = "1", limit = "20", cofounder = "false" } = req.query;
     const query = (q as string)?.trim() || "";
     const pageNum = parseInt(page as string, 10) || 1;
     const limitNum = parseInt(limit as string, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
-
-    if (!query || query.length < 2) {
-      return res.json({ projects: [], total: 0, page: pageNum, limit: limitNum });
-    }
+    const isCofounderOnly = cofounder === "true";
 
     // Search projects by title, description, or technologies - select only safe columns
     let projectsQuery = supabase
       .from("projects")
       .select(`
-        id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id,
+        id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id, looking_for_contributors,
         user:user_id(id, name, avatar_url, username, is_hirable, is_pro)
-      `, { count: "exact" })
-      .or(`title.ilike.%${query}%,description.ilike.%${query}%,technologies_used.cs.{${query}}`)
+      `, { count: "exact" });
+
+    if (query && query.length >= 2) {
+      projectsQuery = projectsQuery.or(`title.ilike.%${query}%,description.ilike.%${query}%,technologies_used.cs.{${query}}`);
+    } else if (!isCofounderOnly) {
+      return res.json({ projects: [], total: 0, page: pageNum, limit: limitNum });
+    }
+
+    if (isCofounderOnly) {
+      projectsQuery = projectsQuery.eq("looking_for_contributors", true);
+    }
+
+    projectsQuery = projectsQuery
       .order("created_at", { ascending: false })
       .range(offset, offset + limitNum - 1);
 

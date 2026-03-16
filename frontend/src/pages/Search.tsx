@@ -54,6 +54,7 @@ export default function Search() {
   const initialQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(initialQuery);
   const [activeFilter, setActiveFilter] = useState<FilterType>("people");
+  const [showOnlyCofounder, setShowOnlyCofounder] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -90,7 +91,8 @@ export default function Search() {
   // 1. Fetch search results
   useEffect(() => {
     const fetchResults = async () => {
-      if (!query || query.trim().length < 1) {
+      // Allow empty query only if showOnlyCofounder is true and we're looking at projects
+      if ((!query || query.trim().length < 1) && !showOnlyCofounder) {
         setUsers([]);
         setPosts([]);
         setProjects([]);
@@ -127,15 +129,15 @@ export default function Search() {
         if (isMention) {
           userPromise = api.get(`/search/users?q=${encodeURIComponent(cleanQ)}`);
           postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
-          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20`);
+          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20&cofounder=${showOnlyCofounder}`);
         } else if (isTag) {
           userPromise = Promise.resolve({ data: [] });
           postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
-          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20`);
+          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20&cofounder=${showOnlyCofounder}`);
         } else {
           userPromise = api.get(`/search/users?q=${encodeURIComponent(query)}`);
           postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
-          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(query)}&limit=20`);
+          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(query)}&limit=20&cofounder=${showOnlyCofounder}`);
         }
 
         const [uRes, pRes, prRes] = await Promise.all([userPromise, postPromise, projectPromise]);
@@ -156,7 +158,7 @@ export default function Search() {
     const timeoutId = setTimeout(fetchResults, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [query, getToken]);
+  }, [query, getToken, showOnlyCofounder]);
 
   // 2. Fetch following list for current user and initialize history
   useEffect(() => {
@@ -289,6 +291,34 @@ export default function Search() {
               autoFocus
             />
 
+            {/* Quick Filter: Seeking Co-Founder */}
+            {activeFilter === "projects" && (
+              <button
+                onClick={() => setShowOnlyCofounder(!showOnlyCofounder)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: showOnlyCofounder ? "var(--text-primary)" : "transparent",
+                  color: showOnlyCofounder ? "var(--bg-page)" : "var(--text-tertiary)",
+                  border: showOnlyCofounder ? "none" : "0.5px solid var(--border-hairline)",
+                  borderRadius: "2px",
+                  padding: "8px 12px",
+                  fontSize: "10px",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase",
+                  transition: "all 0.15s ease",
+                  marginRight: "4px"
+                }}
+              >
+                <Users size={14} weight={showOnlyCofounder ? "fill" : "regular"} />
+                {!isMobile && "Seeking Co-Founder"}
+              </button>
+            )}
+
             {/* Filter Dropdown */}
             <div style={{ position: "relative" }} ref={filterRef}>
               <button
@@ -371,11 +401,12 @@ export default function Search() {
 
       {/* Results Area */}
       <div className="container" style={{ maxWidth: "1000px", margin: "40px auto", padding: "0 20px" }}>
+        
         {loading ? (
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             {[...Array(3)].map((_, i) => <PostCardSkeleton key={i} />)}
           </div>
-        ) : !query ? (
+        ) : (!query && !showOnlyCofounder) ? (
           <div className="fade-in">
             {history.length > 0 ? (
               <div style={{ maxWidth: "600px", margin: "0 auto" }}>
@@ -507,6 +538,33 @@ export default function Search() {
                     {opt.label}
                   </button>
                 ))}
+
+                {activeFilter === "projects" && (
+                  <button
+                    onClick={() => setShowOnlyCofounder(!showOnlyCofounder)}
+                    style={{
+                      padding: "8px 16px",
+                      borderRadius: "2px",
+                      border: "0.5px solid",
+                      borderColor: showOnlyCofounder ? "var(--text-primary)" : "var(--border-hairline)",
+                      backgroundColor: showOnlyCofounder ? "var(--text-primary)" : "transparent",
+                      color: showOnlyCofounder ? "var(--bg-page)" : "var(--text-tertiary)",
+                      fontSize: "11px",
+                      fontWeight: 800,
+                      cursor: "pointer",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      fontFamily: "var(--font-mono)",
+                      transition: "all 0.15s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px"
+                    }}
+                  >
+                    <Users size={14} weight={showOnlyCofounder ? "fill" : "regular"} />
+                    Looking for Co-Founder
+                  </button>
+                )}
 
                 <div
                   style={{
