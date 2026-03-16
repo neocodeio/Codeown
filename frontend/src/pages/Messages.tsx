@@ -7,7 +7,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { 
   PaperPlaneTilt, 
   CaretLeft, 
-  ChatTeardropText, 
+  ChatTeardropText,   
   NotePencil, 
   MagnifyingGlass,
   Plus
@@ -325,7 +325,9 @@ export default function Messages() {
                   margin: 0,
                   letterSpacing: "0.05em",
                   fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase"
+                  textTransform: "uppercase",
+                  flex: 1,
+                  minWidth: 0
                 }}
               >
                 MESSAGES
@@ -333,28 +335,32 @@ export default function Messages() {
               <button
                 onClick={() => setIsNewMessageModalOpen(true)}
                 style={{
-                  width: "32px",
-                  height: "32px",
+                  width: "36px",
+                  height: "36px",
                   borderRadius: "2px",
-                  border: "0.5px solid var(--border-hairline)",
-                  backgroundColor: "var(--bg-page)",
+                  border: "1px solid var(--text-primary)",
+                  backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   cursor: "pointer",
                   transition: "all 0.15s ease",
+                  flexShrink: 0,
+                  padding: 0
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                  e.currentTarget.style.borderColor = "var(--text-primary)";
+                  e.currentTarget.style.transform = "scale(1.05)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--bg-page)";
-                  e.currentTarget.style.borderColor = "var(--border-hairline)";
+                  e.currentTarget.style.backgroundColor = "var(--bg-input)";
+                  e.currentTarget.style.transform = "scale(1)";
                 }}
               >
-                <Plus size={18} weight="thin" />
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "22px", height: "22px" }}>
+                  <NotePencil size={22} weight="bold" />
+                </div>
               </button>
             </div>
 
@@ -654,7 +660,7 @@ export default function Messages() {
                   onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
                 />
                 <div style={{ minWidth: 0, flex: 1 }}>
-                      <div
+                  <div
                     style={{
                       fontWeight: 700,
                       cursor: "pointer",
@@ -675,6 +681,26 @@ export default function Messages() {
                     @{activeConvo.partner.username || "user"}
                   </div>
                 </div>
+
+                {/* New Message button in Header for ease of use */}
+                <button
+                  onClick={() => setIsNewMessageModalOpen(true)}
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "2px",
+                    border: "0.5px solid var(--border-hairline)",
+                    backgroundColor: "transparent",
+                    color: "var(--text-primary)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    flexShrink: 0
+                  }}
+                >
+                  <Plus size={18} weight="bold" />
+                </button>
               </div>
 
               {/* Messages */}
