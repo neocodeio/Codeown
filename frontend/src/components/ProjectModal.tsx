@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import type { Project, ProjectFormData } from "../types/project";
-import { X, Check } from "phosphor-react";
+import { X, Check, GithubLogo } from "phosphor-react";
 import VerifiedBadge from "./VerifiedBadge";
 import { validateImageSize } from "../constants/upload";
 import confetti from "canvas-confetti";
@@ -20,6 +20,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [techInput, setTechInput] = useState("");
+    const [fetchingGitHub, setFetchingGitHub] = useState(false);
 
     const [formData, setFormData] = useState<ProjectFormData>({
         title: "",
@@ -102,6 +103,65 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
             ...prev,
             contributors: prev.contributors?.filter(c => c !== contributorToRemove)
         }));
+    };
+
+    const handleGitHubImport = async () => {
+        const repoUrl = (formData.github_repo || "").trim();
+        if (!repoUrl) {
+            setError("Please enter a GitHub repository URL first.");
+            return;
+        }
+
+        // Simple regex to extract owner and repo from various GitHub URL formats
+        const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)/);
+        if (!match) {
+            setError("Invalid GitHub URL. Format: https://github.com/owner/repo");
+            return;
+        }
+
+        const owner = match[1];
+        const repo = match[2].replace(/\.git$/, "");
+
+        setFetchingGitHub(true);
+        setError("");
+
+        try {
+            // Fetch basic repo info
+            const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+            if (!repoRes.ok) throw new Error("Repository not found or private.");
+            const repoData = await repoRes.json();
+
+            // Fetch languages (for tech stack)
+            const languagesRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
+            const languagesData = await languagesRes.json();
+            const languages = Object.keys(languagesData).slice(0, 5); // Take top 5 languages
+
+            // Fetch README content
+            const readmeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/readme`, {
+                headers: { Accept: "application/vnd.github.raw" }
+            });
+            let readmeContent = "";
+            if (readmeRes.ok) {
+                readmeContent = await readmeRes.text();
+            }
+
+            // Update form data
+            setFormData(prev => ({
+                ...prev,
+                title: prev.title || repoData.name.split(/[-_]/).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+                description: prev.description || repoData.description || "",
+                live_demo: prev.live_demo || repoData.homepage || "",
+                technologies_used: Array.from(new Set([...prev.technologies_used, ...languages])),
+                project_details: prev.project_details || readmeContent.slice(0, 2000) // Truncate README if huge
+            }));
+
+            toast.success("Imported technical data from GitHub! 🪄");
+        } catch (err: any) {
+            console.error("GitHub import error:", err);
+            setError(`GitHub Import Failed: ${err.message}`);
+        } finally {
+            setFetchingGitHub(false);
+        }
     };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -614,9 +674,45 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                         <div className="responsive-grid">
                             <div>
-                                <label className="form-item-label">
-                                    GitHub Repository
-                                </label>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+                                    <label className="form-item-label" style={{ marginBottom: 0 }}>
+                                        GitHub Repository
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={handleGitHubImport}
+                                        disabled={fetchingGitHub || !formData.github_repo}
+                                        style={{
+                                            backgroundColor: "transparent",
+                                            border: "0.5px solid var(--border-hairline)",
+                                            color: fetchingGitHub || !formData.github_repo ? "var(--text-tertiary)" : "var(--text-primary)",
+                                            padding: "4px 10px",
+                                            borderRadius: "2px",
+                                            fontSize: "9px",
+                                            fontWeight: 800,
+                                            fontFamily: "var(--font-mono)",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "6px",
+                                            cursor: fetchingGitHub || !formData.github_repo ? "not-allowed" : "pointer",
+                                            textTransform: "uppercase",
+                                            transition: "all 0.15s ease"
+                                        }}
+                                        onMouseEnter={e => {
+                                            if (!fetchingGitHub && formData.github_repo) {
+                                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                                e.currentTarget.style.borderColor = "var(--text-primary)";
+                                            }
+                                        }}
+                                        onMouseLeave={e => {
+                                            e.currentTarget.style.backgroundColor = "transparent";
+                                            e.currentTarget.style.borderColor = "var(--border-hairline)";
+                                        }}
+                                    >
+                                        <GithubLogo size={14} weight="fill" />
+                                        {fetchingGitHub ? "IMPORTING..." : "IMPORT DATA"}
+                                    </button>
+                                </div>
                                 <input
                                     type="url"
                                     name="github_repo"

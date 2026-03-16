@@ -514,7 +514,7 @@ export default function Profile() {
                   onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                 >
                   <Rocket size={16} weight="fill" />
-                  GENERATE PORTFOLIO
+                  YOUR  PORTFOLIO
                 </button>
                 <button
                 onClick={() => setIsEditModalOpen(true)}
