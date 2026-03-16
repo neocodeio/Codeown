@@ -86,7 +86,7 @@ export default function ProjectDetail() {
   const fetchReactionStatus = async () => {
     try {
       const token = await getToken();
-      if (!token || !currentUser) return;
+      if (!token) return;
 
       const [likeRes, savedRes] = await Promise.all([
         api.get(`/projects/${id}/like`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -96,7 +96,7 @@ export default function ProjectDetail() {
       setIsLiked(likeRes.data.isLiked);
       setIsSaved(savedRes.data.isSaved);
     } catch (error) {
-      console.error("Error fetching reaction status:", error);
+      console.log("Reaction status not available (Guest)");
     }
   };
 
