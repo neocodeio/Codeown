@@ -228,11 +228,12 @@ export async function getProject(req: Request, res: Response) {
 
     // We execute these in parallel. We remove .catch() because query builders are thenables, not full promises.
     //supabase-js returns objects that only implement .then()
-    const [ratingsRes, contribsRes, likesRes, savesRes]: any[] = await Promise.all([
+    const [ratingsRes, contribsRes, likesRes, savesRes, cofounderRes]: any[] = await Promise.all([
       supabase.from("project_ratings").select("rating, user_id").eq("project_id", project.id),
       supabase.from("project_contributors").select("user_id").eq("project_id", project.id),
       userId ? supabase.from("project_likes").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null }),
-      userId ? supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null })
+      userId ? supabase.from("project_saves").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null }),
+      userId ? supabase.from("cofounder_requests").select("id").eq("user_id", userId).eq("project_id", project.id).maybeSingle() : Promise.resolve({ data: null })
     ]);
 
     // Handle Contributors details manually (Resolved PGRST200 join error)
@@ -277,7 +278,8 @@ export async function getProject(req: Request, res: Response) {
       user_rating: userRating,
       contributors: contributors,
       isLiked: !!likesRes?.data,
-      isSaved: !!savesRes?.data
+      isSaved: !!savesRes?.data,
+      hasAppliedToCofounder: !!cofounderRes?.data
     });
   } catch (error: any) {
     console.error("[getProject] CRITICAL UNEXPECTED ERROR:", error);
@@ -968,6 +970,18 @@ export async function submitCofounderRequest(req: Request, res: Response) {
       return res.status(400).json({ error: "You cannot apply to your own project" });
     }
 
+    // Check for existing request
+    const { data: existingRequest } = await supabase
+      .from("cofounder_requests")
+      .select("id")
+      .eq("project_id", id)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (existingRequest) {
+      return res.status(400).json({ error: "You have already applied to be a co-founder for this project." });
+    }
+
     // 2. Validate requester eligibility: 1 post, 1 project, tech skills
     const { data: requester, error: requesterError } = await supabase
       .from("users")
@@ -1007,9 +1021,25 @@ export async function submitCofounderRequest(req: Request, res: Response) {
       });
     }
 
-    // 3. Send Notifications
+    // 3. Save Request
+    const { error: insertError } = await supabase
+      .from("cofounder_requests")
+      .insert({
+        project_id: parseInt(id || "0"),
+        user_id: String(userId),
+        skills,
+        commitment_hours: String(hoursPerWeek),
+        motivation: String(reason || ""),
+        contribution: String(contribution || "")
+      });
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    // 4. Send Notifications
     // Create platform notification
-    await createProjectNotification(String(project.user_id), "cofounder_request", String(userId), parseInt(id));
+    await createProjectNotification(String(project.user_id), "cofounder_request", String(userId), parseInt(id || "0"));
 
     // Send Email
     if (project.user?.email) {
@@ -1020,10 +1050,10 @@ export async function submitCofounderRequest(req: Request, res: Response) {
         requester.username || "anon",
         project.title,
         {
-          skills,
+          skills: skills || [],
           hoursPerWeek: String(hoursPerWeek),
-          reason,
-          contribution
+          reason: String(reason || ""),
+          contribution: String(contribution || "")
         }
       );
     }

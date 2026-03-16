@@ -242,7 +242,7 @@ export default function ProjectDetail() {
           height: "24px", 
           border: "0.5px solid var(--border-hairline)", 
           borderTopColor: "var(--text-primary)", 
-          borderRadius: "2px", 
+          borderRadius: "999px", 
           animation: "spin 0.8s linear infinite" 
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -461,22 +461,24 @@ export default function ProjectDetail() {
                   </p>
                 </div>
                 <button
-                  onClick={() => setIsCofounderModalOpen(true)}
+                  onClick={() => !project.hasAppliedToCofounder && setIsCofounderModalOpen(true)}
+                  disabled={project.hasAppliedToCofounder}
                   style={{
                     padding: "12px 24px",
-                    backgroundColor: "var(--text-primary)",
-                    color: "var(--bg-page)",
-                    border: "none",
+                    backgroundColor: project.hasAppliedToCofounder ? "rgba(255, 255, 255, 0.05)" : "var(--text-primary)",
+                    color: project.hasAppliedToCofounder ? "var(--text-tertiary)" : "var(--bg-page)",
+                    border: project.hasAppliedToCofounder ? "1px solid var(--border-hairline)" : "none",
                     borderRadius: "2px",
                     fontSize: "12px",
                     fontWeight: 900,
                     textTransform: "uppercase",
                     letterSpacing: "0.1em",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap"
+                    cursor: project.hasAppliedToCofounder ? "default" : "pointer",
+                    whiteSpace: "nowrap",
+                    opacity: project.hasAppliedToCofounder ? 0.7 : 1
                   }}
                 >
-                  Apply to Join
+                  {project.hasAppliedToCofounder ? "ALREADY APPLIED" : "Apply to Join"}
                 </button>
               </div>
             )}

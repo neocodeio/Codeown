@@ -17,6 +17,7 @@ export interface Project {
   looking_for_contributors?: boolean;
   isLiked?: boolean;
   isSaved?: boolean;
+  hasAppliedToCofounder?: boolean;
   user?: {
     id: string;
     name: string;
