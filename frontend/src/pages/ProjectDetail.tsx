@@ -526,11 +526,12 @@ export default function ProjectDetail() {
                       border: "none",
                       cursor: "pointer",
                       padding: 0,
-                      color: (hoverRating || userRating) >= star ? "var(--text-primary)" : "var(--border-hairline)",
-                      transition: "color 0.15s"
+                      color: (hoverRating || userRating) >= star ? "var(--text-primary)" : "var(--text-tertiary)",
+                      transition: "all 0.15s ease",
+                      transform: hoverRating >= star ? "scale(1.1)" : "scale(1)"
                     }}
                   >
-                    <Star size={20} weight={(hoverRating || userRating) >= star ? "fill" : "thin"} />
+                    <Star size={22} weight={(hoverRating || userRating) >= star ? "fill" : "bold"} />
                   </button>
                 ))}
                 <span style={{ fontSize: "11px", color: "var(--text-tertiary)", marginLeft: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
@@ -695,7 +696,7 @@ export default function ProjectDetail() {
               letterSpacing: "0.05em"
             }}
           >
-            <Star size={20} weight={isLiked ? "fill" : "thin"} />
+            <Star size={20} weight={isLiked ? "fill" : "bold"} />
             {likeCount > 0 ? `${likeCount} ` : ""}UPVOTE
           </button>
 
