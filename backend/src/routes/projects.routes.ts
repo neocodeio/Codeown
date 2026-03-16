@@ -22,6 +22,7 @@ import { requireAuth } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 // Public routes
+router.get("/my/cofounder-applications", requireAuth, getMyCofounderApplications);
 router.get("/", getProjects);
 router.get("/:id", getProject);
 
@@ -49,7 +50,6 @@ router.get("/:id/changelogs", getProjectChangelogs);
 router.post("/:id/changelogs", requireAuth, addProjectChangelog);
 
 // Co-Founder Request routes
-router.get("/my/cofounder-applications", requireAuth, getMyCofounderApplications);
 router.post("/:id/cofounder-request", requireAuth, submitCofounderRequest);
 router.get("/:id/cofounder-requests", requireAuth, getProjectCofounderRequests);
 

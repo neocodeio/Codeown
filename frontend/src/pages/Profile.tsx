@@ -191,7 +191,7 @@ export default function Profile() {
         const res = await api.get("/projects/my/cofounder-applications", {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        setApplications(res.data || []);
+        setApplications(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
         console.error("Error fetching applications:", error);
       } finally {

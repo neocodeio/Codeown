@@ -442,7 +442,7 @@ export default function ProjectDetail() {
             </p>
 
             {/* OWNER REVIEW SECTION */}
-            {isOwnProject && project.cofounderRequests && project.cofounderRequests.length > 0 && (
+            {isOwnProject && Array.isArray(project.cofounderRequests) && project.cofounderRequests.length > 0 && (
               <div style={{
                 marginBottom: "56px",
                 border: "0.5px solid var(--border-hairline)",
