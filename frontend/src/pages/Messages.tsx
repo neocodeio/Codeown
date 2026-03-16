@@ -42,6 +42,7 @@ interface Conversation {
 export default function Messages() {
   const [searchParams] = useSearchParams();
   const targetUserId = searchParams.get("userId");
+  const initialMessage = searchParams.get("message");
   const { getToken } = useClerkAuth();
   const { user: currentUser } = useClerkUser();
   const navigate = useNavigate();
@@ -58,6 +59,12 @@ export default function Messages() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialMessage) {
+      setNewMessage(initialMessage);
+    }
+  }, [initialMessage]);
 
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

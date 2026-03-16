@@ -9,13 +9,14 @@ import { formatRelativeDate } from "../utils/date";
 import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
-import { ArrowLeft, PencilSimple, Trash, Globe, GithubLogo, Star, ShareNetwork, BookmarkSimple } from "phosphor-react";
+import { ArrowLeft, PencilSimple, Trash, Globe, GithubLogo, Star, ShareNetwork, BookmarkSimple, Handshake } from "phosphor-react";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
 import ProjectChangelog from "../components/ProjectChangelog";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import AvailabilityBadge from "../components/AvailabilityBadge";
+import CoFounderRequestModal from "../components/CoFounderRequestModal";
 import { toast } from "react-toastify";
 
 export default function ProjectDetail() {
@@ -37,6 +38,7 @@ export default function ProjectDetail() {
   const [hoverRating, setHoverRating] = useState(0);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCofounderModalOpen, setIsCofounderModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "changelog">("details");
 
   const viewLogged = useRef(false);
@@ -435,6 +437,49 @@ export default function ProjectDetail() {
             }}>
               {project.description}
             </p>
+
+            {project.looking_for_contributors && !isOwnProject && (
+              <div style={{
+                backgroundColor: "rgba(255, 255, 255, 0.03)",
+                border: "1px solid var(--border-hairline)",
+                padding: "32px",
+                marginBottom: "48px",
+                borderRadius: "2px",
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                alignItems: isMobile ? "flex-start" : "center",
+                justifyContent: "space-between",
+                gap: "24px"
+              }}>
+                <div>
+                  <h3 style={{ fontSize: "14px", fontWeight: 800, marginBottom: "8px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    <Handshake size={20} weight="duotone" />
+                    Join as Co-Founder
+                  </h3>
+                  <p style={{ fontSize: "13px", color: "var(--text-secondary)", maxWidth: "400px", lineHeight: "1.5" }}>
+                    The creator is looking for a partner to build this project. Ready to join the mission?
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsCofounderModalOpen(true)}
+                  style={{
+                    padding: "12px 24px",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
+                    border: "none",
+                    borderRadius: "2px",
+                    fontSize: "12px",
+                    fontWeight: 900,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  Apply to Join
+                </button>
+              </div>
+            )}
 
             {project.technologies_used && project.technologies_used.length > 0 && (
               <div style={{ marginBottom: "40px" }}>
@@ -861,6 +906,12 @@ export default function ProjectDetail() {
         message="Delete this project? This action cannot be undone."
         confirmLabel="Delete"
         isLoading={isDeleting}
+      />
+      <CoFounderRequestModal
+        isOpen={isCofounderModalOpen}
+        onClose={() => setIsCofounderModalOpen(false)}
+        projectId={project.id}
+        projectTitle={project.title}
       />
     </main>
   );

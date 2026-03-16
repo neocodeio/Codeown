@@ -54,7 +54,8 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
     };
 
     const handleShareToX = () => {
-        const tweetText = `Just claimed my developer identity on codeown.space. Building in public. Thanks @amincodes ${window.location.origin}/${user.username || ""}`;
+        const shareUrl = `${window.location.origin}/${user.username || ""}`;
+        const tweetText = `Just claimed my developer identity on @CodeownSpace. Building in public. 🚀\n\nClaim yours at ${shareUrl}`;
         const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
         window.open(xUrl, "_blank");
     };

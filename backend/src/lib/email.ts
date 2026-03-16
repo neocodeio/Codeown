@@ -480,3 +480,64 @@ export async function sendPersonalWeeklyRecapEmail(email: string, userName: stri
     console.error("Unexpected error in sendPersonalWeeklyRecapEmail:", err);
   }
 }
+
+export async function sendCofounderRequestEmail(
+  ownerEmail: string,
+  ownerName: string,
+  requesterName: string,
+  requesterUsername: string,
+  projectTitle: string,
+  applicationData: {
+    skills: string[];
+    hoursPerWeek: string;
+    reason: string;
+    contribution: string;
+  }
+) {
+  if (!resend) return;
+  try {
+    await resend.emails.send({
+      from: "Codeown <notifications@codeown.space>",
+      to: ownerEmail,
+      subject: `New Co-Founder Request for "${projectTitle}" from @${requesterUsername}! 🚀`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+          <h2 style="color: #0f172a; margin-bottom: 24px;">Hey ${ownerName},</h2>
+          <p style="font-size: 16px; color: #475569; line-height: 1.6;">
+            <strong>${requesterName}</strong> (@${requesterUsername}) is interested in becoming a Co-Founder for your project <strong>${projectTitle}</strong>.
+          </p>
+          
+          <div style="background-color: #f8fafc; padding: 24px; border-radius: 8px; margin: 24px 0;">
+            <h3 style="font-size: 14px; text-transform: uppercase; color: #64748b; margin-top: 0; letter-spacing: 0.05em;">Application Details</h3>
+            
+            <p style="margin-bottom: 16px;">
+              <strong style="display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Skills:</strong>
+              <span style="font-size: 14px; color: #0f172a;">${applicationData.skills.join(", ") || "N/A"}</span>
+            </p>
+            
+            <p style="margin-bottom: 16px;">
+              <strong style="display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Weekly Commitment:</strong>
+              <span style="font-size: 14px; color: #0f172a;">${applicationData.hoursPerWeek} hours</span>
+            </p>
+            
+            <p style="margin-bottom: 16px;">
+              <strong style="display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Why join?</strong>
+              <span style="font-size: 14px; color: #0f172a;">${applicationData.reason}</span>
+            </p>
+            
+            <p style="margin-bottom: 0;">
+              <strong style="display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase;">What I bring:</strong>
+              <span style="font-size: 14px; color: #0f172a;">${applicationData.contribution}</span>
+            </p>
+          </div>
+          
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/messages?userId=${requesterUsername}" style="padding: 12px 32px; background: #000000; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">Message @${requesterUsername} &rarr;</a>
+          </div>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Error sending cofounder request email:", err);
+  }
+}

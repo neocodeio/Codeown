@@ -506,7 +506,7 @@ export default function UserProfile() {
                     }, {
                       headers: token ? { Authorization: `Bearer ${token}` } : {}
                     });
-                    navigate(`/messages?userId=${user.id}&message=${encodeURIComponent("Hi! I saw you are open to opportunities and I'd like to chat.")}`);
+                    navigate(`/messages?userId=${user.id}&message=${encodeURIComponent("Hi! I found your profile on Codeown. Your work looks impressive—would love to connect and chat about what you're building!")}`);
                   }}
                   style={{
                     padding: "10px 24px",

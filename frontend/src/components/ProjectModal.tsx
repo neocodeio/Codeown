@@ -605,10 +605,10 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                         {formData.looking_for_contributors && <Check size={12} weight="bold" color="var(--bg-page)" />}
                                     </div>
                                 </div>
-                                <span style={{ fontWeight: 700, fontSize: "13px", color: "var(--text-primary)", letterSpacing: "-0.01em" }}>Looking for Contributors</span>
+                                <span style={{ fontWeight: 700, fontSize: "13px", color: "var(--text-primary)", letterSpacing: "-0.01em" }}>Looking for Co-Founder</span>
                             </label>
                             <p style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "8px", marginLeft: "30px", lineHeight: 1.5, letterSpacing: "-0.01em" }}>
-                                Enable this to let other developers know you're open to collaboration.
+                                Enable this to let other developers know you're open for a Co-Founder to join your mission.
                             </p>
                         </div>
 

@@ -1,11 +1,14 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
-import { sendNewLikeEmail } from "../lib/email.js";
+import { sendNewLikeEmail, sendCofounderRequestEmail } from "../lib/email.js";
+import { ensureUserExists } from "./users.controller.js";
+import { clerkClient } from "@clerk/clerk-sdk-node";
+import { emitUpdate } from "../lib/socket.js";
 
 // Helper function to create notifications
 async function createProjectNotification(
   userId: string,
-  type: "like" | "comment" | "save",
+  type: "like" | "comment" | "save" | "cofounder_request",
   actorId: string,
   projectId: number
 ) {
@@ -22,9 +25,6 @@ async function createProjectNotification(
     console.error("Error creating project notification:", error);
   }
 }
-import { ensureUserExists } from "./users.controller.js";
-import { clerkClient } from "@clerk/clerk-sdk-node";
-import { emitUpdate } from "../lib/socket.js";
 
 // Changelogs features
 export async function getProjectChangelogs(req: Request, res: Response) {
@@ -403,7 +403,7 @@ export async function createProject(req: Request, res: Response) {
       live_demo: live_demo || null,
       cover_image: cover_image || null,
       project_details: project_details.trim(),
-      // looking_for_contributors: !!looking_for_contributors, // Removed: column missing in DB
+      looking_for_contributors: !!looking_for_contributors,
       // like_count: 0, // Usually has default in DB
       // comment_count: 0, // Usually has default in DB
       created_at: now,
@@ -940,5 +940,101 @@ export async function rateProject(req: Request, res: Response) {
   } catch (error) {
     console.error("Error in rateProject:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function submitCofounderRequest(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    const { id } = req.params;
+    const { skills, hoursPerWeek, reason, contribution } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    // 1. Fetch project and owner
+    const { data: project, error: projectError } = await supabase
+      .from("projects")
+      .select("*, user:users(*)")
+      .eq("id", id)
+      .single();
+
+    if (projectError || !project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    if (project.user_id === userId) {
+      return res.status(400).json({ error: "You cannot apply to your own project" });
+    }
+
+    // 2. Validate requester eligibility: 1 post, 1 project, tech skills
+    const { data: requester, error: requesterError } = await supabase
+      .from("users")
+      .select("id, name, username, skills")
+      .eq("id", userId)
+      .single();
+
+    if (requesterError || !requester) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check skills
+    if (!requester.skills || requester.skills.length === 0) {
+      return res.status(400).json({ 
+        error: "Eligibility Check Failed", 
+        details: "You must add at least one tech skill to your profile before applying." 
+      });
+    }
+
+    // Check posts and projects
+    const [postsCountRes, projectsCountRes] = await Promise.all([
+      supabase.from("posts").select("id", { count: "exact", head: true }).eq("user_id", userId),
+      supabase.from("projects").select("id", { count: "exact", head: true }).eq("user_id", userId)
+    ]);
+
+    if ((postsCountRes.count || 0) < 1) {
+      return res.status(400).json({ 
+        error: "Eligibility Check Failed", 
+        details: "You must have shared at least one post on Codeown before applying." 
+      });
+    }
+
+    if ((projectsCountRes.count || 0) < 1) {
+      return res.status(400).json({ 
+        error: "Eligibility Check Failed", 
+        details: "You must have launched at least one project on Codeown before applying." 
+      });
+    }
+
+    // 3. Send Notifications
+    // Create platform notification
+    await createProjectNotification(String(project.user_id), "cofounder_request", String(userId), parseInt(id));
+
+    // Send Email
+    if (project.user?.email) {
+      await sendCofounderRequestEmail(
+        project.user.email,
+        project.user.name || "Project Owner",
+        requester.name || requester.username || "A Developer",
+        requester.username || "anon",
+        project.title,
+        {
+          skills,
+          hoursPerWeek: String(hoursPerWeek),
+          reason,
+          contribution
+        }
+      );
+    }
+
+    return res.json({ 
+      success: true, 
+      message: "Co-Founder Request Sent! The owner will be notified." 
+    });
+
+  } catch (error: any) {
+    console.error("Error in submitCofounderRequest:", error);
+    return res.status(500).json({ error: "Internal server error", details: error?.message });
   }
 }
