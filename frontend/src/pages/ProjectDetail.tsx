@@ -478,7 +478,8 @@ export default function ProjectDetail() {
                         </div>
                         <button
                           onClick={() => {
-                            const msg = `Hey ${req.user.name}, I saw your request to join ${project.title} as a Co-Founder. I'd love to chat more about your skills in ${req.skills.join(", ")}!`;
+                            const projectSkills = Array.isArray(req.skills) ? req.skills.join(", ") : "";
+                            const msg = `Hey ${req.user.name}, I saw your request to join ${project.title} as a Co-Founder. I'd love to chat more about your skills in ${projectSkills}!`;
                             navigate(`/messages?userId=${req.user_id}&message=${encodeURIComponent(msg)}`);
                           }}
                           style={{
@@ -502,14 +503,14 @@ export default function ProjectDetail() {
                         <div>
                           <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Skills</label>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                            {req.skills.map(s => (
+                            {Array.isArray(req.skills) ? req.skills.map(s => (
                               <span key={s} style={{ fontSize: "10px", padding: "2px 6px", border: "0.5px solid var(--border-hairline)", borderRadius: "2px", color: "var(--text-secondary)" }}>{s}</span>
-                            ))}
+                            )) : <span style={{ fontSize: "10px", color: "var(--text-tertiary)" }}>No skills listed</span>}
                           </div>
                         </div>
                         <div>
                           <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Commitment</label>
-                          <div style={{ fontSize: "12px", color: "var(--text-primary)" }}>{req.hours_per_week} HOURS/WEEK</div>
+                          <div style={{ fontSize: "12px", color: "var(--text-primary)" }}>{req.hours_per_week || req.commitment_hours || 0} HOURS/WEEK</div>
                         </div>
                         <div style={{ gridColumn: isMobile ? "auto" : "span 2" }}>
                           <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Motivation & Contribution</label>

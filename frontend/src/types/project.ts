@@ -41,6 +41,7 @@ export interface Project {
     user_id: string;
     skills: string[];
     hours_per_week: number;
+    commitment_hours?: string | number;
     reason: string;
     contribution: string;
     created_at: string;
