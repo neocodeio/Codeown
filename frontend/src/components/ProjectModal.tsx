@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
 import type { Project, ProjectFormData } from "../types/project";
 import { X, Check, GithubLogo } from "phosphor-react";
@@ -16,6 +17,8 @@ interface ProjectModalProps {
 }
 
 export default function ProjectModal({ isOpen, onClose, onUpdated, project }: ProjectModalProps) {
+    const { width } = useWindowSize();
+    const isMobile = width < 768;
     const { getToken } = useClerkAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -329,7 +332,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 alignItems: "center",
                 justifyContent: "center",
                 zIndex: 10000,
-                padding: "0",
+                padding: isMobile ? "0" : "16px",
                 backdropFilter: "blur(4px)",
             }}
             onClick={onClose}
@@ -344,7 +347,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         }
         .form-input, .form-textarea, .form-select {
           width: 100%;
-          padding: 14px 18px;
+          padding: ${isMobile ? "12px 14px" : "14px 18px"};
           border: 0.5px solid var(--border-hairline);
           borderRadius: 2px;
           fontSize: 14px;
@@ -387,26 +390,27 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     backgroundColor: "var(--bg-page)",
                     borderRadius: "0",
                     width: "100%",
-                    maxWidth: "600px",
-                    maxHeight: "90vh",
+                    maxWidth: isMobile ? "100%" : "600px",
+                    height: isMobile ? "100%" : "auto",
+                    maxHeight: isMobile ? "100%" : "90vh",
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
-                    border: "0.5px solid var(--border-hairline)",
+                    border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
                     boxShadow: "none",
                     overflow: "hidden",
-                    margin: "16px"
+                    margin: isMobile ? "0" : "16px"
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Fixed Header */}
-                <div style={{ padding: "32px 40px 24px", borderBottom: "0.5px solid var(--border-hairline)", position: "relative" }}>
+                <div style={{ padding: isMobile ? "24px 20px" : "32px 40px 24px", borderBottom: "0.5px solid var(--border-hairline)", position: "relative" }}>
                     <button
                         onClick={onClose}
                         style={{
                             position: "absolute",
-                            top: "32px",
-                            right: "32px",
+                            top: isMobile ? "20px" : "32px",
+                            right: isMobile ? "20px" : "32px",
                             background: "transparent",
                             border: "none",
                             width: "32px",
@@ -430,7 +434,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 </div>
 
                 {/* Scrolling Content */}
-                <div style={{ padding: "40px", overflowY: "auto", flex: 1 }}>
+                <div style={{ padding: isMobile ? "24px 20px" : "40px", overflowY: "auto", flex: 1 }}>
                     {error && (
                         <div style={{
                             backgroundColor: "transparent",
@@ -516,7 +520,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     <span>ADD</span>
                                 </button>
                             </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px" : "10px" }}>
                                 {formData.technologies_used.map((tech, index) => (
                                     <span
                                         key={index}
@@ -590,7 +594,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     <span>ADD</span>
                                 </button>
                             </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px" : "10px" }}>
                                 {(formData.contributors || []).map((contributor, index) => (
                                     <span
                                         key={index}
@@ -674,7 +678,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                         <div className="responsive-grid">
                             <div>
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+                                <div style={{ 
+                                    display: "flex", 
+                                    alignItems: isMobile ? "flex-start" : "center", 
+                                    flexDirection: isMobile ? "column" : "row",
+                                    justifyContent: "space-between", 
+                                    gap: isMobile ? "8px" : "10px",
+                                    marginBottom: "10px" 
+                                }}>
                                     <label className="form-item-label" style={{ marginBottom: 0 }}>
                                         GitHub Repository
                                     </label>
@@ -784,12 +795,19 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 </div>
 
                 {/* Fixed Footer */}
-                <div style={{ padding: "32px 40px", backgroundColor: "var(--bg-page)", borderTop: "0.5px solid var(--border-hairline)", display: "flex", gap: "16px", justifyContent: "flex-end" }}>
+                <div style={{ 
+                    padding: isMobile ? "20px" : "32px 40px", 
+                    backgroundColor: "var(--bg-page)", 
+                    borderTop: "0.5px solid var(--border-hairline)", 
+                    display: "flex", 
+                    gap: "12px", 
+                    justifyContent: "flex-end" 
+                }}>
                     <button
                         type="button"
                         onClick={onClose}
                         style={{
-                            padding: "0 24px",
+                            padding: isMobile ? "0" : "0 24px",
                             height: "44px",
                             backgroundColor: "transparent",
                             color: "var(--text-tertiary)",
@@ -801,7 +819,8 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             fontFamily: "var(--font-mono)",
                             transition: "all 0.15s ease",
                             textTransform: "uppercase",
-                            letterSpacing: "0.1em"
+                            letterSpacing: "0.1em",
+                            flex: isMobile ? 1 : "none"
                         }}
                         onMouseEnter={e => {
                             e.currentTarget.style.backgroundColor = "var(--bg-hover)";
@@ -819,7 +838,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         form="project-form"
                         disabled={loading}
                         style={{
-                            padding: "0 32px",
+                            padding: isMobile ? "0" : "0 32px",
                             height: "44px",
                             backgroundColor: loading ? "var(--bg-hover)" : "var(--text-primary)",
                             color: loading ? "var(--text-tertiary)" : "var(--bg-page)",
@@ -831,7 +850,8 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             fontFamily: "var(--font-mono)",
                             transition: "all 0.15s ease",
                             textTransform: "uppercase",
-                            letterSpacing: "0.1em"
+                            letterSpacing: "0.1em",
+                            flex: isMobile ? 1 : "none"
                         }}
                     >
                         {loading ? "SHIPPING..." : (project ? "UPDATE" : "LAUNCH")}
