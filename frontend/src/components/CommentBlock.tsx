@@ -21,7 +21,7 @@ export interface CommentWithMeta {
   parent_id?: number | string | null;
   parent_author_name?: string | null;
   like_count?: number;
-  user?: { name: string; username?: string | null; email: string | null; avatar_url?: string | null };
+  user?: { name: string; username?: string | null; email: string | null; avatar_url?: string | null; is_pro?: boolean };
   children?: CommentWithMeta[];
 }
 
@@ -58,15 +58,19 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
   };
 
   const getIndentStyle = () => {
-    if (depth === 0) return { paddingLeft: 0, borderLeft: "none" };
-    // Limit nesting depth on mobile to 2 levels, on desktop to 4 levels to prevent squishing
+    const basePadding = isMobile ? 16 : 24;
+    if (depth === 0) return { paddingLeft: basePadding, paddingRight: basePadding, borderLeft: "none" };
+    
+    // Nested indentation
     const maxDepth = isMobile ? 2 : 4;
     const effectiveDepth = Math.min(depth, maxDepth);
-    const basePadding = isMobile ? 12 : 24;
+    const nestedMargin = isMobile ? 12 : 20;
 
     return {
-      paddingLeft: basePadding,
-      borderLeft: effectiveDepth > 0 ? "0.5px solid var(--border-hairline)" : "none"
+      marginLeft: nestedMargin,
+      borderLeft: effectiveDepth > 0 ? "1px solid var(--border-hairline)" : "none",
+      paddingLeft: isMobile ? 12 : 16,
+      paddingRight: basePadding
     };
   };
 
@@ -76,22 +80,26 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
     <div
       style={{
         ...indentStyle,
-        paddingTop: "16px",
-        paddingBottom: "16px",
+        paddingTop: depth === 0 ? "24px" : "12px",
+        paddingBottom: depth === 0 ? "24px" : "12px",
         position: "relative",
       }}
     >
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: isMobile ? "12px" : "16px" }}>
         {/* Avatar */}
         <div
           style={{
-            width: isMobile ? "32px" : "36px",
-            height: isMobile ? "32px" : "36px",
-            borderRadius: "50%",
+            width: isMobile ? "32px" : "44px",
+            height: isMobile ? "32px" : "44px",
+            borderRadius: "2px", // Matching the "square avatar" aesthetic from composer
             overflow: "hidden",
             cursor: "pointer",
-            flexShrink: 0
+            flexShrink: 0,
+            border: "1px solid var(--border-hairline)",
+            transition: "transform 0.2s ease"
           }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           onClick={() => {
             if (comment.user?.username) navigate(`/${comment.user.username}`);
             else if (comment.user_id) navigate(`/user/${comment.user_id}`);
@@ -107,71 +115,100 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
         {/* Content Area */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
             <span
               onClick={() => {
                 if (comment.user?.username) navigate(`/${comment.user.username}`);
                 else if (comment.user_id) navigate(`/user/${comment.user_id}`);
               }}
-              style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "2px", textTransform: "uppercase", letterSpacing: "-0.01em" }}
+              style={{ 
+                fontSize: "14px", 
+                fontWeight: 800, 
+                color: "var(--text-primary)", 
+                cursor: "pointer", 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "4px", 
+                textTransform: "uppercase", 
+                letterSpacing: "0.02em" 
+              }}
             >
               {name}
-              <VerifiedBadge username={comment.user?.username} size="12px" />
-              {(comment.user as any)?.is_pro && (
+              <VerifiedBadge username={comment.user?.username} size="14px" />
+              {comment.user?.is_pro && (
                 <span style={{
-                  fontSize: "8px",
-                  fontWeight: "800",
-                  padding: "1px 4px",
-                  borderRadius: "3px",
+                  fontSize: "9px",
+                  fontWeight: "900",
+                  padding: "2px 6px",
+                  borderRadius: "2px",
                   backgroundColor: "var(--text-primary)",
                   color: "var(--bg-page)",
-                  letterSpacing: "0.05em",
+                  letterSpacing: "0.1em",
                   marginLeft: "4px",
-                  fontFamily: "var(--font-mono)"
+                  fontFamily: "var(--font-mono)",
+                  lineHeight: 1
                 }}>PRO</span>
               )}
             </span>
-            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+            <span style={{ 
+              fontSize: "11px", 
+              color: "var(--text-tertiary)", 
+              fontWeight: 800, 
+              fontFamily: "var(--font-mono)", 
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              opacity: 0.8
+            }}>
               • {formatRelativeDate(comment.created_at)}
             </span>
           </div>
 
           {/* Comment Text */}
           <div style={{
-            fontSize: "14px",
-            lineHeight: "1.6",
-            color: "var(--text-secondary)",
+            fontSize: "16px",
+            lineHeight: "1.7",
+            color: "var(--text-primary)",
             wordBreak: "break-word",
-            marginBottom: "8px"
+            marginBottom: "16px",
+            fontWeight: 500,
+            opacity: 0.95
           }}>
             <ContentRenderer content={comment.content} />
           </div>
 
           {/* Actions */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "24px", marginBottom: "8px" }}>
             <button
               onClick={toggleLike}
               disabled={!isSignedIn || likeLoading}
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "4px",
+                gap: "6px",
                 background: "none",
                 border: "none",
                 padding: 0,
-                color: isLiked ? "#ef4444" : "var(--text-tertiary)",
+                color: isLiked ? "#ff4b4b" : "var(--text-tertiary)",
                 fontSize: "12px",
-                fontWeight: 700,
+                fontWeight: 800,
                 fontFamily: "var(--font-mono)",
                 cursor: "pointer",
-                textTransform: "uppercase"
+                textTransform: "uppercase",
+                transition: "all 0.15s ease",
+                letterSpacing: "0.1em"
               }}
+              onMouseEnter={(e) => !isLiked && (e.currentTarget.style.color = "var(--text-primary)")}
+              onMouseLeave={(e) => !isLiked && (e.currentTarget.style.color = "var(--text-tertiary)")}
             >
               <FontAwesomeIcon
                 icon={isLiked ? faHeartSolid : faHeartRegular}
-                style={{ fontSize: "14px" }}
+                style={{ fontSize: "16px" }}
               />
-              {likeCount > 0 && <span>{likeCount}</span>}
+              {likeCount > 0 ? (
+                <span>{likeCount}</span>
+              ) : (
+                <span>LIKE</span>
+              )}
             </button>
 
             {isSignedIn && (
@@ -183,11 +220,15 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                   padding: 0,
                   color: "var(--text-tertiary)",
                   fontSize: "12px",
-                  fontWeight: 700,
+                  fontWeight: 800,
                   fontFamily: "var(--font-mono)",
                   cursor: "pointer",
-                  textTransform: "uppercase"
+                  textTransform: "uppercase",
+                  transition: "color 0.15s ease",
+                  letterSpacing: "0.1em"
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
               >
                 Reply
               </button>
@@ -196,7 +237,13 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
 
           {/* Reply Composer Inline */}
           {showReply && isSignedIn && (
-            <div style={{ marginTop: "12px" }}>
+            <div style={{ 
+              marginTop: "20px",
+              padding: "16px",
+              backgroundColor: "var(--bg-hover)",
+              borderRadius: "2px",
+              border: "1px solid var(--border-hairline)"
+             }}>
               <MentionInput
                 value={replyContent}
                 onChange={setReplyContent}
@@ -204,20 +251,21 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                 minHeight="40px"
                 transparent={true}
               />
-              <div style={{ display: "flex", gap: "8px", marginTop: "8px", justifyContent: "flex-end" }}>
+              <div style={{ display: "flex", gap: "12px", marginTop: "16px", justifyContent: "flex-end" }}>
                 <button
                   onClick={() => { setShowReply(false); setReplyContent(""); }}
                   style={{
-                    padding: "6px 12px",
+                    padding: "8px 16px",
                     backgroundColor: "transparent",
                     color: "var(--text-tertiary)",
                     border: "none",
                     borderRadius: "2px",
-                    fontWeight: 800,
+                    fontWeight: 900,
                     cursor: "pointer",
                     fontSize: "11px",
                     fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em"
                   }}
                 >
                   Cancel
@@ -226,19 +274,20 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                   onClick={handleReplySubmit}
                   disabled={!replyContent.trim() || submitting}
                   style={{
-                    padding: "6px 16px",
+                    padding: "8px 24px",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
                     border: "none",
                     borderRadius: "2px",
-                    fontWeight: 800,
+                    fontWeight: 900,
                     cursor: submitting ? "not-allowed" : "pointer",
                     fontSize: "11px",
                     fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em"
                   }}
                 >
-                  {submitting ? "..." : "Reply"}
+                  {submitting ? "..." : "Send"}
                 </button>
               </div>
             </div>
@@ -246,7 +295,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
 
           {/* Nested Replies */}
           {comment.children && comment.children.length > 0 && (
-            <div style={{ marginTop: "8px" }}>
+            <div style={{ marginTop: "16px" }}>
               {comment.children.map((c) => (
                 <CommentBlock
                   key={c.id}

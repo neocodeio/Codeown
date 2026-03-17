@@ -172,7 +172,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           <img
             src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=212121&color=ffffff&bold=true`}
             alt={currentUser.fullName || "User"}
-            style={{ width: "36px", height: "36px", borderRadius: "1px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+            style={{ width: "44px", height: "44px", borderRadius: "2px", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0 }}
           />
           <div style={{ flex: 1 }}>
             <textarea

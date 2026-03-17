@@ -466,21 +466,29 @@ export default function PostDetail() {
         {/* Comment Composer */}
         {isSignedIn && (
           <div style={{
-            padding: isMobile ? "24px 16px" : "40px 24px",
-            borderBottom: "0.5px solid var(--border-hairline)",
+            padding: isMobile ? "24px 16px" : "32px 24px",
+            borderBottom: "1px solid var(--border-hairline)",
             display: "flex",
-            gap: "20px"
+            gap: isMobile ? "12px" : "16px",
+            backgroundColor: "rgba(var(--text-primary-rgb), 0.01)"
           }}>
             <img
               src={user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "User")}&background=212121&color=ffffff&bold=true`}
               alt="My Avatar"
-              style={{ width: "32px", height: "32px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+              style={{ 
+                width: isMobile ? "32px" : "44px", 
+                height: isMobile ? "32px" : "44px", 
+                borderRadius: "2px", 
+                objectFit: "cover", 
+                border: "1px solid var(--border-hairline)",
+                flexShrink: 0
+              }}
             />
             <div style={{ flex: 1 }}>
               <MentionInput
                 value={commentContent}
                 onChange={setCommentContent}
-                placeholder="Post your reply"
+                placeholder="Share your thoughts..."
                 transparent={true}
                 minHeight="40px"
               />
@@ -489,20 +497,31 @@ export default function PostDetail() {
                   onClick={handleSubmitComment}
                   disabled={!commentContent.trim() || isSubmitting}
                   style={{
-                    padding: "8px 20px",
-                    backgroundColor: commentContent.trim() && !isSubmitting ? "var(--text-primary)" : "var(--border-hairline)",
+                    padding: "10px 24px",
+                    backgroundColor: commentContent.trim() && !isSubmitting ? "var(--text-primary)" : "transparent",
                     color: commentContent.trim() && !isSubmitting ? "var(--bg-page)" : "var(--text-tertiary)",
-                    border: "none",
+                    border: "1px solid var(--border-hairline)",
                     borderRadius: "2px",
-                    fontWeight: 700,
+                    fontWeight: 900,
                     fontSize: "11px",
                     fontFamily: "var(--font-mono)",
                     textTransform: "uppercase",
                     cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
-                    transition: "all 0.15s ease"
+                    transition: "all 0.15s ease",
+                    letterSpacing: "0.1em"
+                  }}
+                  onMouseEnter={(e) => {
+                    if (commentContent.trim() && !isSubmitting) {
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "none";
+                    e.currentTarget.style.boxShadow = "none";
                   }}
                 >
-                  POST REPLY
+                  {isSubmitting ? "SENDING..." : "POST REPLY"}
                 </button>
               </div>
             </div>
