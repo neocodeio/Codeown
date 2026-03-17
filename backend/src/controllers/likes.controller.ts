@@ -210,8 +210,7 @@ export async function likeComment(req: Request, res: Response) {
       .from("likes")
       .select("*")
       .eq("user_id", userId)
-      .eq("comment_id", commentIdNum)
-      .is("post_id", null)
+      .eq("comment_id", commentId)
       .maybeSingle();
 
     if (checkError && checkError.code !== "PGRST116") {
@@ -224,7 +223,7 @@ export async function likeComment(req: Request, res: Response) {
         .from("likes")
         .delete()
         .eq("user_id", userId)
-        .eq("comment_id", commentIdNum);
+        .eq("comment_id", commentId);
 
       if (deleteError) {
         console.error("Error unliking comment:", deleteError);
@@ -233,14 +232,22 @@ export async function likeComment(req: Request, res: Response) {
       const { count } = await supabase
         .from("likes")
         .select("*", { count: "exact", head: true })
-        .eq("comment_id", commentIdNum);
+        .eq("comment_id", commentId);
         
       const updatedCount = count || 0;
+
+      // Sync like_count in both tables just in case
+      await Promise.all([
+        supabase.from("project_comments").update({ like_count: updatedCount }).eq("id", commentId),
+        supabase.from("comments").update({ like_count: updatedCount }).eq("id", commentId)
+      ]);
+
       return res.json({ liked: false, likeCount: updatedCount });
     } else {
+      // Like
       const { error } = await supabase
         .from("likes")
-        .insert({ user_id: userId, comment_id: commentIdNum })
+        .insert({ user_id: userId, comment_id: commentId })
         .select()
         .single();
 
@@ -249,32 +256,80 @@ export async function likeComment(req: Request, res: Response) {
         return res.status(500).json({ error: "Failed to like comment", details: error.message });
       }
 
-      const { data: comment } = await supabase
-        .from("comments")
-        .select("user_id")
-        .eq("id", commentIdNum)
-        .single();
+      // Try to find if it's a post comment or project comment for notification
+      let commentOwnerId = null;
+      let targetResourceId = null;
+      let targetResourceType: 'post' | 'project' = 'post';
 
-      if (comment && comment.user_id !== userId) {
+      // Check posts comments table (try/catch to avoid UUID vs Int mapping errors)
+      try {
+        const { data: postComment } = await supabase
+          .from("comments")
+          .select("user_id, post_id")
+          .eq("id", commentId)
+          .maybeSingle();
+
+        if (postComment) {
+          commentOwnerId = postComment.user_id;
+          targetResourceId = postComment.post_id;
+          targetResourceType = 'post';
+        }
+      } catch (e) { /* ignore */ }
+
+      if (!commentOwnerId) {
         try {
-          await supabase.from("notifications").insert({
-            user_id: comment.user_id,
+          const { data: projectComment } = await supabase
+            .from("project_comments")
+            .select("user_id, project_id")
+            .eq("id", commentId)
+            .maybeSingle();
+          
+          if (projectComment) {
+            commentOwnerId = projectComment.user_id;
+            targetResourceId = projectComment.project_id;
+            targetResourceType = 'project';
+          }
+        } catch (e) { /* ignore */ }
+      }
+
+      if (commentOwnerId && commentOwnerId !== userId) {
+        try {
+          const notificationData: any = {
+            user_id: commentOwnerId,
             type: "like",
             actor_id: userId,
             comment_id: commentIdNum,
             read: false,
-          });
+          };
+
+          if (targetResourceType === 'post') {
+            notificationData.post_id = targetResourceId;
+          } else {
+            notificationData.project_id = targetResourceId;
+          }
+
+          await supabase.from("notifications").insert(notificationData);
         } catch (notifErr) {
           console.error("Error creating comment like notification:", notifErr);
         }
       }
 
+      // Sync like_count if needed (some parts of the app use this field)
       const { count } = await supabase
         .from("likes")
         .select("*", { count: "exact", head: true })
-        .eq("comment_id", commentIdNum);
+        .eq("comment_id", commentId);
         
       const updatedCount = count || 0;
+
+      try {
+        if (targetResourceType === 'project' && targetResourceId) {
+          await supabase.from("project_comments").update({ like_count: updatedCount }).eq("id", commentId);
+        } else if (targetResourceType === 'post' && targetResourceId) {
+          await supabase.from("comments").update({ like_count: updatedCount }).eq("id", commentId);
+        }
+      } catch (e) { /* ignore */ }
+
       return res.json({ liked: true, likeCount: updatedCount });
     }
   } catch (error: any) {

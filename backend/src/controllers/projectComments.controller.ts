@@ -56,54 +56,65 @@ export async function getProjectComments(req: Request, res: Response) {
 
     const userMap = new Map((users || []).map((u: any) => [u.id, u]));
 
-    // Get replies for each comment
-    const commentsWithReplies = await Promise.all(
+    // Get likes for these comments and their replies
+    const allCommentIds = [
+      ...comments.map((c: any) => c.id),
+    ];
+
+    // Fetch replies for each comment to get their IDs too
+    const commentsWithRepliesRaw = await Promise.all(
       comments.map(async (comment: any) => {
-        // Get replies for this comment
-        const { data: replies, error: repliesError } = await supabase
+        const { data: replies } = await supabase
           .from("project_comments")
           .select("*")
           .eq("parent_id", comment.id)
           .order("created_at", { ascending: true });
-
-        if (repliesError) {
-          console.error("Error fetching replies:", repliesError);
-          return { ...comment, children: [] };
-        }
-
-        // Get user data for replies
-        const replyUserIds = [...new Set((replies || []).map((r: any) => r.user_id))];
-        const { data: replyUsers } = await supabase
-          .from("users")
-          .select("id, name, email, avatar_url, username")
-          .in("id", replyUserIds);
-
-        const replyUserMap = new Map((replyUsers || []).map((u: any) => [u.id, u]));
-
-        const repliesWithUsers = (replies || []).map((reply: any) => ({
-          ...reply,
-          user: replyUserMap.get(reply.user_id) || { 
-            id: reply.user_id, 
-            name: "Unknown User", 
-            email: null, 
-            avatar_url: null, 
-            username: null 
-          }
-        }));
-
-        return {
-          ...comment,
-          user: userMap.get(comment.user_id) || { 
-            id: comment.user_id, 
-            name: "Unknown User", 
-            email: null, 
-            avatar_url: null, 
-            username: null 
-          },
-          children: repliesWithUsers
-        };
+        return { comment, replies: replies || [] };
       })
     );
+
+    commentsWithRepliesRaw.forEach(item => {
+      item.replies.forEach((r: any) => allCommentIds.push(r.id));
+    });
+
+    // Get like rows from Supabase
+    const { data: likeRows } = await supabase
+      .from("likes")
+      .select("comment_id")
+      .in("comment_id", allCommentIds)
+      .not("comment_id", "is", null);
+
+    const likeCountMap = new Map<number, number>();
+    (likeRows || []).forEach((row: any) => {
+      likeCountMap.set(row.comment_id, (likeCountMap.get(row.comment_id) || 0) + 1);
+    });
+
+    const commentsWithReplies = commentsWithRepliesRaw.map(({ comment, replies }) => {
+      const repliesWithUsers = replies.map((reply: any) => ({
+        ...reply,
+        like_count: likeCountMap.get(reply.id) || 0,
+        user: userMap.get(reply.user_id) || { 
+          id: reply.user_id, 
+          name: "Unknown User", 
+          email: null, 
+          avatar_url: null, 
+          username: null 
+        }
+      }));
+
+      return {
+        ...comment,
+        like_count: likeCountMap.get(comment.id) || 0,
+        user: userMap.get(comment.user_id) || { 
+          id: comment.user_id, 
+          name: "Unknown User", 
+          email: null, 
+          avatar_url: null, 
+          username: null 
+        },
+        children: repliesWithUsers
+      };
+    });
 
     return res.json(commentsWithReplies);
   } catch (error) {

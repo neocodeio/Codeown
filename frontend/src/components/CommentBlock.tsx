@@ -13,8 +13,8 @@ import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 
 export interface CommentWithMeta {
-  id: number;
-  post_id: number;
+  id: number | string;
+  post_id?: number;
   content: string;
   user_id: string;
   created_at: string;
@@ -28,7 +28,7 @@ export interface CommentWithMeta {
 interface CommentBlockProps {
   comment: CommentWithMeta;
   depth: number;
-  onReply: (parentId: number, content: string) => Promise<void>;
+  onReply: (parentId: number | string, content: string) => Promise<void>;
 }
 
 export default function CommentBlock({ comment, depth, onReply }: CommentBlockProps) {

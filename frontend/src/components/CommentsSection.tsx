@@ -64,7 +64,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     }
   };
 
-  const handleReply = async (parentId: number, content: string) => {
+  const handleReply = async (parentId: number | string, content: string) => {
     if (!currentUser) return;
 
     try {

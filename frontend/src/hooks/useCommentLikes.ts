@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 
-export function useCommentLikes(commentId: number | null) {
+export function useCommentLikes(commentId: number | string | null) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(false);
