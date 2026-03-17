@@ -154,13 +154,16 @@ export default function App() {
       backgroundColor: "var(--bg-page)"
     }}>
       {!isAuthRoute && <Navbar />}
-      <div style={{
-        flex: 1,
-        position: "relative",
-        minWidth: 0,
-        paddingTop: isMobile && !isAuthRoute ? "64px" : "0px",
-        paddingBottom: isMobile && !isAuthRoute ? "80px" : "0px"
-      }}>
+      <div 
+        id="main-content"
+        style={{
+          flex: 1,
+          position: "relative",
+          minWidth: 0,
+          paddingTop: isMobile && !isAuthRoute ? "64px" : "0px",
+          paddingBottom: isMobile && !isAuthRoute ? "80px" : "0px"
+        }}
+      >
         <ErrorBoundary>
           <div key={location.pathname}>
             <Suspense fallback={<PageLoader />}>
