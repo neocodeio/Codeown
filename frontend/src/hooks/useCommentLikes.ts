@@ -1,8 +1,9 @@
+
 import { useState, useCallback, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 
-export function useCommentLikes(commentId: number | string | null) {
+export function useCommentLikes(commentId: number | string | null, resourceType?: "post" | "project") {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -13,14 +14,14 @@ export function useCommentLikes(commentId: number | string | null) {
     try {
       const token = await getToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await api.get(`/likes/comment/${commentId}`, { headers });
+      const res = await api.get(`/likes/comment/${commentId}?type=${resourceType || ''}`, { headers });
       setIsLiked(res.data.isLiked === true);
       setLikeCount(res.data.count || 0);
     } catch {
       setIsLiked(false);
       setLikeCount(0);
     }
-  }, [commentId, isLoaded, getToken]);
+  }, [commentId, isLoaded, getToken, resourceType]);
 
   useEffect(() => {
     fetchStatus();
@@ -35,7 +36,7 @@ export function useCommentLikes(commentId: number | string | null) {
         setLoading(false);
         return;
       }
-      const res = await api.post(`/likes/comment/${commentId}`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post(`/likes/comment/${commentId}?type=${resourceType || ''}`, {}, { headers: { Authorization: `Bearer ${token}` } });
       setIsLiked(res.data.liked === true);
       setLikeCount(res.data.likeCount ?? (res.data.liked ? likeCount + 1 : likeCount - 1));
     } catch {
@@ -43,7 +44,7 @@ export function useCommentLikes(commentId: number | string | null) {
     } finally {
       setLoading(false);
     }
-  }, [commentId, getToken, likeCount, fetchStatus]);
+  }, [commentId, getToken, likeCount, fetchStatus, resourceType]);
 
   return { isLiked, likeCount, loading, toggleLike, fetchStatus };
 }

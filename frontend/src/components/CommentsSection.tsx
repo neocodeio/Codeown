@@ -110,6 +110,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
       comment={comment}
       depth={depth}
       onReply={handleReply}
+      resourceType={resourceType}
     />
   );
 

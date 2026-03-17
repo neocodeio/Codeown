@@ -1,7 +1,7 @@
+
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
-import { clerkClient } from "@clerk/clerk-sdk-node";
 
 // Helper function to create project comment notifications
 async function createProjectCommentNotification(
@@ -29,8 +29,8 @@ async function createProjectCommentNotification(
 export async function getProjectComments(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    
-    // Get top-level comments (no parent_id)
+
+    // Get top-level comments
     const { data: comments, error: commentsError } = await supabase
       .from("project_comments")
       .select("*")
@@ -38,85 +38,52 @@ export async function getProjectComments(req: Request, res: Response) {
       .is("parent_id", null)
       .order("created_at", { ascending: false });
 
-    if (commentsError) {
-      console.error("Error fetching project comments:", commentsError);
-      return res.status(500).json({ error: "Failed to fetch comments" });
-    }
+    if (commentsError) throw commentsError;
+    if (!comments || comments.length === 0) return res.json([]);
 
-    if (!comments || comments.length === 0) {
-      return res.json([]);
-    }
+    // Get all nested replies
+    const { data: allReplies } = await supabase
+      .from("project_comments")
+      .select("*")
+      .eq("project_id", id)
+      .not("parent_id", "is", null);
 
-    // Get user data for all comments
-    const userIds = [...new Set(comments.map((c: any) => c.user_id))];
+    const allComments = [...comments, ...(allReplies || [])];
+    const userIds = [...new Set(allComments.map((c: any) => c.user_id))];
+    
+    // Get user data
     const { data: users } = await supabase
       .from("users")
       .select("id, name, email, avatar_url, username")
       .in("id", userIds);
-
     const userMap = new Map((users || []).map((u: any) => [u.id, u]));
 
-    // Get likes for these comments and their replies
-    const allCommentIds = [
-      ...comments.map((c: any) => c.id),
-    ];
-
-    // Fetch replies for each comment to get their IDs too
-    const commentsWithRepliesRaw = await Promise.all(
-      comments.map(async (comment: any) => {
-        const { data: replies } = await supabase
-          .from("project_comments")
-          .select("*")
-          .eq("parent_id", comment.id)
-          .order("created_at", { ascending: true });
-        return { comment, replies: replies || [] };
-      })
-    );
-
-    commentsWithRepliesRaw.forEach(item => {
-      item.replies.forEach((r: any) => allCommentIds.push(r.id));
-    });
-
-    // Get like rows from Supabase
-    const { data: likeRows } = await supabase
-      .from("likes")
+    // Get likes
+    const allIds = allComments.map((c: any) => c.id);
+    const { data: likes } = await supabase
+      .from("project_comment_likes")
       .select("comment_id")
-      .in("comment_id", allCommentIds)
-      .not("comment_id", "is", null);
+      .in("comment_id", allIds);
+    
+    const likeMap = new Map<number, number>();
+    likes?.forEach((l: any) => likeMap.set(l.comment_id, (likeMap.get(l.comment_id) || 0) + 1));
 
-    const likeCountMap = new Map<number, number>();
-    (likeRows || []).forEach((row: any) => {
-      likeCountMap.set(row.comment_id, (likeCountMap.get(row.comment_id) || 0) + 1);
-    });
+    // Structure data
+    const commentsWithMeta = allComments.map(c => ({
+      ...c,
+      like_count: likeMap.get(c.id) || 0,
+      user: userMap.get(c.user_id) || { id: c.user_id, name: "Unknown User" }
+    }));
 
-    const commentsWithReplies = commentsWithRepliesRaw.map(({ comment, replies }) => {
-      const repliesWithUsers = replies.map((reply: any) => ({
-        ...reply,
-        like_count: likeCountMap.get(reply.id) || 0,
-        user: userMap.get(reply.user_id) || { 
-          id: reply.user_id, 
-          name: "Unknown User", 
-          email: null, 
-          avatar_url: null, 
-          username: null 
-        }
-      }));
+    const topLevel = commentsWithMeta.filter(c => c.parent_id === null);
+    const result = topLevel.map(parent => ({
+      ...parent,
+      children: commentsWithMeta
+        .filter(c => c.parent_id === parent.id)
+        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    }));
 
-      return {
-        ...comment,
-        like_count: likeCountMap.get(comment.id) || 0,
-        user: userMap.get(comment.user_id) || { 
-          id: comment.user_id, 
-          name: "Unknown User", 
-          email: null, 
-          avatar_url: null, 
-          username: null 
-        },
-        children: repliesWithUsers
-      };
-    });
-
-    return res.json(commentsWithReplies);
+    return res.json(result);
   } catch (error) {
     console.error("Error in getProjectComments:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -127,101 +94,47 @@ export async function createProjectComment(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { id } = req.params;
-    
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
 
+    if (!userId) return res.status(401).json({ error: "Authentication required" });
     const { content, parent_id } = req.body;
+    if (!content?.trim()) return res.status(400).json({ error: "Content required" });
 
-    if (!content || !content.trim()) {
-      return res.status(400).json({ error: "Comment content is required" });
-    }
+    // Verify project
+    const { data: project } = await supabase.from("projects").select("user_id").eq("id", id).single();
+    if (!project) return res.status(404).json({ error: "Project not found" });
 
-    // Check if project exists
-    const { data: project, error: projectError } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (projectError || !project) {
-      return res.status(404).json({ error: "Project not found" });
-    }
-
-    // If parent_id is provided, check if parent comment exists
-    if (parent_id) {
-      const { data: parentComment, error: parentError } = await supabase
-        .from("project_comments")
-        .select("*")
-        .eq("id", parent_id)
-        .eq("project_id", id)
-        .single();
-
-      if (parentError || !parentComment) {
-        return res.status(404).json({ error: "Parent comment not found" });
-      }
-    }
-
-    // Ensure user exists
     await ensureUserExists(userId);
 
-    // Create comment
-    const { data: comment, error: commentError } = await supabase
+    const { data: comment, error } = await supabase
       .from("project_comments")
       .insert({
-        project_id: parseInt(id as string),
+        project_id: parseInt(id),
         user_id: userId,
         content: content.trim(),
-        parent_id: parent_id || null,
-        like_count: 0
+        parent_id: parent_id || null
       })
       .select()
       .single();
 
-    if (commentError) {
-      console.error("Error creating comment:", commentError);
-      return res.status(500).json({ error: "Failed to create comment" });
-    }
+    if (error) throw error;
 
-    // Update project comment count
-    const { data: allComments } = await supabase
-      .from("project_comments")
-      .select("id")
-      .eq("project_id", id);
+    // Update counts
+    const { count } = await supabase.from("project_comments").select("*", { count: "exact", head: true }).eq("project_id", id);
+    await supabase.from("projects").update({ comment_count: count || 0 }).eq("id", id);
 
-    const commentCount = allComments?.length || 0;
-
-    await supabase
-      .from("projects")
-      .update({ comment_count: commentCount })
-      .eq("id", id);
-
-    // Create notifications
+    // Notification
     if (parent_id) {
-      // This is a reply - notify parent comment author
-      const { data: parentComment } = await supabase
-        .from("project_comments")
-        .select("user_id")
-        .eq("id", parent_id)
-        .single();
-      
-      if (parentComment && parentComment.user_id !== userId) {
-        await createProjectCommentNotification(parentComment.user_id, "reply", userId, parseInt(id as string), comment.id);
+      const { data: pc } = await supabase.from("project_comments").select("user_id").eq("id", parent_id).single();
+      if (pc && pc.user_id !== userId) {
+        await createProjectCommentNotification(pc.user_id, "reply", userId, parseInt(id), comment.id);
       }
-    } else {
-      // This is a new comment - notify project owner
-      if (project.user_id !== userId) {
-        await createProjectCommentNotification(project.user_id, "comment", userId, parseInt(id as string), comment.id);
-      }
+    } else if (project.user_id !== userId) {
+      await createProjectCommentNotification(project.user_id, "comment", userId, parseInt(id), comment.id);
     }
-    const { data: user } = await supabase
-      .from("users")
-      .select("id, name, email, avatar_url, username")
-      .eq("id", userId)
-      .single();
 
-    return res.status(201).json({ success: true, data: comment });
+    // Refresh return
+    const { data: user } = await supabase.from("users").select("id, name, avatar_url, username").eq("id", userId).single();
+    return res.status(201).json({ ...comment, user: user || { id: userId, name: "User" } });
   } catch (error) {
     console.error("Error in createProjectComment:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -232,58 +145,20 @@ export async function updateProjectComment(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { commentId } = req.params;
-    
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
-
     const { content } = req.body;
 
-    if (!content || !content.trim()) {
-      return res.status(400).json({ error: "Comment content is required" });
-    }
-
-    // Check if comment exists and user owns it
-    const { data: existingComment, error: fetchError } = await supabase
+    const { data: comment, error } = await supabase
       .from("project_comments")
-      .select("*")
-      .eq("id", commentId)
-      .eq("user_id", userId)
-      .single();
-
-    if (fetchError || !existingComment) {
-      return res.status(404).json({ error: "Comment not found or access denied" });
-    }
-
-    // Update comment
-    const { data: comment, error: updateError } = await supabase
-      .from("project_comments")
-      .update({
-        content: content.trim()
-      })
+      .update({ content: content?.trim() })
       .eq("id", commentId)
       .eq("user_id", userId)
       .select()
       .single();
 
-    if (updateError) {
-      console.error("Error updating comment:", updateError);
-      return res.status(500).json({ error: "Failed to update comment" });
-    }
-
-    // Get user data for response
-    const { data: user, error: userError } = await supabase
-      .from("users")
-      .select("id, name, email, avatar_url, username")
-      .eq("id", userId)
-      .single();
-
-    return res.json({
-      ...comment,
-      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
-    });
+    if (error) return res.status(404).json({ error: "Not found or unauthorized" });
+    const { data: user } = await supabase.from("users").select("id, name, avatar_url, username").eq("id", userId).single();
+    return res.json({ ...comment, user: user || { id: userId, name: "User" } });
   } catch (error) {
-    console.error("Error in updateProjectComment:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -292,51 +167,17 @@ export async function deleteProjectComment(req: Request, res: Response) {
   try {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     const { commentId } = req.params;
-    
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
 
-    // Check if comment exists and user owns it
-    const { data: existingComment, error: fetchError } = await supabase
-      .from("project_comments")
-      .select("*")
-      .eq("id", commentId)
-      .eq("user_id", userId)
-      .single();
+    const { data: comment } = await supabase.from("project_comments").select("project_id").eq("id", commentId).eq("user_id", userId).single();
+    if (!comment) return res.status(404).json({ error: "Not found" });
 
-    if (fetchError || !existingComment) {
-      return res.status(404).json({ error: "Comment not found or access denied" });
-    }
+    await supabase.from("project_comments").delete().eq("id", commentId);
 
-    // Delete comment (cascade will delete replies)
-    const { error: deleteError } = await supabase
-      .from("project_comments")
-      .delete()
-      .eq("id", commentId)
-      .eq("user_id", userId);
+    const { count } = await supabase.from("project_comments").select("*", { count: "exact", head: true }).eq("project_id", comment.project_id);
+    await supabase.from("projects").update({ comment_count: count || 0 }).eq("id", comment.project_id);
 
-    if (deleteError) {
-      console.error("Error deleting comment:", deleteError);
-      return res.status(500).json({ error: "Failed to delete comment" });
-    }
-
-    // Update project comment count
-    const { data: allComments } = await supabase
-      .from("project_comments")
-      .select("id")
-      .eq("project_id", existingComment.project_id);
-
-    const commentCount = allComments?.length || 0;
-
-    await supabase
-      .from("projects")
-      .update({ comment_count: commentCount })
-      .eq("id", existingComment.project_id);
-
-    return res.json({ message: "Comment deleted successfully" });
+    return res.json({ success: true });
   } catch (error) {
-    console.error("Error in deleteProjectComment:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 }

@@ -1,3 +1,4 @@
+
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { sendNewLikeEmail } from "../lib/email.js";
@@ -11,7 +12,6 @@ export async function likePost(req: Request, res: Response) {
     if (!userId) {
       return res.status(401).json({ error: "User ID not found" });
     }
-
     if (!postId) {
       return res.status(400).json({ error: "Post ID is required" });
     }
@@ -21,12 +21,12 @@ export async function likePost(req: Request, res: Response) {
       return res.status(400).json({ error: "Invalid post ID" });
     }
 
-    // Check if already liked
     const { data: existingLike, error: checkError } = await supabase
       .from("likes")
       .select("*")
       .eq("user_id", userId)
       .eq("post_id", postIdNum)
+      .is("comment_id", null)
       .maybeSingle();
 
     if (checkError && checkError.code !== "PGRST116") {
@@ -35,44 +35,35 @@ export async function likePost(req: Request, res: Response) {
     }
 
     if (existingLike) {
-      // Unlike
       const { error: deleteError } = await supabase
         .from("likes")
         .delete()
         .eq("user_id", userId)
-        .eq("post_id", postIdNum);
+        .eq("post_id", postIdNum)
+        .is("comment_id", null);
 
       if (deleteError) {
-        console.error("Error unliking post:", deleteError);
-        return res.status(500).json({ error: "Failed to unlike post" });
+        console.error("Error unliking:", deleteError);
+        return res.status(500).json({ error: "Failed to remove like" });
       }
 
-      // Get updated like count
       const { count } = await supabase
         .from("likes")
         .select("*", { count: "exact", head: true })
         .eq("post_id", postIdNum);
 
       const updatedCount = count || 0;
-
-      return res.json({ liked: false, message: "Post unliked", likeCount: updatedCount });
+      return res.json({ liked: false, likeCount: updatedCount });
     } else {
-      // Like
-      const { data, error } = await supabase
+      const { error: insertError } = await supabase
         .from("likes")
-        .insert({
-          user_id: userId,
-          post_id: postIdNum,
-        })
-        .select()
-        .single();
+        .insert({ user_id: userId, post_id: postIdNum });
 
-      if (error) {
-        console.error("Error liking post:", error);
-        return res.status(500).json({ error: "Failed to like post", details: error.message });
+      if (insertError) {
+        console.error("Error inserting like:", insertError);
+        return res.status(500).json({ error: "Failed to add like", details: insertError.message });
       }
 
-      // Create notification for post owner
       const { data: post } = await supabase
         .from("posts")
         .select("user_id")
@@ -88,103 +79,39 @@ export async function likePost(req: Request, res: Response) {
             post_id: postIdNum,
             read: false,
           });
-
-          if (notifError) {
-            console.error("Error creating like notification:", notifError);
-          } else {
-            console.log(`Created like notification for user ${post.user_id} from ${userId} on post ${postIdNum}`);
-            
+          
+          if (!notifError) {
             const [{ data: liker }, { data: postOwner }] = await Promise.all([
               supabase.from("users").select("name").eq("id", userId).single(),
               supabase.from("users").select("name, email").eq("id", post.user_id).single()
             ]);
-            
+
             if (postOwner?.email && liker?.name) {
               sendNewLikeEmail(
                 postOwner.email,
-                postOwner.name || "User",
+                postOwner.name,
                 liker.name,
                 'post',
                 postIdNum
               );
             }
           }
-        } catch (notifError) {
-          console.error("Error creating like notification or email:", notifError);
+        } catch (notifErr) {
+          console.error("Error creating like notification:", notifErr);
         }
       }
 
-      // Get updated like count
       const { count } = await supabase
         .from("likes")
         .select("*", { count: "exact", head: true })
         .eq("post_id", postIdNum);
 
       const updatedCount = count || 0;
-
-      return res.json({ liked: true, message: "Post liked", data, likeCount: updatedCount });
+      return res.json({ liked: true, likeCount: updatedCount });
     }
   } catch (error: any) {
     console.error("Unexpected error in likePost:", error);
-    return res.status(500).json({ error: "Internal server error", details: error?.message });
-  }
-}
-
-export async function getPostLikes(req: Request, res: Response) {
-  try {
-    const { postId } = req.params;
-    const user = req.user;
-    const userId = user?.sub || user?.id || user?.userId;
-
-    if (!postId) {
-      return res.status(400).json({ error: "Post ID is required" });
-    }
-
-    const postIdNum = parseInt(postId, 10);
-    if (isNaN(postIdNum)) {
-      return res.status(400).json({ error: "Invalid post ID" });
-    }
-
-    // Get like count
-    const { count, error: countError } = await supabase
-      .from("likes")
-      .select("*", { count: "exact", head: true })
-      .eq("post_id", postIdNum);
-
-    if (countError) {
-      console.error("Error getting like count:", countError);
-      return res.status(500).json({ error: "Failed to get like count" });
-    }
-
-    // Check if current user liked it
-    let isLiked = false;
-
-    // Debug log to trace why likes aren't showing
-    // console.log(`[getPostLikes] Processing for Post ${postIdNum}. User: ${userId ? userId : 'Guest'}`);
-
-    if (userId) {
-      const { data: userLike, error: likeCheckError } = await supabase
-        .from("likes")
-        .select("id")
-        .eq("user_id", userId)
-        .eq("post_id", postIdNum)
-        .maybeSingle();
-
-      // If error is PGRST116, it means no row found (not liked) - this is expected
-      if (likeCheckError && likeCheckError.code !== "PGRST116") {
-        console.error("Error checking user like:", likeCheckError);
-      } else {
-        isLiked = !!userLike;
-        // console.log(`[getPostLikes] DB Check for User ${userId} on Post ${postIdNum}: ${isLiked}`);
-      }
-    } else {
-      // console.log(`[getPostLikes] Skipping DB check because no userId. Req User object:`, user);
-    }
-
-    return res.json({ count: count || 0, isLiked });
-  } catch (error: any) {
-    console.error("Unexpected error in getPostLikes:", error);
-    return res.status(500).json({ error: "Internal server error", details: error?.message });
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -192,230 +119,135 @@ export async function likeComment(req: Request, res: Response) {
   try {
     const user = req.user;
     const userId = user?.sub || user?.id || user?.userId;
-    const { commentId } = req.params;
+    const { commentId: rawCommentId } = req.params;
+    const { type } = req.query;
 
-    if (!userId) {
-      return res.status(401).json({ error: "User ID not found" });
-    }
-    if (!commentId) {
-      return res.status(400).json({ error: "Comment ID is required" });
+    if (!userId) return res.status(401).json({ error: "User ID not found" });
+    if (!rawCommentId) return res.status(400).json({ error: "Comment ID is required" });
+
+    const isNumeric = /^\d+$/.test(rawCommentId);
+    if (!isNumeric) return res.status(400).json({ error: "Invalid comment ID" });
+    const commentId = parseInt(rawCommentId, 10);
+
+    // Determine context (Project or Post)
+    let actualType: 'post' | 'project' = type === 'project' ? 'project' : type === 'post' ? 'post' : 'post';
+    
+    // Auto-resolve if type is not provided
+    if (!type) {
+      const { data: pc } = await supabase.from("comments").select("id").eq("id", commentId).maybeSingle();
+      if (!pc) {
+        const { data: prc } = await supabase.from("project_comments").select("id").eq("id", commentId).maybeSingle();
+        if (prc) actualType = 'project';
+      }
     }
 
-    const commentIdNum = parseInt(commentId, 10);
-    if (isNaN(commentIdNum)) {
-      return res.status(400).json({ error: "Invalid comment ID" });
-    }
+    const likesTable = actualType === 'project' ? "project_comment_likes" : "likes";
+    const commentsTable = actualType === 'project' ? "project_comments" : "comments";
 
-    const { data: existingLike, error: checkError } = await supabase
-      .from("likes")
+    // Toggle logic
+    const { data: existingLike } = await supabase
+      .from(likesTable)
       .select("*")
       .eq("user_id", userId)
       .eq("comment_id", commentId)
       .maybeSingle();
 
-    if (checkError && checkError.code !== "PGRST116") {
-      console.error("Error checking comment like:", checkError);
-      return res.status(500).json({ error: "Failed to check like status" });
-    }
-
     if (existingLike) {
-      const { error: deleteError } = await supabase
-        .from("likes")
-        .delete()
-        .eq("user_id", userId)
-        .eq("comment_id", commentId);
-
-      if (deleteError) {
-        console.error("Error unliking comment:", deleteError);
-        return res.status(500).json({ error: "Failed to unlike comment" });
-      }
-      const { count } = await supabase
-        .from("likes")
-        .select("*", { count: "exact", head: true })
-        .eq("comment_id", commentId);
-        
-      const updatedCount = count || 0;
-
-      // Sync like_count in both tables just in case
-      await Promise.all([
-        supabase.from("project_comments").update({ like_count: updatedCount }).eq("id", commentId),
-        supabase.from("comments").update({ like_count: updatedCount }).eq("id", commentId)
-      ]);
-
-      return res.json({ liked: false, likeCount: updatedCount });
+      await supabase.from(likesTable).delete().eq("user_id", userId).eq("comment_id", commentId);
+      const { count } = await supabase.from(likesTable).select("*", { count: "exact", head: true }).eq("comment_id", commentId);
+      const newCount = count || 0;
+      await supabase.from(commentsTable).update({ like_count: newCount } as any).eq("id", commentId);
+      return res.json({ liked: false, likeCount: newCount });
     } else {
-      // Like
-      const { error } = await supabase
-        .from("likes")
-        .insert({ user_id: userId, comment_id: commentId })
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Error liking comment:", error);
-        return res.status(500).json({ error: "Failed to like comment", details: error.message });
-      }
-
-      // Try to find if it's a post comment or project comment for notification
-      let commentOwnerId = null;
-      let targetResourceId = null;
-      let targetResourceType: 'post' | 'project' = 'post';
-
-      // Check posts comments table (try/catch to avoid UUID vs Int mapping errors)
+      await supabase.from(likesTable).insert({ user_id: userId, comment_id: commentId });
+      
+      // Notification
       try {
-        const { data: postComment } = await supabase
-          .from("comments")
-          .select("user_id, post_id")
-          .eq("id", commentId)
-          .maybeSingle();
-
-        if (postComment) {
-          commentOwnerId = postComment.user_id;
-          targetResourceId = postComment.post_id;
-          targetResourceType = 'post';
-        }
-      } catch (e) { /* ignore */ }
-
-      if (!commentOwnerId) {
-        try {
-          const { data: projectComment } = await supabase
-            .from("project_comments")
-            .select("user_id, project_id")
-            .eq("id", commentId)
-            .maybeSingle();
-          
-          if (projectComment) {
-            commentOwnerId = projectComment.user_id;
-            targetResourceId = projectComment.project_id;
-            targetResourceType = 'project';
-          }
-        } catch (e) { /* ignore */ }
-      }
-
-      if (commentOwnerId && commentOwnerId !== userId) {
-        try {
-          const notificationData: any = {
-            user_id: commentOwnerId,
+        const { data: c } = await supabase.from(commentsTable).select("user_id, " + (actualType === 'project' ? 'project_id' : 'post_id')).eq("id", commentId).single();
+        if (c && (c as any).user_id !== userId) {
+          const notif: any = {
+            user_id: (c as any).user_id,
             type: "like",
             actor_id: userId,
-            comment_id: commentIdNum,
+            comment_id: commentId,
             read: false,
           };
-
-          if (targetResourceType === 'post') {
-            notificationData.post_id = targetResourceId;
-          } else {
-            notificationData.project_id = targetResourceId;
-          }
-
-          await supabase.from("notifications").insert(notificationData);
-        } catch (notifErr) {
-          console.error("Error creating comment like notification:", notifErr);
+          if (actualType === 'project') notif.project_id = (c as any).project_id;
+          else notif.post_id = (c as any).post_id;
+          
+          await supabase.from("notifications").insert(notif);
         }
-      }
+      } catch (e) {}
 
-      // Sync like_count if needed (some parts of the app use this field)
-      const { count } = await supabase
-        .from("likes")
-        .select("*", { count: "exact", head: true })
-        .eq("comment_id", commentId);
-        
-      const updatedCount = count || 0;
-
-      try {
-        if (targetResourceType === 'project' && targetResourceId) {
-          await supabase.from("project_comments").update({ like_count: updatedCount }).eq("id", commentId);
-        } else if (targetResourceType === 'post' && targetResourceId) {
-          await supabase.from("comments").update({ like_count: updatedCount }).eq("id", commentId);
-        }
-      } catch (e) { /* ignore */ }
-
-      return res.json({ liked: true, likeCount: updatedCount });
+      const { count } = await supabase.from(likesTable).select("*", { count: "exact", head: true }).eq("comment_id", commentId);
+      const newCount = count || 0;
+      await supabase.from(commentsTable).update({ like_count: newCount } as any).eq("id", commentId);
+      return res.json({ liked: true, likeCount: newCount });
     }
   } catch (error: any) {
-    console.error("Unexpected error in likeComment:", error);
-    return res.status(500).json({ error: "Internal server error", details: error?.message });
+    console.error("Error in likeComment:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 
 export async function getCommentLikes(req: Request, res: Response) {
   try {
-    const { commentId } = req.params;
-    const user = req.user;
-    const userId = user?.sub || user?.id || user?.userId;
+    const { commentId: rawCommentId } = req.params;
+    const { type } = req.query;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
-    if (!commentId) {
-      return res.status(400).json({ error: "Comment ID is required" });
+    if (!rawCommentId) return res.status(400).json({ error: "Comment ID is required" });
+    const commentId = parseInt(rawCommentId, 10);
+
+    let isProject = type === 'project';
+    if (!type) {
+      const { data } = await supabase.from("project_comments").select("id").eq("id", commentId).maybeSingle();
+      if (data) isProject = true;
     }
 
-    const { count, error: countError } = await supabase
-      .from("likes")
+    const targetTable = isProject ? "project_comment_likes" : "likes";
+
+    const { count } = await supabase
+      .from(targetTable)
       .select("*", { count: "exact", head: true })
       .eq("comment_id", commentId);
 
-    if (countError) {
-      console.error("Error getting comment like count:", countError);
-      return res.status(500).json({ error: "Failed to get like count" });
-    }
-
     let isLiked = false;
     if (userId) {
-      const { data: userLike, error: likeCheckError } = await supabase
-        .from("likes")
+      const { data: userLike } = await supabase
+        .from(targetTable)
         .select("id")
         .eq("user_id", userId)
         .eq("comment_id", commentId)
         .maybeSingle();
-      if (!likeCheckError || likeCheckError.code === "PGRST116") {
-        isLiked = !!userLike;
-      }
+      isLiked = !!userLike;
     }
 
     return res.json({ count: count || 0, isLiked });
   } catch (error: any) {
-    console.error("Unexpected error in getCommentLikes:", error);
-    return res.status(500).json({ error: "Internal server error", details: error?.message });
+    console.error("Error in getCommentLikes:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 
 export async function getUserLikes(req: Request, res: Response) {
   try {
     const { userId } = req.params;
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
 
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
-    }
+    const { data: posts } = await supabase.from("posts").select("id").eq("user_id", userId);
+    const postIds = (posts || []).map((p: any) => p.id);
 
-    // Get total likes from user's posts
-    const { data: posts, error: postsError } = await supabase
-      .from("posts")
-      .select("id")
-      .eq("user_id", userId);
+    if (postIds.length === 0) return res.json({ totalLikes: 0 });
 
-    if (postsError) {
-      console.error("Error fetching user posts:", postsError);
-      return res.status(500).json({ error: "Failed to fetch user posts" });
-    }
-
-    const postIds = posts?.map((p: any) => p.id) || [];
-
-    if (postIds.length === 0) {
-      return res.json({ totalLikes: 0 });
-    }
-
-    const { count, error: countError } = await supabase
+    const { count } = await supabase
       .from("likes")
       .select("*", { count: "exact", head: true })
       .in("post_id", postIds);
 
-    if (countError) {
-      console.error("Error getting total likes:", countError);
-      return res.status(500).json({ error: "Failed to get total likes" });
-    }
-
     return res.json({ totalLikes: count || 0 });
   } catch (error: any) {
-    console.error("Unexpected error in getUserLikes:", error);
-    return res.status(500).json({ error: "Internal server error", details: error?.message });
+    console.error("Error in getUserLikes:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }

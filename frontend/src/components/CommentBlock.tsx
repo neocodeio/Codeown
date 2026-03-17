@@ -29,13 +29,14 @@ interface CommentBlockProps {
   comment: CommentWithMeta;
   depth: number;
   onReply: (parentId: number | string, content: string) => Promise<void>;
+  resourceType: "post" | "project";
 }
 
-export default function CommentBlock({ comment, depth, onReply }: CommentBlockProps) {
+export default function CommentBlock({ comment, depth, onReply, resourceType }: CommentBlockProps) {
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id);
+  const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType);
   const { isSignedIn } = useClerkUser();
   const navigate = useNavigate();
   const { width } = useWindowSize();
@@ -252,6 +253,7 @@ export default function CommentBlock({ comment, depth, onReply }: CommentBlockPr
                   comment={c}
                   depth={depth + 1}
                   onReply={onReply}
+                  resourceType={resourceType}
                 />
               ))}
             </div>
