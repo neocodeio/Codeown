@@ -14,6 +14,7 @@ import {
   BookmarkSimple,
   EnvelopeSimple,
   Handshake,
+  Flame,
 } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -69,6 +70,8 @@ export default function NotificationsPage() {
                 return { icon: <Eye size={size} weight={weight} />, color: "var(--text-primary)" };
             case "cofounder_request":
                 return { icon: <Handshake size={size} weight={weight} />, color: "var(--text-primary)" };
+            case "streak_warning":
+                return { icon: <Flame size={size} weight={weight} />, color: "#f97316" }; // Orange color for fire
             default:
                 return { icon: <Bell size={size} weight={weight} />, color: "var(--text-primary)" };
         }
@@ -105,8 +108,10 @@ export default function NotificationsPage() {
                 return <>{nameWrapper} {notification.project_id ? "Viewed your project" : "Viewed your profile"}</>;
             case "cofounder_request":
                 return <>{nameWrapper} Requested to be a Co-Founder for your project</>;
+            case "streak_warning":
+                return <span style={{ color: "#f97316" }}>{notification.content || "Your streak is about to break!"}</span>;
             default:
-                return <>New notification</>;
+                return <>{notification.content || "New notification"}</>;
         }
     };
 

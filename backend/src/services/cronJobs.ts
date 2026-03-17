@@ -86,10 +86,20 @@ export function initializeCronJobs() {
         } 
         // B. WARN USER: If inactive for 16-17 hours (exactly 8 hours before break)
         else if (hoursSince >= 16 && hoursSince < 17) {
+          // 1. Email Warning
           if (user.email) {
             await sendStreakWarningEmail(user.email, user.name || 'User', user.streak_count);
-            warningCount++;
           }
+          
+          // 2. In-app Notification
+          await supabase.from('notifications').insert({
+            user_id: user.id,
+            type: 'streak_warning',
+            content: `Your ${user.streak_count}-day streak is about to break! You have 8 hours left.`,
+            read: false
+          });
+
+          warningCount++;
         }
       }
 

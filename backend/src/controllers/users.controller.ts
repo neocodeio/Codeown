@@ -4,6 +4,74 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import { sendWelcomeEmail } from "../lib/email.js";
 import { getOrCreateConversation } from "./messages.controller.js";
 
+/**
+ * Internal helper to update user streak.
+ * Logic:
+ * 1. If never active, set to 1.
+ * 2. If already active TODAY (calendar day), do nothing.
+ * 3. If active YESTERDAY (calendar day) AND within 24hr window, increment.
+ * 4. If more than 24hr window since last activity, reset to 1.
+ */
+async function internalUpdateStreak(userId: string): Promise<number | null> {
+    try {
+        // Fetch current streak info
+        const { data: userData, error: fetchError } = await supabase
+            .from("users")
+            .select("streak_count, last_active_at")
+            .eq("id", userId)
+            .single();
+
+        if (fetchError || !userData) return null;
+
+        const now = new Date();
+        const lastActive = userData.last_active_at ? new Date(userData.last_active_at) : null;
+        let newStreak = userData.streak_count || 0;
+
+        if (!lastActive) {
+            newStreak = 1;
+        } else {
+            // Check if it's the same calendar day
+            const isSameDay = 
+                now.getDate() === lastActive.getDate() &&
+                now.getMonth() === lastActive.getMonth() &&
+                now.getFullYear() === lastActive.getFullYear();
+
+            if (isSameDay) {
+                // Already checked in today, update last_active only if it's been a while
+                const minsSince = (now.getTime() - lastActive.getTime()) / (1000 * 60);
+                if (minsSince > 5) { // Only update timestamp every 5 mins to save DB writes
+                    await supabase.from("users").update({ last_active_at: now.toISOString() }).eq("id", userId);
+                }
+                return newStreak;
+            }
+
+            const hoursSince = (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60);
+
+            if (hoursSince > 24) {
+                // Streak broken, start over
+                newStreak = 1;
+            } else {
+                // New day and within 24h, increment!
+                newStreak += 1;
+            }
+        }
+
+        // Update DB
+        await supabase
+            .from("users")
+            .update({
+                streak_count: newStreak,
+                last_active_at: now.toISOString(),
+            })
+            .eq("id", userId);
+
+        return newStreak;
+    } catch (err) {
+        console.error("[internalUpdateStreak] Error:", err);
+        return null;
+    }
+}
+
 export async function updateStreak(req: Request, res: Response) {
     try {
         const user = req.user;
@@ -13,64 +81,13 @@ export async function updateStreak(req: Request, res: Response) {
             return res.status(401).json({ error: "Unauthorized" });
         }
 
-        // Get current user streak info
-        const { data: userData, error: fetchError } = await supabase
-            .from("users")
-            .select("streak_count, last_active_at")
-            .eq("id", userId)
-            .single();
-
-        if (fetchError) {
-            console.error("Error fetching user for streak:", fetchError);
-            return res.status(500).json({ error: "Internal server error" });
-        }
-
-        const now = new Date();
-        const lastActive = userData.last_active_at ? new Date(userData.last_active_at) : null;
-        let newStreak = userData.streak_count || 0;
-
-        if (!lastActive) {
-            // First time ever
-            newStreak = 1;
-        } else {
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            const lastActiveDay = new Date(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate());
-            const dayDiff = Math.floor((today.getTime() - lastActiveDay.getTime()) / (1000 * 60 * 60 * 24));
-            
-            // Check for strict 24 hour rolling window break
-            const hoursSince = (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60);
-
-            if (hoursSince > 24) {
-                // Gap too large, reset to 1
-                newStreak = 1;
-            } else if (dayDiff === 0) {
-                // Already active today, don't increment
-                return res.json({ streak_count: newStreak });
-            } else if (dayDiff === 1) {
-                // Last active yesterday and within 24 hours, increment
-                newStreak += 1;
-            } else {
-                // Fallback for edge cases
-                newStreak = 1;
-            }
-        }
-
-        const { data: updatedUser, error: updateError } = await supabase
-            .from("users")
-            .update({
-                streak_count: newStreak,
-                last_active_at: now.toISOString(),
-            })
-            .eq("id", userId)
-            .select("streak_count")
-            .single();
-
-        if (updateError) {
-            console.error("Error updating streak:", updateError);
+        const newStreak = await internalUpdateStreak(userId);
+        
+        if (newStreak === null) {
             return res.status(500).json({ error: "Failed to update streak" });
         }
 
-        return res.json({ streak_count: updatedUser.streak_count });
+        return res.json({ streak_count: newStreak });
     } catch (error: any) {
         console.error("Unexpected error in updateStreak:", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -956,6 +973,14 @@ export function trackActiveSession(req: Request, res: Response) {
 
         // Update or set last seen timestamp
         activeSessions.set(sessionKey, Date.now());
+
+        // IF LOGGED IN: Update streak logic automatically on ping
+        if (userId) {
+            // We don't await this to keep the ping response fast
+            internalUpdateStreak(userId).catch(err => {
+                console.error("[trackActiveSession] Streak update background error:", err);
+            });
+        }
 
         // Periodically prune stale sessions (older than 60s)
         if (Math.random() < 0.1) { // 10% chance to prune on ping
