@@ -541,3 +541,26 @@ export async function sendCofounderRequestEmail(
     console.error("Error sending cofounder request email:", err);
   }
 }
+export async function sendNewMessageEmail(email: string, userName: string, senderName: string, senderUsername: string) {
+  if (!resend) return;
+  try {
+    await resend.emails.send({
+      from: "Codeown <messages@codeown.space>",
+      to: email,
+      subject: `${senderName} sent you a message on Codeown! 💬`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+          <h2 style="color: #0f172a; margin-bottom: 24px;">Hey ${userName},</h2>
+          <p style="font-size: 16px; color: #475569; line-height: 1.6;">
+            <strong>${senderName}</strong> (@${senderUsername}) just sent you a new message on Codeown.
+          </p>
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/messages?userId=${senderUsername}" style="padding: 12px 32px; background: #000000; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">View Message &rarr;</a>
+          </div>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Error sending new message email:", err);
+  }
+}

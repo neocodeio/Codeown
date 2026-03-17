@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
+import { sendNewMessageEmail } from "../lib/email.js";
 
 // Helper to ensure conversation exists or create one
 export async function getOrCreateConversation(user1Id: string, user2Id: string) {
@@ -260,6 +261,21 @@ export async function sendMessage(req: Request, res: Response) {
                     console.error("Database error creating message notification:", notifErr);
                 } else {
                     console.log(`Notification sent to ${finalRecipientId}`);
+                    
+                    // Fetch user details for email
+                    const [{ data: sender }, { data: recipient }] = await Promise.all([
+                      supabase.from("users").select("name, username").eq("id", userId).single(),
+                      supabase.from("users").select("name, email").eq("id", finalRecipientId).single()
+                    ]);
+
+                    if (sender && recipient && recipient.email) {
+                      sendNewMessageEmail(
+                        recipient.email,
+                        recipient.name || "User",
+                        sender.name || "Someone",
+                        sender.username || "someone"
+                      );
+                    }
                 }
             }
         } catch (notifError) {
