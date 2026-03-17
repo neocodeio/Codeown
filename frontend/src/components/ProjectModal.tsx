@@ -357,6 +357,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
           outline: none;
           font-family: var(--font-main);
           color: var(--text-primary);
+          display: block;
         }
         .form-input:focus, .form-textarea:focus, .form-select:focus {
           border-color: var(--text-primary);
@@ -390,15 +391,15 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 style={{
                     backgroundColor: "var(--bg-page)",
                     borderRadius: "0",
-                    width: isMobile ? "100%" : "90%",
-                    maxWidth: isMobile ? "100%" : "700px",
+                    width: isMobile ? "100%" : "95%",
+                    maxWidth: isMobile ? "100%" : "680px",
                     height: isMobile ? "100%" : "auto",
                     maxHeight: isMobile ? "100%" : "90vh",
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
                     border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-                    boxShadow: isMobile ? "none" : "0 24px 48px rgba(0,0,0,0.4)",
+                    boxShadow: isMobile ? "none" : "0 32px 64px rgba(0,0,0,0.3)",
                     overflow: "hidden",
                     margin: isMobile ? "0" : "auto"
                 }}
@@ -489,7 +490,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             <label className="form-item-label">
                                 Technologies Used *
                             </label>
-                            <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+                            <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: isMobile ? "wrap" : "nowrap" }}>
                                 <input
                                     type="text"
                                     value={techInput}
@@ -497,12 +498,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
                                     placeholder="e.g. React, Node.js"
                                     className="form-input"
+                                    style={{ flex: 1, minWidth: isMobile ? "100%" : "0" }}
                                 />
                                 <button
                                     type="button"
                                     onClick={handleAddTech}
                                     style={{
                                         padding: "0 24px",
+                                        height: "44px",
                                         backgroundColor: "var(--text-primary)",
                                         color: "var(--bg-page)",
                                         border: "none",
@@ -515,7 +518,9 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                         justifyContent: "center",
                                         textTransform: "uppercase",
                                         fontFamily: "var(--font-mono)",
-                                        letterSpacing: "0.1em"
+                                        letterSpacing: "0.1em",
+                                        flexShrink: 0,
+                                        width: isMobile ? "100%" : "auto"
                                     }}
                                 >
                                     <span>ADD</span>
@@ -563,7 +568,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             <label className="form-item-label">
                                 Contributors (Usernames)
                             </label>
-                            <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+                            <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: isMobile ? "wrap" : "nowrap" }}>
                                 <input
                                     type="text"
                                     value={contributorInput}
@@ -571,12 +576,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddContributor())}
                                     placeholder="Enter username"
                                     className="form-input"
+                                    style={{ flex: 1, minWidth: isMobile ? "100%" : "0" }}
                                 />
                                 <button
                                     type="button"
                                     onClick={handleAddContributor}
                                     style={{
                                         padding: "0 24px",
+                                        height: "44px",
                                         backgroundColor: "var(--text-primary)",
                                         color: "var(--bg-page)",
                                         border: "none",
@@ -589,7 +596,9 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                         justifyContent: "center",
                                         textTransform: "uppercase",
                                         fontFamily: "var(--font-mono)",
-                                        letterSpacing: "0.1em"
+                                        letterSpacing: "0.1em",
+                                        flexShrink: 0,
+                                        width: isMobile ? "100%" : "auto"
                                     }}
                                 >
                                     <span>ADD</span>
