@@ -350,15 +350,12 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
             className="modal-overlay"
             style={{
                 position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
+                inset: 0,
                 backgroundColor: "rgba(0, 0, 0, 0.4)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                zIndex: 1100,
+                zIndex: 3000,
                 padding: isMobile ? "0" : "24px 20px",
                 backdropFilter: "blur(8px)",
             }}
@@ -368,11 +365,11 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 className="modal-content"
                 style={{
                     backgroundColor: "var(--bg-page)",
-                    borderRadius: "2px",
+                    borderRadius: isMobile ? "0" : "2px",
                     width: "100%",
                     maxWidth: isMobile ? "100%" : "680px",
-                    height: isMobile ? "100%" : "auto",
-                    maxHeight: isMobile ? "100%" : "90vh",
+                    height: isMobile ? "100dvh" : "auto",
+                    maxHeight: isMobile ? "100dvh" : "90vh",
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
@@ -424,7 +421,12 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     }
                 `}</style>
                 {/* Fixed Header */}
-                <div style={{ padding: isMobile ? "24px 20px" : "32px 40px", borderBottom: "0.5px solid var(--border-hairline)", position: "relative" }}>
+                <div style={{ 
+                    padding: isMobile ? "20px" : "32px 40px", 
+                    borderBottom: "0.5px solid var(--border-hairline)", 
+                    position: "relative",
+                    flexShrink: 0 // Prevent header from shrinking
+                }}>
                     <button
                         onClick={onClose}
                         style={{
@@ -454,7 +456,15 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 </div>
 
                 {/* Scrolling Content */}
-                <div style={{ padding: isMobile ? "24px 20px" : "40px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
+                <div style={{ 
+                    padding: isMobile ? "24px 20px" : "40px", 
+                    overflowY: "auto", 
+                    flex: 1, 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    gap: "32px",
+                    minHeight: 0 // Crucial for flexbox scroll behavior
+                }}>
                     {error && (
                         <div style={{
                             backgroundColor: "transparent",
@@ -786,16 +796,33 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                 {/* Fixed Footer */}
                 <div style={{ 
-                    padding: isMobile ? "24px 20px" : "24px 40px", 
+                    padding: isMobile ? "16px 20px calc(16px + env(safe-area-inset-bottom))" : "24px 40px", 
                     backgroundColor: "var(--bg-page)", 
                     borderTop: "0.5px solid var(--border-hairline)", 
                     display: "flex", 
-                    gap: "12px", 
-                    justifyContent: isMobile ? "center" : "flex-end" 
+                    flexDirection: "row",
+                    gap: "10px", 
+                    justifyContent: "flex-end",
+                    zIndex: 10,
+                    flexShrink: 0 // Prevent footer from shrinking
                 }}>
                     <button
                         onClick={onClose}
-                        style={{ padding: "12px 24px", borderRadius: "2px", fontSize: "11px", fontWeight: 800, transition: "all 0.15s ease", cursor: "pointer", background: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}
+                        style={{ 
+                            padding: isMobile ? "12px 16px" : "14px 24px", 
+                            borderRadius: "2px", 
+                            fontSize: isMobile ? "10px" : "11px", 
+                            fontWeight: 800, 
+                            transition: "all 0.15s ease", 
+                            cursor: "pointer", 
+                            background: "transparent", 
+                            color: "var(--text-tertiary)", 
+                            border: "0.5px solid var(--border-hairline)", 
+                            fontFamily: "var(--font-mono)", 
+                            textTransform: "uppercase", 
+                            letterSpacing: "0.1em",
+                            flex: isMobile ? 1 : "none"
+                        }}
                         onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
                         onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--text-tertiary)"; }}
                     >
@@ -804,9 +831,24 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
-                        style={{ padding: "12px 32px", borderRadius: "2px", fontSize: "11px", fontWeight: 800, transition: "all 0.15s ease", cursor: "pointer", background: "var(--text-primary)", color: "var(--bg-page)", border: "none", opacity: loading ? 0.3 : 1, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.15em" }}
+                        style={{ 
+                            padding: isMobile ? "12px 16px" : "14px 32px", 
+                            borderRadius: "2px", 
+                            fontSize: isMobile ? "10px" : "11px", 
+                            fontWeight: 800, 
+                            transition: "all 0.15s ease", 
+                            cursor: "pointer", 
+                            background: "var(--text-primary)", 
+                            color: "var(--bg-page)", 
+                            border: "none", 
+                            opacity: loading ? 0.3 : 1, 
+                            fontFamily: "var(--font-mono)", 
+                            textTransform: "uppercase", 
+                            letterSpacing: "0.15em",
+                            flex: isMobile ? 1 : "none"
+                        }}
                     >
-                        {loading ? "SAVING..." : (project ? "SAVE CHANGES" : "LAUNCH PROJECT")}
+                        {loading ? "SAVING..." : (project ? "SAVE" : "LAUNCH")}
                     </button>
                 </div>
             </div>

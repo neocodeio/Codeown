@@ -315,38 +315,52 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
     <>
       <div style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
+        inset: 0,
         backgroundColor: "rgba(0, 0, 0, 0.4)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 1000,
+        zIndex: 3000,
+        backdropFilter: "blur(8px)",
       }}>
         <div
           style={{
             width: "100%",
             maxWidth: isMobile ? "100%" : "600px",
-            maxHeight: isMobile ? "100vh" : "90vh",
+            height: isMobile ? "100dvh" : "auto",
+            maxHeight: isMobile ? "100dvh" : "90vh",
             margin: 0,
             backgroundColor: "var(--bg-page)",
-            borderRadius: "2px",
+            borderRadius: isMobile ? "0" : "2px",
             boxShadow: "none",
-            border: "0.5px solid var(--border-hairline)",
+            border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div style={{ padding: "32px 40px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "0.5px solid var(--border-hairline)" }}>
+          <div style={{ 
+            padding: isMobile ? "20px" : "32px 40px", 
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "center", 
+            borderBottom: "0.5px solid var(--border-hairline)", 
+            flexShrink: 0 // Prevent header from shrinking
+          }}>
             <h2 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Edit Profile</h2>
             <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "24px", color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center", padding: "4px" }}>&times;</button>
           </div>
 
-          <div style={{ padding: "40px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "32px" }}>
+          <div style={{ 
+            padding: isMobile ? "24px 20px" : "40px", 
+            overflowY: "auto", 
+            display: "flex", 
+            flexDirection: "column", 
+            gap: "32px",
+            flex: 1,
+            minHeight: 0 // Crucial for flexbox scroll behavior
+          }}>
             {/* Avatar Section */}
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>Avatar</label>
@@ -589,24 +603,64 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "16px", borderTop: "0.5px solid var(--border-hairline)", paddingTop: "32px" }}>
-              <button
-                onClick={onClose}
-                style={{ padding: "12px 24px", borderRadius: "2px", fontSize: "11px", fontWeight: 800, transition: "all 0.15s ease", cursor: "pointer", background: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}
-                onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
-                onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--text-tertiary)"; }}
-              >
-                CANCEL
-              </button>
-              <button
-                onClick={submit}
-                disabled={isSubmitting}
-                style={{ padding: "12px 32px", borderRadius: "2px", fontSize: "11px", fontWeight: 800, transition: "all 0.15s ease", cursor: "pointer", background: "var(--text-primary)", color: "var(--bg-page)", border: "none", opacity: isSubmitting ? 0.3 : 1, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.15em" }}
-              >
-                {isSubmitting ? "UPDATING..." : "SAVE CHANGES"}
-              </button>
-            </div>
+          </div>
+
+          {/* Action Buttons - Fixed Footer */}
+          <div style={{ 
+            padding: isMobile ? "16px 20px calc(16px + env(safe-area-inset-bottom))" : "24px 40px", 
+            backgroundColor: "var(--bg-page)", 
+            borderTop: "0.5px solid var(--border-hairline)", 
+            display: "flex", 
+            flexDirection: "row",
+            gap: "10px", 
+            justifyContent: "flex-end",
+            zIndex: 10,
+            flexShrink: 0 // Prevent footer from shrinking
+          }}>
+            <button
+              onClick={onClose}
+              style={{ 
+                padding: isMobile ? "12px 16px" : "14px 24px", 
+                borderRadius: "2px", 
+                fontSize: isMobile ? "10px" : "11px", 
+                fontWeight: 800, 
+                transition: "all 0.15s ease", 
+                cursor: "pointer", 
+                background: "transparent", 
+                color: "var(--text-tertiary)", 
+                border: "0.5px solid var(--border-hairline)", 
+                fontFamily: "var(--font-mono)", 
+                textTransform: "uppercase", 
+                letterSpacing: "0.1em",
+                flex: isMobile ? 1 : "none"
+              }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--text-tertiary)"; }}
+            >
+              CANCEL
+            </button>
+            <button
+              onClick={submit}
+              disabled={isSubmitting}
+              style={{ 
+                padding: isMobile ? "12px 16px" : "14px 32px", 
+                borderRadius: "2px", 
+                fontSize: isMobile ? "10px" : "11px", 
+                fontWeight: 800, 
+                transition: "all 0.15s ease", 
+                cursor: "pointer", 
+                background: "var(--text-primary)", 
+                color: "var(--bg-page)", 
+                border: "none", 
+                opacity: isSubmitting ? 0.3 : 1, 
+                fontFamily: "var(--font-mono)", 
+                textTransform: "uppercase", 
+                letterSpacing: "0.15em",
+                flex: isMobile ? 1 : "none"
+              }}
+            >
+              {isSubmitting ? "SAVING..." : (isMobile ? "SAVE" : "SAVE CHANGES")}
+            </button>
           </div>
         </div>
       </div>
