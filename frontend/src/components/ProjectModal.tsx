@@ -375,12 +375,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         .responsive-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 24px;
+          gap: ${isMobile ? "16px" : "24px"};
           margin-bottom: 24px;
         }
-        @media (max-width: 640px) {
+        @media (max-width: 1024px) {
           .responsive-grid {
             grid-template-columns: 1fr;
+            gap: 16px;
           }
         }
       `}</style>
@@ -389,17 +390,17 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 style={{
                     backgroundColor: "var(--bg-page)",
                     borderRadius: "0",
-                    width: "100%",
-                    maxWidth: isMobile ? "100%" : "600px",
+                    width: isMobile ? "100%" : "95%",
+                    maxWidth: isMobile ? "100%" : "800px",
                     height: isMobile ? "100%" : "auto",
-                    maxHeight: isMobile ? "100%" : "90vh",
+                    maxHeight: isMobile ? "100%" : "92vh",
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
                     border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-                    boxShadow: "none",
+                    boxShadow: isMobile ? "none" : "0 20px 50px rgba(0,0,0,0.3)",
                     overflow: "hidden",
-                    margin: isMobile ? "0" : "16px"
+                    margin: isMobile ? "0" : "auto"
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
@@ -434,7 +435,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 </div>
 
                 {/* Scrolling Content */}
-                <div style={{ padding: isMobile ? "24px 20px" : "40px", overflowY: "auto", flex: 1 }}>
+                <div style={{ padding: isMobile ? "24px 20px" : "40px 60px", overflowY: "auto", flex: 1 }}>
                     {error && (
                         <div style={{
                             backgroundColor: "transparent",
@@ -697,9 +698,9 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                             backgroundColor: "transparent",
                                             border: "0.5px solid var(--border-hairline)",
                                             color: fetchingGitHub || !formData.github_repo ? "var(--text-tertiary)" : "var(--text-primary)",
-                                            padding: "4px 10px",
+                                            padding: "6px 14px",
                                             borderRadius: "2px",
-                                            fontSize: "9px",
+                                            fontSize: "10px",
                                             fontWeight: 800,
                                             fontFamily: "var(--font-mono)",
                                             display: "flex",
@@ -796,18 +797,18 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                 {/* Fixed Footer */}
                 <div style={{ 
-                    padding: isMobile ? "20px" : "32px 40px", 
+                    padding: isMobile ? "24px 20px" : "32px 80px", 
                     backgroundColor: "var(--bg-page)", 
                     borderTop: "0.5px solid var(--border-hairline)", 
                     display: "flex", 
                     gap: "12px", 
-                    justifyContent: "flex-end" 
+                    justifyContent: isMobile ? "center" : "flex-end" 
                 }}>
                     <button
                         type="button"
                         onClick={onClose}
                         style={{
-                            padding: isMobile ? "0" : "0 24px",
+                            padding: isMobile ? "0 16px" : "0 24px",
                             height: "44px",
                             backgroundColor: "transparent",
                             color: "var(--text-tertiary)",
@@ -838,7 +839,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         form="project-form"
                         disabled={loading}
                         style={{
-                            padding: isMobile ? "0" : "0 32px",
+                            padding: isMobile ? "0 16px" : "0 32px",
                             height: "44px",
                             backgroundColor: loading ? "var(--bg-hover)" : "var(--text-primary)",
                             color: loading ? "var(--text-tertiary)" : "var(--bg-page)",
