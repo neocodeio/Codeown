@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
@@ -229,8 +230,27 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
+
+        // Manual validation
+        if (!formData.title.trim()) {
+            setError("Project Name is required");
+            return;
+        }
+        if (!formData.description.trim()) {
+            setError("Project Description is required");
+            return;
+        }
+        if (formData.technologies_used.length === 0) {
+            setError("At least one technology is required");
+            return;
+        }
+        if (!formData.project_details.trim()) {
+            setError("Project Details are required");
+            return;
+        }
+
         setLoading(true);
         setError("");
 
@@ -316,9 +336,16 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         }
     };
 
-    if (!isOpen) return null;
+    const [mounted, setMounted] = useState(false);
 
-    return (
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
+    if (!isOpen || !mounted) return null;
+
+    const modalContent = (
         <div
             className="modal-overlay"
             style={{
@@ -331,67 +358,18 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                zIndex: 10000,
-                padding: isMobile ? "0" : "16px",
-                backdropFilter: "blur(4px)",
+                zIndex: 1100,
+                padding: isMobile ? "0" : "24px 20px",
+                backdropFilter: "blur(8px)",
             }}
             onClick={onClose}
         >
-            <style>{`
-        @keyframes modalEnter {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .modal-content {
-          animation: modalEnter 0.2s ease-out;
-        }
-        .form-input, .form-textarea, .form-select {
-          width: 100%;
-          padding: ${isMobile ? "12px 14px" : "14px 18px"};
-          border: 0.5px solid var(--border-hairline);
-          borderRadius: 2px;
-          fontSize: 14px;
-          transition: all 0.15s ease;
-          background-color: var(--bg-hover);
-          box-sizing: border-box;
-          outline: none;
-          font-family: var(--font-main);
-          color: var(--text-primary);
-          display: block;
-        }
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-          border-color: var(--text-primary);
-          background-color: var(--bg-page);
-        }
-        .form-item-label {
-          display: block;
-          margin-bottom: 10px;
-          font-family: var(--font-mono);
-          font-size: 11px;
-          font-weight: 700;
-          color: var(--text-tertiary);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-        .responsive-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: ${isMobile ? "16px" : "24px"};
-          margin-bottom: 24px;
-        }
-        @media (max-width: 1024px) {
-          .responsive-grid {
-            grid-template-columns: 1fr;
-            gap: 16px;
-          }
-        }
-      `}</style>
             <div
                 className="modal-content"
                 style={{
                     backgroundColor: "var(--bg-page)",
-                    borderRadius: "0",
-                    width: isMobile ? "100%" : "95%",
+                    borderRadius: "2px",
+                    width: "100%",
                     maxWidth: isMobile ? "100%" : "680px",
                     height: isMobile ? "100%" : "auto",
                     maxHeight: isMobile ? "100%" : "90vh",
@@ -399,12 +377,52 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     flexDirection: "column",
                     position: "relative",
                     border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-                    boxShadow: isMobile ? "none" : "0 32px 64px rgba(0,0,0,0.3)",
+                    boxShadow: isMobile ? "none" : "0 24px 48px rgba(0,0,0,0.2)",
                     overflow: "hidden",
-                    margin: isMobile ? "0" : "auto"
+                    margin: "0",
+                    animation: "modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
+                <style>{`
+                    @keyframes modalEnter {
+                        from { opacity: 0; transform: scale(0.98) translateY(10px); }
+                        to { opacity: 1; transform: scale(1) translateY(0); }
+                    }
+                    .form-input, .form-textarea, .form-select {
+                        width: 100%;
+                        padding: 14px 18px;
+                        border: 0.5px solid var(--border-hairline);
+                        border-radius: 2px;
+                        font-size: 14px;
+                        transition: all 0.15s ease;
+                        background-color: var(--bg-hover);
+                        box-sizing: border-box;
+                        outline: none;
+                        font-family: var(--font-main);
+                        color: var(--text-primary);
+                    }
+                    .form-input:focus, .form-textarea:focus, .form-select:focus {
+                        border-color: var(--text-primary);
+                        background-color: var(--bg-page);
+                    }
+                    .form-item-label {
+                        display: block;
+                        margin-bottom: 12px;
+                        font-family: var(--font-mono);
+                        font-size: 11px;
+                        font-weight: 700;
+                        color: var(--text-tertiary);
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                    }
+                    .responsive-grid {
+                        display: grid;
+                        grid-template-columns: ${isMobile ? "1fr" : "1fr 1fr"};
+                        gap: 24px;
+                        margin-bottom: 32px;
+                    }
+                `}</style>
                 {/* Fixed Header */}
                 <div style={{ padding: isMobile ? "24px 20px" : "32px 40px", borderBottom: "0.5px solid var(--border-hairline)", position: "relative" }}>
                     <button
@@ -436,14 +454,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 </div>
 
                 {/* Scrolling Content */}
-                <div style={{ padding: isMobile ? "24px 20px" : "40px", overflowY: "auto", flex: 1 }}>
+                <div style={{ padding: isMobile ? "24px 20px" : "40px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
                     {error && (
                         <div style={{
                             backgroundColor: "transparent",
                             color: "#ef4444",
                             padding: "16px 20px",
                             borderRadius: "2px",
-                            marginBottom: "32px",
                             fontSize: "11px",
                             fontWeight: 700,
                             fontFamily: "var(--font-mono)",
@@ -455,209 +472,174 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         </div>
                     )}
 
-                    <form id="project-form" onSubmit={handleSubmit}>
-                        <div style={{ marginBottom: "32px" }}>
-                            <label className="form-item-label">
-                                Project Name *
-                            </label>
+                    <div>
+                        <label className="form-item-label">
+                            Project Name *
+                        </label>
+                        <input
+                            type="text"
+                            name="title"
+                            value={formData.title}
+                            onChange={handleInputChange}
+                            className="form-input"
+                            placeholder="GIVE IT A NAME..."
+                        />
+                    </div>
+
+                    <div>
+                        <label className="form-item-label">
+                            Project Description *
+                        </label>
+                        <textarea
+                            name="description"
+                            value={formData.description}
+                            onChange={handleInputChange}
+                            rows={3}
+                            className="form-textarea"
+                            placeholder="WHAT IS THIS ABOUT?"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="form-item-label">
+                            Technologies Used *
+                        </label>
+                        <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
                             <input
                                 type="text"
-                                name="title"
-                                value={formData.title}
-                                onChange={handleInputChange}
-                                required
+                                value={techInput}
+                                onChange={(e) => setTechInput(e.target.value)}
+                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
+                                placeholder="E.G. REACT, NODE.JS..."
                                 className="form-input"
-                                placeholder="Give it a name..."
+                                style={{ flex: 1 }}
                             />
-                        </div>
-
-                        <div style={{ marginBottom: "32px" }}>
-                            <label className="form-item-label">
-                                Project Description *
-                            </label>
-                            <textarea
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
-                                required
-                                rows={3}
-                                className="form-textarea"
-                                placeholder="What is this about?"
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "32px" }}>
-                            <label className="form-item-label">
-                                Technologies Used *
-                            </label>
-                            <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: isMobile ? "wrap" : "nowrap" }}>
-                                <input
-                                    type="text"
-                                    value={techInput}
-                                    onChange={(e) => setTechInput(e.target.value)}
-                                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
-                                    placeholder="e.g. React, Node.js"
-                                    className="form-input"
-                                    style={{ flex: 1, minWidth: isMobile ? "100%" : "0" }}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleAddTech}
-                                    style={{
-                                        padding: "0 24px",
-                                        height: "44px",
-                                        backgroundColor: "var(--text-primary)",
-                                        color: "var(--bg-page)",
-                                        border: "none",
-                                        borderRadius: "2px",
-                                        cursor: "pointer",
-                                        fontWeight: 800,
-                                        fontSize: "11px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        textTransform: "uppercase",
-                                        fontFamily: "var(--font-mono)",
-                                        letterSpacing: "0.1em",
-                                        flexShrink: 0,
-                                        width: isMobile ? "100%" : "auto"
-                                    }}
-                                >
-                                    <span>ADD</span>
-                                </button>
-                            </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px" : "10px" }}>
-                                {formData.technologies_used.map((tech, index) => (
-                                    <span
-                                        key={index}
-                                        style={{
-                                            border: "0.5px solid var(--border-hairline)",
-                                            padding: "6px 12px",
-                                            borderRadius: "2px",
-                                            fontSize: "11px",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "8px",
-                                            fontFamily: "var(--font-mono)",
-                                            textTransform: "uppercase",
-                                            color: "var(--text-tertiary)"
-                                        }}
-                                    >
-                                        {tech}
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveTech(tech)}
-                                            style={{
-                                                background: "none",
-                                                border: "none",
-                                                cursor: "pointer",
-                                                color: "var(--text-tertiary)",
-                                                fontSize: "14px",
-                                                display: "flex", alignItems: "center"
-                                            }}
-                                        >
-                                            <X size={12} />
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-
-                        <div style={{ marginBottom: "32px" }}>
-                            <label className="form-item-label">
-                                Contributors (Usernames)
-                            </label>
-                            <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: isMobile ? "wrap" : "nowrap" }}>
-                                <input
-                                    type="text"
-                                    value={contributorInput}
-                                    onChange={(e) => setContributorInput(e.target.value)}
-                                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddContributor())}
-                                    placeholder="Enter username"
-                                    className="form-input"
-                                    style={{ flex: 1, minWidth: isMobile ? "100%" : "0" }}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleAddContributor}
-                                    style={{
-                                        padding: "0 24px",
-                                        height: "44px",
-                                        backgroundColor: "var(--text-primary)",
-                                        color: "var(--bg-page)",
-                                        border: "none",
-                                        borderRadius: "2px",
-                                        cursor: "pointer",
-                                        fontWeight: 800,
-                                        fontSize: "11px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        textTransform: "uppercase",
-                                        fontFamily: "var(--font-mono)",
-                                        letterSpacing: "0.1em",
-                                        flexShrink: 0,
-                                        width: isMobile ? "100%" : "auto"
-                                    }}
-                                >
-                                    <span>ADD</span>
-                                </button>
-                            </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "8px" : "10px" }}>
-                                {(formData.contributors || []).map((contributor, index) => (
-                                    <span
-                                        key={index}
-                                        style={{
-                                            border: "0.5px solid var(--border-hairline)",
-                                            padding: "6px 12px",
-                                            borderRadius: "2px",
-                                            fontSize: "11px",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "8px",
-                                            fontFamily: "var(--font-mono)",
-                                            textTransform: "uppercase",
-                                            color: "var(--text-tertiary)"
-                                        }}
-                                    >
-                                        @{contributor}
-                                        <VerifiedBadge username={contributor} size="12px" />
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveContributor(contributor)}
-                                            style={{
-                                                background: "none",
-                                                border: "none",
-                                                cursor: "pointer",
-                                                color: "var(--text-tertiary)",
-                                                fontSize: "14px",
-                                                display: "flex", alignItems: "center"
-                                            }}
-                                        >
-                                            <X size={12} />
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div style={{ marginBottom: "32px" }}>
-                            <label className="form-item-label">
-                                Project Status *
-                            </label>
-                            <select
-                                name="status"
-                                value={formData.status}
-                                onChange={handleInputChange}
-                                required
-                                className="form-select"
+                            <button
+                                type="button"
+                                onClick={handleAddTech}
+                                style={{
+                                    padding: "0 24px",
+                                    borderRadius: "2px",
+                                    fontSize: "11px",
+                                    fontWeight: 800,
+                                    cursor: "pointer",
+                                    background: "transparent",
+                                    color: "var(--text-tertiary)",
+                                    border: "0.5px solid var(--border-hairline)",
+                                    fontFamily: "var(--font-mono)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.05em",
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}
                             >
-                                <option value="in_progress">In Progress</option>
-                                <option value="completed">Completed</option>
-                                <option value="paused">Paused</option>
-                            </select>
+                                ADD
+                            </button>
                         </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                            {formData.technologies_used.map((tech, index) => (
+                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "2px", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                                    {tech}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveTech(tech)}
+                                        style={{
+                                            background: "none",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            color: "var(--text-tertiary)",
+                                            fontSize: "14px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            padding: 0
+                                        }}
+                                    >
+                                        <X size={12} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <label className="form-item-label">
+                            Contributors (Usernames)
+                        </label>
+                        <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+                            <input
+                                type="text"
+                                value={contributorInput}
+                                onChange={(e) => setContributorInput(e.target.value)}
+                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddContributor())}
+                                placeholder="ENTER USERNAME..."
+                                className="form-input"
+                                style={{ flex: 1 }}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleAddContributor}
+                                style={{
+                                    padding: "0 24px",
+                                    borderRadius: "2px",
+                                    fontSize: "11px",
+                                    fontWeight: 800,
+                                    cursor: "pointer",
+                                    background: "transparent",
+                                    color: "var(--text-tertiary)",
+                                    border: "0.5px solid var(--border-hairline)",
+                                    fontFamily: "var(--font-mono)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.05em",
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}
+                            >
+                                ADD
+                            </button>
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                            {(formData.contributors || []).map((contributor, index) => (
+                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "2px", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                                    @{contributor}
+                                    <VerifiedBadge username={contributor} size="12px" />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveContributor(contributor)}
+                                        style={{
+                                            background: "none",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            color: "var(--text-tertiary)",
+                                            fontSize: "14px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            padding: 0,
+                                            marginLeft: "4px"
+                                        }}
+                                    >
+                                        <X size={12} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="form-item-label">
+                            Project Status *
+                        </label>
+                        <select
+                            name="status"
+                            value={formData.status}
+                            onChange={handleInputChange}
+                            className="form-select"
+                        >
+                            <option value="in_progress">IN PROGRESS</option>
+                            <option value="completed">COMPLETED</option>
+                            <option value="paused">PAUSED</option>
+                        </select>
+                    </div>
 
                         <div style={{ marginBottom: "32px" }}>
                             <label style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}>
@@ -787,21 +769,19 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             </div>
                         </div>
 
-                        <div style={{ marginBottom: "40px" }}>
-                            <label className="form-item-label">
-                                Project Details *
-                            </label>
-                            <textarea
-                                name="project_details"
-                                value={formData.project_details}
-                                onChange={handleInputChange}
-                                required
-                                rows={8}
-                                className="form-textarea"
-                                placeholder="Deep dive into the technical details..."
-                            />
-                        </div>
-                    </form>
+                    <div>
+                        <label className="form-item-label">
+                            Project Details *
+                        </label>
+                        <textarea
+                            name="project_details"
+                            value={formData.project_details}
+                            onChange={handleInputChange}
+                            rows={8}
+                            className="form-textarea"
+                            placeholder="DEEP DIVE INTO THE TECHNICAL DETAILS..."
+                        />
+                    </div>
                 </div>
 
                 {/* Fixed Footer */}
@@ -814,60 +794,24 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     justifyContent: isMobile ? "center" : "flex-end" 
                 }}>
                     <button
-                        type="button"
                         onClick={onClose}
-                        style={{
-                            padding: isMobile ? "0 16px" : "0 24px",
-                            height: "44px",
-                            backgroundColor: "transparent",
-                            color: "var(--text-tertiary)",
-                            border: "0.5px solid var(--border-hairline)",
-                            borderRadius: "2px",
-                            cursor: "pointer",
-                            fontWeight: 800,
-                            fontSize: "11px",
-                            fontFamily: "var(--font-mono)",
-                            transition: "all 0.15s ease",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.1em",
-                            flex: isMobile ? 1 : "none"
-                        }}
-                        onMouseEnter={e => {
-                            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                            e.currentTarget.style.color = "var(--text-primary)";
-                        }}
-                        onMouseLeave={e => {
-                            e.currentTarget.style.backgroundColor = "transparent";
-                            e.currentTarget.style.color = "var(--text-tertiary)";
-                        }}
+                        style={{ padding: "12px 24px", borderRadius: "2px", fontSize: "11px", fontWeight: 800, transition: "all 0.15s ease", cursor: "pointer", background: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--text-tertiary)"; }}
                     >
                         CANCEL
                     </button>
                     <button
-                        type="submit"
-                        form="project-form"
+                        onClick={handleSubmit}
                         disabled={loading}
-                        style={{
-                            padding: isMobile ? "0 16px" : "0 32px",
-                            height: "44px",
-                            backgroundColor: loading ? "var(--bg-hover)" : "var(--text-primary)",
-                            color: loading ? "var(--text-tertiary)" : "var(--bg-page)",
-                            border: "none",
-                            borderRadius: "2px",
-                            cursor: loading ? "not-allowed" : "pointer",
-                            fontWeight: 800,
-                            fontSize: "11px",
-                            fontFamily: "var(--font-mono)",
-                            transition: "all 0.15s ease",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.1em",
-                            flex: isMobile ? 1 : "none"
-                        }}
+                        style={{ padding: "12px 32px", borderRadius: "2px", fontSize: "11px", fontWeight: 800, transition: "all 0.15s ease", cursor: "pointer", background: "var(--text-primary)", color: "var(--bg-page)", border: "none", opacity: loading ? 0.3 : 1, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.15em" }}
                     >
-                        {loading ? "SHIPPING..." : (project ? "UPDATE" : "LAUNCH")}
+                        {loading ? "SAVING..." : (project ? "SAVE CHANGES" : "LAUNCH PROJECT")}
                     </button>
                 </div>
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 }
