@@ -195,7 +195,11 @@ export default function App() {
             </Suspense>
           </div>
         </ErrorBoundary>
-        {!isAuthRoute && location.pathname !== "/messages" && <FeedbackButton />}
+        {!isAuthRoute && 
+         location.pathname !== "/messages" && 
+         !location.pathname.startsWith("/post/") && 
+         !location.pathname.startsWith("/project/") && 
+         <FeedbackButton />}
       </div>
     </div>
   );
