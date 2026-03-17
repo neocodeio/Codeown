@@ -18,7 +18,7 @@ export interface CommentWithMeta {
   content: string;
   user_id: string;
   created_at: string;
-  parent_id?: number | null;
+  parent_id?: number | string | null;
   parent_author_name?: string | null;
   like_count?: number;
   user?: { name: string; username?: string | null; email: string | null; avatar_url?: string | null };

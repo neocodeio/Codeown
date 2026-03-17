@@ -115,6 +115,45 @@ export async function likePost(req: Request, res: Response) {
   }
 }
 
+export async function getPostLikes(req: Request, res: Response) {
+  try {
+    const { postId } = req.params;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    if (!postId) {
+      return res.status(400).json({ error: "Post ID is required" });
+    }
+
+    const postIdNum = parseInt(postId, 10);
+    if (isNaN(postIdNum)) {
+      return res.status(400).json({ error: "Invalid post ID" });
+    }
+
+    const { count } = await supabase
+      .from("likes")
+      .select("*", { count: "exact", head: true })
+      .eq("post_id", postIdNum)
+      .is("comment_id", null);
+
+    let isLiked = false;
+    if (userId) {
+      const { data: userLike } = await supabase
+        .from("likes")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("post_id", postIdNum)
+        .is("comment_id", null)
+        .maybeSingle();
+      isLiked = !!userLike;
+    }
+
+    return res.json({ count: count || 0, isLiked });
+  } catch (error: any) {
+    console.error("Error in getPostLikes:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 export async function likeComment(req: Request, res: Response) {
   try {
     const user = req.user;

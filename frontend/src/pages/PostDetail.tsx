@@ -133,7 +133,7 @@ export default function PostDetail() {
     }
   };
 
-  const handleReply = async (parentId: number, content: string) => {
+  const handleReply = async (parentId: number | string, content: string) => {
     const token = await getToken();
     await api.post("/comments", { post_id: id, content, parent_id: parentId }, { headers: { Authorization: `Bearer ${token}` } });
     const res = await api.get(`/comments/${id}?sort=${commentSort}`);
@@ -176,7 +176,7 @@ export default function PostDetail() {
   };
 
   function buildTree(list: CommentWithMeta[]): CommentWithMeta[] {
-    const map = new Map<number, CommentWithMeta & { children: CommentWithMeta[] }>();
+    const map = new Map<number | string, CommentWithMeta & { children: CommentWithMeta[] }>();
     list.forEach(c => map.set(c.id, { ...c, children: [] }));
     const roots: (CommentWithMeta & { children: CommentWithMeta[] })[] = [];
     list.forEach(c => {
@@ -527,7 +527,7 @@ export default function PostDetail() {
             <div style={{ display: "flex", flexDirection: "column" }}>
               {buildTree(comments).map(c => (
                 <div key={c.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
-                  <CommentBlock comment={c} depth={0} onReply={handleReply} />
+                  <CommentBlock comment={c} depth={0} onReply={handleReply} resourceType="post" />
                 </div>
               ))}
             </div>
