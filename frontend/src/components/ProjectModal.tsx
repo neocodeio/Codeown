@@ -390,27 +390,27 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 style={{
                     backgroundColor: "var(--bg-page)",
                     borderRadius: "0",
-                    width: isMobile ? "100%" : "95%",
-                    maxWidth: isMobile ? "100%" : "800px",
+                    width: isMobile ? "100%" : "90%",
+                    maxWidth: isMobile ? "100%" : "700px",
                     height: isMobile ? "100%" : "auto",
-                    maxHeight: isMobile ? "100%" : "92vh",
+                    maxHeight: isMobile ? "100%" : "90vh",
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
                     border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-                    boxShadow: isMobile ? "none" : "0 20px 50px rgba(0,0,0,0.3)",
+                    boxShadow: isMobile ? "none" : "0 24px 48px rgba(0,0,0,0.4)",
                     overflow: "hidden",
                     margin: isMobile ? "0" : "auto"
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Fixed Header */}
-                <div style={{ padding: isMobile ? "24px 20px" : "32px 40px 24px", borderBottom: "0.5px solid var(--border-hairline)", position: "relative" }}>
+                <div style={{ padding: isMobile ? "24px 20px" : "32px 40px", borderBottom: "0.5px solid var(--border-hairline)", position: "relative" }}>
                     <button
                         onClick={onClose}
                         style={{
                             position: "absolute",
-                            top: isMobile ? "20px" : "32px",
+                            top: isMobile ? "22px" : "28px",
                             right: isMobile ? "20px" : "32px",
                             background: "transparent",
                             border: "none",
@@ -435,7 +435,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 </div>
 
                 {/* Scrolling Content */}
-                <div style={{ padding: isMobile ? "24px 20px" : "40px 60px", overflowY: "auto", flex: 1 }}>
+                <div style={{ padding: isMobile ? "24px 20px" : "40px", overflowY: "auto", flex: 1 }}>
                     {error && (
                         <div style={{
                             backgroundColor: "transparent",
@@ -797,7 +797,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                 {/* Fixed Footer */}
                 <div style={{ 
-                    padding: isMobile ? "24px 20px" : "32px 80px", 
+                    padding: isMobile ? "24px 20px" : "24px 40px", 
                     backgroundColor: "var(--bg-page)", 
                     borderTop: "0.5px solid var(--border-hairline)", 
                     display: "flex", 
