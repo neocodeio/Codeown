@@ -166,14 +166,14 @@ export default function Navbar() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", padding: "0 12px" }}>
       {/* Logo */}
       <div style={{ padding: "32px 20px 24px 24px" }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }} aria-label="Codeown Home">
           <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "36px", width: "auto" }} />
           <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <h2 style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
               <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
                 Codeown
               </span>
-            </div>
+            </h2>
             {/* Online Status */}
             <div style={{ 
               display: "flex", 
@@ -201,29 +201,27 @@ export default function Navbar() {
         </Link>
       </div>
 
-
-
       {/* Nav Links */}
-      <div style={{ padding: "0 8px", display: "flex", flexDirection: "column", gap: "2px" }}>
-        <Link to="/" style={linkStyle("/")}>
+      <nav style={{ flex: 1, marginTop: "16px" }} aria-label="Main Navigation">
+        <Link to="/" style={linkStyle("/")} aria-label="Home Feed">
           <House size={20} weight={location.pathname === "/" ? "bold" : "thin"} />
           FEED
         </Link>
-        <Link to="/search" style={linkStyle("/search")}>
+        <Link to="/search" style={linkStyle("/search")} aria-label="Search and Discover">
           <MagnifyingGlass size={20} weight={location.pathname === "/search" ? "bold" : "thin"} />
           SEARCH
         </Link>
-        <Link to="/leaderboard" style={linkStyle("/leaderboard")}>
+        <Link to="/leaderboard" style={linkStyle("/leaderboard")} aria-label="Leaderboard">
           <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
           PULSE
         </Link>
-        <Link to="/changelog" style={linkStyle("/changelog")}>
+        <Link to="/changelog" style={linkStyle("/changelog")} aria-label="View Changelog">
           <Scroll size={20} weight={location.pathname === "/changelog" ? "bold" : "thin"} />
           CHANGELOG
         </Link>
         {isSignedIn && (
           <>
-            <Link to="/messages" style={linkStyle("/messages")}>
+            <Link to="/messages" style={linkStyle("/messages")} aria-label={`Messages, ${messageUnreadCount} unread`}>
               <div style={{ position: "relative", display: "flex", alignItems: "center", gap: "8px" }}>
                 <ChatCircle size={20} weight={location.pathname === "/messages" ? "bold" : "thin"} />
                 {messageUnreadCount > 0 && (
@@ -256,6 +254,7 @@ export default function Navbar() {
             <Link
               to="/notifications"
               style={linkStyle("/notifications")}
+              aria-label={`Notifications, ${unreadCount} unread`}
             >
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <Bell size={20} weight={location.pathname === "/notifications" ? "bold" : "thin"} />
@@ -285,6 +284,8 @@ export default function Navbar() {
             <div
               onClick={() => setIsModalOpen(true)}
               style={{ ...linkStyle(""), cursor: "pointer" }}
+              aria-label="Create new post"
+              role="button"
             >
               <Plus size={20} weight="thin" />
               POST
@@ -293,6 +294,8 @@ export default function Navbar() {
             <div
               onClick={() => setIsProjectModalOpen(true)}
               style={{ ...linkStyle(""), cursor: "pointer" }}
+              aria-label="Launch new project"
+              role="button"
             >
               <Rocket size={20} weight="thin" />
               LAUNCH
@@ -305,13 +308,15 @@ export default function Navbar() {
                 else navigate("/profile");
               }}
               style={{ ...linkStyle("/profile"), cursor: "pointer" }}
+              aria-label="View your profile"
+              role="link"
             >
               <UserIcon size={20} weight={location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "bold" : "thin"} />
               PROFILE
             </div>
           </>
         )}
-      </div>
+      </nav>
 
       {/* Spacer */}
       <div style={{ flex: 1 }}></div>
@@ -322,6 +327,8 @@ export default function Navbar() {
         <div
           onClick={toggleTheme}
           style={{ ...linkStyle(""), cursor: "pointer", marginTop: "16px", marginBottom: "16px" }}
+          aria-label="Toggle dark/light mode"
+          role="button"
         >
           {theme === 'light' ? <Moon size={20} weight="thin" /> : <Sun size={20} weight="thin" />}
           {theme === 'light' ? 'DARK MODE' : 'LIGHT MODE'}
@@ -348,6 +355,7 @@ export default function Navbar() {
                 position: "relative",
                 cursor: "pointer",
               }}
+              aria-label="User Profile Quick Access"
             >
               <img
                 src={userAvatarUrl || user.imageUrl}
@@ -368,6 +376,7 @@ export default function Navbar() {
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsLogoutOpen(!isLogoutOpen); }}
                   style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "4px" }}
+                  aria-label="More options"
                 >
                   <DotsThreeOutline size={20} weight="thin" />
                 </button>
@@ -396,6 +405,7 @@ export default function Navbar() {
                         fontFamily: "var(--font-mono)",
                         textTransform: "uppercase"
                       }}
+                      aria-label="Logout"
                     >
                       <SignOut size={18} weight="thin" />
                       Logout
@@ -451,7 +461,9 @@ export default function Navbar() {
               fontSize: "12px",
               fontFamily: "var(--font-mono)",
               letterSpacing: "0.05em"
-            }}>
+            }}
+            aria-label="Sign In"
+            >
               <SignIn size={20} weight="thin" />
               SIGN IN
             </button>

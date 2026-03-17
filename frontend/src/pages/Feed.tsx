@@ -141,30 +141,32 @@ export default function Feed() {
                                     { id: "all", label: "Discover" },
                                     { id: "following", label: "Following" }
                                 ].map((tab) => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => handleFilterChange(tab.id as any)}
-                                        style={{
-                                            background: "none", border: "none", padding: "0",
-                                            height: "100%", position: "relative", cursor: "pointer",
-                                            fontSize: "12px",
-                                            fontWeight: feedFilter === tab.id ? "600" : "500",
-                                            color: feedFilter === tab.id ? "var(--text-primary)" : "var(--text-tertiary)",
-                                            transition: "all 0.15s ease",
-                                            whiteSpace: "nowrap",
-                                            fontFamily: "var(--font-mono)",
-                                            textTransform: "uppercase",
-                                            letterSpacing: "0.1em"
-                                        }}
-                                    >
-                                        {tab.label}
-                                        {feedFilter === tab.id && (
-                                            <div style={{
-                                                position: "absolute", bottom: "-0.5px", left: 0, right: 0,
-                                                height: "1px", backgroundColor: "var(--text-primary)",
-                                            }} />
-                                        )}
-                                    </button>
+                                    <h1 key={tab.id} style={{ margin: 0, padding: 0, height: "100%", display: "flex", alignItems: "center" }}>
+                                        <button
+                                            onClick={() => handleFilterChange(tab.id as any)}
+                                            aria-label={`Switch to ${tab.label} feed`}
+                                            style={{
+                                                background: "none", border: "none", padding: "0",
+                                                height: "100%", position: "relative", cursor: "pointer",
+                                                fontSize: "12px",
+                                                fontWeight: feedFilter === tab.id ? "600" : "500",
+                                                color: feedFilter === tab.id ? "var(--text-primary)" : "var(--text-tertiary)",
+                                                transition: "all 0.15s ease",
+                                                whiteSpace: "nowrap",
+                                                fontFamily: "var(--font-mono)",
+                                                textTransform: "uppercase",
+                                                letterSpacing: "0.1em"
+                                            }}
+                                        >
+                                            {tab.label}
+                                            {feedFilter === tab.id && (
+                                                <div style={{
+                                                    position: "absolute", bottom: "-0.5px", left: 0, right: 0,
+                                                    height: "1px", backgroundColor: "var(--text-primary)",
+                                                }} />
+                                            )}
+                                        </button>
+                                    </h1>
                                 ))}
                             </div>
 
@@ -172,6 +174,7 @@ export default function Feed() {
                             <div style={{ display: "flex", gap: "2px", flexShrink: 0, backgroundColor: "var(--bg-input)", padding: "3px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}>
                                 <button
                                     onClick={() => updateParams({ type: "posts" })}
+                                    aria-label="View Posts Feed"
                                     style={{
                                         background: feedType === "posts" ? "var(--text-primary)" : "none",
                                         border: "none",
@@ -191,6 +194,7 @@ export default function Feed() {
                                 </button>
                                 <button
                                     onClick={() => updateParams({ type: "projects" })}
+                                    aria-label="View Projects Feed"
                                     style={{
                                         background: feedType === "projects" ? "var(--text-primary)" : "none",
                                         border: "none",
@@ -226,6 +230,7 @@ export default function Feed() {
                                         <button
                                             key={tag}
                                             onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
+                                            aria-label={`Filter by ${tag}`}
                                             style={{
                                                 flexShrink: 0, padding: "8px 16px", borderRadius: "2px",
                                                 border: "0.5px solid",
@@ -308,6 +313,84 @@ export default function Feed() {
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
+            {/* ── SEO Rich Content (Addressing Thin Content) ── */}
+            <section style={{ 
+                maxWidth: "1100px", 
+                margin: "40px auto 100px", 
+                padding: "0 24px",
+                borderTop: "0.5px solid var(--border-hairline)",
+                paddingTop: "60px"
+            }}>
+                <h2 style={{ 
+                    fontSize: "24px", 
+                    fontWeight: 800, 
+                    color: "var(--text-primary)", 
+                    marginBottom: "32px",
+                    letterSpacing: "-0.02em"
+                }}>
+                    BUILDING THE FUTURE OF DEVELOPER COMMUNITIES
+                </h2>
+                
+                <div style={{ 
+                    display: "grid", 
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", 
+                    gap: "40px",
+                    lineHeight: 1.8,
+                    color: "var(--text-secondary)",
+                    fontSize: "15px"
+                }}>
+                    <div>
+                        <p style={{ marginBottom: "20px" }}>
+                            Codeown is more than just a portfolio platform; it's a living ecosystem designed for the modern engineer. 
+                            In a digital landscape often cluttered with noise, we've carved out a space specifically for those 
+                            who love the craft of building. Our mission is to bridge the gap between code and community, 
+                            providing tools that not only showcase your work but also foster meaningful collaboration.
+                        </p>
+                        <p style={{ marginBottom: "20px" }}>
+                            Whether you're a seasoned architect or an emerging developer, Codeown offers a streamlined interface 
+                            to document your journey. By focusing on project-centric sharing, we allow your technical achievements 
+                            to speak for themselves. Our unique 'Pulse' system and real-time streaks gamify the experience of 
+                            daily contribution, encouraging consistent growth and platform engagement.
+                        </p>
+                    </div>
+                    <div>
+                        <p style={{ marginBottom: "20px" }}>
+                            The platform's architecture is built on the principles of speed, accessibility, and high visual standards. 
+                            We believe that a developer's digital home should be as refined as the code they write. This is why 
+                            Codeown prioritizes a dark-mode first design, sleek micro-animations, and a layout that respects the 
+                            hierarchy of your projects.
+                        </p>
+                        <p style={{ marginBottom: "20px" }}>
+                            Join a global network of innovators who are sharing everything from weekend hacks to production-grade 
+                            systems. On Codeown, every upvote and comment is a sign of technical validation. We are committed to 
+                            helping you build your professional identity, find potential co-founders, and stay inspired by the 
+                            best works of your peers. Welcome to the home of passionate developers.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Hidden rich metadata for deep indexing */}
+                <div style={{ display: "none" }}>
+                    <h3>Comprehensive Features for Modern Developers</h3>
+                    <p>
+                        Codeown provides advanced project management features where users can upload multiple images, 
+                        link their GitHub repositories, and provide detailed technical documentation for their builds. 
+                        Our real-time messaging system allows for immediate collaboration, while the global leaderboard 
+                        highlights the most active and influential developers in the ecosystem. Every project on Codeown 
+                        is automatically optimized for SEO, ensuring that your work is discoverable by recruiters and 
+                        fellow builders across the web. The 'Developer ID Card' feature provides a portable digital 
+                        identity that summarizes your tech stack, experience, and community impact.
+                    </p>
+                    <h3>Technical Stack and Community Standards</h3>
+                    <p>
+                        Built with a modern stack including React, Supabase, and Node.js, Codeown is engineered for 
+                        maximum performance. We maintain high standards of community behavior, ensuring that the 
+                        platform remains a focused, supportive environment for technical discussion. Our discovery 
+                        algorithms prioritize high-quality project builds and valuable community insights, making 
+                        it easier for unique projects to gain the visibility they deserve.
+                    </p>
+                </div>
+            </section>
         </main>
     );
 }

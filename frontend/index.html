@@ -14,6 +14,7 @@
   <meta name="description"
     content="Codeown is a platform for developers to share projects, collaborate on code, and build their professional identity. Built by developers, for developers." />
   <meta name="keywords" content="developer, coding, programming, portfolio, collaboration, open source, projects" />
+  <link rel="canonical" href="https://codeown.space/" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
@@ -59,7 +60,10 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <!-- Visually hidden H1 for initial SEO crawl before React hydration -->
+  <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Codeown - The Home of Passionate Developers</h1>
+  
+  <div id="root" role="main" aria-label="Codeown Application Root"></div>
   <!-- <a href="https://marketingdb.live" target="_blank"><img src="https://marketingdb.live/badge.svg" alt="Listed on MarketingDB" width="190" height="44"/></a> -->
   <!-- <a href="https://www.foundrlist.com/product/codeown" target="_blank" rel="noopener noreferrer">
   <img 
