@@ -267,6 +267,43 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         return res;
       });
 
+      // Hashtags (#hashtag)
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        const regex = /#(\w+)/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          const tag = match[1];
+          res.push(
+            <span 
+              key={`h-${key++}`} 
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/feed?tag=${tag.toLowerCase()}`);
+              }} 
+              style={{ 
+                color: "var(--text-primary)", 
+                cursor: "pointer", 
+                fontWeight: 700, 
+                backgroundColor: "var(--bg-hover)", 
+                padding: "0 4px", 
+                borderRadius: "2px",
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.95em"
+              }}
+            >
+              #{tag}
+            </span>
+          );
+          lastIdx = match.index + match[0].length;
+        }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
+
       // Links ([text](url))
       parts = parts.flatMap(p => {
         if (typeof p !== 'string') return p;

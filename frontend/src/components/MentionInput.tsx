@@ -34,11 +34,26 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
   const [suggestions, setSuggestions] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [cursorPosition, setCursorPosition] = useState(0);
-  const [mentionStart, setMentionStart] = useState<number | null>(null);
+  const [trigger, setTrigger] = useState<"@" | "#" | null>(null);
+  const [triggerStart, setTriggerStart] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Common popular tags to suggest for hashtags
+  const defaultHashtags: User[] = [
+    { id: "1", name: "programmers", username: "programmers", avatar_url: null },
+    { id: "2", name: "developers", username: "developers", avatar_url: null },
+    { id: "3", name: "javascript", username: "javascript", avatar_url: null },
+    { id: "4", name: "coding", username: "coding", avatar_url: null },
+    { id: "5", name: "webdev", username: "webdev", avatar_url: null },
+    { id: "6", name: "react", username: "react", avatar_url: null },
+    { id: "7", name: "typescript", username: "typescript", avatar_url: null },
+    { id: "8", name: "open-source", username: "open-source", avatar_url: null },
+    { id: "9", name: "bugs", username: "bugs", avatar_url: null },
+    { id: "10", name: "shipit", username: "shipit", avatar_url: null }
+  ];
 
   useImperativeHandle(ref, () => textareaRef.current!);
 
@@ -46,6 +61,13 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
 
   // Fetch users when search query changes
   useEffect(() => {
+    if (trigger === "#") {
+      const filtered = defaultHashtags.filter(h => h.username?.toLowerCase().includes(debouncedQuery.toLowerCase()));
+      setSuggestions(filtered);
+      setSelectedIndex(0);
+      return;
+    }
+
     if (!debouncedQuery || debouncedQuery.length < 1) {
       setSuggestions([]);
       return;
@@ -66,7 +88,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
     };
 
     fetchUsers();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, trigger]);
 
   const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -75,51 +97,59 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
     onChange(newValue);
     setCursorPosition(cursorPos);
 
-    // Check for @ mention trigger
+    // Check for triggers: @ (mention) or # (hashtag)
     const textBeforeCursor = newValue.slice(0, cursorPos);
     const lastAtIndex = textBeforeCursor.lastIndexOf("@");
+    const lastHashIndex = textBeforeCursor.lastIndexOf("#");
 
-    if (lastAtIndex !== -1) {
-      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
-      // Check if there's a space after @, which would end the mention
-      if (!textAfterAt.includes(" ") && !textAfterAt.includes("\n")) {
-        setMentionStart(lastAtIndex);
-        setSearchQuery(textAfterAt);
+    const lastTriggerIndex = Math.max(lastAtIndex, lastHashIndex);
+
+    if (lastTriggerIndex !== -1) {
+      const currentTrigger = textBeforeCursor[lastTriggerIndex] as "@" | "#";
+      const textAfterTrigger = textBeforeCursor.slice(lastTriggerIndex + 1);
+
+      // Trigger if there's no space/newline between trigger and cursor
+      if (!textAfterTrigger.includes(" ") && !textAfterTrigger.includes("\n")) {
+        setTriggerStart(lastTriggerIndex);
+        setTrigger(currentTrigger);
+        setSearchQuery(textAfterTrigger);
         setShowSuggestions(true);
         return;
       }
     }
 
     setShowSuggestions(false);
-    setMentionStart(null);
+    setTriggerStart(null);
+    setTrigger(null);
     setSearchQuery("");
   }, [onChange]);
 
-  const insertMention = useCallback((user: User) => {
-    if (mentionStart === null) return;
+  const insertSuggestion = useCallback((suggestion: User) => {
+    if (triggerStart === null) return;
 
-    const beforeMention = value.slice(0, mentionStart);
+    const beforeTrigger = value.slice(0, triggerStart);
     const afterCursor = value.slice(cursorPosition);
-    const mentionText = `@${user.username || user.name.replace(/\s+/g, "")} `;
+    const suggestionText = `${trigger}${suggestion.username || suggestion.name.replace(/\s+/g, "")} `;
 
-    const newValue = beforeMention + mentionText + afterCursor;
+    const newValue = beforeTrigger + suggestionText + afterCursor;
     onChange(newValue);
 
     // Reset state
     setShowSuggestions(false);
-    setMentionStart(null);
+    setTriggerStart(null);
+    setTrigger(null);
     setSearchQuery("");
     setSuggestions([]);
 
     // Focus back to textarea and set cursor position
     setTimeout(() => {
       if (textareaRef.current) {
-        const newCursorPos = mentionStart + mentionText.length;
+        const newCursorPos = triggerStart + suggestionText.length;
         textareaRef.current.focus();
         textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
       }
     }, 0);
-  }, [mentionStart, cursorPosition, value, onChange]);
+  }, [triggerStart, cursorPosition, value, onChange, trigger]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (!showSuggestions || suggestions.length === 0) return;
@@ -136,7 +166,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
       case "Enter":
         if (showSuggestions && suggestions.length > 0) {
           e.preventDefault();
-          insertMention(suggestions[selectedIndex]);
+          insertSuggestion(suggestions[selectedIndex]);
         }
         break;
       case "Escape":
@@ -146,11 +176,11 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
       case "Tab":
         if (showSuggestions && suggestions.length > 0) {
           e.preventDefault();
-          insertMention(suggestions[selectedIndex]);
+          insertSuggestion(suggestions[selectedIndex]);
         }
         break;
     }
-  }, [showSuggestions, suggestions, selectedIndex, insertMention]);
+  }, [showSuggestions, suggestions, selectedIndex, insertSuggestion]);
 
   const getAvatarUrl = (name: string) => {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=000&color=fff&size=64&bold=true&font-size=0.5`;
@@ -234,7 +264,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
             suggestions.map((user, index) => (
               <div
                 key={user.id}
-                onClick={() => insertMention(user)}
+                onClick={() => insertSuggestion(user)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -246,17 +276,36 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
-                  <img
-                  src={user.avatar_url || getAvatarUrl(user.name)}
-                  alt={user.name}
-                  style={{
+                {trigger === "#" ? (
+                  <div style={{
                     width: "36px",
                     height: "36px",
                     borderRadius: "2px",
-                    objectFit: "cover",
+                    backgroundColor: "var(--bg-hover)",
                     border: "0.5px solid var(--border-hairline)",
-                  }}
-                />
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "18px",
+                    fontWeight: 800,
+                    color: "var(--text-tertiary)",
+                    fontFamily: "var(--font-mono)"
+                  }}>
+                    #
+                  </div>
+                ) : (
+                  <img
+                    src={user.avatar_url || getAvatarUrl(user.name)}
+                    alt={user.name}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "2px",
+                      objectFit: "cover",
+                      border: "0.5px solid var(--border-hairline)",
+                    }}
+                  />
+                )}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{
@@ -268,9 +317,9 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {user.name}
+                    {trigger === "#" ? user.username?.toUpperCase() : user.name}
                   </div>
-                   {user.username && (
+                   {user.username && trigger === "@" && (
                     <div
                       style={{
                         fontSize: "11px",

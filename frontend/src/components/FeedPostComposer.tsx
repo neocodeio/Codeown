@@ -193,6 +193,44 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         minHeight="40px"
                         transparent={true}
                     />
+                    
+                    {/* Hashtags Preview */}
+                    {(() => {
+                        const hashtagRegex = /#(\w+)/g;
+                        const hashtags = content.match(hashtagRegex);
+                        if (hashtags && hashtags.length > 0) {
+                            return (
+                                <div style={{ 
+                                    display: "flex", 
+                                    flexWrap: "wrap", 
+                                    gap: "8px", 
+                                    marginTop: "12px",
+                                    padding: "4px 0"
+                                }}>
+                                    {[...new Set(hashtags)].map((tag, i) => (
+                                        <span 
+                                            key={i} 
+                                            style={{ 
+                                                fontSize: "11px", 
+                                                fontWeight: 700, 
+                                                color: "var(--text-primary)", 
+                                                backgroundColor: "var(--bg-hover)",
+                                                padding: "4px 10px",
+                                                borderRadius: "2px",
+                                                fontFamily: "var(--font-mono)",
+                                                border: "0.5px solid var(--border-hairline)",
+                                                textTransform: "uppercase",
+                                                letterSpacing: "0.05em"
+                                            }}
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            );
+                        }
+                        return null;
+                    })()}
                 </div>
 
                 {/* Link Preview */}
