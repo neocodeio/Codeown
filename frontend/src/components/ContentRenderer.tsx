@@ -282,7 +282,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
               key={`h-${key++}`} 
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/feed?tag=${tag.toLowerCase()}`);
+                navigate(`/?tag=${tag.toLowerCase()}`);
               }} 
               style={{ 
                 color: "var(--text-primary)", 
