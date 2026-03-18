@@ -300,14 +300,19 @@ export async function sendNewFollowerEmail(email: string, userName: string, foll
   }
 }
 
-export async function sendNewLikeEmail(email: string, userName: string, likerName: string, contentType: 'post' | 'project', contentId: number) {
+export async function sendNewLikeEmail(email: string, userName: string, likerName: string, contentType: 'post' | 'project' | 'comment', contentId: number) {
   if (!resend) return;
   try {
-    const url = contentType === 'project' ? `/project/${contentId}` : `/`;
+    const url =
+      contentType === 'project'
+        ? `/project/${contentId}`
+        : contentType === 'comment'
+        ? `/comment/${contentId}`
+        : `/`;
     await resend.emails.send({
       from: "Codeown <notifications@codeown.space>",
       to: email,
-      subject: `${likerName} liked your ${contentType}! ❤️`,
+      subject: `${likerName} liked your ${contentType === 'comment' ? 'comment' : contentType}! ❤️`,
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
           <h2>Hey ${userName},</h2>
