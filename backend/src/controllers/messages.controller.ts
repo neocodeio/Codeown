@@ -151,7 +151,7 @@ export async function getMessages(req: Request, res: Response) {
 
         const { data: messages, error } = await supabase
             .from("messages")
-            .select("*")
+            .select("*, reply_to_message:messages!reply_to_message_id(content, sender_id)")
             .eq("conversation_id", id)
             .order("created_at", { ascending: true });
 
@@ -197,7 +197,7 @@ export async function sendMessage(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-        const { conversationId, content, recipientId } = req.body;
+        const { conversationId, content, recipientId, replyToMessageId, imageUrl } = req.body;
 
         let targetConvoId = conversationId;
 
@@ -227,9 +227,11 @@ export async function sendMessage(req: Request, res: Response) {
             .insert({
                 conversation_id: targetConvoId,
                 sender_id: userId,
-                content: content
+                content: content,
+                reply_to_message_id: replyToMessageId,
+                image_url: imageUrl
             })
-            .select()
+            .select("*, reply_to_message:messages!reply_to_message_id(content, sender_id)")
             .single();
 
         if (error) throw error;

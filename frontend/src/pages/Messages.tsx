@@ -10,8 +10,12 @@ import {
   ChatTeardropText,   
   NotePencil, 
   MagnifyingGlass,
-  Plus
+  Plus,
+  ArrowBendUpRight,
+  X,
+  Image as ImageIcon
 } from "phosphor-react";
+import { toast } from "react-toastify";
 import NewMessageModal from "../components/NewMessageModal";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { socket } from "../lib/socket";
@@ -30,6 +34,12 @@ interface Message {
   content: string;
   created_at: string;
   is_read?: boolean;
+  reply_to_message_id?: number | null;
+  image_url?: string | null;
+  reply_to_message?: {
+    content: string;
+    sender_id: string;
+  } | null;
 }
 
 interface Conversation {
@@ -58,7 +68,11 @@ export default function Messages() {
   const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [hoveredMsgId, setHoveredMsgId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (initialMessage) {
@@ -196,7 +210,7 @@ export default function Messages() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || sending) return;
+    if ((!newMessage.trim() && !selectedImage) || sending) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     if (activeConvo && activeConvo.partner.id && currentUser?.id) {
@@ -206,12 +220,31 @@ export default function Messages() {
     setSending(true);
     try {
       const token = await getToken();
+      let uploadedImageUrl = null;
+
+      if (selectedImage) {
+        const formData = new FormData();
+        formData.append("image", selectedImage);
+        try {
+          const uploadRes = await api.post("/upload/image", formData, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          uploadedImageUrl = uploadRes.data.url;
+        } catch (uploadErr: any) {
+          toast.error(uploadErr.response?.data?.error || "Failed to upload image.");
+          setSending(false);
+          return;
+        }
+      }
+
       const res = await api.post(
         "/messages",
         {
           conversationId: activeConvo?.id === 0 ? undefined : activeConvo?.id,
           recipientId: activeConvo?.id === 0 ? activeConvo?.partner.id : undefined,
           content: newMessage.trim(),
+          replyToMessageId: replyingTo?.id,
+          imageUrl: uploadedImageUrl
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -219,6 +252,10 @@ export default function Messages() {
       );
 
       setNewMessage("");
+      setReplyingTo(null);
+      setSelectedImage(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      
       if (activeConvo?.id === 0) {
         await fetchConversations();
       } else {
@@ -242,6 +279,18 @@ export default function Messages() {
       typingTimeoutRef.current = setTimeout(() => {
         socket.emit("stop_typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
       }, 2000);
+    }
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        toast.error("Image size must not exceed 1MB");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+      setSelectedImage(file);
     }
   };
 
@@ -761,6 +810,8 @@ export default function Messages() {
                   return (
                     <div
                       key={msg.id || idx}
+                      onMouseEnter={() => setHoveredMsgId(msg.id)}
+                      onMouseLeave={() => setHoveredMsgId(null)}
                       style={{
                         alignSelf: isMine ? "flex-end" : "flex-start",
                         maxWidth: isMobile ? "88%" : "70%",
@@ -768,6 +819,7 @@ export default function Messages() {
                         flexDirection: "column",
                         alignItems: isMine ? "flex-end" : "flex-start",
                         gap: "2px",
+                        position: "relative"
                       }}
                     >
                       {/* Name Label - Only show for received messages */}
@@ -786,43 +838,104 @@ export default function Messages() {
                         </span>
                       )}
 
-                      <div
-                        style={{
-                          padding: "10px 14px",
-                          borderRadius: "2px",
-                          backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-page)",
-                          color: isMine ? "var(--bg-page)" : "var(--text-primary)",
-                          fontSize: "14px",
-                          lineHeight: 1.5,
-                          border: "0.5px solid var(--border-hairline)",
-                          wordBreak: "break-word"
-                        }}
-                      >
-                        {(() => {
-                           const urlRegex = /(https?:\/\/[^\s]+)/g;
-                           const parts = msg.content.split(urlRegex);
-                           return parts.map((part, i) => {
-                             if (part.match(urlRegex)) {
-                               return (
-                                 <a
-                                   key={i}
-                                   href={part}
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   style={{
-                                     color: isMine ? "inherit" : "var(--text-primary)",
-                                     textDecoration: "underline",
-                                     fontWeight: 700,
-                                     cursor: "pointer"
-                                   }}
-                                 >
-                                   {part}
-                                 </a>
-                               );
-                             }
-                             return part;
-                           });
-                        })()}
+                      {msg.reply_to_message && (
+                        <div style={{
+                           display: "flex",
+                           alignItems: "center",
+                           gap: "6px",
+                           fontSize: "10px",
+                           color: "var(--text-tertiary)",
+                           marginBottom: "-2px",
+                           paddingLeft: isMine ? "0" : "12px",
+                           paddingRight: isMine ? "12px" : "0",
+                           paddingTop: "2px",
+                           fontFamily: "var(--font-mono)"
+                        }}>
+                           <ArrowBendUpRight size={12} weight="bold" />
+                           <span style={{ fontWeight: 700, textTransform: "uppercase" }}>
+                              {msg.reply_to_message.sender_id === currentUser?.id ? "YOU" : activeConvo.partner.name} REPLIED TO:
+                           </span>
+                           <span style={{ fontStyle: "italic", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: isMobile ? "100px" : "180px", opacity: 0.8 }}>
+                              "{msg.reply_to_message.content}"
+                           </span>
+                        </div>
+                      )}
+
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexDirection: isMine ? "row-reverse" : "row" }}>
+                        <div
+                          style={{
+                            padding: "10px 14px",
+                            borderRadius: "2px",
+                            backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-page)",
+                            color: isMine ? "var(--bg-page)" : "var(--text-primary)",
+                            fontSize: "14px",
+                            lineHeight: 1.5,
+                            border: "0.5px solid var(--border-hairline)",
+                            wordBreak: "break-word",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "8px"
+                          }}
+                        >
+                          
+                          {msg.image_url && (
+                            <img src={msg.image_url} alt="Attached" style={{ maxWidth: "100%", borderRadius: "2px", maxHeight: "200px", objectFit: "cover", border: isMine ? "0.5px solid rgba(0,0,0,0.1)" : "0.5px solid var(--border-hairline)" }} />
+                          )}
+
+                          {msg.content && (
+                            <div>
+                              {(() => {
+                                 const urlRegex = /(https?:\/\/[^\s]+)/g;
+                                 const parts = msg.content.split(urlRegex);
+                                 return parts.map((part, i) => {
+                                   if (part.match(urlRegex)) {
+                                     return (
+                                       <a
+                                         key={i}
+                                         href={part}
+                                         target="_blank"
+                                         rel="noopener noreferrer"
+                                         style={{
+                                           color: isMine ? "inherit" : "var(--text-primary)",
+                                           textDecoration: "underline",
+                                           fontWeight: 700,
+                                           cursor: "pointer"
+                                         }}
+                                       >
+                                         {part}
+                                       </a>
+                                     );
+                                   }
+                                   return part;
+                                 });
+                              })()}
+                            </div>
+                          )}
+                        </div>
+
+                        {hoveredMsgId === msg.id && (
+                          <button
+                            onClick={() => setReplyingTo(msg)}
+                            style={{
+                              background: "var(--bg-hover)",
+                              border: "0.5px solid var(--border-hairline)",
+                              borderRadius: "50%",
+                              width: "28px",
+                              height: "28px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              color: "var(--text-secondary)",
+                              flexShrink: 0,
+                              transition: "all 0.15s ease"
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.transform = "scale(1.1)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.transform = "scale(1)"; }}
+                          >
+                            <ArrowBendUpRight size={18} weight="bold" color="currentColor" />
+                          </button>
+                        )}
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
                         <span
@@ -885,12 +998,79 @@ export default function Messages() {
                   backgroundColor: "var(--bg-page)",
                   borderTop: "0.5px solid var(--border-hairline)",
                   flexShrink: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px"
                 }}
               >
+                {(replyingTo || selectedImage) && (
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    padding: "10px 14px",
+                    backgroundColor: "var(--bg-hover)",
+                    borderRadius: "2px",
+                    border: "0.5px solid var(--border-hairline)"
+                  }}>
+                    {replyingTo && (
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+                        <div style={{ fontSize: "12px", color: "var(--text-secondary)", minWidth: 0 }}>
+                          <div style={{ fontWeight: 700, fontFamily: "var(--font-mono)", marginBottom: "2px", fontSize: "10px", color: "var(--text-primary)" }}>REPLYING TO:</div>
+                          <div style={{ fontStyle: "italic", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>"{replyingTo.content}"</div>
+                        </div>
+                        <button type="button" onClick={() => setReplyingTo(null)} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}><X size={14} weight="bold" /></button>
+                      </div>
+                    )}
+                    {selectedImage && (
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                          <ImageIcon size={16} />
+                          <span style={{ fontSize: "12px", color: "var(--text-primary)", fontFamily: "var(--font-mono)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{selectedImage.name} ({(selectedImage.size / 1024 / 1024).toFixed(2)} MB)</span>
+                        </div>
+                        <button type="button" onClick={() => { setSelectedImage(null); if (fileInputRef.current) fileInputRef.current.value = ""; }} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}><X size={14} weight="bold" /></button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <form
                   onSubmit={handleSendMessage}
                   style={{ display: "flex", gap: "12px", alignItems: "center" }}
                 >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleImageSelect}
+                    style={{ display: "none" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
+                      backgroundColor: selectedImage ? "var(--text-primary)" : "transparent",
+                      color: selectedImage ? "var(--bg-page)" : "var(--text-primary)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.15s ease",
+                      flexShrink: 0,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!selectedImage) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!selectedImage) e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                  >
+                    <ImageIcon size={20} weight={selectedImage ? "fill" : "thin"} />
+                  </button>
                   <input
                     type="text"
                     value={newMessage}
@@ -923,15 +1103,15 @@ export default function Messages() {
                   />
                   <button
                     type="submit"
-                    disabled={!newMessage.trim() || sending}
+                    disabled={(!newMessage.trim() && !selectedImage) || sending}
                     style={{
                       width: "44px",
                       height: "44px",
                       borderRadius: "2px",
                       border: "0.5px solid var(--border-hairline)",
-                      backgroundColor: newMessage.trim() ? "var(--text-primary)" : "transparent",
-                      color: newMessage.trim() ? "var(--bg-page)" : "var(--text-tertiary)",
-                      cursor: newMessage.trim() ? "pointer" : "default",
+                      backgroundColor: (newMessage.trim() || selectedImage) ? "var(--text-primary)" : "transparent",
+                      color: (newMessage.trim() || selectedImage) ? "var(--bg-page)" : "var(--text-tertiary)",
+                      cursor: (newMessage.trim() || selectedImage) ? "pointer" : "default",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
