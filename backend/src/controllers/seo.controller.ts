@@ -210,6 +210,15 @@ export async function serveDynamicSEO(req: Request, res: Response) {
             console.error("Error fetching SEO metadata:", fetchError);
         }
 
+        // Ensure image URL is absolute and truncate description properly
+        if (image && !image.startsWith("http")) {
+            image = new URL(image, baseUrl).toString();
+        }
+
+        if (description && description.length > 200) {
+            description = description.substring(0, 197) + "...";
+        }
+
         // Apply meta tag updates to the HTML
         const titleTag = root.querySelector("title");
         if (titleTag) titleTag.set_content(`${title} | Codeown`);
@@ -229,8 +238,10 @@ export async function serveDynamicSEO(req: Request, res: Response) {
         updateMeta('meta[property="og:image"]', image);
         updateMeta('meta[property="og:url"]', `${baseUrl}${urlPath}`);
         updateMeta('meta[property="og:site_name"]', "Codeown");
+        updateMeta('meta[property="og:type"]', "website");
 
         // Twitter
+        updateMeta('meta[name="twitter:card"]', "summary_large_image");
         updateMeta('meta[name="twitter:title"]', `${title} | Codeown`);
         updateMeta('meta[name="twitter:description"]', description);
         updateMeta('meta[name="twitter:image"]', image);
