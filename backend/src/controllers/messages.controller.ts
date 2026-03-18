@@ -2,8 +2,6 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { sendNewMessageEmail } from "../lib/email.js";
 
-import { isUserOnline } from "../lib/socket.js";
-
 // Helper to ensure conversation exists or create one
 export async function getOrCreateConversation(user1Id: string, user2Id: string) {
     // 1. Check if conversation already exists between these two
@@ -151,7 +149,7 @@ export async function getMessages(req: Request, res: Response) {
 
         const { data: messages, error } = await supabase
             .from("messages")
-            .select("*, reply_to_message:messages!reply_to_message_id(content, sender_id)")
+            .select("*")
             .eq("conversation_id", id)
             .order("created_at", { ascending: true });
 
@@ -197,7 +195,7 @@ export async function sendMessage(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-        const { conversationId, content, recipientId, replyToMessageId, imageUrl } = req.body;
+        const { conversationId, content, recipientId } = req.body;
 
         let targetConvoId = conversationId;
 
@@ -227,11 +225,9 @@ export async function sendMessage(req: Request, res: Response) {
             .insert({
                 conversation_id: targetConvoId,
                 sender_id: userId,
-                content: content,
-                reply_to_message_id: replyToMessageId,
-                image_url: imageUrl
+                content: content
             })
-            .select("*, reply_to_message:messages!reply_to_message_id(content, sender_id)")
+            .select()
             .single();
 
         if (error) throw error;
@@ -265,26 +261,20 @@ export async function sendMessage(req: Request, res: Response) {
                     console.error("Database error creating message notification:", notifErr);
                 } else {
                     console.log(`Notification sent to ${finalRecipientId}`);
-                    
+
                     // Fetch user details for email
                     const [{ data: sender }, { data: recipient }] = await Promise.all([
-                      supabase.from("users").select("name, username").eq("id", userId).single(),
-                      supabase.from("users").select("name, email").eq("id", finalRecipientId).single()
+                        supabase.from("users").select("name, username").eq("id", userId).single(),
+                        supabase.from("users").select("name, email").eq("id", finalRecipientId).single()
                     ]);
 
                     if (sender && recipient && recipient.email) {
-                      // Only send email if recipient is NOT online (on the platform)
-                      const isOnline = isUserOnline(finalRecipientId);
-                      if (!isOnline) {
                         sendNewMessageEmail(
-                          recipient.email,
-                          recipient.name || "User",
-                          sender.name || "Someone",
-                          sender.username || "someone"
+                            recipient.email,
+                            recipient.name || "User",
+                            sender.name || "Someone",
+                            sender.username || "someone"
                         );
-                      } else {
-                        console.log(`Email skipped for ${finalRecipientId} as they are currently online.`);
-                      }
                     }
                 }
             }
