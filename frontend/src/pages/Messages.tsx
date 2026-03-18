@@ -10,7 +10,10 @@ import {
   ChatTeardropText,
   NotePencil,
   MagnifyingGlass,
-  Plus
+  Plus,
+  Image as ImageIcon,
+  X,
+  ArrowClockwise
 } from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -30,6 +33,13 @@ interface Message {
   content: string;
   created_at: string;
   is_read?: boolean;
+  image_url?: string;
+  reply_to?: {
+    id: number;
+    content: string;
+    sender_id: string;
+    image_url?: string;
+  };
 }
 
 interface Conversation {
@@ -58,6 +68,11 @@ export default function Messages() {
   const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -194,9 +209,32 @@ export default function Messages() {
     }
   }, [activeConvo?.id]);
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 1024 * 1024) {
+      alert("Image size must not exceed 1MB");
+      return;
+    }
+
+    setSelectedImage(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || sending) return;
+    if ((!newMessage.trim() && !selectedImage) || sending) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     if (activeConvo && activeConvo.partner.id && currentUser?.id) {
@@ -206,12 +244,30 @@ export default function Messages() {
     setSending(true);
     try {
       const token = await getToken();
+      let imageUrl = undefined;
+
+      if (selectedImage) {
+        setUploadingImage(true);
+        const formData = new FormData();
+        formData.append("image", selectedImage);
+        const uploadRes = await api.post("/upload/image", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        imageUrl = uploadRes.data.url;
+        setUploadingImage(false);
+      }
+
       const res = await api.post(
         "/messages",
         {
           conversationId: activeConvo?.id === 0 ? undefined : activeConvo?.id,
           recipientId: activeConvo?.id === 0 ? activeConvo?.partner.id : undefined,
           content: newMessage.trim(),
+          replyToMessageId: replyingTo?.id,
+          imageUrl: imageUrl,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -219,6 +275,9 @@ export default function Messages() {
       );
 
       setNewMessage("");
+      setReplyingTo(null);
+      clearImage();
+
       if (activeConvo?.id === 0) {
         await fetchConversations();
       } else {
@@ -228,6 +287,7 @@ export default function Messages() {
       console.error("Error sending message:", error);
     } finally {
       setSending(false);
+      setUploadingImage(false);
     }
   };
 
@@ -768,7 +828,9 @@ export default function Messages() {
                         flexDirection: "column",
                         alignItems: isMine ? "flex-end" : "flex-start",
                         gap: "2px",
+                        position: "relative"
                       }}
+                      className="message-container"
                     >
                       {/* Name Label - Only show for received messages */}
                       {!isMine && (
@@ -786,7 +848,37 @@ export default function Messages() {
                         </span>
                       )}
 
+                      {/* Reply Context */}
+                      {msg.reply_to && (
+                        <div
+                          style={{
+                            padding: "8px 12px",
+                            backgroundColor: "var(--bg-hover)",
+                            borderLeft: "2px solid var(--text-tertiary)",
+                            borderRadius: "2px",
+                            fontSize: "11px",
+                            color: "var(--text-secondary)",
+                            marginBottom: "2px",
+                            maxWidth: "100%",
+                            cursor: "pointer",
+                            opacity: 0.8
+                          }}
+                          onClick={() => {
+                            const el = document.getElementById(`msg-${msg.reply_to?.id}`);
+                            el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                          }}
+                        >
+                          <div style={{ fontWeight: 800, fontSize: "9px", textTransform: "uppercase", marginBottom: "2px" }}>
+                            {msg.reply_to.sender_id === currentUser?.id ? "YOU" : activeConvo.partner.name}
+                          </div>
+                          <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {msg.reply_to.content || (msg.reply_to.image_url ? "📷 Image" : "")}
+                          </div>
+                        </div>
+                      )}
+
                       <div
+                        id={`msg-${msg.id}`}
                         style={{
                           padding: "10px 14px",
                           borderRadius: "2px",
@@ -795,36 +887,57 @@ export default function Messages() {
                           fontSize: "14px",
                           lineHeight: 1.5,
                           border: "0.5px solid var(--border-hairline)",
-                          wordBreak: "break-word"
+                          wordBreak: "break-word",
+                          position: "relative"
                         }}
                       >
-                        {(() => {
-                          const urlRegex = /(https?:\/\/[^\s]+)/g;
-                          const parts = msg.content.split(urlRegex);
-                          return parts.map((part, i) => {
-                            if (part.match(urlRegex)) {
-                              return (
-                                <a
-                                  key={i}
-                                  href={part}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  style={{
-                                    color: isMine ? "inherit" : "var(--text-primary)",
-                                    textDecoration: "underline",
-                                    fontWeight: 700,
-                                    cursor: "pointer"
-                                  }}
-                                >
-                                  {part}
-                                </a>
-                              );
-                            }
-                            return part;
-                          });
-                        })()}
+                        {msg.image_url && (
+                          <img
+                            src={msg.image_url}
+                            alt=""
+                            style={{
+                              maxWidth: "100%",
+                              maxHeight: "300px",
+                              borderRadius: "2px",
+                              marginBottom: msg.content ? "8px" : 0,
+                              display: "block",
+                              cursor: "pointer"
+                            }}
+                            onClick={() => window.open(msg.image_url, '_blank')}
+                          />
+                        )}
+                        {msg.content && (
+                          <div>
+                            {(() => {
+                              const urlRegex = /(https?:\/\/[^\s]+)/g;
+                              const parts = msg.content.split(urlRegex);
+                              return parts.map((part, i) => {
+                                if (part.match(urlRegex)) {
+                                  return (
+                                    <a
+                                      key={i}
+                                      href={part}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        color: isMine ? "inherit" : "var(--text-primary)",
+                                        textDecoration: "underline",
+                                        fontWeight: 700,
+                                        cursor: "pointer"
+                                      }}
+                                    >
+                                      {part}
+                                    </a>
+                                  );
+                                }
+                                return part;
+                              });
+                            })()}
+                          </div>
+                        )}
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
                         <span
                           style={{
                             fontSize: "10px",
@@ -838,6 +951,27 @@ export default function Messages() {
                             minute: "2-digit",
                           })}
                         </span>
+                        
+                        <button
+                          onClick={() => setReplyingTo(msg)}
+                          className="reply-button"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            padding: 0,
+                            color: "var(--text-tertiary)",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            fontFamily: "var(--font-mono)",
+                            textTransform: "uppercase"
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                          onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                        >
+                          Reply
+                        </button>
+
                         {isMine && msg.is_read && (() => {
                           let lastMyMsgIdx = -1;
                           for (let i = messages.length - 1; i >= 0; i--) {
@@ -885,53 +1019,184 @@ export default function Messages() {
                   backgroundColor: "var(--bg-page)",
                   borderTop: "0.5px solid var(--border-hairline)",
                   flexShrink: 0,
+                  position: "relative"
                 }}
               >
+                {/* Reply Preview */}
+                {replyingTo && (
+                  <div
+                    style={{
+                      padding: "12px 16px",
+                      backgroundColor: "var(--bg-hover)",
+                      borderBottom: "0.5px solid var(--border-hairline)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "12px",
+                      animation: "slide-down 0.2s ease-out"
+                    }}
+                  >
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", color: "var(--text-secondary)", marginBottom: "4px" }}>
+                        Replying to {replyingTo.sender_id === currentUser?.id ? "yourself" : activeConvo.partner.name}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {replyingTo.content || (replyingTo.image_url ? "📷 Image" : "")}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setReplyingTo(null)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "var(--text-primary)",
+                        padding: "4px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                    >
+                      <X size={18} weight="bold" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Image Preview */}
+                {imagePreview && (
+                  <div
+                    style={{
+                      padding: "12px 16px",
+                      backgroundColor: "var(--bg-hover)",
+                      borderBottom: "0.5px solid var(--border-hairline)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      animation: "slide-down 0.2s ease-out"
+                    }}
+                  >
+                    <div style={{ position: "relative" }}>
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        style={{
+                          width: "60px",
+                          height: "60px",
+                          borderRadius: "2px",
+                          objectFit: "cover",
+                          border: "0.5px solid var(--border-hairline)"
+                        }}
+                      />
+                      <button
+                        onClick={clearImage}
+                        style={{
+                          position: "absolute",
+                          top: "-8px",
+                          right: "-4px",
+                          width: "-5px",
+                          height: "15px",
+                          borderRadius: "50%",
+                          backgroundColor: "#fff",
+                          color: "#000",
+                          border: "1px solid var(--border-hairline)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          zIndex: 10
+                        }}
+                      >
+                        <X size={12} weight="bold" />
+                      </button>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>{selectedImage?.name}</div>
+                      <div style={{ fontSize: "10px", color: "var(--text-tertiary)" }}>
+                        {(selectedImage?.size! / 1024).toFixed(0)} KB
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <form
                   onSubmit={handleSendMessage}
-                  style={{ display: "flex", gap: "12px", alignItems: "center" }}
+                  style={{ display: "flex", gap: "12px", alignItems: "center", padding: "12px 0 0" }}
                 >
                   <input
-                    type="text"
-                    value={newMessage}
-                    onChange={handleInputChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage(e as unknown as React.FormEvent);
-                      }
-                    }}
-                    placeholder="Type a message..."
-                    style={{
-                      flex: 1,
-                      padding: "12px 16px",
-                      borderRadius: "2px",
-                      border: "0.5px solid var(--border-hairline)",
-                      outline: "none",
-                      backgroundColor: "var(--bg-input)",
-                      fontSize: "14px",
-                      color: "var(--text-primary)",
-                      transition: "all 0.15s ease",
-                      minWidth: 0,
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--text-primary)";
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "var(--border-hairline)";
-                    }}
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageSelect}
+                    accept="image/*"
+                    style={{ display: "none" }}
                   />
+                  
                   <button
-                    type="submit"
-                    disabled={!newMessage.trim() || sending}
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
                     style={{
                       width: "44px",
                       height: "44px",
                       borderRadius: "2px",
                       border: "0.5px solid var(--border-hairline)",
-                      backgroundColor: newMessage.trim() ? "var(--text-primary)" : "transparent",
-                      color: newMessage.trim() ? "var(--bg-page)" : "var(--text-tertiary)",
-                      cursor: newMessage.trim() ? "pointer" : "default",
+                      backgroundColor: "transparent",
+                      color: "var(--text-primary)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      flexShrink: 0
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    <ImageIcon size={20} weight="thin" />
+                  </button>
+
+                  <div style={{ flex: 1, position: "relative" }}>
+                    <input
+                      type="text"
+                      value={newMessage}
+                      onChange={handleInputChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage(e as unknown as React.FormEvent);
+                        }
+                      }}
+                      placeholder="Type a message..."
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        borderRadius: "2px",
+                        border: "0.5px solid var(--border-hairline)",
+                        outline: "none",
+                        backgroundColor: "var(--bg-input)",
+                        fontSize: "14px",
+                        color: "var(--text-primary)",
+                        transition: "all 0.15s ease",
+                        minWidth: 0,
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = "var(--text-primary)";
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = "var(--border-hairline)";
+                      }}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={(!newMessage.trim() && !selectedImage) || sending || uploadingImage}
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
+                      backgroundColor: (newMessage.trim() || selectedImage) ? "var(--text-primary)" : "transparent",
+                      color: (newMessage.trim() || selectedImage) ? "var(--bg-page)" : "var(--text-tertiary)",
+                      cursor: (newMessage.trim() || selectedImage) ? "pointer" : "default",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -939,10 +1204,14 @@ export default function Messages() {
                       flexShrink: 0,
                     }}
                   >
-                    <PaperPlaneTilt
-                      size={20}
-                      weight="thin"
-                    />
+                    {uploadingImage ? (
+                      <ArrowClockwise size={20} weight="thin" className="spin-animation" />
+                    ) : (
+                      <PaperPlaneTilt
+                        size={20}
+                        weight="thin"
+                      />
+                    )}
                   </button>
                 </form>
               </div>
@@ -1021,9 +1290,28 @@ export default function Messages() {
           0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
           40% { transform: scale(1); opacity: 1; }
         }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
+        @keyframes slide-down {
+          from { transform: translateY(-10px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .spin-animation {
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .message-container .reply-button {
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+        .message-container:hover .reply-button {
+          opacity: 1;
+        }
+        @media (max-width: 768px) {
+          .message-container .reply-button {
+            opacity: 1;
+          }
         }
       `}</style>
     </main>
