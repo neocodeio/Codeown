@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { sendNewMessageEmail } from "../lib/email.js";
 
+import { isUserOnline } from "../lib/socket.js";
+
 // Helper to ensure conversation exists or create one
 export async function getOrCreateConversation(user1Id: string, user2Id: string) {
     // 1. Check if conversation already exists between these two
@@ -269,12 +271,18 @@ export async function sendMessage(req: Request, res: Response) {
                     ]);
 
                     if (sender && recipient && recipient.email) {
-                      sendNewMessageEmail(
-                        recipient.email,
-                        recipient.name || "User",
-                        sender.name || "Someone",
-                        sender.username || "someone"
-                      );
+                      // Only send email if recipient is NOT online (on the platform)
+                      const isOnline = isUserOnline(finalRecipientId);
+                      if (!isOnline) {
+                        sendNewMessageEmail(
+                          recipient.email,
+                          recipient.name || "User",
+                          sender.name || "Someone",
+                          sender.username || "someone"
+                        );
+                      } else {
+                        console.log(`Email skipped for ${finalRecipientId} as they are currently online.`);
+                      }
                     }
                 }
             }

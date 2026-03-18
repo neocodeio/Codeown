@@ -75,6 +75,10 @@ export default function App() {
   useEffect(() => {
     socket.connect();
 
+    if (isSignedIn && user?.id) {
+      socket.emit("join", user.id);
+    }
+
     const handleUpdate = ({ type }: { type: string, data: any }) => {
       console.log(`[Socket] Received update: ${type}`);
       if (type.startsWith("post_")) {
@@ -89,7 +93,7 @@ export default function App() {
     return () => {
       socket.off("content_update", handleUpdate);
     };
-  }, [queryClient]);
+  }, [queryClient, isSignedIn, user?.id]);
 
   // Check onboarding status for signed-in users
   useEffect(() => {

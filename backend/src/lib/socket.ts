@@ -50,3 +50,9 @@ export const emitUpdate = (type: string, data: any) => {
     io.emit("content_update", { type, data });
   }
 };
+
+export const isUserOnline = (userId: string) => {
+  if (!io) return false;
+  const room = io.sockets.adapter.rooms.get(userId);
+  return !!room && room.size > 0;
+};

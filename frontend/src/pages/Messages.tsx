@@ -69,11 +69,12 @@ export default function Messages() {
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   useEffect(() => {
     if (!currentUser?.id) return;
-
-    socket.connect();
-    socket.emit("join", currentUser.id);
 
     const handleTyping = ({ senderId }: { senderId: string }) => {
       setTypingUsers((prev) => ({ ...prev, [senderId]: true }));
@@ -96,13 +97,8 @@ export default function Messages() {
       socket.off("typing", handleTyping);
       socket.off("stop_typing", handleStopTyping);
       socket.off("messages_read", handleMessagesRead);
-      socket.disconnect();
     };
   }, [currentUser?.id]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
   useEffect(() => {
     scrollToBottom();
