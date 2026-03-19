@@ -73,9 +73,18 @@ export default function App() {
 
   // Global real-time updates
   useEffect(() => {
+    const onConnect = () => {
+      console.log(`[Socket] Connected: ${socket.id}`);
+      if (isSignedIn && user?.id) {
+        socket.emit("join", user.id);
+      }
+    };
+
+    socket.on("connect", onConnect);
     socket.connect();
 
-    if (isSignedIn && user?.id) {
+    // In case already connected when hook runs
+    if (socket.connected && isSignedIn && user?.id) {
       socket.emit("join", user.id);
     }
 
@@ -152,6 +161,7 @@ export default function App() {
     socket.on("content_update", handleUpdate);
     
     return () => {
+      socket.off("connect", onConnect);
       socket.off("content_update", handleUpdate);
     };
   }, [queryClient, isSignedIn, user?.id]);

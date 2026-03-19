@@ -280,6 +280,15 @@ export async function sendMessage(req: Request, res: Response) {
                 } else {
                     console.log(`Notification sent to ${finalRecipientId}`);
 
+                    // Emit real-time message to recipient
+                    try {
+                        const { getIO } = await import("../lib/socket.js");
+                        const io = getIO();
+                        io.to(finalRecipientId).emit("new_message", message);
+                    } catch (ioErr) {
+                        console.error("Error emitting new_message to socket:", ioErr);
+                    }
+
                     // Fetch user details for email
                     const [{ data: sender }, { data: recipient }] = await Promise.all([
                         supabase.from("users").select("name, username").eq("id", userId).single(),
