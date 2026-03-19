@@ -4,7 +4,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Image as ImageIcon, X, ListPlus, PlusCircle, MinusCircle } from "phosphor-react";
+import { Image as ImageIcon, ListPlus, PlusCircle, MinusCircle } from "phosphor-react";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
 import { validateImageSize } from "../constants/upload";
@@ -265,20 +265,34 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     style={{
                                         position: "absolute",
                                         top: "8px",
-                                        right: "8px",
-                                        backgroundColor: "var(--bg-page)",
-                                        color: "var(--text-primary)",
-                                        border: "0.5px solid var(--border-hairline)",
-                                        borderRadius: "1px",
-                                        width: "24px",
-                                        height: "24px",
+                                        right: "9px",
+                                        backgroundColor: "#000",
+                                        border: "1px solid rgba(255,255,255,0.2)",
+                                        borderRadius: "2px",
+                                        width: "22px",
+                                        height: "22px",
                                         cursor: "pointer",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
+                                        zIndex: 100,
+                                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                                        padding: 0,
+                                        transition: "all 0.15s var(--ease-smooth)",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = "#333";
+                                        e.currentTarget.style.transform = "scale(1.05)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = "#000";
+                                        e.currentTarget.style.transform = "scale(1)";
                                     }}
                                 >
-                                    <X size={14} weight="bold" />
+                                    <div style={{ position: "relative", width: "10px", height: "10px" }}>
+                                        <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.5px", backgroundColor: "#fff", transform: "rotate(45deg)", borderRadius: "1px" }} />
+                                        <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.5px", backgroundColor: "#fff", transform: "rotate(-45deg)", borderRadius: "1px" }} />
+                                    </div>
                                 </button>
                             </div>
                         ))}
@@ -301,9 +315,32 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Poll Options</span>
                             <button 
                                 onClick={() => setIsPoll(false)}
-                                style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center" }}
+                                style={{ 
+                                    background: "none", 
+                                    border: "0.5px solid var(--border-hairline)", 
+                                    color: "var(--text-tertiary)", 
+                                    cursor: "pointer", 
+                                    display: "flex", 
+                                    alignItems: "center", 
+                                    padding: "6px",
+                                    borderRadius: "2px",
+                                    transition: "all 0.15s var(--ease-smooth)",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                                    e.currentTarget.style.color = "var(--text-primary)";
+                                    e.currentTarget.style.borderColor = "var(--text-primary)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = "transparent";
+                                    e.currentTarget.style.color = "var(--text-tertiary)";
+                                    e.currentTarget.style.borderColor = "var(--border-hairline)";
+                                }}
                             >
-                                <X size={14} weight="bold" />
+                                <div style={{ position: "relative", width: "10px", height: "10px" }}>
+                                    <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.2px", backgroundColor: "currentColor", transform: "rotate(45deg)", borderRadius: "1px" }} />
+                                    <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.2px", backgroundColor: "currentColor", transform: "rotate(-45deg)", borderRadius: "1px" }} />
+                                </div>
                             </button>
                         </div>
                         {pollOptions.map((option, index) => (
