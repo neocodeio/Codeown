@@ -30,6 +30,7 @@ import logo from "../assets/icon-removebg.png";
 import logoWhite from "../assets/logo-white.png";
 import DeveloperIDCardModal from "./DeveloperIDCardModal";
 import StreakBadge from "./StreakBadge";
+import AvailabilityBadge from "./AvailabilityBadge";
 
 
 
@@ -357,10 +358,12 @@ export default function Navbar() {
               }}
               aria-label="User Profile Quick Access"
             >
-              <img
-                src={userAvatarUrl || user.imageUrl}
-                alt="Profile"
-                style={{ width: "36px", height: "36px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+              <AvailabilityBadge
+                avatarUrl={userAvatarUrl || user.imageUrl}
+                name={profile?.name || user.fullName || "User"}
+                size={36}
+                isOpenToOpportunities={profile?.is_hirable === true && profile?.is_pro === true}
+                isOG={profile?.is_og}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "4px" }}>
