@@ -10,7 +10,6 @@ import {
   ChatTeardropText,
   NotePencil,
   MagnifyingGlass,
-  Plus,
   Image as ImageIcon,
   X,
   ArrowClockwise
@@ -779,25 +778,6 @@ export default function Messages() {
                   </div>
                 </div>
 
-                {/* New Message button in Header for ease of use */}
-                <button
-                  onClick={() => setIsNewMessageModalOpen(true)}
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "2px",
-                    border: "0.5px solid var(--border-hairline)",
-                    backgroundColor: "transparent",
-                    color: "var(--text-primary)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    flexShrink: 0
-                  }}
-                >
-                  <Plus size={18} weight="bold" />
-                </button>
               </div>
 
               {/* Messages */}
