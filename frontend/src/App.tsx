@@ -84,23 +84,67 @@ export default function App() {
       
       // Post related updates
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
-        // Invalidate lists
-        queryClient.invalidateQueries({ queryKey: ["posts"] });
-        // Invalidate specific post if ID is present
-        if (data.id || data.postId) {
-          queryClient.invalidateQueries({ queryKey: ["post", String(data.id || data.postId)] });
-          queryClient.invalidateQueries({ queryKey: ["comments", String(data.id || data.postId)] });
+        if (type === "post_created") {
+          // Prepend to all active post feeds
+          queryClient.setQueriesData({ queryKey: ["posts"] }, (oldData: any) => {
+            if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
+            
+            // Avoid duplicates
+            const firstPage = oldData.pages[0];
+            const exists = firstPage.posts.some((p: any) => p.id === data.id);
+            if (exists) return oldData;
+
+            return {
+              ...oldData,
+              pages: [
+                {
+                  ...firstPage,
+                  posts: [data, ...firstPage.posts]
+                },
+                ...oldData.pages.slice(1)
+              ]
+            };
+          });
+        } else {
+          // Invalidate for updates/likes/comments
+          queryClient.invalidateQueries({ queryKey: ["posts"] });
+          if (data.id || data.postId) {
+            queryClient.invalidateQueries({ queryKey: ["post", String(data.id || data.postId)] });
+            queryClient.invalidateQueries({ queryKey: ["comments", String(data.id || data.postId)] });
+          }
         }
       } 
       
       // Project related updates
       else if (type.startsWith("project_") || (type === "comment_liked" && data.type === "project")) {
-        // Invalidate lists
-        queryClient.invalidateQueries({ queryKey: ["projects"] });
-        // Invalidate specific project if ID is present
-        if (data.id || data.projectId) {
-          queryClient.invalidateQueries({ queryKey: ["project", String(data.id || data.projectId)] });
-          queryClient.invalidateQueries({ queryKey: ["project_comments", String(data.id || data.projectId)] });
+        if (type === "project_created") {
+          // Prepend to all active project feeds
+          queryClient.setQueriesData({ queryKey: ["projects"] }, (oldData: any) => {
+            if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
+            
+            // Avoid duplicates
+            const firstPage = oldData.pages[0];
+            const exists = firstPage.projects.some((p: any) => p.id === data.id);
+            if (exists) return oldData;
+
+            return {
+              ...oldData,
+              pages: [
+                {
+                  ...firstPage,
+                  projects: [data, ...firstPage.projects]
+                },
+                ...oldData.pages.slice(1)
+              ]
+            };
+          });
+        } else {
+          // Invalidate for updates/likes/comments
+          queryClient.invalidateQueries({ queryKey: ["projects"] });
+          if (data.id || data.projectId) {
+            queryClient.invalidateQueries({ queryKey: ["project", String(data.id || data.projectId)] });
+            queryClient.invalidateQueries({ queryKey: ["project_comments", String(data.id || data.projectId)] });
+          }
         }
       }
     };

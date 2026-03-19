@@ -477,15 +477,18 @@ export async function createPost(req: Request, res: Response) {
 
     console.log(`[CreatePost] Final language choice: '${langCode}' (Input was: '${language}')`);
 
-    const { data, error } = await supabase.from("posts").insert({
-      title: finalTitle,
-      content: content.trim(),
-      user_id: userId,
-      images: imageUrls.length > 0 ? imageUrls : null,
-      tags: allTags.length > 0 ? allTags : null,
-      language: langCode,
-      poll: poll || null,
-    }).select().single();
+    const { data: createdPost, error } = await supabase.from("posts")
+      .insert({
+        title: finalTitle,
+        content: content.trim(),
+        user_id: userId,
+        images: imageUrls.length > 0 ? imageUrls : null,
+        tags: allTags.length > 0 ? allTags : null,
+        language: langCode,
+        poll: poll || null,
+      })
+      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)")
+      .single();
 
     if (error) {
       console.error("Supabase error:", error);
@@ -497,22 +500,22 @@ export async function createPost(req: Request, res: Response) {
       });
     }
 
-    console.log("Post created successfully:", data);
+    console.log("Post created successfully:", createdPost);
     
     // Emit real-time update
-    emitUpdate("post_created", data);
+    emitUpdate("post_created", createdPost);
 
     // Track post creation analytics (non-blocking)
     supabase.from("analytics_events").insert({
       event_type: 'post_created',
       actor_id: userId,
       target_user_id: userId,
-      post_id: data.id
+      post_id: createdPost.id
     }).then(({ error }) => {
       if (error) console.error("Error logging post creation analytics:", error);
     });
     
-    return res.status(201).json({ success: true, data });
+    return res.status(201).json({ success: true, data: createdPost });
   } catch (error: any) {
     console.error("Unexpected error in createPost:", error);
     return res.status(500).json({
