@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -8,6 +8,7 @@ import { Image as ImageIcon, ListPlus, PlusCircle, MinusCircle } from "phosphor-
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
 import { validateImageSize } from "../constants/upload";
+import AvailabilityBadge from "./AvailabilityBadge";
 
 interface FeedPostComposerProps {
     onCreated: () => void;
@@ -24,6 +25,26 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { getToken, isLoaded } = useClerkAuth();
     const { user, isSignedIn } = useClerkUser();
+    const [isOG, setIsOG] = useState(false);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (isSignedIn && user?.id) {
+                try {
+                    const token = await getToken();
+                    const res = await api.get(`/users/${user.id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    if (res.data) {
+                        setIsOG(res.data.is_og || false);
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch user data in composer", err);
+                }
+            }
+        };
+        fetchUserData();
+    }, [isSignedIn, user?.id, getToken]);
 
     const { avatarUrl } = useAvatar(
         user?.id,
@@ -168,16 +189,12 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             display: "flex",
             gap: "24px",
         }}>
-            <img
-                src={avatarUrl}
-                alt="Profile"
-                style={{
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "2px",
-                    objectFit: "cover",
-                    border: "0.5px solid var(--border-hairline)"
-                }}
+            <AvailabilityBadge
+                avatarUrl={avatarUrl}
+                name={user?.fullName || user?.username || "User"}
+                size={44}
+                username={user?.username}
+                isOG={isOG}
             />
             <div style={{ flex: 1 }}>
                 <div style={{ marginBottom: "20px" }}>

@@ -182,6 +182,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               size={isMobile ? 40 : 44}
               isOpenToOpportunities={project.user?.is_pro === true && project.user?.is_hirable === true}
               isOG={project.user?.is_og}
+              username={project.user?.username}
             />
         </div>
       </div>

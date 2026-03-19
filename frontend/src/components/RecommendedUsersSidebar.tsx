@@ -10,6 +10,8 @@ import UserHoverCard from "./UserHoverCard";
 import VerifiedBadge from "./VerifiedBadge";
 import { formatRelativeDate } from "../utils/date";
 
+import AvailabilityBadge from "./AvailabilityBadge";
+
 export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
     const isDesktop = width >= 1100;
@@ -153,10 +155,13 @@ export default function RecommendedUsersSidebar() {
                                             minWidth: 0
                                         }}
                                     >
-                                        <img
-                                            src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
-                                            alt=""
-                                            style={{ width: 48, height: 48, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
+                                        <AvailabilityBadge
+                                            avatarUrl={user.avatar_url}
+                                            name={user.name || "User"}
+                                            size={48}
+                                            isOpenToOpportunities={user.is_pro && user.is_hirable}
+                                            isOG={user.is_og}
+                                            username={user.username}
                                         />
                                         <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
@@ -252,12 +257,6 @@ export default function RecommendedUsersSidebar() {
                             return ordered.map((user: any, idx: number) => {
                                 const rank = top3.length >= 3 ? (idx === 0 ? 2 : idx === 1 ? 1 : 3) : idx + 1;
                                 const firstName = (user?.name || "User").split(" ")[0];
-                                const initials = (user?.name || "U")
-                                    .split(" ")
-                                    .filter(Boolean)
-                                    .slice(0, 2)
-                                    .map((p: string) => p[0]?.toUpperCase())
-                                    .join("");
 
                                 return (
                                     <Link
@@ -278,40 +277,19 @@ export default function RecommendedUsersSidebar() {
                                                 width: "48px",
                                                 height: "48px",
                                                 margin: "0 auto 8px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center"
                                             }}
                                         >
-                                            {user.avatar_url ? (
-                                                <img
-                                                    src={user.avatar_url}
-                                                    alt=""
-                                                    style={{
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        borderRadius: "2px",
-                                                        objectFit: "cover",
-                                                        border: "0.5px solid var(--border-hairline)",
-                                                        backgroundColor: "var(--bg-hover)",
-                                                    }}
-                                                />
-                                            ) : (
-                                                <div
-                                                    style={{
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        borderRadius: "2px",
-                                                        backgroundColor: "var(--bg-hover)",
-                                                        border: "0.5px solid var(--border-hairline)",
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        fontSize: "12px",
-                                                        fontWeight: 500,
-                                                        color: "var(--text-primary)",
-                                                    }}
-                                                >
-                                                    {initials || "U"}
-                                                </div>
-                                            )}
+                                            <AvailabilityBadge
+                                                avatarUrl={user.avatar_url}
+                                                name={user.name || "User"}
+                                                size={48}
+                                                isOpenToOpportunities={user.is_pro && user.is_hirable}
+                                                isOG={user.is_og}
+                                                username={user.username}
+                                            />
 
                                             <div
                                                 style={{

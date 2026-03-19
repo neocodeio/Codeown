@@ -83,7 +83,7 @@ export async function getConversations(req: Request, res: Response) {
         const otherUserIds = participants.map(p => p.user_id);
         const { data: users, error: err3 } = await supabase
             .from("users")
-            .select("id, name, username, avatar_url")
+            .select("id, name, username, avatar_url, is_og")
             .in("id", otherUserIds);
 
         if (err3) throw err3;
@@ -291,8 +291,8 @@ export async function sendMessage(req: Request, res: Response) {
 
                     // Fetch user details for email
                     const [{ data: sender }, { data: recipient }] = await Promise.all([
-                        supabase.from("users").select("name, username").eq("id", userId).single(),
-                        supabase.from("users").select("name, email").eq("id", finalRecipientId).single()
+                        supabase.from("users").select("name, username, is_og").eq("id", userId).single(),
+                        supabase.from("users").select("name, email, is_og").eq("id", finalRecipientId).single()
                     ]);
 
                     if (sender && recipient && recipient.email) {

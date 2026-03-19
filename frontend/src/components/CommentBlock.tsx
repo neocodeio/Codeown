@@ -11,6 +11,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
+import AvailabilityBadge from "./AvailabilityBadge";
 
 export interface CommentWithMeta {
   id: number | string;
@@ -88,27 +89,18 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
       <div style={{ display: "flex", alignItems: "flex-start", gap: isMobile ? "12px" : "16px" }}>
         {/* Avatar */}
         <div
-          style={{
-            width: isMobile ? "32px" : "44px",
-            height: isMobile ? "32px" : "44px",
-            borderRadius: "2px", // Matching the "square avatar" aesthetic from composer
-            overflow: "hidden",
-            cursor: "pointer",
-            flexShrink: 0,
-            border: "1px solid var(--border-hairline)",
-            transition: "transform 0.2s ease"
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           onClick={() => {
             if (comment.user?.username) navigate(`/${comment.user.username}`);
             else if (comment.user_id) navigate(`/user/${comment.user_id}`);
           }}
+          style={{ cursor: "pointer", flexShrink: 0 }}
         >
-          <img
-            src={avatarUrl}
-            alt={name}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          <AvailabilityBadge
+            avatarUrl={avatarUrl}
+            name={name}
+            size={isMobile ? 32 : 44}
+            isOpenToOpportunities={comment.user?.is_pro}
+            username={comment.user?.username}
           />
         </div>
 

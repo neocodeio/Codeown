@@ -194,6 +194,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
             size={40}
             isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
             isOG={post.user?.is_og}
+            username={post.user?.username}
           />
         </div>
       </div>

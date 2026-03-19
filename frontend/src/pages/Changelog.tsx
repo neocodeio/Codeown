@@ -105,6 +105,16 @@ export default function Changelog() {
                 }}>
                     Tracking the evolution of Codeown.
                 </p>
+                <p style={{ 
+                    fontSize: "11px", 
+                    color: "var(--text-tertiary)", 
+                    fontFamily: "var(--font-mono)",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em"
+                }}>
+                    All changes are made by <a href="amin.ceo" style={{ color: "var(--text-primary)", fontWeight: 900, textDecoration: "none", fontSize: "10px" }}>@amin.ceo</a>
+                </p>
             </header>
 
             {isAminCeo && (

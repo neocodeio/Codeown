@@ -16,6 +16,7 @@ import {
 } from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
 import VerifiedBadge from "../components/VerifiedBadge";
+import AvailabilityBadge from "../components/AvailabilityBadge";
 import { socket } from "../lib/socket";
 
 interface Partner {
@@ -23,6 +24,7 @@ interface Partner {
   name: string;
   username: string | null;
   avatar_url: string | null;
+  is_og?: boolean;
 }
 
 interface Message {
@@ -591,20 +593,12 @@ export default function Messages() {
                     e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
-                <img
-                  src={
-                    convo.partner.avatar_url ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(convo.partner.name)}&background=212121&color=fff&bold=true`
-                  }
-                  alt=""
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "2px",
-                    objectFit: "cover",
-                    flexShrink: 0,
-                    border: "0.5px solid var(--border-hairline)"
-                  }}
+                <AvailabilityBadge
+                  avatarUrl={convo.partner.avatar_url}
+                  name={convo.partner.name}
+                  size={48}
+                  isOG={convo.partner.is_og}
+                  username={convo.partner.username}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
@@ -738,23 +732,18 @@ export default function Messages() {
                     />
                   </button>
                 )}
-                <img
-                  src={
-                    activeConvo.partner.avatar_url ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(activeConvo.partner.name)}&background=212121&color=fff&bold=true`
-                  }
-                  alt=""
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "2px",
-                    cursor: "pointer",
-                    objectFit: "cover",
-                    flexShrink: 0,
-                    border: "0.5px solid var(--border-hairline)"
-                  }}
+                <div 
                   onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
-                />
+                  style={{ cursor: "pointer", flexShrink: 0 }}
+                >
+                  <AvailabilityBadge
+                    avatarUrl={activeConvo.partner.avatar_url}
+                    name={activeConvo.partner.name}
+                    size={36}
+                    isOG={activeConvo.partner.is_og}
+                    username={activeConvo.partner.username}
+                  />
+                </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div
                     style={{

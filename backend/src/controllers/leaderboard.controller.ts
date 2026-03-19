@@ -24,7 +24,7 @@ export async function getLeaderboard(req: Request, res: Response) {
         // Fetch all users with basic info
         const { data: users, error: usersError } = await supabase
             .from("users")
-            .select("id, name, username, avatar_url, streak_count, is_pro, last_active_at")
+            .select("id, name, username, avatar_url, streak_count, is_pro, is_og, last_active_at")
             .limit(100);
 
         if (usersError) throw usersError;

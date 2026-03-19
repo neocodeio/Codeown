@@ -87,7 +87,7 @@ export async function getProjects(req: Request, res: Response) {
       .from("projects")
       .select(`
         id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id,
-        user:user_id(id, name, avatar_url, username, is_hirable, is_pro),
+        user:user_id(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         ratings:project_ratings(rating)
       `, { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
@@ -145,7 +145,7 @@ export async function getProjects(req: Request, res: Response) {
 
       return {
         ...project,
-        user: creator || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null, is_hirable: false, is_pro: false },
+        user: creator || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null, is_hirable: false, is_pro: false, is_og: false },
         rating: averageRating,
         rating_count: ratingCount,
         contributors: contributors
@@ -204,7 +204,7 @@ export async function getProject(req: Request, res: Response) {
       .from("projects")
       .select(`
         *,
-        user:user_id(id, name, avatar_url, username, is_hirable, is_pro)
+        user:user_id(id, name, avatar_url, username, is_hirable, is_pro, is_og)
       `)
       .eq("id", resolvedId)
       .maybeSingle();
@@ -250,7 +250,7 @@ export async function getProject(req: Request, res: Response) {
         const requesterIds = requestsRes.map(r => r.user_id);
         const { data: usersData } = await supabase
           .from("users")
-          .select("id, name, username, avatar_url")
+          .select("id, name, username, avatar_url, is_og")
           .in("id", requesterIds);
         
         const userMap = new Map((usersData || []).map(u => [u.id, u]));
@@ -268,7 +268,7 @@ export async function getProject(req: Request, res: Response) {
         const contributorIds = contribsRes.data.map((c: any) => c.user_id);
         const { data: userData } = await supabase
           .from("users")
-          .select("id, name, avatar_url, username, is_hirable, is_pro")
+          .select("id, name, avatar_url, username, is_hirable, is_pro, is_og")
           .in("id", contributorIds);
         contributors = userData || [];
       } catch (cErr) {
@@ -297,7 +297,7 @@ export async function getProject(req: Request, res: Response) {
     // 5. RETURN COMBINED DATA
     return res.json({
       ...project,
-      user: project.user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null, is_hirable: false, is_pro: false },
+      user: project.user || { id: project.user_id, name: "Unknown User", avatar_url: null, username: null, is_hirable: false, is_pro: false, is_og: false },
       rating: averageRating,
       rating_count: ratingCount,
       user_rating: userRating,
@@ -352,7 +352,7 @@ export async function getUserProjects(req: Request, res: Response) {
     // Attach user data to projects
     const projectsWithUsers = (projects || []).map((project: any) => ({
       ...project,
-      user: user || { id: userId, name: "Unknown User", avatar_url: null, username: null, is_hirable: false, is_pro: false }
+      user: user || { id: userId, name: "Unknown User", avatar_url: null, username: null, is_hirable: false, is_pro: false, is_og: false }
     }));
 
     return res.json(projectsWithUsers || []);
@@ -464,7 +464,7 @@ export async function createProject(req: Request, res: Response) {
     // Fetch user data for response
     const { data: user } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, email, avatar_url, username, is_og")
       .eq("id", userId)
       .single();
 
@@ -510,13 +510,13 @@ export async function createProject(req: Request, res: Response) {
     // Emit real-time update
     emitUpdate("project_created", {
       ...project,
-      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null, is_og: false }
     });
 
     return res.status(201).json({
       ...project,
       is_first: isFirstProject,
-      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null, is_og: false }
     });
   } catch (error: any) {
     console.error("CRITICAL error in createProject controller:", error);
@@ -598,7 +598,7 @@ export async function updateProject(req: Request, res: Response) {
     // Fetch user data for response
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username")
+      .select("id, name, email, avatar_url, username, is_og")
       .eq("id", userId)
       .single();
 
@@ -609,12 +609,12 @@ export async function updateProject(req: Request, res: Response) {
     // Emit real-time update
     emitUpdate("project_updated", {
       ...project,
-      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null, is_og: false }
     });
 
     return res.json({
       ...project,
-      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null }
+      user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null, is_og: false }
     });
   } catch (error) {
     console.error("Error in updateProject:", error);

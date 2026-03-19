@@ -8,6 +8,7 @@ interface AvailabilityBadgeProps {
     isOpenToOpportunities?: boolean;
     tooltipText?: string;
     isOG?: boolean;
+    username?: string | null;
 }
 
 export default function AvailabilityBadge({
@@ -24,7 +25,7 @@ export default function AvailabilityBadge({
     const briefcaseIconSize = Math.max(8, Math.round(briefcaseBgSize * 0.45));
 
     return (
-        <OGAvatarDecorator isOG={isOG}>
+        <OGAvatarDecorator is_og={isOG}>
             <div
                 className="availability-badge-container"
                 title={showBadge ? tooltipText : undefined}

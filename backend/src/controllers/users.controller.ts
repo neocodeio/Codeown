@@ -81,7 +81,7 @@ export async function updateStreak(req: Request, res: Response) {
             return res.status(401).json({ error: "Unauthorized" });
         }
 
-        const newStreak = await internalUpdateStreak(userId);
+        const newStreak = await internalUpdateStreak(String(userId));
         
         if (newStreak === null) {
             return res.status(500).json({ error: "Failed to update streak" });
@@ -356,7 +356,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     // Check if user exists - select only safe columns
     const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
         .eq("id", userId)
         .single();
 
@@ -400,6 +400,11 @@ export async function ensureUserExists(userId: string, userData?: any) {
 
     // Create new user
     console.log("Creating new user in Supabase:", { userId, userInfo });
+    
+    // Check if new user should be OG (Founding 100)
+    const { count: userCount } = await supabase.from("users").select("id", { count: "exact", head: true });
+    const isNewUserOG = (userCount || 0) < 100;
+
     const { data: newUser, error } = await supabase
         .from("users")
         .insert({
@@ -409,6 +414,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
             avatar_url: userInfo.avatar_url,
             username: userInfo.username,
             onboarding_completed: false,
+            is_og: isNewUserOG,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
         })
@@ -475,7 +481,7 @@ export async function getUserProfile(req: Request, res: Response) {
         // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
             .eq(field, userId)
             .single();
 
@@ -483,6 +489,28 @@ export async function getUserProfile(req: Request, res: Response) {
             console.error("Supabase error:", userError);
             return res.status(500).json({ error: "Failed to fetch user", details: userError.message });
         }
+
+        if (!user) { // Handle case where user is null but no specific error code
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Dynamic OG Logic: If is_og is null/false, check if they are in the first 100
+        let userIsOG = user.is_og || false;
+        if (!userIsOG && user.created_at) {
+            const { count } = await supabase
+                .from("users")
+                .select("id", { count: 'exact', head: true })
+                .lt("created_at", user.created_at);
+            
+            if (count !== null && count < 100) {
+                userIsOG = true;
+                // Auto-sync flag to DB for future speed (non-blocking)
+                supabase.from("users").update({ is_og: true }).eq("id", user.id).then(({error}) => {
+                    if (error) console.error("Error auto-syncing OG flag:", error);
+                });
+            }
+        }
+        user.is_og = userIsOG;
 
         // If user not in Supabase, try Clerk
         let userData = user;
@@ -644,6 +672,7 @@ export async function getUserProfile(req: Request, res: Response) {
             experience_level: userData.experience_level || null,
             is_hirable: userData.is_hirable ?? false,
             is_pro: userData.is_pro ?? false,
+            is_og: userIsOG,
             is_organization: userData.is_organization ?? false,
             // Social links
             github_url: userData.github_url || null,

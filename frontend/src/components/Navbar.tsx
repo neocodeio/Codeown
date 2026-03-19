@@ -364,6 +364,7 @@ export default function Navbar() {
                 size={36}
                 isOpenToOpportunities={profile?.is_hirable === true && profile?.is_pro === true}
                 isOG={profile?.is_og}
+                username={profile?.username || user?.username}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "4px" }}>
