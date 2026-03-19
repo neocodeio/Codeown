@@ -7,6 +7,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { Rocket, Users, Star } from "phosphor-react";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
+import VerifiedBadge from "./VerifiedBadge";
 import { formatRelativeDate } from "../utils/date";
 
 export default function RecommendedUsersSidebar() {
@@ -170,6 +171,11 @@ export default function RecommendedUsersSidebar() {
                                                 }}>
                                                     {(user.name || "User").split(" ")[0]}
                                                 </span>
+                                                <VerifiedBadge 
+                                                    username={user.username} 
+                                                    isPro={user.is_pro || user.is_premium} 
+                                                    size="14px"
+                                                />
                                                 {user.streak_count > 0 && (
                                                     <div style={{ flexShrink: 0 }}>
                                                         <StreakBadge count={user.streak_count} mini />
@@ -337,11 +343,20 @@ export default function RecommendedUsersSidebar() {
                                                 overflow: "hidden",
                                                 textOverflow: "ellipsis",
                                                 whiteSpace: "nowrap",
-                                                letterSpacing: "-0.01em"
+                                                letterSpacing: "-0.01em",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                gap: "4px"
                                             }}
-                                            title={firstName}
+                                            title={user.name}
                                         >
                                             {firstName}
+                                            <VerifiedBadge 
+                                                username={user.username} 
+                                                isPro={user.is_pro || user.is_premium} 
+                                                size="12px"
+                                            />
                                         </div>
 
                                         <div
