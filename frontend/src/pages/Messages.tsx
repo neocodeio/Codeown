@@ -75,6 +75,8 @@ export default function Messages() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   useEffect(() => {
     if (initialMessage) {
@@ -85,8 +87,19 @@ export default function Messages() {
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      // If the user is within 150px of the bottom, consider them "at bottom"
+      const atBottom = scrollHeight - scrollTop - clientHeight < 150;
+      setIsAtBottom(atBottom);
+    }
+  };
+
+  const scrollToBottom = (force = false) => {
+    if (force || isAtBottom) {
+      messagesEndRef.current?.scrollIntoView({ behavior: force ? "auto" : "smooth" });
+    }
   };
 
   useEffect(() => {
@@ -219,6 +232,9 @@ export default function Messages() {
   useEffect(() => {
     if (activeConvo && activeConvo.id !== 0) {
       fetchMessages(activeConvo.id, activeConvo.partner.id);
+      setIsAtBottom(true);
+      setTimeout(() => scrollToBottom(true), 100);
+      
       const interval = setInterval(() => {
         fetchMessages(activeConvo.id, activeConvo.partner.id);
       }, 5000);
@@ -300,6 +316,7 @@ export default function Messages() {
       } else {
         setMessages([...messages, res.data]);
       }
+      setTimeout(() => scrollToBottom(true), 100);
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
@@ -785,6 +802,8 @@ export default function Messages() {
 
               {/* Messages */}
               <div
+                ref={scrollRef}
+                onScroll={handleScroll}
                 style={{
                   flex: 1,
                   overflowY: "auto",
