@@ -241,13 +241,13 @@ export default function ProjectDetail() {
   if (loading) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
-        <div style={{ 
-          width: "24px", 
-          height: "24px", 
-          border: "0.5px solid var(--border-hairline)", 
-          borderTopColor: "var(--text-primary)", 
-          borderRadius: "999px", 
-          animation: "spin 0.8s linear infinite" 
+        <div style={{
+          width: "24px",
+          height: "24px",
+          border: "0.5px solid var(--border-hairline)",
+          borderTopColor: "var(--text-primary)",
+          borderRadius: "999px",
+          animation: "spin 0.8s linear infinite"
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -468,9 +468,9 @@ export default function ProjectDetail() {
                     }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", gap: "16px", flexWrap: "wrap" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                          <img 
-                            src={req.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(req.user.name)}&background=212121&color=ffffff&bold=true`} 
-                            style={{ width: "40px", height: "40px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} 
+                          <img
+                            src={req.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(req.user.name)}&background=212121&color=ffffff&bold=true`}
+                            style={{ width: "40px", height: "40px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}
                           />
                           <div>
                             <div style={{ fontWeight: 800, fontSize: "14px" }}>{req.user.name.toUpperCase()}</div>
@@ -740,37 +740,37 @@ export default function ProjectDetail() {
 
             {/* EMBED BADGE SECTION (Only for Owner) */}
             {isOwnProject && (
-              <div style={{ 
-                  marginTop: "40px",
-                  padding: "24px",
-                  backgroundColor: "var(--bg-hover)",
-                  border: "0.5px solid var(--border-hairline)",
-                  borderRadius: "2px",
+              <div style={{
+                marginTop: "40px",
+                padding: "24px",
+                backgroundColor: "var(--bg-hover)",
+                border: "0.5px solid var(--border-hairline)",
+                borderRadius: "2px",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
                   <Code size={18} weight="thin" color="var(--text-tertiary)" />
-                  <h3 style={{ 
-                      fontSize: "11px", 
-                      fontWeight: 800, 
-                      fontFamily: "var(--font-mono)", 
-                      color: "var(--text-tertiary)", 
-                      textTransform: "uppercase", 
-                      letterSpacing: "0.1em",
-                      margin: 0
+                  <h3 style={{
+                    fontSize: "11px",
+                    fontWeight: 800,
+                    fontFamily: "var(--font-mono)",
+                    color: "var(--text-tertiary)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    margin: 0
                   }}>
                     Embed Badge
                   </h3>
                 </div>
-                
+
                 <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "24px", alignItems: isMobile ? "flex-start" : "center" }}>
                   {/* Badge Preview */}
                   <div style={{ flexShrink: 0 }}>
                     <div style={{ fontSize: "9px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase" }}>Preview</div>
                     <a href={window.location.href} target="_blank" rel="noopener noreferrer">
-                      <img 
-                        src={`${window.location.origin}/badges/listed-on-codeown.svg`} 
-                        alt="Listed on Codeown" 
-                        style={{ height: "40px", display: "block" }} 
+                      <img
+                        src={`${window.location.origin}/badges/listed-on-codeown.svg`}
+                        alt="Listed on Codeown"
+                        style={{ height: "40px", display: "block" }}
                       />
                     </a>
                   </div>
@@ -779,7 +779,7 @@ export default function ProjectDetail() {
                   <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                       <div style={{ fontSize: "9px", color: "var(--text-tertiary)", fontWeight: 700, textTransform: "uppercase" }}>Embed HTML Code</div>
-                      <button 
+                      <button
                         onClick={() => {
                           const code = `<a href="${window.location.origin}/project/${project.id}" target="_blank">\n  <img src="${window.location.origin}/badges/listed-on-codeown.svg" alt="Listed on Codeown" width="170" height="40" />\n</a>`;
                           navigator.clipboard.writeText(code);

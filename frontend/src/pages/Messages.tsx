@@ -72,6 +72,7 @@ export default function Messages() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -87,6 +88,22 @@ export default function Messages() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (previewImage) {
+      document.body.style.overflow = "hidden";
+      const handleEsc = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setPreviewImage(null);
+      };
+      window.addEventListener("keydown", handleEsc);
+      return () => {
+        document.body.style.overflow = "unset";
+        window.removeEventListener("keydown", handleEsc);
+      };
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [previewImage]);
 
   useEffect(() => {
     if (!currentUser?.id) return;
@@ -903,7 +920,7 @@ export default function Messages() {
                               display: "block",
                               cursor: "pointer"
                             }}
-                            onClick={() => window.open(msg.image_url, '_blank')}
+                            onClick={() => setPreviewImage(msg.image_url!)}
                           />
                         )}
                         {msg.content && (
@@ -1285,7 +1302,80 @@ export default function Messages() {
         onSelectUser={(user) => startPlaceholderConvo(user.id)}
       />
 
+      {/* Image Previewer Modal */}
+      {previewImage && (
+        <div
+          onClick={() => setPreviewImage(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            backgroundColor: "rgba(0, 0, 0, 0.95)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "zoom-out",
+            animation: "fadeIn 0.2s ease",
+            padding: "20px"
+          }}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setPreviewImage(null);
+            }}
+            style={{
+              position: "absolute",
+              top: "24px",
+              right: "24px",
+              background: "rgba(255, 255, 255, 0.1)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              color: "#fff",
+              width: "44px",
+              height: "44px",
+              borderRadius: "2px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              backdropFilter: "blur(10px)",
+              zIndex: 10000
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)"}
+          >
+            <X size={24} weight="bold" />
+          </button>
+          
+          <img
+            src={previewImage}
+            alt="Preview"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "90vh",
+              objectFit: "contain",
+              borderRadius: "2px",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+              animation: "imageScale 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+            }}
+          />
+        </div>
+      )}
+
       <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes imageScale {
+          from { transform: scale(0.95); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
         @keyframes typing-bounce {
           0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
           40% { transform: scale(1); opacity: 1; }
