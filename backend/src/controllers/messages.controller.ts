@@ -287,12 +287,30 @@ export async function sendMessage(req: Request, res: Response) {
                     ]);
 
                     if (sender && recipient && recipient.email) {
-                        sendNewMessageEmail(
-                            recipient.email,
-                            recipient.name || "User",
-                            sender.name || "Someone",
-                            sender.username || "someone"
-                        );
+                        try {
+                            const { isUserOnline } = await import("../lib/socket.js");
+                            const isOnline = isUserOnline(finalRecipientId);
+                            
+                            if (!isOnline) {
+                                sendNewMessageEmail(
+                                    recipient.email,
+                                    recipient.name || "User",
+                                    sender.name || "Someone",
+                                    sender.username || "someone"
+                                );
+                            } else {
+                                console.log(`Recipient ${finalRecipientId} is online, skipping email.`);
+                            }
+                        } catch (socketErr) {
+                            console.error("Error checking user online status:", socketErr);
+                            // Fallback to sending email if check fails
+                            sendNewMessageEmail(
+                                recipient.email,
+                                recipient.name || "User",
+                                sender.name || "Someone",
+                                sender.username || "someone"
+                            );
+                        }
                     }
                 }
             }
