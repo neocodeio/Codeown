@@ -411,9 +411,13 @@ export default function RecommendedUsersSidebar() {
                                         <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: "var(--text-tertiary)" }}>•</div>
                                     )}
                                 </div>
-                                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center", gap: "4px" }}>
+                                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center", gap: "2px" }}>
                                     <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "-0.01em" }}>{project.title}</span>
-                                    <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>{formatRelativeDate(project.created_at).toUpperCase()}</span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                        <span style={{ fontSize: "10.5px", color: "var(--text-secondary)", fontWeight: 700 }}>By {project.user?.name || "User"}</span>
+                                        <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="12px" />
+                                    </div>
+                                    <span style={{ fontSize: "9px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, marginTop: "2px" }}>{formatRelativeDate(project.created_at).toUpperCase()}</span>
                                 </div>
                             </Link>
                         ))}
