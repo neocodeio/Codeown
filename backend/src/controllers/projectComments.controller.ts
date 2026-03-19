@@ -108,7 +108,7 @@ export async function createProjectComment(req: Request, res: Response) {
     const { data: comment, error } = await supabase
       .from("project_comments")
       .insert({
-        project_id: parseInt(id),
+        project_id: parseInt(id as string),
         user_id: userId,
         content: content.trim(),
         parent_id: parent_id || null
@@ -126,15 +126,21 @@ export async function createProjectComment(req: Request, res: Response) {
     if (parent_id) {
       const { data: pc } = await supabase.from("project_comments").select("user_id").eq("id", parent_id).single();
       if (pc && pc.user_id !== userId) {
-        await createProjectCommentNotification(pc.user_id, "reply", userId, parseInt(id), comment.id);
+        await createProjectCommentNotification(pc.user_id, "reply", userId, parseInt(id as string), comment.id);
       }
     } else if (project.user_id !== userId) {
-      await createProjectCommentNotification(project.user_id, "comment", userId, parseInt(id), comment.id);
+      await createProjectCommentNotification(project.user_id, "comment", userId, parseInt(id as string), comment.id);
     }
 
     // Refresh return
     const { data: user } = await supabase.from("users").select("id, name, avatar_url, username").eq("id", userId).single();
-    return res.status(201).json({ ...comment, user: user || { id: userId, name: "User" } });
+    const fullComment = { ...comment, user: user || { id: userId, name: "User" } };
+
+    // Emit real-time update
+    const { emitUpdate } = await import("../lib/socket.js");
+    emitUpdate("project_commented", { projectId: parseInt(id as string), comment: fullComment, commentCount: count || 0 });
+
+    return res.status(201).json(fullComment);
   } catch (error) {
     console.error("Error in createProjectComment:", error);
     return res.status(500).json({ error: "Internal server error" });

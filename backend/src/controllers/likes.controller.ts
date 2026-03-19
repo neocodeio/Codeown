@@ -53,6 +53,11 @@ export async function likePost(req: Request, res: Response) {
         .eq("post_id", postIdNum);
 
       const updatedCount = count || 0;
+
+      // Emit real-time update
+      const { emitUpdate } = await import("../lib/socket.js");
+      emitUpdate("post_liked", { id: postIdNum, likeCount: updatedCount });
+
       return res.json({ liked: false, likeCount: updatedCount });
     } else {
       const { error: insertError } = await supabase
@@ -107,6 +112,11 @@ export async function likePost(req: Request, res: Response) {
         .eq("post_id", postIdNum);
 
       const updatedCount = count || 0;
+      
+      // Emit real-time update
+      const { emitUpdate } = await import("../lib/socket.js");
+      emitUpdate("post_liked", { id: postIdNum, likeCount: updatedCount });
+
       return res.json({ liked: true, likeCount: updatedCount });
     }
   } catch (error: any) {
@@ -196,6 +206,11 @@ export async function likeComment(req: Request, res: Response) {
       const { count } = await supabase.from(likesTable).select("*", { count: "exact", head: true }).eq("comment_id", commentId);
       const newCount = count || 0;
       await supabase.from(commentsTable).update({ like_count: newCount } as any).eq("id", commentId);
+
+      // Emit real-time update
+      const { emitUpdate } = await import("../lib/socket.js");
+      emitUpdate("comment_liked", { id: commentId, likeCount: newCount, type: actualType });
+
       return res.json({ liked: false, likeCount: newCount });
     } else {
       await supabase.from(likesTable).insert({ user_id: userId, comment_id: commentId });
@@ -221,6 +236,11 @@ export async function likeComment(req: Request, res: Response) {
       const { count } = await supabase.from(likesTable).select("*", { count: "exact", head: true }).eq("comment_id", commentId);
       const newCount = count || 0;
       await supabase.from(commentsTable).update({ like_count: newCount } as any).eq("id", commentId);
+
+      // Emit real-time update
+      const { emitUpdate } = await import("../lib/socket.js");
+      emitUpdate("comment_liked", { id: commentId, likeCount: newCount, type: actualType });
+
       return res.json({ liked: true, likeCount: newCount });
     }
   } catch (error: any) {

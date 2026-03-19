@@ -353,6 +353,18 @@ export async function createComment(req: Request, res: Response) {
     }
 
     console.log("Comment created successfully:", data);
+
+    // Get the full comments count for real-time update
+    const { count } = await supabase.from("comments").select("*", { count: "exact", head: true }).eq("post_id", postIdInt);
+    
+    // Refresh user data for the returned comment
+    const { data: userRecord } = await supabase.from("users").select("id, name, avatar_url, username, is_pro").eq("id", userId).single();
+    const fullComment = { ...(data as any), user: userRecord || { id: userId, name: "User" } };
+
+    // Emit real-time update
+    const { emitUpdate } = await import("../lib/socket.js");
+    emitUpdate("post_commented", { postId: postIdInt, comment: fullComment, commentCount: count || 0 });
+
     return res.status(201).json({ success: true, data, commentId });
   } catch (error: any) {
     console.error("Unexpected error in createComment:", error);

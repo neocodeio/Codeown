@@ -780,6 +780,10 @@ export async function toggleProjectLike(req: Request, res: Response) {
       .update({ like_count: likeCount })
       .eq("id", id);
 
+    // Emit real-time update
+    const { emitUpdate } = await import("../lib/socket.js");
+    emitUpdate("project_liked", { id: parseInt(id as string), likeCount });
+
     return res.json({ isLiked, likeCount });
   } catch (error) {
     console.error("Error in toggleProjectLike:", error);

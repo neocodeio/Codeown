@@ -79,12 +79,29 @@ export default function App() {
       socket.emit("join", user.id);
     }
 
-    const handleUpdate = ({ type }: { type: string, data: any }) => {
-      console.log(`[Socket] Received update: ${type}`);
-      if (type.startsWith("post_")) {
+    const handleUpdate = ({ type, data }: { type: string, data: any }) => {
+      console.log(`[Socket] Received update: ${type}`, data);
+      
+      // Post related updates
+      if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
+        // Invalidate lists
         queryClient.invalidateQueries({ queryKey: ["posts"] });
-      } else if (type.startsWith("project_")) {
+        // Invalidate specific post if ID is present
+        if (data.id || data.postId) {
+          queryClient.invalidateQueries({ queryKey: ["post", String(data.id || data.postId)] });
+          queryClient.invalidateQueries({ queryKey: ["comments", String(data.id || data.postId)] });
+        }
+      } 
+      
+      // Project related updates
+      else if (type.startsWith("project_") || (type === "comment_liked" && data.type === "project")) {
+        // Invalidate lists
         queryClient.invalidateQueries({ queryKey: ["projects"] });
+        // Invalidate specific project if ID is present
+        if (data.id || data.projectId) {
+          queryClient.invalidateQueries({ queryKey: ["project", String(data.id || data.projectId)] });
+          queryClient.invalidateQueries({ queryKey: ["project_comments", String(data.id || data.projectId)] });
+        }
       }
     };
 
