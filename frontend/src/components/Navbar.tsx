@@ -213,7 +213,7 @@ export default function Navbar() {
         </Link>
         <Link to="/leaderboard" style={linkStyle("/leaderboard")} aria-label="Leaderboard">
           <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
-          PULSE
+          LEADERBOARD
         </Link>
         <Link to="/changelog" style={linkStyle("/changelog")} aria-label="View Changelog">
           <Scroll size={20} weight={location.pathname === "/changelog" ? "bold" : "thin"} />
