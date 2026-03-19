@@ -738,85 +738,87 @@ export default function ProjectDetail() {
               )}
             </div>
 
-            {/* EMBED BADGE SECTION */}
-            <div style={{ 
-                marginTop: "40px",
-                padding: "24px",
-                backgroundColor: "var(--bg-hover)",
-                border: "0.5px solid var(--border-hairline)",
-                borderRadius: "2px",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                <Code size={18} weight="thin" color="var(--text-tertiary)" />
-                <h3 style={{ 
-                    fontSize: "11px", 
-                    fontWeight: 800, 
-                    fontFamily: "var(--font-mono)", 
-                    color: "var(--text-tertiary)", 
-                    textTransform: "uppercase", 
-                    letterSpacing: "0.1em",
-                    margin: 0
-                }}>
-                  Embed Badge
-                </h3>
-              </div>
-              
-              <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "24px", alignItems: isMobile ? "flex-start" : "center" }}>
-                {/* Badge Preview */}
-                <div style={{ flexShrink: 0 }}>
-                  <div style={{ fontSize: "9px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase" }}>Preview</div>
-                  <a href={window.location.href} target="_blank" rel="noopener noreferrer">
-                    <img 
-                      src={`${window.location.origin}/badges/listed-on-codeown.svg`} 
-                      alt="Listed on Codeown" 
-                      style={{ height: "34px", display: "block" }} 
-                    />
-                  </a>
-                </div>
-
-                {/* Embed Code */}
-                <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                    <div style={{ fontSize: "9px", color: "var(--text-tertiary)", fontWeight: 700, textTransform: "uppercase" }}>Embed HTML Code</div>
-                    <button 
-                      onClick={() => {
-                        const code = `<a href="${window.location.origin}/project/${project.id}" target="_blank">\n  <img src="${window.location.origin}/badges/listed-on-codeown.svg" alt="Listed on Codeown" width="170" height="40" />\n</a>`;
-                        navigator.clipboard.writeText(code);
-                        setCopiedBadge(true);
-                        setTimeout(() => setCopiedBadge(false), 2000);
-                      }}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        color: copiedBadge ? "#4ade80" : "var(--text-primary)",
-                        fontSize: "9px",
-                        fontWeight: 800,
-                        cursor: "pointer",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        fontFamily: "var(--font-mono)"
-                      }}
-                    >
-                      {copiedBadge ? "COPIED" : "COPY CODE"}
-                    </button>
-                  </div>
-                  <div style={{
-                    backgroundColor: "var(--bg-page)",
-                    padding: "12px",
-                    borderRadius: "2px",
-                    border: "0.5px solid var(--border-hairline)",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "11px",
-                    color: "var(--text-secondary)",
-                    overflowX: "auto",
-                    whiteSpace: "nowrap",
-                    width: "100%",
+            {/* EMBED BADGE SECTION (Only for Owner) */}
+            {isOwnProject && (
+              <div style={{ 
+                  marginTop: "40px",
+                  padding: "24px",
+                  backgroundColor: "var(--bg-hover)",
+                  border: "0.5px solid var(--border-hairline)",
+                  borderRadius: "2px",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+                  <Code size={18} weight="thin" color="var(--text-tertiary)" />
+                  <h3 style={{ 
+                      fontSize: "11px", 
+                      fontWeight: 800, 
+                      fontFamily: "var(--font-mono)", 
+                      color: "var(--text-tertiary)", 
+                      textTransform: "uppercase", 
+                      letterSpacing: "0.1em",
+                      margin: 0
                   }}>
-                    {`<a href="${window.location.origin}/project/${project.id}" ... />`}
+                    Embed Badge
+                  </h3>
+                </div>
+                
+                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "24px", alignItems: isMobile ? "flex-start" : "center" }}>
+                  {/* Badge Preview */}
+                  <div style={{ flexShrink: 0 }}>
+                    <div style={{ fontSize: "9px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase" }}>Preview</div>
+                    <a href={window.location.href} target="_blank" rel="noopener noreferrer">
+                      <img 
+                        src={`${window.location.origin}/badges/listed-on-codeown.svg`} 
+                        alt="Listed on Codeown" 
+                        style={{ height: "40px", display: "block" }} 
+                      />
+                    </a>
+                  </div>
+
+                  {/* Embed Code */}
+                  <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                      <div style={{ fontSize: "9px", color: "var(--text-tertiary)", fontWeight: 700, textTransform: "uppercase" }}>Embed HTML Code</div>
+                      <button 
+                        onClick={() => {
+                          const code = `<a href="${window.location.origin}/project/${project.id}" target="_blank">\n  <img src="${window.location.origin}/badges/listed-on-codeown.svg" alt="Listed on Codeown" width="170" height="40" />\n</a>`;
+                          navigator.clipboard.writeText(code);
+                          setCopiedBadge(true);
+                          setTimeout(() => setCopiedBadge(false), 2000);
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: copiedBadge ? "#4ade80" : "var(--text-primary)",
+                          fontSize: "9px",
+                          fontWeight: 800,
+                          cursor: "pointer",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          fontFamily: "var(--font-mono)"
+                        }}
+                      >
+                        {copiedBadge ? "COPIED" : "COPY CODE"}
+                      </button>
+                    </div>
+                    <div style={{
+                      backgroundColor: "var(--bg-page)",
+                      padding: "12px",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "11px",
+                      color: "var(--text-secondary)",
+                      overflowX: "auto",
+                      whiteSpace: "nowrap",
+                      width: "100%",
+                    }}>
+                      {`<a href="${window.location.origin}/project/${project.id}" ... />`}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div style={{ display: "flex", flexDirection: isMobile ? "row" : "column", gap: "12px", marginBottom: isMobile ? "40px" : "0" }}>
