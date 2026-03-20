@@ -41,6 +41,7 @@ interface Message {
     sender_id: string;
     image_url?: string;
   };
+  reactions?: { [emoji: string]: string[] }; // emoji -> [userIds]
 }
 
 interface Conversation {
@@ -78,6 +79,8 @@ export default function Messages() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [reactingTo, setReactingTo] = useState<number | null>(null);
+  const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (initialMessage) {
@@ -145,6 +148,24 @@ export default function Messages() {
       socket.off("messages_read", handleMessagesRead);
     };
   }, [currentUser?.id]);
+
+  useEffect(() => {
+    if (reactingTo !== null) {
+      const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
+        const picker = document.querySelector(".emoji-picker-overlay");
+        if (picker && !picker.contains(e.target as Node)) {
+          setReactingTo(null);
+        }
+      };
+      
+      document.addEventListener("mousedown", handleOutsideClick);
+      document.addEventListener("touchstart", handleOutsideClick);
+      return () => {
+        document.removeEventListener("mousedown", handleOutsideClick);
+        document.removeEventListener("touchstart", handleOutsideClick);
+      };
+    }
+  }, [reactingTo]);
 
   useEffect(() => {
     scrollToBottom();
@@ -323,6 +344,47 @@ export default function Messages() {
     } finally {
       setSending(false);
       setUploadingImage(false);
+    }
+  };
+
+  const handleReaction = async (messageId: number, emoji: string) => {
+    try {
+      const token = await getToken();
+      await api.patch(`/messages/message/${messageId}/reaction`, { emoji }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Optimistic Update
+      setMessages(prev => prev.map(m => {
+        if (m.id === messageId) {
+          const currentReactions = m.reactions || {};
+          const users = currentReactions[emoji] || [];
+          const userId = currentUser!.id;
+          
+          if (users.includes(userId)) {
+            // Remove
+            const newUsers = users.filter(id => id !== userId);
+            const newReactions = { ...currentReactions };
+            if (newUsers.length === 0) delete newReactions[emoji];
+            else newReactions[emoji] = newUsers;
+            return { ...m, reactions: newReactions };
+          } else {
+            // Add
+            return {
+              ...m,
+              reactions: {
+                ...currentReactions,
+                [emoji]: [...users, userId]
+              }
+            };
+          }
+        }
+        return m;
+      }));
+    } catch (error) {
+      console.error("Error toggling reaction:", error);
+    } finally {
+      setReactingTo(null);
     }
   };
 
@@ -884,6 +946,26 @@ export default function Messages() {
 
                       <div
                         id={`msg-${msg.id}`}
+                        onMouseDown={() => {
+                          if (isMobile) return;
+                          longPressTimeoutRef.current = setTimeout(() => setReactingTo(msg.id), 500);
+                        }}
+                        onMouseUp={() => {
+                          if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
+                        }}
+                        onMouseLeave={() => {
+                          if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
+                        }}
+                        onTouchStart={() => {
+                          longPressTimeoutRef.current = setTimeout(() => setReactingTo(msg.id), 500);
+                        }}
+                        onTouchEnd={() => {
+                          if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
+                        }}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          setReactingTo(msg.id);
+                        }}
                         style={{
                           padding: "10px 14px",
                           borderRadius: "2px",
@@ -893,7 +975,10 @@ export default function Messages() {
                           lineHeight: 1.5,
                           border: "0.5px solid var(--border-hairline)",
                           wordBreak: "break-word",
-                          position: "relative"
+                          position: "relative",
+                          cursor: "pointer",
+                          userSelect: "none",
+                          WebkitUserSelect: "none"
                         }}
                       >
                         {msg.image_url && (
@@ -990,6 +1075,85 @@ export default function Messages() {
                             <span style={{ fontSize: "10px", color: "var(--text-primary)", fontWeight: 700, marginLeft: "4px", fontFamily: "var(--font-mono)" }}>SEEN</span>
                           )}
                       </div>
+
+                      {/* Reactions Display */}
+                      {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                        <div style={{ 
+                          display: "flex", 
+                          flexWrap: "wrap", 
+                          gap: "4px", 
+                          marginTop: "2px",
+                          alignSelf: isMine ? "flex-end" : "flex-start",
+                          zIndex: 2
+                        }}>
+                          {Object.entries(msg.reactions).map(([emoji, userIds]) => {
+                            const hasReacted = userIds.includes(currentUser!.id);
+                            return (
+                              <div
+                                key={emoji}
+                                onClick={() => handleReaction(msg.id, emoji)}
+                                style={{
+                                  padding: "2px 6px",
+                                  backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-hover)",
+                                  color: hasReacted ? "var(--bg-page)" : "var(--text-primary)",
+                                  borderRadius: "10px",
+                                  fontSize: "11px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                  cursor: "pointer",
+                                  border: "0.5px solid var(--border-hairline)",
+                                  transition: "all 0.15s ease"
+                                }}
+                              >
+                                <span>{emoji}</span>
+                                <span style={{ fontSize: "9px", fontWeight: 800 }}>{userIds.length}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Emoji Picker Overlay */}
+                      {reactingTo === msg.id && (
+                        <div
+                          className="emoji-picker-overlay"
+                          style={{
+                            position: "absolute",
+                            bottom: "100%",
+                            [isMine ? "right" : "left"]: 0,
+                            backgroundColor: "var(--bg-page)",
+                            borderRadius: "24px",
+                            padding: "6px 12px",
+                            boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+                            border: "0.5px solid var(--border-hairline)",
+                            display: "flex",
+                            gap: "10px",
+                            zIndex: 1000,
+                            animation: "reactionFadeUp 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28)",
+                            marginBottom: "10px"
+                          }}
+                        >
+                          {["👍", "❤️", "😂", "😮", "😢", "🔥"].map((emoji) => (
+                            <button
+                              key={emoji}
+                              onClick={() => handleReaction(msg.id, emoji)}
+                              style={{
+                                background: "none",
+                                border: "none",
+                                fontSize: "20px",
+                                padding: "4px",
+                                cursor: "pointer",
+                                transition: "transform 0.15s ease",
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.3)"}
+                              onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -1378,6 +1542,10 @@ export default function Messages() {
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        @keyframes reactionFadeUp {
+          from { transform: translateY(10px) scale(0.8); opacity: 0; }
+          to { transform: translateY(0) scale(1); opacity: 1; }
         }
         .message-container .reply-button {
           opacity: 0;

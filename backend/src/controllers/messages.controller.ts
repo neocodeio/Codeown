@@ -156,7 +156,8 @@ export async function getMessages(req: Request, res: Response) {
                     content,
                     sender_id,
                     image_url
-                )
+                ),
+                reactions
             `)
             .eq("conversation_id", id)
             .order("created_at", { ascending: true });
@@ -244,7 +245,8 @@ export async function sendMessage(req: Request, res: Response) {
                     content,
                     sender_id,
                     image_url
-                )
+                ),
+                reactions
             `)
             .single();
 
@@ -334,6 +336,68 @@ export async function sendMessage(req: Request, res: Response) {
 
     } catch (error: any) {
         console.error("Error sending message:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function toggleReaction(req: Request, res: Response) {
+    try {
+        const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+        const { messageId } = req.params;
+        const { emoji } = req.body;
+
+        if (!emoji) return res.status(400).json({ error: "Emoji required" });
+
+        // 1. Get current message and reactions
+        const { data: message, error: fetchErr } = await supabase
+            .from("messages")
+            .select("reactions, conversation_id")
+            .eq("id", messageId)
+            .single();
+
+        if (fetchErr || !message) return res.status(404).json({ error: "Message not found" });
+
+        // Verify participation
+        const { data: participation } = await supabase
+            .from("conversation_participants")
+            .select("*")
+            .eq("conversation_id", message.conversation_id)
+            .eq("user_id", userId)
+            .single();
+
+        if (!participation) return res.status(403).json({ error: "Access denied" });
+
+        let reactions = message.reactions || {};
+        let userIds = reactions[emoji] || [];
+
+        if (userIds.includes(userId)) {
+            // Remove
+            userIds = userIds.filter((id: string) => id !== userId);
+        } else {
+            // Add
+            userIds = [...userIds, userId];
+        }
+
+        if (userIds.length === 0) {
+            delete reactions[emoji];
+        } else {
+            reactions[emoji] = userIds;
+        }
+
+        // 2. Update
+        const { error: updateErr } = await supabase
+            .from("messages")
+            .update({ reactions })
+            .eq("id", messageId);
+
+        if (updateErr) throw updateErr;
+
+        return res.json({ success: true, reactions });
+
+    } catch (error: any) {
+        console.error("Error toggling reaction:", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
