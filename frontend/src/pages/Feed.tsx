@@ -4,6 +4,7 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import BackToTop from "../components/BackToTop";
 
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
@@ -313,6 +314,7 @@ export default function Feed() {
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
+            <BackToTop />
         </main>
     );
 }
