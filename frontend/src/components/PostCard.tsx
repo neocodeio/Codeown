@@ -10,11 +10,12 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar } from "phosphor-react";
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import ShareModal from "./ShareModal";
+import SendToChatModal from "./SendToChatModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { toast } from "react-toastify";
 import Lightbox from "./Lightbox";
@@ -34,6 +35,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const { isLiked, likeCount, toggleLike } = useLikes(post.id, post.isLiked, post.like_count);
   const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isSendToChatModalOpen, setIsSendToChatModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -87,6 +89,11 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsShareModalOpen(true);
+  };
+
+  const handleSendToChat = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsSendToChatModalOpen(true);
   };
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -415,6 +422,11 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
               icon: ShareNetwork, 
               onClick: handleShare, 
               hoverColor: "var(--text-primary)",
+            },
+            {
+              icon: PaperPlaneTilt,
+              onClick: handleSendToChat,
+              hoverColor: "var(--text-primary)",
             }
           ].map((action, i) => (
             <button
@@ -459,6 +471,11 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
         onClose={() => setIsShareModalOpen(false)}
         url={shareUrl}
         title="Share this post"
+      />
+      <SendToChatModal
+        isOpen={isSendToChatModalOpen}
+        onClose={() => setIsSendToChatModalOpen(false)}
+        postId={post.id}
       />
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}

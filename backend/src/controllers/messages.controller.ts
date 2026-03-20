@@ -157,7 +157,31 @@ export async function getMessages(req: Request, res: Response) {
                     sender_id,
                     image_url
                 ),
-                reactions
+                reactions,
+                shared_post:shared_post_id (
+                    id,
+                    title,
+                    content,
+                    images,
+                    user:user_id (
+                        id,
+                        name,
+                        username,
+                        avatar_url
+                    )
+                ),
+                shared_project:shared_project_id (
+                    id,
+                    title,
+                    description,
+                    thumbnail_url,
+                    user:user_id (
+                        id,
+                        name,
+                        username,
+                        avatar_url
+                    )
+                )
             `)
             .eq("conversation_id", id)
             .order("created_at", { ascending: true });
@@ -204,7 +228,7 @@ export async function sendMessage(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-        const { conversationId, content, recipientId, replyToMessageId, imageUrl } = req.body;
+        const { conversationId, content, recipientId, replyToMessageId, imageUrl, sharedPostId, sharedProjectId } = req.body;
 
         let targetConvoId = conversationId;
 
@@ -236,7 +260,9 @@ export async function sendMessage(req: Request, res: Response) {
                 sender_id: userId,
                 content: content,
                 reply_to_message_id: replyToMessageId,
-                image_url: imageUrl
+                image_url: imageUrl,
+                shared_post_id: sharedPostId,
+                shared_project_id: sharedProjectId
             })
             .select(`
                 *,
@@ -246,7 +272,31 @@ export async function sendMessage(req: Request, res: Response) {
                     sender_id,
                     image_url
                 ),
-                reactions
+                reactions,
+                shared_post:shared_post_id (
+                    id,
+                    title,
+                    content,
+                    images,
+                    user:user_id (
+                        id,
+                        name,
+                        username,
+                        avatar_url
+                    )
+                ),
+                shared_project:shared_project_id (
+                    id,
+                    title,
+                    description,
+                    thumbnail_url,
+                    user:user_id (
+                        id,
+                        name,
+                        username,
+                        avatar_url
+                    )
+                )
             `)
             .single();
 

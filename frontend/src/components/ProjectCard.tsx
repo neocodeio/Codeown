@@ -8,13 +8,14 @@ import api from "../api/axios";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, Trash, DotsThree } from "phosphor-react";
+import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, Trash, DotsThree, PaperPlaneTilt } from "phosphor-react";
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import { getOptimizedImageUrl } from "../utils/image";
 import ShareModal from "./ShareModal";
+import SendToChatModal from "./SendToChatModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { toast } from "react-toastify";
 
@@ -31,6 +32,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const { isSaved, toggleSave } = useProjectSaved(project.id, project.isSaved);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isSendToChatModalOpen, setIsSendToChatModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -149,6 +151,11 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsShareModalOpen(true);
+  };
+
+  const handleSendToChat = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsSendToChatModalOpen(true);
   };
 
   const cardElement = (
@@ -379,6 +386,11 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
               icon: ShareNetwork, 
               onClick: handleShare, 
               hoverColor: "var(--text-primary)",
+            },
+            {
+              icon: PaperPlaneTilt,
+              onClick: handleSendToChat,
+              hoverColor: "var(--text-primary)",
             }
           ].map((action, i) => (
             <button
@@ -424,6 +436,11 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
         onClose={() => setIsShareModalOpen(false)}
         url={shareUrl}
         title="Share this project"
+      />
+      <SendToChatModal
+        isOpen={isSendToChatModalOpen}
+        onClose={() => setIsSendToChatModalOpen(false)}
+        projectId={project.id}
       />
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}

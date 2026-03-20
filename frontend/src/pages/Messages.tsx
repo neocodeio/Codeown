@@ -41,7 +41,29 @@ interface Message {
     sender_id: string;
     image_url?: string;
   };
-  reactions?: { [emoji: string]: string[] }; // emoji -> [userIds]
+  reactions?: { [emoji: string]: string[] };
+  shared_post?: {
+    id: number;
+    title: string;
+    content: string;
+    images: string[];
+    user: {
+      name: string;
+      username: string;
+      avatar_url: string;
+    };
+  };
+  shared_project?: {
+    id: number;
+    title: string;
+    description: string;
+    thumbnail_url: string;
+    user: {
+      name: string;
+      username: string;
+      avatar_url: string;
+    };
+  };
 }
 
 interface Conversation {
@@ -1023,6 +1045,80 @@ export default function Messages() {
                                 return part;
                               });
                             })()}
+                          </div>
+                        )}
+
+                        {/* Shared Post Preview */}
+                        {msg.shared_post && (
+                          <div 
+                            onClick={(e) => { e.stopPropagation(); navigate(`/post/${msg.shared_post?.id}`); }}
+                            style={{
+                              marginTop: msg.content ? "12px" : 0,
+                              backgroundColor: isMine ? "rgba(255,255,255,0.1)" : "var(--bg-hover)",
+                              borderRadius: "2px",
+                              border: "0.5px solid var(--border-hairline)",
+                              overflow: "hidden",
+                              cursor: "pointer",
+                              transition: "all 0.2s ease"
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                            onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                          >
+                            {msg.shared_post.images && msg.shared_post.images[0] && (
+                              <img 
+                                src={msg.shared_post.images[0]} 
+                                alt="" 
+                                style={{ width: "100%", height: "120px", objectFit: "cover" }} 
+                              />
+                            )}
+                            <div style={{ padding: "12px" }}>
+                              <div style={{ fontSize: "9px", fontWeight: 800, fontFamily: "var(--font-mono)", color: isMine ? "rgba(255,255,255,0.6)" : "var(--text-tertiary)", textTransform: "uppercase", marginBottom: "4px" }}>
+                                Shared Post • {msg.shared_post.user.name}
+                              </div>
+                              <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "#fff" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                {msg.shared_post.title || "Untitled Post"}
+                              </div>
+                              <div style={{ fontSize: "11px", color: isMine ? "rgba(255,255,255,0.8)" : "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                {msg.shared_post.content}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Shared Project Preview */}
+                        {msg.shared_project && (
+                          <div 
+                            onClick={(e) => { e.stopPropagation(); navigate(`/project/${msg.shared_project?.id}`); }}
+                            style={{
+                              marginTop: msg.content ? "12px" : 0,
+                              backgroundColor: isMine ? "rgba(255,255,255,0.1)" : "var(--bg-hover)",
+                              borderRadius: "2px",
+                              border: "0.5px solid var(--border-hairline)",
+                              overflow: "hidden",
+                              cursor: "pointer",
+                              transition: "all 0.2s ease"
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                            onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                          >
+                            {msg.shared_project.thumbnail_url && (
+                              <img 
+                                src={msg.shared_project.thumbnail_url} 
+                                alt="" 
+                                style={{ width: "100%", height: "120px", objectFit: "cover" }} 
+                              />
+                            )}
+                            <div style={{ padding: "12px" }}>
+                              <div style={{ fontSize: "9px", fontWeight: 800, fontFamily: "var(--font-mono)", color: isMine ? "rgba(255,255,255,0.6)" : "var(--text-tertiary)", textTransform: "uppercase", marginBottom: "4px" }}>
+                                Shared Project • {msg.shared_project.user.name}
+                              </div>
+                              <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "#fff" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                {msg.shared_project.title || "Untitled Project"}
+                              </div>
+                              <div style={{ fontSize: "11px", color: isMine ? "rgba(255,255,255,0.8)" : "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                {msg.shared_project.description}
+                              </div>
+                            </div>
                           </div>
                         )}
                       </div>
