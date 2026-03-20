@@ -21,6 +21,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const [images, setImages] = useState<string[]>([]);
     const [isPoll, setIsPoll] = useState(false);
     const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
+    const [isFocused, setIsFocused] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { getToken, isLoaded } = useClerkAuth();
@@ -166,6 +167,20 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
+            // Celebration for OGs (Founding 100)
+            if (isOG) {
+                const confettiInstance = (await import("canvas-confetti")).default;
+                confettiInstance({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ["#000000", "#ffffff", "#cccccc", "#555555"],
+                    shapes: ["square", "circle"],
+                    ticks: 200,
+                    gravity: 1.2
+                });
+            }
+
             setContent("");
             setImages([]);
             setIsPoll(false);
@@ -182,13 +197,50 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     if (!isSignedIn) return null;
 
     return (
-        <div style={{
-            padding: isMobile ? "24px 16px" : "24px 40px",
-            borderBottom: "0.7px solid var(--border-hairline)",
-            backgroundColor: "var(--bg-page)",
-            display: "flex",
-            gap: "24px",
-        }}>
+        <div 
+            onFocus={() => setIsFocused(true)}
+            onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                    setIsFocused(false);
+                }
+            }}
+            style={{
+                padding: isMobile ? "24px 16px" : "24px 40px",
+                borderBottom: "0.7px solid var(--border-hairline)",
+                backgroundColor: "var(--bg-page)",
+                display: "flex",
+                gap: "24px",
+                position: "relative",
+                zIndex: isFocused ? 1001 : 1,
+                transition: "all 0.4s cubic-bezier(0.2, 0, 0, 1)"
+            }}
+        >
+            {/* Immersive Glassmorphism Backdrop Blur when focused */}
+            {isFocused && (
+                <div 
+                    onClick={() => setIsFocused(false)}
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: "rgba(0,0,0,0.01)",
+                        backdropFilter: "blur(6px)",
+                        zIndex: -1,
+                        animation: "fadeInBlur 0.4s ease-out",
+                        pointerEvents: "auto"
+                    }} 
+                />
+            )}
+            
+            <style>{`
+                @keyframes fadeInBlur {
+                    from { opacity: 0; backdrop-filter: blur(0px); }
+                    to { opacity: 1; backdrop-filter: blur(6px); }
+                }
+            `}</style>
+
             <AvailabilityBadge
                 avatarUrl={avatarUrl}
                 name={user?.fullName || user?.username || "User"}

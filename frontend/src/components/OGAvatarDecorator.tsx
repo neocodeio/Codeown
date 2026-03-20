@@ -58,13 +58,34 @@ export default function OGAvatarDecorator({ children, is_og = false }: OGAvatarD
                     animation: "ogRotate 4s linear infinite",
                     opacity: 0.8
                 }} />
+                
+                {/* Floating "Diamond Sparkles" for extra flair */}
+                {[...Array(3)].map((_, i) => (
+                    <div 
+                        key={i}
+                        style={{
+                            position: "absolute",
+                            width: "2px",
+                            height: "2px",
+                            backgroundColor: "#fff",
+                            borderRadius: "50%",
+                            top: "50%",
+                            left: "50%",
+                            boxShadow: "0 0 5px #fff",
+                            animation: `ogSparkle ${3 + i}s linear infinite`,
+                            animationDelay: `${i * 1.5}s`,
+                            opacity: 0.8,
+                            zIndex: 1
+                        }} 
+                    />
+                ))}
             </div>
 
             <style>{`
-                @keyframes ogPulseSimple {
-                    0% { opacity: 0.8; transform: scale(1); }
-                    50% { opacity: 1; transform: scale(1.01); }
-                    100% { opacity: 0.8; transform: scale(1); }
+                @keyframes ogSparkle {
+                    0% { transform: rotate(${0}deg) translate(22px) rotate(0deg) scale(0); opacity: 0; }
+                    50% { transform: rotate(${180}deg) translate(28px) rotate(-180deg) scale(1); opacity: 1; }
+                    100% { transform: rotate(${360}deg) translate(22px) rotate(-360deg) scale(0); opacity: 0; }
                 }
                 @keyframes ogRotate {
                     from { transform: rotate(0deg); }
