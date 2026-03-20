@@ -312,6 +312,7 @@ export async function getPostsByUser(req: Request, res: Response) {
           avatar_url: (userData as any).avatar_url || null,
           username: (userData as any).username || null,
           is_pro: (userData as any).is_pro ?? false,
+          is_og: (userData as any).is_og ?? false,
         };
       } else {
         // No user data found
@@ -715,7 +716,7 @@ export async function votePost(req: Request, res: Response) {
       .from("posts")
       .update({ poll: updatedPoll })
       .eq("id", id)
-      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro)")
+      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
       .single();
 
     if (updateError) {
