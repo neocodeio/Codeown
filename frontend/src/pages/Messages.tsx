@@ -42,6 +42,8 @@ interface Message {
     image_url?: string;
   };
   reactions?: { [emoji: string]: string[] };
+  shared_post_id?: number;
+  shared_project_id?: number;
   shared_post?: {
     id: number;
     title: string;
@@ -744,7 +746,7 @@ export default function Messages() {
                             <span style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "11px", fontFamily: "var(--font-mono)" }}>YOU:</span>
                           )}
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {convo.last_message.content}
+                            {convo.last_message.content || (convo.last_message.shared_post || convo.last_message.shared_post_id ? "Shared a post" : convo.last_message.shared_project || convo.last_message.shared_project_id ? "Shared a project" : "Media")}
                           </span>
                         </>
                       ) : (
@@ -1054,7 +1056,7 @@ export default function Messages() {
                             onClick={(e) => { e.stopPropagation(); navigate(`/post/${msg.shared_post?.id}`); }}
                             style={{
                               marginTop: msg.content ? "12px" : 0,
-                              backgroundColor: isMine ? "rgba(255,255,255,0.1)" : "var(--bg-hover)",
+                              backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)",
                               borderRadius: "2px",
                               border: "0.5px solid var(--border-hairline)",
                               overflow: "hidden",
@@ -1072,13 +1074,13 @@ export default function Messages() {
                               />
                             )}
                             <div style={{ padding: "12px" }}>
-                              <div style={{ fontSize: "9px", fontWeight: 800, fontFamily: "var(--font-mono)", color: isMine ? "rgba(255,255,255,0.6)" : "var(--text-tertiary)", textTransform: "uppercase", marginBottom: "4px" }}>
-                                Shared Post • {msg.shared_post.user.name}
+                              <div style={{ fontSize: "9px", fontWeight: 800, fontFamily: "var(--font-mono)", color: isMine ? "inherit" : "var(--text-tertiary)", opacity: isMine ? 0.6 : 1, textTransform: "uppercase", marginBottom: "4px" }}>
+                                Shared Post • {msg.shared_post.user?.name || "User"}
                               </div>
-                              <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "#fff" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                              <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                 {msg.shared_post.title || "Untitled Post"}
                               </div>
-                              <div style={{ fontSize: "11px", color: isMine ? "rgba(255,255,255,0.8)" : "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                              <div style={{ fontSize: "11px", color: isMine ? "inherit" : "var(--text-secondary)", opacity: isMine ? 0.8 : 1, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                 {msg.shared_post.content}
                               </div>
                             </div>
@@ -1091,7 +1093,7 @@ export default function Messages() {
                             onClick={(e) => { e.stopPropagation(); navigate(`/project/${msg.shared_project?.id}`); }}
                             style={{
                               marginTop: msg.content ? "12px" : 0,
-                              backgroundColor: isMine ? "rgba(255,255,255,0.1)" : "var(--bg-hover)",
+                              backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)",
                               borderRadius: "2px",
                               border: "0.5px solid var(--border-hairline)",
                               overflow: "hidden",
@@ -1109,13 +1111,13 @@ export default function Messages() {
                               />
                             )}
                             <div style={{ padding: "12px" }}>
-                              <div style={{ fontSize: "9px", fontWeight: 800, fontFamily: "var(--font-mono)", color: isMine ? "rgba(255,255,255,0.6)" : "var(--text-tertiary)", textTransform: "uppercase", marginBottom: "4px" }}>
-                                Shared Project • {msg.shared_project.user.name}
+                              <div style={{ fontSize: "9px", fontWeight: 800, fontFamily: "var(--font-mono)", color: isMine ? "inherit" : "var(--text-tertiary)", opacity: isMine ? 0.6 : 1, textTransform: "uppercase", marginBottom: "4px" }}>
+                                Shared Project • {msg.shared_project.user?.name || "User"}
                               </div>
-                              <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "#fff" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                              <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                 {msg.shared_project.title || "Untitled Project"}
                               </div>
-                              <div style={{ fontSize: "11px", color: isMine ? "rgba(255,255,255,0.8)" : "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                              <div style={{ fontSize: "11px", color: isMine ? "inherit" : "var(--text-secondary)", opacity: isMine ? 0.8 : 1, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                 {msg.shared_project.description}
                               </div>
                             </div>
