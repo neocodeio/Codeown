@@ -185,6 +185,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             setImages([]);
             setIsPoll(false);
             setPollOptions(["", ""]);
+            setIsFocused(false); // Remove blur/focus on success
             onCreated();
         } catch (error) {
             console.error("Failed to post:", error);
