@@ -4,6 +4,7 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
+import MessageNotificationToast from "./components/MessageNotificationToast";
 import { useWindowSize } from "./hooks/useWindowSize";
 import { useClerkUser } from "./hooks/useClerkUser";
 import { useClerkAuth } from "./hooks/useClerkAuth";
@@ -275,6 +276,7 @@ export default function App() {
          !location.pathname.startsWith("/post/") && 
          !location.pathname.startsWith("/project/") && 
          <FeedbackButton />}
+        {!isAuthRoute && <MessageNotificationToast />}
       </div>
     </div>
   );

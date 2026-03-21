@@ -386,7 +386,18 @@ export async function sendMessage(req: Request, res: Response) {
                     try {
                         const { getIO } = await import("../lib/socket.js");
                         const io = getIO();
-                        io.to(finalRecipientId).emit("new_message", message);
+                        
+                        // Fetch sender info for the notification toast
+                        const { data: senderInfo } = await supabase
+                            .from("users")
+                            .select("name, username, avatar_url")
+                            .eq("id", userId)
+                            .single();
+
+                        io.to(finalRecipientId).emit("new_message", {
+                            ...message,
+                            sender: senderInfo || { name: "Someone", username: null, avatar_url: null }
+                        });
                     } catch (ioErr) {
                         console.error("Error emitting new_message to socket:", ioErr);
                     }
