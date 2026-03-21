@@ -177,7 +177,7 @@ export async function getMessages(req: Request, res: Response) {
                     id,
                     title,
                     description,
-                    thumbnail_url,
+                    cover_image,
                     user:user_id (
                         id,
                         name,
@@ -311,7 +311,7 @@ export async function sendMessage(req: Request, res: Response) {
                     id,
                     title,
                     description,
-                    thumbnail_url,
+                    cover_image,
                     user:user_id (
                         id,
                         name,
@@ -325,13 +325,12 @@ export async function sendMessage(req: Request, res: Response) {
         if (error) {
             console.error("SendMessage PRIMARY failed:", error);
             // Fallback to basic message if columns don't exist OR if selection fails
-            const errorMsg = error.message || "Unknown error";
             const { data: basicMsg, error: basicErr } = await supabase
                 .from("messages")
                 .insert({
                     conversation_id: targetConvoId,
                     sender_id: userId,
-                    content: content || (`Shared content [DEBUG: ${errorMsg}]`),
+                    content: content || (sharedPostId || sharedProjectId ? "Shared content (please update DB to view previews)" : ""),
                     reply_to_message_id: replyToMessageId,
                     image_url: imageUrl
                 })

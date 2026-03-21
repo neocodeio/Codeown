@@ -57,7 +57,7 @@ interface Message {
     id: number;
     title: string;
     description: string;
-    thumbnail_url: string;
+    cover_image: string;
     user: {
       name: string;
       username: string;
@@ -1101,9 +1101,9 @@ export default function Messages() {
                             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                           >
-                            {msg.shared_project.thumbnail_url && (
+                            {msg.shared_project.cover_image && (
                               <img 
-                                src={msg.shared_project.thumbnail_url} 
+                                src={msg.shared_project.cover_image} 
                                 alt="" 
                                 style={{ width: "100%", height: "120px", objectFit: "cover" }} 
                               />
