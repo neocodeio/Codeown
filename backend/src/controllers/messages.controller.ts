@@ -138,14 +138,17 @@ export async function getMessages(req: Request, res: Response) {
         const { id } = req.params; // conversationId
 
         // Verify participation
-        const { data: participation } = await supabase
+        const { data: participation, error: partError } = await supabase
             .from("conversation_participants")
             .select("*")
             .eq("conversation_id", id)
             .eq("user_id", userId)
-            .single();
+            .maybeSingle();
 
-        if (!participation) return res.status(403).json({ error: "Access denied" });
+        if (partError || !participation) {
+            console.error("Participation check failed:", partError);
+            return res.status(403).json({ error: "Access denied" });
+        }
 
         const { data: messages, error } = await supabase
             .from("messages")
@@ -163,7 +166,7 @@ export async function getMessages(req: Request, res: Response) {
                     title,
                     content,
                     images,
-                    user:user_id (
+                    user:users (
                         id,
                         name,
                         username,
@@ -175,7 +178,7 @@ export async function getMessages(req: Request, res: Response) {
                     title,
                     description,
                     thumbnail_url,
-                    user:user_id (
+                    user:users (
                         id,
                         name,
                         username,
@@ -186,7 +189,26 @@ export async function getMessages(req: Request, res: Response) {
             .eq("conversation_id", id)
             .order("created_at", { ascending: true });
 
-        if (error) throw error;
+        if (error) {
+            console.error("Primary selection failed, falling back to basic:", error);
+            // Fallback for when new columns don't exist yet
+            const { data: basicMessages, error: basicError } = await supabase
+                .from("messages")
+                .select(`
+                    *,
+                    reply_to:reply_to_message_id (
+                        id,
+                        content,
+                        sender_id,
+                        image_url
+                    )
+                `)
+                .eq("conversation_id", id)
+                .order("created_at", { ascending: true });
+            
+            if (basicError) throw basicError;
+            return res.json(basicMessages);
+        }
 
         // Mark messages as read (those sent by partner)
         await supabase
