@@ -10,7 +10,7 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt } from "phosphor-react";
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -44,8 +44,45 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const [isPinned, setIsPinned] = useState(false);
 
   const isOwnPost = currentUser?.id === post.user_id;
+
+  // Fetch pinned state on mount
+  useEffect(() => {
+    if (!isOwnPost || !currentUser?.id) return;
+    const fetchPinnedState = async () => {
+      try {
+        const token = await getToken();
+        const res = await api.get(`/users/${currentUser.id}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.data?.pinned_post_id === post.id) {
+          setIsPinned(true);
+        }
+      } catch { /* ignore */ }
+    };
+    fetchPinnedState();
+  }, [isOwnPost, currentUser?.id, post.id, getToken]);
+
+  const handlePinPost = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMenuOpen(false);
+    try {
+      const token = await getToken();
+      if (!token) return;
+      const endpoint = isPinned ? "/users/pin/unpin" : `/users/pin/${post.id}`;
+      await api.post(endpoint, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setIsPinned(!isPinned);
+      toast.success(isPinned ? "Post unpinned" : "Post pinned to profile");
+      onUpdated?.();
+    } catch (error) {
+      console.error("Error toggling pin:", error);
+      toast.error("Failed to update pin");
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -264,6 +301,7 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
                     boxShadow: "none", zIndex: 10, padding: "4px", minWidth: "160px"
                   }}>
                     {[
+                      { icon: PushPin, label: isPinned ? "Unpin" : "Pin to Profile", onClick: handlePinPost, color: "var(--text-primary)" },
                       { icon: PencilSimple, label: "Edit", onClick: handleEdit, color: "var(--text-primary)" },
                       { icon: Trash, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
                     ].map((item, i) => (

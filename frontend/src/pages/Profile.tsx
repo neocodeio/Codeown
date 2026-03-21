@@ -59,6 +59,8 @@ interface UserProfile {
   total_likes: number;
   pinned_post_id: number | null;
   pinned_post: any | null;
+  pinned_project_id: number | null;
+  pinned_project: any | null;
   job_title: string | null;
   location: string | null;
   experience_level: string | null;
@@ -931,7 +933,11 @@ export default function Profile() {
                     <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No posts yet.</p>
                   </div>
                 ) : (
-                  posts.map((p) => (
+                  [...posts].sort((a, b) => {
+                    if (userProfile?.pinned_post_id === a.id) return -1;
+                    if (userProfile?.pinned_post_id === b.id) return 1;
+                    return 0;
+                  }).map((p) => (
                     <div key={p.id} style={{ position: "relative" }}>
                       {userProfile?.pinned_post_id === p.id && (
                         <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "10px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
@@ -974,7 +980,21 @@ export default function Profile() {
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    {projects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserProjects} />)}
+                    {[...projects].sort((a, b) => {
+                      if (userProfile?.pinned_project_id === a.id) return -1;
+                      if (userProfile?.pinned_project_id === b.id) return 1;
+                      return 0;
+                    }).map((p) => (
+                      <div key={p.id} style={{ position: "relative" }}>
+                        {userProfile?.pinned_project_id === p.id && (
+                          <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "10px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                            <PushPin size={12} weight="fill" />
+                            PINNED
+                          </div>
+                        )}
+                        <ProjectCard project={p} onUpdated={fetchUserProjects} />
+                      </div>
+                    ))}
                   </div>
                 )
                 }

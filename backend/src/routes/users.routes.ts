@@ -3,6 +3,7 @@ import {
     getUserProfile,
     updateUserProfile,
     pinPost,
+    pinProject,
     getUserTotalLikes,
     completeOnboarding,
     updateStreak,
@@ -22,6 +23,7 @@ router.get("/recommended", optionalAuth, getRecommendedUsers);
 router.get("/active/count", getActiveCount);
 router.post("/active/ping", optionalAuth, trackActiveSession);
 router.post("/pin/:postId", requireAuth, pinPost);
+router.post("/pin-project/:projectId", requireAuth, pinProject);
 router.post("/onboarding/complete", requireAuth, completeOnboarding);
 router.post("/streak/update", requireAuth, updateStreak);
 

@@ -8,7 +8,7 @@ import api from "../api/axios";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, Trash, DotsThree, PaperPlaneTilt } from "phosphor-react";
+import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, Trash, DotsThree, PaperPlaneTilt, PushPin } from "phosphor-react";
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -39,8 +39,45 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const [isPinned, setIsPinned] = useState(false);
 
   const isOwnProject = currentUser?.id === project.user_id;
+
+  // Fetch pinned state on mount
+  useEffect(() => {
+    if (!isOwnProject || !currentUser?.id) return;
+    const fetchPinnedState = async () => {
+      try {
+        const token = await getToken();
+        const res = await api.get(`/users/${currentUser.id}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.data?.pinned_project_id === project.id) {
+          setIsPinned(true);
+        }
+      } catch { /* ignore */ }
+    };
+    fetchPinnedState();
+  }, [isOwnProject, currentUser?.id, project.id, getToken]);
+
+  const handlePinProject = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMenuOpen(false);
+    try {
+      const token = await getToken();
+      if (!token) return;
+      const endpoint = isPinned ? "/users/pin-project/unpin" : `/users/pin-project/${project.id}`;
+      await api.post(endpoint, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setIsPinned(!isPinned);
+      toast.success(isPinned ? "Project unpinned" : "Project pinned to profile");
+      onUpdated?.();
+    } catch (error) {
+      console.error("Error toggling project pin:", error);
+      toast.error("Failed to update pin");
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -280,6 +317,7 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
                   boxShadow: "none", zIndex: 10, padding: "4px", minWidth: "160px"
                 }}>
                   {[
+                    { icon: PushPin, label: isPinned ? "Unpin" : "Pin to Profile", onClick: handlePinProject, color: "var(--text-primary)" },
                     { icon: PencilSimple, label: "Edit", onClick: handleEditClick, color: "var(--text-primary)" },
                     { icon: Trash, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
                   ].map((item, i) => (

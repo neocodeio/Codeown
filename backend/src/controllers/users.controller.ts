@@ -356,7 +356,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     // Check if user exists - select only safe columns
     const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, pinned_project_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
         .eq("id", userId)
         .single();
 
@@ -481,7 +481,7 @@ export async function getUserProfile(req: Request, res: Response) {
         // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, pinned_project_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
             .eq(field, userId)
             .single();
 
@@ -652,6 +652,28 @@ export async function getUserProfile(req: Request, res: Response) {
             }
         }
 
+        // Fetch pinned project if exists
+        let pinnedProject = null;
+        if (userData.pinned_project_id) {
+            const { data: project } = await supabase
+                .from("projects")
+                .select("id, title, description, cover_image, user_id, created_at, like_count, comment_count, view_count, status, technologies_used, looking_for_contributors")
+                .eq("id", userData.pinned_project_id)
+                .single();
+
+            if (project) {
+                pinnedProject = {
+                    ...project,
+                    user: {
+                        name: userData.name,
+                        email: userData.email,
+                        avatar_url: userData.avatar_url,
+                        username: userData.username,
+                    },
+                };
+            }
+        }
+
         // Build response data
         const responseData: any = {
             id: userData.id,
@@ -665,6 +687,8 @@ export async function getUserProfile(req: Request, res: Response) {
             total_likes: totalLikes,
             pinned_post_id: userData.pinned_post_id || null,
             pinned_post: pinnedPost,
+            pinned_project_id: userData.pinned_project_id || null,
+            pinned_project: pinnedProject,
             // Professional info
             location: userData.location || null,
             job_title: userData.job_title || null,
@@ -903,6 +927,74 @@ export async function pinPost(req: Request, res: Response) {
         return res.json({ success: true, message: "Post pinned", pinnedPostId: postIdNum });
     } catch (error: any) {
         console.error("Unexpected error in pinPost:", error);
+        return res.status(500).json({ error: "Internal server error", details: error?.message });
+    }
+}
+
+// Pin or unpin a project to user's profile
+export async function pinProject(req: Request, res: Response) {
+    try {
+        const user = req.user;
+        const userId = user?.sub || user?.id || user?.userId;
+        const { projectId } = req.params;
+
+        if (!userId) {
+            return res.status(401).json({ error: "User ID not found" });
+        }
+
+        // If projectId is "unpin", unpin the current project
+        if (projectId === "unpin") {
+            const { error: updateError } = await supabase
+                .from("users")
+                .update({ pinned_project_id: null })
+                .eq("id", userId);
+
+            if (updateError) {
+                console.error("Error unpinning project:", updateError);
+                return res.status(500).json({ error: "Failed to unpin project" });
+            }
+
+            return res.json({ success: true, message: "Project unpinned" });
+        }
+
+        if (!projectId) {
+            return res.status(400).json({ error: "Project ID is required" });
+        }
+
+        const projectIdNum = parseInt(projectId, 10);
+        if (isNaN(projectIdNum)) {
+            return res.status(400).json({ error: "Invalid project ID" });
+        }
+
+        // Verify the project exists and belongs to the user
+        const { data: project, error: projectError } = await supabase
+            .from("projects")
+            .select("id, user_id")
+            .eq("id", projectIdNum)
+            .single();
+
+        if (projectError || !project) {
+            return res.status(404).json({ error: "Project not found" });
+        }
+
+        if (project.user_id !== userId) {
+            return res.status(403).json({ error: "You can only pin your own projects" });
+        }
+
+        // Pin the project
+        const { error: updateError } = await supabase
+            .from("users")
+            .update({ pinned_project_id: projectIdNum })
+            .eq("id", userId);
+
+        if (updateError) {
+            console.error("Error pinning project:", updateError);
+            return res.status(500).json({ error: "Failed to pin project" });
+        }
+
+        return res.json({ success: true, message: "Project pinned", pinnedProjectId: projectIdNum });
+    } catch (error: any) {
+        console.error("Unexpected error in pinProject:", error);
         return res.status(500).json({ error: "Internal server error", details: error?.message });
     }
 }
