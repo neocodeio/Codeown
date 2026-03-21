@@ -945,7 +945,7 @@ export default function Profile() {
                           PINNED
                         </div>
                       )}
-                      <PostCard post={p} onUpdated={fetchUserPosts} />
+                      <PostCard post={p} onUpdated={fetchUserPosts} isPinned={userProfile?.pinned_post_id === p.id} />
                     </div>
                   ))
                 )}
@@ -992,7 +992,7 @@ export default function Profile() {
                             PINNED
                           </div>
                         )}
-                        <ProjectCard project={p} onUpdated={fetchUserProjects} />
+                        <ProjectCard project={p} onUpdated={fetchUserProjects} isPinned={userProfile?.pinned_project_id === p.id} />
                       </div>
                     ))}
                   </div>

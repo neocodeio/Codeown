@@ -23,9 +23,10 @@ import Lightbox from "./Lightbox";
 interface PostCardProps {
   post: Post;
   onUpdated?: () => void;
+  isPinned?: boolean;
 }
 
-export default function PostCard({ post, onUpdated }: PostCardProps) {
+export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: PostCardProps) {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -44,26 +45,27 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
-  const [isPinned, setIsPinned] = useState(false);
+  const [isPinnedLocal, setIsPinnedLocal] = useState(false);
+
+  // Use prop if provided, otherwise use local state
+  const isPinned = isPinnedProp !== undefined ? isPinnedProp : isPinnedLocal;
 
   const isOwnPost = currentUser?.id === post.user_id;
 
-  // Fetch pinned state on mount
+  // Fetch pinned state on mount only if prop is not provided
   useEffect(() => {
-    if (!isOwnPost || !currentUser?.id) return;
+    if (isPinnedProp !== undefined || !isOwnPost || !currentUser?.id) return;
     const fetchPinnedState = async () => {
       try {
         const token = await getToken();
         const res = await api.get(`/users/${currentUser.id}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        if (res.data?.pinned_post_id === post.id) {
-          setIsPinned(true);
-        }
+        setIsPinnedLocal(res.data?.pinned_post_id === post.id);
       } catch { /* ignore */ }
     };
     fetchPinnedState();
-  }, [isOwnPost, currentUser?.id, post.id, getToken]);
+  }, [isPinnedProp, isOwnPost, currentUser?.id, post.id, getToken]);
 
   const handlePinPost = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -75,8 +77,10 @@ export default function PostCard({ post, onUpdated }: PostCardProps) {
       await api.post(endpoint, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setIsPinned(!isPinned);
+      setIsPinnedLocal(!isPinned);
       toast.success(isPinned ? "Post unpinned" : "Post pinned to profile");
+      // Trigger profile refetch so PINNED label updates without page refresh
+      window.dispatchEvent(new Event("profileUpdated"));
       onUpdated?.();
     } catch (error) {
       console.error("Error toggling pin:", error);

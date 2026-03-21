@@ -22,9 +22,10 @@ import { toast } from "react-toastify";
 interface ProjectCardProps {
   project: Project;
   onUpdated?: () => void;
+  isPinned?: boolean;
 }
 
-export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
+export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp }: ProjectCardProps) {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -39,26 +40,27 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
-  const [isPinned, setIsPinned] = useState(false);
+  const [isPinnedLocal, setIsPinnedLocal] = useState(false);
+
+  // Use prop if provided, otherwise use local state
+  const isPinned = isPinnedProp !== undefined ? isPinnedProp : isPinnedLocal;
 
   const isOwnProject = currentUser?.id === project.user_id;
 
-  // Fetch pinned state on mount
+  // Fetch pinned state on mount only if prop is not provided
   useEffect(() => {
-    if (!isOwnProject || !currentUser?.id) return;
+    if (isPinnedProp !== undefined || !isOwnProject || !currentUser?.id) return;
     const fetchPinnedState = async () => {
       try {
         const token = await getToken();
         const res = await api.get(`/users/${currentUser.id}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        if (res.data?.pinned_project_id === project.id) {
-          setIsPinned(true);
-        }
+        setIsPinnedLocal(res.data?.pinned_project_id === project.id);
       } catch { /* ignore */ }
     };
     fetchPinnedState();
-  }, [isOwnProject, currentUser?.id, project.id, getToken]);
+  }, [isPinnedProp, isOwnProject, currentUser?.id, project.id, getToken]);
 
   const handlePinProject = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,8 +72,10 @@ export default function ProjectCard({ project, onUpdated }: ProjectCardProps) {
       await api.post(endpoint, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setIsPinned(!isPinned);
+      setIsPinnedLocal(!isPinned);
       toast.success(isPinned ? "Project unpinned" : "Project pinned to profile");
+      // Trigger profile refetch so PINNED label updates without page refresh
+      window.dispatchEvent(new Event("profileUpdated"));
       onUpdated?.();
     } catch (error) {
       console.error("Error toggling project pin:", error);
