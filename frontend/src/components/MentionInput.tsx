@@ -17,6 +17,7 @@ interface MentionInputProps {
   style?: React.CSSProperties;
   onFocus?: () => void;
   onBlur?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   transparent?: boolean;
 }
 
@@ -28,6 +29,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
   style = {},
   onFocus,
   onBlur,
+  onKeyDown,
   transparent = false,
 }: MentionInputProps, ref) {
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -152,6 +154,27 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
   }, [triggerStart, cursorPosition, value, onChange, trigger]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Explicitly handle Ctrl+Enter to add a new line as requested
+    if (e.ctrlKey && e.key === "Enter") {
+      e.preventDefault();
+      const start = e.currentTarget.selectionStart;
+      const end = e.currentTarget.selectionEnd;
+      const val = e.currentTarget.value;
+      const newVal = val.substring(0, start) + "\n" + val.substring(end);
+      onChange(newVal);
+      
+      // Manually set cursor position after the new line
+      setTimeout(() => {
+        if (textareaRef.current) {
+          const newPos = start + 1;
+          textareaRef.current.setSelectionRange(newPos, newPos);
+        }
+      }, 0);
+      return;
+    }
+
+    if (onKeyDown) onKeyDown(e);
+
     if (!showSuggestions || suggestions.length === 0) return;
 
     switch (e.key) {
@@ -180,7 +203,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
         }
         break;
     }
-  }, [showSuggestions, suggestions, selectedIndex, insertSuggestion]);
+  }, [showSuggestions, suggestions, selectedIndex, insertSuggestion, onKeyDown, onChange]);
 
   const getAvatarUrl = (name: string) => {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=000&color=fff&size=64&bold=true&font-size=0.5`;
