@@ -24,6 +24,8 @@ import {
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
+import SendToChatModal from "../components/SendToChatModal";
+import { PaperPlaneTilt } from "phosphor-react";
 
 interface Post {
   id: number;
@@ -66,6 +68,7 @@ export default function PostDetail() {
   const [votedOption, setVotedOption] = useState<number | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
+  const [isSendToChatModalOpen, setIsSendToChatModalOpen] = useState(false);
 
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id), post?.isLiked, post?.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id), post?.isSaved);
@@ -143,6 +146,14 @@ export default function PostDetail() {
   const handleShare = () => {
     if (!post) return;
     setIsShareModalOpen(true);
+  };
+
+  const handleSendToChat = () => {
+    if (!isSignedIn) {
+      navigate("/sign-in");
+      return;
+    }
+    setIsSendToChatModalOpen(true);
   };
 
   const handleVote = async (optionIndex: number) => {
@@ -452,6 +463,14 @@ export default function PostDetail() {
                 <ShareNetwork size={18} weight="thin" />
               </button>
 
+              {/* Send to Chat */}
+              <button
+                onClick={handleSendToChat}
+                style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}
+              >
+                <PaperPlaneTilt size={18} weight="thin" />
+              </button>
+
               {/* Save */}
               <button
                 onClick={toggleSave}
@@ -565,6 +584,14 @@ export default function PostDetail() {
         onClose={() => setIsLightboxOpen(false)} 
         imageSrc={lightboxImage} 
       />
+      {post && (
+        <SendToChatModal
+          isOpen={isSendToChatModalOpen}
+          onClose={() => setIsSendToChatModalOpen(false)}
+          postId={post.id}
+          initialMessage={`Check out this post: ${post.title || post.content.substring(0, 50)}...`}
+        />
+      )}
 
       <style>{`
         body { background-color: var(--bg-page) !important; }

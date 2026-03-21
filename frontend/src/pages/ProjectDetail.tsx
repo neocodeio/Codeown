@@ -18,6 +18,8 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import CoFounderRequestModal from "../components/CoFounderRequestModal";
 import { toast } from "react-toastify";
+import SendToChatModal from "../components/SendToChatModal";
+import { PaperPlaneTilt } from "phosphor-react";
 
 export default function ProjectDetail() {
   const { width } = useWindowSize();
@@ -41,6 +43,7 @@ export default function ProjectDetail() {
   const [isCofounderModalOpen, setIsCofounderModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "changelog">("details");
   const [copiedBadge, setCopiedBadge] = useState(false);
+  const [isSendToChatModalOpen, setIsSendToChatModalOpen] = useState(false);
 
   const viewLogged = useRef(false);
 
@@ -231,6 +234,14 @@ export default function ProjectDetail() {
   const handleShare = () => {
     if (!project) return;
     setIsShareModalOpen(true);
+  };
+
+  const handleSendToChat = () => {
+    if (!currentUser) {
+      navigate("/sign-in");
+      return;
+    }
+    setIsSendToChatModalOpen(true);
   };
 
   const handleProjectUpdated = () => {
@@ -973,6 +984,34 @@ export default function ProjectDetail() {
             <ShareNetwork size={20} weight="thin" />
             SHARE
           </button>
+
+          <button
+            onClick={handleSendToChat}
+            style={{
+              flex: 1,
+              padding: "16px",
+              border: "0.5px solid var(--border-hairline)",
+              borderRadius: "2px",
+              backgroundColor: "transparent",
+              color: "var(--text-primary)",
+              cursor: "pointer",
+              fontWeight: 800,
+              fontSize: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "10px",
+              transition: "all 0.15s ease",
+              fontFamily: "var(--font-mono)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em"
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+          >
+            <PaperPlaneTilt size={20} weight="thin" />
+            SEND
+          </button>
         </div>
 
         <div style={{ marginBottom: "64px" }}>
@@ -1085,6 +1124,14 @@ export default function ProjectDetail() {
         projectId={project.id}
         projectTitle={project.title}
       />
+      {project && (
+        <SendToChatModal
+          isOpen={isSendToChatModalOpen}
+          onClose={() => setIsSendToChatModalOpen(false)}
+          projectId={project.id}
+          initialMessage={`Check out this project: ${project.title}`}
+        />
+      )}
     </main>
   );
 }
