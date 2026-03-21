@@ -166,7 +166,7 @@ export async function getMessages(req: Request, res: Response) {
                     title,
                     content,
                     images,
-                    user:users (
+                    user:users!posts_user_id_fkey (
                         id,
                         name,
                         username,
@@ -178,7 +178,7 @@ export async function getMessages(req: Request, res: Response) {
                     title,
                     description,
                     thumbnail_url,
-                    user:users (
+                    user:user_id (
                         id,
                         name,
                         username,
@@ -280,7 +280,7 @@ export async function sendMessage(req: Request, res: Response) {
             .insert({
                 conversation_id: targetConvoId,
                 sender_id: userId,
-                content: content,
+                content: content || "",
                 reply_to_message_id: replyToMessageId,
                 image_url: imageUrl,
                 shared_post_id: sharedPostId,
@@ -300,7 +300,7 @@ export async function sendMessage(req: Request, res: Response) {
                     title,
                     content,
                     images,
-                    user:users (
+                    user:users!posts_user_id_fkey (
                         id,
                         name,
                         username,
@@ -312,7 +312,7 @@ export async function sendMessage(req: Request, res: Response) {
                     title,
                     description,
                     thumbnail_url,
-                    user:users (
+                    user:user_id (
                         id,
                         name,
                         username,
