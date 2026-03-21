@@ -323,14 +323,15 @@ export async function sendMessage(req: Request, res: Response) {
             .single();
 
         if (error) {
-            console.error("SendMessage failed with full columns, falling back:", error);
-            // Fallback to basic message if columns don't exist
+            console.error("SendMessage PRIMARY failed:", error);
+            // Fallback to basic message if columns don't exist OR if selection fails
+            const errorMsg = error.message || "Unknown error";
             const { data: basicMsg, error: basicErr } = await supabase
                 .from("messages")
                 .insert({
                     conversation_id: targetConvoId,
                     sender_id: userId,
-                    content: content || (sharedPostId || sharedProjectId ? "Shared content (please update DB to view)" : ""),
+                    content: content || (`Shared content [DEBUG: ${errorMsg}]`),
                     reply_to_message_id: replyToMessageId,
                     image_url: imageUrl
                 })
@@ -345,7 +346,10 @@ export async function sendMessage(req: Request, res: Response) {
                 `)
                 .single();
             
-            if (basicErr) throw basicErr;
+            if (basicErr) {
+                console.error("SendMessage FALLBACK also failed:", basicErr);
+                throw basicErr;
+            }
             message = basicMsg;
         }
 
