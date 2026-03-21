@@ -132,6 +132,44 @@ export async function createProjectComment(req: Request, res: Response) {
       await createProjectCommentNotification(project.user_id, "comment", userId, parseInt(id as string), comment.id);
     }
 
+    // Create notifications for mentioned users (@username)
+    try {
+      const mentionRegex = /@(\w+(?:\.\w+)*)/g;
+      const mentions = content.match(mentionRegex) || [];
+      const mentionedUsernames = mentions.map((m: string) => m.substring(1).toLowerCase());
+
+      if (mentionedUsernames.length > 0) {
+        const { data: mentionedUsers } = await supabase
+          .from("users")
+          .select("id")
+          .in("username", mentionedUsernames);
+
+        if (mentionedUsers && mentionedUsers.length > 0) {
+          const mentionNotifications = mentionedUsers
+            .filter((u: any) => u.id !== userId && u.id !== project.user_id)
+            .map((u: any) => ({
+              user_id: u.id,
+              type: "mention",
+              actor_id: userId,
+              project_id: parseInt(id as string),
+              comment_id: comment.id,
+              read: false,
+            }));
+
+          if (mentionNotifications.length > 0) {
+            const { error: mentionNotifError } = await supabase.from("notifications").insert(mentionNotifications);
+            if (mentionNotifError) {
+              console.error("Error creating project comment mention notifications:", mentionNotifError);
+            } else {
+              console.log(`Created ${mentionNotifications.length} mention notifications for project comment`);
+            }
+          }
+        }
+      }
+    } catch (mentionError) {
+      console.error("Error processing project comment mentions:", mentionError);
+    }
+
     // Refresh return
     const { data: user } = await supabase.from("users").select("id, name, avatar_url, username").eq("id", userId).single();
     const fullComment = { ...comment, user: user || { id: userId, name: "User" } };

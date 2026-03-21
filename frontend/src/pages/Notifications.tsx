@@ -98,7 +98,12 @@ export default function NotificationsPage() {
             case "follow":
                 return <>{nameWrapper} Started following you</>;
             case "mention":
-                return <>{nameWrapper} Mentioned you</>;
+                if (notification.comment_id && notification.project_id) {
+                    return <>{nameWrapper} Mentioned you in a project comment</>;
+                } else if (notification.comment_id) {
+                    return <>{nameWrapper} Mentioned you in a comment</>;
+                }
+                return <>{nameWrapper} Mentioned you in a post</>;
             case "reply":
                 return <>{nameWrapper} Replied to your comment</>;
             case "save":

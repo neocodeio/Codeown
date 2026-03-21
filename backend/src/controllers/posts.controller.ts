@@ -283,7 +283,8 @@ export async function getPostsByUser(req: Request, res: Response) {
           avatar_url: clerkUser.imageUrl || null,
           username: clerkUser.username || null,
           is_hirable: false,
-          is_pro: false
+          is_pro: false,
+          is_og: false
         };
 
         // Sync user to Supabase for future requests
@@ -518,6 +519,43 @@ export async function createPost(req: Request, res: Response) {
     }).then(({ error }) => {
       if (error) console.error("Error logging post creation analytics:", error);
     });
+
+    // Create notifications for mentioned users (@username)
+    try {
+      const mentionRegex = /@(\w+(?:\.\w+)*)/g;
+      const mentions = content.match(mentionRegex) || [];
+      const mentionedUsernames = mentions.map((m: string) => m.substring(1).toLowerCase());
+
+      if (mentionedUsernames.length > 0) {
+        const { data: mentionedUsers } = await supabase
+          .from("users")
+          .select("id")
+          .in("username", mentionedUsernames);
+
+        if (mentionedUsers && mentionedUsers.length > 0) {
+          const mentionNotifications = mentionedUsers
+            .filter((u: any) => u.id !== userId)
+            .map((u: any) => ({
+              user_id: u.id,
+              type: "mention",
+              actor_id: userId,
+              post_id: createdPost.id,
+              read: false,
+            }));
+
+          if (mentionNotifications.length > 0) {
+            const { error: mentionNotifError } = await supabase.from("notifications").insert(mentionNotifications);
+            if (mentionNotifError) {
+              console.error("Error creating post mention notifications:", mentionNotifError);
+            } else {
+              console.log(`Created ${mentionNotifications.length} mention notifications for post ${createdPost.id}`);
+            }
+          }
+        }
+      }
+    } catch (mentionError) {
+      console.error("Error processing post mentions:", mentionError);
+    }
     
     return res.status(201).json({ success: true, data: createdPost });
   } catch (error: any) {
