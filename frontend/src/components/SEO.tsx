@@ -23,7 +23,7 @@ export const SEO = ({
     type = 'website',
     author,
     publishedTime,
-    keywords = ["coding", "programming", "developer", "portfolio", "showcase", "collaboration"],
+    keywords = ["coding", "programming", "developer", "portfolio", "showcase", "collaboration", "open source", "software engineering", "networking", "projects", "tech community", "builders"],
     username,
     firstName,
     lastName,
