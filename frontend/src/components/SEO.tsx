@@ -18,7 +18,7 @@ interface SEOProps {
 export const SEO = ({
     title,
     description,
-    image = '/favicon.png?v=2',
+    image = '/meta-tag.png?v=4',
     url = window.location.href,
     type = 'website',
     author,
