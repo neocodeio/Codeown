@@ -1,10 +1,11 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import BackToTop from "../components/BackToTop";
+import { CaretDown } from "phosphor-react";
 
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
@@ -19,6 +20,24 @@ export default function Feed() {
     const isMobile = width < 768;
     const isDesktop = width >= 1100;
     const [searchParams, setSearchParams] = useSearchParams();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        if (isDropdownOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isDropdownOpen]);
+
 
     // Sync state with URL params
     const feedType = (searchParams.get("type") as "posts" | "projects") || "posts";
@@ -125,93 +144,122 @@ export default function Feed() {
                         <div style={{
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "space-between",
                             height: "64px",
-                            padding: "0 24px",
-                            gap: "8px"
+                            width: "100%",
+                            borderBottom: "1px solid var(--border-hairline)",
+                            position: "relative"
                         }}>
-                            {/* Tabs Column */}
-                            <div style={{
-                                display: "flex",
-                                gap: isMobile ? "16px" : "28px",
-                                height: "100%",
-                                overflowX: "auto",
-                                scrollbarWidth: "none"
-                            }} className="no-scrollbar">
-                                {[
-                                    { id: "all", label: "Discover" },
-                                    { id: "following", label: "Following" }
-                                ].map((tab) => (
-                                    <h1 key={tab.id} style={{ margin: 0, padding: 0, height: "100%", display: "flex", alignItems: "center" }}>
+                            {/* "For You" Tab with Dropdown */}
+                            <div style={{ flex: 1, height: "100%", display: "flex", justifyContent: "center" }} ref={dropdownRef}>
+                                <button
+                                    onClick={() => {
+                                        if (feedFilter === "all") {
+                                            setIsDropdownOpen(!isDropdownOpen);
+                                        } else {
+                                            handleFilterChange("all");
+                                        }
+                                    }}
+                                    aria-label="Switch to Discover feed"
+                                    style={{
+                                        background: "none", border: "none", padding: "0 16px",
+                                        height: "100%", position: "relative", cursor: "pointer",
+                                        display: "flex", alignItems: "center", gap: "6px",
+                                        fontSize: "12px",
+                                        fontWeight: feedFilter === "all" ? "600" : "500",
+                                        color: feedFilter === "all" ? "var(--text-primary)" : "var(--text-tertiary)",
+                                        transition: "all 0.15s ease",
+                                        whiteSpace: "nowrap",
+                                        fontFamily: "var(--font-mono)",
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.1em"
+                                    }}
+                                >
+                                    For You
+                                    {feedFilter === "all" && (
+                                        <CaretDown size={14} weight="bold" style={{ 
+                                            transition: "transform 0.2s ease", 
+                                            transform: isDropdownOpen ? "rotate(-180deg)" : "none",
+                                            marginTop: "-1px"
+                                        }} />
+                                    )}
+                                    {feedFilter === "all" && (
+                                        <div style={{
+                                            position: "absolute", bottom: "-1px", left: 0, right: 0,
+                                            height: "1px", backgroundColor: "var(--text-primary)",
+                                        }} />
+                                    )}
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {isDropdownOpen && (
+                                    <div style={{
+                                        position: "absolute", top: "100%", left: "25%", transform: "translateX(-50%)",
+                                        marginTop: "4px", backgroundColor: "var(--bg-page)",
+                                        border: "0.5px solid var(--border-hairline)", borderRadius: "2px",
+                                        boxShadow: "0 4px 20px rgba(0,0,0,0.5)", zIndex: 100,
+                                        width: "180px", padding: "8px", display: "flex", flexDirection: "column", gap: "4px"
+                                    }}>
                                         <button
-                                            onClick={() => handleFilterChange(tab.id as any)}
-                                            aria-label={`Switch to ${tab.label} feed`}
+                                            onClick={(e) => { e.stopPropagation(); updateParams({ type: "posts" }); setIsDropdownOpen(false); }}
                                             style={{
-                                                background: "none", border: "none", padding: "0",
-                                                height: "100%", position: "relative", cursor: "pointer",
-                                                fontSize: "12px",
-                                                fontWeight: feedFilter === tab.id ? "600" : "500",
-                                                color: feedFilter === tab.id ? "var(--text-primary)" : "var(--text-tertiary)",
-                                                transition: "all 0.15s ease",
-                                                whiteSpace: "nowrap",
-                                                fontFamily: "var(--font-mono)",
-                                                textTransform: "uppercase",
-                                                letterSpacing: "0.1em"
+                                                textAlign: "left", padding: "12px 16px", borderRadius: "1px",
+                                                background: "none", border: "none", cursor: "pointer",
+                                                color: feedType === "posts" ? "var(--text-primary)" : "var(--text-secondary)", 
+                                                fontSize: "12px", fontWeight: feedType === "posts" ? "800" : "600",
+                                                fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em",
+                                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                                transition: "all 0.15s ease"
                                             }}
+                                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                                         >
-                                            {tab.label}
-                                            {feedFilter === tab.id && (
-                                                <div style={{
-                                                    position: "absolute", bottom: "-0.5px", left: 0, right: 0,
-                                                    height: "1px", backgroundColor: "var(--text-primary)",
-                                                }} />
-                                            )}
+                                            All
                                         </button>
-                                    </h1>
-                                ))}
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); updateParams({ type: "projects" }); setIsDropdownOpen(false); }}
+                                            style={{
+                                                textAlign: "left", padding: "12px 16px", borderRadius: "1px",
+                                                background: "none", border: "none", cursor: "pointer",
+                                                color: feedType === "projects" ? "var(--text-primary)" : "var(--text-secondary)", 
+                                                fontSize: "12px", fontWeight: feedType === "projects" ? "800" : "600",
+                                                fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em",
+                                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                                transition: "all 0.15s ease"
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                        >
+                                            Projects
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
-                            {/* Feed Type Switcher */}
-                            <div style={{ display: "flex", gap: "2px", flexShrink: 0, backgroundColor: "var(--bg-input)", padding: "3px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}>
+                            {/* "Following" Tab */}
+                            <div style={{ flex: 1, height: "100%", display: "flex", justifyContent: "center" }}>
                                 <button
-                                    onClick={() => updateParams({ type: "posts" })}
-                                    aria-label="View Posts Feed"
+                                    onClick={() => handleFilterChange("following")}
+                                    aria-label="Switch to Following feed"
                                     style={{
-                                        background: feedType === "posts" ? "var(--text-primary)" : "none",
-                                        border: "none",
-                                        padding: "8px 16px",
-                                        borderRadius: "1px",
-                                        fontSize: "11px",
-                                        fontWeight: "800",
-                                        fontFamily: "var(--font-mono)",
-                                        color: feedType === "posts" ? "var(--bg-page)" : "var(--text-tertiary)",
-                                        cursor: "pointer",
+                                        background: "none", border: "none", padding: "0 16px",
+                                        height: "100%", position: "relative", cursor: "pointer",
+                                        fontSize: "12px",
+                                        fontWeight: feedFilter === "following" ? "600" : "500",
+                                        color: feedFilter === "following" ? "var(--text-primary)" : "var(--text-tertiary)",
                                         transition: "all 0.15s ease",
+                                        whiteSpace: "nowrap",
+                                        fontFamily: "var(--font-mono)",
                                         textTransform: "uppercase",
-                                        letterSpacing: "0.05em"
+                                        letterSpacing: "0.1em"
                                     }}
                                 >
-                                    Posts
-                                </button>
-                                <button
-                                    onClick={() => updateParams({ type: "projects" })}
-                                    aria-label="View Projects Feed"
-                                    style={{
-                                        background: feedType === "projects" ? "var(--text-primary)" : "none",
-                                        border: "none",
-                                        padding: "8px 16px",
-                                        borderRadius: "1px",
-                                        fontSize: "11px",
-                                        fontWeight: "800",
-                                        fontFamily: "var(--font-mono)",
-                                        color: feedType === "projects" ? "var(--bg-page)" : "var(--text-tertiary)",
-                                        cursor: "pointer",
-                                        transition: "all 0.15s ease",
-                                        textTransform: "uppercase",
-                                        letterSpacing: "0.05em"
-                                    }}
-                                >
-                                    Projects
+                                    Following
+                                    {feedFilter === "following" && (
+                                        <div style={{
+                                            position: "absolute", bottom: "-1px", left: 0, right: 0,
+                                            height: "1px", backgroundColor: "var(--text-primary)",
+                                        }} />
+                                    )}
                                 </button>
                             </div>
                         </div>
