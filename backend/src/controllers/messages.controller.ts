@@ -275,7 +275,7 @@ export async function sendMessage(req: Request, res: Response) {
             return res.status(400).json({ error: "Recipient or Conversation ID required" });
         }
 
-        const { data: message, error } = await supabase
+        let { data: message, error } = await supabase
             .from("messages")
             .insert({
                 conversation_id: targetConvoId,
@@ -300,7 +300,7 @@ export async function sendMessage(req: Request, res: Response) {
                     title,
                     content,
                     images,
-                    user:user_id (
+                    user:users (
                         id,
                         name,
                         username,
@@ -312,7 +312,7 @@ export async function sendMessage(req: Request, res: Response) {
                     title,
                     description,
                     thumbnail_url,
-                    user:user_id (
+                    user:users (
                         id,
                         name,
                         username,
@@ -322,7 +322,32 @@ export async function sendMessage(req: Request, res: Response) {
             `)
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.error("SendMessage failed with full columns, falling back:", error);
+            // Fallback to basic message if columns don't exist
+            const { data: basicMsg, error: basicErr } = await supabase
+                .from("messages")
+                .insert({
+                    conversation_id: targetConvoId,
+                    sender_id: userId,
+                    content: content || (sharedPostId || sharedProjectId ? "Shared content (please update DB to view)" : ""),
+                    reply_to_message_id: replyToMessageId,
+                    image_url: imageUrl
+                })
+                .select(`
+                    *,
+                    reply_to:reply_to_message_id (
+                        id,
+                        content,
+                        sender_id,
+                        image_url
+                    )
+                `)
+                .single();
+            
+            if (basicErr) throw basicErr;
+            message = basicMsg;
+        }
 
         // Create notification for recipient
         try {
