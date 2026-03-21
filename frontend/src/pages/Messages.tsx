@@ -12,7 +12,9 @@ import {
   MagnifyingGlass,
   Image as ImageIcon,
   X,
-  ArrowClockwise
+  ArrowClockwise,
+  Trash,
+  DotsThree
 } from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -113,6 +115,8 @@ export default function Messages() {
   }, [initialMessage]);
 
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
+  const [messageMenuId, setMessageMenuId] = useState<number | null>(null);
+  const [deletingMessageId, setDeletingMessageId] = useState<number | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleScroll = () => {
@@ -162,23 +166,35 @@ export default function Messages() {
       setMessages((prev) => prev.map(m => (m.conversation_id === conversationId && !m.is_read && m.sender_id !== readerId) ? { ...m, is_read: true } : m));
     };
 
+    const handleMessageDeleted = ({ messageId, conversationId: _conversationId }: { messageId: number, conversationId: number }) => {
+      setMessages((prev) => prev.filter(m => m.id !== Number(messageId)));
+    };
+
     socket.on("typing", handleTyping);
     socket.on("stop_typing", handleStopTyping);
     socket.on("messages_read", handleMessagesRead);
+    socket.on("message_deleted", handleMessageDeleted);
 
     return () => {
       socket.off("typing", handleTyping);
       socket.off("stop_typing", handleStopTyping);
       socket.off("messages_read", handleMessagesRead);
+      socket.off("message_deleted", handleMessageDeleted);
     };
   }, [currentUser?.id]);
 
   useEffect(() => {
-    if (reactingTo !== null) {
+    if (reactingTo !== null || messageMenuId !== null) {
       const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
         const picker = document.querySelector(".emoji-picker-overlay");
-        if (picker && !picker.contains(e.target as Node)) {
+        const menu = document.querySelector(".message-action-menu");
+        if ((picker && !picker.contains(e.target as Node)) && (menu && !menu.contains(e.target as Node))) {
           setReactingTo(null);
+          setMessageMenuId(null);
+        } else if (picker && !picker.contains(e.target as Node)) {
+          setReactingTo(null);
+        } else if (menu && !menu.contains(e.target as Node)) {
+          setMessageMenuId(null);
         }
       };
       
@@ -189,7 +205,7 @@ export default function Messages() {
         document.removeEventListener("touchstart", handleOutsideClick);
       };
     }
-  }, [reactingTo]);
+  }, [reactingTo, messageMenuId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -405,10 +421,27 @@ export default function Messages() {
         }
         return m;
       }));
-    } catch (error) {
-      console.error("Error toggling reaction:", error);
     } finally {
       setReactingTo(null);
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: number) => {
+    try {
+      const token = await getToken();
+      await api.delete(`/messages/message/${messageId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Optimistic update
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      // Use console only — no alert
+    } finally {
+      setReactingTo(null);
+      setMessageMenuId(null);
+      setDeletingMessageId(null);
     }
   };
 
@@ -968,6 +1001,145 @@ export default function Messages() {
                         </div>
                       )}
 
+                      {/* Three-dots menu trigger - appears on hover */}
+                      {isMine && (
+                        <div
+                          className="msg-dots-trigger"
+                          style={{
+                            position: "relative",
+                            alignSelf: "flex-end",
+                            marginBottom: "-2px"
+                          }}
+                        >
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }}
+                            style={{
+                              background: "none",
+                              border: "none",
+                              padding: "2px",
+                              cursor: "pointer",
+                              color: "var(--text-tertiary)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderRadius: "4px",
+                              transition: "all 0.15s ease"
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-tertiary)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+                          >
+                            <DotsThree size={18} weight="bold" />
+                          </button>
+
+                          {/* Small dropdown menu */}
+                          {messageMenuId === msg.id && (
+                            <div
+                              className="message-action-menu"
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                right: 0,
+                                marginTop: "4px",
+                                backgroundColor: "var(--bg-page)",
+                                border: "0.5px solid var(--border-hairline)",
+                                borderRadius: "6px",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                                zIndex: 1000,
+                                minWidth: "160px",
+                                overflow: "hidden",
+                                animation: "reactionFadeUp 0.15s ease-out"
+                              }}
+                            >
+                              {deletingMessageId === msg.id ? (
+                                <div style={{ padding: "12px 14px" }}>
+                                  <div style={{
+                                    fontSize: "11px",
+                                    fontWeight: 700,
+                                    fontFamily: "var(--font-mono)",
+                                    color: "var(--text-primary)",
+                                    marginBottom: "10px",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.03em"
+                                  }}>
+                                    Delete for everyone?
+                                  </div>
+                                  <div style={{ display: "flex", gap: "8px" }}>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); setDeletingMessageId(null); }}
+                                      style={{
+                                        flex: 1,
+                                        padding: "7px 12px",
+                                        border: "0.5px solid var(--border-hairline)",
+                                        borderRadius: "4px",
+                                        background: "transparent",
+                                        color: "var(--text-primary)",
+                                        fontSize: "11px",
+                                        fontWeight: 700,
+                                        fontFamily: "var(--font-mono)",
+                                        cursor: "pointer",
+                                        textTransform: "uppercase",
+                                        transition: "background 0.15s"
+                                      }}
+                                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleDeleteMessage(msg.id); }}
+                                      style={{
+                                        flex: 1,
+                                        padding: "7px 12px",
+                                        border: "none",
+                                        borderRadius: "4px",
+                                        backgroundColor: "#ef4444",
+                                        color: "#fff",
+                                        fontSize: "11px",
+                                        fontWeight: 700,
+                                        fontFamily: "var(--font-mono)",
+                                        cursor: "pointer",
+                                        textTransform: "uppercase",
+                                        transition: "opacity 0.15s"
+                                      }}
+                                      onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
+                                      onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setDeletingMessageId(msg.id); }}
+                                  style={{
+                                    width: "100%",
+                                    padding: "10px 14px",
+                                    background: "none",
+                                    border: "none",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    cursor: "pointer",
+                                    fontSize: "12px",
+                                    fontWeight: 700,
+                                    fontFamily: "var(--font-mono)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.03em",
+                                    color: "#ef4444",
+                                    transition: "background 0.15s ease"
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                >
+                                  <Trash size={15} weight="bold" />
+                                  Delete Message
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       <div
                         id={`msg-${msg.id}`}
                         onMouseDown={() => {
@@ -1159,6 +1331,8 @@ export default function Messages() {
                         >
                           Reply
                         </button>
+
+
 
                         {isMine && msg.is_read && (() => {
                           let lastMyMsgIdx = -1;
@@ -1645,15 +1819,18 @@ export default function Messages() {
           from { transform: translateY(10px) scale(0.8); opacity: 0; }
           to { transform: translateY(0) scale(1); opacity: 1; }
         }
-        .message-container .reply-button {
+        .message-container .reply-button,
+        .message-container .msg-dots-trigger {
           opacity: 0;
           transition: opacity 0.2s ease;
         }
-        .message-container:hover .reply-button {
+        .message-container:hover .reply-button,
+        .message-container:hover .msg-dots-trigger {
           opacity: 1;
         }
         @media (max-width: 768px) {
-          .message-container .reply-button {
+          .message-container .reply-button,
+          .message-container .msg-dots-trigger {
             opacity: 1;
           }
         }

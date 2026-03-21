@@ -501,3 +501,68 @@ export async function toggleReaction(req: Request, res: Response) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
+export async function deleteMessage(req: Request, res: Response) {
+    try {
+        const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+        const { messageId } = req.params;
+
+        // 1. Get message to check ownership/participation
+        const { data: message, error: fetchErr } = await supabase
+            .from("messages")
+            .select("conversation_id, sender_id")
+            .eq("id", messageId)
+            .single();
+
+        if (fetchErr || !message) return res.status(404).json({ error: "Message not found" });
+
+        // 2. Verify participation (only participants can delete messages in the convo)
+        const { data: participation } = await supabase
+            .from("conversation_participants")
+            .select("*")
+            .eq("conversation_id", message.conversation_id)
+            .eq("user_id", userId)
+            .single();
+
+        if (!participation) return res.status(403).json({ error: "Access denied" });
+
+        // 3. Delete
+        const { error: deleteErr } = await supabase
+            .from("messages")
+            .delete()
+            .eq("id", messageId);
+
+        if (deleteErr) throw deleteErr;
+
+        // 4. Emit socket event for real-time deletion
+        try {
+            const { getIO, isUserOnline } = await import("../lib/socket.js");
+            const io = getIO();
+            
+            // Find other participant to notify
+            const { data: otherParticipant } = await supabase
+                .from("conversation_participants")
+                .select("user_id")
+                .eq("conversation_id", message.conversation_id)
+                .neq("user_id", userId)
+                .single();
+
+            if (otherParticipant) {
+                io.to(otherParticipant.user_id).emit("message_deleted", { 
+                    messageId, 
+                    conversationId: message.conversation_id 
+                });
+            }
+        } catch (socketErr) {
+            console.error("Error emitting message_deleted:", socketErr);
+        }
+
+        return res.json({ success: true });
+
+    } catch (error: any) {
+        console.error("Error deleting message:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
