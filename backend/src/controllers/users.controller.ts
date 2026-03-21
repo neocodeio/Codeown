@@ -356,7 +356,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     // Check if user exists - select only safe columns
     const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, pinned_project_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
         .eq("id", userId)
         .single();
 
@@ -481,7 +481,7 @@ export async function getUserProfile(req: Request, res: Response) {
         // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, pinned_project_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
             .eq(field, userId)
             .single();
 
@@ -652,13 +652,26 @@ export async function getUserProfile(req: Request, res: Response) {
             }
         }
 
-        // Fetch pinned project if exists
+        // Fetch pinned project if exists (column may not exist yet)
         let pinnedProject = null;
-        if (userData.pinned_project_id) {
+        let pinnedProjectId: number | null = null;
+        try {
+            const { data: pinnedData, error: pinnedError } = await supabase
+                .from("users")
+                .select("pinned_project_id")
+                .eq("id", targetUserId)
+                .single();
+            if (!pinnedError && pinnedData) {
+                pinnedProjectId = pinnedData.pinned_project_id || null;
+            }
+        } catch {
+            // Column doesn't exist yet, ignore
+        }
+        if (pinnedProjectId) {
             const { data: project } = await supabase
                 .from("projects")
                 .select("id, title, description, cover_image, user_id, created_at, like_count, comment_count, view_count, status, technologies_used, looking_for_contributors")
-                .eq("id", userData.pinned_project_id)
+                .eq("id", pinnedProjectId)
                 .single();
 
             if (project) {
@@ -687,7 +700,7 @@ export async function getUserProfile(req: Request, res: Response) {
             total_likes: totalLikes,
             pinned_post_id: userData.pinned_post_id || null,
             pinned_post: pinnedPost,
-            pinned_project_id: userData.pinned_project_id || null,
+            pinned_project_id: pinnedProjectId,
             pinned_project: pinnedProject,
             // Professional info
             location: userData.location || null,
