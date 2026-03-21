@@ -23,9 +23,10 @@ interface SendToChatModalProps {
   onClose: () => void;
   postId?: number;
   projectId?: number;
+  initialMessage?: string;
 }
 
-export default function SendToChatModal({ isOpen, onClose, postId, projectId }: SendToChatModalProps) {
+export default function SendToChatModal({ isOpen, onClose, postId, projectId, initialMessage }: SendToChatModalProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,7 +64,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId }: 
           conversationId: convoId,
           sharedPostId: postId,
           sharedProjectId: projectId,
-          content: "" // No text content for now, just the share
+          content: initialMessage || ""
         },
         {
           headers: { Authorization: `Bearer ${token}` },
