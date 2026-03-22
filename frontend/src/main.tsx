@@ -11,7 +11,13 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
+import * as Sentry from "@sentry/react";
 
+Sentry.init({
+  dsn: "https://err_eb74f2b31931879fd2d80af35c4d347b5fc1d43c388b2e8490@ingest.errgent.com/15",
+  // Adds request headers and IP for users, for more info visit:
+  sendDefaultPii: true,
+});
 // Unregister any existing service workers to prevent errors
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(function(registrations) {
