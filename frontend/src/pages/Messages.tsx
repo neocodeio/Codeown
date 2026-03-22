@@ -869,7 +869,7 @@ export default function Messages() {
                             <span style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "11px", fontFamily: "var(--font-mono)" }}>YOU:</span>
                           )}
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {convo.last_message.content || (convo.last_message.shared_post || convo.last_message.shared_post_id ? "Shared a post" : convo.last_message.shared_project || convo.last_message.shared_project_id ? "Shared a project" : "Media")}
+                            {convo.last_message.content || (convo.last_message.shared_post || convo.last_message.shared_post_id ? "Shared a post" : convo.last_message.shared_project || convo.last_message.shared_project_id ? "Shared a project" : convo.last_message.audio_url ? "🎤 Voice Message" : "📷 Image")}
                           </span>
                         </>
                       ) : (
