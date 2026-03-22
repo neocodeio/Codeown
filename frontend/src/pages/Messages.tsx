@@ -872,7 +872,12 @@ export default function Messages() {
                             <span style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "11px", fontFamily: "var(--font-mono)" }}>YOU:</span>
                           )}
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {convo.last_message.content || (convo.last_message.shared_post || convo.last_message.shared_post_id ? "Shared a post" : convo.last_message.shared_project || convo.last_message.shared_project_id ? "Shared a project" : convo.last_message.audio_url ? "🎤 Voice Message" : "📷 Image")}
+                            {convo.last_message.content || (
+                              convo.last_message.shared_post || convo.last_message.shared_post_id ? "Shared a post" : 
+                              convo.last_message.shared_project || convo.last_message.shared_project_id ? "Shared a project" : 
+                              convo.last_message.audio_url ? "🎤 Voice Message" : 
+                              (convo.last_message.image_url?.includes("giphy.com") || convo.last_message.image_url?.includes("tenor.com") || convo.last_message.image_url?.toLowerCase().endsWith(".gif")) ? "🎬 GIF" : "📷 Image"
+                            )}
                           </span>
                         </>
                       ) : (
@@ -1089,7 +1094,10 @@ export default function Messages() {
                             {msg.reply_to.sender_id === currentUser?.id ? "YOU" : activeConvo.partner.name}
                           </div>
                           <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {msg.reply_to.content || (msg.reply_to.image_url ? "📷 Image" : "")}
+                            {msg.reply_to.content || (
+                              (msg.reply_to.image_url?.includes("giphy.com") || msg.reply_to.image_url?.includes("tenor.com") || msg.reply_to.image_url?.toLowerCase().endsWith(".gif")) ? "🎬 GIF" : 
+                              msg.reply_to.image_url ? "📷 Image" : ""
+                            )}
                           </div>
                         </div>
                       )}
