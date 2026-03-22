@@ -14,7 +14,9 @@ import {
   X,
   ArrowClockwise,
   Trash,
-  DotsThree
+  DotsThree,
+  Microphone,
+  StopCircle
 } from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -37,11 +39,13 @@ interface Message {
   created_at: string;
   is_read?: boolean;
   image_url?: string;
+  audio_url?: string;
   reply_to?: {
     id: number;
     content: string;
     sender_id: string;
     image_url?: string;
+    audio_url?: string;
   };
   reactions?: { [emoji: string]: string[] };
   shared_post_id?: number;
@@ -107,6 +111,17 @@ export default function Messages() {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [reactingTo, setReactingTo] = useState<number | null>(null);
   const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Audio Recording states
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
+  const [isUploadingAudio, setIsUploadingAudio] = useState(false);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<BlobPart[]>([]);
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (initialMessage) {
@@ -327,9 +342,66 @@ export default function Messages() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        setAudioBlob(blob);
+        setAudioPreviewUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingTime((prev) => {
+          if (prev >= 9) { // 10 seconds max
+            stopRecording();
+            return 10;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    } catch (err) {
+      console.error("Error accessing microphone", err);
+      alert("Could not access microphone.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+    }
+  };
+
+  const clearAudio = () => {
+    setAudioBlob(null);
+    if (audioPreviewUrl) URL.revokeObjectURL(audioPreviewUrl);
+    setAudioPreviewUrl(null);
+    setRecordingTime(0);
+    setIsRecording(false);
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if ((!newMessage.trim() && !selectedImage) || sending) return;
+    if ((!newMessage.trim() && !selectedImage && !audioBlob) || sending) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     if (activeConvo && activeConvo.partner.id && currentUser?.id) {
@@ -355,6 +427,21 @@ export default function Messages() {
         setUploadingImage(false);
       }
 
+      let audioUrl = undefined;
+      if (audioBlob) {
+        setIsUploadingAudio(true);
+        const formData = new FormData();
+        formData.append("audio", audioBlob, "voice_message.webm");
+        const uploadRes = await api.post("/upload/audio", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        audioUrl = uploadRes.data.url;
+        setIsUploadingAudio(false);
+      }
+
       const res = await api.post(
         "/messages",
         {
@@ -363,6 +450,7 @@ export default function Messages() {
           content: newMessage.trim(),
           replyToMessageId: replyingTo?.id,
           imageUrl: imageUrl,
+          audioUrl: audioUrl,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -372,6 +460,7 @@ export default function Messages() {
       setNewMessage("");
       setReplyingTo(null);
       clearImage();
+      clearAudio();
 
       if (activeConvo?.id === 0) {
         await fetchConversations();
@@ -384,6 +473,7 @@ export default function Messages() {
     } finally {
       setSending(false);
       setUploadingImage(false);
+      setIsUploadingAudio(false);
     }
   };
 
@@ -1192,6 +1282,21 @@ export default function Messages() {
                             onClick={() => setPreviewImage(msg.image_url!)}
                           />
                         )}
+                        {msg.audio_url && (
+                          <div style={{ marginTop: msg.image_url ? "8px" : 0, marginBottom: msg.content ? "8px" : 0 }}>
+                            <audio 
+                              src={msg.audio_url} 
+                              controls 
+                              style={{ 
+                                height: "36px", 
+                                maxWidth: "220px",
+                                outline: "none",
+                                // make the audio player match the theme slightly better
+                                filter: isMine ? "invert(1) hue-rotate(180deg)" : "invert(0)"
+                              }} 
+                            />
+                          </div>
+                        )}
                         {msg.content && (
                           <div>
                             {(() => {
@@ -1482,7 +1587,7 @@ export default function Messages() {
                         Replying to {replyingTo.sender_id === currentUser?.id ? "yourself" : activeConvo.partner.name}
                       </div>
                       <div style={{ fontSize: "12px", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {replyingTo.content || (replyingTo.image_url ? "📷 Image" : "")}
+                        {replyingTo.content || (replyingTo.audio_url ? "🎤 Voice Message" : (replyingTo.image_url ? "📷 Image" : ""))}
                       </div>
                     </div>
                     <button
@@ -1559,6 +1664,54 @@ export default function Messages() {
                   </div>
                 )}
 
+                {/* Audio Preview */}
+                {audioPreviewUrl && !isRecording && (
+                  <div
+                    style={{
+                      padding: "12px 16px",
+                      backgroundColor: "var(--bg-hover)",
+                      borderBottom: "0.5px solid var(--border-hairline)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      animation: "slide-down 0.2s ease-out"
+                    }}
+                  >
+                    <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "12px" }}>
+                      <audio src={audioPreviewUrl} controls style={{ height: "30px", flex: 1 }} />
+                    </div>
+                    <button
+                      onClick={clearAudio}
+                      type="button"
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        backgroundColor: "var(--bg-input)",
+                        color: "var(--text-primary)",
+                        border: "0.5px solid var(--border-hairline)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        flexShrink: 0,
+                        padding: 0,
+                        margin: 0
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                        e.currentTarget.style.color = "var(--text-error, #ff4444)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--bg-input)";
+                        e.currentTarget.style.color = "var(--text-primary)";
+                      }}
+                    >
+                      <X size={16} weight="bold" color="currentColor" />
+                    </button>
+                  </div>
+                )}
+
                 <form
                   onSubmit={handleSendMessage}
                   style={{ display: "flex", gap: "12px", alignItems: "center", padding: "12px 0 0" }}
@@ -1591,52 +1744,108 @@ export default function Messages() {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
-                    <ImageIcon size={20} weight="thin" />
+                    <ImageIcon size={30} weight="regular" />
                   </button>
 
-                  <div style={{ flex: 1, position: "relative" }}>
-                    <input
-                      type="text"
-                      value={newMessage}
-                      onChange={handleInputChange}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage(e as unknown as React.FormEvent);
-                        }
-                      }}
-                      placeholder="Type a message..."
+                  {/* Mic Button */}
+                  {!audioPreviewUrl && (
+                    <button
+                      type="button"
+                      onClick={isRecording ? stopRecording : startRecording}
                       style={{
-                        width: "100%",
-                        padding: "12px 16px",
+                        width: "44px",
+                        height: "44px",
                         borderRadius: "2px",
                         border: "0.5px solid var(--border-hairline)",
-                        outline: "none",
-                        backgroundColor: "var(--bg-input)",
-                        fontSize: "14px",
-                        color: "var(--text-primary)",
+                        backgroundColor: isRecording ? "var(--text-error, #ff4444)" : "transparent",
+                        color: isRecording ? "#fff" : "var(--text-primary)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
                         transition: "all 0.15s ease",
-                        minWidth: 0,
+                        flexShrink: 0
                       }}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = "var(--text-primary)";
+                      onMouseEnter={(e) => {
+                        if (!isRecording) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                       }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = "var(--border-hairline)";
+                      onMouseLeave={(e) => {
+                        if (!isRecording) e.currentTarget.style.backgroundColor = "transparent";
                       }}
-                    />
+                    >
+                      {isRecording ? <StopCircle size={30} weight="fill" /> : <Microphone size={30} weight="regular" />}
+                    </button>
+                  )}
+
+                  <div style={{ flex: 1, position: "relative" }}>
+                    {isRecording ? (
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "44px",
+                          padding: "12px 16px",
+                          borderRadius: "2px",
+                          border: "0.5px solid var(--border-hairline)",
+                          backgroundColor: "var(--bg-input)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "8px",
+                          color: "var(--text-error, #ff4444)",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "14px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "currentColor", animation: "pulse 1.5s infinite" }} />
+                        Recording 0:0{recordingTime} / 0:10
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={newMessage}
+                        onChange={handleInputChange}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage(e as unknown as React.FormEvent);
+                          }
+                        }}
+                        placeholder={audioBlob ? "Message attached with voice recording..." : "Type a message..."}
+                        disabled={!!audioBlob}
+                        style={{
+                          width: "100%",
+                          padding: "12px 16px",
+                          borderRadius: "2px",
+                          border: "0.5px solid var(--border-hairline)",
+                          outline: "none",
+                          backgroundColor: audioBlob ? "var(--bg-hover)" : "var(--bg-input)",
+                          fontSize: "14px",
+                          color: "var(--text-primary)",
+                          transition: "all 0.15s ease",
+                          minWidth: 0,
+                          opacity: audioBlob ? 0.7 : 1,
+                        }}
+                        onFocus={(e) => {
+                          if (!audioBlob) e.currentTarget.style.borderColor = "var(--text-primary)";
+                        }}
+                        onBlur={(e) => {
+                          if (!audioBlob) e.currentTarget.style.borderColor = "var(--border-hairline)";
+                        }}
+                      />
+                    )}
                   </div>
 
                   <button
                     type="submit"
-                    disabled={(!newMessage.trim() && !selectedImage) || sending || uploadingImage}
+                    disabled={(!newMessage.trim() && !selectedImage && !audioBlob) || sending || uploadingImage || isUploadingAudio || isRecording}
                     style={{
                       width: "44px",
                       height: "44px",
                       borderRadius: "2px",
                       border: "0.5px solid var(--border-hairline)",
-                      backgroundColor: (newMessage.trim() || selectedImage) ? "var(--text-primary)" : "transparent",
-                      color: (newMessage.trim() || selectedImage) ? "var(--bg-page)" : "var(--text-tertiary)",
+                      backgroundColor: (newMessage.trim() || selectedImage || audioBlob) ? "var(--text-primary)" : "transparent",
+                      color: (newMessage.trim() || selectedImage || audioBlob) ? "var(--bg-page)" : "var(--text-tertiary)",
                       cursor: (newMessage.trim() || selectedImage) ? "pointer" : "default",
                       display: "flex",
                       alignItems: "center",
@@ -1645,7 +1854,7 @@ export default function Messages() {
                       flexShrink: 0,
                     }}
                   >
-                    {uploadingImage ? (
+                    {uploadingImage || isUploadingAudio ? (
                       <ArrowClockwise size={20} weight="thin" className="spin-animation" />
                     ) : (
                       <PaperPlaneTilt

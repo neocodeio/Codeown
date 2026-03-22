@@ -158,7 +158,8 @@ export async function getMessages(req: Request, res: Response) {
                     id,
                     content,
                     sender_id,
-                    image_url
+                    image_url,
+                    audio_url
                 ),
                 reactions,
                 shared_post:shared_post_id (
@@ -250,7 +251,7 @@ export async function sendMessage(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-        const { conversationId, content, recipientId, replyToMessageId, imageUrl, sharedPostId, sharedProjectId } = req.body;
+        const { conversationId, content, recipientId, replyToMessageId, imageUrl, audioUrl, sharedPostId, sharedProjectId } = req.body;
 
         let targetConvoId = conversationId;
 
@@ -283,6 +284,7 @@ export async function sendMessage(req: Request, res: Response) {
                 content: content || "",
                 reply_to_message_id: replyToMessageId,
                 image_url: imageUrl,
+                audio_url: audioUrl,
                 shared_post_id: sharedPostId,
                 shared_project_id: sharedProjectId
             })
@@ -292,7 +294,8 @@ export async function sendMessage(req: Request, res: Response) {
                     id,
                     content,
                     sender_id,
-                    image_url
+                    image_url,
+                    audio_url
                 ),
                 reactions,
                 shared_post:shared_post_id (
