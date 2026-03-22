@@ -103,7 +103,7 @@ export async function uploadAudio(req: MulterRequest, res: Response) {
 
     if (error) {
       console.error("Supabase audio upload error:", error);
-      return res.status(500).json({ error: "Failed to upload audio" });
+      return res.status(500).json({ error: "Failed to upload audio", details: error.message });
     }
 
     const { data: { publicUrl } } = supabase.storage
