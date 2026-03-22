@@ -337,11 +337,37 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
           const url = match[1];
           if (!firstUrl) firstUrl = url;
-          res.push(
-            <a key={`lu-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-primary)", fontWeight: 700, textDecoration: "underline", textDecorationColor: "var(--border-hairline)" }} onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'var(--border-hairline)'}>
-              {url.length > 40 ? url.substring(0, 37) + "..." : url}
-            </a>
-          );
+          
+          // Check if it's an image/GIF
+          const isImage = /\.(gif|jpe?g|png|webp|bmp)$/i.test(url) || url.includes("tenor.com") || url.includes("giphy.com");
+          
+          if (isImage) {
+            res.push(
+              <div key={`img-${key++}`} style={{ margin: "8px 0" }}>
+                <img 
+                  src={url} 
+                  alt="" 
+                  style={{ 
+                    maxWidth: "100%", 
+                    maxHeight: "360px", 
+                    borderRadius: "4px", 
+                    border: "0.5px solid var(--border-hairline)",
+                    display: "block" 
+                  }} 
+                  onError={(e) => {
+                    // fallback to link if image fails to load
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            );
+          } else {
+            res.push(
+              <a key={`lu-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-primary)", fontWeight: 700, textDecoration: "underline", textDecorationColor: "var(--border-hairline)" }} onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'var(--border-hairline)'}>
+                {url.length > 40 ? url.substring(0, 37) + "..." : url}
+              </a>
+            );
+          }
           lastIdx = match.index + match[0].length;
         }
         if (lastIdx < p.length) res.push(p.slice(lastIdx));

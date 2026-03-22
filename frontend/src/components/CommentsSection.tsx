@@ -5,6 +5,8 @@ import api from "../api/axios";
 import CommentBlock, { type CommentWithMeta } from "./CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { Gif } from "phosphor-react";
+import GifPicker from "./GifPicker";
 
 interface CommentsSectionProps {
   resourceId: number;
@@ -20,6 +22,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
+  const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
 
   useEffect(() => {
     fetchComments();
@@ -238,6 +241,47 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                 >
                   {submitting ? "..." : "Post"}
                 </button>
+              </div>
+            )}
+
+            {isFocused && (
+              <div style={{ position: "relative", marginTop: "12px", display: "flex", gap: "10px" }}>
+                <button
+                  type="button"
+                  onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "6px 10px",
+                    backgroundColor: "transparent",
+                    color: "var(--text-tertiary)",
+                    border: "0.5px solid var(--border-hairline)",
+                    borderRadius: "2px",
+                    cursor: "pointer",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                >
+                  <Gif size={18} weight={isGifPickerOpen ? "fill" : "regular"} />
+                  GIF
+                </button>
+
+                {isGifPickerOpen && (
+                  <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
+                    <GifPicker 
+                      onSelect={(gifUrl) => {
+                        setNewComment(prev => prev + (prev.trim() ? " " : "") + gifUrl);
+                        setIsGifPickerOpen(false);
+                      }}
+                      onClose={() => setIsGifPickerOpen(false)}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>

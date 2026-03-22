@@ -16,9 +16,11 @@ import {
   Trash,
   DotsThree,
   Microphone,
-  StopCircle
+  StopCircle,
+  Gif
 } from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
+import GifPicker from "../components/GifPicker";
 import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { socket } from "../lib/socket";
@@ -98,6 +100,7 @@ export default function Messages() {
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
+  const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
@@ -399,9 +402,9 @@ export default function Messages() {
     if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if ((!newMessage.trim() && !selectedImage && !audioBlob) || sending) return;
+  const handleSendMessage = async (e?: React.FormEvent, directImageUrl?: string) => {
+    if (e) e.preventDefault();
+    if ((!newMessage.trim() && !selectedImage && !audioBlob && !directImageUrl) || sending) return;
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     if (activeConvo && activeConvo.partner.id && currentUser?.id) {
@@ -411,7 +414,7 @@ export default function Messages() {
     setSending(true);
     try {
       const token = await getToken();
-      let imageUrl = undefined;
+      let imageUrl = directImageUrl;
 
       if (selectedImage) {
         setUploadingImage(true);
@@ -1712,40 +1715,87 @@ export default function Messages() {
                   </div>
                 )}
 
-                <form
-                  onSubmit={handleSendMessage}
-                  style={{ display: "flex", gap: "12px", alignItems: "center", padding: "12px 0 0" }}
-                >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleImageSelect}
-                    accept="image/*"
-                    style={{ display: "none" }}
-                  />
-                  
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "2px",
-                      border: "0.5px solid var(--border-hairline)",
-                      backgroundColor: "transparent",
-                      color: "var(--text-primary)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      transition: "all 0.15s ease",
-                      flexShrink: 0
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  <form
+                    onSubmit={handleSendMessage}
+                    style={{ display: "flex", gap: "12px", alignItems: "center", padding: "12px 0 0" }}
                   >
-                    <ImageIcon size={30} weight="regular" />
-                  </button>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageSelect}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                    />
+                    
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{
+                        width: "44px",
+                        height: "44px",
+                        borderRadius: "2px",
+                        border: "0.5px solid var(--border-hairline)",
+                        backgroundColor: "transparent",
+                        color: "var(--text-primary)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                        flexShrink: 0
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <ImageIcon size={30} weight="regular" />
+                    </button>
+
+                    {/* Gif Button */}
+                    <div style={{ position: "relative" }}>
+                      <button
+                        type="button"
+                        onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                        style={{
+                          width: "44px",
+                          height: "44px",
+                          borderRadius: "2px",
+                          border: "0.5px solid var(--border-hairline)",
+                          backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
+                          color: "var(--text-primary)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          flexShrink: 0
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                        onMouseLeave={(e) => {
+                          if (!isGifPickerOpen) e.currentTarget.style.backgroundColor = "transparent";
+                        }}
+                      >
+                        <Gif size={30} weight={isGifPickerOpen ? "fill" : "regular"} />
+                      </button>
+
+                      {isGifPickerOpen && (
+                        <div style={{ 
+                          position: "absolute", 
+                          bottom: "100%", 
+                          left: 0, 
+                          marginBottom: "12px", 
+                          zIndex: 2000 
+                        }}>
+                          <GifPicker 
+                            onSelect={(gifUrl) => {
+                              // Direct send GIF
+                              handleSendMessage(undefined, gifUrl);
+                              setIsGifPickerOpen(false);
+                            }}
+                            onClose={() => setIsGifPickerOpen(false)}
+                          />
+                        </div>
+                      )}
+                    </div>
 
                   {/* Mic Button */}
                   {!audioPreviewUrl && (

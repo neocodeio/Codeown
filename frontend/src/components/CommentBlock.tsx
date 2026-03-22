@@ -12,6 +12,8 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
+import { Gif } from "phosphor-react";
+import GifPicker from "./GifPicker";
 
 export interface CommentWithMeta {
   id: number | string;
@@ -37,6 +39,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType);
   const { isSignedIn } = useClerkUser();
   const navigate = useNavigate();
@@ -236,13 +239,28 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
               borderRadius: "2px",
               border: "1px solid var(--border-hairline)"
              }}>
+            <div style={{ marginTop: "16px", marginBottom: "16px" }}>
+              <div style={{ 
+                marginBottom: "8px", 
+                fontSize: "11px", 
+                fontWeight: 700, 
+                color: "var(--text-tertiary)", 
+                fontFamily: "var(--font-mono)",
+                textTransform: "uppercase"
+              }}>
+                Replying to <span style={{ color: "var(--text-primary)" }}>@{comment.user?.username || name}</span>
+              </div>
               <MentionInput
                 value={replyContent}
                 onChange={setReplyContent}
-                placeholder={`Reply to ${name}...`}
-                minHeight="40px"
-                transparent={true}
+                placeholder="Write a reply..."
+                style={{
+                  minHeight: "80px",
+                  fontSize: "14px",
+                  borderRadius: "2px"
+                }}
               />
+            </div>
               <div style={{ display: "flex", gap: "12px", marginTop: "16px", justifyContent: "flex-end" }}>
                 <button
                   onClick={() => { setShowReply(false); setReplyContent(""); }}
@@ -262,6 +280,41 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                 >
                   Cancel
                 </button>
+                <div style={{ position: "relative" }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                    style={{
+                      padding: "8px 16px",
+                      backgroundColor: "transparent",
+                      color: "var(--text-tertiary)",
+                      border: "0.5px solid var(--border-hairline)",
+                      borderRadius: "2px",
+                      fontWeight: 900,
+                      cursor: "pointer",
+                      fontSize: "11px",
+                      fontFamily: "var(--font-mono)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                    onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                  >
+                    <Gif size={18} weight={isGifPickerOpen ? "fill" : "regular"} />
+                  </button>
+
+                  {isGifPickerOpen && (
+                    <div style={{ position: "absolute", bottom: "100%", right: 0, marginBottom: "12px", zIndex: 100 }}>
+                      <GifPicker 
+                        onSelect={(gifUrl) => {
+                          setReplyContent(prev => prev + (prev.trim() ? " " : "") + gifUrl);
+                          setIsGifPickerOpen(false);
+                        }}
+                        onClose={() => setIsGifPickerOpen(false)}
+                      />
+                    </div>
+                  )}
+                </div>
                 <button
                   onClick={handleReplySubmit}
                   disabled={!replyContent.trim() || submitting}
