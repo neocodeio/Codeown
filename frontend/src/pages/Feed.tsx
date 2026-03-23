@@ -13,94 +13,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { SEO } from "../components/SEO";
-import api from "../api/axios";
-import { socket } from "../lib/socket";
-import { Trophy } from "phosphor-react";
 
-
-const GoalBanner = () => {
-    const [userCount, setUserCount] = useState(33);
-    const goal = 100;
-    const { width } = useWindowSize();
-    const isMobile = width < 768;
-    const percentage = Math.max(2, Math.min((userCount / goal) * 100, 100));
-
-    useEffect(() => {
-        const fetchCount = async () => {
-            try {
-                const res = await api.get("/users/count/total");
-                setUserCount(res.data.count);
-            } catch (err) {
-                console.error("Failed to fetch user count", err);
-            }
-        };
-        fetchCount();
-
-        const onUpdate = ({ type, data }: { type: string, data: any }) => {
-            if (type === "user_signup") {
-                setUserCount(data.count);
-            }
-        };
-        socket.on("content_update", onUpdate);
-        return () => {
-            socket.off("content_update", onUpdate);
-        };
-    }, []);
-
-    if (isMobile) return null;
-
-    return (
-        <div style={{
-            backgroundColor: "var(--bg-page)",
-            borderBottom: "0.5px solid var(--border-hairline)",
-            padding: "16px 24px",
-            display: "flex",
-            alignItems: "center",
-            gap: "24px"
-        }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                <Trophy size={14} weight="bold" color="#22c55e" />
-                <span style={{ 
-                    fontFamily: "var(--font-mono)", 
-                    fontSize: "11px", 
-                    fontWeight: 800, 
-                    color: "var(--text-primary)",
-                    letterSpacing: "0.05em",
-                    textTransform: "uppercase"
-                }}>
-                     BUILDERS
-                </span>
-            </div>
-
-            <div style={{ flex: 1, position: "relative" }}>
-                 <div style={{ 
-                    height: "4px", 
-                    backgroundColor: "var(--bg-input)", 
-                    borderRadius: "2px", 
-                    overflow: "hidden"
-                }}>
-                    <div style={{ 
-                        width: `${percentage}%`, 
-                        height: "100%", 
-                        backgroundColor: "#22c55e",
-                        boxShadow: "0 0 8px rgba(34, 197, 94, 0.2)",
-                        transition: "width 1.5s cubic-bezier(0.2, 0, 0, 1)"
-                    }} />
-                </div>
-            </div>
-
-            <div style={{ 
-                fontFamily: "var(--font-mono)", 
-                fontSize: "11px", 
-                fontWeight: 700, 
-                color: "#22c55e",
-                whiteSpace: "nowrap"
-            }}>
-                {userCount}/{goal} <span style={{ opacity: 0.5, fontSize: "10px", marginLeft: "4px" }}>READY</span>
-            </div>
-        </div>
-    );
-};
 
 export default function Feed() {
     const { width } = useWindowSize();
@@ -221,7 +134,6 @@ export default function Feed() {
                 }}>
 
                     {/* ── Minimal Apple-Style Header ── */}
-                    <GoalBanner />
                     <div style={{
                         position: "sticky",
                         top: 0,
