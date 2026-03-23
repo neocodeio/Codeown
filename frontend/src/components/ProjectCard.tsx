@@ -206,11 +206,11 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
       className="fade-in"
       style={{
         cursor: "pointer",
-        padding: isMobile ? "32px 20px" : "48px 40px",
+        padding: isMobile ? "24px 20px" : "40px",
         backgroundColor: "var(--bg-page)",
         borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
-        gap: "24px",
+        gap: "20px",
         transition: "all 0.15s ease",
         width: "100%",
         boxSizing: "border-box"
@@ -247,15 +247,15 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
           alignItems: "flex-start",
           marginBottom: "6px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
             <UserHoverCard userId={project.user_id}>
               <span
                 onClick={handleUserClick}
                 style={{
                   fontSize: "14px",
-                  fontWeight: 700,
+                  fontWeight: 800,
                   color: "var(--text-primary)",
-                  letterSpacing: "-0.01em",
+                  letterSpacing: "-0.012em",
                   textTransform: "uppercase",
                   cursor: "pointer"
                 }}
@@ -264,11 +264,11 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
               </span>
             </UserHoverCard>
             <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="14px" />
-            <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.02em" }}>
               @{project.user?.username || 'user'}
             </span>
-            <span style={{ color: "var(--border-hairline)" }}>•</span>
-            <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+            <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", letterSpacing: "0.02em" }}>
               {formatRelativeDate(project.created_at).toUpperCase()}
             </span>
             
@@ -347,10 +347,9 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
           )}
         </div>
 
-        {/* Project Details */}
-        <div style={{ marginBottom: "24px" }}>
-          <h3 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.02em", textTransform: "uppercase" }}>{project.title}</h3>
-          <p style={{ fontSize: "15px", lineHeight: "1.7", color: "var(--text-secondary)", marginBottom: "20px" }}>{project.description}</p>
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "10px", letterSpacing: "-0.01em", textTransform: "uppercase" }}>{project.title}</h3>
+          <p style={{ fontSize: "14.5px", lineHeight: "1.6", color: "rgba(255, 255, 255, 0.9)", marginBottom: "20px" }}>{project.description}</p>
           
           {/* Tech Stack Chips */}
           {project.technologies_used && project.technologies_used.length > 0 && (

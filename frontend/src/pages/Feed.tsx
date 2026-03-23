@@ -138,54 +138,57 @@ export default function Feed() {
                         position: "sticky",
                         top: 0,
                         zIndex: 100,
-                        backgroundColor: "var(--bg-page)",
+                        backgroundColor: "color-mix(in srgb, var(--bg-page), transparent 15%)", // theme-aware glass
+                        backdropFilter: "blur(12px)",
+                        WebkitBackdropFilter: "blur(12px)",
                         borderBottom: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
                             display: "flex",
                             alignItems: "center",
-                            height: "64px",
+                            height: "56px",
                             width: "100%",
-                            borderBottom: "1px solid var(--border-hairline)",
-                            position: "relative"
+                            position: "relative",
+                            justifyContent: "center",
+                            gap: "8px"
                         }}>
                             {/* "For You" Tab with Dropdown */}
-                            <div style={{ flex: 1, height: "100%", display: "flex", justifyContent: "center" }} ref={dropdownRef}>
+                            <div style={{ position: "relative" }} ref={dropdownRef}>
                                 <button
                                     onClick={() => {
-                                        if (feedFilter === "all") {
-                                            setIsDropdownOpen(!isDropdownOpen);
-                                        } else {
-                                            handleFilterChange("all");
-                                        }
+                                        if (feedFilter === "all") setIsDropdownOpen(!isDropdownOpen);
+                                        else handleFilterChange("all");
                                     }}
-                                    aria-label="Switch to Discover feed"
                                     style={{
-                                        background: "none", border: "none", padding: "0 16px",
-                                        height: "100%", position: "relative", cursor: "pointer",
-                                        display: "flex", alignItems: "center", gap: "6px",
+                                        background: "none", border: "none", padding: "0 24px",
+                                        height: "40px", cursor: "pointer",
+                                        display: "flex", alignItems: "center", gap: "8px",
                                         fontSize: "12px",
-                                        fontWeight: feedFilter === "all" ? "600" : "500",
+                                        fontWeight: feedFilter === "all" ? "700" : "500",
                                         color: feedFilter === "all" ? "var(--text-primary)" : "var(--text-tertiary)",
                                         transition: "all 0.15s ease",
-                                        whiteSpace: "nowrap",
                                         fontFamily: "var(--font-mono)",
                                         textTransform: "uppercase",
-                                        letterSpacing: "0.1em"
+                                        letterSpacing: "0.1em",
+                                        borderRadius: "2px"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (feedFilter !== "all") e.currentTarget.style.color = "var(--text-secondary)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (feedFilter !== "all") e.currentTarget.style.color = "var(--text-tertiary)";
                                     }}
                                 >
-                                    For You
-                                    {feedFilter === "all" && (
-                                        <CaretDown size={14} weight="bold" style={{
-                                            transition: "transform 0.2s ease",
-                                            transform: isDropdownOpen ? "rotate(-180deg)" : "none",
-                                            marginTop: "-1px"
-                                        }} />
-                                    )}
+                                    {feedType === "posts" ? "DISCOVER" : "PROJECTS"}
+                                    <CaretDown size={12} weight="bold" style={{
+                                        transition: "transform 0.2s ease",
+                                        transform: isDropdownOpen ? "rotate(-180deg)" : "none",
+                                        opacity: feedFilter === "all" ? 1 : 0.5
+                                    }} />
                                     {feedFilter === "all" && (
                                         <div style={{
-                                            position: "absolute", bottom: "-1px", left: 0, right: 0,
-                                            height: "1px", backgroundColor: "var(--text-primary)",
+                                            position: "absolute", bottom: "0px", left: "20px", right: "20px",
+                                            height: "2px", backgroundColor: "var(--text-primary)",
                                         }} />
                                     )}
                                 </button>
@@ -236,28 +239,33 @@ export default function Feed() {
                             </div>
 
                             {/* "Following" Tab */}
-                            <div style={{ flex: 1, height: "100%", display: "flex", justifyContent: "center" }}>
+                            <div style={{ position: "relative" }}>
                                 <button
                                     onClick={() => handleFilterChange("following")}
-                                    aria-label="Switch to Following feed"
                                     style={{
-                                        background: "none", border: "none", padding: "0 16px",
-                                        height: "100%", position: "relative", cursor: "pointer",
+                                        background: "none", border: "none", padding: "0 24px",
+                                        height: "40px", cursor: "pointer",
                                         fontSize: "12px",
-                                        fontWeight: feedFilter === "following" ? "600" : "500",
+                                        fontWeight: feedFilter === "following" ? "700" : "500",
                                         color: feedFilter === "following" ? "var(--text-primary)" : "var(--text-tertiary)",
                                         transition: "all 0.15s ease",
-                                        whiteSpace: "nowrap",
                                         fontFamily: "var(--font-mono)",
                                         textTransform: "uppercase",
-                                        letterSpacing: "0.1em"
+                                        letterSpacing: "0.1em",
+                                        borderRadius: "2px"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (feedFilter !== "following") e.currentTarget.style.color = "var(--text-secondary)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (feedFilter !== "following") e.currentTarget.style.color = "var(--text-tertiary)";
                                     }}
                                 >
                                     Following
                                     {feedFilter === "following" && (
                                         <div style={{
-                                            position: "absolute", bottom: "-1px", left: 0, right: 0,
-                                            height: "1px", backgroundColor: "var(--text-primary)",
+                                            position: "absolute", bottom: "0px", left: "20px", right: "20px",
+                                            height: "2px", backgroundColor: "var(--text-primary)",
                                         }} />
                                     )}
                                 </button>
@@ -282,11 +290,10 @@ export default function Feed() {
                                             aria-label={`Filter by ${tag}`}
                                             style={{
                                                 flexShrink: 0, padding: "8px 16px", borderRadius: "2px",
-                                                border: "0.5px solid",
-                                                borderColor: isSelected ? "var(--text-primary)" : "var(--border-hairline)",
-                                                backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
+                                                border: "none",
+                                                backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-hover)",
                                                 color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
-                                                fontSize: "12px", fontWeight: "700", cursor: "pointer",
+                                                fontSize: "11px", fontWeight: "700", cursor: "pointer",
                                                 transition: "all 0.15s ease",
                                                 fontFamily: "var(--font-mono)",
                                                 textTransform: "uppercase",
@@ -312,7 +319,7 @@ export default function Feed() {
                         {isInitialLoading ? (
                             <div style={{ display: "flex", flexDirection: "column" }}>
                                 {[...Array(3)].map((_, i) => (
-                                    <div key={i} style={{ padding: isMobile ? "24px 16px" : "32px", borderBottom: "1px solid #f1f5f9" }}>
+                                    <div key={i} style={{ padding: isMobile ? "24px 16px" : "40px", borderBottom: "0.5px solid var(--border-hairline)" }}>
                                         <PostCardSkeleton />
                                     </div>
                                 ))}

@@ -3,10 +3,10 @@ export function PostCardSkeleton() {
     <article
       style={{
         backgroundColor: "var(--bg-page)",
-        padding: "48px 40px",
+        padding: "40px",
         borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
-        gap: "24px"
+        gap: "20px"
       }}
     >
       {/* Left Column: Avatar skeleton */}

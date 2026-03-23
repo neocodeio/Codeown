@@ -217,11 +217,11 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
       className="fade-in"
       style={{
         cursor: "pointer",
-        padding: isMobile ? "32px 20px" : "48px 40px",
+        padding: isMobile ? "24px 20px" : "40px",
         backgroundColor: "var(--bg-page)",
         borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
-        gap: "24px",
+        gap: "20px",
         transition: "all 0.15s ease",
         width: "100%",
         boxSizing: "border-box"
@@ -259,15 +259,15 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
           alignItems: "flex-start",
           marginBottom: "6px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
             <UserHoverCard userId={post.user_id}>
               <span
                 onClick={handleUserClick}
                 style={{
                   fontSize: "14px",
-                  fontWeight: 700,
+                  fontWeight: 800,
                   color: "var(--text-primary)",
-                  letterSpacing: "-0.01em",
+                  letterSpacing: "-0.012em",
                   textTransform: "uppercase",
                   cursor: "pointer"
                 }}
@@ -276,11 +276,11 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
               </span>
             </UserHoverCard>
             <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
-            <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.02em" }}>
               @{post.user?.username || 'user'}
             </span>
-            <span style={{ color: "var(--border-hairline)" }}>•</span>
-            <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+            <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", letterSpacing: "0.02em" }}>
               {formatRelativeDate(post.created_at).toUpperCase()}
             </span>
           </div>
@@ -333,12 +333,12 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
 
         {/* Post Text */}
         <div style={{
-          fontSize: "15px",
-          lineHeight: "1.7",
-          color: "var(--text-secondary)",
-          marginBottom: "24px",
+          fontSize: "14.5px",
+          lineHeight: "1.6",
+          color: "rgba(255, 255, 255, 0.9)", // Slightly softer than pure text-primary
+          marginBottom: "20px",
         }}>
-          {post.title && <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", margin: "0 0 12px", letterSpacing: "-0.02em", textTransform: "uppercase" }}>{post.title}</h2>}
+          {post.title && <h2 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", letterSpacing: "-0.01em", textTransform: "uppercase" }}>{post.title}</h2>}
           <ContentRenderer content={post.content} />
         </div>
 
