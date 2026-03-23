@@ -9,7 +9,8 @@ import {
     updateStreak,
     getRecommendedUsers,
     trackActiveSession,
-    getActiveCount
+    getActiveCount,
+    getTotalUserCount
 } from "../controllers/users.controller.js";
 import { recordProfileView } from "../controllers/profileViews.controller.js";
 import { getUserProjects } from "../controllers/projects.controller.js";
@@ -21,6 +22,7 @@ const router = Router();
 // Static/specific routes MUST come before /:userId to avoid being swallowed by the wildcard
 router.get("/recommended", optionalAuth, getRecommendedUsers);
 router.get("/active/count", getActiveCount);
+router.get("/count/total", getTotalUserCount);
 router.post("/active/ping", optionalAuth, trackActiveSession);
 router.post("/pin/:postId", requireAuth, pinPost);
 router.post("/pin-project/:projectId", requireAuth, pinProject);

@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { sendWelcomeEmail } from "../lib/email.js";
 import { getOrCreateConversation } from "./messages.controller.js";
+import { emitUpdate } from "../lib/socket.js";
 
 /**
  * Internal helper to update user streak.
@@ -427,6 +428,10 @@ export async function ensureUserExists(userId: string, userData?: any) {
     }
 
     console.log("User created successfully:", newUser);
+    
+    // Broadcast user signup in real-time
+    const { count: newUserCount } = await supabase.from("users").select("id", { count: "exact", head: true });
+    emitUpdate("user_signup", { count: newUserCount || 0, user: { name: newUser.name, username: newUser.username } });
 
     // Create a CEO welcome DM + notification for this brand new user
     try {
@@ -1154,5 +1159,23 @@ export function getActiveCount(req: Request, res: Response) {
     } catch (error) {
         console.error("[getActiveCount] Error:", error);
         return res.status(200).json({ count: 1 }); // Fallback
+    }
+}
+
+/**
+ * Returns the total user count from the database.
+ */
+export async function getTotalUserCount(req: Request, res: Response) {
+    console.log("[getTotalUserCount] API HIT");
+    try {
+        const { count, error } = await supabase
+            .from("users")
+            .select("id", { count: "exact", head: true });
+
+        if (error) throw error;
+        return res.json({ count: count || 0 });
+    } catch (error) {
+        console.error("[getTotalUserCount] Error:", error);
+        return res.status(500).json({ error: "Failed to get user count" });
     }
 }
