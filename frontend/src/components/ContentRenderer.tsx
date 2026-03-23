@@ -314,7 +314,8 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         while ((match = regex.exec(p)) !== null) {
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
           const url = match[2];
-          if (!firstUrl) firstUrl = url;
+          const isImage = /\.(gif|jpe?g|png|webp|bmp)$/i.test(url) || url.includes("tenor.com") || url.includes("giphy.com");
+          if (!firstUrl && !isImage) firstUrl = url;
           res.push(
             <a key={`l-${key++}`} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-primary)", fontWeight: 700, textDecoration: "underline", textDecorationColor: "var(--border-hairline)" }} onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'var(--border-hairline)'}>
               {match[1]}
@@ -336,14 +337,14 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         while ((match = regex.exec(p)) !== null) {
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
           const url = match[1];
-          if (!firstUrl) firstUrl = url;
-          
           // Check if it's an image/GIF
           const isImage = /\.(gif|jpe?g|png|webp|bmp)$/i.test(url) || url.includes("tenor.com") || url.includes("giphy.com");
           
+          if (!firstUrl && !isImage) firstUrl = url;
+          
           if (isImage) {
             res.push(
-              <div key={`img-${key++}`} style={{ margin: "8px 0" }}>
+              <div key={`img-${key++}`} style={{ margin: "12px 0" }}>
                 <img 
                   src={url} 
                   alt="" 
@@ -352,7 +353,8 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
                     maxHeight: "360px", 
                     borderRadius: "4px", 
                     border: "0.5px solid var(--border-hairline)",
-                    display: "block" 
+                    display: "block",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
                   }} 
                   onError={(e) => {
                     // fallback to link if image fails to load

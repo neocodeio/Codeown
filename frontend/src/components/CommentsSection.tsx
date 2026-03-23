@@ -5,7 +5,7 @@ import api from "../api/axios";
 import CommentBlock, { type CommentWithMeta } from "./CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
-import { Gif } from "phosphor-react";
+import { Gif, X } from "phosphor-react";
 import GifPicker from "./GifPicker";
 
 interface CommentsSectionProps {
@@ -23,6 +23,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   const [loading, setLoading] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
+  const [selectedGif, setSelectedGif] = useState<string | null>(null);
 
   useEffect(() => {
     fetchComments();
@@ -41,22 +42,25 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   };
 
   const handleSubmitComment = async () => {
-    if (!newComment.trim() || !currentUser) return;
+    if ((!newComment.trim() && !selectedGif) || !currentUser) return;
 
     setSubmitting(true);
     try {
       const token = await getToken();
       if (!token) return;
 
+      const finalContent = selectedGif ? `${newComment.trim()}\n${selectedGif}`.trim() : newComment.trim();
+
       const endpoint = resourceType === "project" ? `/projects/${resourceId}/comments` : `/posts/${resourceId}/comments`;
       const response = await api.post(
         endpoint,
-        { content: newComment.trim() },
+        { content: finalContent },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setComments(prev => [response.data, ...prev]);
       setNewComment("");
+      setSelectedGif(null);
       setIsFocused(false);
       onCommentAdded?.();
     } catch (error) {
@@ -178,6 +182,40 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
             style={{ width: "44px", height: "44px", borderRadius: "2px", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0 }}
           />
           <div style={{ flex: 1 }}>
+            {selectedGif && (
+              <div style={{ 
+                position: "relative", 
+                width: "fit-content", 
+                marginBottom: "12px",
+                borderRadius: "4px",
+                overflow: "hidden",
+                border: "0.5px solid var(--border-hairline)",
+                animation: "reactionFadeUp 0.15s ease-out"
+              }}>
+                <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "150px", display: "block" }} />
+                <button 
+                  onClick={() => setSelectedGif(null)}
+                  style={{
+                    position: "absolute",
+                    top: "4px",
+                    right: "4px",
+                    backgroundColor: "rgba(0,0,0,0.6)",
+                    color: "#fff",
+                    border: "none",
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    fontSize: "10px"
+                  }}
+                >
+                  <X size={12} weight="bold" />
+                </button>
+              </div>
+            )}
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
@@ -275,7 +313,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                   <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
                     <GifPicker 
                       onSelect={(gifUrl) => {
-                        setNewComment(prev => prev + (prev.trim() ? " " : "") + gifUrl);
+                        setSelectedGif(gifUrl);
                         setIsGifPickerOpen(false);
                       }}
                       onClose={() => setIsGifPickerOpen(false)}

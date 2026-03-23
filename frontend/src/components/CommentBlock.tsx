@@ -12,7 +12,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
-import { Gif } from "phosphor-react";
+import { Gif, X } from "phosphor-react";
 import GifPicker from "./GifPicker";
 
 export interface CommentWithMeta {
@@ -40,6 +40,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
   const [replyContent, setReplyContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
+  const [selectedGif, setSelectedGif] = useState<string | null>(null);
   const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType);
   const { isSignedIn } = useClerkUser();
   const navigate = useNavigate();
@@ -50,11 +51,13 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
   const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=212121&color=ffffff&bold=true`;
 
   const handleReplySubmit = async () => {
-    if (!replyContent.trim()) return;
+    if (!replyContent.trim() && !selectedGif) return;
     setSubmitting(true);
     try {
-      await onReply(comment.id, replyContent.trim());
+      const finalContent = selectedGif ? `${replyContent.trim()} ${selectedGif}`.trim() : replyContent.trim();
+      await onReply(comment.id, finalContent);
       setReplyContent("");
+      setSelectedGif(null);
       setShowReply(false);
     } finally {
       setSubmitting(false);
@@ -240,6 +243,39 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
               border: "1px solid var(--border-hairline)"
              }}>
             <div style={{ marginTop: "16px", marginBottom: "16px" }}>
+              {selectedGif && (
+                <div style={{ 
+                  position: "relative", 
+                  width: "fit-content", 
+                  marginBottom: "12px",
+                  borderRadius: "2px",
+                  overflow: "hidden",
+                  border: "0.5px solid var(--border-hairline)",
+                  animation: "reactionFadeUp 0.15s ease-out"
+                }}>
+                  <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "120px", display: "block" }} />
+                  <button 
+                    onClick={() => setSelectedGif(null)}
+                    style={{
+                      position: "absolute",
+                      top: "4px",
+                      right: "4px",
+                      backgroundColor: "rgba(0,0,0,0.6)",
+                      color: "#fff",
+                      border: "none",
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <X size={10} weight="bold" />
+                  </button>
+                </div>
+              )}
               <div style={{ 
                 marginBottom: "8px", 
                 fontSize: "11px", 
@@ -307,7 +343,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                     <div style={{ position: "absolute", bottom: "100%", right: 0, marginBottom: "12px", zIndex: 100 }}>
                       <GifPicker 
                         onSelect={(gifUrl) => {
-                          setReplyContent(prev => prev + (prev.trim() ? " " : "") + gifUrl);
+                          setSelectedGif(gifUrl);
                           setIsGifPickerOpen(false);
                         }}
                         onClose={() => setIsGifPickerOpen(false)}
@@ -317,7 +353,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                 </div>
                 <button
                   onClick={handleReplySubmit}
-                  disabled={!replyContent.trim() || submitting}
+                  disabled={(!replyContent.trim() && !selectedGif) || submitting}
                   style={{
                     padding: "8px 24px",
                     backgroundColor: "var(--text-primary)",
