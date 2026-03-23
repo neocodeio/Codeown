@@ -15,6 +15,8 @@ import {
   EnvelopeSimple,
   Handshake,
   Flame,
+  Star,
+  Trophy,
 } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -72,6 +74,8 @@ export default function NotificationsPage() {
                 return { icon: <Handshake size={size} weight={weight} />, color: "var(--text-primary)" };
             case "streak_warning":
                 return { icon: <Flame size={size} weight={weight} />, color: "#f97316" }; // Orange color for fire
+            case "milestone":
+                return { icon: <Trophy size={size} weight={weight} />, color: "#fff" };
             default:
                 return { icon: <Bell size={size} weight={weight} />, color: "var(--text-primary)" };
         }
@@ -115,6 +119,15 @@ export default function NotificationsPage() {
                 return <>{nameWrapper} Requested to be a Co-Founder for your project</>;
             case "streak_warning":
                 return <span style={{ color: "#f97316" }}>{notification.content || "Your streak is about to break!"}</span>;
+            case "milestone":
+                return (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <span style={{ fontSize: "12px", color: "#fff", fontWeight: 800, fontFamily: "var(--font-mono)", textTransform: "uppercase", opacity: 0.6 }}>Milestone_Station</span>
+                        <div style={{ fontSize: "20px", fontWeight: 900, color: "#fff", letterSpacing: "-0.02em" }}>
+                            {notification.metadata?.milestone || "A NEW RECORD"}
+                        </div>
+                    </div>
+                );
             default:
                 return <>{notification.content || "New notification"}</>;
         }
@@ -304,7 +317,53 @@ export default function NotificationsPage() {
                                         {itemStyle.icon}
                                     </div>
 
-                                    {/* Left-Middle: Avatar */}
+                                    {notification.type === "milestone" ? (
+                                        <div style={{
+                                            flex: 1,
+                                            background: "rgba(23, 23, 23, 1)",
+                                            border: "0.5px solid rgba(255,255,255,0.1)",
+                                            borderRadius: "4px",
+                                            padding: "24px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "16px",
+                                            position: "relative",
+                                            overflow: "hidden",
+                                            boxShadow: "0 8px 32px -8px rgba(0,0,0,0.5)"
+                                        }}>
+                                            <div style={{ position: "absolute", top: "-10px", right: "-10px", opacity: 0.1, pointerEvents: "none" }}>
+                                                 <Star size={80} weight="fill" color="#fff" />
+                                            </div>
+                                            
+                                            <div style={{ display: "flex", alignItems: "center", gap: "12px", zIndex: 1 }}>
+                                                <div style={{ fontSize: "32px" }}>{notification.metadata?.emoji || "✨"}</div>
+                                                <div style={{ borderLeft: "0.5px solid rgba(255,255,255,0.2)", paddingLeft: "12px" }}>
+                                                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", fontWeight: 900, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Record Unlocked</div>
+                                                    <div style={{ fontSize: "13px", color: "#fff", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{notification.metadata?.milestone?.toUpperCase()}</div>
+                                                </div>
+                                            </div>
+
+                                            <p style={{ margin: 0, fontSize: "14px", color: "rgba(255,255,255,0.6)", lineHeight: 1.6, zIndex: 1 }}>
+                                                {notification.content}
+                                            </p>
+
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "8px", zIndex: 1 }}>
+                                                <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.1)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>SYNC_ID_CORE_{Math.floor(1000 + (notification.id % 9000))}</div>
+                                                <p style={{
+                                                    margin: 0,
+                                                    fontSize: "10px",
+                                                    color: "rgba(255,255,255,0.3)",
+                                                    fontWeight: 700,
+                                                    fontFamily: "var(--font-mono)",
+                                                    textTransform: "uppercase"
+                                                }}>
+                                                    {formatRelativeDate(notification.created_at)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {/* Left-Middle: Avatar */}
                                     <div style={{ flexShrink: 0 }}>
                                         <img
                                             src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
@@ -342,7 +401,9 @@ export default function NotificationsPage() {
                                         }}>
                                             {formatRelativeDate(notification.created_at)}
                                         </p>
-                                    </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             );
                         })}

@@ -569,3 +569,75 @@ export async function sendNewMessageEmail(email: string, userName: string, sende
     console.error("Error sending new message email:", err);
   }
 }
+export async function sendMilestoneEmail(email: string, name: string, milestone: string, emoji: string) {
+  if (!resend) return;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "Codeown Team <welcome@codeown.space>",
+      to: email,
+      subject: `${emoji} Milestone Reached: ${milestone} at Codeown!`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@800&display=swap');
+          </style>
+        </head>
+        <body style="font-family: 'Inter', sans-serif; background-color: #000; margin: 0; padding: 40px 20px;">
+          <div style="max-width: 500px; margin: 0 auto; background: #000; border: 0.5px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 48px; position: relative; overflow: hidden;">
+            
+            <!-- Logo Section -->
+            <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                 <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; color: #fff; letter-spacing: 0.2em; text-transform: uppercase;">CODEOWN.SYSTEM</div>
+                 <div style="font-size: 8px; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: 'JetBrains Mono', monospace;">ARCHIVE • MILSTONE_STATION_v2.0</div>
+              </div>
+              <div style="background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 2px; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800;">
+                CORE_EVENT
+              </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 40px;">
+              <div style="font-size: 64px; margin-bottom: 24px;">${emoji}</div>
+              <h1 style="color: #fff; font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -1.5px; text-transform: uppercase; font-family: 'Inter', sans-serif;">
+                Time flies.
+              </h1>
+              <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em;">
+                ${name || 'DEVELOPER'} REACHED A NEW RECORD
+              </p>
+            </div>
+
+            <!-- Card Logic -->
+            <div style="background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.1); padding: 32px; border-radius: 8px; margin-bottom: 40px; text-align: center;">
+              <div style="color: #fff; font-size: 40px; font-weight: 900; margin-bottom: 8px; font-family: 'Inter', sans-serif;">${milestone.toUpperCase()}</div>
+              <div style="font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em;">MEMBERSHIP_DURATION</div>
+            </div>
+
+            <p style="color: rgba(255,255,255,0.7); font-size: 15px; line-height: 1.6; text-align: center; margin-bottom: 40px;">
+              Exactly one ${milestone.toLowerCase()} has passed since you initialized your core directory on Codeown. Thank you for being a vital part of the next generation of builders.
+            </p>
+
+            <div style="text-align: center;">
+              <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" style="background: #fff; color: #000; padding: 18px 36px; border-radius: 4px; text-decoration: none; font-weight: 900; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-transform: uppercase; display: inline-block;">
+                ENTER_DASHBOARD &rarr;
+              </a>
+            </div>
+
+            <div style="margin-top: 64px; border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 24px; text-align: center;">
+               <div style="font-family: 'JetBrains Mono', monospace; font-size: 8px; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 0.2em;">
+                 &copy; ${new Date().getFullYear()} CODEOWN • DECENTRALIZED_OPERATING_SYSTEM
+               </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    });
+
+    if (error) console.error("Error sending milestone email:", error);
+  } catch (err) {
+    console.error("Unexpected error in sendMilestoneEmail:", err);
+  }
+}

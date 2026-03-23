@@ -196,5 +196,72 @@ export function initializeCronJobs() {
   weeklyDigestJob.start();
   hourlyStreakMonitor.start();
   personalRecapJob.start();
+
+  // Daily Milestone Job (Every day at 9:00 AM)
+  const milestoneJob = new CronJob('0 9 * * *', async () => {
+    console.log('[Cron] Running Daily Milestone Job...');
+    try {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      // Fetch all users to check their join dates
+      const { data: users, error: usersError } = await supabase
+        .from('users')
+        .select('id, email, name, username, created_at');
+
+      if (usersError || !users) return;
+
+      for (const user of users) {
+        if (!user.created_at) continue;
+
+        const joinedAt = new Date(user.created_at);
+        const joinDay = new Date(joinedAt.getFullYear(), joinedAt.getMonth(), joinedAt.getDate());
+        
+        // Calculate diff in days
+        const diffTime = Math.abs(today.getTime() - joinDay.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        let milestoneTitle = '';
+        let milestoneEmoji = '';
+        const milestones = [
+          { days: 7, label: '1 Week', emoji: '🌱' },
+          { days: 30, label: '1 Month', emoji: '✨' },
+          { days: 182, label: '6 Months', emoji: '🚀' },
+          { days: 365, label: '1 Year', emoji: '👑' },
+          { days: 730, label: '2 Years', emoji: '🔥' },
+          { days: 1095, label: '3 Years', emoji: '💎' }
+        ];
+
+        const reachedMilestone = milestones.find(m => m.days === diffDays);
+
+        if (reachedMilestone) {
+          console.log(`[Cron] User ${user.username} reached ${reachedMilestone.label} milestone!`);
+          
+          // 1. Send Email
+          if (user.email) {
+            const { sendMilestoneEmail } = await import('../lib/email.js');
+            await sendMilestoneEmail(user.email, user.name || 'User', reachedMilestone.label, reachedMilestone.emoji);
+          }
+
+          // 2. In-app Notification
+          await supabase.from('notifications').insert({
+            user_id: user.id,
+            type: 'milestone',
+            content: `${reachedMilestone.emoji} Milestone Unlocked: You've been with Codeown for ${reachedMilestone.label}!`,
+            read: false,
+            metadata: {
+              milestone: reachedMilestone.label,
+              emoji: reachedMilestone.emoji
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('[Cron] Error in Milestone Job:', error);
+    }
+  });
+
+  milestoneJob.start();
+
   console.log('[Cron] Jobs scheduled.');
 }
