@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
-import { CaretLeft } from "phosphor-react";
+import { CaretLeft, TwitterLogo } from "phosphor-react";
 
 export default function FounderStory() {
     const navigate = useNavigate();
@@ -321,6 +321,40 @@ export default function FounderStory() {
                         >
                             Join Codeown Today
                         </Link>
+                        <div style={{ marginTop: "32px", display: "flex", justifyContent: "center" }}>
+                            <a
+                                href="https://x.com/amincodes"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    color: "var(--text-tertiary)",
+                                    fontSize: "11px",
+                                    fontWeight: 700,
+                                    textDecoration: "none",
+                                    fontFamily: "var(--font-mono)",
+                                    textTransform: "uppercase",
+                                    transition: "all 0.15s ease",
+                                    letterSpacing: "0.05em",
+                                    padding: "4px 8px",
+                                    border: "0.5px solid var(--border-hairline)",
+                                    borderRadius: "2px"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color = "var(--text-primary)";
+                                    e.currentTarget.style.borderColor = "var(--text-primary)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color = "var(--text-tertiary)";
+                                    e.currentTarget.style.borderColor = "var(--border-hairline)";
+                                }}
+                            >
+                                <TwitterLogo size={14} weight="fill" />
+                                @amincodes
+                            </a>
+                        </div>
                     </div>
                 </article>
             </div>

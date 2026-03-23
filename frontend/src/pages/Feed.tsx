@@ -176,8 +176,8 @@ export default function Feed() {
                                 >
                                     For You
                                     {feedFilter === "all" && (
-                                        <CaretDown size={14} weight="bold" style={{ 
-                                            transition: "transform 0.2s ease", 
+                                        <CaretDown size={14} weight="bold" style={{
+                                            transition: "transform 0.2s ease",
                                             transform: isDropdownOpen ? "rotate(-180deg)" : "none",
                                             marginTop: "-1px"
                                         }} />
@@ -204,7 +204,7 @@ export default function Feed() {
                                             style={{
                                                 textAlign: "left", padding: "12px 16px", borderRadius: "1px",
                                                 background: "none", border: "none", cursor: "pointer",
-                                                color: feedType === "posts" ? "var(--text-primary)" : "var(--text-secondary)", 
+                                                color: feedType === "posts" ? "var(--text-primary)" : "var(--text-secondary)",
                                                 fontSize: "12px", fontWeight: feedType === "posts" ? "800" : "600",
                                                 fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em",
                                                 display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -220,7 +220,7 @@ export default function Feed() {
                                             style={{
                                                 textAlign: "left", padding: "12px 16px", borderRadius: "1px",
                                                 background: "none", border: "none", cursor: "pointer",
-                                                color: feedType === "projects" ? "var(--text-primary)" : "var(--text-secondary)", 
+                                                color: feedType === "projects" ? "var(--text-primary)" : "var(--text-secondary)",
                                                 fontSize: "12px", fontWeight: feedType === "projects" ? "800" : "600",
                                                 fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em",
                                                 display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -324,21 +324,33 @@ export default function Feed() {
                                 <p style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>Be the first to share something amazing with the community.</p>
                             </div>
                         ) : (
-                            <div>
+                            <>
                                 {feedType === "posts"
                                     ? (currentItems as any[]).map(p => (
-                                        <div key={p.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
+                                        <div key={p.id} style={{
+                                            borderBottom: "0.5px solid var(--border-hairline)",
+                                            animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
+                                        }}>
                                             <PostCard post={p} onUpdated={() => fetchPosts(undefined, false)} />
                                         </div>
                                     ))
                                     : (currentItems as any[]).map(p => (
-                                        <div key={p.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
+                                        <div key={p.id} style={{
+                                            borderBottom: "0.5px solid var(--border-hairline)",
+                                            animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
+                                        }}>
                                             <ProjectCard project={p} onUpdated={() => fetchProjects(undefined, false)} />
                                         </div>
                                     ))
                                 }
                                 {loading && <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontWeight: "600", fontFamily: "var(--font-mono)" }}>LOADING...</div>}
-                            </div>
+                                <style>{`
+                                @keyframes slideDownFadeIn {
+                                    from { opacity: 0; transform: translateY(-10px); }
+                                    to { opacity: 1; transform: translateY(0); }
+                                }
+                            `}</style>
+                            </>
                         )}
                     </div>
                 </div>

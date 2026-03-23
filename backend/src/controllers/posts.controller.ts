@@ -506,9 +506,14 @@ export async function createPost(req: Request, res: Response) {
     }
 
     console.log("Post created successfully:", createdPost);
+
+    const formattedPost = {
+      ...createdPost,
+      user: Array.isArray(createdPost.user) ? createdPost.user[0] : createdPost.user,
+    };
     
     // Emit real-time update
-    emitUpdate("post_created", createdPost);
+    emitUpdate("post_created", formattedPost);
 
     // Track post creation analytics (non-blocking)
     supabase.from("analytics_events").insert({
@@ -557,7 +562,7 @@ export async function createPost(req: Request, res: Response) {
       console.error("Error processing post mentions:", mentionError);
     }
     
-    return res.status(201).json({ success: true, data: createdPost });
+    return res.status(201).json({ success: true, data: formattedPost });
   } catch (error: any) {
     console.error("Unexpected error in createPost:", error);
     return res.status(500).json({

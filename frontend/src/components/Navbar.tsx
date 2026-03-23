@@ -76,7 +76,7 @@ export default function Navbar() {
 
 
 
-  useFaviconNotification(unreadCount);
+  useFaviconNotification(unreadCount + messageUnreadCount);
 
   // Use the centralized avatar hook
   const { avatarUrl: userAvatarUrl } = useAvatar(
@@ -138,6 +138,13 @@ export default function Navbar() {
     };
   }, [getToken]);
 
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Remove periodic ping - React Query handles active count efficiently
   // Only ping when user actively interacts, not on a timer
 
@@ -180,13 +187,15 @@ export default function Navbar() {
               display: "flex", 
               alignItems: "center", 
               gap: "6px", 
-              marginTop: "2px" 
+              marginTop: "2px",
+              flexWrap: "wrap" 
             }}>
               <div style={{ 
                 width: "4px", 
                 height: "4px", 
                 borderRadius: "1px", 
                 backgroundColor: "#22c55e",
+                flexShrink: 0
               }} />
               <span style={{ 
                 fontSize: "10px", 
@@ -196,6 +205,8 @@ export default function Navbar() {
                 letterSpacing: "0.05em"
               }}>
                 {activeCount.toString().padStart(2, '0')} BUILDERS ONLINE
+                <span style={{ margin: "0 6px", opacity: 0.3 }}>•</span>
+                <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).toUpperCase()}</span>
               </span>
             </div>
           </div>

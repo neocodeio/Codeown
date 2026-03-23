@@ -102,6 +102,7 @@ export default function Messages() {
   const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -188,18 +189,63 @@ export default function Messages() {
       setMessages((prev) => prev.filter(m => m.id !== Number(messageId)));
     };
 
+    const handleNewMessage = (payload: any) => {
+      // 1. Update messages list if this is the active conversation
+      if (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) {
+        setMessages((prev) => {
+          const exists = prev.some(m => m.id === payload.id);
+          if (exists) return prev;
+          return [...prev, payload];
+        });
+        scrollToBottom(true);
+        // Mark as read via socket
+        socket.emit("mark_read", {
+          senderId: currentUser.id,
+          receiverId: payload.sender_id,
+          conversationId: payload.conversation_id
+        });
+      }
+
+      // 2. Update conversations list (snippet, order, unread count)
+      setConversations((prev) => {
+        const convoIndex = prev.findIndex(c => c.id === payload.conversation_id || (c.id === 0 && c.partner.id === payload.sender_id));
+        if (convoIndex === -1) {
+          fetchConversations(false);
+          return prev;
+        }
+
+        const updatedConvos = [...prev];
+        const convo = updatedConvos[convoIndex];
+
+        updatedConvos[convoIndex] = {
+          ...convo,
+          id: payload.conversation_id, // ensure ID is correct if it was a placeholder
+          last_message: payload,
+          unread_count: (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id)))
+            ? 0
+            : (convo.unread_count || 0) + 1
+        };
+
+        // Move to top
+        const [moved] = updatedConvos.splice(convoIndex, 1);
+        return [moved, ...updatedConvos];
+      });
+    };
+
     socket.on("typing", handleTyping);
     socket.on("stop_typing", handleStopTyping);
     socket.on("messages_read", handleMessagesRead);
     socket.on("message_deleted", handleMessageDeleted);
+    socket.on("new_message", handleNewMessage);
 
     return () => {
       socket.off("typing", handleTyping);
       socket.off("stop_typing", handleStopTyping);
       socket.off("messages_read", handleMessagesRead);
       socket.off("message_deleted", handleMessageDeleted);
+      socket.off("new_message", handleNewMessage);
     };
-  }, [currentUser?.id]);
+  }, [currentUser?.id, activeConvo?.id]);
 
   useEffect(() => {
     if (reactingTo !== null || messageMenuId !== null) {
@@ -215,7 +261,7 @@ export default function Messages() {
           setMessageMenuId(null);
         }
       };
-      
+
       document.addEventListener("mousedown", handleOutsideClick);
       document.addEventListener("touchstart", handleOutsideClick);
       return () => {
@@ -282,12 +328,13 @@ export default function Messages() {
     }
   };
 
-  const fetchMessages = async (convoId: number, partnerId?: string) => {
+  const fetchMessages = async (convoId: number, partnerId?: string, isInitial = false) => {
     if (convoId === 0) {
       setMessages([]);
       return;
     }
     try {
+      if (isInitial) setMessagesLoading(true);
       const token = await getToken();
       const res = await api.get(`/messages/${convoId}/messages`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -299,6 +346,8 @@ export default function Messages() {
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
+    } finally {
+      if (isInitial) setMessagesLoading(false);
     }
   };
 
@@ -311,10 +360,10 @@ export default function Messages() {
 
   useEffect(() => {
     if (activeConvo && activeConvo.id !== 0) {
-      fetchMessages(activeConvo.id, activeConvo.partner.id);
+      fetchMessages(activeConvo.id, activeConvo.partner.id, true);
       setIsAtBottom(true);
       setTimeout(() => scrollToBottom(true), 100);
-      
+
       const interval = setInterval(() => {
         fetchMessages(activeConvo.id, activeConvo.partner.id);
       }, 5000);
@@ -468,7 +517,18 @@ export default function Messages() {
       if (activeConvo?.id === 0) {
         await fetchConversations();
       } else {
-        setMessages([...messages, res.data]);
+        setMessages((prev) => [...prev, res.data]);
+
+        // Immediate local conversation list update
+        setConversations((prev) => {
+          const convoId = activeConvo?.id;
+          const convoIndex = prev.findIndex(c => c.id === convoId);
+          if (convoIndex === -1) return prev;
+          const updated = [...prev];
+          updated[convoIndex] = { ...updated[convoIndex], last_message: res.data, unread_count: 0 };
+          const [moved] = updated.splice(convoIndex, 1);
+          return [moved, ...updated];
+        });
       }
       setTimeout(() => scrollToBottom(true), 100);
     } catch (error) {
@@ -493,7 +553,7 @@ export default function Messages() {
           const currentReactions = m.reactions || {};
           const users = currentReactions[emoji] || [];
           const userId = currentUser!.id;
-          
+
           if (users.includes(userId)) {
             // Remove
             const newUsers = users.filter(id => id !== userId);
@@ -717,7 +777,26 @@ export default function Messages() {
               padding: "12px",
             }}
           >
-            {conversations.length === 0 && !targetUserId && (
+            {loading ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "16px" }}>
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                    <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "var(--bg-hover)", flexShrink: 0, animation: "shimmer 1.5s infinite linear" }} />
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
+                      <div style={{ width: "40%", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", animation: "shimmer 1.5s infinite linear" }} />
+                      <div style={{ width: "70%", height: "12px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", animation: "shimmer 1.5s infinite linear" }} />
+                    </div>
+                  </div>
+                ))}
+                <style>{`
+                  @keyframes shimmer {
+                    0% { opacity: 0.5; }
+                    50% { opacity: 1; }
+                    100% { opacity: 0.5; }
+                  }
+                `}</style>
+              </div>
+            ) : conversations.length === 0 && !targetUserId ? (
               <div
                 style={{
                   padding: "48px 24px",
@@ -773,8 +852,8 @@ export default function Messages() {
                   NEW MESSAGE
                 </button>
               </div>
-            )}
-            {filteredConversations.map((convo) => (
+            ) : null}
+            {!loading && filteredConversations.map((convo) => (
               <div
                 key={convo.id}
                 onClick={() => {
@@ -873,10 +952,10 @@ export default function Messages() {
                           )}
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
                             {convo.last_message.content || (
-                              convo.last_message.shared_post || convo.last_message.shared_post_id ? "Shared a post" : 
-                              convo.last_message.shared_project || convo.last_message.shared_project_id ? "Shared a project" : 
-                              convo.last_message.audio_url ? "🎤 Voice Message" : 
-                              (convo.last_message.image_url?.includes("giphy.com") || convo.last_message.image_url?.includes("tenor.com") || convo.last_message.image_url?.toLowerCase().endsWith(".gif")) ? "🎬 GIF" : "📷 Image"
+                              convo.last_message.shared_post || convo.last_message.shared_post_id ? "Shared a post" :
+                                convo.last_message.shared_project || convo.last_message.shared_project_id ? "Shared a project" :
+                                  convo.last_message.audio_url ? "🎤 Voice Message" :
+                                    (convo.last_message.image_url?.includes("giphy.com") || convo.last_message.image_url?.includes("tenor.com") || convo.last_message.image_url?.toLowerCase().endsWith(".gif")) ? "🎬 GIF" : "📷 Image"
                             )}
                           </span>
                         </>
@@ -949,7 +1028,7 @@ export default function Messages() {
                     />
                   </button>
                 )}
-                <div 
+                <div
                   onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
                   style={{ cursor: "pointer", flexShrink: 0 }}
                 >
@@ -961,28 +1040,35 @@ export default function Messages() {
                     username={activeConvo.partner.username}
                   />
                 </div>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <div
-                    style={{
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      color: "var(--text-primary)",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      fontFamily: "var(--font-mono)",
-                      letterSpacing: "0.05em"
-                    }}
-                    onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
-                  >
-                    {activeConvo.partner.name.toUpperCase()}
-                    <VerifiedBadge username={activeConvo.partner.username} size="14px" />
+                {messagesLoading && activeConvo.id === 0 ? (
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", animation: "shimmer 1.5s infinite linear" }} />
+                    <div style={{ width: "80px", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", animation: "shimmer 1.5s infinite linear" }} />
                   </div>
-                  <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
-                    @{activeConvo.partner.username || "user"}
+                ) : (
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        color: "var(--text-primary)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        fontFamily: "var(--font-mono)",
+                        letterSpacing: "0.05em"
+                      }}
+                      onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
+                    >
+                      {activeConvo.partner.name.toUpperCase()}
+                      <VerifiedBadge username={activeConvo.partner.username} size="14px" />
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+                      @{activeConvo.partner.username || "user"}
+                    </div>
                   </div>
-                </div>
+                )}
 
               </div>
 
@@ -999,7 +1085,28 @@ export default function Messages() {
                   gap: "16px",
                 }}
               >
-                {messages.length === 0 && activeConvo.id !== 0 && (
+                {messagesLoading ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                    {[...Array(4)].map((_, i) => (
+                      <div key={i} style={{
+                        display: "flex",
+                        flexDirection: i % 2 === 0 ? "row" : "row-reverse",
+                        gap: "12px",
+                        alignItems: "flex-end"
+                      }}>
+                        <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "var(--bg-hover)", animation: "shimmer 1.5s infinite linear" }} />
+                        <div style={{
+                          maxWidth: "60%",
+                          width: "200px",
+                          height: "60px",
+                          backgroundColor: "var(--bg-hover)",
+                          borderRadius: "4px",
+                          animation: "shimmer 1.5s infinite linear"
+                        }} />
+                      </div>
+                    ))}
+                  </div>
+                ) : messages.length === 0 && activeConvo.id !== 0 && (
                   <div
                     style={{
                       textAlign: "center",
@@ -1095,8 +1202,8 @@ export default function Messages() {
                           </div>
                           <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {msg.reply_to.content || (
-                              (msg.reply_to.image_url?.includes("giphy.com") || msg.reply_to.image_url?.includes("tenor.com") || msg.reply_to.image_url?.toLowerCase().endsWith(".gif")) ? "🎬 GIF" : 
-                              msg.reply_to.image_url ? "📷 Image" : ""
+                              (msg.reply_to.image_url?.includes("giphy.com") || msg.reply_to.image_url?.includes("tenor.com") || msg.reply_to.image_url?.toLowerCase().endsWith(".gif")) ? "🎬 GIF" :
+                                msg.reply_to.image_url ? "📷 Image" : ""
                             )}
                           </div>
                         </div>
@@ -1295,16 +1402,16 @@ export default function Messages() {
                         )}
                         {msg.audio_url && (
                           <div style={{ marginTop: msg.image_url ? "8px" : 0, marginBottom: msg.content ? "8px" : 0 }}>
-                            <audio 
-                              src={msg.audio_url} 
-                              controls 
-                              style={{ 
-                                height: "36px", 
+                            <audio
+                              src={msg.audio_url}
+                              controls
+                              style={{
+                                height: "36px",
                                 maxWidth: "220px",
                                 outline: "none",
                                 // make the audio player match the theme slightly better
                                 filter: isMine ? "invert(1) hue-rotate(180deg)" : "invert(0)"
-                              }} 
+                              }}
                             />
                           </div>
                         )}
@@ -1340,7 +1447,7 @@ export default function Messages() {
 
                         {/* Shared Post Preview */}
                         {msg.shared_post && (
-                          <div 
+                          <div
                             onClick={(e) => { e.stopPropagation(); navigate(`/post/${msg.shared_post?.id}`); }}
                             style={{
                               marginTop: msg.content ? "12px" : 0,
@@ -1355,10 +1462,10 @@ export default function Messages() {
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                           >
                             {msg.shared_post.images && msg.shared_post.images[0] && (
-                              <img 
-                                src={msg.shared_post.images[0]} 
-                                alt="" 
-                                style={{ width: "100%", height: "120px", objectFit: "cover" }} 
+                              <img
+                                src={msg.shared_post.images[0]}
+                                alt=""
+                                style={{ width: "100%", height: "120px", objectFit: "cover" }}
                               />
                             )}
                             <div style={{ padding: "12px" }}>
@@ -1377,7 +1484,7 @@ export default function Messages() {
 
                         {/* Shared Project Preview */}
                         {msg.shared_project && (
-                          <div 
+                          <div
                             onClick={(e) => { e.stopPropagation(); navigate(`/project/${msg.shared_project?.id}`); }}
                             style={{
                               marginTop: msg.content ? "12px" : 0,
@@ -1392,10 +1499,10 @@ export default function Messages() {
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                           >
                             {msg.shared_project.cover_image && (
-                              <img 
-                                src={msg.shared_project.cover_image} 
-                                alt="" 
-                                style={{ width: "100%", height: "120px", objectFit: "cover" }} 
+                              <img
+                                src={msg.shared_project.cover_image}
+                                alt=""
+                                style={{ width: "100%", height: "120px", objectFit: "cover" }}
                               />
                             )}
                             <div style={{ padding: "12px" }}>
@@ -1427,7 +1534,7 @@ export default function Messages() {
                             minute: "2-digit",
                           })}
                         </span>
-                        
+
                         <button
                           onClick={() => setReplyingTo(msg)}
                           className="reply-button"
@@ -1466,10 +1573,10 @@ export default function Messages() {
 
                       {/* Reactions Display */}
                       {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                        <div style={{ 
-                          display: "flex", 
-                          flexWrap: "wrap", 
-                          gap: "4px", 
+                        <div style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "4px",
                           marginTop: "2px",
                           alignSelf: isMine ? "flex-end" : "flex-start",
                           zIndex: 2
@@ -1723,27 +1830,52 @@ export default function Messages() {
                   </div>
                 )}
 
-                  <form
-                    onSubmit={handleSendMessage}
-                    style={{ display: "flex", gap: "12px", alignItems: "center", padding: "12px 0 0" }}
+                <form
+                  onSubmit={handleSendMessage}
+                  style={{ display: "flex", gap: "12px", alignItems: "center", padding: "12px 0 0" }}
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageSelect}
+                    accept="image/*"
+                    style={{ display: "none" }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "2px",
+                      border: "0.5px solid var(--border-hairline)",
+                      backgroundColor: "transparent",
+                      color: "var(--text-primary)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      flexShrink: 0
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleImageSelect}
-                      accept="image/*"
-                      style={{ display: "none" }}
-                    />
-                    
+                    <ImageIcon size={30} weight="regular" />
+                  </button>
+
+                  {/* Gif Button */}
+                  <div style={{ position: "relative" }}>
                     <button
                       type="button"
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
                       style={{
                         width: "44px",
                         height: "44px",
                         borderRadius: "2px",
                         border: "0.5px solid var(--border-hairline)",
-                        backgroundColor: "transparent",
+                        backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
                         color: "var(--text-primary)",
                         display: "flex",
                         alignItems: "center",
@@ -1753,57 +1885,32 @@ export default function Messages() {
                         flexShrink: 0
                       }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      onMouseLeave={(e) => {
+                        if (!isGifPickerOpen) e.currentTarget.style.backgroundColor = "transparent";
+                      }}
                     >
-                      <ImageIcon size={30} weight="regular" />
+                      <Gif size={30} weight={isGifPickerOpen ? "fill" : "regular"} />
                     </button>
 
-                    {/* Gif Button */}
-                    <div style={{ position: "relative" }}>
-                      <button
-                        type="button"
-                        onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
-                        style={{
-                          width: "44px",
-                          height: "44px",
-                          borderRadius: "2px",
-                          border: "0.5px solid var(--border-hairline)",
-                          backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
-                          color: "var(--text-primary)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          transition: "all 0.15s ease",
-                          flexShrink: 0
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                        onMouseLeave={(e) => {
-                          if (!isGifPickerOpen) e.currentTarget.style.backgroundColor = "transparent";
-                        }}
-                      >
-                        <Gif size={30} weight={isGifPickerOpen ? "fill" : "regular"} />
-                      </button>
-
-                      {isGifPickerOpen && (
-                        <div style={{ 
-                          position: "absolute", 
-                          bottom: "100%", 
-                          left: 0, 
-                          marginBottom: "12px", 
-                          zIndex: 2000 
-                        }}>
-                          <GifPicker 
-                            onSelect={(gifUrl) => {
-                              // Direct send GIF
-                              handleSendMessage(undefined, gifUrl);
-                              setIsGifPickerOpen(false);
-                            }}
-                            onClose={() => setIsGifPickerOpen(false)}
-                          />
-                        </div>
-                      )}
-                    </div>
+                    {isGifPickerOpen && (
+                      <div style={{
+                        position: "absolute",
+                        bottom: "100%",
+                        left: 0,
+                        marginBottom: "12px",
+                        zIndex: 2000
+                      }}>
+                        <GifPicker
+                          onSelect={(gifUrl) => {
+                            // Direct send GIF
+                            handleSendMessage(undefined, gifUrl);
+                            setIsGifPickerOpen(false);
+                          }}
+                          onClose={() => setIsGifPickerOpen(false)}
+                        />
+                      </div>
+                    )}
+                  </div>
 
                   {/* Mic Button */}
                   {!audioPreviewUrl && (
@@ -2041,7 +2148,7 @@ export default function Messages() {
           >
             <X size={24} weight="bold" />
           </button>
-          
+
           <img
             src={previewImage}
             alt="Preview"
