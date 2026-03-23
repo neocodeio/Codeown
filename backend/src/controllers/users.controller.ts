@@ -403,7 +403,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     console.log("Creating new user in Supabase:", { userId, userInfo });
     
     // Check if new user should be OG (Founding 100)
-    const { count: userCount } = await supabase.from("users").select("id", { count: "exact", head: true });
+    const { count: userCount } = await supabase.from("users").select("id", { count: "exact", head: true }).eq("is_organization", false).not("username", "is", null);
     const isNewUserOG = (userCount || 0) < 100;
 
     const { data: newUser, error } = await supabase
@@ -1170,7 +1170,9 @@ export async function getTotalUserCount(req: Request, res: Response) {
     try {
         const { count, error } = await supabase
             .from("users")
-            .select("id", { count: "exact", head: true });
+            .select("id", { count: "exact", head: true })
+            .eq("is_organization", false)
+            .not("username", "is", null); // Only count builders with a username
 
         if (error) throw error;
         return res.json({ count: count || 0 });

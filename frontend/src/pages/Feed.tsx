@@ -68,7 +68,7 @@ const GoalBanner = () => {
                     letterSpacing: "0.05em",
                     textTransform: "uppercase"
                 }}>
-                     USERS
+                     BUILDERS
                 </span>
             </div>
 
