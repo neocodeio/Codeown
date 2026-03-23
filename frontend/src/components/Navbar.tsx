@@ -186,7 +186,7 @@ export default function Navbar() {
             <div style={{ 
               display: "flex", 
               alignItems: "center", 
-              gap: "6px", 
+              gap: "3px", 
               marginTop: "2px",
               flexWrap: "wrap" 
             }}>
@@ -205,7 +205,7 @@ export default function Navbar() {
                 letterSpacing: "0.05em"
               }}>
                 {activeCount.toString().padStart(2, '0')} BUILDERS ONLINE
-                <span style={{ margin: "0 6px", opacity: 0.3 }}>•</span>
+                <span style={{ margin: "0 4px", opacity: 0.3 }}>•</span>
                 <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).toUpperCase()}</span>
               </span>
             </div>

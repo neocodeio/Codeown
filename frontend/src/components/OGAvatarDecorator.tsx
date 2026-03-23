@@ -31,7 +31,7 @@ export default function OGAvatarDecorator({ children, is_og = false }: OGAvatarD
             lineHeight: 0, 
             width: "max-content",
             height: "max-content",
-            padding: "4px", // Distinct separation
+            padding: "3px", // Distinct separation
             zIndex: 1
         }}>
             {/* The "Founding Ring" - Clean 1px primary border with high-end glow */}
@@ -113,7 +113,7 @@ export default function OGAvatarDecorator({ children, is_og = false }: OGAvatarD
                 color: "var(--bg-page)",
                 fontSize: "7.5px",
                 fontWeight: 900,
-                padding: "5px 0.5px",
+                padding: "4px 0.5px",
                 paddingLeft: "1px",
                 borderRadius: "1.5px",
                 fontFamily: "var(--font-mono)",
