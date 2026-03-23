@@ -18,6 +18,7 @@ import ShareModal from "./ShareModal";
 import SendToChatModal from "./SendToChatModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { toast } from "react-toastify";
+import UserHoverCard from "./UserHoverCard";
 import Lightbox from "./Lightbox";
 
 interface PostCardProps {
@@ -235,16 +236,18 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
     >
       {/* Avatar Col */}
       <div style={{ flexShrink: 0 }}>
-        <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
-          <AvailabilityBadge
-            avatarUrl={post.user?.avatar_url || null}
-            name={post.user?.name || "User"}
-            size={40}
-            isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
-            isOG={post.user?.is_og}
-            username={post.user?.username}
-          />
-        </div>
+        <UserHoverCard userId={post.user_id}>
+          <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
+            <AvailabilityBadge
+              avatarUrl={post.user?.avatar_url || null}
+              name={post.user?.name || "User"}
+              size={40}
+              isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
+              isOG={post.user?.is_og}
+              username={post.user?.username}
+            />
+          </div>
+        </UserHoverCard>
       </div>
 
       {/* Content Col */}
@@ -257,18 +260,21 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
           marginBottom: "6px"
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <span
-              onClick={handleUserClick}
-              style={{
-                fontSize: "14px",
-                fontWeight: 700,
-                color: "var(--text-primary)",
-                letterSpacing: "-0.01em",
-                textTransform: "uppercase"
-              }}
-            >
-              {userName}
-            </span>
+            <UserHoverCard userId={post.user_id}>
+              <span
+                onClick={handleUserClick}
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
+                  letterSpacing: "-0.01em",
+                  textTransform: "uppercase",
+                  cursor: "pointer"
+                }}
+              >
+                {userName}
+              </span>
+            </UserHoverCard>
             <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
             <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
               @{post.user?.username || 'user'}
