@@ -245,7 +245,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             <AvailabilityBadge
                 avatarUrl={avatarUrl}
                 name={user?.fullName || user?.username || "User"}
-                size={44}
+                size={36}
                 username={user?.username}
                 isOG={isOG}
             />

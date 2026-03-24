@@ -227,7 +227,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             <AvailabilityBadge
               avatarUrl={project.user?.avatar_url || null}
               name={userName}
-              size={isMobile ? 40 : 44}
+              size={isMobile ? 32 : 36}
               isOpenToOpportunities={project.user?.is_pro === true && project.user?.is_hirable === true}
               isOG={project.user?.is_og}
               username={project.user?.username}

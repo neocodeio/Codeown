@@ -241,7 +241,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             <AvailabilityBadge
               avatarUrl={post.user?.avatar_url || null}
               name={post.user?.name || "User"}
-              size={40}
+              size={36}
               isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
               isOG={post.user?.is_og}
               username={post.user?.username}
