@@ -539,7 +539,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 backgroundColor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "transparent",
                                 color: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "1.50px solid var(--border-hairline)",
-                                borderRadius: "var(--radius-pill)",
+                                borderRadius: "10px",
                                 fontWeight: 800,
                                 fontSize: "11px",
                                 fontFamily: "var(--font-mono)",
