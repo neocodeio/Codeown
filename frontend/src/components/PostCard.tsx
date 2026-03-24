@@ -456,7 +456,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               count: likeCount, 
               onClick: handleLike, 
               active: isLiked, 
-              activeColor: "var(--text-primary)",
+              activeColor: "#ef4444",
               weight: isLiked ? "fill" as const : "thin" as const
             },
             { 
@@ -489,7 +489,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 fontSize: "12px"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = action.hoverColor || action.activeColor || "var(--text-primary)";
+                e.currentTarget.style.color = action.hoverColor || action.activeColor || (action.icon === Heart ? "#ef4444" : "var(--text-primary)");
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";

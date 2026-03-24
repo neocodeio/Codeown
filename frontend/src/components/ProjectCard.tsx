@@ -417,7 +417,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
               count: likeCount, 
               onClick: handleLike, 
               active: isLiked, 
-              activeColor: "var(--text-primary)",
+              activeColor: "#3b82f6",
               weight: isLiked ? "fill" as const : "thin" as const
             },
             { 
@@ -450,7 +450,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 fontSize: "12px"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = action.hoverColor || action.activeColor || "var(--text-primary)";
+                e.currentTarget.style.color = action.hoverColor || action.activeColor || (action.icon === ArrowCircleUp ? "#3b82f6" : "var(--text-primary)");
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
