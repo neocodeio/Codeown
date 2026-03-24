@@ -9,6 +9,7 @@ import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
 import { validateImageSize } from "../constants/upload";
 import AvailabilityBadge from "./AvailabilityBadge";
+import { compressImage } from "../utils/image";
 
 interface FeedPostComposerProps {
     onCreated: () => void;
@@ -96,7 +97,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             }
         }
 
-        const { compressImage } = await import("../utils/image");
+
 
         Array.from(files).forEach(async (file) => {
             try {
