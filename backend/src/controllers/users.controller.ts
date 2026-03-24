@@ -490,30 +490,8 @@ export async function getUserProfile(req: Request, res: Response) {
             return res.status(500).json({ error: "Failed to fetch user", details: userError.message });
         }
 
-        if (!user) { // Handle case where user is null but no specific error code
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        // Dynamic OG Logic: If is_og is null/false, check if they are in the first 100
-        let userIsOG = user.is_og || false;
-        if (!userIsOG && user.created_at) {
-            const { count } = await supabase
-                .from("users")
-                .select("id", { count: 'exact', head: true })
-                .lt("created_at", user.created_at);
-            
-            if (count !== null && count < 100) {
-                userIsOG = true;
-                // Auto-sync flag to DB for future speed (non-blocking)
-                supabase.from("users").update({ is_og: true }).eq("id", user.id).then(({error}) => {
-                    if (error) console.error("Error auto-syncing OG flag:", error);
-                });
-            }
-        }
-        user.is_og = userIsOG;
-
         // If user not in Supabase, try Clerk
-        let userData = user;
+        let userData: any = user;
         if (!user && process.env.CLERK_SECRET_KEY) {
             try {
                 let clerkUser;
@@ -598,6 +576,33 @@ export async function getUserProfile(req: Request, res: Response) {
 
         if (!userData) {
             return res.status(404).json({ error: "User not found" });
+        }
+
+        // Dynamic OG Logic: If is_og is null/false, check if they are in the first 100
+        let userIsOG = userData.is_og || false;
+        if (!userIsOG && userData.created_at) {
+            const { count: ogCount } = await supabase
+                .from("users")
+                .select("id", { count: 'exact', head: true })
+                .lt("created_at", userData.created_at);
+            
+            if (ogCount !== null && ogCount < 100) {
+                userIsOG = true;
+                // Auto-sync flag to DB for future speed (non-blocking)
+                supabase.from("users").update({ is_og: true }).eq("id", userData.id).then(({error}) => {
+                    if (error) console.error("Error auto-syncing OG flag:", error);
+                });
+            }
+        }
+        
+        // Calculate Founder Rank (join order)
+        let founderNumber = 1;
+        if (userData.created_at) {
+            const { count: fCount } = await supabase
+                .from("users")
+                .select("id", { count: 'exact', head: true })
+                .lt("created_at", userData.created_at);
+            founderNumber = (fCount || 0) + 1;
         }
 
         // For other queries, we need the UUID
@@ -685,16 +690,6 @@ export async function getUserProfile(req: Request, res: Response) {
                     },
                 };
             }
-        }
-
-        // Calculate Founder Rank (join order)
-        let founderNumber = 1;
-        if (userData.created_at) {
-            const { count: founderCount } = await supabase
-                .from("users")
-                .select("id", { count: 'exact', head: true })
-                .lt("created_at", userData.created_at);
-            founderNumber = (founderCount || 0) + 1;
         }
 
         // Build response data
