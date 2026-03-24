@@ -192,21 +192,24 @@ export default function App() {
 
       try {
         const token = await getToken();
-        if (!token) {
-          return;
-        }
+        if (!token) return;
+
         const res = await api.get(`/users/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.data && res.data.onboarding_completed === true) {
-          // Mark locally so we never check again for this user
-          localStorage.setItem(`onboarding_done_${user.id}`, "true");
-        } else if (res.data && res.data.onboarding_completed === false) {
+        
+        if (res.data) {
+          if (res.data.onboarding_completed === true) {
+            localStorage.setItem(`onboarding_done_${user.id}`, "true");
+          } else {
+            navigate("/onboarding", { replace: true });
+          }
+        }
+      } catch (err: any) {
+        // If user not found (404), they likely haven't started onboarding yet
+        if (err.response?.status === 404) {
           navigate("/onboarding", { replace: true });
         }
-        // If onboarding_completed is undefined/missing, do nothing (old user without the field)
-      } catch {
-        // If API fails, don't redirect — avoid breaking existing users
       }
     };
 

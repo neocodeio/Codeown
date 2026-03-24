@@ -6,7 +6,7 @@ import { isClerkEnabled, clerkPublishableKey } from "../lib/clerk";
 export default function SignUpPage() {
   const { isSignedIn, isLoaded } = useClerkUser();
 
-  if (isLoaded && isSignedIn) return <Navigate to="/" replace />;
+  if (isLoaded && isSignedIn) return <Navigate to="/onboarding" replace />;
 
   return (
     <div className="fade-in" style={{
@@ -14,7 +14,7 @@ export default function SignUpPage() {
       justifyContent: "center",
       alignItems: "center",
       minHeight: "100vh",
-      padding: "20px 24px",
+      padding: "200px 24px",
       backgroundColor: "var(--bg-page)"
     }}>
       <div style={{
@@ -31,6 +31,8 @@ export default function SignUpPage() {
             routing="path"
             path="/sign-up"
             signInUrl="/sign-in"
+            afterSignUpUrl="/onboarding"
+            forceRedirectUrl="/onboarding"
             appearance={{
                 variables: {
                   colorPrimary: "#000000",
