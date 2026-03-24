@@ -9,17 +9,17 @@ import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
 import { useFaviconNotification } from "../hooks/useFaviconNotification";
 import api from "../api/axios";
-import { 
-  House, 
-  MagnifyingGlass, 
-  ChatCircle, 
-  Rocket, 
-  User as UserIcon, 
-  Bell, 
-  Plus, 
-  SignOut, 
-  DotsThreeOutline, 
-  SignIn, 
+import {
+  House,
+  MagnifyingGlass,
+  ChatCircle,
+  Rocket,
+  User as UserIcon,
+  Bell,
+  Plus,
+  SignOut,
+  DotsThreeOutline,
+  SignIn,
   UsersThree,
   Sun,
   Moon,
@@ -100,59 +100,59 @@ export default function Navbar() {
 
   // Streak update logic (no longer rendered here, but kept for potential future use)
 
-const StatusBadge = () => {
-  const [activeCount, setActiveCount] = useState(1);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const StatusBadge = () => {
+    const [activeCount, setActiveCount] = useState(1);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
-  useEffect(() => {
-    const fetchActiveCount = async () => {
-      try {
-        const { data } = await api.get("/users/active/count");
-        setActiveCount(data?.count || 1);
-      } catch (e) {
-        setActiveCount(1);
-      }
-    };
+    useEffect(() => {
+      const fetchActiveCount = async () => {
+        try {
+          const { data } = await api.get("/users/active/count");
+          setActiveCount(data?.count || 1);
+        } catch (e) {
+          setActiveCount(1);
+        }
+      };
 
-    fetchActiveCount();
-    const countInterval = setInterval(fetchActiveCount, 30000); // 30s
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+      fetchActiveCount();
+      const countInterval = setInterval(fetchActiveCount, 30000); // 30s
+      const timer = setInterval(() => setCurrentTime(new Date()), 1000);
 
-    return () => {
-      clearInterval(countInterval);
-      clearInterval(timer);
-    };
-  }, []);
+      return () => {
+        clearInterval(countInterval);
+        clearInterval(timer);
+      };
+    }, []);
 
-  return (
-    <div style={{ 
-      display: "flex", 
-      alignItems: "center", 
-      gap: "3px", 
-      marginTop: "2px",
-      flexWrap: "wrap" 
-    }}>
-      <div style={{ 
-        width: "4px", 
-        height: "4px", 
-        borderRadius: "var(--radius-xs)", 
-        backgroundColor: "#22c55e",
-        flexShrink: 0
-      }} />
-      <span style={{ 
-        fontSize: "10px", 
-        fontFamily: "var(--font-mono)",
-        color: "var(--text-secondary)",
-        fontWeight: 700,
-        letterSpacing: "0.05em"
+    return (
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "3px",
+        marginTop: "2px",
+        flexWrap: "wrap"
       }}>
-        {activeCount.toString().padStart(2, '0')} BUILDERS ONLINE
-        <span style={{ margin: "0 4px", opacity: 0.3 }}>•</span>
-        <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).toUpperCase()}</span>
-      </span>
-    </div>
-  );
-};
+        <div style={{
+          width: "4px",
+          height: "4px",
+          borderRadius: "var(--radius-xs)",
+          backgroundColor: "#22c55e",
+          flexShrink: 0
+        }} />
+        <span style={{
+          fontSize: "10px",
+          fontFamily: "var(--font-mono)",
+          color: "var(--text-secondary)",
+          fontWeight: 700,
+          letterSpacing: "0.05em"
+        }}>
+          {activeCount.toString().padStart(2, '0')} BUILDERS ONLINE
+          <span style={{ margin: "0 4px", opacity: 0.3 }}>•</span>
+          <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).toUpperCase()}</span>
+        </span>
+      </div>
+    );
+  };
 
   // Remove periodic ping - React Query handles active count efficiently
   // Only ping when user actively interacts, not on a timer
@@ -460,7 +460,7 @@ const StatusBadge = () => {
               fontFamily: "var(--font-mono)",
               letterSpacing: "0.05em"
             }}
-            aria-label="Sign In"
+              aria-label="Sign In"
             >
               <SignIn size={20} weight="thin" />
               SIGN IN
@@ -517,13 +517,13 @@ const StatusBadge = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
             <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "24px", width: "auto" }} />
-            <span style={{ 
-              fontSize: "14px", 
-              fontWeight: 800, 
-              color: "var(--text-primary)", 
+            <span style={{
+              fontSize: "14px",
+              fontWeight: 800,
+              color: "var(--text-primary)",
               letterSpacing: "0.05em",
               fontFamily: "var(--font-mono)",
-              textTransform: "uppercase" 
+              textTransform: "uppercase"
             }}>
               CODEOWN
             </span>

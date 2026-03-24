@@ -8,7 +8,7 @@ interface OGAvatarDecoratorProps {
 
 const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorProps) => {
     const { theme } = useTheme();
-    
+
     // Support both boolean and string "true" from DB
     const isActuallyOG = is_og === true || String(is_og) === "true";
 
@@ -21,10 +21,10 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
     const shimmerPrimary = theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.1)";
 
     return (
-        <div style={{ 
-            position: "relative", 
+        <div style={{
+            position: "relative",
             display: "inline-block",
-            lineHeight: 0, 
+            lineHeight: 0,
             width: "max-content",
             height: "max-content",
             padding: "3px", // Distinct separation
@@ -38,7 +38,7 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
                 right: 0,
                 bottom: 0,
                 border: `1px solid #e0e0e0`,
-                borderRadius: "var(--radius-xs)", 
+                borderRadius: "var(--radius-xs)",
                 // boxShadow: `0 0 15px ${glowColor}, inset 0 0 5px ${shimmerPrimary}`, 
                 pointerEvents: "none",
                 zIndex: 0,
@@ -54,11 +54,11 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
                     animation: "ogRotate 4s linear infinite",
                     opacity: 0.8
                 }} />
-                
+
                 {/* Floating "Diamond Sparkles" for extra flair */}
                 {[...Array(3)].map((_, i) => (
-                    <div 
-                         key={i}
+                    <div
+                        key={i}
                         style={{
                             position: "absolute",
                             width: "2px",
@@ -72,14 +72,14 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
                             animationDelay: `${i * 1.5}s`,
                             opacity: 0.8,
                             zIndex: 1
-                        }} 
+                        }}
                     />
                 ))}
             </div>
 
             {/* The Avatar Itself */}
-            <div style={{ 
-                position: "relative", 
+            <div style={{
+                position: "relative",
                 zIndex: 1,
                 display: "flex",
                 alignItems: "center",

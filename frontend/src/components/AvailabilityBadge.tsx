@@ -44,7 +44,7 @@ const AvailabilityBadge = memo(({
                     style={{
                         width: "100%",
                         height: "100%",
-                        borderRadius: "var(--radius-xs)",
+                        borderRadius: "100%",
                         position: "relative",
                         overflow: "hidden",
                         backgroundColor: "var(--bg-hover)",
