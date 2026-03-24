@@ -296,7 +296,7 @@ export default function RecommendedUsersSidebar() {
                                                     position: "absolute",
                                                     top: "-4px",
                                                     left: "-4px",
-                                                    padding: "2px 6px",
+                                                    padding: "0px 6px",
                                                     backgroundColor: "var(--text-primary)",
                                                     color: "var(--bg-page)",
                                                     display: "flex",
@@ -306,7 +306,8 @@ export default function RecommendedUsersSidebar() {
                                                     fontFamily: "var(--font-mono)",
                                                     fontWeight: 800,
                                                     letterSpacing: "0.05em",
-                                                    borderRadius: "var(--radius-xs)"
+                                                    borderRadius: "var(--radius-xs)",
+                                                    zIndex: 10,
                                                 }}
                                             >
                                                 {rank}
