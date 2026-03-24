@@ -298,7 +298,7 @@ export default function FeedbackButton() {
           zIndex: 900,
           width: isMobile ? "48px" : "56px",
           height: isMobile ? "48px" : "56px",
-          borderRadius: "var(--radius-lg)",
+          borderRadius: "100%",
           backgroundColor: isMobile ? "var(--text-primary)" : "var(--bg-page)",
           color: isMobile ? "var(--bg-page)" : "var(--text-primary)",
           border: "0.5px solid var(--border-hairline)",
