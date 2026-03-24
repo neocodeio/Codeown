@@ -244,7 +244,7 @@ export default function App() {
         }}
       >
         <ErrorBoundary>
-          <div key={location.pathname}>
+          <div>
             <Suspense fallback={<PageLoader />}>
               <Routes location={location}>
                 <Route path="/" element={<Feed />} />
