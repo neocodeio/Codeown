@@ -690,11 +690,11 @@ export async function getUserProfile(req: Request, res: Response) {
         // Calculate Founder Rank (join order)
         let founderNumber = 1;
         if (userData.created_at) {
-            const { count } = await supabase
+            const { count: founderCount } = await supabase
                 .from("users")
                 .select("id", { count: 'exact', head: true })
                 .lt("created_at", userData.created_at);
-            founderNumber = (count || 0) + 1;
+            founderNumber = (founderCount || 0) + 1;
         }
 
         // Build response data
