@@ -80,7 +80,7 @@ export default function Leaderboard() {
                   gap: "8px", 
                   background: "transparent", 
                   padding: "6px 14px", 
-                  borderRadius: "2px", 
+                  borderRadius: "var(--radius-sm)", 
                   color: "var(--text-primary)", 
                   fontSize: "10px", 
                   fontWeight: 800, 
@@ -110,7 +110,7 @@ export default function Leaderboard() {
                     <div style={{
                         gridRow: isMobile ? "auto" : "span 2",
                         background: "var(--text-primary)",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         padding: isMobile ? "32px" : "56px",
                         position: "relative",
                         overflow: "hidden",
@@ -119,7 +119,7 @@ export default function Leaderboard() {
                     }}>
                         <div style={{ position: "relative", zIndex: 1 }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "48px" }}>
-                                <div style={{ border: "0.5px solid rgba(255,255,255,0.2)", width: "48px", height: "48px", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <div style={{ border: "0.5px solid rgba(255,255,255,0.2)", width: "48px", height: "48px", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                     <Trophy size={28} weight="thin" color="currentColor" />
                                 </div>
                                 <div style={{ textAlign: "right" }}>
@@ -129,7 +129,7 @@ export default function Leaderboard() {
                             </div>
 
                             <div style={{ display: "flex", alignItems: "center", gap: "24px", marginBottom: "48px" }}>
-                                <img src={top3[0].avatar_url || `https://ui-avatars.com/api/?name=${top3[0].name}&background=random`} style={{ width: "80px", height: "80px", borderRadius: "2px", border: "0.5px solid rgba(255,255,255,0.2)" }} alt="" />
+                                <img src={top3[0].avatar_url || `https://ui-avatars.com/api/?name=${top3[0].name}&background=random`} style={{ width: "80px", height: "80px", borderRadius: "var(--radius-sm)", border: "0.5px solid rgba(255,255,255,0.2)" }} alt="" />
                                 <div style={{ minWidth: 0 }}>
                                     <h2 style={{ fontSize: "24px", fontWeight: 800, margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
                                         {top3[0].name}
@@ -146,10 +146,10 @@ export default function Leaderboard() {
                             </div>
 
                             {top3[0].latest_project && (
-                                <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "2px", padding: "24px", border: "0.5px solid rgba(255,255,255,0.1)" }}>
+                                <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "var(--radius-sm)", padding: "24px", border: "0.5px solid rgba(255,255,255,0.1)" }}>
                                     <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", fontWeight: 700, marginBottom: "16px", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>Latest Project</div>
                                     <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                                        <div style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "2px", border: "0.5px solid rgba(255,255,255,0.1)", overflow: "hidden" }}>
+                                        <div style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "0.5px solid rgba(255,255,255,0.1)", overflow: "hidden" }}>
                                             <img src={top3[0].latest_project.cover_image || "/placeholder.png"} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
                                         </div>
                                         <div style={{ minWidth: 0 }}>
@@ -168,7 +168,7 @@ export default function Leaderboard() {
                     {top3.slice(1).map((user, idx) => (
                         <div key={user.id} style={{
                             background: "var(--bg-page)",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             padding: "32px 24px",
                             border: "0.5px solid var(--border-hairline)",
                             display: "flex",
@@ -176,11 +176,11 @@ export default function Leaderboard() {
                             justifyContent: "center",
                             position: "relative"
                         }}>
-                            <div style={{ position: "absolute", top: "16px", right: "20px", border: "0.5px solid var(--border-hairline)", padding: "4px 10px", borderRadius: "2px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+                            <div style={{ position: "absolute", top: "16px", right: "20px", border: "0.5px solid var(--border-hairline)", padding: "4px 10px", borderRadius: "var(--radius-sm)", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
                                 RANK #{idx + 2}
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-                                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "56px", height: "56px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} alt="" />
+                                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "56px", height: "56px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} alt="" />
                                 <div>
                                     <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: "-0.01em" }}>{user.name}</h3>
                                     <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 800, fontFamily: "var(--font-mono)", marginTop: "2px" }}>{user.pulse_score.toString().padStart(4, '0')}P</div>
@@ -198,7 +198,7 @@ export default function Leaderboard() {
                     ))}
 
                     {/* Simple Info Block */}
-                    <div style={{ background: "var(--bg-hover)", borderRadius: "2px", padding: "32px 24px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "20px", border: "0.5px solid var(--border-hairline)" }}>
+                    <div style={{ background: "var(--bg-hover)", borderRadius: "var(--radius-sm)", padding: "32px 24px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "20px", border: "0.5px solid var(--border-hairline)" }}>
                         <Flame size={32} weight="thin" />
                         <div>
                             <div style={{ fontWeight: 800, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Persistence Pays</div>
@@ -214,7 +214,7 @@ export default function Leaderboard() {
                 <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>{theRest.length} ACTIVE DEVELOPERS</span>
             </div>
 
-            <div style={{ background: "var(--bg-page)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", marginBottom: "48px" }}>
+            <div style={{ background: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", marginBottom: "48px" }}>
                 {theRest.length === 0 ? (
                     <div style={{ padding: "120px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
                         <ChartBar size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "24px", display: "block", margin: "0 auto" }} />
@@ -252,7 +252,7 @@ function StatItem({ icon, label, value, isDark = false }: { icon: any, label: st
         <div style={{
             background: isDark ? "rgba(255,255,255,0.03)" : "var(--bg-hover)",
             padding: "16px",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             border: isDark ? "0.5px solid rgba(255,255,255,0.08)" : "0.5px solid var(--border-hairline)"
         }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", color: isDark ? "rgba(255,255,255,0.4)" : "var(--text-tertiary)", fontSize: "9px", fontWeight: 800, textTransform: "uppercase", marginBottom: "8px", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
@@ -283,7 +283,7 @@ function LeaderboardRow({ user, rank, isMobile }: { user: LeaderboardUser, rank:
         >
             <div style={{ width: "40px", fontSize: "12px", fontWeight: 800, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>{rank.toString().padStart(2, '0')}</div>
             <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1 }}>
-                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "40px", height: "40px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} alt="" />
+                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "40px", height: "40px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} alt="" />
                 <div>
                     <div style={{ fontWeight: 800, fontSize: "14px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px", textTransform: "uppercase" }}>
                         {user.name}
@@ -313,7 +313,7 @@ function LeaderboardRow({ user, rank, isMobile }: { user: LeaderboardUser, rank:
                     transform: "translateX(-50%)",
                     zIndex: 100,
                     background: "var(--text-primary)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     padding: "10px 14px",
                     boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
                     border: "0.5px solid var(--text-primary)",
@@ -324,7 +324,7 @@ function LeaderboardRow({ user, rank, isMobile }: { user: LeaderboardUser, rank:
                     whiteSpace: "nowrap",
                     animation: "tooltip-pop 0.2s ease-out"
                 }}>
-                    <img src={user.latest_project.cover_image || "/placeholder.png"} style={{ width: "48px", height: "30px", objectFit: "cover", borderRadius: "2px", border: "0.5px solid rgba(255,255,255,0.1)" }} alt="" />
+                    <img src={user.latest_project.cover_image || "/placeholder.png"} style={{ width: "48px", height: "30px", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "0.5px solid rgba(255,255,255,0.1)" }} alt="" />
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         <div style={{ fontSize: "9px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>MASTERPIECE</div>
                         <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--bg-page)" }}>{user.latest_project.title}</div>

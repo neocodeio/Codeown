@@ -51,7 +51,7 @@ export default function LinkPreview({ url }: { url: string }) {
                 marginTop: "16px",
                 height: "100px",
                 backgroundColor: "var(--bg-hover)",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 border: "0.5px solid var(--border-hairline)",
                 display: "flex",
                 alignItems: "center",
@@ -73,7 +73,7 @@ export default function LinkPreview({ url }: { url: string }) {
             style={{
                 marginTop: "16px",
                 display: "flex",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 border: "0.5px solid var(--border-hairline)",
                 overflow: "hidden",
                 textDecoration: "none",
@@ -127,7 +127,7 @@ export default function LinkPreview({ url }: { url: string }) {
                         <img
                             src={metadata.favicon}
                             alt=""
-                            style={{ width: "14px", height: "14px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}
+                            style={{ width: "14px", height: "14px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}
                             onError={(e) => (e.currentTarget.style.display = "none")}
                         />
                     )}

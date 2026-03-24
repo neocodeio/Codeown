@@ -15,7 +15,7 @@ export function PostCardSkeleton() {
           style={{
             width: "44px",
             height: "44px",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             backgroundColor: "var(--bg-hover)",
             animation: "pulse 1.5s ease-in-out infinite",
           }}
@@ -30,7 +30,7 @@ export function PostCardSkeleton() {
               width: "120px",
               height: "16px",
               backgroundColor: "var(--bg-hover)",
-              borderRadius: "1px",
+              borderRadius: "var(--radius-xs)",
               animation: "pulse 1.5s ease-in-out infinite",
             }}
           />
@@ -39,7 +39,7 @@ export function PostCardSkeleton() {
               width: "80px",
               height: "14px",
               backgroundColor: "var(--bg-hover)",
-              borderRadius: "1px",
+              borderRadius: "var(--radius-xs)",
               animation: "pulse 1.5s ease-in-out infinite",
               opacity: 0.6
             }}
@@ -51,7 +51,7 @@ export function PostCardSkeleton() {
             width: "80%",
             height: "18px",
             backgroundColor: "var(--bg-hover)",
-            borderRadius: "1px",
+            borderRadius: "var(--radius-xs)",
             marginBottom: "16px",
             animation: "pulse 1.5s ease-in-out infinite",
           }}
@@ -63,7 +63,7 @@ export function PostCardSkeleton() {
               width: "100%",
               height: "14px",
               backgroundColor: "var(--bg-hover)",
-              borderRadius: "1px",
+              borderRadius: "var(--radius-xs)",
               animation: "pulse 1.5s ease-in-out infinite",
               opacity: 0.4
             }}
@@ -73,7 +73,7 @@ export function PostCardSkeleton() {
               width: "90%",
               height: "14px",
               backgroundColor: "var(--bg-hover)",
-              borderRadius: "1px",
+              borderRadius: "var(--radius-xs)",
               animation: "pulse 1.5s ease-in-out infinite",
               opacity: 0.4
             }}
@@ -88,7 +88,7 @@ export function PostCardSkeleton() {
                 width: "48px",
                 height: "16px",
                 backgroundColor: "var(--bg-hover)",
-                borderRadius: "1px",
+                borderRadius: "var(--radius-xs)",
                 animation: "pulse 1.5s ease-in-out infinite",
                 opacity: 0.3
               }}
@@ -112,7 +112,7 @@ export function ProfileSkeleton() {
     <div
       style={{
         backgroundColor: "var(--bg-page)",
-        borderRadius: "2px",
+        borderRadius: "var(--radius-sm)",
         padding: "48px",
         marginBottom: "24px",
         boxShadow: "none",
@@ -124,7 +124,7 @@ export function ProfileSkeleton() {
         style={{
           width: "128px",
           height: "128px",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-sm)",
           backgroundColor: "var(--bg-hover)",
           margin: "0 auto 32px",
           animation: "pulse 1.5s ease-in-out infinite",
@@ -135,7 +135,7 @@ export function ProfileSkeleton() {
           width: "240px",
           height: "32px",
           backgroundColor: "var(--bg-hover)",
-          borderRadius: "1px",
+          borderRadius: "var(--radius-xs)",
           margin: "0 auto 16px",
           animation: "pulse 1.5s ease-in-out infinite",
         }}
@@ -145,7 +145,7 @@ export function ProfileSkeleton() {
           width: "180px",
           height: "18px",
           backgroundColor: "var(--bg-hover)",
-          borderRadius: "1px",
+          borderRadius: "var(--radius-xs)",
           margin: "0 auto",
           animation: "pulse 1.5s ease-in-out infinite",
           opacity: 0.6

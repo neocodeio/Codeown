@@ -262,7 +262,7 @@ export default function Search() {
             alignItems: "center",
             backgroundColor: "var(--bg-page)",
             border: "0.5px solid var(--border-hairline)",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             padding: "8px 8px 8px 16px",
             gap: "12px",
             height: "56px",
@@ -302,7 +302,7 @@ export default function Search() {
                   backgroundColor: showOnlyCofounder ? "var(--text-primary)" : "transparent",
                   color: showOnlyCofounder ? "var(--bg-page)" : "var(--text-tertiary)",
                   border: showOnlyCofounder ? "none" : "0.5px solid var(--border-hairline)",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   padding: "8px 12px",
                   fontSize: "10px",
                   fontWeight: 800,
@@ -330,7 +330,7 @@ export default function Search() {
                   backgroundColor: "var(--text-primary)",
                   color: "var(--bg-page)",
                   border: "none",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   padding: "10px 16px",
                   fontSize: "11px",
                   fontWeight: 700,
@@ -354,7 +354,7 @@ export default function Search() {
                   top: "120%",
                   right: 0,
                   backgroundColor: "var(--bg-page)",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "0.5px solid var(--border-hairline)",
                   padding: "4px",
                   minWidth: "160px",
@@ -376,7 +376,7 @@ export default function Search() {
                         border: "none",
                         background: activeFilter === opt.id ? "var(--bg-hover)" : "transparent",
                         color: "var(--text-primary)",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         fontWeight: 700,
                         fontSize: "11px",
                         cursor: "pointer",
@@ -425,7 +425,7 @@ export default function Search() {
                         justifyContent: "space-between",
                         padding: "16px 20px",
                         backgroundColor: "transparent",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         cursor: "pointer",
                         transition: "all 0.15s ease",
                         borderBottom: "0.5px solid var(--border-hairline)"
@@ -449,7 +449,7 @@ export default function Search() {
                           padding: "8px",
                           cursor: "pointer",
                           color: "#cbd5e1",
-                          borderRadius: "8px",
+                          borderRadius: "var(--radius-sm)",
                           transition: "all 0.2s"
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.color = "#ef4444"}
@@ -490,7 +490,7 @@ export default function Search() {
                 <span
                   style={{
                     padding: "4px 8px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     backgroundColor: "var(--bg-hover)",
                     fontWeight: 700,
                     color: "var(--text-primary)",
@@ -521,7 +521,7 @@ export default function Search() {
                     onClick={() => setActiveFilter(opt.id as FilterType)}
                     style={{
                       padding: "8px 16px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       border: "0.5px solid",
                       borderColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--border-hairline)",
                       backgroundColor: activeFilter === opt.id ? "var(--text-primary)" : "transparent",
@@ -544,7 +544,7 @@ export default function Search() {
                     onClick={() => setShowOnlyCofounder(!showOnlyCofounder)}
                     style={{
                       padding: "8px 16px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       border: "0.5px solid",
                       borderColor: showOnlyCofounder ? "var(--text-primary)" : "var(--border-hairline)",
                       backgroundColor: showOnlyCofounder ? "var(--text-primary)" : "transparent",
@@ -569,7 +569,7 @@ export default function Search() {
                 <div
                   style={{
                     display: "inline-flex",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     border: "0.5px solid var(--border-hairline)",
                     overflow: "hidden",
                   }}
@@ -613,7 +613,7 @@ export default function Search() {
                     onClick={() => navigate(user.username ? `/${user.username}` : `/user/${user.id}`)}
                     style={{
                       border: "0.5px solid var(--border-hairline)",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       padding: "32px 24px",
                       display: "flex",
                       flexDirection: "column",
@@ -651,7 +651,7 @@ export default function Search() {
                         backgroundColor: currentUserFollowing.includes(user.id) ? "transparent" : "var(--text-primary)",
                         color: currentUserFollowing.includes(user.id) ? "var(--text-primary)" : "var(--bg-page)",
                         border: currentUserFollowing.includes(user.id) ? "0.5px solid var(--border-hairline)" : "none",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         padding: "10px 24px",
                         fontWeight: 800,
                         fontSize: "11px",
@@ -705,7 +705,7 @@ function EmptyState({ type }: { type: string }) {
       padding: "80px 40px",
       backgroundColor: "transparent",
       border: "0.5px solid var(--border-hairline)",
-      borderRadius: "2px",
+      borderRadius: "var(--radius-sm)",
       color: "var(--text-tertiary)"
     }}>
       <div style={{ 

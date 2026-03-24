@@ -94,7 +94,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                         width: "100%",
                         aspectRatio: "1 / 1.58",
                         background: "#000000",
-                        borderRadius: "16px",
+                        borderRadius: "var(--radius-lg)",
                         border: "0.5px solid rgba(255, 255, 255, 0.15)",
                         boxShadow: "0 40px 80px -20px rgba(0, 0, 0, 0.8)",
                         padding: "24px 28px",
@@ -121,7 +121,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             </div>
                             <div style={{ fontSize: "7px", opacity: 0.3, marginTop: "2px" }}>CORE ARCHIVE • v4.0.0</div>
                         </div>
-                        <div style={{ fontSize: "9px", fontWeight: 800, opacity: 0.4, border: "0.5px solid rgba(255,255,255,0.2)", padding: "7px 8px", borderRadius: "2px", letterSpacing: "0.1em" }}>DEVELOPER ID</div>
+                        <div style={{ fontSize: "9px", fontWeight: 800, opacity: 0.4, border: "0.5px solid rgba(255,255,255,0.2)", padding: "7px 8px", borderRadius: "var(--radius-sm)", letterSpacing: "0.1em" }}>DEVELOPER ID</div>
 
                     </div>
 
@@ -132,13 +132,13 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                 height: "110px",
                                 background: "rgba(255,255,255,0.03)",
                                 border: "0.5px solid rgba(255,255,255,0.1)",
-                                borderRadius: "4px",
+                                borderRadius: "var(--radius-sm)",
                                 padding: "4px"
                             }}>
                                 <img
                                     src={avatarUrl}
                                     alt=""
-                                    style={{ width: "100%", height: "100%", borderRadius: "2px", objectFit: "cover", filter: "grayscale(1) brightness(1.1)" }}
+                                    style={{ width: "100%", height: "100%", borderRadius: "var(--radius-xs)", objectFit: "cover", filter: "grayscale(1) brightness(1.1)" }}
                                     crossOrigin="anonymous"
                                 />
                             </div>
@@ -188,7 +188,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                 ))}
                             </div>
                         </div>
-                        <div style={{ padding: "3px", backgroundColor: "#fff", borderRadius: "1px" }}>
+                        <div style={{ padding: "3px", backgroundColor: "#fff", borderRadius: "var(--radius-xs)" }}>
                             <img src={qrCodeUrl} alt="" style={{ width: "42px", height: "42px", display: "block" }} crossOrigin="anonymous" />
                         </div>
                     </div>
@@ -207,7 +207,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                 backgroundColor: "#fff",
                                 color: "#000",
                                 border: "none",
-                                borderRadius: "8px",
+                                borderRadius: "var(--radius-sm)",
                                 fontSize: "12px",
                                 fontWeight: 900,
                                 fontFamily: "var(--font-mono)",
@@ -230,7 +230,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                 backgroundColor: "rgba(255, 255, 255, 0.05)",
                                 color: "#fff",
                                 border: "0.5px solid rgba(255, 255, 255, 0.2)",
-                                borderRadius: "8px",
+                                borderRadius: "var(--radius-sm)",
                                 fontSize: "11px",
                                 fontWeight: 800,
                                 fontFamily: "var(--font-mono)",

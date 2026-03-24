@@ -74,7 +74,7 @@ const Lightbox: React.FC<LightboxProps> = ({ isOpen, onClose, imageSrc, altText 
                     maxWidth: '90%',
                     maxHeight: '90vh',
                     objectFit: 'contain',
-                    borderRadius: '4px',
+                    borderRadius: "var(--radius-md)",
                     boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
                     animation: 'zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                 }}

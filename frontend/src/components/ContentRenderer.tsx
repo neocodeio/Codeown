@@ -236,7 +236,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         while ((match = regex.exec(p)) !== null) {
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
           res.push(
-            <code key={`ic-${key++}`} style={{ backgroundColor: "var(--bg-hover)", padding: "2px 6px", borderRadius: "2px", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", fontSize: "0.9em", fontFamily: "var(--font-mono)" }}>
+            <code key={`ic-${key++}`} style={{ backgroundColor: "var(--bg-hover)", padding: "2px 6px", borderRadius: "var(--radius-sm)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", fontSize: "0.9em", fontFamily: "var(--font-mono)" }}>
               {match[1]}
             </code>
           );
@@ -290,7 +290,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
                 fontWeight: 700, 
                 backgroundColor: "var(--bg-hover)", 
                 padding: "0 4px", 
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.95em"
               }}
@@ -351,7 +351,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
                   style={{ 
                     maxWidth: "100%", 
                     maxHeight: "360px", 
-                    borderRadius: "4px", 
+                    borderRadius: "var(--radius-sm)", 
                     border: "0.5px solid var(--border-hairline)",
                     display: "block",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1)"

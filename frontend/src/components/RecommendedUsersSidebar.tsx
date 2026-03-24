@@ -115,7 +115,7 @@ export default function RecommendedUsersSidebar() {
                 .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
                 .sidebar-title { font-size: 11px; font-family: var(--font-mono); font-weight: 800; color: var(--text-tertiary); margin: 0; letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
                 .sidebar-item { transition: opacity 0.15s ease; }
-                .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: 2px; animation: skeleton-pulse 2s infinite ease-in-out; }
+                .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: var(--radius-sm); animation: skeleton-pulse 2s infinite ease-in-out; }
                 @keyframes skeleton-pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
             `}</style>
 
@@ -198,7 +198,7 @@ export default function RecommendedUsersSidebar() {
                                     style={{
                                         padding: "0 12px",
                                         height: "28px",
-                                        borderRadius: "2px",
+                                        borderRadius: "var(--radius-md)",
                                         backgroundColor: user.isFollowing ? "transparent" : "var(--text-primary)",
                                         color: user.isFollowing ? "var(--text-primary)" : "var(--bg-page)",
                                         border: "0.5px solid var(--border-hairline)",
@@ -306,7 +306,7 @@ export default function RecommendedUsersSidebar() {
                                                     fontFamily: "var(--font-mono)",
                                                     fontWeight: 800,
                                                     letterSpacing: "0.05em",
-                                                    borderRadius: "1px"
+                                                    borderRadius: "var(--radius-xs)"
                                                 }}
                                             >
                                                 {rank}
@@ -382,7 +382,7 @@ export default function RecommendedUsersSidebar() {
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         {projects.map(project => (
                             <Link key={project.id} to={`/project/${project.id}`} style={{ display: "flex", gap: "16px", textDecoration: "none" }} className="sidebar-item">
-                                <div style={{ width: "44px", height: "44px", borderRadius: "2px", overflow: "hidden", backgroundColor: "var(--bg-hover)", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}>
+                                <div style={{ width: "44px", height: "44px", borderRadius: "var(--radius-sm)", overflow: "hidden", backgroundColor: "var(--bg-hover)", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}>
                                     {project.cover_image ? (
                                         <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
                                     ) : (

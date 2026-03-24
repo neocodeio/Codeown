@@ -123,7 +123,7 @@ export default function Changelog() {
                     padding: "30px",
                     backgroundColor: "var(--bg-hover)",
                     border: "1px solid var(--border-hairline)",
-                    borderRadius: "2px"
+                    borderRadius: "var(--radius-sm)"
                 }}>
                     <h2 style={{ 
                         fontSize: "13px", 
@@ -146,7 +146,7 @@ export default function Changelog() {
                                 padding: "12px 16px",
                                 backgroundColor: "var(--bg-page)",
                                 border: "0.5px solid var(--border-hairline)",
-                                borderRadius: "1px",
+                                borderRadius: "var(--radius-xs)",
                                 color: "var(--text-primary)",
                                 fontFamily: "var(--font-mono)",
                                 fontSize: "13px",
@@ -161,7 +161,7 @@ export default function Changelog() {
                                 padding: "16px",
                                 backgroundColor: "var(--bg-page)",
                                 border: "0.5px solid var(--border-hairline)",
-                                borderRadius: "1px",
+                                borderRadius: "var(--radius-xs)",
                                 color: "var(--text-primary)",
                                 fontFamily: "inherit",
                                 fontSize: "14px",
@@ -178,7 +178,7 @@ export default function Changelog() {
                                 backgroundColor: newContent.trim() ? "var(--text-primary)" : "transparent",
                                 color: newContent.trim() ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "1.5px solid var(--border-hairline)",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-sm)",
                                 fontWeight: 900,
                                 fontSize: "11px",
                                 fontFamily: "var(--font-mono)",
@@ -226,7 +226,7 @@ export default function Changelog() {
                                     fontSize: "11px",
                                     fontWeight: 900,
                                     fontFamily: "var(--font-mono)",
-                                    borderRadius: "1px",
+                                    borderRadius: "var(--radius-xs)",
                                     textTransform: "uppercase"
                                 }}>
                                     {log.version}

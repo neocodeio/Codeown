@@ -365,7 +365,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 className="modal-content"
                 style={{
                     backgroundColor: "var(--bg-page)",
-                    borderRadius: isMobile ? "0" : "2px",
+                    borderRadius: isMobile ? "0" : "var(--radius-lg)",
                     width: "100%",
                     maxWidth: isMobile ? "100%" : "680px",
                     height: isMobile ? "100dvh" : "auto",
@@ -390,7 +390,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         width: 100%;
                         padding: 14px 18px;
                         border: 0.5px solid var(--border-hairline);
-                        border-radius: 2px;
+                        border-radius: var(--radius-sm);
                         font-size: 14px;
                         transition: all 0.15s ease;
                         background-color: var(--bg-hover);
@@ -470,7 +470,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             backgroundColor: "transparent",
                             color: "#ef4444",
                             padding: "16px 20px",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             fontSize: "11px",
                             fontWeight: 700,
                             fontFamily: "var(--font-mono)",
@@ -529,7 +529,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 onClick={handleAddTech}
                                 style={{
                                     padding: "0 24px",
-                                    borderRadius: "2px",
+                                    borderRadius: "var(--radius-sm)",
                                     fontSize: "11px",
                                     fontWeight: 800,
                                     cursor: "pointer",
@@ -548,7 +548,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         </div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                             {formData.technologies_used.map((tech, index) => (
-                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "2px", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
                                     {tech}
                                     <button
                                         type="button"
@@ -591,7 +591,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 onClick={handleAddContributor}
                                 style={{
                                     padding: "0 24px",
-                                    borderRadius: "2px",
+                                    borderRadius: "var(--radius-sm)",
                                     fontSize: "11px",
                                     fontWeight: 800,
                                     cursor: "pointer",
@@ -610,7 +610,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         </div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                             {(formData.contributors || []).map((contributor, index) => (
-                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "2px", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
                                     @{contributor}
                                     <VerifiedBadge username={contributor} size="12px" />
                                     <button
@@ -664,7 +664,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     <div style={{
                                         width: "100%", height: "100%",
                                         border: "0.5px solid var(--border-hairline)",
-                                        borderRadius: "2px",
+                                        borderRadius: "var(--radius-xs)",
                                         backgroundColor: formData.looking_for_contributors ? "var(--text-primary)" : "transparent",
                                         display: "flex", alignItems: "center", justifyContent: "center"
                                     }}>
@@ -700,7 +700,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                             border: "0.5px solid var(--border-hairline)",
                                             color: fetchingGitHub || !formData.github_repo ? "var(--text-tertiary)" : "var(--text-primary)",
                                             padding: "6px 14px",
-                                            borderRadius: "2px",
+                                            borderRadius: "var(--radius-sm)",
                                             fontSize: "10px",
                                             fontWeight: 800,
                                             fontFamily: "var(--font-mono)",
@@ -756,7 +756,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 Cover Image
                             </label>
                             {formData.cover_image && (
-                                <div style={{ marginBottom: "16px", borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
+                                <div style={{ marginBottom: "16px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                                     <img
                                         src={formData.cover_image}
                                         alt="Cover"
@@ -810,7 +810,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         onClick={onClose}
                         style={{ 
                             padding: isMobile ? "12px 16px" : "14px 24px", 
-                            borderRadius: "2px", 
+                            borderRadius: "var(--radius-sm)", 
                             fontSize: isMobile ? "10px" : "11px", 
                             fontWeight: 800, 
                             transition: "all 0.15s ease", 
@@ -833,7 +833,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         disabled={loading}
                         style={{ 
                             padding: isMobile ? "12px 16px" : "14px 32px", 
-                            borderRadius: "2px", 
+                            borderRadius: "var(--radius-sm)", 
                             fontSize: isMobile ? "10px" : "11px", 
                             fontWeight: 800, 
                             transition: "all 0.15s ease", 

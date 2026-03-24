@@ -14,9 +14,9 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
 
     if (!isActuallyOG) return <>{children}</>;
 
-    const glowColor = theme === "dark" 
-        ? "rgba(255, 255, 255, 0.45)" 
-        : "rgba(0, 0, 0, 0.2)";
+    // const glowColor = theme === "dark" 
+    //     ? "rgba(255, 255, 255, 0.45)" 
+    //     : "rgba(0, 0, 0, 0.2)";
     const ringColor = "var(--text-primary)";
     const shimmerPrimary = theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.1)";
 
@@ -39,7 +39,7 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
                 bottom: 0,
                 border: `1px solid #e0e0e0`,
                 borderRadius: "var(--radius-xs)", 
-                boxShadow: `0 0 15px ${glowColor}, inset 0 0 5px ${shimmerPrimary}`, 
+                // boxShadow: `0 0 15px ${glowColor}, inset 0 0 5px ${shimmerPrimary}`, 
                 pointerEvents: "none",
                 zIndex: 0,
                 overflow: "hidden"
@@ -64,7 +64,7 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
                             width: "2px",
                             height: "2px",
                             backgroundColor: "#fff",
-                            borderRadius: "50%",
+                            borderRadius: "var(--radius-sm)",
                             top: "50%",
                             left: "50%",
                             boxShadow: "0 0 5px #fff",
@@ -99,7 +99,7 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
                 fontWeight: 900,
                 padding: "4px 0.5px",
                 paddingLeft: "1px",
-                borderRadius: "1.5px",
+                borderRadius: "var(--radius-xs)",
                 fontFamily: "var(--font-mono)",
                 zIndex: 10,
                 border: "1px solid #000",

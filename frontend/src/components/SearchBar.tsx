@@ -131,7 +131,7 @@ export default function SearchBar() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     <span style={{ fontSize: "13px", fontWeight: 700, color: "#334155" }}>{h}</span>
                   </div>
-                  <button onClick={(e) => removeFromHistory(e, h)} style={{ border: "none", background: "none", padding: "4px 8px", cursor: "pointer", color: "#94a3b8", borderRadius: "8px" }} onMouseEnter={(e) => e.currentTarget.style.color = "#ef4444"}>
+                  <button onClick={(e) => removeFromHistory(e, h)} style={{ border: "none", background: "none", padding: "4px 8px", cursor: "pointer", color: "#94a3b8", borderRadius: "var(--radius-sm)" }} onMouseEnter={(e) => e.currentTarget.style.color = "#ef4444"}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 </div>

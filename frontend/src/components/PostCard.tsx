@@ -295,7 +295,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     color: "var(--text-tertiary)",
                     cursor: "pointer",
                     padding: "4px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-md)",
                     transition: "all 0.15s ease"
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
@@ -307,7 +307,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               {isMenuOpen && (
                   <div style={{
                     position: "absolute", top: "100%", right: 0,
-                    backgroundColor: "var(--bg-page)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)",
+                    backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)",
                     boxShadow: "none", zIndex: 10, padding: "4px", minWidth: "160px"
                   }}>
                     {[
@@ -317,7 +317,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     ].map((item, i) => (
                       <button key={i} onClick={item.onClick} style={{
                         width: "100%", padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px",
-                        border: "none", background: "none", cursor: "pointer", borderRadius: "2px",
+                        border: "none", background: "none", cursor: "pointer", borderRadius: "var(--radius-sm)",
                         fontSize: "11px", fontWeight: 800, color: item.color, fontFamily: "var(--font-mono)", textTransform: "uppercase"
                       }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
@@ -343,7 +343,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         </div>
 
         {post.images && post.images.length > 0 && (
-          <div style={{ borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px" }}>
+          <div style={{ borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px" }}>
             <ImageSlider images={post.images} onImageClick={handleImageClick} />
           </div>
         )}
@@ -355,7 +355,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             padding: "20px",
             backgroundColor: "var(--bg-hover)",
             border: "0.5px solid var(--border-hairline)",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             display: "flex",
             flexDirection: "column",
             gap: "12px"
@@ -384,7 +384,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       padding: "14px 16px",
                       backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
                       border: "0.5px solid var(--border-hairline)",
-                      borderRadius: "1px",
+                      borderRadius: "var(--radius-sm)",
                       cursor: votedOption !== null ? "default" : "pointer",
                       textAlign: "left",
                       overflow: "hidden",

@@ -241,7 +241,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
           minHeight,
           padding: transparent ? "0" : "16px",
           border: transparent ? "none" : "0.5px solid var(--border-hairline)",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-sm)",
           fontSize: transparent ? "18px" : "14px",
           fontFamily: "var(--font-main)",
           resize: "none",
@@ -267,7 +267,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
             right: 0,
             marginTop: "8px",
             backgroundColor: "var(--bg-page)",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             border: "0.5px solid var(--border-hairline)",
             boxShadow: "none",
             maxHeight: "300px",
@@ -303,7 +303,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                   <div style={{
                     width: "36px",
                     height: "36px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     backgroundColor: "var(--bg-hover)",
                     border: "0.5px solid var(--border-hairline)",
                     display: "flex",
@@ -323,7 +323,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                     style={{
                       width: "36px",
                       height: "36px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       objectFit: "cover",
                       border: "0.5px solid var(--border-hairline)",
                     }}

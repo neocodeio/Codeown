@@ -13,7 +13,7 @@ export default function WelcomeCard() {
             className="fade-in slide-up welcome-card-minimal"
             style={{
                 backgroundColor: "var(--bg-card)",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 padding: isMobile ? "28px" : "40px",
                 marginBottom: "48px",
                 position: "relative",
@@ -46,7 +46,7 @@ export default function WelcomeCard() {
                             padding: "6px 14px",
                             backgroundColor: "var(--bg-hover)",
                             color: "var(--text-tertiary)",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             fontSize: "10px",
                             fontWeight: 800,
                             letterSpacing: "0.08em",
@@ -96,7 +96,7 @@ export default function WelcomeCard() {
                             onClick={() => window.dispatchEvent(new CustomEvent("openProjectModal"))}
                             style={{
                                 padding: "14px 28px",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-sm)",
                                 backgroundColor: "var(--text-primary)",
                                 border: "none",
                                 color: "var(--bg-page)",
@@ -127,7 +127,7 @@ export default function WelcomeCard() {
                             onClick={() => window.dispatchEvent(new CustomEvent("openPostModal"))}
                             style={{
                                 padding: "14px 28px",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-sm)",
                                 backgroundColor: "transparent",
                                 border: "0.5px solid var(--border-hairline)",
                                 color: "var(--text-primary)",

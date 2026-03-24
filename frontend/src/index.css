@@ -26,11 +26,13 @@
   --shadow-md: none;
   --shadow-lg: none;
 
-  /* Sharp corners */
-  --radius-xs: 2px;
-  --radius-sm: 2px;
-  --radius-md: 2px;
-  --radius-lg: 0px;
+  /* Full rounded aesthetic */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 36px;
+  --radius-sharp: 0px;
 
   --max-width: 1200px;
   --feed-width: 680px;
@@ -107,7 +109,7 @@ button {
   background: transparent;
   padding: 8px 16px;
   color: var(--text-primary);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
 }
 
 button:active {
@@ -141,7 +143,7 @@ textarea {
   background: var(--bg-input);
   padding: 14px;
   color: var(--text-primary);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   width: 100%;
   transition: all 0.2s ease;
 }

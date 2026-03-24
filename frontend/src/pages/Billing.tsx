@@ -57,7 +57,7 @@ export default function Billing() {
   if (!isLoaded || loadingProfile) {
     return (
       <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--bg-page)" }}>
-        <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "2px", animation: "spin 0.8s linear infinite" }} />
+        <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "var(--radius-sm)", animation: "spin 0.8s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </main>
     );
@@ -87,7 +87,7 @@ export default function Billing() {
         {/* Card */}
         <div style={{
           backgroundColor: "var(--bg-page)",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-sm)",
           border: "0.5px solid var(--border-hairline)",
           overflow: "hidden",
         }}>
@@ -103,7 +103,7 @@ export default function Billing() {
               justifyContent: "center",
               width: 40,
               height: 40,
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               backgroundColor: "var(--text-primary)",
               color: "var(--bg-page)",
               marginBottom: 20,
@@ -177,7 +177,7 @@ export default function Billing() {
                 color: isPro ? "var(--text-primary)" : "var(--bg-page)",
                 backgroundColor: isPro ? "var(--bg-hover)" : "var(--text-primary)",
                 border: isPro ? "0.5px solid var(--border-hairline)" : "none",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 cursor: isPro ? "default" : "pointer",
                 transition: "all 0.15s ease",
                 display: "flex",

@@ -24,14 +24,14 @@ export default function RecentProjectLaunches() {
                 padding: "24px",
                 marginTop: "20px",
             }}>
-                <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", marginBottom: "20px" }} />
+                <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", marginBottom: "20px" }} />
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     {[...Array(3)].map((_, i) => (
                         <div key={i} style={{ display: "flex", gap: "12px" }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "2px", backgroundColor: "var(--bg-hover)" }} />
+                            <div style={{ width: "40px", height: "40px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-hover)" }} />
                             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
-                                <div style={{ width: "70%", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "1px" }} />
-                                <div style={{ width: "30%", height: "8px", backgroundColor: "var(--bg-hover)", borderRadius: "1px" }} />
+                                <div style={{ width: "70%", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-xs)" }} />
+                                <div style={{ width: "30%", height: "8px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-xs)" }} />
                             </div>
                         </div>
                     ))}
@@ -82,7 +82,7 @@ export default function RecentProjectLaunches() {
                         <div style={{
                             width: "40px",
                             height: "40px",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             overflow: "hidden",
                             backgroundColor: "var(--bg-hover)",
                             flexShrink: 0,

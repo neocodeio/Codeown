@@ -265,7 +265,7 @@ export default function PostDetail() {
             onClick={() => navigate(-1)}
             style={{
               padding: "4px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "none",
               background: "none",
               display: "flex",
@@ -288,7 +288,7 @@ export default function PostDetail() {
               <img
                 src={avatarUrl}
                 alt={userName}
-                style={{ width: "48px", height: "48px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+                style={{ width: "48px", height: "48px", borderRadius: "var(--radius-sm)", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
               />
             </div>
           )}
@@ -301,7 +301,7 @@ export default function PostDetail() {
                 <img
                   src={avatarUrl}
                   alt={userName}
-                  style={{ width: "36px", height: "36px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+                  style={{ width: "36px", height: "36px", borderRadius: "var(--radius-sm)", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
                 />
               )}
               <div>
@@ -330,7 +330,7 @@ export default function PostDetail() {
 
             {/* Media/Images */}
             {post.images && post.images.length > 0 && (
-              <div style={{ marginBottom: "24px", borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
+              <div style={{ marginBottom: "24px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                 <ImageSlider images={post.images} onImageClick={handleImageClick} />
               </div>
             )}
@@ -342,7 +342,7 @@ export default function PostDetail() {
                 padding: "24px",
                 backgroundColor: "var(--bg-hover)",
                 border: "0.5px solid var(--border-hairline)",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 display: "flex",
                 flexDirection: "column",
                 gap: "16px"
@@ -371,7 +371,7 @@ export default function PostDetail() {
                           padding: "16px",
                           backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
                           border: "0.5px solid var(--border-hairline)",
-                          borderRadius: "1px",
+                          borderRadius: "var(--radius-xs)",
                           cursor: votedOption !== null ? "default" : "pointer",
                           textAlign: "left",
                           overflow: "hidden",
@@ -497,7 +497,7 @@ export default function PostDetail() {
               style={{ 
                 width: isMobile ? "32px" : "44px", 
                 height: isMobile ? "32px" : "44px", 
-                borderRadius: "2px", 
+                borderRadius: "var(--radius-sm)", 
                 objectFit: "cover", 
                 border: "1px solid var(--border-hairline)",
                 flexShrink: 0
@@ -520,7 +520,7 @@ export default function PostDetail() {
                     backgroundColor: commentContent.trim() && !isSubmitting ? "var(--text-primary)" : "transparent",
                     color: commentContent.trim() && !isSubmitting ? "var(--bg-page)" : "var(--text-tertiary)",
                     border: "1px solid var(--border-hairline)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontWeight: 900,
                     fontSize: "11px",
                     fontFamily: "var(--font-mono)",

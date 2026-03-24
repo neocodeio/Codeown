@@ -82,7 +82,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                                 padding: "10px 16px",
                                 backgroundColor: "var(--bg-input)",
                                 border: "1px solid var(--border-hairline)",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-sm)",
                                 color: "var(--text-primary)",
                                 fontWeight: 700,
                                 fontSize: "11px",
@@ -110,7 +110,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                         <div style={{
                             backgroundColor: "var(--bg-input)",
                             border: "1px solid var(--text-primary)",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             padding: "20px",
                             animation: "slideIn 0.3s ease-out"
                         }}>
@@ -126,7 +126,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                                     width: "100%",
                                     minHeight: "120px",
                                     padding: "14px",
-                                    borderRadius: "2px",
+                                    borderRadius: "var(--radius-sm)",
                                     border: "1px solid var(--border-hairline)",
                                     backgroundColor: "var(--bg-page)",
                                     fontSize: "14px",
@@ -172,7 +172,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                                         background: "var(--text-primary)",
                                         color: "var(--bg-page)",
                                         border: "none",
-                                        borderRadius: "2px",
+                                        borderRadius: "var(--radius-sm)",
                                         fontWeight: 800,
                                         cursor: (isSubmitting || !newLog.trim()) ? "not-allowed" : "pointer",
                                         opacity: (isSubmitting || !newLog.trim()) ? 0.5 : 1,
@@ -198,7 +198,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                     padding: "60px 20px",
                     textAlign: "center",
                     background: "var(--bg-hover)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     border: "1px dashed var(--border-hairline)",
                     color: "var(--text-tertiary)",
                     display: "flex",
@@ -240,7 +240,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                                 height: "7px",
                                 background: "var(--bg-page)",
                                 border: "1.5px solid var(--text-primary)",
-                                borderRadius: "1px",
+                                borderRadius: "var(--radius-xs)",
                             }} />
 
                             {/* Metadata */}
@@ -267,7 +267,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                             <div style={{
                                 background: "var(--bg-page)",
                                 border: "1px solid var(--border-hairline)",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-sm)",
                                 padding: "24px",
                                 transition: "all 0.2s ease"
                             }}

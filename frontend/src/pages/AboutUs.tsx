@@ -52,7 +52,7 @@ export default function AboutUs() {
                     Whether you are building your first project or sharing years of experience, this platform is here to help you grow and connect.
                 </p>
 
-                <div style={{ marginTop: "40px", padding: "40px", backgroundColor: "var(--bg-page)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}>
+                <div style={{ marginTop: "40px", padding: "40px", backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}>
                     <h2 style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", marginBottom: "32px", textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "var(--font-mono)" }}>Connect With Us</h2>
                     <div style={{ display: "flex", gap: "32px", flexWrap: "wrap" }}>
                         <a
@@ -63,7 +63,7 @@ export default function AboutUs() {
                             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.7"}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                         >
-                            <div style={{ width: "32px", height: "32px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
+                            <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
                                 <InstagramLogo size={18} weight="thin" />
                             </div>
                             Instagram
@@ -76,7 +76,7 @@ export default function AboutUs() {
                             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.7"}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                         >
-                            <div style={{ width: "32px", height: "32px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
+                            <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
                                 <WhatsappLogo size={18} weight="thin" />
                             </div>
                             WhatsApp
@@ -89,7 +89,7 @@ export default function AboutUs() {
                             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.7"}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                         >
-                            <div style={{ width: "32px", height: "32px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
+                            <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
                                 <TwitterLogo size={18} weight="thin" />
                             </div>
                             Twitter

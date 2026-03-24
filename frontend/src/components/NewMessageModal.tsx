@@ -84,7 +84,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                 ref={modalRef}
                 style={{
                     backgroundColor: "var(--bg-page)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-lg)",
                     border: "0.5px solid var(--border-hairline)",
                     width: "100%",
                     maxWidth: "500px",
@@ -122,7 +122,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                             color: "var(--text-tertiary)",
                             display: "flex",
                             alignItems: "center",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-xs)",
                             transition: "all 0.1s"
                         }}
                         className="btn-modal-close"
@@ -139,7 +139,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                         gap: "12px",
                         backgroundColor: "var(--bg-input)",
                         padding: "12px 16px",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                     }}>
                         <MagnifyingGlass size={18} weight="thin" style={{ color: "var(--text-tertiary)" }} />
@@ -188,7 +188,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                     alignItems: "center",
                                     gap: "16px",
                                     padding: "12px 20px",
-                                    borderRadius: "2px",
+                                    borderRadius: "var(--radius-sm)",
                                     cursor: "pointer",
                                     transition: "all 0.15s ease",
                                     border: "0.5px solid transparent",
@@ -199,7 +199,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                 <img
                                     src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=212121&color=fff`}
                                     alt=""
-                                    style={{ width: "40px", height: "40px", borderRadius: "2px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+                                    style={{ width: "40px", height: "40px", borderRadius: "var(--radius-xs)", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
                                 />
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontWeight: 800, fontSize: "14px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>

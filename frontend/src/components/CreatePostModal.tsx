@@ -214,7 +214,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
         className="modal-content-wrapper"
         style={{
           backgroundColor: "var(--bg-page)",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-lg)",
           width: "100%",
           maxWidth: "700px",
           maxHeight: "90vh",
@@ -238,7 +238,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
             display: flex;
             align-items: center;
             justify-content: center;
-            borderRadius: 2px;
+            borderRadius: "var(--radius-sm)",
             border: 0.5px solid transparent;
             background: transparent;
             color: var(--text-secondary);
@@ -275,7 +275,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               max-width: 100vw !important;
               height: 100% !important;
               width: 100% !important;
-              border-radius: 2px !important;
+              border-radius: var(--radius-lg) !important;
               border: none !important;
               margin: 0 !important;
             }
@@ -324,7 +324,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           {activeTab === "write" ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {/* Toolbar */}
-               <div className="toolbar-container" style={{ display: "flex", gap: "6px", padding: "6px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", flexWrap: "wrap", alignItems: "center" }}>
+               <div className="toolbar-container" style={{ display: "flex", gap: "6px", padding: "6px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", flexWrap: "wrap", alignItems: "center" }}>
                 <button className="toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><FontAwesomeIcon icon={faBold} /></button>
                 <button className="toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><FontAwesomeIcon icon={faItalic} /></button>
                 <button className="toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><FontAwesomeIcon icon={faHeading} /></button>
@@ -347,7 +347,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               />
             </div>
           ) : (
-             <div style={{ minHeight: "200px", padding: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", overflowY: "auto" }}>
+             <div style={{ minHeight: "200px", padding: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", overflowY: "auto" }}>
               {content ? (
                 <ContentRenderer content={content} />
               ) : (
@@ -360,11 +360,11 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
             {images.map((img, idx) => (
               <div key={idx} style={{ position: "relative", width: "100px", height: "100px" }}>
-                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} />
-                <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "4px", right: "4px", width: "24px", height: "24px", borderRadius: "2px", backgroundColor: "var(--bg-page)", color: "#ef4444", border: "0.5px solid var(--border-hairline)", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
+                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} />
+                <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "4px", right: "4px", width: "24px", height: "24px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-page)", color: "#ef4444", border: "0.5px solid var(--border-hairline)", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
               </div>
             ))}
-            <label style={{ width: "100px", height: "100px", borderRadius: "2px", border: "0.5px dashed var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", transition: "all 0.15s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}>
+            <label style={{ width: "100px", height: "100px", borderRadius: "var(--radius-sm)", border: "0.5px dashed var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", transition: "all 0.15s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}>
               <FontAwesomeIcon icon={faImage} />
               <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
             </label>
@@ -382,7 +382,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                     backgroundColor: "var(--bg-hover)",
                     color: "var(--text-primary)",
                     padding: "6px 14px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "11px",
                     fontWeight: 700,
                     fontFamily: "var(--font-mono)",
@@ -423,7 +423,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               style={{
                 width: "100%",
                 padding: "14px 18px",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 border: "0.5px solid var(--border-hairline)",
                 fontSize: "11px",
                 fontFamily: "var(--font-mono)",
@@ -442,13 +442,13 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
 
         {/* Footer */}
          <div className="modal-footer" style={{ padding: "32px 40px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", gap: "16px" }}>
-          <button onClick={onClose} style={{ padding: "12px 24px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", background: "transparent", color: "var(--text-tertiary)", fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.1em" }}>CANCEL</button>
+          <button onClick={onClose} style={{ padding: "12px 24px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", background: "transparent", color: "var(--text-tertiary)", fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.1em" }}>CANCEL</button>
           <button
             onClick={submit}
             disabled={!content.trim() || isSubmitting}
             style={{
               padding: "12px 32px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "none",
               background: "var(--text-primary)",
               color: "var(--bg-page)",

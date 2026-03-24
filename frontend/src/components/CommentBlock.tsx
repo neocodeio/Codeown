@@ -138,7 +138,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                   fontSize: "9px",
                   fontWeight: "900",
                   padding: "2px 6px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   backgroundColor: "var(--text-primary)",
                   color: "var(--bg-page)",
                   letterSpacing: "0.1em",
@@ -239,7 +239,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
               marginTop: "20px",
               padding: "16px",
               backgroundColor: "var(--bg-hover)",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "1px solid var(--border-hairline)"
              }}>
             <div style={{ marginTop: "16px", marginBottom: "16px" }}>
@@ -248,7 +248,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                   position: "relative", 
                   width: "fit-content", 
                   marginBottom: "12px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   overflow: "hidden",
                   border: "0.5px solid var(--border-hairline)",
                   animation: "reactionFadeUp 0.15s ease-out"
@@ -293,7 +293,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                 style={{
                   minHeight: "80px",
                   fontSize: "14px",
-                  borderRadius: "2px"
+                  borderRadius: "var(--radius-sm)"
                 }}
               />
             </div>
@@ -305,7 +305,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                     backgroundColor: "transparent",
                     color: "var(--text-tertiary)",
                     border: "none",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontWeight: 900,
                     cursor: "pointer",
                     fontSize: "11px",
@@ -325,7 +325,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                       backgroundColor: "transparent",
                       color: "var(--text-tertiary)",
                       border: "0.5px solid var(--border-hairline)",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       fontWeight: 900,
                       cursor: "pointer",
                       fontSize: "11px",
@@ -359,7 +359,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
                     border: "none",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontWeight: 900,
                     cursor: submitting ? "not-allowed" : "pointer",
                     fontSize: "11px",

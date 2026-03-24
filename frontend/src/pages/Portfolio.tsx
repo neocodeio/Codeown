@@ -200,7 +200,7 @@ export default function Portfolio() {
               padding: isMobile ? "8px 12px" : "10px 20px",
               backgroundColor: "rgba(255, 255, 255, 0.05)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "50px",
+              borderRadius: "var(--radius-lg)",
               color: "#fff",
               cursor: "pointer",
               display: "flex",
@@ -220,7 +220,7 @@ export default function Portfolio() {
               padding: isMobile ? "8px 12px" : "10px 24px",
               backgroundColor: "#fff",
               border: "none",
-              borderRadius: "50px",
+              borderRadius: "var(--radius-lg)",
               color: "#000",
               cursor: "pointer",
               display: "flex",
@@ -271,7 +271,7 @@ export default function Portfolio() {
                 fontSize: "10px",
                 fontWeight: 900,
                 padding: "4px 8px",
-                borderRadius: "4px",
+                borderRadius: "var(--radius-md)",
                 fontFamily: "var(--font-mono)"
               }}>PRO</span>
             )}
@@ -325,7 +325,7 @@ export default function Portfolio() {
             padding: isMobile ? "32px 24px" : "60px", 
             backgroundColor: "rgba(255, 255, 255, 0.02)", 
             border: "1px solid rgba(255, 255, 255, 0.05)",
-            borderRadius: "4px",
+            borderRadius: "var(--radius-md)",
             position: "relative",
             overflow: "hidden" // Fix for floating elements
           }}>
@@ -391,7 +391,7 @@ export default function Portfolio() {
                   width: "100%",
                   aspectRatio: "16/10",
                   backgroundColor: "rgba(255, 255, 255, 0.03)",
-                  borderRadius: "4px",
+                  borderRadius: "var(--radius-md)",
                   overflow: "hidden",
                   border: "1px solid rgba(255, 255, 255, 0.05)"
                 }}>
@@ -421,7 +421,7 @@ export default function Portfolio() {
                       color: "rgba(255, 255, 255, 0.4)",
                       padding: "4px 8px",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
-                      borderRadius: "2px"
+                      borderRadius: "var(--radius-sm)"
                     }}>
                       0{idx + 1}
                     </span>
@@ -452,7 +452,7 @@ export default function Portfolio() {
             padding: isMobile ? "40px 20px" : "80px", 
             backgroundColor: "rgba(255, 255, 255, 0.02)",
             border: "1px solid rgba(255, 255, 255, 0.05)",
-            borderRadius: "4px"
+            borderRadius: "var(--radius-sm)"
           }}>
             <h2 style={{ fontSize: "12px", fontFamily: "var(--font-mono)", letterSpacing: "0.2em", color: "rgba(255, 255, 255, 0.4)", marginBottom: isMobile ? "32px" : "40px", textAlign: "center" }}>TECHNICAL STACK</h2>
             <div style={{ 

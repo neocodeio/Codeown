@@ -20,7 +20,7 @@ export default function SignInPage() {
       <div style={{
         width: "100%",
         maxWidth: "480px",
-        borderRadius: "2px",
+        borderRadius: "var(--radius-sm)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -35,7 +35,7 @@ export default function SignInPage() {
               appearance={{
                 variables: {
                   colorPrimary: "#000000",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   fontSize: "14px",
                 },
                 elements: {
@@ -43,10 +43,10 @@ export default function SignInPage() {
                   card: "shadow-none border-0 bg-transparent p-0 m-0",
                   headerTitle: "text-2xl font-bold tracking-tight text-black uppercase",
                   headerSubtitle: "text-gray-500 mt-2 text-sm",
-                  socialButtonsBlockButton: "border-[0.5px] border-gray-200 hover:bg-gray-50 transition-all rounded-[2px]",
-                  formButtonPrimary: "bg-black hover:bg-zinc-800 transition-all rounded-[2px] py-3 text-xs uppercase font-bold tracking-widest",
+                  socialButtonsBlockButton: "border-[0.5px] border-gray-200 hover:bg-gray-50 transition-all rounded-[var(--radius-sm)]",
+                  formButtonPrimary: "bg-black hover:bg-zinc-800 transition-all rounded-[var(--radius-sm)] py-3 text-xs uppercase font-bold tracking-widest",
                   footerActionLink: "text-black hover:underline",
-                  formFieldInput: "rounded-[2px] border-[0.5px] border-gray-200 focus:border-black transition-all",
+                  formFieldInput: "rounded-[var(--radius-sm)] border-[0.5px] border-gray-200 focus:border-black transition-all",
                   dividerLine: "bg-gray-100",
                   dividerText: "text-gray-400 text-[10px] uppercase font-bold",
                   socialButtonsBlockButtonText: "text-sm font-medium",

@@ -111,7 +111,7 @@ export default function MessageNotificationToast() {
               padding: "14px 18px",
               backgroundColor: "var(--bg-page)",
               border: "0.5px solid var(--border-hairline)",
-              borderRadius: "8px",
+              borderRadius: "var(--radius-sm)",
               boxShadow: "0 12px 40px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.1)",
               cursor: "pointer",
               transition: "all 0.2s ease",
@@ -141,7 +141,7 @@ export default function MessageNotificationToast() {
                 height: "2px",
                 backgroundColor: "var(--text-primary)",
                 animation: "toastProgress 5s linear forwards",
-                borderRadius: "0 0 0 8px"
+                borderRadius: "0 0 0 var(--radius-sm)"
               }}
             />
 
@@ -153,7 +153,7 @@ export default function MessageNotificationToast() {
                 style={{
                   width: "40px",
                   height: "40px",
-                  borderRadius: "50%",
+                  borderRadius: "var(--radius-pill)",
                   objectFit: "cover",
                   border: "0.5px solid var(--border-hairline)",
                   flexShrink: 0
@@ -164,7 +164,7 @@ export default function MessageNotificationToast() {
                 style={{
                   width: "40px",
                   height: "40px",
-                  borderRadius: "50%",
+                  borderRadius: "var(--radius-pill)",
                   backgroundColor: "var(--bg-hover)",
                   display: "flex",
                   alignItems: "center",
@@ -234,7 +234,7 @@ export default function MessageNotificationToast() {
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
-                borderRadius: "4px",
+                borderRadius: "var(--radius-xs)",
                 transition: "all 0.15s ease"
               }}
               onMouseEnter={(e) => {

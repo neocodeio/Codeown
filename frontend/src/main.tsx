@@ -66,7 +66,7 @@ const AppWrapper = () => {
         pauseOnHover
         theme={theme}
         toastStyle={{
-          borderRadius: '2px',
+          borderRadius: 'var(--radius-sm)',
           fontSize: '13px',
           fontWeight: 800,
           fontFamily: 'var(--font-mono)',

@@ -71,7 +71,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
       maxHeight: "60vh",
       backgroundColor: "var(--bg-page)",
       border: "0.5px solid var(--border-hairline)",
-      borderRadius: "8px",
+      borderRadius: "var(--radius-lg)",
       display: "flex",
       flexDirection: "column",
       boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
@@ -93,7 +93,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
           alignItems: "center",
           backgroundColor: "var(--bg-hover)",
           padding: "8px 12px",
-          borderRadius: "4px",
+          borderRadius: "var(--radius-sm)",
           gap: "8px",
           border: "0.5px solid var(--border-hairline)"
         }}>
@@ -156,7 +156,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
             onClick={() => onSelect(gif.images.fixed_height.url)}
             style={{
               backgroundColor: "var(--bg-hover)",
-              borderRadius: "4px",
+              borderRadius: "var(--radius-sm)",
               cursor: "pointer",
               overflow: "hidden",
               transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",

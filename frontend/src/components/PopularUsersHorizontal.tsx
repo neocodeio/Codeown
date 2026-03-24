@@ -92,16 +92,16 @@ export default function PopularUsersHorizontal() {
                         <div key={i} style={{
                             minWidth: "140px",
                             padding: "12px",
-                            borderRadius: "12px",
+                            borderRadius: "var(--radius-sm)",
                             backgroundColor: "#f8fafc",
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
-                            gap: "8px"
+                            gap: "var(--spacing-sm)"
                         }}>
                             <div style={{ width: "56px", height: "56px", borderRadius: "50%", backgroundColor: "#e2e8f0" }} />
-                            <div style={{ width: "80px", height: "12px", borderRadius: "4px", backgroundColor: "#e2e8f0" }} />
-                            <div style={{ width: "60px", height: "10px", borderRadius: "4px", backgroundColor: "#e2e8f0" }} />
+                            <div style={{ width: "80px", height: "12px", borderRadius: "var(--radius-sm)", backgroundColor: "#e2e8f0" }} />
+                            <div style={{ width: "60px", height: "10px", borderRadius: "var(--radius-sm)", backgroundColor: "#e2e8f0" }} />
                         </div>
                     ))}
                 </div>
@@ -164,7 +164,7 @@ export default function PopularUsersHorizontal() {
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
-                            gap: "8px",
+                            gap: "var(--spacing-sm)",
                             textDecoration: "none",
                             width: "100%"
                         }}>
@@ -226,12 +226,12 @@ export default function PopularUsersHorizontal() {
                                         <span style={{
                                             fontSize: "8px",
                                             fontWeight: "800",
-                                            padding: "1px 4px",
-                                            borderRadius: "3px",
+                                            padding: "var(--spacing-xs) var(--spacing-sm)",
+                                            borderRadius: "var(--radius-sm)",
                                             backgroundColor: "var(--text-primary)",
                                             color: "#fff",
                                             letterSpacing: "0.02em",
-                                            marginLeft: "2px"
+                                            marginLeft: "var(--spacing-sm)"
                                         }}>PRO</span>
                                     )}
                                 </div>

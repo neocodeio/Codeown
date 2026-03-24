@@ -107,7 +107,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
           width: "100%",
           maxWidth: "440px",
           backgroundColor: "var(--bg-page)",
-          borderRadius: "12px",
+          borderRadius: "var(--radius-lg)",
           border: "0.5px solid var(--border-hairline)",
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
           display: "flex",
@@ -137,7 +137,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
               style={{
                 width: "100%",
                 padding: "12px 12px 12px 40px",
-                borderRadius: "8px",
+                  borderRadius: "var(--radius-md)",
                 border: "0.5px solid var(--border-hairline)",
                 backgroundColor: "var(--bg-input)",
                 color: "var(--text-primary)",
@@ -165,7 +165,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
                 onClick={() => handleSend(convo.id)}
                 style={{
                   padding: "12px",
-                  borderRadius: "8px",
+                    borderRadius: "var(--radius-md)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
@@ -185,7 +185,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
                   disabled={sendingId === convo.id}
                   style={{
                     padding: "8px 16px",
-                    borderRadius: "6px",
+                    borderRadius: "var(--radius-sm)",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
                     border: "none",

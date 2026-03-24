@@ -114,7 +114,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
           className="modal-dialog"
           style={{
             backgroundColor: "var(--bg-page)",
-            borderRadius: isMobile ? "2px 2px 0 0" : "2px",
+            borderRadius: isMobile ? "var(--radius-lg) var(--radius-lg) 0 0" : "var(--radius-lg)",
             border: "0.5px solid var(--border-hairline)",
             width: "100%",
             maxWidth: isMobile ? "100%" : "440px",
@@ -182,7 +182,7 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
                   <div style={{
                     width: "48px",
                     height: "48px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     overflow: "hidden",
                     border: "0.5px solid var(--border-hairline)",
                     flexShrink: 0

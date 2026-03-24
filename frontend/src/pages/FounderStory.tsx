@@ -256,7 +256,7 @@ export default function FounderStory() {
                     <div style={{
                         backgroundColor: "var(--bg-hover)",
                         padding: "32px",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                         marginTop: "56px",
                         marginBottom: "48px"
@@ -303,7 +303,7 @@ export default function FounderStory() {
                                 padding: "12px 32px",
                                 backgroundColor: "var(--text-primary)",
                                 color: "var(--bg-page)",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-sm)",
                                 fontSize: "12px",
                                 fontWeight: 700,
                                 textDecoration: "none",
@@ -340,7 +340,7 @@ export default function FounderStory() {
                                     letterSpacing: "0.05em",
                                     padding: "4px 8px",
                                     border: "0.5px solid var(--border-hairline)",
-                                    borderRadius: "2px"
+                                    borderRadius: "var(--radius-xs)",
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.color = "var(--text-primary)";

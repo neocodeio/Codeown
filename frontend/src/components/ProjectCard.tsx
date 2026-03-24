@@ -280,7 +280,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   backgroundColor: "rgba(34, 197, 94, 0.1)",
                   border: "0.5px solid rgba(34, 197, 94, 0.2)",
                   padding: "2px 8px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                 }}>
                   <span style={{ fontSize: "9px", fontWeight: 800, color: "#22c55e", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Seeking Co-Founder</span>
                 </div>
@@ -291,14 +291,14 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             <div style={{
               marginLeft: "12px",
               padding: "2px 8px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               backgroundColor: "transparent",
               border: "0.5px solid var(--border-hairline)",
               display: "flex",
               alignItems: "center",
               gap: "4px"
             }}>
-              <div style={{ width: "4px", height: "4px", borderRadius: "1px", backgroundColor: getStatusColor(project.status) }} />
+              <div style={{ width: "4px", height: "4px", borderRadius: "var(--radius-xs)", backgroundColor: getStatusColor(project.status) }} />
               <span style={{ fontSize: "9px", fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{getStatusText(project.status)}</span>
             </div>
           </div>
@@ -309,7 +309,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 onClick={toggleMenu}
                 style={{
                   background: "none", border: "none", color: "var(--text-tertiary)",
-                  cursor: "pointer", padding: "4px", borderRadius: "2px",
+                  cursor: "pointer", padding: "4px", borderRadius: "var(--radius-sm)",
                   transition: "all 0.15s ease"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
@@ -321,7 +321,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 {isMenuOpen && (
                 <div style={{
                   position: "absolute", top: "100%", right: 0,
-                  backgroundColor: "var(--bg-page)", borderRadius: "2px", border: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)",
                   boxShadow: "none", zIndex: 10, padding: "4px", minWidth: "160px"
                 }}>
                   {[
@@ -331,7 +331,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   ].map((item, i) => (
                     <button key={i} onClick={(e) => { item.onClick(e); setIsMenuOpen(false); }} style={{
                       width: "100%", padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px",
-                      border: "none", background: "none", cursor: "pointer", borderRadius: "2px",
+                      border: "none", background: "none", cursor: "pointer", borderRadius: "var(--radius-sm)",
                       fontSize: "11px", fontWeight: 800, color: item.color, fontFamily: "var(--font-mono)", textTransform: "uppercase"
                     }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
@@ -361,7 +361,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   }}
                     style={{
                     padding: "6px 14px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     border: "0.5px solid var(--border-hairline)",
                     backgroundColor: "transparent",
                     color: "var(--text-tertiary)",
@@ -393,7 +393,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
 
         {/* Media */}
         {project.cover_image && (
-          <div style={{ borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px", aspectRatio: "16/9" }}>
+          <div style={{ borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px", aspectRatio: "16/9" }}>
             <img src={getOptimizedImageUrl(project.cover_image)} alt={project.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
           </div>
         )}

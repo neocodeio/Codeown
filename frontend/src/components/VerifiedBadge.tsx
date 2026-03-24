@@ -48,7 +48,7 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                             color: "var(--text-primary)",
                             padding: "6px 10px",
                             border: "0.5px solid var(--border-hairline)",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             fontSize: "10px",
                             fontFamily: "var(--font-mono)",
                             fontWeight: 500,

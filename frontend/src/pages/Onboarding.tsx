@@ -102,7 +102,7 @@ export default function Onboarding() {
           height: "20px",
           border: "0.5px solid var(--border-hairline)",
           borderTopColor: "var(--text-primary)",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-sm)",
           animation: "spin 1s linear infinite",
         }} />
         <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
@@ -236,7 +236,7 @@ export default function Onboarding() {
           onClick={back}
           style={{
             padding: "12px 28px",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             border: "0.5px solid var(--border-hairline)",
             backgroundColor: "transparent",
             color: "var(--text-secondary)",
@@ -264,7 +264,7 @@ export default function Onboarding() {
         disabled={disabled}
         style={{
           padding: "12px 32px",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-sm)",
           border: "none",
           backgroundColor: disabled ? "var(--border-hairline)" : "var(--text-primary)",
           color: disabled ? "var(--text-tertiary)" : "var(--bg-page)",
@@ -289,7 +289,7 @@ export default function Onboarding() {
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "16px 20px",
-    borderRadius: "2px",
+    borderRadius: "var(--radius-sm)",
     border: "0.5px solid var(--border-hairline)",
     fontSize: "14px",
     fontWeight: 500,
@@ -419,7 +419,7 @@ export default function Onboarding() {
                   key={f.label}
                   style={{
                     padding: "10px 20px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 700,
                     color: "var(--text-primary)",
@@ -604,7 +604,7 @@ export default function Onboarding() {
                     onClick={() => toggleSkill(skill)}
                     style={{
                       padding: "10px 20px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       fontSize: "12px",
                       fontWeight: 700,
                       fontFamily: "var(--font-mono)",
@@ -809,7 +809,7 @@ export default function Onboarding() {
                 onClick={back}
                 style={{
                   padding: "12px 32px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "transparent",
                   color: "var(--text-secondary)",
@@ -828,7 +828,7 @@ export default function Onboarding() {
                 disabled={isSubmitting}
                 style={{
                   padding: "12px 36px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "none",
                   backgroundColor: isSubmitting ? "var(--border-hairline)" : "var(--text-primary)",
                   color: isSubmitting ? "var(--text-tertiary)" : "var(--bg-page)",

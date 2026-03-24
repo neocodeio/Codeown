@@ -180,7 +180,7 @@ export default function Feed() {
                                         fontFamily: "var(--font-mono)",
                                         textTransform: "uppercase",
                                         letterSpacing: "0.1em",
-                                        borderRadius: "2px"
+                                        borderRadius: "var(--radius-sm)"
                                     }}
                                     onMouseEnter={(e) => {
                                         if (feedFilter !== "all") e.currentTarget.style.color = "var(--text-secondary)";
@@ -208,14 +208,14 @@ export default function Feed() {
                                     <div style={{
                                         position: "absolute", top: "100%", left: "25%", transform: "translateX(-50%)",
                                         marginTop: "4px", backgroundColor: "var(--bg-page)",
-                                        border: "0.5px solid var(--border-hairline)", borderRadius: "2px",
+                                        border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-md)",
                                         boxShadow: "0 4px 20px rgba(0,0,0,0.5)", zIndex: 100,
                                         width: "180px", padding: "8px", display: "flex", flexDirection: "column", gap: "4px"
                                     }}>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); updateParams({ type: "posts" }); setIsDropdownOpen(false); }}
                                             style={{
-                                                textAlign: "left", padding: "12px 16px", borderRadius: "1px",
+                                                textAlign: "left", padding: "12px 16px", borderRadius: "var(--radius-sm)",
                                                 background: "none", border: "none", cursor: "pointer",
                                                 color: feedType === "posts" ? "var(--text-primary)" : "var(--text-secondary)",
                                                 fontSize: "12px", fontWeight: feedType === "posts" ? "800" : "600",
@@ -231,7 +231,7 @@ export default function Feed() {
                                         <button
                                             onClick={(e) => { e.stopPropagation(); updateParams({ type: "projects" }); setIsDropdownOpen(false); }}
                                             style={{
-                                                textAlign: "left", padding: "12px 16px", borderRadius: "1px",
+                                                textAlign: "left", padding: "12px 16px", borderRadius: "var(--radius-sm)",
                                                 background: "none", border: "none", cursor: "pointer",
                                                 color: feedType === "projects" ? "var(--text-primary)" : "var(--text-secondary)",
                                                 fontSize: "12px", fontWeight: feedType === "projects" ? "800" : "600",
@@ -262,7 +262,7 @@ export default function Feed() {
                                         fontFamily: "var(--font-mono)",
                                         textTransform: "uppercase",
                                         letterSpacing: "0.1em",
-                                        borderRadius: "2px"
+                                        borderRadius: "var(--radius-sm)"
                                     }}
                                     onMouseEnter={(e) => {
                                         if (feedFilter !== "following") e.currentTarget.style.color = "var(--text-secondary)";
@@ -286,6 +286,7 @@ export default function Feed() {
                             <div style={{
                                 display: "flex",
                                 gap: "10px",
+                                borderRadius: "0px",
                                 padding: "12px 24px",
                                 overflowX: "auto",
                                 borderTop: "0.5px solid var(--border-hairline)",
@@ -299,7 +300,7 @@ export default function Feed() {
                                             onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
                                             aria-label={`Filter by ${tag}`}
                                             style={{
-                                                flexShrink: 0, padding: "8px 16px", borderRadius: "2px",
+                                                flexShrink: 0, padding: "8px 16px", borderRadius: "var(--radius-sm)",
                                                 border: "none",
                                                 backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-hover)",
                                                 color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",

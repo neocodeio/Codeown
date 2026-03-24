@@ -63,7 +63,7 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
         style={{
           width: "100%",
           maxWidth: "380px",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-lg)",
           backgroundColor: "var(--bg-page)",
           border: "0.5px solid var(--border-hairline)",
           boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
@@ -118,7 +118,7 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
 
         <div
           style={{
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             border: "0.5px solid var(--border-hairline)",
             padding: "12px",
             fontSize: "12px",
@@ -141,7 +141,7 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
             style={{
               width: "100%",
               padding: "12px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "0.5px solid var(--border-hairline)",
               backgroundColor: "var(--text-primary)",
               color: "var(--bg-page)",
@@ -162,7 +162,7 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
             style={{
               width: "100%",
               padding: "12px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "0.5px solid var(--border-hairline)",
               backgroundColor: "transparent",
               color: "var(--text-primary)",

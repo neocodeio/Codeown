@@ -58,7 +58,7 @@ export default function ConfirmDeleteModal({
         style={{
           width: "100%",
           maxWidth: "400px",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-lg)",
           backgroundColor: "var(--bg-page)",
           border: "0.5px solid var(--border-hairline)",
           padding: "32px",
@@ -103,7 +103,7 @@ export default function ConfirmDeleteModal({
             disabled={isLoading}
             style={{
               padding: "10px 24px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "0.5px solid var(--border-hairline)",
               backgroundColor: "transparent",
               fontSize: "12px",
@@ -131,7 +131,7 @@ export default function ConfirmDeleteModal({
             disabled={isLoading}
             style={{
               padding: "10px 24px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "none",
               backgroundColor: "#ef4444",
               fontSize: "12px",

@@ -93,7 +93,7 @@ export default function FeedbackButton() {
           maxHeight: "90vh",
           overflowY: "auto",
           backgroundColor: "var(--bg-page)",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-lg)",
           border: "0.5px solid var(--border-hairline)",
           boxShadow: "0 25px 50px rgba(0, 0, 0, 0.2)",
           padding: "32px",
@@ -132,7 +132,7 @@ export default function FeedbackButton() {
 
         {sent ? (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <div style={{ width: "48px", height: "48px", background: "var(--bg-hover)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
+            <div style={{ width: "48px", height: "48px", background: "var(--bg-hover)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
               <CheckCircle size={24} weight="thin" />
             </div>
             <h3 style={{ margin: "0 0 8px", color: "var(--text-primary)", fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", fontWeight: 800 }}>Feedback Received</h3>
@@ -150,7 +150,7 @@ export default function FeedbackButton() {
                 style={{
                   width: "100%",
                   padding: "12px 16px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
@@ -173,7 +173,7 @@ export default function FeedbackButton() {
                 style={{
                   width: "100%",
                   padding: "12px 16px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
@@ -196,7 +196,7 @@ export default function FeedbackButton() {
                 style={{
                   width: "100%",
                   padding: "12px 16px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
@@ -219,7 +219,7 @@ export default function FeedbackButton() {
                 style={{
                   width: "100%",
                   padding: "12px 16px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-lg)",
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
@@ -240,7 +240,7 @@ export default function FeedbackButton() {
                 border: "0.5px solid var(--border-hairline)",
                 backgroundColor: "rgba(239, 68, 68, 0.1)",
                 color: "#ef4444",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 fontSize: "10px",
                 fontFamily: "var(--font-mono)",
                 marginBottom: "20px",
@@ -260,7 +260,7 @@ export default function FeedbackButton() {
                 backgroundColor: "var(--text-primary)",
                 color: "var(--bg-page)",
                 border: "none",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 fontWeight: 800,
                 fontSize: "12px",
                 fontFamily: "var(--font-mono)",
@@ -298,7 +298,7 @@ export default function FeedbackButton() {
           zIndex: 900,
           width: isMobile ? "48px" : "56px",
           height: isMobile ? "48px" : "56px",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-lg)",
           backgroundColor: isMobile ? "var(--text-primary)" : "var(--bg-page)",
           color: isMobile ? "var(--bg-page)" : "var(--text-primary)",
           border: "0.5px solid var(--border-hairline)",

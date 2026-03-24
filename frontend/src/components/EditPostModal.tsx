@@ -215,7 +215,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
             className="modal-content"
             style={{
               backgroundColor: "#f5f5f5",
-              borderRadius: "25px",
+              borderRadius: "var(--radius-lg)",
               border: "1px solid var(--border-light)",
               boxShadow: "var(--shadow-xl)",
               display: "flex",
@@ -254,7 +254,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "4px",
+                  borderRadius: "var(--radius-sm)",
                   transition: "all 0.15s",
                 }}
               >
@@ -282,7 +282,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                   width: "100%",
                   padding: "12px 16px",
                   border: "1px solid #e4e7eb",
-                  borderRadius: "8px",
+                  borderRadius: "var(--radius-sm)",
                   fontSize: "18px",
                   fontWeight: 600,
                   fontFamily: "inherit",
@@ -310,7 +310,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                   minHeight: "150px",
                   padding: "12px 16px",
                   border: "1px solid #e4e7eb",
-                  borderRadius: "8px",
+                  borderRadius: "var(--radius-md)",
                   fontSize: "16px",
                   fontFamily: "inherit",
                   resize: "vertical",
@@ -355,7 +355,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                     padding: "10px 16px",
                     backgroundColor: "#f8fafc",
                     border: "2px dashed #212121",
-                    borderRadius: "8px",
+                    borderRadius: "var(--radius-md)",
                     color: "#212121",
                     cursor: "pointer",
                     fontSize: "14px",
@@ -385,7 +385,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                             width: "100%",
                             height: "100px",
                             objectFit: "cover",
-                            borderRadius: "8px",
+                            borderRadius: "var(--radius-md)",
                             border: "1px solid #e4e7eb",
                           }}
                         />
@@ -439,7 +439,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                   backgroundColor: "#212121",
                   border: "none",
                   color: "#ffffff",
-                  borderRadius: "20px",
+                  borderRadius: "var(--radius-sm)",
                   cursor: isSubmitting ? "not-allowed" : "pointer",
                   fontSize: "15px",
                   fontWeight: 500,
@@ -458,7 +458,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                   backgroundColor: isLoaded && content.trim() && !isSubmitting ? "#212121" : "#e4e7eb",
                   border: "none",
                   color: isLoaded && content.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
-                  borderRadius: "20px",
+                  borderRadius: "var(--radius-sm)",
                   cursor: isLoaded && content.trim() && !isSubmitting ? "pointer" : "not-allowed",
                   fontSize: "15px",
                   fontWeight: 500,

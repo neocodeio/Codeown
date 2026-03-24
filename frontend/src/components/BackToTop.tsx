@@ -48,7 +48,7 @@ export default function BackToTop() {
                 height: "48px",
                 backgroundColor: "var(--bg-page)",
                 border: "0.5px solid var(--border-hairline)",
-                borderRadius: "2px", // Sharp, modern look to match branding
+                borderRadius: "var(--radius-sm)", // Rounded to match modern design system
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

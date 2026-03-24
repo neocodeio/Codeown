@@ -287,7 +287,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                                 color: "var(--text-primary)", 
                                                 backgroundColor: "var(--bg-hover)",
                                                 padding: "4px 10px",
-                                                borderRadius: "2px",
+                                                borderRadius: "var(--radius-sm)",
                                                 fontFamily: "var(--font-mono)",
                                                 border: "0.5px solid var(--border-hairline)",
                                                 textTransform: "uppercase",
@@ -320,7 +320,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         gridTemplateColumns: images.length === 1 ? "1fr" : "1fr 1fr",
                         gap: "10px",
                         marginBottom: "16px",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         overflow: "hidden",
                         border: "0.5px solid var(--border-hairline)"
                     }}>
@@ -339,7 +339,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         right: "9px",
                                         backgroundColor: "#000",
                                         border: "1px solid rgba(255,255,255,0.2)",
-                                        borderRadius: "2px",
+                                        borderRadius: "var(--radius-sm)",
                                         width: "22px",
                                         height: "22px",
                                         cursor: "pointer",
@@ -361,8 +361,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     }}
                                 >
                                     <div style={{ position: "relative", width: "10px", height: "10px" }}>
-                                        <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.5px", backgroundColor: "#fff", transform: "rotate(45deg)", borderRadius: "1px" }} />
-                                        <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.5px", backgroundColor: "#fff", transform: "rotate(-45deg)", borderRadius: "1px" }} />
+                                        <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.5px", backgroundColor: "#fff", transform: "rotate(45deg)", borderRadius: "var(--radius-xs)" }} />
+                                        <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.5px", backgroundColor: "#fff", transform: "rotate(-45deg)", borderRadius: "var(--radius-xs)" }} />
                                     </div>
                                 </button>
                             </div>
@@ -377,7 +377,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         padding: "20px",
                         backgroundColor: "var(--bg-hover)",
                         border: "0.5px solid var(--border-hairline)",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-md)",
                         display: "flex",
                         flexDirection: "column",
                         gap: "12px"
@@ -394,7 +394,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     display: "flex", 
                                     alignItems: "center", 
                                     padding: "6px",
-                                    borderRadius: "2px",
+                                    borderRadius: "var(--radius-sm)",
                                     transition: "all 0.15s var(--ease-smooth)",
                                 }}
                                 onMouseEnter={(e) => {
@@ -409,8 +409,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 }}
                             >
                                 <div style={{ position: "relative", width: "10px", height: "10px" }}>
-                                    <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.2px", backgroundColor: "currentColor", transform: "rotate(45deg)", borderRadius: "1px" }} />
-                                    <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.2px", backgroundColor: "currentColor", transform: "rotate(-45deg)", borderRadius: "1px" }} />
+                                    <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.2px", backgroundColor: "currentColor", transform: "rotate(45deg)", borderRadius: "var(--radius-xs)" }} />
+                                    <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.2px", backgroundColor: "currentColor", transform: "rotate(-45deg)", borderRadius: "var(--radius-xs)" }} />
                                 </div>
                             </button>
                         </div>
@@ -430,7 +430,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         fontSize: "13px",
                                         fontFamily: "var(--font-mono)",
                                         outline: "none",
-                                        borderRadius: "1px"
+                                        borderRadius: "var(--radius-sm)"
                                     }}
                                 />
                                 {pollOptions.length > 2 && (
@@ -493,7 +493,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 color: "inherit",
                                 cursor: "pointer",
                                 padding: "8px",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-sm)",
                                 transition: "all 0.15s"
                             }}
                             onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
@@ -509,7 +509,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 color: isPoll ? "var(--text-primary)" : "inherit",
                                 cursor: "pointer",
                                 padding: "8px",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-sm)",
                                 transition: "all 0.15s"
                             }}
                             onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
@@ -539,7 +539,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 backgroundColor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "transparent",
                                 color: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "1.50px solid var(--border-hairline)",
-                                borderRadius: "2px",
+                                borderRadius: "var(--radius-pill)",
                                 fontWeight: 800,
                                 fontSize: "11px",
                                 fontFamily: "var(--font-mono)",

@@ -707,7 +707,7 @@ export default function Messages() {
                 style={{
                   width: "36px",
                   height: "36px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "1px solid var(--text-primary)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
@@ -741,7 +741,7 @@ export default function Messages() {
                 gap: "10px",
                 padding: "10px 14px",
                 backgroundColor: "var(--bg-input)",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 border: "0.5px solid var(--border-hairline)",
               }}
             >
@@ -783,8 +783,8 @@ export default function Messages() {
                   <div key={i} style={{ display: "flex", gap: "16px", alignItems: "center" }}>
                     <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "var(--bg-hover)", flexShrink: 0, animation: "shimmer 1.5s infinite linear" }} />
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
-                      <div style={{ width: "40%", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", animation: "shimmer 1.5s infinite linear" }} />
-                      <div style={{ width: "70%", height: "12px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", animation: "shimmer 1.5s infinite linear" }} />
+                      <div style={{ width: "40%", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
+                      <div style={{ width: "70%", height: "12px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
                     </div>
                   </div>
                 ))}
@@ -811,7 +811,7 @@ export default function Messages() {
                   style={{
                     width: "64px",
                     height: "64px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     backgroundColor: "var(--bg-hover)",
                     display: "flex",
                     alignItems: "center",
@@ -837,7 +837,7 @@ export default function Messages() {
                   onClick={() => setIsNewMessageModalOpen(true)}
                   style={{
                     padding: "10px 20px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 600,
                     fontFamily: "var(--font-mono)",
@@ -868,7 +868,7 @@ export default function Messages() {
                   padding: "20px",
                   cursor: "pointer",
                   backgroundColor: activeConvo?.id === convo.id ? "var(--bg-hover)" : "transparent",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   display: "flex",
                   alignItems: "center",
                   gap: "16px",
@@ -1042,8 +1042,8 @@ export default function Messages() {
                 </div>
                 {messagesLoading && activeConvo.id === 0 ? (
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", animation: "shimmer 1.5s infinite linear" }} />
-                    <div style={{ width: "80px", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "2px", animation: "shimmer 1.5s infinite linear" }} />
+                    <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
+                    <div style={{ width: "80px", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
                   </div>
                 ) : (
                   <div style={{ minWidth: 0, flex: 1 }}>
@@ -1100,7 +1100,7 @@ export default function Messages() {
                           width: "200px",
                           height: "60px",
                           backgroundColor: "var(--bg-hover)",
-                          borderRadius: "4px",
+                          borderRadius: "var(--radius-sm)",
                           animation: "shimmer 1.5s infinite linear"
                         }} />
                       </div>
@@ -1121,7 +1121,7 @@ export default function Messages() {
                       style={{
                         width: "64px",
                         height: "64px",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         backgroundColor: "var(--bg-hover)",
                         display: "flex",
                         alignItems: "center",
@@ -1184,7 +1184,7 @@ export default function Messages() {
                             padding: "8px 12px",
                             backgroundColor: "var(--bg-hover)",
                             borderLeft: "2px solid var(--text-tertiary)",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             fontSize: "11px",
                             color: "var(--text-secondary)",
                             marginBottom: "2px",
@@ -1230,7 +1230,7 @@ export default function Messages() {
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              borderRadius: "4px",
+                              borderRadius: "var(--radius-sm)",
                               transition: "all 0.15s ease"
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
@@ -1250,7 +1250,7 @@ export default function Messages() {
                                 marginTop: "4px",
                                 backgroundColor: "var(--bg-page)",
                                 border: "0.5px solid var(--border-hairline)",
-                                borderRadius: "6px",
+                                borderRadius: "var(--radius-sm)",
                                 boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
                                 zIndex: 1000,
                                 minWidth: "160px",
@@ -1278,7 +1278,7 @@ export default function Messages() {
                                         flex: 1,
                                         padding: "7px 12px",
                                         border: "0.5px solid var(--border-hairline)",
-                                        borderRadius: "4px",
+                                        borderRadius: "var(--radius-sm)",
                                         background: "transparent",
                                         color: "var(--text-primary)",
                                         fontSize: "11px",
@@ -1299,7 +1299,7 @@ export default function Messages() {
                                         flex: 1,
                                         padding: "7px 12px",
                                         border: "none",
-                                        borderRadius: "4px",
+                                        borderRadius: "var(--radius-sm)",
                                         backgroundColor: "#ef4444",
                                         color: "#fff",
                                         fontSize: "11px",
@@ -1372,7 +1372,7 @@ export default function Messages() {
                         }}
                         style={{
                           padding: "10px 14px",
-                          borderRadius: "2px",
+                          borderRadius: "var(--radius-sm)",
                           backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-page)",
                           color: isMine ? "var(--bg-page)" : "var(--text-primary)",
                           fontSize: "14px",
@@ -1392,7 +1392,7 @@ export default function Messages() {
                             style={{
                               maxWidth: "100%",
                               maxHeight: "300px",
-                              borderRadius: "2px",
+                              borderRadius: "var(--radius-sm)",
                               marginBottom: msg.content ? "8px" : 0,
                               display: "block",
                               cursor: "pointer"
@@ -1452,7 +1452,7 @@ export default function Messages() {
                             style={{
                               marginTop: msg.content ? "12px" : 0,
                               backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)",
-                              borderRadius: "2px",
+                              borderRadius: "var(--radius-sm)",
                               border: "0.5px solid var(--border-hairline)",
                               overflow: "hidden",
                               cursor: "pointer",
@@ -1489,7 +1489,7 @@ export default function Messages() {
                             style={{
                               marginTop: msg.content ? "12px" : 0,
                               backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)",
-                              borderRadius: "2px",
+                              borderRadius: "var(--radius-sm)",
                               border: "0.5px solid var(--border-hairline)",
                               overflow: "hidden",
                               cursor: "pointer",
@@ -1591,7 +1591,7 @@ export default function Messages() {
                                   padding: "2px 6px",
                                   backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-hover)",
                                   color: hasReacted ? "var(--bg-page)" : "var(--text-primary)",
-                                  borderRadius: "10px",
+                                  borderRadius: "var(--radius-pill)",
                                   fontSize: "11px",
                                   display: "flex",
                                   alignItems: "center",
@@ -1618,7 +1618,7 @@ export default function Messages() {
                             bottom: "100%",
                             [isMine ? "right" : "left"]: 0,
                             backgroundColor: "var(--bg-page)",
-                            borderRadius: "24px",
+                            borderRadius: "var(--radius-pill)",
                             padding: "6px 12px",
                             boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
                             border: "0.5px solid var(--border-hairline)",
@@ -1661,15 +1661,15 @@ export default function Messages() {
                       alignItems: "center",
                       gap: "8px",
                       padding: "12px 16px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       backgroundColor: "var(--bg-hover)",
                       border: "0.5px solid var(--border-hairline)",
                       marginTop: "4px"
                     }}
                   >
-                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "2px", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.32s" }} />
-                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "2px", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.16s" }} />
-                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "2px", animation: "typing-bounce 1.4s infinite ease-in-out both" }} />
+                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "var(--radius-sm)", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.32s" }} />
+                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "var(--radius-sm)", animation: "typing-bounce 1.4s infinite ease-in-out both", animationDelay: "-0.16s" }} />
+                    <div style={{ backgroundColor: "var(--text-primary)", width: "6px", height: "6px", borderRadius: "var(--radius-sm)", animation: "typing-bounce 1.4s infinite ease-in-out both" }} />
                   </div>
                 )}
 
@@ -1746,7 +1746,7 @@ export default function Messages() {
                         style={{
                           width: "60px",
                           height: "60px",
-                          borderRadius: "2px",
+                          borderRadius: "var(--radius-sm)",
                           objectFit: "cover",
                           border: "0.5px solid var(--border-hairline)"
                         }}
@@ -1848,7 +1848,7 @@ export default function Messages() {
                     style={{
                       width: "44px",
                       height: "44px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       border: "0.5px solid var(--border-hairline)",
                       backgroundColor: "transparent",
                       color: "var(--text-primary)",
@@ -1873,7 +1873,7 @@ export default function Messages() {
                       style={{
                         width: "44px",
                         height: "44px",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                         backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
                         color: "var(--text-primary)",
@@ -1920,7 +1920,7 @@ export default function Messages() {
                       style={{
                         width: "44px",
                         height: "44px",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                         backgroundColor: isRecording ? "var(--text-error, #ff4444)" : "transparent",
                         color: isRecording ? "#fff" : "var(--text-primary)",
@@ -1949,7 +1949,7 @@ export default function Messages() {
                           width: "100%",
                           height: "44px",
                           padding: "12px 16px",
-                          borderRadius: "2px",
+                          borderRadius: "var(--radius-sm)",
                           border: "0.5px solid var(--border-hairline)",
                           backgroundColor: "var(--bg-input)",
                           display: "flex",
@@ -1981,7 +1981,7 @@ export default function Messages() {
                         style={{
                           width: "100%",
                           padding: "12px 16px",
-                          borderRadius: "2px",
+                          borderRadius: "var(--radius-sm)",
                           border: "0.5px solid var(--border-hairline)",
                           outline: "none",
                           backgroundColor: audioBlob ? "var(--bg-hover)" : "var(--bg-input)",
@@ -2007,7 +2007,7 @@ export default function Messages() {
                     style={{
                       width: "44px",
                       height: "44px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       border: "0.5px solid var(--border-hairline)",
                       backgroundColor: (newMessage.trim() || selectedImage || audioBlob) ? "var(--text-primary)" : "transparent",
                       color: (newMessage.trim() || selectedImage || audioBlob) ? "var(--bg-page)" : "var(--text-tertiary)",
@@ -2049,7 +2049,7 @@ export default function Messages() {
                 style={{
                   width: "72px",
                   height: "72px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   backgroundColor: "var(--bg-hover)",
                   display: "flex",
                   alignItems: "center",
@@ -2134,7 +2134,7 @@ export default function Messages() {
               color: "#fff",
               width: "44px",
               height: "44px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -2157,7 +2157,7 @@ export default function Messages() {
               maxWidth: "100%",
               maxHeight: "90vh",
               objectFit: "contain",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
               animation: "imageScale 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
             }}

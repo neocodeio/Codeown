@@ -135,7 +135,7 @@ const StatusBadge = () => {
       <div style={{ 
         width: "4px", 
         height: "4px", 
-        borderRadius: "1px", 
+        borderRadius: "var(--radius-xs)", 
         backgroundColor: "#22c55e",
         flexShrink: 0
       }} />
@@ -165,7 +165,7 @@ const StatusBadge = () => {
       alignItems: "center",
       gap: "14px",
       padding: "10px 16px",
-      borderRadius: "2px",
+      borderRadius: "10px",
       textDecoration: "none",
       color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
       backgroundColor: isActive ? "var(--bg-hover)" : "transparent",
@@ -230,7 +230,7 @@ const StatusBadge = () => {
                       padding: "0 2px",
                       backgroundColor: "var(--text-primary)",
                       color: "var(--bg-page)",
-                      borderRadius: "0",
+                      borderRadius: "var(--radius-md)",
                       fontSize: "9px",
                       fontFamily: "var(--font-mono)",
                       display: "flex",
@@ -342,7 +342,7 @@ const StatusBadge = () => {
                 display: "flex",
                 alignItems: "center",
                 border: "1px solid var(--border-hairline)",
-                borderRadius: "2px",
+                borderRadius: "10px",
                 gap: "12px",
                 padding: "12px 12px",
                 marginTop: "8px",
@@ -387,7 +387,7 @@ const StatusBadge = () => {
                     marginBottom: "12px",
                     backgroundColor: "var(--bg-page)",
                     border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     padding: "4px",
                     minWidth: "160px",
                     zIndex: 100
@@ -449,7 +449,7 @@ const StatusBadge = () => {
               backgroundColor: "var(--text-primary)",
               color: "var(--bg-page)",
               border: "none",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               fontWeight: 800,
               cursor: "pointer",
               display: "flex",
@@ -626,7 +626,7 @@ const StatusBadge = () => {
               transform: "translateX(-50%)",
               backgroundColor: "var(--bg-page)",
               border: "0.5px solid var(--border-hairline)",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               padding: "4px",
               display: "flex",
               flexDirection: "column",
@@ -683,7 +683,7 @@ const StatusBadge = () => {
                 alignItems: "center",
                 justifyContent: "center",
                 fontWeight: 800,
-                borderRadius: "1px",
+                borderRadius: "var(--radius-xs)",
                 letterSpacing: "0.05em"
               }}
             >
@@ -723,7 +723,7 @@ const StatusBadge = () => {
                 alignItems: "center",
                 justifyContent: "center",
                 fontWeight: 800,
-                borderRadius: "1px",
+                borderRadius: "var(--radius-xs)",
                 letterSpacing: "0.05em"
               }}
             >
@@ -737,7 +737,7 @@ const StatusBadge = () => {
           style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: (location.pathname === "/profile" || (profile?.username && location.pathname === `/${profile.username}`)) ? "var(--text-primary)" : "var(--text-tertiary)", position: "relative" }}
         >
           {userAvatarUrl ? (
-            <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "2px", border: location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "1.5px solid var(--text-primary)" : "0.5px solid var(--border-hairline)", objectFit: "cover" }} />
+            <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "var(--radius-sm)", border: location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "1.5px solid var(--text-primary)" : "0.5px solid var(--border-hairline)", objectFit: "cover" }} />
           ) : (
             <UserIcon size={20} weight="thin" />
           )}

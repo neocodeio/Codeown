@@ -93,7 +93,7 @@ export default function ForgotPassword() {
           width: "100%",
           maxWidth: "400px",
           backgroundColor: "var(--bg-page)",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-sm)",
           padding: isMobile ? "32px 24px" : "48px 40px",
           border: "0.5px solid var(--border-hairline)",
         }}
@@ -173,7 +173,7 @@ export default function ForgotPassword() {
               padding: "12px 16px",
               backgroundColor: "var(--bg-hover)",
               border: "0.5px solid var(--border-hairline)",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               color: "var(--text-primary)",
               fontSize: "12px",
               fontWeight: 700,
@@ -227,7 +227,7 @@ export default function ForgotPassword() {
                   style={{
                     width: "100%",
                     padding: "12px 12px 12px 40px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     backgroundColor: "transparent",
                     border: "0.5px solid var(--border-hairline)",
                     fontSize: "14px",
@@ -284,7 +284,7 @@ export default function ForgotPassword() {
                     style={{
                       width: "100%",
                       padding: "12px 12px 12px 40px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       backgroundColor: "transparent",
                       border: "0.5px solid var(--border-hairline)",
                       letterSpacing: "0.2em",
@@ -341,7 +341,7 @@ export default function ForgotPassword() {
                     style={{
                       width: "100%",
                       padding: "12px 12px 12px 40px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       backgroundColor: "transparent",
                       border: "0.5px solid var(--border-hairline)",
                       fontSize: "14px",
@@ -367,7 +367,7 @@ export default function ForgotPassword() {
             disabled={loading}
             style={{
               padding: "12px 24px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               fontSize: "12px",
               fontWeight: 700,
               backgroundColor: "var(--text-primary)",

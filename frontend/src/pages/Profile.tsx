@@ -237,7 +237,7 @@ export default function Profile() {
             transform: isMobile ? "translateX(-50%)" : "none",
             width: isMobile ? "100px" : "150px",
             height: isMobile ? "100px" : "150px",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             border: "4px solid var(--bg-page)",
             backgroundColor: "var(--bg-page)",
             zIndex: 10
@@ -312,7 +312,7 @@ export default function Profile() {
           backgroundColor: "#fcfcfc",
           position: "relative",
           overflow: "hidden",
-          borderRadius: "0",
+          borderRadius: "12px",
           borderBottom: "0.5px solid var(--border-hairline)",
           marginBottom: 0
         }}>
@@ -377,7 +377,7 @@ export default function Profile() {
             style={{
               width: isMobile ? "96px" : "120px",
               height: isMobile ? "96px" : "120px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "4px solid var(--bg-page)",
               backgroundColor: "var(--bg-page)",
               cursor: "pointer",
@@ -457,7 +457,7 @@ export default function Profile() {
                     fontSize: isMobile ? 10 : 11,
                     fontWeight: 800,
                     padding: "4px 8px",
-                    borderRadius: "1px",
+                    borderRadius: "var(--radius-xs)",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
                     letterSpacing: "0.1em",
@@ -496,7 +496,7 @@ export default function Profile() {
                   }}
                   style={{
                     padding: "8px 16px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 800,
                     fontFamily: "var(--font-mono)",
@@ -522,7 +522,7 @@ export default function Profile() {
                 onClick={() => setIsEditModalOpen(true)}
                 style={{
                   padding: "8px 16px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   fontSize: "12px",
                   fontWeight: 600,
                   fontFamily: "var(--font-mono)",
@@ -549,7 +549,7 @@ export default function Profile() {
                   onClick={() => navigate("/analytics")}
                   style={{
                     padding: "8px 16px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 600,
                     fontFamily: "var(--font-mono)",
@@ -570,14 +570,14 @@ export default function Profile() {
                 >
                   <ChartBar size={16} weight="thin" />
                   ANALYTICS
-                  <span style={{ fontSize: '9px', backgroundColor: 'var(--text-primary)', color: 'var(--bg-page)', padding: '2px 4px', borderRadius: '1px', fontWeight: 700 }}>PRO</span>
+                  <span style={{ fontSize: '9px', backgroundColor: 'var(--text-primary)', color: 'var(--bg-page)', padding: '2px 4px', borderRadius: 'var(--radius-xs)', fontWeight: 700 }}>PRO</span>
                 </button>
               )}
               <button
                 onClick={() => setIsIDCardModalOpen(true)}
                 style={{
                   padding: "8px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-page)",
                   color: "var(--text-primary)",
@@ -611,7 +611,7 @@ export default function Profile() {
                 }}
                 style={{
                   padding: "8px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-page)",
                   color: "var(--text-primary)",
@@ -629,7 +629,7 @@ export default function Profile() {
                   onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
                   style={{
                     padding: "8px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     border: "0.5px solid var(--border-hairline)",
                     backgroundColor: "var(--bg-page)",
                     color: "var(--text-primary)",
@@ -664,7 +664,7 @@ export default function Profile() {
                       zIndex: 10001,
                       padding: "12px",
                       backgroundColor: "var(--bg-page)",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       border: "0.5px solid var(--border-hairline)",
                       boxShadow: "none",
                     }} onClick={(e) => e.stopPropagation()}>
@@ -674,7 +674,7 @@ export default function Profile() {
                           padding: "10px 14px",
                           border: "none",
                           background: "none",
-                          borderRadius: "2px",
+                          borderRadius: "var(--radius-sm)",
                           textAlign: "left",
                           cursor: "pointer",
                           display: "flex",
@@ -695,7 +695,7 @@ export default function Profile() {
                           padding: "10px 14px",
                           border: "none",
                           background: "none",
-                          borderRadius: "2px",
+                          borderRadius: "var(--radius-sm)",
                           textAlign: "left",
                           cursor: "pointer",
                           display: "flex",
@@ -789,7 +789,7 @@ export default function Profile() {
                     padding: "6px 14px",
                     backgroundColor: "var(--bg-hover)",
                     color: "var(--text-primary)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     border: "0.5px solid var(--border-hairline)",
                     transition: "all 0.15s ease",
                     textTransform: "uppercase",
@@ -881,7 +881,7 @@ export default function Profile() {
         {/* Tabs + Content */}
         <div style={{
           padding: `0 ${innerPaddingX}px`,
-          borderTop: "0.5px solid var(--border-hairline)",
+          // borderTop: "0.5px solid var(--border-hairline)",
         }}>
           <div className="tabs-row" style={{
             display: "flex",
@@ -907,7 +907,7 @@ export default function Profile() {
                   padding: "16px 0",
                   backgroundColor: "transparent",
                   border: "none",
-                  borderBottom: activeTab === tab.id ? "1.5px solid var(--text-primary)" : "1.5px solid transparent",
+                  // borderBottom: activeTab === tab.id ? "1.5px solid var(--text-primary)" : "1.5px solid transparent",
                   color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)",
                   fontSize: "12px",
                   fontWeight: activeTab === tab.id ? 800 : 600,
@@ -963,7 +963,7 @@ export default function Profile() {
                       style={{
                         margin: "0 auto",
                         padding: "10px 24px",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         fontSize: "12px",
                         fontWeight: 600,
                         backgroundColor: "var(--text-primary)",
@@ -1006,7 +1006,7 @@ export default function Profile() {
               {loadingApps ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                    {[...Array(3)].map((_, i) => (
-                    <div key={i} className="skeleton-pulse" style={{ height: "140px", width: "100%", borderRadius: "2px" }} />
+                    <div key={i} className="skeleton-pulse" style={{ height: "140px", width: "100%", borderRadius: "var(--radius-sm)" }} />
                   ))}
                 </div>
               ) : applications.length === 0 ? (
@@ -1015,7 +1015,7 @@ export default function Profile() {
                   textAlign: "center",
                   backgroundColor: "rgba(255,255,255,0.02)",
                   border: "0.5px solid var(--border-hairline)",
-                  borderRadius: "2px"
+                  borderRadius: "var(--radius-sm)"
                 }}>
                   <Handshake size={32} weight="thin" style={{ color: "var(--text-tertiary)", marginBottom: "16px" }} />
                   <p style={{ fontWeight: 800, color: "var(--text-primary)", fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>NO APPLICATIONS</p>
@@ -1031,7 +1031,7 @@ export default function Profile() {
                       style={{
                         padding: "24px",
                         border: "0.5px solid var(--border-hairline)",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         backgroundColor: "var(--bg-page)",
                         cursor: "pointer",
                         transition: "all 0.15s ease",
@@ -1043,13 +1043,13 @@ export default function Profile() {
                       }}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
-                         <div style={{ width: "48px", height: "48px", flexShrink: 0, borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
+                         <div style={{ width: "48px", height: "48px", flexShrink: 0, borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                             <img src={app.project.cover_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.title)}&background=212121&color=ffffff&bold=true`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                          </div>
                          <div>
                             <h3 style={{ fontSize: "14px", fontWeight: 800, margin: 0, color: "var(--text-primary)", textTransform: "uppercase" }}>{app.project.title}</h3>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
-                               <img src={app.project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.user?.name || "U")}&background=212121&color=ffffff&bold=true`} style={{ width: "16px", height: "16px", borderRadius: "2px" }} />
+                               <img src={app.project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.user?.name || "U")}&background=212121&color=ffffff&bold=true`} style={{ width: "16px", height: "16px", borderRadius: "var(--radius-sm)" }} />
                                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>@{app.project.user?.username}</span>
                             </div>
                          </div>
@@ -1063,7 +1063,7 @@ export default function Profile() {
                           border: "0.5px solid rgba(34, 197, 94, 0.2)",
                           fontSize: "10px",
                           fontWeight: 800,
-                          borderRadius: "2px",
+                          borderRadius: "var(--radius-sm)",
                           fontFamily: "var(--font-mono)",
                           textTransform: "uppercase"
                         }}>
@@ -1090,7 +1090,7 @@ export default function Profile() {
                       fontSize: "10px",
                       fontWeight: 700,
                       fontFamily: "var(--font-mono)",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       border: "0.5px solid var(--border-hairline)",
                       backgroundColor: savedSubTab === "posts" ? "var(--text-primary)" : "transparent",
                       color: savedSubTab === "posts" ? "var(--bg-page)" : "var(--text-tertiary)",
@@ -1108,7 +1108,7 @@ export default function Profile() {
                       fontSize: "10px",
                       fontWeight: 700,
                       fontFamily: "var(--font-mono)",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       border: "0.5px solid var(--border-hairline)",
                       backgroundColor: savedSubTab === "projects" ? "var(--text-primary)" : "transparent",
                       color: savedSubTab === "projects" ? "var(--bg-page)" : "var(--text-tertiary)",

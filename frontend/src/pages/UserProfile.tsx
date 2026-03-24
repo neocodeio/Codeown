@@ -197,7 +197,7 @@ export default function UserProfile() {
         <div style={{
           width: "100%",
           height: isMobile ? "200px" : "320px",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-sm)",
           backgroundColor: "var(--bg-hover)",
           position: "relative",
           marginBottom: isMobile ? "60px" : "80px",
@@ -233,27 +233,27 @@ export default function UserProfile() {
             gap: "20px"
           }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", alignItems: isMobile ? "center" : "flex-start" }}>
-              <div style={{ width: "60%", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
-              <div style={{ width: "30%", height: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+              <div style={{ width: "60%", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
+              <div style={{ width: "30%", height: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
             </div>
 
             <div style={{ display: "flex", gap: "12px" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "2px", backgroundColor: "var(--bg-hover)" }} />
-              <div style={{ width: "140px", height: "44px", borderRadius: "2px", backgroundColor: "var(--bg-hover)" }} />
-              <div style={{ width: "44px", height: "44px", borderRadius: "2px", backgroundColor: "var(--bg-hover)" }} />
+              <div style={{ width: "44px", height: "44px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-hover)" }} />
+              <div style={{ width: "140px", height: "44px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-hover)" }} />
+              <div style={{ width: "44px", height: "44px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-hover)" }} />
             </div>
           </div>
 
           <div style={{ width: "100%", maxWidth: "600px", display: "flex", flexDirection: "column", gap: "8px", alignItems: isMobile ? "center" : "flex-start" }}>
-            <div style={{ width: "100%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
-            <div style={{ width: "90%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
-            <div style={{ width: "80%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+            <div style={{ width: "100%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
+            <div style={{ width: "90%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
+            <div style={{ width: "80%", height: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
           </div>
 
           <div style={{ display: "flex", gap: "24px", justifyContent: isMobile ? "center" : "flex-start" }}>
-            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
-            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
-            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
+            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
+            <div style={{ width: "80px", height: "20px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
           </div>
         </div>
 
@@ -261,14 +261,14 @@ export default function UserProfile() {
         <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "32px", alignItems: isMobile ? "center" : "flex-start" }}>
           {/* Tabs */}
           <div style={{ display: "flex", gap: "12px" }}>
-            <div style={{ width: "100px", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
-            <div style={{ width: "100px", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "2px" }} />
+            <div style={{ width: "100px", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
+            <div style={{ width: "100px", height: "40px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
           </div>
 
           {/* Content Grid */}
           <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px" }}>
-            <div style={{ width: "100%", height: "200px", backgroundColor: "transparent", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} />
-            <div style={{ width: "100%", height: "200px", backgroundColor: "transparent", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }} />
+            <div style={{ width: "100%", height: "200px", backgroundColor: "transparent", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} />
+            <div style={{ width: "100%", height: "200px", backgroundColor: "transparent", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} />
           </div>
         </div>
       </div>
@@ -346,7 +346,7 @@ export default function UserProfile() {
           backgroundColor: "#fcfcfc",
           position: "relative",
           overflow: "hidden",
-          borderRadius: "0",
+          borderRadius: "12px",
           borderBottom: "0.5px solid var(--border-hairline)",
           marginBottom: 0,
         }}>
@@ -378,7 +378,7 @@ export default function UserProfile() {
             style={{
               width: isMobile ? "96px" : "120px",
               height: isMobile ? "96px" : "120px",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               border: "4px solid var(--bg-page)",
               backgroundColor: "var(--bg-page)",
               cursor: "pointer",
@@ -426,7 +426,7 @@ export default function UserProfile() {
                   fontSize: isMobile ? 10 : 11,
                   fontWeight: 800,
                   padding: "4px 8px",
-                  borderRadius: "1px",
+                  borderRadius: "var(--radius-xs)",
                   backgroundColor: "var(--text-primary)",
                   color: "var(--bg-page)",
                   letterSpacing: "0.1em",
@@ -447,7 +447,7 @@ export default function UserProfile() {
                 onClick={() => navigate(`/portfolio/${user.username}`)}
                 style={{
                   padding: "8px 16px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   fontSize: "12px",
                   fontWeight: 800,
                   fontFamily: "var(--font-mono)",
@@ -474,7 +474,7 @@ export default function UserProfile() {
                   onClick={() => navigate(`/messages?userId=${user.id}`)}
                   style={{
                     padding: "10px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     backgroundColor: "transparent",
                     color: "var(--text-primary)",
                     border: "0.5px solid var(--border-hairline)",
@@ -497,7 +497,7 @@ export default function UserProfile() {
                   disabled={followLoading}
                   style={{
                     padding: "10px 24px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 700,
                     border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
@@ -538,7 +538,7 @@ export default function UserProfile() {
                   }}
                   style={{
                     padding: "10px 24px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 700,
                     backgroundColor: "transparent",
@@ -566,7 +566,7 @@ export default function UserProfile() {
                 }}
                 style={{
                   padding: "10px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   backgroundColor: "transparent",
                   color: "var(--text-primary)",
                   border: "0.5px solid var(--border-hairline)",
@@ -586,7 +586,7 @@ export default function UserProfile() {
                 onClick={() => setIsIDCardModalOpen(true)}
                 style={{
                   padding: "10px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   backgroundColor: "transparent",
                   color: "var(--text-primary)",
                   border: "0.5px solid var(--border-hairline)",
@@ -676,7 +676,7 @@ export default function UserProfile() {
                     padding: "6px 12px",
                     backgroundColor: "transparent",
                     color: "var(--text-secondary)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     border: "0.5px solid var(--border-hairline)",
                     transition: "all 0.15s ease",
                     fontFamily: "var(--font-mono)",

@@ -52,7 +52,7 @@ export default function Analytics() {
     if (loading) {
         return (
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
-                <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "2px", animation: "spin 0.6s linear infinite" }} />
+                <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "var(--radius-sm)", animation: "spin 0.6s linear infinite" }} />
             </div>
         );
     }
@@ -70,7 +70,7 @@ export default function Analytics() {
                         backgroundColor: "var(--text-primary)",
                         color: "var(--bg-page)",
                         border: "none",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         fontWeight: 700,
                         fontFamily: "var(--font-mono)",
                         textTransform: "uppercase",
@@ -133,14 +133,14 @@ export default function Analytics() {
                     <div style={{
                         padding: "32px",
                         backgroundColor: "var(--bg-page)",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                         transition: "all 0.2s ease"
                     }}>
                         <div style={{
                             width: "32px",
                             height: "32px",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             backgroundColor: "var(--bg-hover)",
                             display: "flex",
                             alignItems: "center",
@@ -161,13 +161,13 @@ export default function Analytics() {
                     <div style={{
                         padding: "32px",
                         backgroundColor: "var(--bg-page)",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
                             width: "32px",
                             height: "32px",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             backgroundColor: "var(--bg-hover)",
                             display: "flex",
                             alignItems: "center",
@@ -188,13 +188,13 @@ export default function Analytics() {
                     <div style={{
                         padding: "32px",
                         backgroundColor: "var(--bg-page)",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
                             width: "32px",
                             height: "32px",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             backgroundColor: "var(--bg-hover)",
                             display: "flex",
                             alignItems: "center",
@@ -225,7 +225,7 @@ export default function Analytics() {
                             padding: "64px 24px",
                             textAlign: "center",
                             backgroundColor: "var(--bg-page)",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             border: "0.5px dashed var(--border-hairline)"
                         }}>
                             <p style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>No recent activity to show.</p>
@@ -236,7 +236,7 @@ export default function Analytics() {
                                 <div key={idx} style={{
                                     padding: "20px 24px",
                                     backgroundColor: "var(--bg-page)",
-                                    borderRadius: "2px",
+                                    borderRadius: "var(--radius-sm)",
                                     borderBottom: "0.5px solid var(--border-hairline)",
                                     display: "flex",
                                     alignItems: "center",
@@ -251,7 +251,7 @@ export default function Analytics() {
                                         <div style={{
                                             width: "32px",
                                             height: "32px",
-                                            borderRadius: "2px",
+                                            borderRadius: "var(--radius-sm)",
                                             backgroundColor: "var(--bg-hover)",
                                             display: "flex",
                                             alignItems: "center",
@@ -290,7 +290,7 @@ export default function Analytics() {
                                     {event.actor ? (
                                         <div
                                             onClick={() => navigate(`/${event.actor.username}`)}
-                                            style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 12px", borderRadius: "2px", backgroundColor: "var(--bg-hover)", cursor: "pointer", transition: "all 0.15s ease", border: "0.5px solid var(--border-hairline)" }}
+                                            style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 12px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-hover)", cursor: "pointer", transition: "all 0.15s ease", border: "0.5px solid var(--border-hairline)" }}
                                             onMouseEnter={(e) => {
                                                 e.currentTarget.style.backgroundColor = "var(--bg-page)";
                                                 e.currentTarget.style.borderColor = "var(--text-primary)";
@@ -303,12 +303,12 @@ export default function Analytics() {
                                             <img
                                                 src={event.actor.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(event.actor.name)}&background=212121&color=ffffff&bold=true`}
                                                 alt={event.actor.name}
-                                                style={{ width: "20px", height: "20px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}
+                                                style={{ width: "20px", height: "20px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}
                                             />
                                             <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{event.actor.username}</span>
                                         </div>
                                     ) : (
-                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)", opacity: 0.5 }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", opacity: 0.5 }}>
                                             <User size={14} weight="thin" />
                                             <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Anonymous</span>
                                         </div>

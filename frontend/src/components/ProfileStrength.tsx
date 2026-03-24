@@ -54,7 +54,7 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
       border: "0.5px solid var(--border-hairline)",
       padding: "24px",
       marginBottom: "32px",
-      borderRadius: "2px",
+      borderRadius: "var(--radius-sm)",
       position: "relative",
       overflow: "hidden"
     }}>
@@ -80,7 +80,7 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
             alignItems: "center", 
             justifyContent: "center",
             border: "0.5px solid var(--border-hairline)",
-            borderRadius: "1px"
+            borderRadius: "var(--radius-xs)"
           }}>
             <Target size={18} weight="thin" color="var(--text-primary)" />
           </div>
@@ -159,7 +159,7 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
               color: "var(--text-secondary)",
               padding: "4px 10px",
               backgroundColor: "transparent",
-              borderRadius: "1px",
+              borderRadius: "var(--radius-xs)",
               border: "0.5px solid var(--border-hairline)",
               fontFamily: "var(--font-mono)",
               letterSpacing: "0.05em"

@@ -257,7 +257,7 @@ export default function ProjectDetail() {
           height: "24px",
           border: "0.5px solid var(--border-hairline)",
           borderTopColor: "var(--text-primary)",
-          borderRadius: "999px",
+          borderRadius: "var(--radius-xs)",
           animation: "spin 0.8s linear infinite"
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -340,7 +340,7 @@ export default function ProjectDetail() {
             width: "100%",
             height: isMobile ? "240px" : "560px",
             overflow: "hidden",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             border: "0.5px solid var(--border-hairline)",
             marginBottom: "56px",
             position: "relative",
@@ -458,7 +458,7 @@ export default function ProjectDetail() {
               <div style={{
                 marginBottom: "56px",
                 border: "0.5px solid var(--border-hairline)",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 padding: isMobile ? "24px" : "40px",
                 backgroundColor: "rgba(255, 255, 255, 0.02)"
               }}>
@@ -474,14 +474,14 @@ export default function ProjectDetail() {
                     <div key={req.id} style={{
                       padding: "24px",
                       border: "0.5px solid var(--border-hairline)",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       backgroundColor: "var(--bg-page)"
                     }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", gap: "16px", flexWrap: "wrap" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                           <img
                             src={req.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(req.user.name)}&background=212121&color=ffffff&bold=true`}
-                            style={{ width: "40px", height: "40px", borderRadius: "2px", border: "0.5px solid var(--border-hairline)" }}
+                            style={{ width: "40px", height: "40px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}
                           />
                           <div>
                             <div style={{ fontWeight: 800, fontSize: "14px" }}>{req.user.name.toUpperCase()}</div>
@@ -499,7 +499,7 @@ export default function ProjectDetail() {
                             backgroundColor: "var(--text-primary)",
                             color: "var(--bg-page)",
                             border: "none",
-                            borderRadius: "2px",
+                            borderRadius: "var(--radius-sm)",
                             fontSize: "11px",
                             fontWeight: 800,
                             cursor: "pointer",
@@ -516,7 +516,7 @@ export default function ProjectDetail() {
                           <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Skills</label>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                             {Array.isArray(req.skills) ? req.skills.map(s => (
-                              <span key={s} style={{ fontSize: "10px", padding: "2px 6px", border: "0.5px solid var(--border-hairline)", borderRadius: "2px", color: "var(--text-secondary)" }}>{s}</span>
+                              <span key={s} style={{ fontSize: "10px", padding: "2px 6px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", color: "var(--text-secondary)" }}>{s}</span>
                             )) : <span style={{ fontSize: "10px", color: "var(--text-tertiary)" }}>No skills listed</span>}
                           </div>
                         </div>
@@ -542,7 +542,7 @@ export default function ProjectDetail() {
                 border: "1px solid var(--border-hairline)",
                 padding: "32px",
                 marginBottom: "48px",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
                 display: "flex",
                 flexDirection: isMobile ? "column" : "row",
                 alignItems: isMobile ? "flex-start" : "center",
@@ -566,7 +566,7 @@ export default function ProjectDetail() {
                     backgroundColor: project.hasAppliedToCofounder ? "rgba(255, 255, 255, 0.05)" : "var(--text-primary)",
                     color: project.hasAppliedToCofounder ? "var(--text-tertiary)" : "var(--bg-page)",
                     border: project.hasAppliedToCofounder ? "1px solid var(--border-hairline)" : "none",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 900,
                     textTransform: "uppercase",
@@ -634,7 +634,7 @@ export default function ProjectDetail() {
                         gap: "10px",
                         padding: "10px 16px 10px 10px",
                         backgroundColor: "var(--bg-page)",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         cursor: "pointer",
                         border: "0.5px solid var(--border-hairline)",
                         transition: "all 0.15s ease"
@@ -645,7 +645,7 @@ export default function ProjectDetail() {
                       <img
                         src={contrib.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(contrib.name || contrib.username)}&background=212121&color=ffffff&bold=true`}
                         alt={contrib.username}
-                        style={{ width: "28px", height: "28px", borderRadius: "2px" }}
+                        style={{ width: "28px", height: "28px", borderRadius: "var(--radius-sm)" }}
                       />
                       <span style={{ fontWeight: 700, fontSize: "13px", display: "flex", alignItems: "center", color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
                         {contrib.name || contrib.username}
@@ -698,7 +698,7 @@ export default function ProjectDetail() {
                     padding: "12px 24px",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     textDecoration: "none",
                     fontSize: "13px",
                     fontWeight: 600,
@@ -725,7 +725,7 @@ export default function ProjectDetail() {
                     padding: "12px 24px",
                     backgroundColor: "transparent",
                     color: "var(--text-primary)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     border: "0.5px solid var(--border-hairline)",
                     textDecoration: "none",
                     fontSize: "13px",
@@ -756,7 +756,7 @@ export default function ProjectDetail() {
                 padding: "24px",
                 backgroundColor: "var(--bg-hover)",
                 border: "0.5px solid var(--border-hairline)",
-                borderRadius: "2px",
+                borderRadius: "var(--radius-sm)",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
                   <Code size={18} weight="thin" color="var(--text-tertiary)" />
@@ -815,7 +815,7 @@ export default function ProjectDetail() {
                     <div style={{
                       backgroundColor: "var(--bg-page)",
                       padding: "12px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       border: "0.5px solid var(--border-hairline)",
                       fontFamily: "var(--font-mono)",
                       fontSize: "11px",
@@ -843,7 +843,7 @@ export default function ProjectDetail() {
                     backgroundColor: "transparent",
                     color: "var(--text-primary)",
                     border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     cursor: "pointer",
                     fontWeight: 600,
                     fontSize: "12px",
@@ -868,7 +868,7 @@ export default function ProjectDetail() {
                     backgroundColor: "transparent",
                     color: "#ef4444",
                     border: "0.5px solid #ef4444",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     cursor: isDeleting ? "not-allowed" : "pointer",
                     fontWeight: 600,
                     fontSize: "12px",
@@ -897,7 +897,7 @@ export default function ProjectDetail() {
           padding: isMobile ? "12px" : "20px",
           backgroundColor: "var(--bg-page)",
           border: "0.5px solid var(--border-hairline)",
-          borderRadius: "2px",
+          borderRadius: "var(--radius-sm)",
           marginBottom: "64px",
         }}>
           <button
@@ -907,7 +907,7 @@ export default function ProjectDetail() {
               flex: 1,
               padding: "16px",
               border: "0.5px solid var(--border-hairline)",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               backgroundColor: isLiked ? "var(--text-primary)" : "transparent",
               color: isLiked ? "var(--bg-page)" : "var(--text-primary)",
               cursor: currentUser ? "pointer" : "not-allowed",
@@ -934,7 +934,7 @@ export default function ProjectDetail() {
               flex: 1,
               padding: "16px",
               border: "0.5px solid var(--border-hairline)",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               backgroundColor: isSaved ? "var(--text-primary)" : "transparent",
               color: isSaved ? "var(--bg-page)" : "var(--text-primary)",
               cursor: currentUser ? "pointer" : "not-allowed",
@@ -963,7 +963,7 @@ export default function ProjectDetail() {
               flex: 1,
               padding: "16px",
               border: "0.5px solid var(--border-hairline)",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               backgroundColor: "transparent",
               color: "var(--text-primary)",
               cursor: "pointer",
@@ -991,7 +991,7 @@ export default function ProjectDetail() {
               flex: 1,
               padding: "16px",
               border: "0.5px solid var(--border-hairline)",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               backgroundColor: "transparent",
               color: "var(--text-primary)",
               cursor: "pointer",
@@ -1033,7 +1033,7 @@ export default function ProjectDetail() {
                 fontWeight: 800,
                 fontFamily: "var(--font-mono)",
                 color: activeTab === "details" ? "var(--text-primary)" : "var(--text-tertiary)",
-                borderBottom: activeTab === "details" ? "1px solid var(--text-primary)" : "1px solid transparent",
+                // borderBottom: activeTab === "details" ? "1px solid var(--text-primary)" : "1px solid transparent",
                 cursor: "pointer",
                 transition: "all 0.2s",
                 textTransform: "uppercase",
@@ -1052,7 +1052,7 @@ export default function ProjectDetail() {
                 fontWeight: 800,
                 fontFamily: "var(--font-mono)",
                 color: activeTab === "changelog" ? "var(--text-primary)" : "var(--text-tertiary)",
-                borderBottom: activeTab === "changelog" ? "1px solid var(--text-primary)" : "1px solid transparent",
+                // borderBottom: activeTab === "changelog" ? "1px solid var(--text-primary)" : "1px solid transparent",
                 cursor: "pointer",
                 transition: "all 0.2s",
                 textTransform: "uppercase",

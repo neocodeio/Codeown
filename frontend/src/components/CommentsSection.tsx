@@ -179,7 +179,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           <img
             src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=212121&color=ffffff&bold=true`}
             alt={currentUser.fullName || "User"}
-            style={{ width: "44px", height: "44px", borderRadius: "2px", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0 }}
+            style={{ width: "44px", height: "44px", borderRadius: "var(--radius-sm)", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0 }}
           />
           <div style={{ flex: 1 }}>
             {selectedGif && (
@@ -187,7 +187,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                 position: "relative", 
                 width: "fit-content", 
                 marginBottom: "12px",
-                borderRadius: "4px",
+                borderRadius: "var(--radius-sm)",
                 overflow: "hidden",
                 border: "0.5px solid var(--border-hairline)",
                 animation: "reactionFadeUp 0.15s ease-out"
@@ -231,6 +231,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                 outline: "none",
                 fontSize: "15px",
                 fontWeight: 500,
+                borderRadius: "var(--radius-sm)",
                 resize: "none",
                 fontFamily: "inherit",
                 color: "var(--text-primary)",
@@ -269,7 +270,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     backgroundColor: newComment.trim() && !submitting ? "var(--text-primary)" : "transparent",
                     color: newComment.trim() && !submitting ? "var(--bg-page)" : "var(--text-tertiary)",
                     border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     cursor: newComment.trim() && !submitting ? "pointer" : "not-allowed",
                     fontWeight: 800,
                     fontSize: "11px",
@@ -295,7 +296,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     backgroundColor: "transparent",
                     color: "var(--text-tertiary)",
                     border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     cursor: "pointer",
                     fontSize: "11px",
                     fontWeight: 700,
@@ -333,14 +334,14 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
             textAlign: "center",
             padding: "80px 40px",
             backgroundColor: "var(--bg-hover)",
-            borderRadius: "2px",
+            borderRadius: "var(--radius-sm)",
             border: "0.5px solid var(--border-hairline)",
           }}>
             <div style={{
               width: "48px",
               height: "48px",
               backgroundColor: "var(--bg-hover)",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

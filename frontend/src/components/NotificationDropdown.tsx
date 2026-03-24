@@ -155,7 +155,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               backgroundColor: "var(--bg-page)",
               border: "0.5px solid var(--border-hairline)",
               cursor: "pointer",
-              borderRadius: "2px",
+              borderRadius: "var(--radius-sm)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -172,7 +172,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                   right: "-8px",
                   backgroundColor: "var(--text-primary)",
                   color: "var(--bg-page)",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   width: "16px",
                   height: "16px",
                   fontSize: "9px",
@@ -270,7 +270,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       border: "0.5px solid var(--border-hairline)",
                       color: "var(--text-primary)",
                       padding: "8px 14px",
-                      borderRadius: "2px",
+                      borderRadius: "var(--radius-sm)",
                       fontSize: "11px",
                       fontWeight: "800",
                       cursor: "pointer",
@@ -295,7 +295,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                 {isMobile && (
                   <button
                     onClick={() => setIsOpen(false)}
-                    style={{ background: "var(--text-primary)", border: "none", color: "var(--bg-page)", padding: "8px 14px", borderRadius: "2px", fontWeight: "800", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
+                    style={{ background: "var(--text-primary)", border: "none", color: "var(--bg-page)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontWeight: "800", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
                   >
                     CLOSE
                   </button>
@@ -310,7 +310,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                   <div style={{
                     width: "48px",
                     height: "48px",
-                    borderRadius: "2px",
+                    borderRadius: "var(--radius-sm)",
                     backgroundColor: "var(--bg-hover)",
                     display: "flex",
                     alignItems: "center",
@@ -337,7 +337,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       style={{
                         padding: "16px 20px",
                         margin: "2px 0",
-                        borderRadius: "2px",
+                        borderRadius: "var(--radius-sm)",
                         cursor: "pointer",
                         backgroundColor: notification.read ? "var(--bg-page)" : "var(--bg-hover)",
                         transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -352,7 +352,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                         <img
                           src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
                           alt=""
-                          style={{ width: "42px", height: "42px", borderRadius: "1px", objectFit: "cover", backgroundColor: "var(--bg-hover)", border: "0.5px solid var(--border-hairline)" }}
+                          style={{ width: "42px", height: "42px", borderRadius: "var(--radius-xs)", objectFit: "cover", backgroundColor: "var(--bg-hover)", border: "0.5px solid var(--border-hairline)" }}
                         />
                         <div style={{
                           position: "absolute",
@@ -360,7 +360,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                           right: "-4px",
                           width: "20px",
                           height: "20px",
-                          borderRadius: "6px",
+                          borderRadius: "var(--radius-sm)",
                           backgroundColor: "var(--bg-page)",
                           display: "flex",
                           alignItems: "center",

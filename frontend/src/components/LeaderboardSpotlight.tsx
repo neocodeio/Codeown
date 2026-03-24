@@ -39,7 +39,7 @@ export default function LeaderboardSpotlight() {
         }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <div style={{ background: "rgba(255,255,255,0.1)", width: "28px", height: "28px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ background: "rgba(255,255,255,0.1)", width: "28px", height: "28px", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <HugeiconsIcon icon={Rocket01Icon} size={16} color="#fff" />
                     </div>
                     <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, letterSpacing: "-0.01em" }}>Community Spotlight</h3>
@@ -50,14 +50,14 @@ export default function LeaderboardSpotlight() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
                 {topUsers.map((user, idx) => (
                     <Link key={user.id} to={`/${user.username}`} style={{ textDecoration: "none", color: "inherit", textAlign: "center" }}>
-                        <div style={{ position: "relative", marginBottom: "8px", display: "inline-block" }}>
+                        <div style={{ position: "relative", marginBottom: "sm", display: "inline-block" }}>
                             <img
                                 src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`}
-                                style={{ width: "48px", height: "48px", borderRadius: "12px", border: idx === 0 ? "2px solid #fff" : "1px solid rgba(255,255,255,0.1)" }}
+                                style={{ width: "48px", height: "48px", borderRadius: "12px", border: idx === 0 ? "sm solid #fff" : "1px solid rgba(255,255,255,0.1)" }}
                                 alt=""
                             />
                             {idx === 0 && (
-                                <div style={{ position: "absolute", bottom: "-4px", right: "-4px", background: "#facc15", borderRadius: "50%", width: "16px", height: "16px", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #111" }}>
+                                <div style={{ position: "absolute", bottom: "-4px", right: "-4px", background: "#facc15", borderRadius: "50%", width: "16px", height: "16px", display: "flex", alignItems: "center", justifyContent: "center", border: "sm solid #111" }}>
                                     <span style={{ fontSize: "10px", fontWeight: 800, color: "#111" }}>1</span>
                                 </div>
                             )}

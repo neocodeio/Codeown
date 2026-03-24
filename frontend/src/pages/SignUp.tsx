@@ -20,7 +20,7 @@ export default function SignUpPage() {
       <div style={{
         width: "100%",
         maxWidth: "480px",
-        borderRadius: "2px",
+        borderRadius: "var(--radius-sm)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -34,7 +34,7 @@ export default function SignUpPage() {
             appearance={{
                 variables: {
                   colorPrimary: "#000000",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   fontSize: "14px",
                 },
                 elements: {

@@ -152,7 +152,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
         width: CARD_WIDTH,
         maxWidth: "calc(100vw - 24px)",
         backgroundColor: "var(--bg-page)",
-        borderRadius: "2px",
+        borderRadius: "var(--radius-md)",
         boxShadow: "none",
         border: "0.5px solid var(--border-hairline)",
         overflow: "hidden",
@@ -177,7 +177,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
               <img
                 src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
                 alt=""
-                style={{ width: 48, height: 48, borderRadius: "2px", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
+                style={{ width: 48, height: 48, borderRadius: "var(--radius-sm)", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div
@@ -241,7 +241,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                 style={{
                   width: "100%",
                   padding: "10px 16px",
-                  borderRadius: "2px",
+                  borderRadius: "var(--radius-sm)",
                   border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
                   fontSize: "11px",
                   fontWeight: 800,
