@@ -5,6 +5,8 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
 import { SEO } from "../components/SEO";
+import OnboardingSuccessModal from "../components/OnboardingSuccessModal";
+
 
 const TOTAL_STEPS = 5;
 
@@ -36,7 +38,9 @@ export default function Onboarding() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
 
   // --- Access guard ---
   useEffect(() => {
@@ -149,7 +153,7 @@ export default function Onboarding() {
       // Mark as done locally to prevent redirect loop
       if (user?.id) localStorage.setItem(`onboarding_done_${user.id}`, "true");
       window.dispatchEvent(new Event("profileUpdated"));
-      navigate("/", { replace: true });
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Error completing onboarding:", error);
     } finally {
@@ -172,7 +176,7 @@ export default function Onboarding() {
       // Mark as done locally to prevent redirect loop
       if (user?.id) localStorage.setItem(`onboarding_done_${user.id}`, "true");
       window.dispatchEvent(new Event("profileUpdated"));
-      navigate("/", { replace: true });
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Error skipping onboarding:", error);
     } finally {
@@ -945,7 +949,11 @@ export default function Onboarding() {
           margin: "0 auto",
         }}
       >
-        {renderStep()}
+      {renderStep()}
+      <OnboardingSuccessModal 
+        isOpen={showSuccessModal} 
+        onClose={() => navigate("/", { replace: true })} 
+      />
       </div>
     </div>
   );

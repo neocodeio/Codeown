@@ -147,6 +147,15 @@ export default function Profile() {
   }, [searchParams, setSearchParams, handleProfileUpdated]);
 
   useEffect(() => {
+    if (searchParams.get("action") === "new-project") {
+      setIsProjectModalOpen(true);
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("action");
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
     const closeMenu = () => setIsMenuOpen(false);
     if (isMenuOpen) {
       document.addEventListener("click", closeMenu);

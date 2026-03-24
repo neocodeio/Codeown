@@ -687,6 +687,16 @@ export async function getUserProfile(req: Request, res: Response) {
             }
         }
 
+        // Calculate Founder Rank (join order)
+        let founderNumber = 1;
+        if (userData.created_at) {
+            const { count } = await supabase
+                .from("users")
+                .select("id", { count: 'exact', head: true })
+                .lt("created_at", userData.created_at);
+            founderNumber = (count || 0) + 1;
+        }
+
         // Build response data
         const responseData: any = {
             id: userData.id,
@@ -710,6 +720,7 @@ export async function getUserProfile(req: Request, res: Response) {
             is_hirable: userData.is_hirable ?? false,
             is_pro: userData.is_pro ?? false,
             is_og: userIsOG,
+            founder_number: founderNumber,
             is_organization: userData.is_organization ?? false,
             // Social links
             github_url: userData.github_url || null,
