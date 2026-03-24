@@ -437,41 +437,149 @@ export default function UserProfile() {
             </h1>
             <div style={{
               display: "flex",
-              gap: "8px",
+              gap: "10px",
               marginLeft: isMobile ? 0 : "auto",
               width: isMobile ? "100%" : "auto",
               justifyContent: isMobile ? "flex-start" : "flex-end",
               flexWrap: "wrap",
+              alignItems: "center"
             }}>
-              <button
-                onClick={() => navigate(`/portfolio/${user.username}`)}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: "var(--radius-sm)",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  fontFamily: "var(--font-mono)",
-                  border: "none",
-                  backgroundColor: "var(--text-primary)",
-                  color: "var(--bg-page)",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.15s ease",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-              >
-                <Rocket size={16} weight="fill" />
-                PORTFOLIO
-              </button>
-              {isSignedIn && (
+              {/* Primary Actions */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", flex: isMobile ? "1" : "none" }}>
                 <button
-                  onClick={() => navigate(`/messages?userId=${user.id}`)}
+                  onClick={() => navigate(`/portfolio/${user.username}`)}
+                  style={{
+                    padding: "10px 16px",
+                    borderRadius: "var(--radius-sm)",
+                    fontSize: "12px",
+                    fontWeight: 800,
+                    fontFamily: "var(--font-mono)",
+                    border: "none",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.15s ease",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    flex: isMobile ? 1 : "none",
+                    justifyContent: "center"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                >
+                  <Rocket size={16} weight="fill" />
+                  PORTFOLIO
+                </button>
+
+                {isSignedIn && (
+                  <button
+                    onClick={handleFollow}
+                    disabled={followLoading}
+                    style={{
+                      padding: "10px 24px",
+                      borderRadius: "var(--radius-sm)",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
+                      backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
+                      color: isFollowing ? "var(--text-primary)" : "var(--bg-page)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      transition: "all 0.15s ease",
+                      fontFamily: "var(--font-mono)",
+                      textTransform: "uppercase",
+                      flex: isMobile ? 1 : "none",
+                      justifyContent: "center"
+                    }}
+                    onMouseEnter={(e) => {
+                      if (isFollowing) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                      else e.currentTarget.style.opacity = "0.9";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (isFollowing) e.currentTarget.style.backgroundColor = "transparent";
+                      else e.currentTarget.style.opacity = "1";
+                    }}
+                  >
+                    {isFollowing ? <Check size={16} weight="bold" /> : <Plus size={16} weight="bold" />}
+                    {isFollowing ? "FOLLOWING" : "FOLLOW"}
+                  </button>
+                )}
+
+                {user.is_pro && user.is_hirable && (
+                  <button
+                    onClick={async () => {
+                      const token = await getToken();
+                      await api.post("/analytics/track", {
+                        event_type: "opportunity_click",
+                        target_user_id: user.id
+                      }, {
+                        headers: token ? { Authorization: `Bearer ${token}` } : {}
+                      });
+                      navigate(`/messages?userId=${user.id}&message=${encodeURIComponent("Hi! I found your profile on Codeown. Your work looks impressive—would love to connect and chat about what you're building!")}`);
+                    }}
+                    style={{
+                      padding: "10px 24px",
+                      borderRadius: "var(--radius-sm)",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      backgroundColor: "transparent",
+                      color: "var(--text-primary)",
+                      border: "0.5px solid var(--border-hairline)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      transition: "all 0.15s ease",
+                      fontFamily: "var(--font-mono)",
+                      textTransform: "uppercase",
+                      flex: isMobile ? "1 0 100%" : "none",
+                      justifyContent: "center"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    <Rocket size={16} weight="bold" />
+                    HIRE ME
+                  </button>
+                )}
+              </div>
+
+              {/* Utility Tools Group */}
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                {isSignedIn && (
+                  <button
+                    onClick={() => navigate(`/messages?userId=${user.id}`)}
+                    style={{
+                      padding: "10px",
+                      borderRadius: "var(--radius-sm)",
+                      backgroundColor: "transparent",
+                      color: "var(--text-primary)",
+                      border: "0.5px solid var(--border-hairline)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    title="Message"
+                  >
+                    <EnvelopeSimple size={20} weight="thin" />
+                  </button>
+                )}
+                
+                <button
+                  onClick={() => {
+                    const shareUrl = user.username ? `${window.location.origin}/${user.username}` : window.location.href;
+                    navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
+                  }}
                   style={{
                     padding: "10px",
                     borderRadius: "var(--radius-sm)",
@@ -486,124 +594,34 @@ export default function UserProfile() {
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                  title="Message"
+                  title="Share"
                 >
-                  <EnvelopeSimple size={20} weight="thin" />
+                  <ShareNetwork size={20} weight="thin" />
                 </button>
-              )}
-              {isSignedIn && (
+
                 <button
-                  onClick={handleFollow}
-                  disabled={followLoading}
+                  onClick={() => setIsIDCardModalOpen(true)}
                   style={{
-                    padding: "10px 24px",
+                    padding: "10px",
                     borderRadius: "var(--radius-sm)",
-                    fontSize: "12px",
-                    fontWeight: 700,
-                    border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
-                    backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
-                    color: isFollowing ? "var(--text-primary)" : "var(--bg-page)",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    transition: "all 0.15s ease",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
-                  }}
-                  onMouseEnter={(e) => {
-                    if (isFollowing) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                    else e.currentTarget.style.opacity = "0.9";
-                  }}
-                  onMouseLeave={(e) => {
-                    if (isFollowing) e.currentTarget.style.backgroundColor = "transparent";
-                    else e.currentTarget.style.opacity = "1";
-                  }}
-                >
-                  {isFollowing ? <Check size={16} weight="bold" /> : <Plus size={16} weight="bold" />}
-                  {isFollowing ? "FOLLOWING" : "FOLLOW"}
-                </button>
-              )}
-              {user.is_pro && user.is_hirable && (
-                <button
-                  onClick={async () => {
-                    const token = await getToken();
-                    await api.post("/analytics/track", {
-                      event_type: "opportunity_click",
-                      target_user_id: user.id
-                    }, {
-                      headers: token ? { Authorization: `Bearer ${token}` } : {}
-                    });
-                    navigate(`/messages?userId=${user.id}&message=${encodeURIComponent("Hi! I found your profile on Codeown. Your work looks impressive—would love to connect and chat about what you're building!")}`);
-                  }}
-                  style={{
-                    padding: "10px 24px",
-                    borderRadius: "var(--radius-sm)",
-                    fontSize: "12px",
-                    fontWeight: 700,
                     backgroundColor: "transparent",
                     color: "var(--text-primary)",
                     border: "0.5px solid var(--border-hairline)",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: "8px",
+                    justifyContent: "center",
                     transition: "all 0.15s ease",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  title="Developer ID Card"
                 >
-                  <Rocket size={16} weight="bold" />
-                  HIRE ME
+                  <IdentificationCard size={20} weight="thin" />
                 </button>
-              )}
-              <button
-                onClick={() => {
-                  const shareUrl = user.username ? `${window.location.origin}/${user.username}` : window.location.href;
-                  navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!"));
-                }}
-                style={{
-                  padding: "10px",
-                  borderRadius: "var(--radius-sm)",
-                  backgroundColor: "transparent",
-                  color: "var(--text-primary)",
-                  border: "0.5px solid var(--border-hairline)",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                title="Share"
-              >
-                <ShareNetwork size={20} weight="thin" />
-              </button>
-              <button
-                onClick={() => setIsIDCardModalOpen(true)}
-                style={{
-                  padding: "10px",
-                  borderRadius: "var(--radius-sm)",
-                  backgroundColor: "transparent",
-                  color: "var(--text-primary)",
-                  border: "0.5px solid var(--border-hairline)",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                title="Developer ID Card"
-              >
-                <IdentificationCard size={20} weight="thin" />
-              </button>
             </div>
           </div>
+        </div>
 
           <span style={{ fontSize: "14px", color: "var(--text-tertiary)", display: "block", marginBottom: "16px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
             @{user.username}
