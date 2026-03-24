@@ -335,7 +335,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         <div style={{
           fontSize: "14.5px",
           lineHeight: "1.6",
-          color: "rgba(255, 255, 255, 0.9)", // Slightly softer than pure text-primary
+          color: "var(--text-secondary)", // Better readability across themes
           marginBottom: "20px",
         }}>
           {post.title && <h2 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", letterSpacing: "-0.01em", textTransform: "uppercase" }}>{post.title}</h2>}

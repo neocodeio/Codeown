@@ -347,7 +347,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
 
         <div style={{ marginBottom: "20px" }}>
           <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "10px", letterSpacing: "-0.01em", textTransform: "uppercase" }}>{project.title}</h3>
-          <p style={{ fontSize: "14.5px", lineHeight: "1.6", color: "rgba(255, 255, 255, 0.9)", marginBottom: "20px" }}>{project.description}</p>
+          <p style={{ fontSize: "14.5px", lineHeight: "1.6", color: "var(--text-secondary)", marginBottom: "20px" }}>{project.description}</p>
           
           {/* Tech Stack Chips */}
           {project.technologies_used && project.technologies_used.length > 0 && (
