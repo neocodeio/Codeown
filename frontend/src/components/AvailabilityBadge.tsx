@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Briefcase } from "phosphor-react";
 import OGAvatarDecorator from "./OGAvatarDecorator";
 
@@ -11,14 +12,14 @@ interface AvailabilityBadgeProps {
     username?: string | null;
 }
 
-export default function AvailabilityBadge({
+const AvailabilityBadge = memo(({
     avatarUrl,
     name,
     size = 40,
     isOpenToOpportunities = false,
     tooltipText = "Open to opportunities",
     isOG = false,
-}: AvailabilityBadgeProps) {
+}: AvailabilityBadgeProps) => {
     const showBadge = isOpenToOpportunities === true;
     // scale icon bg size: 35% of avatar size
     const briefcaseBgSize = Math.max(14, Math.round(size * 0.25));
@@ -94,4 +95,6 @@ export default function AvailabilityBadge({
             </div>
         </OGAvatarDecorator>
     );
-}
+});
+
+export default AvailabilityBadge;

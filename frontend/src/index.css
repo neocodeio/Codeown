@@ -391,7 +391,18 @@ textarea:focus {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-tertiary);
+  background: var(--text-secondary);
+}
+
+@keyframes ogSparkle {
+    0% { transform: rotate(0deg) translate(22px) rotate(0deg) scale(0); opacity: 0; }
+    50% { transform: rotate(180deg) translate(28px) rotate(-180deg) scale(1); opacity: 1; }
+    100% { transform: rotate(360deg) translate(22px) rotate(-360deg) scale(0); opacity: 0; }
+}
+
+@keyframes ogRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* For Firefox */

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -26,7 +26,7 @@ interface ProjectCardProps {
   isPinned?: boolean;
 }
 
-export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp }: ProjectCardProps) {
+const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: ProjectCardProps) => {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -117,8 +117,6 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
     }
   };
 
-
-
   const getStatusText = (status: string) => {
     switch (status) {
       case 'completed': return 'COMPLETED';
@@ -200,7 +198,7 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
     setIsSendToChatModalOpen(true);
   };
 
-  const cardElement = (
+  return (
     <article
       onClick={handleClick}
       className="fade-in"
@@ -224,7 +222,7 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
     >
       {/* Avatar Col */}
       <div style={{ flexShrink: 0 }}>
-        <UserHoverCard userId={project.user_id}>
+        <UserHoverCard userId={project.user_id} user={project.user as any}>
           <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
             <AvailabilityBadge
               avatarUrl={project.user?.avatar_url || null}
@@ -248,7 +246,7 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
           marginBottom: "6px"
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-            <UserHoverCard userId={project.user_id}>
+            <UserHoverCard userId={project.user_id} user={project.user as any}>
               <span
                 onClick={handleUserClick}
                 style={{
@@ -396,7 +394,7 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
         {/* Media */}
         {project.cover_image && (
           <div style={{ borderRadius: "2px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px", aspectRatio: "16/9" }}>
-            <img src={getOptimizedImageUrl(project.cover_image)} alt={project.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src={getOptimizedImageUrl(project.cover_image)} alt={project.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
           </div>
         )}
 
@@ -500,6 +498,6 @@ export default function ProjectCard({ project, onUpdated, isPinned: isPinnedProp
       />
     </article>
   );
+});
 
-  return cardElement;
-}
+export default ProjectCard;

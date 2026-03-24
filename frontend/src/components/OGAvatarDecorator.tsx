@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import { useTheme } from "../context/ThemeContext";
 
 interface OGAvatarDecoratorProps {
@@ -6,11 +6,7 @@ interface OGAvatarDecoratorProps {
     is_og?: boolean;
 }
 
-/**
- * OGAvatarDecorator - High-end "Founding 100" visual aura.
- * Features a clean, high-contrast pulse border and integrated OG tag.
- */
-export default function OGAvatarDecorator({ children, is_og = false }: OGAvatarDecoratorProps) {
+const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorProps) => {
     const { theme } = useTheme();
     
     // Support both boolean and string "true" from DB
@@ -62,7 +58,7 @@ export default function OGAvatarDecorator({ children, is_og = false }: OGAvatarD
                 {/* Floating "Diamond Sparkles" for extra flair */}
                 {[...Array(3)].map((_, i) => (
                     <div 
-                        key={i}
+                         key={i}
                         style={{
                             position: "absolute",
                             width: "2px",
@@ -80,18 +76,6 @@ export default function OGAvatarDecorator({ children, is_og = false }: OGAvatarD
                     />
                 ))}
             </div>
-
-            <style>{`
-                @keyframes ogSparkle {
-                    0% { transform: rotate(${0}deg) translate(22px) rotate(0deg) scale(0); opacity: 0; }
-                    50% { transform: rotate(${180}deg) translate(28px) rotate(-180deg) scale(1); opacity: 1; }
-                    100% { transform: rotate(${360}deg) translate(22px) rotate(-360deg) scale(0); opacity: 0; }
-                }
-                @keyframes ogRotate {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            `}</style>
 
             {/* The Avatar Itself */}
             <div style={{ 
@@ -127,4 +111,6 @@ export default function OGAvatarDecorator({ children, is_og = false }: OGAvatarD
             </div>
         </div>
     );
-}
+});
+
+export default OGAvatarDecorator;

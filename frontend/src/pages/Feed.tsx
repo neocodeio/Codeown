@@ -82,16 +82,26 @@ export default function Feed() {
     const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;
 
     useEffect(() => {
+        let throttleTimeout: ReturnType<typeof setTimeout> | null = null;
+        
         const handleScroll = () => {
-            if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1000) {
-                if (hasMore && !loading) {
+            if (throttleTimeout) return;
+            
+            throttleTimeout = setTimeout(() => {
+                const scrolledToBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1200;
+                if (scrolledToBottom && hasMore && !loading) {
                     if (feedType === "posts") fetchPosts(undefined, true);
                     else fetchProjects(undefined, true);
                 }
-            }
+                throttleTimeout = null;
+            }, 200);
         };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            if (throttleTimeout) clearTimeout(throttleTimeout);
+        };
     }, [hasMore, loading, fetchPosts, fetchProjects, feedType]);
 
     const currentItems = feedType === "posts" ? posts : projects;
@@ -338,7 +348,7 @@ export default function Feed() {
                                             borderBottom: "0.5px solid var(--border-hairline)",
                                             animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
                                         }}>
-                                            <PostCard post={p} onUpdated={() => fetchPosts(undefined, false)} />
+                                            <PostCard post={p} onUpdated={handlePostCreated} />
                                         </div>
                                     ))
                                     : (currentItems as any[]).map(p => (
@@ -346,7 +356,7 @@ export default function Feed() {
                                             borderBottom: "0.5px solid var(--border-hairline)",
                                             animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
                                         }}>
-                                            <ProjectCard project={p} onUpdated={() => fetchProjects(undefined, false)} />
+                                            <ProjectCard project={p} onUpdated={handleProjectCreated} />
                                         </div>
                                     ))
                                 }

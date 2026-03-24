@@ -100,8 +100,9 @@ export default function Navbar() {
 
   // Streak update logic (no longer rendered here, but kept for potential future use)
 
-  // Active user tracking and polling
-  const [activeCount, setActiveCount] = useState(0);
+const StatusBadge = () => {
+  const [activeCount, setActiveCount] = useState(1);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     const fetchActiveCount = async () => {
@@ -113,37 +114,45 @@ export default function Navbar() {
       }
     };
 
-    const pingActiveSession = async () => {
-      try {
-        const token = await getToken();
-        await api.post("/users/active/ping", {}, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
-        });
-      } catch (e) {
-        // Silently fail pings
-      }
-    };
-
-    // Initial calls
     fetchActiveCount();
-    pingActiveSession();
-
-    // Set up intervals
     const countInterval = setInterval(fetchActiveCount, 30000); // 30s
-    const pingInterval = setInterval(pingActiveSession, 45000); // 45s
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
 
     return () => {
       clearInterval(countInterval);
-      clearInterval(pingInterval);
+      clearInterval(timer);
     };
-  }, [getToken]);
-
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
   }, []);
+
+  return (
+    <div style={{ 
+      display: "flex", 
+      alignItems: "center", 
+      gap: "3px", 
+      marginTop: "2px",
+      flexWrap: "wrap" 
+    }}>
+      <div style={{ 
+        width: "4px", 
+        height: "4px", 
+        borderRadius: "1px", 
+        backgroundColor: "#22c55e",
+        flexShrink: 0
+      }} />
+      <span style={{ 
+        fontSize: "10px", 
+        fontFamily: "var(--font-mono)",
+        color: "var(--text-secondary)",
+        fontWeight: 700,
+        letterSpacing: "0.05em"
+      }}>
+        {activeCount.toString().padStart(2, '0')} BUILDERS ONLINE
+        <span style={{ margin: "0 4px", opacity: 0.3 }}>•</span>
+        <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).toUpperCase()}</span>
+      </span>
+    </div>
+  );
+};
 
   // Remove periodic ping - React Query handles active count efficiently
   // Only ping when user actively interacts, not on a timer
@@ -182,33 +191,7 @@ export default function Navbar() {
                 Codeown
               </span>
             </h2>
-            {/* Online Status */}
-            <div style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "3px", 
-              marginTop: "2px",
-              flexWrap: "wrap" 
-            }}>
-              <div style={{ 
-                width: "4px", 
-                height: "4px", 
-                borderRadius: "1px", 
-                backgroundColor: "#22c55e",
-                flexShrink: 0
-              }} />
-              <span style={{ 
-                fontSize: "10px", 
-                fontFamily: "var(--font-mono)",
-                color: "var(--text-secondary)",
-                fontWeight: 700,
-                letterSpacing: "0.05em"
-              }}>
-                {activeCount.toString().padStart(2, '0')} BUILDERS ONLINE
-                <span style={{ margin: "0 4px", opacity: 0.3 }}>•</span>
-                <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).toUpperCase()}</span>
-              </span>
-            </div>
+            <StatusBadge />
           </div>
         </Link>
       </div>

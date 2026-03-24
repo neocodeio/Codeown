@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -27,7 +27,7 @@ interface PostCardProps {
   isPinned?: boolean;
 }
 
-export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: PostCardProps) {
+const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProps) => {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -236,7 +236,7 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
     >
       {/* Avatar Col */}
       <div style={{ flexShrink: 0 }}>
-        <UserHoverCard userId={post.user_id}>
+        <UserHoverCard userId={post.user_id} user={post.user as any}>
           <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
             <AvailabilityBadge
               avatarUrl={post.user?.avatar_url || null}
@@ -260,7 +260,7 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
           marginBottom: "6px"
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-            <UserHoverCard userId={post.user_id}>
+            <UserHoverCard userId={post.user_id} user={post.user as any}>
               <span
                 onClick={handleUserClick}
                 style={{
@@ -542,5 +542,6 @@ export default function PostCard({ post, onUpdated, isPinned: isPinnedProp }: Po
       {postCardContent}
     </>
   );
-}
+});
 
+export default PostCard;
