@@ -14,6 +14,7 @@ import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import { Gif, X } from "phosphor-react";
 import GifPicker from "./GifPicker";
+import RollingNumber from "./RollingNumber";
 
 export interface CommentWithMeta {
   id: number | string;
@@ -41,7 +42,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
   const [submitting, setSubmitting] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
-  const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType);
+  const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType, false, comment.like_count);
   const { isSignedIn } = useClerkUser();
   const navigate = useNavigate();
   const { width } = useWindowSize();
@@ -203,7 +204,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                 style={{ fontSize: "16px" }}
               />
               {likeCount > 0 ? (
-                <span>{likeCount}</span>
+                <RollingNumber value={likeCount} fontWeight={800} fontSize="12px" />
               ) : (
                 <span>LIKE</span>
               )}

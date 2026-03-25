@@ -20,6 +20,7 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { toast } from "react-toastify";
 import UserHoverCard from "./UserHoverCard";
 import Lightbox from "./Lightbox";
+import RollingNumber from "./RollingNumber";
 
 interface PostCardProps {
   post: Post;
@@ -497,7 +498,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             >
                  <action.icon size={22} weight={action.weight || "thin"} />
               {action.count !== undefined && action.count > 0 && (
-                <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count}</span>
+                action.icon === Heart ? (
+                  <RollingNumber value={action.count} fontWeight={800} fontSize="12px" />
+                ) : (
+                  <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count}</span>
+                )
               )}
             </button>
           ))}

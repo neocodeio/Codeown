@@ -3,14 +3,27 @@ import { useState, useCallback, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 
-export function useCommentLikes(commentId: number | string | null, resourceType?: "post" | "project") {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+export function useCommentLikes(commentId: number | string | null, resourceType?: "post" | "project", initialIsLiked?: boolean, initialLikeCount?: number) {
+  const [isLiked, setIsLiked] = useState(initialIsLiked ?? false);
+  const [likeCount, setLikeCount] = useState(initialLikeCount ?? 0);
   const [loading, setLoading] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
 
+  // Sync with initial values if they change
+  useEffect(() => {
+    if (initialIsLiked !== undefined) {
+      setIsLiked(initialIsLiked);
+    }
+  }, [initialIsLiked]);
+
+  useEffect(() => {
+    if (initialLikeCount !== undefined) {
+      setLikeCount(initialLikeCount);
+    }
+  }, [initialLikeCount]);
+
   const fetchStatus = useCallback(async () => {
-    if (!commentId || !isLoaded) return;
+    if (!commentId || !isLoaded || initialIsLiked !== undefined) return;
     try {
       const token = await getToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -21,7 +34,7 @@ export function useCommentLikes(commentId: number | string | null, resourceType?
       setIsLiked(false);
       setLikeCount(0);
     }
-  }, [commentId, isLoaded, getToken, resourceType]);
+  }, [commentId, isLoaded, getToken, resourceType, initialIsLiked]);
 
   useEffect(() => {
     fetchStatus();
