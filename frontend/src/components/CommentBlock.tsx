@@ -203,11 +203,8 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                 icon={isLiked ? faHeartSolid : faHeartRegular}
                 style={{ fontSize: "16px" }}
               />
-              {likeCount > 0 ? (
-                <RollingNumber value={likeCount} fontWeight={800} fontSize="12px" />
-              ) : (
-                <span>LIKE</span>
-              )}
+              <RollingNumber value={likeCount || 0} fontWeight={800} fontSize="12px" color="inherit" />
+              {likeCount === 0 && <span style={{ marginLeft: "-2px" }}>LIKE</span>}
             </button>
 
             {isSignedIn && (

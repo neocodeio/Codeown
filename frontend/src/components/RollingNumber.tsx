@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState, memo, useRef } from "react";
 
 interface RollingNumberProps {
     value: number;
@@ -12,70 +12,84 @@ const RollingNumber = memo(({ value, fontSize = "inherit", fontWeight = "inherit
     const [prevValue, setPrevValue] = useState(value);
     const [isAnimating, setIsAnimating] = useState(false);
     const [direction, setDirection] = useState<"up" | "down">("up");
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (value !== displayValue) {
+            // Cancel previous timer if it exists to reset the animation cycle
+            if (timerRef.current) clearTimeout(timerRef.current);
+            
             setDirection(value > displayValue ? "up" : "down");
             setPrevValue(displayValue);
             setIsAnimating(true);
             
-            // Short delay to allow browser to register the state change before finishing animation
-            const timer = setTimeout(() => {
+            timerRef.current = setTimeout(() => {
                 setDisplayValue(value);
                 setIsAnimating(false);
-            }, 300); // Animation duration match
+                timerRef.current = null;
+            }, 450);
 
-            return () => clearTimeout(timer);
+            return () => {
+                if (timerRef.current) clearTimeout(timerRef.current);
+            };
         }
     }, [value, displayValue]);
 
+    if (value === 0 && !isAnimating) return null;
+
     return (
         <span style={{ 
-            display: "inline-flex", 
+            display: "inline-block", 
             overflow: "hidden", 
-            height: "1.2em", 
+            height: "1.25em", 
             position: "relative",
-            verticalAlign: "bottom",
-            lineHeight: "1.2em",
+            lineHeight: "1.25em",
             fontSize,
             fontWeight,
-            color
+            color,
+            verticalAlign: "middle"
         }}>
             <style>{`
-                @keyframes slideUpIn {
-                    from { transform: translateY(1.2em); opacity: 0; }
+                @keyframes rollingSlideInUp {
+                    from { transform: translateY(100%); opacity: 0; }
                     to { transform: translateY(0); opacity: 1; }
                 }
-                @keyframes slideUpOut {
+                @keyframes rollingSlideOutUp {
                     from { transform: translateY(0); opacity: 1; }
-                    to { transform: translateY(-1.2em); opacity: 0; }
+                    to { transform: translateY(-100%); opacity: 0; }
                 }
-                @keyframes slideDownIn {
-                    from { transform: translateY(-1.2em); opacity: 0; }
+                @keyframes rollingSlideInDown {
+                    from { transform: translateY(-100%); opacity: 0; }
                     to { transform: translateY(0); opacity: 1; }
                 }
-                @keyframes slideDownOut {
+                @keyframes rollingSlideOutDown {
                     from { transform: translateY(0); opacity: 1; }
-                    to { transform: translateY(1.2em); opacity: 0; }
+                    to { transform: translateY(100%); opacity: 0; }
                 }
-                .rolling-digit-in-up { animation: slideUpIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-                .rolling-digit-out-up { animation: slideUpOut 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-                .rolling-digit-in-down { animation: slideDownIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-                .rolling-digit-out-down { animation: slideDownOut 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+                .rolling-in-up { animation: rollingSlideInUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+                .rolling-out-up { animation: rollingSlideOutUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+                .rolling-in-down { animation: rollingSlideInDown 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+                .rolling-out-down { animation: rollingSlideOutDown 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
             `}</style>
             
-            {isAnimating ? (
-                <div style={{ position: "relative", width: "100%", height: "100%" }}>
-                    <div className={direction === "up" ? "rolling-digit-out-up" : "rolling-digit-out-down"} style={{ position: "absolute", top: 0, left: 0 }}>
-                        {prevValue}
-                    </div>
-                    <div className={direction === "up" ? "rolling-digit-in-up" : "rolling-digit-in-down"} style={{ position: "absolute", top: 0, left: 0 }}>
-                        {value}
-                    </div>
-                </div>
-            ) : (
-                <span>{displayValue}</span>
-            )}
+            <div style={{ position: "relative", height: "100%", whiteSpace: "nowrap", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {isAnimating ? (
+                    <>
+                        <span style={{ visibility: "hidden" }}>{Math.max(value, prevValue)}</span>
+                        
+                        <div key={`out-${prevValue}-${value}`} className={direction === "up" ? "rolling-out-up" : "rolling-out-down"} 
+                             style={{ position: "absolute", width: "100%", textAlign: "center" }}>
+                            {prevValue}
+                        </div>
+                        <div key={`in-${value}-${prevValue}`} className={direction === "up" ? "rolling-in-up" : "rolling-in-down"} 
+                             style={{ position: "absolute", width: "100%", textAlign: "center" }}>
+                            {value}
+                        </div>
+                    </>
+                ) : (
+                    <span key={`stable-${displayValue}`}>{displayValue}</span>
+                )}
+            </div>
         </span>
     );
 });

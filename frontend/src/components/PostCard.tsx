@@ -445,7 +445,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
           alignItems: "center",
           justifyContent: "flex-start"
         }}>
-          {[
+          { [
             { 
               icon: ChatCircle, 
               count: post.comment_count, 
@@ -477,35 +477,38 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               onClick: handleSendToChat,
               hoverColor: "var(--text-primary)",
             }
-          ].map((action, i) => (
-            <button
-              key={i}
-              onClick={action.onClick}
-              style={{
-                display: "flex", alignItems: "center", gap: "6px",
-                background: "none", border: "none", padding: "4px 0",
-                cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
-                transition: "all 0.15s ease",
-                fontFamily: "var(--font-mono)",
-                fontSize: "12px"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = action.hoverColor || action.activeColor || (action.icon === Heart ? "#ef4444" : "var(--text-primary)");
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
-              }}
-            >
-                 <action.icon size={22} weight={action.weight || "thin"} />
-              {action.count !== undefined && action.count > 0 && (
-                action.icon === Heart ? (
-                  <RollingNumber value={action.count} fontWeight={800} fontSize="12px" />
+          ].map((action, i) => {
+            const Icon = action.icon;
+            return (
+              <button
+                key={i}
+                onClick={action.onClick}
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px",
+                  background: "none", border: "none", padding: "4px 0",
+                  cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
+                  transition: "all 0.15s ease",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "12px"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === Heart ? "#ef4444" : "var(--text-primary)");
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
+                }}
+              >
+                <Icon size={22} weight={action.weight || "thin"} />
+                {Icon === Heart ? (
+                  <RollingNumber value={action.count || 0} fontWeight={800} fontSize="12px" color="inherit" />
                 ) : (
-                  <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count}</span>
-                )
-              )}
-            </button>
-          ))}
+                  action.count !== undefined && action.count > 0 && (
+                    <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count}</span>
+                  )
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
