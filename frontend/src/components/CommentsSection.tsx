@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
@@ -17,29 +18,26 @@ interface CommentsSectionProps {
 export default function CommentsSection({ resourceId, resourceType, onCommentAdded }: CommentsSectionProps) {
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
-  const [comments, setComments] = useState<CommentWithMeta[]>([]);
+  const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchComments();
-  }, [resourceId, resourceType]);
+  const queryKey = resourceType === "project" 
+    ? ["project_comments", String(resourceId)] 
+    : ["comments", String(resourceId)];
 
-  const fetchComments = async () => {
-    try {
+  const { data: comments = [], isLoading: loading } = useQuery({
+    queryKey,
+    queryFn: async () => {
       const endpoint = resourceType === "project" ? `/projects/${resourceId}/comments` : `/posts/${resourceId}/comments`;
       const response = await api.get(endpoint);
-      setComments(response.data || []);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data || [];
+    },
+    enabled: !!resourceId
+  });
 
   const handleSubmitComment = async () => {
     if ((!newComment.trim() && !selectedGif) || !currentUser) return;
@@ -58,7 +56,11 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setComments(prev => [response.data, ...prev]);
+      queryClient.setQueryData(queryKey, (old: CommentWithMeta[] | undefined) => {
+        return [response.data, ...(old || [])];
+      });
+      queryClient.invalidateQueries({ queryKey });
+
       setNewComment("");
       setSelectedGif(null);
       setIsFocused(false);
@@ -103,7 +105,12 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         });
       };
 
-      setComments(prev => updateCommentsWithReply(prev));
+      queryClient.setQueryData(queryKey, (old: CommentWithMeta[] | undefined) => {
+        if (!old) return [response.data];
+        return updateCommentsWithReply(old);
+      });
+      queryClient.invalidateQueries({ queryKey });
+
       onCommentAdded?.();
     } catch (error) {
       console.error("Error posting reply:", error);
