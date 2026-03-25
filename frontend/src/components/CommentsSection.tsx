@@ -7,6 +7,7 @@ import CommentBlock, { type CommentWithMeta } from "./CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import { Gif, X } from "phosphor-react";
+import { useAvatar } from "../hooks/useAvatar";
 import GifPicker from "./GifPicker";
 
 interface CommentsSectionProps {
@@ -24,6 +25,12 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   const [isFocused, setIsFocused] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
+
+  const { avatarUrl } = useAvatar(
+    currentUser?.id,
+    currentUser?.imageUrl,
+    currentUser?.fullName || currentUser?.username || "User"
+  );
 
   const queryKey = resourceType === "project" 
     ? ["project_comments", String(resourceId)] 
@@ -184,7 +191,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           alignItems: "flex-start"
         }}>
           <img
-            src={currentUser.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName || "U")}&background=212121&color=ffffff&bold=true`}
+            src={avatarUrl}
             alt={currentUser.fullName || "User"}
             style={{ width: "44px", height: "44px", borderRadius: "var(--radius-sm)", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0 }}
           />

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
+import { useAvatar } from "../hooks/useAvatar";
 import ImageSlider from "../components/ImageSlider";
 import ContentRenderer from "../components/ContentRenderer";
 import MentionInput from "../components/MentionInput";
@@ -69,6 +70,12 @@ export default function PostDetail() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
   const [isSendToChatModalOpen, setIsSendToChatModalOpen] = useState(false);
+
+  const { avatarUrl: currentUserAvatarUrl } = useAvatar(
+    user?.id,
+    user?.imageUrl,
+    user?.fullName || user?.username || "User"
+  );
 
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id), post?.isLiked, post?.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id), post?.isSaved);
@@ -492,7 +499,7 @@ export default function PostDetail() {
             backgroundColor: "rgba(var(--text-primary-rgb), 0.01)"
           }}>
             <img
-              src={user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "User")}&background=212121&color=ffffff&bold=true`}
+              src={currentUserAvatarUrl}
               alt="My Avatar"
               style={{ 
                 width: isMobile ? "32px" : "44px", 
