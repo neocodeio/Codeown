@@ -12,7 +12,7 @@ const RollingNumber = memo(({ value, fontSize = "inherit", fontWeight = "inherit
     const [prevValue, setPrevValue] = useState(value);
     const [isAnimating, setIsAnimating] = useState(false);
     const [direction, setDirection] = useState<"up" | "down">("up");
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (value !== displayValue) {
