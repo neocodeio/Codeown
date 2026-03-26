@@ -257,7 +257,7 @@ export default function ProjectDetail() {
           height: "24px",
           border: "0.5px solid var(--border-hairline)",
           borderTopColor: "var(--text-primary)",
-          borderRadius: "var(--radius-xs)",
+          borderRadius: "99%",
           animation: "spin 0.8s linear infinite"
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
