@@ -33,17 +33,18 @@ interface CommentBlockProps {
   comment: CommentWithMeta;
   depth: number;
   onReply: (parentId: number | string, content: string) => Promise<void>;
+  onDelete?: (commentId: number | string) => Promise<void>;
   resourceType: "post" | "project";
 }
 
-export default function CommentBlock({ comment, depth, onReply, resourceType }: CommentBlockProps) {
+export default function CommentBlock({ comment, depth, onReply, onDelete, resourceType }: CommentBlockProps) {
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
   const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType, false, comment.like_count);
-  const { isSignedIn } = useClerkUser();
+  const { isSignedIn, user } = useClerkUser();
   const navigate = useNavigate();
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -158,6 +159,17 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                 Reply
               </button>
             )}
+
+            {isSignedIn && (comment.user_id === user?.id) && (
+              <button
+                onClick={() => onDelete?.(comment.id)}
+                style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 800, fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", transition: "color 0.15s ease", letterSpacing: "0.1em" }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "#ff4b4b"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+              >
+                Delete
+              </button>
+            )}
           </div>
 
           {showReply && (
@@ -210,6 +222,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
               comment={c} 
               depth={depth + 1} 
               onReply={onReply} 
+              onDelete={onDelete}
               resourceType={resourceType} 
             />
           </div>

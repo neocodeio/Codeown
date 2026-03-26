@@ -130,12 +130,37 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     }
   };
 
+  const handleCommentDelete = async (commentId: number | string) => {
+    if (!currentUser) return;
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+
+    try {
+      const token = await getToken();
+      if (!token) return;
+
+      const endpoint = resourceType === "project" 
+        ? `/project-comments/${commentId}` 
+        : `/comments/${commentId}`;
+        
+      await api.delete(endpoint, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      queryClient.invalidateQueries({ queryKey });
+      onCommentAdded?.(); // Update counts in parent
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      alert("Failed to delete comment");
+    }
+  };
+
   const renderComment = (comment: CommentWithMeta, depth: number = 0) => (
     <CommentBlock
       key={comment.id}
       comment={comment}
       depth={depth}
       onReply={handleReply}
+      onDelete={handleCommentDelete}
       resourceType={resourceType}
     />
   );

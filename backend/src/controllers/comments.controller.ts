@@ -377,3 +377,45 @@ export async function createComment(req: Request, res: Response) {
   }
 }
 
+export async function deleteComment(req: Request, res: Response) {
+  try {
+    const user = req.user;
+    const { commentId } = req.params;
+    const userId = user?.sub || user?.id || user?.userId;
+
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const { data: comment, error: fetchError } = await supabase
+      .from("comments")
+      .select("post_id, user_id")
+      .eq("id", commentId)
+      .single();
+
+    if (fetchError || !comment) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    if (comment.user_id !== userId) {
+      return res.status(403).json({ error: "Forbidden: Not your comment" });
+    }
+
+    const { error: deleteError } = await supabase
+      .from("comments")
+      .delete()
+      .eq("id", commentId);
+
+    if (deleteError) {
+      return res.status(500).json({ error: "Delete failed", details: deleteError.message });
+    }
+
+    // Refresh count and emit
+    const { count } = await supabase.from("comments").select("*", { count: "exact", head: true }).eq("post_id", comment.post_id);
+    const { emitUpdate } = await import("../lib/socket.js");
+    emitUpdate("post_commented", { postId: comment.post_id, commentId, deleted: true, commentCount: count || 0 });
+
+    return res.json({ success: true });
+  } catch (error: any) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
