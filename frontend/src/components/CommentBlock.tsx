@@ -33,7 +33,7 @@ interface CommentBlockProps {
   comment: CommentWithMeta;
   depth: number;
   onReply: (parentId: number | string, content: string) => Promise<void>;
-  onDelete?: (commentId: number | string) => Promise<void>;
+  onDelete?: (commentId: number | string) => void | Promise<void>;
   resourceType: "post" | "project";
 }
 

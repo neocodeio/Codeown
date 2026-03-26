@@ -9,6 +9,7 @@ import { faComment } from "@fortawesome/free-solid-svg-icons";
 import { Gif, X } from "phosphor-react";
 import { useAvatar } from "../hooks/useAvatar";
 import GifPicker from "./GifPicker";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface CommentsSectionProps {
   resourceId: number;
@@ -25,6 +26,9 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   const [isFocused, setIsFocused] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
+  
+  const [commentToDelete, setCommentToDelete] = useState<number | string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { avatarUrl } = useAvatar(
     currentUser?.id,
@@ -130,27 +134,29 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     }
   };
 
-  const handleCommentDelete = async (commentId: number | string) => {
-    if (!currentUser) return;
-    if (!window.confirm("Are you sure you want to delete this comment?")) return;
-
+  const handleCommentDelete = async () => {
+    if (!currentUser || !commentToDelete) return;
+    setIsDeleting(true);
     try {
       const token = await getToken();
       if (!token) return;
 
       const endpoint = resourceType === "project" 
-        ? `/project-comments/${commentId}` 
-        : `/comments/${commentId}`;
+        ? `/project-comments/${commentToDelete}` 
+        : `/comments/${commentToDelete}`;
         
       await api.delete(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
       queryClient.invalidateQueries({ queryKey });
-      onCommentAdded?.(); // Update counts in parent
+      onCommentAdded?.();
+      setCommentToDelete(null);
     } catch (error) {
       console.error("Error deleting comment:", error);
       alert("Failed to delete comment");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -160,7 +166,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
       comment={comment}
       depth={depth}
       onReply={handleReply}
-      onDelete={handleCommentDelete}
+      onDelete={(id) => setCommentToDelete(id)}
       resourceType={resourceType}
     />
   );
@@ -329,6 +335,15 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           </div>
         )}
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={commentToDelete !== null}
+        onClose={() => setCommentToDelete(null)}
+        onConfirm={handleCommentDelete}
+        title="Delete Comment"
+        message="Are you sure you want to delete this comment? This action cannot be undone."
+        isLoading={isDeleting}
+      />
 
       <style>{`
         @keyframes fadeIn {
