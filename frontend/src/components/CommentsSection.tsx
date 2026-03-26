@@ -36,7 +36,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     ? ["project_comments", String(resourceId)] 
     : ["comments", String(resourceId)];
 
-  const { data: comments = [], isLoading: loading } = useQuery({
+  const { data: rawComments = [], isLoading: loading } = useQuery({
     queryKey,
     queryFn: async () => {
       const endpoint = resourceType === "project" ? `/projects/${resourceId}/comments` : `/posts/${resourceId}/comments`;
@@ -46,28 +46,56 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     enabled: !!resourceId
   });
 
+  const buildCommentTree = (inputComments: CommentWithMeta[]): CommentWithMeta[] => {
+    if (!inputComments || inputComments.length === 0) return [];
+
+    // Check if the backend already nested the comments (project comments do this)
+    const alreadyNested = inputComments.some(c => c.children && c.children.length > 0);
+    if (alreadyNested) {
+      return inputComments.filter(c => !c.parent_id);
+    }
+
+    // For flat lists (post comments), build the tree manually
+    const map = new Map<string, CommentWithMeta & { children: CommentWithMeta[] }>();
+    const roots: (CommentWithMeta & { children: CommentWithMeta[] })[] = [];
+
+    // First pass: index every comment
+    for (const c of inputComments) {
+      if (c && c.id != null) {
+        map.set(String(c.id), { ...c, children: [] });
+      }
+    }
+
+    // Second pass: attach children to parents
+    for (const c of inputComments) {
+      if (!c || c.id == null) continue;
+      const node = map.get(String(c.id))!;
+      if (c.parent_id != null && map.has(String(c.parent_id))) {
+        map.get(String(c.parent_id))!.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+
+    return roots;
+  };
+
+  const comments = buildCommentTree(rawComments);
+
   const handleSubmitComment = async () => {
     if ((!newComment.trim() && !selectedGif) || !currentUser) return;
-
     setSubmitting(true);
     try {
       const token = await getToken();
       if (!token) return;
-
       const finalContent = selectedGif ? `${newComment.trim()}\n${selectedGif}`.trim() : newComment.trim();
-
       const endpoint = resourceType === "project" ? `/projects/${resourceId}/comments` : `/posts/${resourceId}/comments`;
-      const response = await api.post(
+      await api.post(
         endpoint,
         { content: finalContent },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      queryClient.setQueryData(queryKey, (old: CommentWithMeta[] | undefined) => {
-        return [response.data, ...(old || [])];
-      });
       queryClient.invalidateQueries({ queryKey });
-
       setNewComment("");
       setSelectedGif(null);
       setIsFocused(false);
@@ -82,42 +110,16 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
 
   const handleReply = async (parentId: number | string, content: string) => {
     if (!currentUser) return;
-
     try {
       const token = await getToken();
       if (!token) return;
-
       const endpoint = resourceType === "project" ? `/projects/${resourceId}/comments` : `/posts/${resourceId}/comments`;
-      const response = await api.post(
+      await api.post(
         endpoint,
         { content, parent_id: parentId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      const updateCommentsWithReply = (comments: CommentWithMeta[]): CommentWithMeta[] => {
-        return comments.map(comment => {
-          if (comment.id === parentId) {
-            return {
-              ...comment,
-              children: [...(comment.children || []), response.data]
-            };
-          }
-          if (comment.children) {
-            return {
-              ...comment,
-              children: updateCommentsWithReply(comment.children)
-            };
-          }
-          return comment;
-        });
-      };
-
-      queryClient.setQueryData(queryKey, (old: CommentWithMeta[] | undefined) => {
-        if (!old) return [response.data];
-        return updateCommentsWithReply(old);
-      });
       queryClient.invalidateQueries({ queryKey });
-
       onCommentAdded?.();
     } catch (error) {
       console.error("Error posting reply:", error);
@@ -146,13 +148,9 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     return (
       <div style={{ textAlign: "center", padding: "60px 0" }}>
         <div className="loading-spinner" style={{
-          width: "32px",
-          height: "32px",
-          border: "2px solid var(--border-hairline)",
-          borderTopColor: "var(--text-primary)",
-          borderRadius: "50%",
-          animation: "spin 0.8s linear infinite",
-          margin: "0 auto"
+          width: "32px", height: "32px", border: "2px solid var(--border-hairline)",
+          borderTopColor: "var(--text-primary)", borderRadius: "50%",
+          animation: "spin 0.8s linear infinite", margin: "0 auto"
         }} />
       </div>
     );
@@ -160,36 +158,20 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
 
   return (
     <div style={{ padding: "0" }}>
-      {/* Simple Header */}
       <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: "20px",
-        paddingBottom: "12px",
-        borderBottom: "0.5px solid var(--border-hairline)"
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        marginBottom: "20px", paddingBottom: "12px", borderBottom: "0.5px solid var(--border-hairline)"
       }}>
         <h3 style={{
-          fontSize: "14px",
-          fontWeight: 800,
-          color: "var(--text-primary)",
-          margin: 0,
-          fontFamily: "var(--font-mono)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em"
+          fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", margin: 0,
+          fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em"
         }}>
-          Comments ({comments.length.toString().padStart(2, '0')})
+          Comments ({rawComments.length.toString().padStart(2, '0')})
         </h3>
       </div>
 
-      {/* integrated Composer */}
       {currentUser && (
-        <div style={{
-          marginBottom: "32px",
-          display: "flex",
-          gap: "12px",
-          alignItems: "flex-start"
-        }}>
+        <div style={{ marginBottom: "32px", display: "flex", gap: "12px", alignItems: "flex-start" }}>
           <img
             src={avatarUrl}
             alt={currentUser.fullName || "User"}
@@ -198,32 +180,17 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           <div style={{ flex: 1 }}>
             {selectedGif && (
               <div style={{ 
-                position: "relative", 
-                width: "fit-content", 
-                marginBottom: "12px",
-                borderRadius: "var(--radius-sm)",
-                overflow: "hidden",
-                border: "0.5px solid var(--border-hairline)",
+                position: "relative", width: "fit-content", marginBottom: "12px",
+                borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)",
                 animation: "reactionFadeUp 0.15s ease-out"
               }}>
                 <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "150px", display: "block" }} />
                 <button 
                   onClick={() => setSelectedGif(null)}
                   style={{
-                    position: "absolute",
-                    top: "4px",
-                    right: "4px",
-                    backgroundColor: "rgba(0,0,0,0.6)",
-                    color: "#fff",
-                    border: "none",
-                    width: "20px",
-                    height: "20px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    fontSize: "10px"
+                    position: "absolute", top: "4px", right: "4px", backgroundColor: "rgba(0,0,0,0.6)",
+                    color: "#fff", border: "none", width: "20px", height: "20px", borderRadius: "50%",
+                    display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "10px"
                   }}
                 >
                   <X size={12} weight="bold" />
@@ -238,41 +205,20 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               placeholder="Share your thoughts..."
               disabled={submitting}
               style={{
-                width: "100%",
-                minHeight: isFocused ? "80px" : "40px",
-                padding: "8px 0",
-                border: "none",
-                outline: "none",
-                fontSize: "15px",
-                fontWeight: 500,
-                borderRadius: "var(--radius-sm)",
-                resize: "none",
-                fontFamily: "inherit",
-                color: "var(--text-primary)",
-                backgroundColor: "transparent",
+                width: "100%", minHeight: isFocused ? "80px" : "40px", padding: "8px 0",
+                border: "none", outline: "none", fontSize: "15px", fontWeight: 500,
+                borderRadius: "var(--radius-sm)", resize: "none", fontFamily: "inherit",
+                color: "var(--text-primary)", backgroundColor: "transparent",
                 borderBottom: isFocused ? "1px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
                 transition: "border-color 0.2s"
               }}
             />
 
             {isFocused && (
-              <div style={{
-                marginTop: "12px",
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "8px"
-              }}>
+              <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end", gap: "8px" }}>
                 <button
                   onClick={() => { setIsFocused(false); setNewComment(""); }}
-                  style={{
-                    padding: "6px 12px",
-                    backgroundColor: "transparent",
-                    color: "#666",
-                    border: "none",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    fontSize: "13px"
-                  }}
+                  style={{ padding: "6px 12px", backgroundColor: "transparent", color: "#666", border: "none", fontWeight: 500, cursor: "pointer", fontSize: "13px" }}
                 >
                   Cancel
                 </button>
@@ -283,13 +229,9 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     padding: "8px 20px",
                     backgroundColor: newComment.trim() && !submitting ? "var(--text-primary)" : "transparent",
                     color: newComment.trim() && !submitting ? "var(--bg-page)" : "var(--text-tertiary)",
-                    border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "var(--radius-sm)",
+                    border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)",
                     cursor: newComment.trim() && !submitting ? "pointer" : "not-allowed",
-                    fontWeight: 800,
-                    fontSize: "11px",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
+                    fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase"
                   }}
                 >
                   {submitting ? "..." : "Post"}
@@ -303,19 +245,10 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                   type="button"
                   onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "6px 10px",
-                    backgroundColor: "transparent",
-                    color: "var(--text-tertiary)",
-                    border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "var(--radius-sm)",
-                    cursor: "pointer",
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
+                    display: "flex", alignItems: "center", gap: "6px", padding: "6px 10px",
+                    backgroundColor: "transparent", color: "var(--text-tertiary)",
+                    border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)",
+                    cursor: "pointer", fontSize: "11px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase"
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                   onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
@@ -327,10 +260,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                 {isGifPickerOpen && (
                   <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
                     <GifPicker 
-                      onSelect={(gifUrl) => {
-                        setSelectedGif(gifUrl);
-                        setIsGifPickerOpen(false);
-                      }}
+                      onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }}
                       onClose={() => setIsGifPickerOpen(false)}
                     />
                   </div>
@@ -341,37 +271,23 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         </div>
       )}
 
-      {/* Comments List */}
       <div>
         {comments.length === 0 ? (
           <div style={{
-            textAlign: "center",
-            padding: "80px 40px",
-            backgroundColor: "var(--bg-hover)",
-            borderRadius: "var(--radius-sm)",
-            border: "0.5px solid var(--border-hairline)",
+            textAlign: "center", padding: "80px 40px", backgroundColor: "var(--bg-hover)",
+            borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)",
           }}>
             <div style={{
-              width: "48px",
-              height: "48px",
-              backgroundColor: "var(--bg-hover)",
-              borderRadius: "var(--radius-sm)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 24px",
-              border: "0.5px solid var(--border-hairline)",
-              color: "var(--text-primary)"
+              width: "48px", height: "48px", backgroundColor: "var(--bg-hover)",
+              borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center",
+              justifyContent: "center", margin: "0 auto 24px",
+              border: "0.5px solid var(--border-hairline)", color: "var(--text-primary)"
             }}>
               <FontAwesomeIcon icon={faComment} style={{ fontSize: "28px" }} />
             </div>
             <div style={{
-              fontSize: "16px",
-              fontWeight: 800,
-              color: "var(--text-primary)",
-              marginBottom: "12px",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase"
+              fontSize: "16px", fontWeight: 800, color: "var(--text-primary)",
+              marginBottom: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase"
             }}>
               No replies yet
             </div>

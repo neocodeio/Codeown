@@ -48,6 +48,11 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
+  const hasChildren = comment.children && comment.children.length > 0;
+  const avatarSize = isMobile ? 32 : 44;
+  const gap = isMobile ? 12 : 16;
+  const horizontalPadding = isMobile ? 16 : 24;
+
   const name = comment.user?.name || "User";
   const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=212121&color=ffffff&bold=true`;
 
@@ -65,35 +70,29 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
     }
   };
 
-  const getIndentStyle = () => {
-    const basePadding = isMobile ? 16 : 24;
-    if (depth === 0) return { paddingLeft: basePadding, paddingRight: basePadding, borderLeft: "none" };
-    
-    // Nested indentation
-    const maxDepth = isMobile ? 2 : 4;
-    const effectiveDepth = Math.min(depth, maxDepth);
-    const nestedMargin = isMobile ? 12 : 20;
-
-    return {
-      marginLeft: nestedMargin,
-      borderLeft: effectiveDepth > 0 ? "1px solid var(--border-hairline)" : "none",
-      paddingLeft: isMobile ? 12 : 16,
-      paddingRight: basePadding
-    };
-  };
-
-  const indentStyle = getIndentStyle();
-
   return (
-    <div
-      style={{
-        ...indentStyle,
-        paddingTop: depth === 0 ? "24px" : "12px",
-        paddingBottom: depth === 0 ? "24px" : "12px",
-        position: "relative",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "flex-start", gap: isMobile ? "12px" : "16px" }}>
+    <div style={{
+      paddingTop: depth === 0 ? "24px" : "12px",
+      paddingBottom: "12px",
+      paddingLeft: depth === 0 ? horizontalPadding : 0,
+      paddingRight: depth === 0 ? horizontalPadding : 0,
+      position: "relative"
+    }}>
+      {/* Thread Line for children */}
+      {hasChildren && (
+        <div style={{
+          position: "absolute",
+          left: depth === 0 ? (horizontalPadding + avatarSize / 2) : (avatarSize / 2),
+          top: depth === 0 ? (24 + avatarSize + 8) : (12 + avatarSize + 8),
+          bottom: 0,
+          width: "2px",
+          backgroundColor: "var(--border-hairline)",
+          zIndex: 1
+        }} />
+      )}
+
+      {/* Main Comment Row */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: `${gap}px`, position: "relative", zIndex: 2 }}>
         {/* Avatar */}
         <div
           onClick={() => {
@@ -105,7 +104,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
           <AvailabilityBadge
             avatarUrl={avatarUrl}
             name={name}
-            size={isMobile ? 32 : 44}
+            size={avatarSize}
             isOpenToOpportunities={comment.user?.is_pro}
             username={comment.user?.username}
           />
@@ -120,89 +119,31 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
                 if (comment.user?.username) navigate(`/${comment.user.username}`);
                 else if (comment.user_id) navigate(`/user/${comment.user_id}`);
               }}
-              style={{ 
-                fontSize: "14px", 
-                fontWeight: 800, 
-                color: "var(--text-primary)", 
-                cursor: "pointer", 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "4px", 
-                textTransform: "uppercase", 
-                letterSpacing: "0.02em" 
-              }}
+              style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", textTransform: "uppercase", letterSpacing: "0.02em" }}
             >
               {name}
               <VerifiedBadge username={comment.user?.username} size="14px" />
               {comment.user?.is_pro && (
-                <span style={{
-                  fontSize: "9px",
-                  fontWeight: "900",
-                  padding: "2px 6px",
-                  borderRadius: "var(--radius-sm)",
-                  backgroundColor: "var(--text-primary)",
-                  color: "var(--bg-page)",
-                  letterSpacing: "0.1em",
-                  marginLeft: "4px",
-                  fontFamily: "var(--font-mono)",
-                  lineHeight: 1
-                }}>PRO</span>
+                <span style={{ fontSize: "9px", fontWeight: "900", padding: "2px 6px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", letterSpacing: "0.1em", marginLeft: "4px", fontFamily: "var(--font-mono)", lineHeight: 1 }}>PRO</span>
               )}
             </span>
-            <span style={{ 
-              fontSize: "11px", 
-              color: "var(--text-tertiary)", 
-              fontWeight: 800, 
-              fontFamily: "var(--font-mono)", 
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              opacity: 0.8
-            }}>
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 800, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.8 }}>
               • {formatRelativeDate(comment.created_at)}
             </span>
           </div>
 
-          {/* Comment Text */}
-          <div style={{
-            fontSize: "16px",
-            lineHeight: "1.7",
-            color: "var(--text-primary)",
-            wordBreak: "break-word",
-            marginBottom: "16px",
-            fontWeight: 500,
-            opacity: 0.95
-          }}>
+          <div style={{ fontSize: "16px", lineHeight: "1.7", color: "var(--text-primary)", wordBreak: "break-word", marginBottom: "12px", fontWeight: 500, opacity: 0.95 }}>
             <ContentRenderer content={comment.content} />
           </div>
 
           {/* Actions */}
-          <div style={{ display: "flex", alignItems: "center", gap: "24px", marginBottom: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
             <button
               onClick={toggleLike}
               disabled={!isSignedIn || likeLoading}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                background: "none",
-                border: "none",
-                padding: 0,
-                color: isLiked ? "#ff4b4b" : "var(--text-tertiary)",
-                fontSize: "12px",
-                fontWeight: 800,
-                fontFamily: "var(--font-mono)",
-                cursor: "pointer",
-                textTransform: "uppercase",
-                transition: "all 0.15s ease",
-                letterSpacing: "0.1em"
-              }}
-              onMouseEnter={(e) => !isLiked && (e.currentTarget.style.color = "var(--text-primary)")}
-              onMouseLeave={(e) => !isLiked && (e.currentTarget.style.color = "var(--text-tertiary)")}
+              style={{ display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none", padding: 0, color: isLiked ? "#ff4b4b" : "var(--text-tertiary)", fontSize: "12px", fontWeight: 800, fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", transition: "all 0.15s ease", letterSpacing: "0.1em" }}
             >
-              <FontAwesomeIcon
-                icon={isLiked ? faHeartSolid : faHeartRegular}
-                style={{ fontSize: "16px" }}
-              />
+              <FontAwesomeIcon icon={isLiked ? faHeartSolid : faHeartRegular} style={{ fontSize: "16px" }} />
               <RollingNumber value={likeCount || 0} fontWeight={800} fontSize="12px" color="inherit" />
               {likeCount === 0 && <span style={{ marginLeft: "-2px" }}>LIKE</span>}
             </button>
@@ -210,19 +151,7 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
             {isSignedIn && (
               <button
                 onClick={() => setShowReply((s) => !s)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  color: "var(--text-tertiary)",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  fontFamily: "var(--font-mono)",
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                  transition: "color 0.15s ease",
-                  letterSpacing: "0.1em"
-                }}
+                style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 800, fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", transition: "color 0.15s ease", letterSpacing: "0.1em" }}
                 onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
               >
@@ -231,163 +160,59 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
             )}
           </div>
 
-          {/* Reply Composer Inline */}
-          {showReply && isSignedIn && (
-            <div style={{ 
-              marginTop: "20px",
-              padding: "16px",
-              backgroundColor: "var(--bg-hover)",
-              borderRadius: "var(--radius-sm)",
-              border: "1px solid var(--border-hairline)"
-             }}>
-            <div style={{ marginTop: "16px", marginBottom: "16px" }}>
+          {showReply && (
+            <div style={{ marginTop: "16px", padding: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)" }}>
               {selectedGif && (
-                <div style={{ 
-                  position: "relative", 
-                  width: "fit-content", 
-                  marginBottom: "12px",
-                  borderRadius: "var(--radius-sm)",
-                  overflow: "hidden",
-                  border: "0.5px solid var(--border-hairline)",
-                  animation: "reactionFadeUp 0.15s ease-out"
-                }}>
+                <div style={{ position: "relative", width: "fit-content", marginBottom: "12px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                   <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "120px", display: "block" }} />
-                  <button 
-                    onClick={() => setSelectedGif(null)}
-                    style={{
-                      position: "absolute",
-                      top: "4px",
-                      right: "4px",
-                      backgroundColor: "rgba(0,0,0,0.6)",
-                      color: "#fff",
-                      border: "none",
-                      width: "20px",
-                      height: "20px",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer"
-                    }}
-                  >
-                    <X size={10} weight="bold" />
-                  </button>
+                  <button onClick={() => setSelectedGif(null)} style={{ position: "absolute", top: "4px", right: "4px", backgroundColor: "rgba(0,0,0,0.6)", color: "#fff", border: "none", width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><X size={10} weight="bold" /></button>
                 </div>
               )}
-              <div style={{ 
-                marginBottom: "8px", 
-                fontSize: "11px", 
-                fontWeight: 700, 
-                color: "var(--text-tertiary)", 
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase"
-              }}>
-                Replying to <span style={{ color: "var(--text-primary)" }}>@{comment.user?.username || name}</span>
-              </div>
-              <MentionInput
-                value={replyContent}
-                onChange={setReplyContent}
-                placeholder="Write a reply..."
-                style={{
-                  minHeight: "80px",
-                  fontSize: "14px",
-                  borderRadius: "var(--radius-sm)"
-                }}
-              />
-            </div>
+              <MentionInput value={replyContent} onChange={setReplyContent} placeholder="Write a reply..." style={{ minHeight: "80px", fontSize: "14px", borderRadius: "var(--radius-sm)" }} />
               <div style={{ display: "flex", gap: "12px", marginTop: "16px", justifyContent: "flex-end" }}>
-                <button
-                  onClick={() => { setShowReply(false); setReplyContent(""); }}
-                  style={{
-                    padding: "8px 16px",
-                    backgroundColor: "transparent",
-                    color: "var(--text-tertiary)",
-                    border: "none",
-                    borderRadius: "var(--radius-sm)",
-                    fontWeight: 900,
-                    cursor: "pointer",
-                    fontSize: "11px",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em"
-                  }}
-                >
-                  Cancel
-                </button>
+                <button onClick={() => { setShowReply(false); setReplyContent(""); }} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "none", fontWeight: 900, cursor: "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Cancel</button>
                 <div style={{ position: "relative" }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
-                    style={{
-                      padding: "8px 16px",
-                      backgroundColor: "transparent",
-                      color: "var(--text-tertiary)",
-                      border: "0.5px solid var(--border-hairline)",
-                      borderRadius: "var(--radius-sm)",
-                      fontWeight: 900,
-                      cursor: "pointer",
-                      fontSize: "11px",
-                      fontFamily: "var(--font-mono)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-                    onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
-                  >
-                    <Gif size={18} weight={isGifPickerOpen ? "fill" : "regular"} />
-                  </button>
-
-                  {isGifPickerOpen && (
-                    <div style={{ position: "absolute", bottom: "100%", right: 0, marginBottom: "12px", zIndex: 100 }}>
-                      <GifPicker 
-                        onSelect={(gifUrl) => {
-                          setSelectedGif(gifUrl);
-                          setIsGifPickerOpen(false);
-                        }}
-                        onClose={() => setIsGifPickerOpen(false)}
-                      />
-                    </div>
-                  )}
+                   <button type="button" onClick={() => setIsGifPickerOpen(!isGifPickerOpen)} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontWeight: 900, cursor: "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                     <Gif size={18} weight={isGifPickerOpen ? "fill" : "regular"} />
+                   </button>
+                   {isGifPickerOpen && (
+                     <div style={{ position: "absolute", bottom: "100%", right: 0, marginBottom: "12px", zIndex: 100 }}>
+                       <GifPicker onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
+                     </div>
+                   )}
                 </div>
-                <button
-                  onClick={handleReplySubmit}
-                  disabled={(!replyContent.trim() && !selectedGif) || submitting}
-                  style={{
-                    padding: "8px 24px",
-                    backgroundColor: "var(--text-primary)",
-                    color: "var(--bg-page)",
-                    border: "none",
-                    borderRadius: "var(--radius-sm)",
-                    fontWeight: 900,
-                    cursor: submitting ? "not-allowed" : "pointer",
-                    fontSize: "11px",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em"
-                  }}
-                >
-                  {submitting ? "..." : "Send"}
-                </button>
+                <button onClick={handleReplySubmit} disabled={(!replyContent.trim() && !selectedGif) || submitting} style={{ padding: "8px 24px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "var(--radius-sm)", fontWeight: 900, cursor: submitting ? "not-allowed" : "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{submitting ? "..." : "Send"}</button>
               </div>
-            </div>
-          )}
-
-          {/* Nested Replies */}
-          {comment.children && comment.children.length > 0 && (
-            <div style={{ marginTop: "16px" }}>
-              {comment.children.map((c) => (
-                <CommentBlock
-                  key={c.id}
-                  comment={c}
-                  depth={depth + 1}
-                  onReply={onReply}
-                  resourceType={resourceType}
-                />
-              ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Nested Replies with horizontal connector */}
+      {hasChildren && (
+        <div style={{ marginTop: "16px", marginLeft: `${avatarSize / 2}px` }}>
+          {comment.children!.map((c) => (
+            <div key={c.id} style={{ position: "relative", paddingLeft: `${avatarSize / 2 + gap}px` }}>
+              {/* Horizontal Tick connecting vertical line to child avatar */}
+              <div style={{
+                position: "absolute",
+                left: 0,
+                top: `${avatarSize / 2 + 12}px`, // Alignment with child avatar center
+                width: `${avatarSize / 2 + gap}px`,
+                height: "2px",
+                backgroundColor: "var(--border-hairline)",
+                zIndex: 1
+              }} />
+              <CommentBlock 
+                comment={c} 
+                depth={depth + 1} 
+                onReply={onReply} 
+                resourceType={resourceType} 
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
