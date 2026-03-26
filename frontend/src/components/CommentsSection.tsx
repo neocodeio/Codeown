@@ -46,38 +46,41 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     enabled: !!resourceId
   });
 
-  const buildCommentTree = (inputComments: CommentWithMeta[]): CommentWithMeta[] => {
-    if (!inputComments || inputComments.length === 0) return [];
+  const buildCommentTree = (flatComments: CommentWithMeta[]): CommentWithMeta[] => {
+    if (!flatComments || flatComments.length === 0) return [];
+    
+    // Normalize and Index
+    const nodeMap: Record<string, CommentWithMeta & { children: CommentWithMeta[] }> = {};
+    const processed = flatComments.map(c => {
+      const node = { ...c, children: [] as CommentWithMeta[] };
+      nodeMap[String(c.id)] = node;
+      return node;
+    });
 
-    // Check if the backend already nested the comments (project comments do this)
-    const alreadyNested = inputComments.some(c => c.children && c.children.length > 0);
-    if (alreadyNested) {
-      return inputComments.filter(c => !c.parent_id);
-    }
+    const roots: CommentWithMeta[] = [];
 
-    // For flat lists (post comments), build the tree manually
-    const map = new Map<string, CommentWithMeta & { children: CommentWithMeta[] }>();
-    const roots: (CommentWithMeta & { children: CommentWithMeta[] })[] = [];
-
-    // First pass: index every comment
-    for (const c of inputComments) {
-      if (c && c.id != null) {
-        map.set(String(c.id), { ...c, children: [] });
-      }
-    }
-
-    // Second pass: attach children to parents
-    for (const c of inputComments) {
-      if (!c || c.id == null) continue;
-      const node = map.get(String(c.id))!;
-      if (c.parent_id != null && map.has(String(c.parent_id))) {
-        map.get(String(c.parent_id))!.children.push(node);
+    // Link
+    processed.forEach(node => {
+      const pId = node.parent_id != null ? String(node.parent_id) : null;
+      if (pId && nodeMap[pId] && pId !== String(node.id)) {
+        nodeMap[pId].children!.push(node);
       } else {
         roots.push(node);
       }
-    }
+    });
 
-    return roots;
+    // Sort threads (Oldest first) and roots (Newest first)
+    roots.forEach(root => {
+      const sortChildren = (node: any) => {
+        if (node.children) {
+          node.children.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          node.children.forEach(sortChildren);
+        }
+      };
+      sortChildren(root);
+    });
+
+    return roots.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   };
 
   const comments = buildCommentTree(rawComments);

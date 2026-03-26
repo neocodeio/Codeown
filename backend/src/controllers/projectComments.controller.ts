@@ -30,25 +30,15 @@ export async function getProjectComments(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
-    // Get top-level comments
-    const { data: comments, error: commentsError } = await supabase
+    // Simplified: fetch all comments for this project in one go
+    const { data: allComments, error: commentsError } = await supabase
       .from("project_comments")
       .select("*")
-      .eq("project_id", id)
-      .is("parent_id", null)
-      .order("created_at", { ascending: false });
+      .eq("project_id", parseInt(id as string));
 
     if (commentsError) throw commentsError;
-    if (!comments || comments.length === 0) return res.json([]);
+    if (!allComments || allComments.length === 0) return res.json([]);
 
-    // Get all nested replies
-    const { data: allReplies } = await supabase
-      .from("project_comments")
-      .select("*")
-      .eq("project_id", id)
-      .not("parent_id", "is", null);
-
-    const allComments = [...comments, ...(allReplies || [])];
     const userIds = [...new Set(allComments.map((c: any) => c.user_id))];
     
     // Get user data
@@ -75,15 +65,7 @@ export async function getProjectComments(req: Request, res: Response) {
       user: userMap.get(c.user_id) || { id: c.user_id, name: "Unknown User" }
     }));
 
-    const topLevel = commentsWithMeta.filter(c => c.parent_id === null);
-    const result = topLevel.map(parent => ({
-      ...parent,
-      children: commentsWithMeta
-        .filter(c => c.parent_id === parent.id)
-        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-    }));
-
-    return res.json(result);
+    return res.json(commentsWithMeta);
   } catch (error) {
     console.error("Error in getProjectComments:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -111,7 +93,7 @@ export async function createProjectComment(req: Request, res: Response) {
         project_id: parseInt(id as string),
         user_id: userId,
         content: content.trim(),
-        parent_id: parent_id || null
+        parent_id: parent_id ? parseInt(String(parent_id)) : null
       })
       .select()
       .single();

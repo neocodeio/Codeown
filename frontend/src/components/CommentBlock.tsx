@@ -189,30 +189,32 @@ export default function CommentBlock({ comment, depth, onReply, resourceType }: 
       </div>
 
       {/* Nested Replies with horizontal connector */}
-      {hasChildren && (
-        <div style={{ marginTop: "16px", marginLeft: `${avatarSize / 2}px` }}>
-          {comment.children!.map((c) => (
-            <div key={c.id} style={{ position: "relative", paddingLeft: `${avatarSize / 2 + gap}px` }}>
-              {/* Horizontal Tick connecting vertical line to child avatar */}
-              <div style={{
-                position: "absolute",
-                left: 0,
-                top: `${avatarSize / 2 + 12}px`, // Alignment with child avatar center
-                width: `${avatarSize / 2 + gap}px`,
-                height: "2px",
-                backgroundColor: "var(--border-hairline)",
-                zIndex: 1
-              }} />
-              <CommentBlock 
-                comment={c} 
-                depth={depth + 1} 
-                onReply={onReply} 
-                resourceType={resourceType} 
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      <div style={{ 
+        marginTop: "16px", 
+        marginLeft: `${avatarSize / 2}px`,
+        display: (comment.children && comment.children.length > 0) ? "block" : "none"
+      }}>
+        {comment.children?.map((c) => (
+          <div key={c.id} style={{ position: "relative", paddingLeft: `${avatarSize / 2 + gap}px` }}>
+            {/* Horizontal Tick connecting vertical line to child avatar */}
+            <div style={{
+              position: "absolute",
+              left: 0,
+              top: `${avatarSize / 2 + 12}px`, // Alignment with child avatar center
+              width: `${avatarSize / 2 + gap}px`,
+              height: "2px",
+              backgroundColor: "var(--border-hairline)",
+              zIndex: 1
+            }} />
+            <CommentBlock 
+              comment={c} 
+              depth={depth + 1} 
+              onReply={onReply} 
+              resourceType={resourceType} 
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
