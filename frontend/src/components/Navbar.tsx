@@ -102,7 +102,6 @@ export default function Navbar() {
 
   const StatusBadge = () => {
     const [activeCount, setActiveCount] = useState(1);
-    const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
       const fetchActiveCount = async () => {
@@ -116,11 +115,9 @@ export default function Navbar() {
 
       fetchActiveCount();
       const countInterval = setInterval(fetchActiveCount, 30000); // 30s
-      const timer = setInterval(() => setCurrentTime(new Date()), 1000);
 
       return () => {
         clearInterval(countInterval);
-        clearInterval(timer);
       };
     }, []);
 
@@ -147,8 +144,6 @@ export default function Navbar() {
           letterSpacing: "0.05em"
         }}>
           {activeCount.toString().padStart(2, '0')} BUILDERS ONLINE
-          <span style={{ margin: "0 4px", opacity: 0.3 }}>•</span>
-          <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).toUpperCase()}</span>
         </span>
       </div>
     );
@@ -183,17 +178,46 @@ export default function Navbar() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", padding: "0 12px" }}>
       {/* Logo */}
       <div style={{ padding: "32px 20px 24px 24px" }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }} aria-label="Codeown Home">
-          <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "36px", width: "auto" }} />
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <h2 style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
-              <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
-                Codeown
-              </span>
-            </h2>
-            <StatusBadge />
-          </div>
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }} aria-label="Codeown Home">
+            <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "36px", width: "auto" }} />
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <h2 style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
+                <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
+                  Codeown
+                </span>
+              </h2>
+              <StatusBadge />
+            </div>
+          </Link>
+          
+          <button
+            onClick={toggleTheme}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--text-tertiary)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px",
+              borderRadius: "var(--radius-sm)",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--text-primary)";
+              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--text-tertiary)";
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+            aria-label="Toggle theme"
+          >
+            {theme === 'light' ? <Moon size={20} weight="thin" /> : <Sun size={20} weight="thin" />}
+          </button>
+        </div>
       </div>
 
       {/* Nav Links */}
@@ -318,16 +342,6 @@ export default function Navbar() {
 
       {/* Footer Links & Profile */}
       <div style={{ padding: "0 16px 20px 16px", borderTop: "0.5px solid var(--border-hairline)" }}>
-        {/* Theme Toggle */}
-        <div
-          onClick={toggleTheme}
-          style={{ ...linkStyle(""), cursor: "pointer", marginTop: "16px", marginBottom: "16px" }}
-          aria-label="Toggle dark/light mode"
-          role="button"
-        >
-          {theme === 'light' ? <Moon size={20} weight="thin" /> : <Sun size={20} weight="thin" />}
-          {theme === 'light' ? 'DARK MODE' : 'LIGHT MODE'}
-        </div>
 
         {/* Profile Card */}
         {isSignedIn && user ? (
@@ -538,14 +552,25 @@ export default function Navbar() {
               background: "none",
               border: "none",
               cursor: "pointer",
-              color: "var(--text-primary)",
+              color: "var(--text-tertiary)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: "4px"
+              padding: "8px",
+              borderRadius: "var(--radius-sm)",
+              transition: "all 0.15s ease",
             }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--text-primary)";
+              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--text-tertiary)";
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+            aria-label="Toggle theme"
           >
-            {theme === 'light' ? <Moon size={22} weight="thin" /> : <Sun size={22} weight="thin" />}
+            {theme === 'light' ? <Moon size={20} weight="thin" /> : <Sun size={20} weight="thin" />}
           </button>
 
           {isSignedIn && (
