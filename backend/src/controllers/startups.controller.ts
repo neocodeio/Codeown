@@ -299,26 +299,42 @@ export async function getStartupJobs(req: Request, res: Response) {
 }
 
 export async function createStartupJob(req: Request, res: Response) {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-    const { data: startup } = await supabase.from("startups").select("owner_id").eq("id", id).single();
-    if (!startup || startup.owner_id !== userId) {
-      return res.status(403).json({ error: "Only owner can post jobs" });
+    // 1. Verify ownership
+    const { data: startup, error: startupError } = await supabase
+      .from("startups")
+      .select("owner_id")
+      .eq("id", id)
+      .single();
+
+    if (startupError || !startup) {
+        console.error("[createJob] Startup fetch error:", startupError);
+        return res.status(404).json({ error: "Startup not found or database error", details: startupError?.message });
     }
 
+    if (startup.owner_id !== userId) {
+        return res.status(403).json({ error: "Only the owner can post jobs" });
+    }
+
+    // 2. Prepare payload
     const jobData = {
+      startup_id: id,
       title: req.body.title,
       description: req.body.description,
       type: req.body.type || 'Full-time',
       location: req.body.location || 'Remote',
-      salary_range: req.body.salary_range,
-      startup_id: id,
+      salary_range: req.body.salary_range || null,
       custom_questions: [],
       created_at: new Date().toISOString()
     };
 
+    console.log("[createJob] Attempting insert into 'startup_job_postings'...");
+
+    // 3. Insert into the database
     const { data, error } = await supabase
       .from("startup_job_postings")
       .insert([jobData])
@@ -326,13 +342,19 @@ export async function createStartupJob(req: Request, res: Response) {
       .single();
 
     if (error) {
-        console.error("Supabase Error [createJob]:", error);
-        throw error;
+        console.error("[createJob] SUPABASE INSERT ERROR:", error);
+        return res.status(500).json({ 
+            error: "Database failed to save job", 
+            code: error.code,
+            details: error.message 
+        });
     }
-    
+
+    console.log("[createJob] SUCCESS:", data.id);
     res.status(201).json(data);
   } catch (err: any) {
-    res.status(500).json({ error: "Failed to create job", details: err.message });
+    console.error("[createJob] UNEXPECTED CRASH:", err);
+    res.status(500).json({ error: "Internal server error", message: err.message });
   }
 }
 
