@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Startup, StartupMember } from '../../types/startup.ts';
 import { useWindowSize } from '../../hooks/useWindowSize.ts';
-import { Trash, Shield, Users, MagnifyingGlass } from 'phosphor-react';
+import { UserPlus, Trash, Shield, Users, MagnifyingGlass } from 'phosphor-react';
 import { toast } from 'react-toastify';
 import { getStartupMembers, addStartupMember, removeStartupMember } from '../../api/startups.ts';
 
@@ -47,160 +47,155 @@ export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner
 
   const handleRemoveMember = async (userId: string) => {
     if (userId === startup.owner_id) {
-        toast.error("Cannot remove the owner.");
-        return;
+      toast.error("Cannot remove the owner.");
+      return;
     }
-    
+
     try {
-        await removeStartupMember(startup.id, userId);
-        toast.success("Member removed.");
-        fetchMembers();
-        if (onUpdate) onUpdate();
+      await removeStartupMember(startup.id, userId);
+      toast.success("Member removed.");
+      fetchMembers();
+      if (onUpdate) onUpdate();
     } catch (err: any) {
-        toast.error(err.response?.data?.error || "Failed to remove member.");
+      toast.error(err.response?.data?.error || "Failed to remove member.");
     }
   };
 
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    
+
     try {
-        await addStartupMember(startup.id, searchQuery.trim());
-        toast.success(`Sent invite to @${searchQuery.trim()}`);
-        setSearchQuery('');
-        fetchMembers();
-        if (onUpdate) onUpdate();
+      await addStartupMember(startup.id, searchQuery.trim());
+      toast.success(`Sent invite to @${searchQuery.trim()}`);
+      setSearchQuery('');
+      fetchMembers();
+      if (onUpdate) onUpdate();
     } catch (err: any) {
-        toast.error(err.response?.data?.error || "User not found or already on team.");
+      toast.error(err.response?.data?.error || "User not found or already on team.");
     }
   };
 
   return (
-    <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0' : '20px 0' }}>
+    <div style={{ maxWidth: 'var(--feed-width)', margin: '0 auto' }}>
       <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'baseline',
-          marginBottom: '40px',
-          paddingBottom: '20px',
-          borderBottom: '0.5px solid var(--border-hairline)'
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: isMobile ? 'flex-start' : 'center',
+        flexDirection: isMobile ? 'column' : 'row',
+        gap: isMobile ? '12px' : '0',
+        marginBottom: '32px'
       }}>
-          <h2 style={{ fontSize: '12px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              Team Composition
-          </h2>
-          <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>{members.length} / 50 UNITS</span>
+        <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Users size={isMobile ? 24 : 28} color="var(--text-primary)" />
+          Startup Team
+        </h2>
+        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-tertiary)' }}>{members.length} contributors</span>
       </div>
 
       {isOwner && (
-          <form 
-            onSubmit={handleAddMember}
-            style={{ 
-              marginBottom: '48px', 
-              display: 'flex', 
-              gap: '12px',
-              backgroundColor: 'var(--bg-hover)',
-              padding: '16px',
-              borderRadius: 'var(--radius-sm)',
-              border: '0.5px solid var(--border-hairline)'
-            }}
-          >
-              <div style={{ flex: 1, position: 'relative' }}>
-                  <MagnifyingGlass size={16} weight="thin" color="var(--text-tertiary)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                  <input
-                    type="text"
-                    placeholder="Invite by username..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ 
-                        paddingLeft: '40px', 
-                        backgroundColor: 'transparent', 
-                        border: 'none',
-                        fontSize: '14px'
-                    }}
-                  />
-              </div>
-              <button className="primary" style={{ padding: '8px 20px', fontSize: '11px', fontWeight: 800 }}>INVITE</button>
-          </form>
+        <form
+          onSubmit={handleAddMember}
+          style={{
+            marginBottom: '40px',
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: '12px',
+            padding: isMobile ? '20px' : '24px',
+            backgroundColor: 'var(--bg-card)',
+            border: '1px solid var(--border-hairline)',
+            borderRadius: 'var(--radius-md)'
+          }}
+        >
+          <div style={{ flex: 1, position: 'relative' }}>
+            <MagnifyingGlass size={18} weight="thin" color="var(--text-tertiary)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
+            <input
+              type="text"
+              placeholder="Search by username..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ paddingLeft: '44px', backgroundColor: 'var(--bg-hover)', width: '100%' }}
+            />
+          </div>
+          <button className="primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontWeight: 800, padding: '12px 24px' }}>
+            <UserPlus size={18} weight="bold" />
+            INVITE
+          </button>
+        </form>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {loading ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 0', gap: '16px' }}>
-                  <div style={{ width: '20px', height: '20px', border: '1.5px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-              </div>
-          ) : (Array.isArray(members) && members.length > 0) ? (
-              members.map(member => (
-                  <div key={member.user_id} style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '16px 0',
-                      borderBottom: '0.5px solid var(--border-hairline)',
-                      animation: 'fadeIn 0.4s ease'
-                  }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                          <div style={{
-                              width: '36px',
-                              height: '36px',
-                              borderRadius: '50%',
-                              backgroundColor: 'var(--bg-hover)',
-                              border: '0.5px solid var(--border-hairline)',
-                              overflow: 'hidden',
-                              flexShrink: 0
-                          }}>
-                              {member.avatar_url ? (
-                                  <img src={member.avatar_url} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : (
-                                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                      <Users size={16} weight="thin" color="var(--text-tertiary)" />
-                                  </div>
-                              )}
-                          </div>
-                          <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                  <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>{member.name}</span>
-                                  {member.role === 'Owner' && <Shield size={12} weight="fill" color="var(--text-tertiary)" />}
-                                  <span style={{ 
-                                      fontSize: '9px', 
-                                      fontWeight: 900, 
-                                      color: 'var(--text-tertiary)', 
-                                      textTransform: 'uppercase',
-                                      letterSpacing: '0.05em',
-                                      backgroundColor: 'var(--bg-hover)',
-                                      padding: '2px 6px',
-                                      borderRadius: '4px'
-                                  }}>{member.role}</span>
-                              </div>
-                              <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>@{member.username}</span>
-                          </div>
-                      </div>
-
-                      {isOwner && member.role !== 'Owner' && (
-                          <button
-                            onClick={() => handleRemoveMember(member.user_id)}
-                            style={{
-                              padding: '8px',
-                              border: 'none',
-                              color: 'var(--text-tertiary)',
-                              backgroundColor: 'transparent',
-                              cursor: 'pointer',
-                              opacity: 0.4,
-                              transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = '#ef4444'; }}
-                            onMouseLeave={e => { e.currentTarget.style.opacity = '0.4'; e.currentTarget.style.color = 'var(--text-tertiary)'; }}
-                          >
-                             <Trash size={16} weight="thin" />
-                          </button>
-                      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {loading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 0', gap: '20px' }}>
+            <div style={{ width: '32px', height: '32px', border: '2px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            <p style={{ color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 600 }}>ASSEMBLING TEAM...</p>
+          </div>
+        ) : (Array.isArray(members) && members.length > 0) ? (
+          members.map(member => (
+            <div key={member.user_id} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: isMobile ? '16px' : '20px',
+              backgroundColor: 'var(--bg-card)',
+              border: '0.5px solid var(--border-hairline)',
+              borderRadius: 'var(--radius-md)',
+              transition: 'background-color 0.2s ease'
+            }}>
+              {/* ... rest of member item ... */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '16px' }}>
+                <div style={{
+                  width: isMobile ? '36px' : '40px',
+                  height: isMobile ? '36px' : '40px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--bg-hover)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '0.5px solid var(--border-hairline)',
+                  flexShrink: 0
+                }}>
+                  {member.avatar_url ? (
+                    <img src={member.avatar_url} alt={member.name} style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
+                  ) : (
+                    <Users size={isMobile ? 18 : 20} weight="thin" color="var(--text-tertiary)" />
+                  )}
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{member.name}</span>
+                    {member.role === 'Owner' && <div title="Startup Owner"><Shield size={13} weight="fill" color="#3b82f6" /></div>}
+                    <span style={{ fontSize: '9px', fontWeight: 900, padding: '2px 6px', backgroundColor: 'var(--bg-hover)', borderRadius: 'var(--radius-xs)', color: 'var(--text-tertiary)', letterSpacing: '0.05em' }}>{member.role.toUpperCase()}</span>
                   </div>
-              ))
-          ) : (
-              <div style={{ textAlign: 'center', padding: '64px 0' }}>
-                  <p style={{ color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 600 }}>NO MEMBERS REGISTERED</p>
+                  <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>@{member.username}</span>
+                </div>
               </div>
-          )}
+
+              {isOwner && member.role !== 'Owner' && (
+                <button
+                  onClick={() => handleRemoveMember(member.user_id)}
+                  style={{
+                    padding: '8px',
+                    border: 'none',
+                    color: '#ef4444',
+                    backgroundColor: 'transparent',
+                    opacity: 0.6,
+                    borderRadius: 'var(--radius-xs)',
+                    cursor: 'pointer',
+                    flexShrink: 0
+                  }}
+                >
+                  <Trash size={18} weight="thin" />
+                </button>
+              )}
+            </div>
+          ))
+        ) : (
+          <div style={{ textAlign: 'center', padding: '48px', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '0.5px solid var(--border-hairline)' }}>
+            <Users size={40} weight="thin" color="var(--text-tertiary)" style={{ marginBottom: '12px' }} />
+            <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>No members found yet.</p>
+          </div>
+        )}
       </div>
     </div>
   );
