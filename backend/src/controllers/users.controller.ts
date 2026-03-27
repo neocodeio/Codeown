@@ -790,6 +790,10 @@ export async function updateUserProfile(req: Request, res: Response) {
             console.error("Error fetching user:", fetchError);
         }
 
+        // Security: No one can self-verify. Strip verified fields from request.
+        delete req.body.is_verified;
+        delete req.body.verified;
+
         // Check username change restriction (14 days)
         if (username && username !== currentUser?.username) {
             if (username.trim().length > 0 && username.trim().length < 8) {
