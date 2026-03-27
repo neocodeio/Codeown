@@ -358,6 +358,30 @@ export async function createStartupJob(req: Request, res: Response) {
   }
 }
 
+export async function deleteStartupJob(req: Request, res: Response) {
+  try {
+    const { id, jobId } = req.params;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    // Verify ownership
+    const { data: startup } = await supabase.from("startups").select("owner_id").eq("id", id).single();
+    if (!startup || startup.owner_id !== userId) {
+      return res.status(403).json({ error: "Only owner can delete jobs" });
+    }
+
+    const { error } = await supabase
+      .from("startup_job_postings")
+      .delete()
+      .eq("id", jobId)
+      .eq("startup_id", id);
+
+    if (error) throw error;
+    res.json({ message: "Job deleted successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to delete job", details: err.message });
+  }
+}
+
 // Feed
 export async function getStartupFeed(req: Request, res: Response) {
   try {

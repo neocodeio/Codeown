@@ -63,3 +63,8 @@ export const createStartupJob = async (id: string, jobData: any) => {
     const { data } = await api.post<JobPosting>(`/startups/${id}/jobs`, jobData);
     return data;
 };
+
+export const deleteStartupJob = async (id: string, jobId: string) => {
+    const { data } = await api.delete(`/startups/${id}/jobs/${jobId}`);
+    return data;
+};

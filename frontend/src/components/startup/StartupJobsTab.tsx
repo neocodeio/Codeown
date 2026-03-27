@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import type { Startup, JobPosting } from '../../types/startup.ts';
 import { useWindowSize } from '../../hooks/useWindowSize.ts';
-import { Briefcase, Plus, PaperPlaneTilt, Globe, Clock, X } from 'phosphor-react';
+import { Briefcase, Plus, PaperPlaneTilt, Globe, Clock, X, Trash } from 'phosphor-react';
 import { toast } from 'react-toastify';
-import { getStartupJobs, createStartupJob } from '../../api/startups.ts';
+import { getStartupJobs, createStartupJob, deleteStartupJob } from '../../api/startups.ts';
 
 interface StartupJobsTabProps {
   startup: Startup;
@@ -60,6 +60,18 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
           toast.error("Failed to post job.");
       } finally {
           setIsSubmitting(false);
+      }
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+      if (!window.confirm("Are you sure you want to delete this job posting?")) return;
+      
+      try {
+          await deleteStartupJob(startup.id, jobId);
+          toast.success("Job deleted successfully");
+          fetchJobs();
+      } catch (err) {
+          toast.error("Failed to delete job");
       }
   };
 
@@ -211,9 +223,22 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
                   }}>
                       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '8px' : '16px' }}>
                           <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 800, color: 'var(--text-primary)' }}>{job.title}</h3>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-tertiary)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                              <Clock size={14} weight="bold" />
-                              Hiring
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-tertiary)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                  <Clock size={14} weight="bold" />
+                                  Hiring
+                              </div>
+                              {isOwner && (
+                                  <button 
+                                      onClick={(e) => { e.stopPropagation(); handleDeleteJob(job.id); }}
+                                      style={{ background: 'none', border: 'none', color: 'var(--accent-red)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', opacity: 0.6, transition: 'opacity 0.2s' }}
+                                      onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                                      onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
+                                      title="Delete job"
+                                  >
+                                      <Trash size={18} />
+                                  </button>
+                              )}
                           </div>
                       </div>
                       
