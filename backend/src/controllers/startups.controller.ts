@@ -315,6 +315,7 @@ export async function createStartupJob(req: Request, res: Response) {
       location: req.body.location || 'Remote',
       salary_range: req.body.salary_range,
       startup_id: id,
+      custom_questions: [],
       created_at: new Date().toISOString()
     };
 
