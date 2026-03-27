@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Startup, StartupUpdate } from '../../types/startup.ts';
 import { useWindowSize } from '../../hooks/useWindowSize.ts';
-import { Megaphone, Globe, PaperPlaneTilt, Clock, Broadcast, Rss } from 'phosphor-react';
+import { Megaphone, Globe, PaperPlaneTilt, Clock, Rss } from 'phosphor-react';
 import { toast } from 'react-toastify';
 import ContentRenderer from '../ContentRenderer.tsx';
 import { getStartupUpdates, postStartupUpdate } from '../../api/startups.ts';
@@ -102,7 +102,7 @@ export const StartupFeedTab: React.FC<StartupFeedTabProps> = ({ startup, isOwner
                           flex: 1
                         }}
                       >
-                          <Broadcast size={20} weight={shouldBroadcast ? "fill" : "regular"} color={shouldBroadcast ? "var(--text-primary)" : "var(--text-tertiary)"} />
+                          {/* <Broadcast size={20} weight={shouldBroadcast ? "fill" : "regular"} color={shouldBroadcast ? "var(--text-primary)" : "var(--text-tertiary)"} /> */}
                           {/* <div>
                               <div style={{ fontSize: '12px', fontWeight: 800, color: shouldBroadcast ? 'var(--text-primary)' : 'var(--text-secondary)' }}>Broadcast to main feed</div>
                               <div style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>Visible to the whole community</div>
