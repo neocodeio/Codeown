@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { StartupCard } from '../components/StartupCard.tsx';
 import type { Startup } from '../types/startup.ts';
 import { useWindowSize } from '../hooks/useWindowSize.ts';
-import { MagnifyingGlass, Plus, Rocket } from 'phosphor-react';
+import { MagnifyingGlass, Rocket } from 'phosphor-react';
 import { Link } from 'react-router-dom';
 import { getStartups, getCooldownStatus, type CooldownStatus } from '../api/startups.ts';
 import { toast } from 'react-toastify';
