@@ -180,6 +180,89 @@ export async function getStartupMembers(req: Request, res: Response) {
   }
 }
 
+export async function addStartupMember(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { username, role = 'Member' } = req.body;
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    const { data: startup } = await supabase.from("startups").select("owner_id").eq("id", id).single();
+    if (!startup || startup.owner_id !== currentUserId) {
+      return res.status(403).json({ error: "Only owner can invite members" });
+    }
+
+    const { data: user, error: userError } = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", username.trim())
+      .single();
+
+    if (userError || !user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const { data: existing } = await supabase
+      .from("startup_members")
+      .select("id")
+      .eq("startup_id", id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (existing) {
+      return res.status(400).json({ error: "User is already a member" });
+    }
+
+    const { error: insertError } = await supabase
+      .from("startup_members")
+      .insert({ startup_id: id, user_id: user.id, role });
+
+    if (insertError) throw insertError;
+
+    // Increment count
+    try {
+        await supabase.rpc('increment_startup_member_count', { startup_row_id: id });
+    } catch (rpcErr) {
+        console.warn("RPC increment failed, skipping count update");
+    }
+
+    res.json({ message: "Member added successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to add member", details: err.message });
+  }
+}
+
+export async function removeStartupMember(req: Request, res: Response) {
+  try {
+    const { id, userId: targetUserId } = req.params;
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    const { data: startup } = await supabase.from("startups").select("owner_id").eq("id", id).single();
+    if (!startup || startup.owner_id !== currentUserId) {
+      return res.status(403).json({ error: "Only owner can remove members" });
+    }
+
+    if (targetUserId === currentUserId) return res.status(400).json({ error: "Owner cannot be removed" });
+
+    const { error: deleteError } = await supabase
+      .from("startup_members")
+      .delete()
+      .eq("startup_id", id)
+      .eq("user_id", targetUserId);
+
+    if (deleteError) throw deleteError;
+    
+    try {
+        await supabase.rpc('decrement_startup_member_count', { startup_row_id: id });
+    } catch (rpcErr) {
+        console.warn("RPC decrement failed, skipping count update");
+    }
+
+    res.json({ message: "Member removed successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to remove member", details: err.message });
+  }
+}
+
 // Jobs
 export async function getStartupJobs(req: Request, res: Response) {
   try {

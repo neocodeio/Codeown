@@ -48,3 +48,13 @@ export const postStartupUpdate = async (id: string, content: string, is_broadcas
     const { data } = await api.post<StartupUpdate>(`/startups/${id}/updates`, { content, is_broadcast });
     return data;
 };
+
+export const addStartupMember = async (id: string, username: string, role: string = 'Member') => {
+    const { data } = await api.post(`/startups/${id}/members`, { username, role });
+    return data;
+};
+
+export const removeStartupMember = async (id: string, userId: string) => {
+    const { data } = await api.delete(`/startups/${id}/members/${userId}`);
+    return data;
+};

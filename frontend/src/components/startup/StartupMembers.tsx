@@ -3,7 +3,7 @@ import type { Startup, StartupMember } from '../../types/startup.ts';
 import { useWindowSize } from '../../hooks/useWindowSize.ts';
 import { UserPlus, Trash, Shield, Users, MagnifyingGlass } from 'phosphor-react';
 import { toast } from 'react-toastify';
-import { getStartupMembers } from '../../api/startups.ts';
+import { getStartupMembers, addStartupMember, removeStartupMember } from '../../api/startups.ts';
 
 interface StartupMembersProps {
   startup: Startup;
@@ -17,50 +17,60 @@ export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      setLoading(true);
-      try {
-        const data = await getStartupMembers(startup.id);
-        if (Array.isArray(data)) {
-          // Normalize the data for the component
-          setMembers(data.map(m => ({
-            user_id: m.user.id,
-            name: m.user.name,
-            username: m.user.username,
-            avatar_url: m.user.avatar_url,
-            role: m.role as any
-          })));
-        } else {
-          setMembers([]);
-        }
-      } catch (err) {
-        toast.error("Failed to load team members.");
+  const fetchMembers = async () => {
+    setLoading(true);
+    try {
+      const data = await getStartupMembers(startup.id);
+      if (Array.isArray(data)) {
+        setMembers(data.map(m => ({
+          user_id: m.user.id,
+          name: m.user.name,
+          username: m.user.username,
+          avatar_url: m.user.avatar_url,
+          role: m.role as any
+        })));
+      } else {
         setMembers([]);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err) {
+      toast.error("Failed to load team members.");
+      setMembers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchMembers();
   }, [startup.id]);
 
-  const handleRemoveMember = (userId: string) => {
+  const handleRemoveMember = async (userId: string) => {
     if (userId === startup.owner_id) {
         toast.error("Cannot remove the owner.");
         return;
     }
-    // Simulation for now as delete endpoint is pending
-    setMembers(members.filter(m => m.user_id !== userId));
-    toast.success("Member removed.");
+    
+    try {
+        await removeStartupMember(startup.id, userId);
+        toast.success("Member removed.");
+        fetchMembers();
+    } catch (err: any) {
+        toast.error(err.response?.data?.error || "Failed to remove member.");
+    }
   };
 
-  const handleAddMember = (e: React.FormEvent) => {
+  const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     
-    // In a real app, this would be an API call to invite/add
-    toast.info("Invite functionality will be connected shortly.");
-    setSearchQuery('');
+    try {
+        await addStartupMember(startup.id, searchQuery.trim());
+        toast.success(`Sent invite to @${searchQuery.trim()}`);
+        setSearchQuery('');
+        fetchMembers();
+    } catch (err: any) {
+        toast.error(err.response?.data?.error || "User not found or already on team.");
+    }
   };
 
   return (
