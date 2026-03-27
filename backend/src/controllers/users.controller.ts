@@ -810,11 +810,11 @@ export async function updateUserProfile(req: Request, res: Response) {
                 }
             }
 
-            // Check if username is already taken by another user
+            // Check if username is already taken by another user (case-insensitive)
             const { data: existingUser } = await supabase
                 .from("users")
                 .select("id")
-                .eq("username", username.trim())
+                .ilike("username", username.trim())
                 .neq("id", userId)
                 .maybeSingle();
 
