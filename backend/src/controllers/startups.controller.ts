@@ -66,13 +66,19 @@ export async function createStartup(req: Request, res: Response) {
     }
 
     const startupData = {
-      ...req.body,
-      owner_id: userId,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      milestones: req.body.milestones || [],
+      name: req.body.name,
+      tagline: req.body.tagline,
+      description: req.body.description,
+      logo_url: req.body.logo_url,
+      website_url: req.body.website_url,
+      founded_date: req.body.founded_date || new Date().toISOString().split('T')[0],
+      status: req.body.status || 'Active',
+      is_hiring: !!req.body.is_hiring,
+      looking_for_cofounder: !!req.body.looking_for_cofounder,
       tech_stack: req.body.tech_stack || [],
-      member_count: 1
+      owner_id: userId,
+      member_count: 1,
+      milestones: []
     };
 
     const { data, error } = await supabase
