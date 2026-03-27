@@ -449,7 +449,6 @@ export default function Profile() {
                 fontWeight: 700,
                 color: "var(--text-primary)",
                 margin: 0,
-                textTransform: "uppercase",
                 letterSpacing: "-0.02em",
                 display: "flex",
                 alignItems: "center",
@@ -458,19 +457,17 @@ export default function Profile() {
                 overflowWrap: "anywhere",
                 lineHeight: 1.12,
               }}>
-                {(userProfile?.name || user?.fullName || "").toUpperCase()}
+                {userProfile?.name || user?.fullName || ""}
                 <VerifiedBadge username={userProfile?.username || user?.username} isPro={userProfile?.is_pro} size={isMobile ? "18px" : "22px"} />
                 {/* {userProfile && userProfile.streak_count > 0 && <StreakBadge count={userProfile.streak_count} />} */}
                 {userProfile?.is_pro === true && (
                   <span style={{
                     fontSize: isMobile ? 10 : 11,
-                    fontWeight: 800,
+                    fontWeight: 600,
                     padding: "4px 8px",
                     borderRadius: "var(--radius-xs)",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
-                    letterSpacing: "0.1em",
-                    fontFamily: "var(--font-mono)"
                   }}>PRO</span>
                 )}
               </h1>
@@ -507,8 +504,7 @@ export default function Profile() {
                     padding: "8px 16px",
                     borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
-                    fontWeight: 800,
-                    fontFamily: "var(--font-mono)",
+                    fontWeight: 600,
                     border: "none",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
@@ -517,15 +513,13 @@ export default function Profile() {
                     alignItems: "center",
                     gap: "8px",
                     whiteSpace: "nowrap",
-                    transition: "all 0.15s ease",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em"
+                    transition: "all 0.15s ease"
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
                   onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                 >
                   <Rocket size={16} weight="fill" />
-                  YOUR  PORTFOLIO
+                  Your Portfolio
                 </button>
                 <button
                 onClick={() => setIsEditModalOpen(true)}
@@ -534,7 +528,6 @@ export default function Profile() {
                   borderRadius: "var(--radius-sm)",
                   fontSize: "12px",
                   fontWeight: 600,
-                  fontFamily: "var(--font-mono)",
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-page)",
                   color: "var(--text-primary)",
@@ -543,15 +536,13 @@ export default function Profile() {
                   alignItems: "center",
                   gap: "8px",
                   whiteSpace: "nowrap",
-                  transition: "all 0.15s ease",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em"
+                  transition: "all 0.15s ease"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
               >
-                <PencilSimple size={16} weight="thin" />
-                EDIT PROFILE
+                <PencilSimple size={16} weight="regular" />
+                Edit Profile
               </button>
               {userProfile?.is_pro && (
                 <button
@@ -561,7 +552,6 @@ export default function Profile() {
                     borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 600,
-                    fontFamily: "var(--font-mono)",
                     border: "0.5px solid var(--border-hairline)",
                     backgroundColor: "transparent",
                     color: "var(--text-primary)",
@@ -570,15 +560,13 @@ export default function Profile() {
                     alignItems: "center",
                     gap: "8px",
                     whiteSpace: "nowrap",
-                    transition: "all 0.15s ease",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em"
+                    transition: "all 0.15s ease"
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
-                  <ChartBar size={16} weight="thin" />
-                  ANALYTICS
+                  <ChartBar size={16} weight="regular" />
+                  Analytics
                   <span style={{ fontSize: '9px', backgroundColor: 'var(--text-primary)', color: 'var(--bg-page)', padding: '2px 4px', borderRadius: 'var(--radius-xs)', fontWeight: 700 }}>PRO</span>
                 </button>
               )}
@@ -600,7 +588,7 @@ export default function Profile() {
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
                 title="View ID card"
               >
-                <IdentificationCard size={18} weight="thin" />
+                <IdentificationCard size={18} weight="regular" />
               </button>
             </div>
 
@@ -727,7 +715,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <span style={{ fontSize: "14px", color: "var(--text-tertiary)", display: "block", marginBottom: "16px", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
+          <span style={{ fontSize: "14.5px", color: "var(--text-tertiary)", display: "block", marginBottom: "16px", fontWeight: 500 }}>
             @{userProfile?.username || user?.username}
           </span>
 
@@ -744,14 +732,13 @@ export default function Profile() {
             gap: "20px",
             alignItems: "center",
             color: "var(--text-tertiary)",
-            fontSize: "11px",
-            fontFamily: "var(--font-mono)",
+            fontSize: "13px",
             marginBottom: "20px",
-            textTransform: "uppercase"
+            fontWeight: 500
           }}>
             {userProfile?.location && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <MapPin size={14} weight="thin" />
+                <MapPin size={14} weight="regular" />
                 {userProfile.location}
               </span>
             )}
@@ -768,14 +755,14 @@ export default function Profile() {
                   textDecoration: "none",
                 }}
               >
-                <LinkIcon size={14} weight="thin" />
+                <LinkIcon size={14} weight="regular" />
                 {userProfile.website_url.replace(/^https?:\/\//, "")}
               </a>
             )}
             {userProfile?.created_at && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <CalendarBlank size={14} weight="thin" />
-                JOINED {formatProfileJoinDate(userProfile.created_at).toUpperCase()}
+                <CalendarBlank size={14} weight="regular" />
+                Joined {formatProfileJoinDate(userProfile.created_at)}
               </span>
             )}
           </div>
@@ -792,17 +779,13 @@ export default function Profile() {
                 <span
                   key={index}
                   style={{
-                    fontSize: "10px",
-                    fontWeight: 800,
-                    fontFamily: "var(--font-mono)",
+                    fontSize: "12px",
+                    fontWeight: 600,
                     padding: "6px 14px",
                     backgroundColor: "var(--bg-hover)",
                     color: "var(--text-primary)",
                     borderRadius: "var(--radius-sm)",
-                    border: "0.5px solid var(--border-hairline)",
-                    transition: "all 0.15s ease",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em"
+                    border: "0.5px solid var(--border-hairline)"
                   }}
                 >
                   {skill}
@@ -828,13 +811,10 @@ export default function Profile() {
                   padding: 0,
                   fontSize: "14px",
                   color: "var(--text-primary)",
-                  fontWeight: 800,
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em"
+                  fontWeight: 600
                 }}
               >
-                {userProfile?.follower_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>FOLLOWERS</span>
+                {userProfile?.follower_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Followers</span>
               </button>
               <button
                 onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
@@ -845,13 +825,10 @@ export default function Profile() {
                   padding: 0,
                   fontSize: "14px",
                   color: "var(--text-primary)",
-                  fontWeight: 800,
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em"
+                  fontWeight: 600
                 }}
               >
-                {userProfile?.following_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>FOLLOWING</span>
+                {userProfile?.following_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Following</span>
               </button>
             </div>
             <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
@@ -901,10 +878,10 @@ export default function Profile() {
             padding: isMobile ? "0 16px" : "0"
           }}>
             {[
-              { id: "posts", icon: Rocket, label: "POSTS" },
-              { id: "projects", icon: SquaresFour, label: "PROJECTS" },
-              { id: "applications", icon: Handshake, label: "APPLICATIONS" },
-              { id: "saved", icon: BookmarkSimple, label: "SAVED" }
+              { id: "posts", icon: Rocket, label: "Posts" },
+              { id: "projects", icon: SquaresFour, label: "Projects" },
+              { id: "applications", icon: Handshake, label: "Applications" },
+              { id: "saved", icon: BookmarkSimple, label: "Saved" }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -918,12 +895,10 @@ export default function Profile() {
                   border: "none",
                   // borderBottom: activeTab === tab.id ? "1.5px solid var(--text-primary)" : "1.5px solid transparent",
                   color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)",
-                  fontSize: "12px",
-                  fontWeight: activeTab === tab.id ? 800 : 600,
+                  fontSize: "13px",
+                  fontWeight: activeTab === tab.id ? 700 : 500,
                   cursor: "pointer",
                   transition: "all 0.15s ease",
-                  fontFamily: "var(--font-mono)",
-                  letterSpacing: "0.05em",
                   flexShrink: 0
                 }}
               >
@@ -949,9 +924,9 @@ export default function Profile() {
                   }).map((p) => (
                     <div key={p.id} style={{ position: "relative" }}>
                       {userProfile?.pinned_post_id === p.id && (
-                        <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "10px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                        <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700 }}>
                           <PushPin size={12} weight="fill" />
-                          PINNED
+                          Pinned
                         </div>
                       )}
                       <PostCard post={p} onUpdated={fetchUserPosts} isPinned={userProfile?.pinned_post_id === p.id} />
@@ -979,12 +954,10 @@ export default function Profile() {
                         color: "var(--bg-page)",
                         border: "none",
                         cursor: "pointer",
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase"
                       }}
                     >
                       <Plus size={14} weight="bold" style={{ marginRight: '8px' }} />
-                      NEW PROJECT
+                      New project
                     </button>
                   </div>
                 ) : (
@@ -996,9 +969,9 @@ export default function Profile() {
                     }).map((p) => (
                       <div key={p.id} style={{ position: "relative" }}>
                         {userProfile?.pinned_project_id === p.id && (
-                          <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "10px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                          <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700 }}>
                             <PushPin size={12} weight="fill" />
-                            PINNED
+                            Pinned
                           </div>
                         )}
                         <ProjectCard project={p} onUpdated={fetchUserProjects} isPinned={userProfile?.pinned_project_id === p.id} />
@@ -1027,7 +1000,7 @@ export default function Profile() {
                   borderRadius: "var(--radius-sm)"
                 }}>
                   <Handshake size={32} weight="thin" style={{ color: "var(--text-tertiary)", marginBottom: "16px" }} />
-                  <p style={{ fontWeight: 800, color: "var(--text-primary)", fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>NO APPLICATIONS</p>
+                  <p style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px" }}>No applications</p>
                   <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginTop: "8px" }}>You haven't applied to join any projects as a co-founder yet.</p>
                 </div>
               ) : (
@@ -1056,10 +1029,10 @@ export default function Profile() {
                             <img src={app.project.cover_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.title)}&background=212121&color=ffffff&bold=true`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                          </div>
                          <div>
-                            <h3 style={{ fontSize: "14px", fontWeight: 800, margin: 0, color: "var(--text-primary)", textTransform: "uppercase" }}>{app.project.title}</h3>
+                            <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>{app.project.title}</h3>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
                                <img src={app.project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.user?.name || "U")}&background=212121&color=ffffff&bold=true`} style={{ width: "16px", height: "16px", borderRadius: "var(--radius-sm)" }} />
-                               <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>@{app.project.user?.username}</span>
+                               <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>@{app.project.user?.username}</span>
                             </div>
                          </div>
                       </div>
@@ -1070,16 +1043,14 @@ export default function Profile() {
                           backgroundColor: "rgba(34, 197, 94, 0.1)",
                           color: "#22c55e",
                           border: "0.5px solid rgba(34, 197, 94, 0.2)",
-                          fontSize: "10px",
-                          fontWeight: 800,
+                          fontSize: "11px",
+                          fontWeight: 600,
                           borderRadius: "var(--radius-sm)",
-                          fontFamily: "var(--font-mono)",
-                          textTransform: "uppercase"
                         }}>
                           Applied
                         </div>
-                        <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
-                          {new Date(app.created_at).toLocaleDateString().toUpperCase()}
+                        <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
+                          {new Date(app.created_at).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
@@ -1092,41 +1063,37 @@ export default function Profile() {
             {activeTab === "saved" && (
               <div className="tab-content-enter">
                 <div style={{ display: "flex", gap: "8px", marginBottom: "32px", marginTop: "12px" }}>
-                  <button
+                     <button
                     onClick={() => setSavedSubTab("posts")}
                     style={{
                       padding: "6px 14px",
-                      fontSize: "10px",
-                      fontWeight: 700,
-                      fontFamily: "var(--font-mono)",
+                      fontSize: "11px",
+                      fontWeight: 600,
                       borderRadius: "var(--radius-sm)",
                       border: "0.5px solid var(--border-hairline)",
                       backgroundColor: savedSubTab === "posts" ? "var(--text-primary)" : "transparent",
                       color: savedSubTab === "posts" ? "var(--bg-page)" : "var(--text-tertiary)",
                       cursor: "pointer",
                       transition: "all 0.2s",
-                      textTransform: "uppercase"
                     }}
                   >
-                    POSTS
+                    Posts
                   </button>
                   <button
                     onClick={() => setSavedSubTab("projects")}
                     style={{
                       padding: "6px 14px",
-                      fontSize: "10px",
-                      fontWeight: 700,
-                      fontFamily: "var(--font-mono)",
+                      fontSize: "11px",
+                      fontWeight: 600,
                       borderRadius: "var(--radius-sm)",
                       border: "0.5px solid var(--border-hairline)",
                       backgroundColor: savedSubTab === "projects" ? "var(--text-primary)" : "transparent",
                       color: savedSubTab === "projects" ? "var(--bg-page)" : "var(--text-tertiary)",
                       cursor: "pointer",
                       transition: "all 0.2s",
-                      textTransform: "uppercase"
                     }}
                   >
-                    PROJECTS
+                    Projects
                   </button>
                 </div>
 
@@ -1180,7 +1147,7 @@ export default function Profile() {
             onClose={() => setFollowersModalOpen(false)}
             userId={userProfile.id}
             type={followersModalType}
-            title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
+            title={followersModalType === "followers" ? "Followers" : "Following"}
           />
         )
       }

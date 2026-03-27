@@ -85,11 +85,9 @@ export default function Changelog() {
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
                     <Scroll size={32} weight="thin" color="var(--text-primary)" />
                     <h1 style={{ 
-                        fontSize: "24px", 
-                        fontWeight: 900, 
+                        fontSize: "32px", 
+                        fontWeight: 800, 
                         color: "var(--text-primary)", 
-                        letterSpacing: "-0.04em",
-                        textTransform: "uppercase",
                         margin: 0
                     }}>
                         Changelog
@@ -98,22 +96,17 @@ export default function Changelog() {
                 <p style={{ 
                     fontSize: "14px", 
                     color: "var(--text-tertiary)", 
-                    fontFamily: "var(--font-mono)",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em"
+                    fontWeight: 500,
+                    marginBottom: "8px"
                 }}>
                     Tracking the evolution of Codeown.
                 </p>
                 <p style={{ 
-                    fontSize: "11px", 
+                    fontSize: "14px", 
                     color: "var(--text-tertiary)", 
-                    fontFamily: "var(--font-mono)",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em"
+                    fontWeight: 500,
                 }}>
-                    All changes are made by <a href="amin.ceo" style={{ color: "var(--text-primary)", fontWeight: 900, textDecoration: "none", fontSize: "10px" }}>@amin.ceo</a>
+                    All changes are made by <a href="amin.ceo" style={{ color: "var(--text-primary)", fontWeight: 600, textDecoration: "none" }}>@amin.ceo</a>
                 </p>
             </header>
 
@@ -126,15 +119,12 @@ export default function Changelog() {
                     borderRadius: "var(--radius-sm)"
                 }}>
                     <h2 style={{ 
-                        fontSize: "13px", 
-                        fontWeight: 800, 
+                        fontSize: "15px", 
+                        fontWeight: 700, 
                         color: "var(--text-primary)", 
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase",
                         marginBottom: "20px",
-                        letterSpacing: "0.1em"
                     }}>
-                        Post New Update
+                        Post new update
                     </h2>
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         <input
@@ -148,8 +138,7 @@ export default function Changelog() {
                                 border: "0.5px solid var(--border-hairline)",
                                 borderRadius: "var(--radius-xs)",
                                 color: "var(--text-primary)",
-                                fontFamily: "var(--font-mono)",
-                                fontSize: "13px",
+                                fontSize: "14px",
                                 outline: "none"
                             }}
                         />
@@ -179,10 +168,8 @@ export default function Changelog() {
                                 color: newContent.trim() ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "1.5px solid var(--border-hairline)",
                                 borderRadius: "var(--radius-sm)",
-                                fontWeight: 900,
-                                fontSize: "11px",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
+                                fontWeight: 600,
+                                fontSize: "13px",
                                 cursor: newContent.trim() ? "pointer" : "not-allowed",
                                 display: "flex",
                                 alignItems: "center",
@@ -191,7 +178,7 @@ export default function Changelog() {
                                 transition: "all 0.15s"
                             }}
                         >
-                            {isPosting ? "PUBLISHING..." : <><Plus size={16} weight="bold" /> PUBLISH UPDATE</>}
+                            {isPosting ? "Publishing..." : <><Plus size={16} weight="bold" /> Publish update</>}
                         </button>
                     </div>
                 </div>
@@ -199,12 +186,12 @@ export default function Changelog() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
                 {isLoading ? (
-                    <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontSize: "12px" }}>
-                        LOADING_LOGS...
+                    <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 500 }}>
+                        Loading logs...
                     </div>
                 ) : changelogs.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontSize: "12px" }}>
-                        NO_ENTRIES_YET.
+                    <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 500 }}>
+                        No entries yet.
                     </div>
                 ) : (
                     changelogs.map((log) => (
@@ -224,10 +211,8 @@ export default function Changelog() {
                                     backgroundColor: "var(--text-primary)",
                                     color: "var(--bg-page)",
                                     fontSize: "11px",
-                                    fontWeight: 900,
-                                    fontFamily: "var(--font-mono)",
+                                    fontWeight: 700,
                                     borderRadius: "var(--radius-xs)",
-                                    textTransform: "uppercase"
                                 }}>
                                     {log.version}
                                 </div>
@@ -236,10 +221,8 @@ export default function Changelog() {
                                     alignItems: "center",
                                     gap: "6px",
                                     color: "var(--text-tertiary)",
-                                    fontSize: "11px",
-                                    fontFamily: "var(--font-mono)",
-                                    fontWeight: 700,
-                                    textTransform: "uppercase"
+                                    fontSize: "12px",
+                                    fontWeight: 500,
                                 }}>
                                     <Clock size={14} weight="thin" />
                                     {formatRelativeDate(log.created_at)}
@@ -262,11 +245,9 @@ export default function Changelog() {
             <footer style={{ marginTop: "80px", textAlign: "center", paddingBottom: "40px" }}>
                 <Rocket size={24} weight="thin" color="var(--border-hairline)" style={{ marginBottom: "16px" }} />
                 <div style={{ 
-                    fontSize: "10px", 
+                    fontSize: "12px", 
                     color: "var(--text-tertiary)", 
-                    fontFamily: "var(--font-mono)", 
-                    fontWeight: 700,
-                    textTransform: "uppercase"
+                    fontWeight: 500,
                 }}>
                     Codeown Engine v1.0.0
                 </div>

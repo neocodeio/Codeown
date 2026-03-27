@@ -36,14 +36,14 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
 
   const getMissingLabel = (id: string) => {
     switch (id) {
-      case "name": return "NAME";
-      case "avatar": return "AVATAR";
-      case "bio": return "BIO";
-      case "job": return "JOB_TITLE";
-      case "location": return "LOCATION";
-      case "skills": return "SKILLS";
-      case "socials": return "SOCIAL_LINKS";
-      case "projects": return "SHIP_PROJECT";
+      case "name": return "Name";
+      case "avatar": return "Avatar";
+      case "bio": return "Bio";
+      case "job": return "Job title";
+      case "location": return "Location";
+      case "skills": return "Skills";
+      case "socials": return "Social links";
+      case "projects": return "Ship project";
       default: return "";
     }
   };
@@ -86,35 +86,30 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
           </div>
           <div>
             <h3 style={{ 
-              fontSize: "12px", 
-              fontWeight: 800, 
+              fontSize: "14px", 
+              fontWeight: 700, 
               color: "var(--text-primary)", 
               margin: 0,
-              fontFamily: "var(--font-mono)",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase"
             }}>
-              Identity Strength
+              Identity strength
             </h3>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
               <Info size={12} weight="thin" color="var(--text-tertiary)" />
               <p style={{ 
-                fontSize: "11px", 
+                fontSize: "12px", 
                 color: "var(--text-tertiary)", 
                 margin: 0,
-                fontFamily: "var(--font-mono)",
-                fontWeight: 600
+                fontWeight: 500
               }}>
-                COMPLETE_ENGINE_INDEXING
+                Complete engine indexing
               </p>
             </div>
           </div>
         </div>
         <div style={{
           fontSize: "20px",
-          fontWeight: 900,
+          fontWeight: 800,
           color: "var(--text-primary)",
-          fontFamily: "var(--font-mono)",
           letterSpacing: "-0.05em"
         }}>
           {score}%
@@ -141,28 +136,24 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
         <span style={{ 
-          fontSize: "10px", 
-          fontFamily: "var(--font-mono)", 
+          fontSize: "11px", 
           color: "var(--text-tertiary)", 
-          fontWeight: 800,
-          letterSpacing: "0.05em" 
+          fontWeight: 600,
         }}>
-          PENDING_TASKS:
+          Pending tasks:
         </span>
         {missing.slice(0, 3).map(id => (
           <div 
             key={id} 
             className="strength-tag"
             style={{
-              fontSize: "10px",
-              fontWeight: 800,
+              fontSize: "11px",
+              fontWeight: 600,
               color: "var(--text-secondary)",
               padding: "4px 10px",
               backgroundColor: "transparent",
               borderRadius: "var(--radius-xs)",
               border: "0.5px solid var(--border-hairline)",
-              fontFamily: "var(--font-mono)",
-              letterSpacing: "0.05em"
             }}
           >
             {getMissingLabel(id)}
@@ -170,13 +161,12 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
         ))}
         {missing.length > 3 && (
           <div style={{ 
-            fontSize: "10px", 
-            fontWeight: 800, 
+            fontSize: "11px", 
+            fontWeight: 600, 
             color: "var(--text-tertiary)", 
-            fontFamily: "var(--font-mono)",
             marginLeft: "2px" 
           }}>
-            +{missing.length - 3}_MORE
+            +{missing.length - 3} more
           </div>
         )}
       </div>

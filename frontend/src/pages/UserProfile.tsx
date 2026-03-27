@@ -416,22 +416,18 @@ export default function UserProfile() {
               gap: "8px",
               maxWidth: "100%",
               overflowWrap: "anywhere",
-              lineHeight: 1.12,
-              textTransform: "uppercase"
+              lineHeight: 1.12
             }}>
               {user.name}
               <VerifiedBadge username={user.username} isPro={user.is_pro} size={isMobile ? "18px" : "22px"} />
               {user.is_pro === true && (
                 <span style={{
                   fontSize: isMobile ? 10 : 11,
-                  fontWeight: 800,
+                  fontWeight: 600,
                   padding: "4px 8px",
                   borderRadius: "var(--radius-xs)",
                   backgroundColor: "var(--text-primary)",
                   color: "var(--bg-page)",
-                  letterSpacing: "0.1em",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase"
                 }}>PRO</span>
               )}
             </h1>
@@ -452,8 +448,7 @@ export default function UserProfile() {
                     padding: "10px 16px",
                     borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
-                    fontWeight: 800,
-                    fontFamily: "var(--font-mono)",
+                    fontWeight: 600,
                     border: "none",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
@@ -463,8 +458,6 @@ export default function UserProfile() {
                     gap: "8px",
                     whiteSpace: "nowrap",
                     transition: "all 0.15s ease",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
                     flex: isMobile ? 1 : "none",
                     justifyContent: "center"
                   }}
@@ -472,7 +465,7 @@ export default function UserProfile() {
                   onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                 >
                   <Rocket size={16} weight="fill" />
-                  PORTFOLIO
+                  Portfolio
                 </button>
 
                 {isSignedIn && (
@@ -483,7 +476,7 @@ export default function UserProfile() {
                       padding: "10px 24px",
                       borderRadius: "var(--radius-sm)",
                       fontSize: "12px",
-                      fontWeight: 700,
+                      fontWeight: 600,
                       border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
                       backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
                       color: isFollowing ? "var(--text-primary)" : "var(--bg-page)",
@@ -492,8 +485,6 @@ export default function UserProfile() {
                       alignItems: "center",
                       gap: "8px",
                       transition: "all 0.15s ease",
-                      fontFamily: "var(--font-mono)",
-                      textTransform: "uppercase",
                       flex: isMobile ? 1 : "none",
                       justifyContent: "center"
                     }}
@@ -506,8 +497,8 @@ export default function UserProfile() {
                       else e.currentTarget.style.opacity = "1";
                     }}
                   >
-                    {isFollowing ? <Check size={16} weight="bold" /> : <Plus size={16} weight="bold" />}
-                    {isFollowing ? "FOLLOWING" : "FOLLOW"}
+                    {isFollowing ? <Check size={16} weight="regular" /> : <Plus size={16} weight="regular" />}
+                    {isFollowing ? "Following" : "Follow"}
                   </button>
                 )}
 
@@ -527,7 +518,7 @@ export default function UserProfile() {
                       padding: "10px 24px",
                       borderRadius: "var(--radius-sm)",
                       fontSize: "12px",
-                      fontWeight: 700,
+                      fontWeight: 600,
                       backgroundColor: "transparent",
                       color: "var(--text-primary)",
                       border: "0.5px solid var(--border-hairline)",
@@ -536,16 +527,14 @@ export default function UserProfile() {
                       alignItems: "center",
                       gap: "8px",
                       transition: "all 0.15s ease",
-                      fontFamily: "var(--font-mono)",
-                      textTransform: "uppercase",
                       flex: isMobile ? "1 0 100%" : "none",
                       justifyContent: "center"
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
-                    <Rocket size={16} weight="bold" />
-                    HIRE ME
+                    <Rocket size={16} weight="regular" />
+                    Hire me
                   </button>
                 )}
               </div>
@@ -571,7 +560,7 @@ export default function UserProfile() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                     title="Message"
                   >
-                    <EnvelopeSimple size={20} weight="thin" />
+                    <EnvelopeSimple size={20} weight="regular" />
                   </button>
                 )}
                 
@@ -617,13 +606,13 @@ export default function UserProfile() {
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   title="Developer ID Card"
                 >
-                  <IdentificationCard size={20} weight="thin" />
+                  <IdentificationCard size={20} weight="regular" />
                 </button>
             </div>
           </div>
         </div>
 
-          <span style={{ fontSize: "14px", color: "var(--text-tertiary)", display: "block", marginBottom: "16px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+          <span style={{ fontSize: "14.5px", color: "var(--text-tertiary)", display: "block", marginBottom: "16px", fontWeight: 500 }}>
             @{user.username}
           </span>
 
@@ -640,15 +629,13 @@ export default function UserProfile() {
             gap: "24px",
             alignItems: "center",
             color: "var(--text-tertiary)",
-            fontSize: "12px",
-            fontWeight: 700,
-            marginBottom: "24px",
-            fontFamily: "var(--font-mono)",
-            textTransform: "uppercase"
+            fontSize: "13px",
+            fontWeight: 500,
+            marginBottom: "24px"
           }}>
             {user.location && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <MapPin size={16} weight="thin" />
+                <MapPin size={16} weight="regular" />
                 {user.location}
               </span>
             )}
@@ -665,14 +652,14 @@ export default function UserProfile() {
                   textDecoration: "none",
                 }}
               >
-                <Link size={16} weight="thin" />
+                <Link size={16} weight="regular" />
                 {user.website_url.replace(/^https?:\/\//, "")}
               </a>
             )}
             {user.created_at && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <Calendar size={16} weight="thin" />
-                JOINED {formatProfileJoinDate(user.created_at).toUpperCase()}
+                <Calendar size={16} weight="regular" />
+                Joined {formatProfileJoinDate(user.created_at)}
               </span>
             )}
           </div>
@@ -689,16 +676,14 @@ export default function UserProfile() {
                 <span
                   key={index}
                   style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
+                    fontSize: "12px",
+                    fontWeight: 600,
                     padding: "6px 12px",
                     backgroundColor: "transparent",
                     color: "var(--text-secondary)",
                     borderRadius: "var(--radius-sm)",
                     border: "0.5px solid var(--border-hairline)",
                     transition: "all 0.15s ease",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = "var(--bg-hover)";
@@ -730,14 +715,12 @@ export default function UserProfile() {
                   background: "none",
                   cursor: "pointer",
                   padding: 0,
-                  fontSize: "12px",
+                  fontSize: "14px",
                   color: "var(--text-primary)",
-                  fontWeight: 700,
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase"
+                  fontWeight: 600
                 }}
               >
-                {user.follower_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>FOLLOWERS</span>
+                {user.follower_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Followers</span>
               </button>
               <button
                 onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }}
@@ -746,30 +729,28 @@ export default function UserProfile() {
                   background: "none",
                   cursor: "pointer",
                   padding: 0,
-                  fontSize: "12px",
+                  fontSize: "14px",
                   color: "var(--text-primary)",
-                  fontWeight: 700,
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase"
+                  fontWeight: 600
                 }}
               >
-                {user.following_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>FOLLOWING</span>
+                {user.following_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Following</span>
               </button>
             </div>
             <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
               {user.twitter_url && (
                 <a href={user.twitter_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-tertiary)", transition: "color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"} aria-label="Twitter">
-                  <TwitterLogo size={20} weight="thin" />
+                  <TwitterLogo size={20} weight="regular" />
                 </a>
               )}
               {user.linkedin_url && (
                 <a href={user.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-tertiary)", transition: "color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"} aria-label="LinkedIn">
-                  <LinkedinLogo size={20} weight="thin" />
+                  <LinkedinLogo size={20} weight="regular" />
                 </a>
               )}
               {user.github_url && (
                 <a href={user.github_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-tertiary)", transition: "color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"} aria-label="GitHub">
-                  <GithubLogo size={20} weight="thin" />
+                  <GithubLogo size={20} weight="regular" />
                 </a>
               )}
             </div>
@@ -796,8 +777,8 @@ export default function UserProfile() {
                 flex: isMobile ? "1" : "none",
                 minWidth: isMobile ? "0" : "140px",
                 padding: "20px 24px",
-                fontSize: "12px",
-                fontWeight: 800,
+                fontSize: "13px",
+                fontWeight: 600,
                 color: activeTab === "posts" ? "var(--text-primary)" : "var(--text-tertiary)",
                 background: "transparent",
                 border: "none",
@@ -805,14 +786,11 @@ export default function UserProfile() {
                 whiteSpace: "nowrap",
                 position: "relative",
                 transition: "all 0.15s ease",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em"
               }}
               onMouseEnter={(e) => { if (activeTab !== "posts") e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
-              POSTS
+              Posts
               {activeTab === "posts" && (
                 <div style={{
                   position: "absolute",
@@ -830,8 +808,8 @@ export default function UserProfile() {
                 flex: isMobile ? "1" : "none",
                 minWidth: isMobile ? "0" : "140px",
                 padding: "20px 24px",
-                fontSize: "12px",
-                fontWeight: 800,
+                fontSize: "13px",
+                fontWeight: 600,
                 color: activeTab === "projects" ? "var(--text-primary)" : "var(--text-tertiary)",
                 background: "transparent",
                 border: "none",
@@ -839,14 +817,11 @@ export default function UserProfile() {
                 whiteSpace: "nowrap",
                 position: "relative",
                 transition: "all 0.15s ease",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em"
               }}
               onMouseEnter={(e) => { if (activeTab !== "projects") e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
             >
-              PROJECTS
+              Projects
               {activeTab === "projects" && (
                 <div style={{
                   position: "absolute",
@@ -865,8 +840,8 @@ export default function UserProfile() {
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {posts.length === 0 ? (
                   <div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
-                    <Layout size={40} weight="thin" style={{ opacity: 0.5, marginBottom: "16px" }} />
-                    <p style={{ fontWeight: 700, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>No posts yet</p>
+                    <Layout size={40} weight="regular" style={{ opacity: 0.5, marginBottom: "16px" }} />
+                    <p style={{ fontWeight: 600, fontSize: "14px" }}>No posts yet</p>
                   </div>
                 ) : (
                   [...posts].sort((a, b) => {
@@ -877,19 +852,16 @@ export default function UserProfile() {
                     <div key={p.id} style={{ position: "relative" }}>
                       {user.pinned_post_id === p.id && (
                         <div style={{
-                          padding: "12px 24px 0",
+                          padding: "16px 24px 0",
                           display: "flex",
                           alignItems: "center",
                           gap: "8px",
-                          color: "var(--text-tertiary)",
-                          fontSize: "11px",
-                          fontWeight: 700,
-                          fontFamily: "var(--font-mono)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em"
+                          color: "var(--text-secondary)",
+                          fontSize: "12px",
+                          fontWeight: 600
                         }}>
-                          <PushPin size={14} weight="thin" />
-                          PINNED POST
+                          <PushPin size={14} weight="regular" />
+                          Pinned post
                         </div>
                       )}
                       <PostCard post={p} onUpdated={fetchUserPosts} />
@@ -901,8 +873,8 @@ export default function UserProfile() {
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {projects.length === 0 ? (
                   <div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
-                    <Rocket size={40} weight="thin" style={{ opacity: 0.5, marginBottom: "16px" }} />
-                    <p style={{ fontWeight: 700, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>No projects yet</p>
+                    <Rocket size={40} weight="regular" style={{ opacity: 0.5, marginBottom: "16px" }} />
+                    <p style={{ fontWeight: 600, fontSize: "14px" }}>No projects yet</p>
                   </div>
                 ) : (
                   [...projects].sort((a, b) => {
@@ -913,19 +885,16 @@ export default function UserProfile() {
                     <div key={p.id} style={{ position: "relative" }}>
                       {user.pinned_project_id === p.id && (
                         <div style={{
-                          padding: "12px 24px 0",
+                          padding: "16px 24px 0",
                           display: "flex",
                           alignItems: "center",
                           gap: "8px",
-                          color: "var(--text-tertiary)",
-                          fontSize: "11px",
-                          fontWeight: 700,
-                          fontFamily: "var(--font-mono)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em"
+                          color: "var(--text-secondary)",
+                          fontSize: "12px",
+                          fontWeight: 600
                         }}>
-                          <PushPin size={14} weight="thin" />
-                          PINNED PROJECT
+                          <PushPin size={14} weight="regular" />
+                          Pinned project
                         </div>
                       )}
                       <ProjectCard project={p} onUpdated={fetchUserProjects} />
@@ -946,7 +915,7 @@ export default function UserProfile() {
           onClose={() => setFollowersModalOpen(false)}
           userId={user.id}
           type={followersModalType}
-          title={followersModalType === "followers" ? "FOLLOWERS" : "FOLLOWING"}
+          title={followersModalType === "followers" ? "Followers" : "Following"}
         />
       )}
       <Lightbox

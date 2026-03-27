@@ -105,12 +105,9 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                 }}>
                     <h2 style={{
                         margin: 0,
-                        fontSize: "14px",
-                        fontWeight: 800,
+                        fontSize: "18px",
+                        fontWeight: 700,
                         color: "var(--text-primary)",
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em"
                     }}>New message</h2>
                     <button
                         onClick={onClose}
@@ -146,7 +143,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                         <input
                             autoFocus
                             type="text"
-                            placeholder="SEARCH PEOPLE..."
+                            placeholder="Search people..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{
@@ -154,11 +151,8 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                 background: "none",
                                 flex: 1,
                                 outline: "none",
-                                fontSize: "12px",
+                                fontSize: "14px",
                                 color: "var(--text-primary)",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em"
                             }}
                         />
                     </div>
@@ -175,7 +169,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                             <div style={{ width: "24px", height: "24px", border: "1px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
                         </div>
                     ) : searchQuery.length > 0 && users.length === 0 ? (
-                        <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                        <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px" }}>
                             No users found for "{searchQuery}"
                         </div>
                     ) : (
@@ -202,11 +196,11 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                     style={{ width: "40px", height: "40px", borderRadius: "var(--radius-xs)", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
                                 />
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontWeight: 800, fontSize: "14px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <div style={{ fontWeight: 700, fontSize: "14px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
                                         {u.name}
                                         <VerifiedBadge username={u.username} size="14px" />
                                     </div>
-                                    <div style={{ color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase", fontWeight: 700 }}>@{u.username}</div>
+                                    <div style={{ color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 500 }}>@{u.username}</div>
                                 </div>
                             </div>
                         ))

@@ -86,7 +86,7 @@ export default function NotificationsPage() {
         const username = notification.actor?.username;
 
         const nameWrapper = (
-            <span style={{ fontWeight: 700, display: "inline-flex", alignItems: "center", color: "var(--text-primary)", marginRight: "4px", textTransform: "uppercase", fontSize: "14px" }}>
+            <span style={{ fontWeight: 600, display: "inline-flex", alignItems: "center", color: "var(--text-primary)", marginRight: "4px", fontSize: "14px" }}>
                 {actorName}
                 <VerifiedBadge username={username} size="14px" />
             </span>
@@ -122,9 +122,9 @@ export default function NotificationsPage() {
             case "milestone":
                 return (
                     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <span style={{ fontSize: "12px", color: "#fff", fontWeight: 800, fontFamily: "var(--font-mono)", textTransform: "uppercase", opacity: 0.6 }}>Milestone_Station</span>
-                        <div style={{ fontSize: "20px", fontWeight: 900, color: "#fff", letterSpacing: "-0.02em" }}>
-                            {notification.metadata?.milestone || "A NEW RECORD"}
+                        <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}>Milestone achieved</span>
+                        <div style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
+                            {notification.metadata?.milestone || "New record"}
                         </div>
                     </div>
                 );
@@ -141,7 +141,7 @@ export default function NotificationsPage() {
     return (
         <main style={{ padding: 0, backgroundColor: "var(--bg-page)", width: "100%" }}>
             <SEO
-                title="NOTIFICATIONS"
+                title="Notifications"
                 description="Stay updated with your latest interactions on Codeown."
             />
 
@@ -194,15 +194,12 @@ export default function NotificationsPage() {
 
                         <div style={{ flex: 1 }}>
                             <h1 style={{
-                                fontSize: "14px",
+                                fontSize: "16px",
                                 fontWeight: 700,
                                 color: "var(--text-primary)",
-                                margin: 0,
-                                letterSpacing: "0.05em",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase"
+                                margin: 0
                             }}>
-                                NOTIFICATIONS
+                                Notifications
                             </h1>
                         </div>
 
@@ -215,10 +212,8 @@ export default function NotificationsPage() {
                                     color: "var(--text-secondary)",
                                     padding: "6px 14px",
                                     borderRadius: "var(--radius-sm)",
-                                    fontSize: "11px",
-                                    fontWeight: 700,
-                                    fontFamily: "var(--font-mono)",
-                                    textTransform: "uppercase",
+                                    fontSize: "12px",
+                                    fontWeight: 600,
                                     cursor: "pointer",
                                     transition: "all 0.15s ease"
                                 }}
@@ -241,8 +236,8 @@ export default function NotificationsPage() {
                     {/* Notifications List */}
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         {loading && (
-                            <div style={{ padding: "48px", textAlign: "center", color: "var(--text-tertiary)", fontWeight: 600, fontSize: "12px", fontFamily: "var(--font-mono)" }}>
-                                SYNCING...
+                            <div style={{ padding: "48px", textAlign: "center", color: "var(--text-tertiary)", fontWeight: 600, fontSize: "13px" }}>
+                                Syncing...
                             </div>
                         )}
 
@@ -266,10 +261,10 @@ export default function NotificationsPage() {
                                     color: "var(--text-tertiary)",
                                     border: "0.5px solid var(--border-hairline)"
                                 }}>
-                                    <Bell size={32} weight="thin" style={{ opacity: 0.5 }} />
+                                    <Bell size={32} weight="regular" style={{ opacity: 0.5 }} />
                                 </div>
-                                <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Nothing yet</h2>
-                                <p style={{ fontSize: "13px", color: "var(--text-tertiary)", margin: 0, maxWidth: "260px", lineHeight: 1.6 }}>
+                                <h2 style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Nothing yet</h2>
+                                <p style={{ fontSize: "14px", color: "var(--text-tertiary)", margin: 0, maxWidth: "260px", lineHeight: 1.6 }}>
                                     Interaction is the heartbeat of Codeown. Build, share, and connect to see updates here.
                                 </p>
                             </div>
@@ -320,42 +315,39 @@ export default function NotificationsPage() {
                                     {notification.type === "milestone" ? (
                                         <div style={{
                                             flex: 1,
-                                            background: "rgba(23, 23, 23, 1)",
-                                            border: "0.5px solid rgba(255,255,255,0.1)",
-                                            borderRadius: "var(--radius-md)",
+                                            background: "var(--bg-hover)",
+                                            border: "0.5px solid var(--border-hairline)",
+                                            borderRadius: "var(--radius-sm)",
                                             padding: "24px",
                                             display: "flex",
                                             flexDirection: "column",
                                             gap: "16px",
                                             position: "relative",
-                                            overflow: "hidden",
-                                            boxShadow: "0 8px 32px -8px rgba(0,0,0,0.5)"
+                                            overflow: "hidden"
                                         }}>
                                             <div style={{ position: "absolute", top: "-10px", right: "-10px", opacity: 0.1, pointerEvents: "none" }}>
-                                                 <Star size={80} weight="fill" color="#fff" />
+                                                 <Star size={80} weight="fill" color="var(--text-primary)" />
                                             </div>
                                             
                                             <div style={{ display: "flex", alignItems: "center", gap: "12px", zIndex: 1 }}>
                                                 <div style={{ fontSize: "32px" }}>{notification.metadata?.emoji || "✨"}</div>
-                                                <div style={{ borderLeft: "0.5px solid rgba(255,255,255,0.2)", paddingLeft: "12px" }}>
-                                                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", fontWeight: 900, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Record Unlocked</div>
-                                                    <div style={{ fontSize: "13px", color: "#fff", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{notification.metadata?.milestone?.toUpperCase()}</div>
+                                                <div style={{ borderLeft: "0.5px solid var(--border-hairline)", paddingLeft: "12px" }}>
+                                                    <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>Record unlocked</div>
+                                                    <div style={{ fontSize: "14.5px", color: "var(--text-primary)", fontWeight: 700 }}>{notification.metadata?.milestone}</div>
                                                 </div>
                                             </div>
 
-                                            <p style={{ margin: 0, fontSize: "14px", color: "rgba(255,255,255,0.6)", lineHeight: 1.6, zIndex: 1 }}>
+                                            <p style={{ margin: 0, fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6, zIndex: 1 }}>
                                                 {notification.content}
                                             </p>
 
                                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "8px", zIndex: 1 }}>
-                                                <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.1)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>SYNC_ID_CORE_{Math.floor(1000 + (notification.id % 9000))}</div>
+                                                <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 500 }}>Codeown notification</div>
                                                 <p style={{
                                                     margin: 0,
-                                                    fontSize: "10px",
-                                                    color: "rgba(255,255,255,0.3)",
-                                                    fontWeight: 700,
-                                                    fontFamily: "var(--font-mono)",
-                                                    textTransform: "uppercase"
+                                                    fontSize: "11px",
+                                                    color: "var(--text-tertiary)",
+                                                    fontWeight: 500
                                                 }}>
                                                     {formatRelativeDate(notification.created_at)}
                                                 </p>
@@ -371,7 +363,7 @@ export default function NotificationsPage() {
                                             style={{
                                                 width: "40px",
                                                 height: "40px",
-                                                borderRadius: "var(--radius-sm)",
+                                                borderRadius: "10px",
                                                 objectFit: "cover",
                                                 border: "0.5px solid var(--border-hairline)",
                                                 backgroundColor: "var(--bg-hover)"
@@ -383,21 +375,18 @@ export default function NotificationsPage() {
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <p style={{
                                             margin: 0,
-                                            fontSize: "14px",
+                                            fontSize: "14.5px",
                                             color: "var(--text-primary)",
                                             lineHeight: 1.5,
-                                            fontWeight: notification.read ? 400 : 700,
+                                            fontWeight: notification.read ? 400 : 600,
                                         }}>
                                             {getNotificationMessage(notification)}
                                         </p>
                                         <p style={{
                                             margin: "6px 0 0",
-                                            fontSize: "11px",
+                                            fontSize: "12px",
                                             color: "var(--text-tertiary)",
-                                            fontWeight: 700,
-                                            fontFamily: "var(--font-mono)",
-                                            textTransform: "uppercase",
-                                            letterSpacing: "0.05em"
+                                            fontWeight: 500
                                         }}>
                                             {formatRelativeDate(notification.created_at)}
                                         </p>

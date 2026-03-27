@@ -66,7 +66,7 @@ export class ErrorBoundary extends Component<Props, State> {
             width: "100%",
             textAlign: "center"
           }}>
-            <h2 style={{ fontSize: "18px", fontWeight: 800, marginBottom: "16px", textTransform: "uppercase", letterSpacing: "-0.01em" }}>Something went wrong</h2>
+            <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>Something went wrong</h2>
             <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: "1.6" }}>
               {isChunkLoadError 
                 ? "The application was updated. A refresh is required to continue."
@@ -85,16 +85,14 @@ export class ErrorBoundary extends Component<Props, State> {
                   color: "var(--bg-page)",
                   borderRadius: "var(--radius-sm)",
                   cursor: "pointer",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
+                  fontSize: "13px",
+                  fontWeight: 600,
                   transition: "opacity 0.15s ease"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
                 onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
               >
-                Refresh App
+                Refresh app
               </button>
               <button
                 onClick={() => window.location.href = "/"}
@@ -105,10 +103,8 @@ export class ErrorBoundary extends Component<Props, State> {
                   color: "var(--text-primary)",
                   borderRadius: "var(--radius-sm)",
                   cursor: "pointer",
-                  fontSize: "12px",
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em"
+                  fontSize: "13px",
+                  fontWeight: 600,
                 }}
               >
                 Home

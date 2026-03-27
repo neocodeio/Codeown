@@ -93,7 +93,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                     style={{
                         width: "100%",
                         aspectRatio: "1 / 1.58",
-                        background: "#000000",
+                        backgroundColor: "#000000",
                         borderRadius: "var(--radius-lg)",
                         border: "0.5px solid rgba(255, 255, 255, 0.15)",
                         boxShadow: "0 40px 80px -20px rgba(0, 0, 0, 0.8)",
@@ -102,8 +102,6 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                         flexDirection: "column",
                         position: "relative",
                         overflow: "hidden",
-                        color: "#fff",
-                        fontFamily: "var(--font-mono)",
                     }}
                 >
                     {/* Texture & Glow */}
@@ -116,12 +114,12 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
 
                     <div style={{ position: "relative", zIndex: 10, display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
                         <div>
-                            <div style={{ fontSize: "11px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.2em", display: "flex", alignItems: "center", gap: "6px" }}>
-                                CODEOWN <ShieldCheck size={12} weight="fill" style={{ opacity: 0.4 }} />
+                            <div style={{ fontSize: "12px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
+                                Codeown <ShieldCheck size={12} weight="fill" style={{ opacity: 0.4 }} />
                             </div>
-                            <div style={{ fontSize: "7px", opacity: 0.3, marginTop: "2px" }}>CORE ARCHIVE • v4.0.0</div>
+                            <div style={{ fontSize: "8px", opacity: 0.3, marginTop: "2px" }}>Core archive • v4.0.0</div>
                         </div>
-                        <div style={{ fontSize: "9px", fontWeight: 800, opacity: 0.4, border: "0.5px solid rgba(255,255,255,0.2)", padding: "7px 8px", borderRadius: "var(--radius-sm)", letterSpacing: "0.1em" }}>DEVELOPER ID</div>
+                        <div style={{ fontSize: "10px", fontWeight: 600, opacity: 0.4, border: "0.5px solid rgba(255,255,255,0.2)", padding: "7px 10px", borderRadius: "var(--radius-sm)" }}>Developer ID</div>
 
                     </div>
 
@@ -149,27 +147,27 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             )}
                         </div>
                         <div style={{ textAlign: "center", marginTop: "12px" }}>
-                            <div style={{ fontSize: "15px", fontWeight: 800, color: "#fff", textTransform: "uppercase" }}>{nameFallback}</div>
-                            <div style={{ fontSize: "9px", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>@{user.username || "ANON"}</div>
+                            <div style={{ fontSize: "16px", fontWeight: 700, color: "#fff" }}>{nameFallback}</div>
+                            <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)" }}>@{user.username || "anon"}</div>
                         </div>
                     </div>
 
                     <div style={{ position: "relative", zIndex: 10, marginBottom: "16px" }}>
-                        <div style={{ fontSize: "7px", fontWeight: 800, opacity: 0.3, textTransform: "uppercase", borderBottom: "0.5px solid rgba(255,255,255,0.1)", paddingBottom: "4px", marginBottom: "6px" }}>Bio.Data</div>
-                        <div style={{ fontSize: "9px", color: "rgba(255,255,255,0.7)", textTransform: "uppercase", lineHeight: "1.3" }}>{firstLineBio}</div>
+                        <div style={{ fontSize: "8px", fontWeight: 600, opacity: 0.3, borderBottom: "0.5px solid rgba(255,255,255,0.1)", paddingBottom: "4px", marginBottom: "6px" }}>Bio data</div>
+                        <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.7)", lineHeight: "1.4" }}>{firstLineBio}</div>
                     </div>
 
                     <div style={{ position: "relative", zIndex: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", border: "0.5px solid rgba(255,255,255,0.1)", padding: "8px", background: "rgba(255,255,255,0.02)", marginBottom: "12px" }}>
                         <div>
-                            <div style={{ fontSize: "6px", opacity: 0.3, textTransform: "uppercase", marginBottom: "2px" }}>Deployment</div>
-                            <div style={{ fontSize: "10px", fontWeight: 800 }}>{joinDate.toUpperCase()}</div>
+                            <div style={{ fontSize: "8px", opacity: 0.3, marginBottom: "2px" }}>Deployment</div>
+                            <div style={{ fontSize: "11px", fontWeight: 700 }}>{joinDate}</div>
                         </div>
                         <div>
-                            <div style={{ fontSize: "6px", opacity: 0.3, textTransform: "uppercase", marginBottom: "2px" }}>Units</div>
-                            <div style={{ fontSize: "10px", fontWeight: 800 }}>{projectsCount.toString().padStart(3, '0')} PROJECTS</div>
+                            <div style={{ fontSize: "8px", opacity: 0.3, marginBottom: "2px" }}>Units</div>
+                            <div style={{ fontSize: "11px", fontWeight: 700 }}>{projectsCount.toString().padStart(3, '0')} projects</div>
                         </div>
                         <div style={{ gridColumn: "span 2" }}>
-                            <div style={{ fontSize: "6px", opacity: 0.3, textTransform: "uppercase", marginBottom: "6px" }}>Tech.Stacks</div>
+                            <div style={{ fontSize: "8px", opacity: 0.3, marginBottom: "6px" }}>Tech stacks</div>
                             <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
                                 {techStacks.length > 0 ? techStacks.map((skill, idx) => (
                                     <span key={idx} style={{ fontSize: "8px", padding: "1px 4px", border: "0.5px solid rgba(255,255,255,0.2)", backgroundColor: "rgba(255,255,255,0.05)" }}>{skill}</span>
@@ -180,8 +178,8 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
 
                     <div style={{ position: "relative", zIndex: 10, marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                         <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: "7px", opacity: 0.3, textTransform: "uppercase", marginBottom: "4px" }}>Identification</div>
-                            <div style={{ fontSize: "9px", fontWeight: 900 }}>{serialNumber}</div>
+                            <div style={{ fontSize: "8px", opacity: 0.3, marginBottom: "4px" }}>Identification</div>
+                            <div style={{ fontSize: "10px", fontWeight: 700 }}>{serialNumber}</div>
                             <div style={{ display: "flex", gap: "1px", height: "12px", marginTop: "4px", opacity: 0.4 }}>
                                 {[2, 1, 3, 1, 2, 1, 1, 2, 1, 3, 1, 2].map((w, i) => (
                                     <div key={i} style={{ width: `${w}px`, height: "100%", backgroundColor: "#fff" }} />
@@ -208,10 +206,8 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                 color: "#000",
                                 border: "none",
                                 borderRadius: "var(--radius-sm)",
-                                fontSize: "12px",
+                                fontSize: "0.95em",
                                 fontWeight: 900,
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -220,7 +216,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             }}
                         >
                             <DownloadSimple size={18} weight="bold" />
-                            {downloading ? "PROCESSING..." : "Download Card"}
+                            {downloading ? "Processing..." : "Download Card"}
                         </button>
                         <button
                             onClick={handleShareToX}
@@ -231,10 +227,8 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                                 color: "#fff",
                                 border: "0.5px solid rgba(255, 255, 255, 0.2)",
                                 borderRadius: "var(--radius-sm)",
-                                fontSize: "11px",
-                                fontWeight: 800,
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
+                                fontSize: "12px",
+                                fontWeight: 600,
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -243,7 +237,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             }}
                         >
                             <TwitterLogo size={18} weight="fill" />
-                            Share ON X
+                            Share on X
                         </button>
                     </div>
                 </div>

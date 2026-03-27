@@ -269,24 +269,22 @@ export default function Search() {
             width: "100%",
             boxSizing: "border-box"
           }}>
-            <MagnifyingGlass size={20} weight="thin" style={{ color: "var(--text-tertiary)" }} />
+            <MagnifyingGlass size={20} weight="regular" style={{ color: "var(--text-tertiary)" }} />
 
             <input
               type="text"
               value={query}
               onChange={handleSearch}
-              placeholder={`SEARCH...`}
+              placeholder={`Search...`}
               style={{
                 flex: 1,
                 border: "none",
                 outline: "none",
-                fontSize: "14px",
-                fontWeight: 600,
+                fontSize: "15px",
+                fontWeight: 500,
                 color: "var(--text-primary)",
                 background: "transparent",
                 minWidth: 0,
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase"
               }}
               autoFocus
             />
@@ -303,13 +301,11 @@ export default function Search() {
                   color: showOnlyCofounder ? "var(--bg-page)" : "var(--text-tertiary)",
                   border: showOnlyCofounder ? "none" : "0.5px solid var(--border-hairline)",
                   borderRadius: "var(--radius-sm)",
-                  padding: "8px 12px",
-                  fontSize: "10px",
-                  fontWeight: 800,
+                  padding: "8px 14px",
+                  fontSize: "12px",
+                  fontWeight: 600,
                   cursor: "pointer",
                   whiteSpace: "nowrap",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase",
                   transition: "all 0.15s ease",
                   marginRight: "4px"
                 }}
@@ -332,19 +328,17 @@ export default function Search() {
                   border: "none",
                   borderRadius: "var(--radius-sm)",
                   padding: "10px 16px",
-                  fontSize: "11px",
-                  fontWeight: 700,
+                  fontSize: "13px",
+                  fontWeight: 600,
                   cursor: "pointer",
                   whiteSpace: "nowrap",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase",
                   transition: "opacity 0.15s ease"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
                 onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
               >
                 {activeFilter === "people" ? <Users size={16} /> : activeFilter === "posts" ? <Layout size={16} /> : <Rocket size={16} />}
-                <span>{activeFilter}</span>
+                <span style={{ textTransform: "capitalize" }}>{activeFilter}</span>
                 <CaretDown size={12} weight="bold" />
               </button>
 
@@ -377,12 +371,10 @@ export default function Search() {
                         background: activeFilter === opt.id ? "var(--bg-hover)" : "transparent",
                         color: "var(--text-primary)",
                         borderRadius: "var(--radius-sm)",
-                        fontWeight: 700,
-                        fontSize: "11px",
+                        fontWeight: 500,
+                        fontSize: "13px",
                         cursor: "pointer",
                         textAlign: "left",
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase"
                       }}
                       onMouseEnter={(e) => { if (activeFilter !== opt.id) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
                       onMouseLeave={(e) => { if (activeFilter !== opt.id) e.currentTarget.style.backgroundColor = "transparent"; }}
@@ -410,11 +402,11 @@ export default function Search() {
           <div className="fade-in">
             {history.length > 0 ? (
               <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px", color: "var(--text-tertiary)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", color: "var(--text-tertiary)" }}>
                   <Clock size={16} />
-                  <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "var(--font-mono)" }}>Recent Searches</span>
+                  <span style={{ fontSize: "13px", fontWeight: 600 }}>Recent Searches</span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                   {history.map((h, i) => (
                     <div
                       key={i}
@@ -423,12 +415,11 @@ export default function Search() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
-                        padding: "16px 20px",
+                        padding: "14px 16px",
                         backgroundColor: "transparent",
                         borderRadius: "var(--radius-sm)",
                         cursor: "pointer",
                         transition: "all 0.15s ease",
-                        borderBottom: "0.5px solid var(--border-hairline)"
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = "var(--bg-hover)";
@@ -438,8 +429,8 @@ export default function Search() {
                       }}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                        <MagnifyingGlass size={16} weight="thin" style={{ color: "var(--text-tertiary)" }} />
-                        <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{h}</span>
+                        <MagnifyingGlass size={16} weight="regular" style={{ color: "var(--text-tertiary)" }} />
+                        <span style={{ fontSize: "14.5px", fontWeight: 500, color: "var(--text-primary)" }}>{h}</span>
                       </div>
                       <button
                         onClick={(e) => removeFromHistory(e, h)}
@@ -448,12 +439,12 @@ export default function Search() {
                           background: "none",
                           padding: "8px",
                           cursor: "pointer",
-                          color: "#cbd5e1",
+                          color: "var(--text-tertiary)",
                           borderRadius: "var(--radius-sm)",
                           transition: "all 0.2s"
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.color = "#ef4444"}
-                        onMouseLeave={(e) => e.currentTarget.style.color = "#cbd5e1"}
+                        onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
                       >
                         <X size={16} />
                       </button>
@@ -463,15 +454,15 @@ export default function Search() {
               </div>
             ) : (
               <div style={{ textAlign: "center", padding: "80px 40px", color: "var(--text-tertiary)" }}>
-                <MagnifyingGlass size={64} weight="thin" style={{ opacity: 0.1, marginBottom: "24px" }} />
-                <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-secondary)", marginBottom: "8px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Search Codeown</div>
-                <p style={{ margin: 0, fontSize: "14px", color: "var(--text-tertiary)" }}>Find people, posts, and projects from the community</p>
+                <MagnifyingGlass size={64} weight="regular" style={{ opacity: 0.1, marginBottom: "24px" }} />
+                <div style={{ fontSize: "16px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Search Codeown</div>
+                <p style={{ margin: 0, fontSize: "15px", color: "var(--text-tertiary)" }}>Find people, posts, and projects from the community</p>
               </div>
             )}
           </div>
         ) : !loading && !users.length && !posts.length && !projects.length ? (
           <div style={{ textAlign: "center", padding: "80px 40px", color: "var(--text-tertiary)" }}>
-            <div style={{ fontSize: "14px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>No results found for "{query}"</div>
+            <div style={{ fontSize: "15px", fontWeight: 600 }}>No results found for "{query}"</div>
           </div>
         ) : (
           <div className="fade-in">
@@ -485,14 +476,14 @@ export default function Search() {
                 marginBottom: "32px",
               }}
             >
-              <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+              <div style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 500 }}>
                 <span style={{ color: "var(--text-primary)" }}>Results for</span>{" "}
                 <span
                   style={{
                     padding: "4px 8px",
                     borderRadius: "var(--radius-sm)",
                     backgroundColor: "var(--bg-hover)",
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: "var(--text-primary)",
                   }}
                 >
@@ -526,12 +517,9 @@ export default function Search() {
                       borderColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--border-hairline)",
                       backgroundColor: activeFilter === opt.id ? "var(--text-primary)" : "transparent",
                       color: activeFilter === opt.id ? "var(--bg-page)" : "var(--text-tertiary)",
-                      fontSize: "11px",
-                      fontWeight: 800,
+                      fontSize: "12px",
+                      fontWeight: 600,
                       cursor: "pointer",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      fontFamily: "var(--font-mono)",
                       transition: "all 0.15s ease",
                     }}
                   >
@@ -549,12 +537,9 @@ export default function Search() {
                       borderColor: showOnlyCofounder ? "var(--text-primary)" : "var(--border-hairline)",
                       backgroundColor: showOnlyCofounder ? "var(--text-primary)" : "transparent",
                       color: showOnlyCofounder ? "var(--bg-page)" : "var(--text-tertiary)",
-                      fontSize: "11px",
-                      fontWeight: 800,
+                      fontSize: "12px",
+                      fontWeight: 600,
                       cursor: "pointer",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      fontFamily: "var(--font-mono)",
                       transition: "all 0.15s ease",
                       display: "flex",
                       alignItems: "center",
@@ -562,7 +547,7 @@ export default function Search() {
                     }}
                   >
                     <Users size={14} weight={showOnlyCofounder ? "fill" : "regular"} />
-                    Looking for Co-Founder
+                    Seeking Co-Founder
                   </button>
                 )}
 
@@ -582,16 +567,13 @@ export default function Search() {
                       key={opt.id}
                       onClick={() => setSortOption(opt.id as SortOption)}
                       style={{
-                        padding: "6px 10px",
-                        fontSize: "10px",
-                        fontWeight: 700,
+                        padding: "6px 12px",
+                        fontSize: "11px",
+                        fontWeight: 600,
                         border: "none",
                         backgroundColor: sortOption === opt.id ? "var(--text-primary)" : "transparent",
                         color: sortOption === opt.id ? "var(--bg-page)" : "var(--text-tertiary)",
                         cursor: "pointer",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.08em",
-                        fontFamily: "var(--font-mono)",
                         transition: "all 0.15s ease",
                       }}
                     >
@@ -639,11 +621,11 @@ export default function Search() {
                       />
                     </div>
 
-                    <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 600, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
                       {user.name}
                       <VerifiedBadge username={user.username} size="14px" />
                     </h3>
-                    <p style={{ margin: "0 0 24px", fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>@{user.username || "user"}</p>
+                    <p style={{ margin: "0 0 24px", fontSize: "13.5px", color: "var(--text-tertiary)", fontWeight: 400 }}>@{user.username || "user"}</p>
 
                     <button
                       onClick={(e) => handleFollow(e, user.id)}
@@ -653,15 +635,14 @@ export default function Search() {
                         border: currentUserFollowing.includes(user.id) ? "0.5px solid var(--border-hairline)" : "none",
                         borderRadius: "var(--radius-sm)",
                         padding: "10px 24px",
-                        fontWeight: 800,
-                        fontSize: "11px",
+                        fontWeight: 600,
+                        fontSize: "13px",
                         cursor: "pointer",
                         width: "100%",
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase"
+                        transition: "all 0.15s ease"
                       }}
                     >
-                      {currentUserFollowing.includes(user.id) ? "FOLLOWING" : "FOLLOW"}
+                      {currentUserFollowing.includes(user.id) ? "Following" : "Follow"}
                     </button>
                   </div>
                 ))}
@@ -709,15 +690,12 @@ function EmptyState({ type }: { type: string }) {
       color: "var(--text-tertiary)"
     }}>
       <div style={{ 
-        fontSize: "13px", 
-        fontWeight: 800, 
-        fontFamily: "var(--font-mono)", 
-        textTransform: "uppercase", 
+        fontSize: "14px", 
+        fontWeight: 600, 
         color: "var(--text-primary)",
-        letterSpacing: "0.05em",
         marginBottom: "8px"
       }}>
-        NO {type.toUpperCase()} FOUND
+        No {type.toLowerCase()} found
       </div>
       <p style={{ fontSize: "14px", color: "var(--text-secondary)" }}>Try adjusting your search terms</p>
     </div>

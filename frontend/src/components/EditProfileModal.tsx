@@ -358,7 +358,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
             borderBottom: "0.5px solid var(--border-hairline)", 
             flexShrink: 0 // Prevent header from shrinking
           }}>
-            <h2 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Edit Profile</h2>
+            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 700, color: "var(--text-primary)" }}>Edit profile</h2>
             <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "24px", color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center", padding: "4px" }}>&times;</button>
           </div>
 
@@ -373,7 +373,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           }}>
             {/* Avatar Section */}
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>Avatar</label>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)" }}>Avatar</label>
               <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
                 <label style={{ cursor: "pointer", position: "relative" }}>
                   <div style={{
@@ -398,8 +398,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                     alignItems: "center",
                     justifyContent: "center",
                     fontSize: "12px",
-                    fontWeight: 800,
-                    fontFamily: "var(--font-mono)",
+                    fontWeight: 600,
                     border: "2px solid var(--bg-page)",
                     boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
                   }}>
@@ -408,7 +407,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: "none" }} />
                 </label>
                 <div style={{ fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                  <p style={{ margin: 0, fontWeight: 700, color: "var(--text-primary)", textTransform: "uppercase", fontSize: "10px", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>CHANGE AVATAR</p>
+                  <p style={{ margin: 0, fontWeight: 600, color: "var(--text-primary)", fontSize: "11px" }}>Change avatar</p>
                   <p style={{ margin: "4px 0 0" }}>Minimalist square profile. 2px radius.</p>
                 </div>
               </div>
@@ -416,7 +415,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
 
             {/* Banner Section */}
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", fontFamily: "var(--font-mono)" }}>Profile Banner</label>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)" }}>Profile banner</label>
               <label style={{ cursor: "pointer", position: "relative", width: "100%" }}>
                 <div style={{
                   width: "100%",
@@ -430,8 +429,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   {bannerPreview ? (
                     <img src={bannerPreview} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Banner Preview" />
                   ) : (
-                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)", fontWeight: 800 }}>
-                      NO BANNER DATA
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)", fontSize: "13px", fontWeight: 500 }}>
+                      No banner
                     </div>
                   )}
                   <div style={{
@@ -444,113 +443,111 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                     opacity: 0,
                     transition: "opacity 0.2s",
                     color: "white",
-                    fontSize: "10px",
-                    fontWeight: 800,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
+                    fontSize: "11px",
+                    fontWeight: 600,
                   }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = "1"}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = "0"}
                   >
-                    CHANGE BANNER
+                    Change banner
                   </div>
                 </div>
                 <input type="file" accept="image/*" onChange={handleBannerChange} style={{ display: "none" }} />
               </label>
-              <span style={{ fontSize: "9px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Recommended size: 1500x500px</span>
+              <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>Recommended size: 1500x500px</span>
             </div>
 
             {/* Form Fields */}
             <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "12px" }}>Display Name</label>
-              <input style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="FULL NAME..." />
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "12px" }}>Display name</label>
+              <input style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "12px" }}>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "12px" }}>
                 Username
                 {!canChange && (
-                  <span style={{ color: "var(--text-tertiary)", float: "right", textTransform: "uppercase", fontSize: "10px" }}>LOCKED FOR 14D</span>
+                  <span style={{ color: "var(--text-tertiary)", float: "right", fontSize: "11px", fontWeight: 500 }}>Locked for 14d</span>
                 )}
               </label>
               <input
-                style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}
+                style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }}
                 type="text"
                 value={username}
                 onChange={(e) => { setUsername(e.target.value); setUsernameError(null); }}
                 disabled={!canChange && username === currentUser.username}
-                placeholder="USERNAME..."
+                placeholder="Username"
               />
-              {usernameError && <p style={{ color: "#ef4444", fontSize: "11px", marginTop: "8px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{usernameError}</p>}
+              {usernameError && <p style={{ color: "#ef4444", fontSize: "11px", marginTop: "8px", fontWeight: 500 }}>{usernameError}</p>}
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "12px" }}>Job Title</label>
-              <input style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. FULL STACK DEVELOPER" />
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "12px" }}>Job title</label>
+              <input style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Full stack developer" />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "12px" }}>Location</label>
-              <input style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. SAN FRANCISCO, CA" />
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "12px" }}>Location</label>
+              <input style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. San Francisco, CA" />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "12px" }}>Bio</label>
+              <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "12px" }}>Bio</label>
               <textarea
                 style={{ width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box", resize: "none", lineHeight: 1.6 }}
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="TELL THE COMMUNITY WHO YOU ARE..."
+                placeholder="Tell the community who you are"
               />
             </div>
 
             <div style={{ borderTop: "0.5px solid var(--border-hairline)", paddingTop: "12px" }}>
-              <span style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "20px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Social Links</span>
+              <span style={{ display: "block", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "20px" }}>Social links</span>
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "8px" }}>GitHub URL</label>
-                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box", fontFamily: "var(--font-mono)" }} type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/..." />
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>GitHub URL</label>
+                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/..." />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "8px" }}>Instagram URL</label>
-                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box", fontFamily: "var(--font-mono)" }} type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://instagram.com/..." />
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>Instagram URL</label>
+                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://instagram.com/..." />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "8px" }}>LinkedIn URL</label>
-                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box", fontFamily: "var(--font-mono)" }} type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/..." />
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>LinkedIn URL</label>
+                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/..." />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em", marginBottom: "8px" }}>Personal Website</label>
-                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box", fontFamily: "var(--font-mono)" }} type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://..." />
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>Personal website</label>
+                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://..." />
                 </div>
               </div>
             </div>
 
             <div style={{ borderTop: "0.5px solid var(--border-hairline)", paddingTop: "32px" }}>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "20px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Tech Stack & Skills</label>
+              <label style={{ display: "block", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "20px" }}>Tech stack & skills</label>
               <form onSubmit={handleAddSkill} style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
                 <input
                   style={{ flex: 1, width: "100%", padding: "14px 18px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "14px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }}
                   type="text"
                   value={skillInput}
                   onChange={(e) => setSkillInput(e.target.value)}
-                  placeholder="ADD SKILL (E.G. REACT)..."
+                  placeholder="Add skill (e.g. React)"
                 />
                 <button
                   type="button"
                   onClick={() => handleAddSkill()}
-                  style={{ padding: "0 24px", borderRadius: "var(--radius-sm)", fontSize: "11px", fontWeight: 800, transition: "all 0.15s ease", cursor: "pointer", background: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}
+                  style={{ padding: "0 24px", borderRadius: "var(--radius-sm)", fontSize: "13px", fontWeight: 600, transition: "all 0.15s ease", cursor: "pointer", background: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)" }}
                   onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
                   onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--text-tertiary)"; }}
                 >
-                  ADD
+                  Add
                 </button>
               </form>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                 {skills.map((skill) => (
-                  <div key={skill} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", cursor: "default", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                  <div key={skill} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "11px", fontWeight: 600, border: "0.5px solid var(--border-hairline)", cursor: "default" }}>
                     {skill}
                     <span
                       style={{ cursor: "pointer", color: "var(--text-tertiary)", fontSize: "14px", marginLeft: "4px" }}
@@ -561,8 +558,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                   </div>
                 ))}
                 {skills.length === 0 && (
-                  <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontStyle: "italic", padding: "4px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                    NO SKILLS ADDED.
+                  <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontStyle: "italic", padding: "4px", fontWeight: 500 }}>
+                    No skills added.
                   </div>
                 )}
               </div>
@@ -573,19 +570,19 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
               {currentUser.is_pro === true && (
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "24px" }}>
                   <div style={{ flex: 1 }}>
-                    <label style={{ display: "block", fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "8px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Open to Opportunities</label>
+                    <label style={{ display: "block", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px" }}>Open to opportunities</label>
                     <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.6" }}>
                       Indicate that you are open to new professional opportunities.
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "16px" }}>
-                      <p style={{ margin: 0, fontSize: "11px", color: (projectCount ?? 0) > 0 ? "var(--text-primary)" : "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                        {(projectCount ?? 0) > 0 ? "[✓]" : "[ ]"} PROJECTS
+                      <p style={{ margin: 0, fontSize: "11px", color: (projectCount ?? 0) > 0 ? "var(--text-primary)" : "var(--text-tertiary)", fontWeight: 600 }}>
+                        {(projectCount ?? 0) > 0 ? "[✓]" : "[ ]"} Projects
                       </p>
-                      <p style={{ margin: 0, fontSize: "11px", color: skills.length > 0 ? "var(--text-primary)" : "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                        {skills.length > 0 ? "[✓]" : "[ ]"} SKILLS
+                      <p style={{ margin: 0, fontSize: "11px", color: skills.length > 0 ? "var(--text-primary)" : "var(--text-tertiary)", fontWeight: 600 }}>
+                        {skills.length > 0 ? "[✓]" : "[ ]"} Skills
                       </p>
-                      <p style={{ margin: 0, fontSize: "11px", color: bio.trim().length > 0 ? "var(--text-primary)" : "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                        {bio.trim().length > 0 ? "[✓]" : "[ ]"} BIO
+                      <p style={{ margin: 0, fontSize: "11px", color: bio.trim().length > 0 ? "var(--text-primary)" : "var(--text-tertiary)", fontWeight: 600 }}>
+                        {bio.trim().length > 0 ? "[✓]" : "[ ]"} Bio
                       </p>
                     </div>
                   </div>
@@ -630,24 +627,21 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
             <button
               onClick={onClose}
               style={{ 
-                padding: isMobile ? "12px 16px" : "14px 24px", 
+               padding: isMobile ? "12px 16px" : "14px 24px", 
                 borderRadius: "var(--radius-sm)", 
-                fontSize: isMobile ? "10px" : "11px", 
-                fontWeight: 800, 
+                fontSize: "13px", 
+                fontWeight: 600, 
                 transition: "all 0.15s ease", 
                 cursor: "pointer", 
                 background: "transparent", 
                 color: "var(--text-tertiary)", 
                 border: "0.5px solid var(--border-hairline)", 
-                fontFamily: "var(--font-mono)", 
-                textTransform: "uppercase", 
-                letterSpacing: "0.1em",
                 flex: isMobile ? 1 : "none"
               }}
               onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
               onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--text-tertiary)"; }}
             >
-              CANCEL
+              Cancel
             </button>
             <button
               onClick={submit}
@@ -655,21 +649,18 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
               style={{ 
                 padding: isMobile ? "12px 16px" : "14px 32px", 
                 borderRadius: "var(--radius-sm)", 
-                fontSize: isMobile ? "10px" : "11px", 
-                fontWeight: 800, 
+                fontSize: "13px", 
+                fontWeight: 600, 
                 transition: "all 0.15s ease", 
                 cursor: "pointer", 
                 background: "var(--text-primary)", 
                 color: "var(--bg-page)", 
                 border: "none", 
                 opacity: isSubmitting ? 0.3 : 1, 
-                fontFamily: "var(--font-mono)", 
-                textTransform: "uppercase", 
-                letterSpacing: "0.15em",
                 flex: isMobile ? 1 : "none"
               }}
             >
-              {isSubmitting ? "SAVING..." : (isMobile ? "SAVE" : "SAVE CHANGES")}
+              {isSubmitting ? "Saving..." : (isMobile ? "Save" : "Save changes")}
             </button>
           </div>
         </div>

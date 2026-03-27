@@ -197,8 +197,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         marginBottom: "20px", paddingBottom: "12px", borderBottom: "0.5px solid var(--border-hairline)"
       }}>
         <h3 style={{
-          fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", margin: 0,
-          fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em"
+          fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", margin: 0,
         }}>
           Comments ({rawComments.length.toString().padStart(2, '0')})
         </h3>
@@ -265,7 +264,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     color: newComment.trim() && !submitting ? "var(--bg-page)" : "var(--text-tertiary)",
                     border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)",
                     cursor: newComment.trim() && !submitting ? "pointer" : "not-allowed",
-                    fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase"
+                    fontWeight: 600, fontSize: "12px"
                   }}
                 >
                   {submitting ? "..." : "Post"}
@@ -282,7 +281,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     display: "flex", alignItems: "center", gap: "6px", padding: "6px 10px",
                     backgroundColor: "transparent", color: "var(--text-tertiary)",
                     border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)",
-                    cursor: "pointer", fontSize: "11px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase"
+                    cursor: "pointer", fontSize: "11px", fontWeight: 700
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                   onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
@@ -320,12 +319,12 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               <FontAwesomeIcon icon={faComment} style={{ fontSize: "28px" }} />
             </div>
             <div style={{
-              fontSize: "16px", fontWeight: 800, color: "var(--text-primary)",
-              marginBottom: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase"
+              fontSize: "16px", fontWeight: 700, color: "var(--text-primary)",
+              marginBottom: "12px",
             }}>
               No replies yet
             </div>
-            <div style={{ color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 700, maxWidth: "300px", margin: "0 auto", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+            <div style={{ color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 500, maxWidth: "300px", margin: "0 auto" }}>
               Be the first to share your thoughts and start the conversation!
             </div>
           </div>

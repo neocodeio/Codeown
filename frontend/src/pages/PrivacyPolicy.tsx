@@ -15,10 +15,8 @@ export default function PrivacyPolicy() {
                     background: "none",
                     border: "none",
                     color: "var(--text-tertiary)",
-                    fontWeight: 700,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    fontSize: "11px",
+                    fontWeight: 600,
+                    fontSize: "12px",
                     cursor: "pointer",
                     marginBottom: "48px",
                     padding: 0,
@@ -28,13 +26,13 @@ export default function PrivacyPolicy() {
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
             >
                 <CaretLeft size={16} weight="bold" />
-                BACK
+                Back
             </button>
 
-            <h1 style={{ fontSize: "32px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
-                PRIVACY POLICY
+            <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em" }}>
+                Privacy policy
             </h1>
-            <p style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "11px", marginBottom: "48px", textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "var(--font-mono)" }}>
+            <p style={{ color: "var(--text-tertiary)", fontWeight: 600, fontSize: "12px", marginBottom: "48px" }}>
                 Last updated: 2026/01/27
             </p>
 
@@ -44,65 +42,65 @@ export default function PrivacyPolicy() {
                 </p>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>1. INFORMATION WE COLLECT</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>1. Information we collect</h2>
                     <p>We may collect the following information:</p>
                     <ul style={{ paddingLeft: "24px", marginTop: "12px", listStyleType: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Personal information such as name and email address when you create an account.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Account-related data such as projects, posts, or content you submit.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Technical data such as IP address, browser type, and cookies.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Personal information such as name and email address when you create an account.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Account-related data such as projects, posts, or content you submit.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Technical data such as IP address, browser type, and cookies.</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>2. HOW WE USE YOUR INFORMATION</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>2. How we use your information</h2>
                     <p>We use the collected information to:</p>
                     <ul style={{ paddingLeft: "24px", marginTop: "12px", listStyleType: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Provide and maintain our services.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Manage user accounts and authentication.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Improve the performance and user experience of the website.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Communicate with users regarding updates or support.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Provide and maintain our services.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Manage user accounts and authentication.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Improve the performance and user experience of the website.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Communicate with users regarding updates or support.</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>3. PAYMENT PROCESSING</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>3. Payment processing</h2>
                     <p>We use Lemon Squeezy for payment processing. We do not store your credit card information on our servers. All payment data is handled securely by Lemon Squeezy in accordance with their privacy policy.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>4. DATA PROTECTION</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>4. Data protection</h2>
                     <p>We take reasonable technical and organizational measures to protect your data from unauthorized access, loss, or misuse.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>5. SHARING OF INFORMATION</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>5. Sharing of information</h2>
                     <p>We do not sell or rent your personal information. We may share data only when required by law or to protect our legal rights.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>6. COOKIES</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>6. Cookies</h2>
                     <p>We may use cookies to enhance user experience and analyze website usage. You can disable cookies through your browser settings.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>7. USER RIGHTS</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>7. User rights</h2>
                     <p>You have the right to:</p>
                     <ul style={{ paddingLeft: "24px", marginTop: "12px", listStyleType: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Access your personal data.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Update or correct your information.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Request deletion of your account and data.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Access your personal data.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Update or correct your information.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Request deletion of your account and data.</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>8. CHANGES TO THIS POLICY</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>8. Changes to this policy</h2>
                     <p>We may update this Privacy Policy from time to time. Any changes will be posted on this page.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>9. CONTACT US</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>9. Contact us</h2>
                     <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-                    <a href="mailto:codeown.neocode@outlook.com" style={{ color: "var(--text-primary)", fontWeight: 700, textDecoration: "underline", fontFamily: "var(--font-mono)", fontSize: "14px" }}>codeown.neocode@outlook.com</a>
+                    <a href="mailto:codeown.neocode@outlook.com" style={{ color: "var(--text-primary)", fontWeight: 600, textDecoration: "underline", fontSize: "14px" }}>codeown.neocode@outlook.com</a>
                 </section>
             </div>
         </div>

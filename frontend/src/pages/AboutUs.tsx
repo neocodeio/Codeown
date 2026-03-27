@@ -15,10 +15,8 @@ export default function AboutUs() {
                     background: "none",
                     border: "none",
                     color: "var(--text-tertiary)",
-                    fontWeight: 700,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    fontSize: "11px",
+                    fontWeight: 600,
+                    fontSize: "12px",
                     cursor: "pointer",
                     marginBottom: "48px",
                     padding: 0,
@@ -28,11 +26,11 @@ export default function AboutUs() {
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
             >
                 <CaretLeft size={16} weight="bold" />
-                BACK
+                Back
             </button>
 
-            <h1 style={{ fontSize: "32px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "48px", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
-                ABOUT US
+            <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "48px", letterSpacing: "-0.04em" }}>
+                About us
             </h1>
 
             <div style={{ color: "var(--text-secondary)", lineHeight: "1.8", fontSize: "16px", display: "flex", flexDirection: "column", gap: "32px" }}>
@@ -53,13 +51,13 @@ export default function AboutUs() {
                 </p>
 
                 <div style={{ marginTop: "40px", padding: "40px", backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}>
-                    <h2 style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", marginBottom: "32px", textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "var(--font-mono)" }}>Connect With Us</h2>
+                    <h2 style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "32px" }}>Connect with us</h2>
                     <div style={{ display: "flex", gap: "32px", flexWrap: "wrap" }}>
                         <a
                             href="https://www.instagram.com/neocode.io"
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)", fontWeight: 700, textDecoration: "none", transition: "all 0.15s ease", fontSize: "13px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
+                            style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)", fontWeight: 600, textDecoration: "none", transition: "all 0.15s ease", fontSize: "14px" }}
                             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.7"}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                         >
@@ -72,7 +70,7 @@ export default function AboutUs() {
                             href="https://api.whatsapp.com/send?phone=966559281499"
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)", fontWeight: 700, textDecoration: "none", transition: "all 0.15s ease", fontSize: "13px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
+                            style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)", fontWeight: 600, textDecoration: "none", transition: "all 0.15s ease", fontSize: "14px" }}
                             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.7"}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                         >
@@ -85,7 +83,7 @@ export default function AboutUs() {
                             href="https://twitter.com/neocode_io"
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)", fontWeight: 700, textDecoration: "none", transition: "all 0.15s ease", fontSize: "13px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
+                            style={{ display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)", fontWeight: 600, textDecoration: "none", transition: "all 0.15s ease", fontSize: "14px" }}
                             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.7"}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                         >

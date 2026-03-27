@@ -118,10 +118,10 @@ export default function ProjectDetail() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'completed': return 'COMPLETED';
-      case 'in_progress': return 'IN PROGRESS';
-      case 'paused': return 'PAUSED';
-      default: return status.toUpperCase();
+      case 'completed': return 'Completed';
+      case 'in_progress': return 'In progress';
+      case 'paused': return 'Paused';
+      default: return status.charAt(0).toUpperCase() + status.slice(1);
     }
   };
 
@@ -315,12 +315,10 @@ export default function ProjectDetail() {
             backgroundColor: "transparent",
             border: "none",
             cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: 800,
-            fontFamily: "var(--font-mono)",
+            fontSize: "13px",
+            fontWeight: 600,
             color: "var(--text-tertiary)",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em"
+            transition: "all 0.15s ease",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = "var(--text-primary)";
@@ -331,8 +329,8 @@ export default function ProjectDetail() {
             e.currentTarget.style.transform = "translateX(0)";
           }}
         >
-          <ArrowLeft size={16} weight="thin" />
-          BACK
+          <ArrowLeft size={16} weight="regular" />
+          Back
         </button>
 
         {project.cover_image && (
@@ -362,15 +360,13 @@ export default function ProjectDetail() {
               backgroundColor: "var(--bg-page)",
               color: "var(--text-primary)",
               padding: "6px 12px",
-              borderRadius: "0",
+              borderRadius: "var(--radius-sm)",
               border: "0.5px solid var(--border-hairline)",
-              fontSize: "10px",
-              fontFamily: "var(--font-mono)",
-              fontWeight: 800,
+              fontSize: "11px",
+              fontWeight: 600,
               display: "flex",
               alignItems: "center",
               gap: "8px",
-              textTransform: "uppercase"
             }}>
               <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: getStatusColor(project.status) }} />
               {getStatusText(project.status)}
@@ -395,7 +391,7 @@ export default function ProjectDetail() {
               letterSpacing: "-0.04em",
               overflowWrap: "anywhere",
               wordBreak: "break-word",
-              textTransform: "uppercase"
+              color: "var(--text-primary)"
             }}>
               {project.title}
             </h1>
@@ -429,14 +425,14 @@ export default function ProjectDetail() {
                     {userName}
                     <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="16px" />
                   </div>
-                  <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 400, fontFamily: "var(--font-mono)", display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 500, display: "flex", alignItems: "center", gap: "12px" }}>
                     <span>@{project.user?.username || 'user'}</span>
                     <span>•</span>
-                    <span>{formatRelativeDate(project.created_at).toUpperCase()}</span>
+                    <span>{formatRelativeDate(project.created_at)}</span>
                     {project.view_count !== undefined && (
                       <>
                         <span>•</span>
-                        <span>{project.view_count} VIEWS</span>
+                        <span>{project.view_count} views</span>
                       </>
                     )}
                   </div>
@@ -464,7 +460,7 @@ export default function ProjectDetail() {
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
                   <Handshake size={24} weight="fill" />
-                  <h2 style={{ fontSize: "16px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>
+                  <h2 style={{ fontSize: "16px", fontWeight: 700 }}>
                     Applications ({project.cofounderRequests.length})
                   </h2>
                 </div>
@@ -484,8 +480,8 @@ export default function ProjectDetail() {
                             style={{ width: "40px", height: "40px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}
                           />
                           <div>
-                            <div style={{ fontWeight: 800, fontSize: "14px" }}>{req.user.name.toUpperCase()}</div>
-                            <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>@{req.user.username}</div>
+                            <div style={{ fontWeight: 700, fontSize: "14px", color: "var(--text-primary)" }}>{req.user.name}</div>
+                            <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>@{req.user.username}</div>
                           </div>
                         </div>
                         <button
@@ -500,34 +496,32 @@ export default function ProjectDetail() {
                             color: "var(--bg-page)",
                             border: "none",
                             borderRadius: "var(--radius-sm)",
-                            fontSize: "11px",
-                            fontWeight: 800,
+                            fontSize: "12px",
+                            fontWeight: 600,
                             cursor: "pointer",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase"
                           }}
                         >
-                          MESSAGE APPLICANT
+                          Message applicant
                         </button>
                       </div>
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "20px" }}>
                         <div>
-                          <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Skills</label>
+                          <label style={{ fontSize: "10px", fontWeight: 600, color: "var(--text-tertiary)", display: "block", marginBottom: "4px" }}>Skills</label>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                             {Array.isArray(req.skills) ? req.skills.map(s => (
-                              <span key={s} style={{ fontSize: "10px", padding: "2px 6px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", color: "var(--text-secondary)" }}>{s}</span>
-                            )) : <span style={{ fontSize: "10px", color: "var(--text-tertiary)" }}>No skills listed</span>}
+                              <span key={s} style={{ fontSize: "11px", padding: "4px 10px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", color: "var(--text-secondary)", fontWeight: 500 }}>{s}</span>
+                            )) : <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>No skills listed</span>}
                           </div>
                         </div>
                         <div>
-                          <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Commitment</label>
-                          <div style={{ fontSize: "12px", color: "var(--text-primary)" }}>{req.hours_per_week || req.commitment_hours || 0} HOURS/WEEK</div>
+                          <label style={{ fontSize: "10px", fontWeight: 600, color: "var(--text-tertiary)", display: "block", marginBottom: "4px" }}>Commitment</label>
+                          <div style={{ fontSize: "13px", color: "var(--text-primary)", fontWeight: 500 }}>{req.hours_per_week || req.commitment_hours || 0} hours/week</div>
                         </div>
                         <div style={{ gridColumn: isMobile ? "auto" : "span 2" }}>
-                          <label style={{ fontSize: "9px", fontWeight: 800, color: "var(--text-tertiary)", display: "block", marginBottom: "4px", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Motivation & Contribution</label>
-                          <p style={{ fontSize: "13px", color: "var(--text-secondary)", margin: 0, lineHeight: "1.5" }}>{req.reason}</p>
-                          <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "8px", lineHeight: "1.5" }}><strong>What I bring:</strong> {req.contribution}</p>
+                          <label style={{ fontSize: "10px", fontWeight: 600, color: "var(--text-tertiary)", display: "block", marginBottom: "4px" }}>Motivation & Contribution</label>
+                          <p style={{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, lineHeight: "1.5" }}>{req.reason}</p>
+                          <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "8px", lineHeight: "1.5" }}><strong>What I bring:</strong> {req.contribution}</p>
                         </div>
                       </div>
                     </div>
@@ -550,9 +544,9 @@ export default function ProjectDetail() {
                 gap: "24px"
               }}>
                 <div>
-                  <h3 style={{ fontSize: "14px", fontWeight: 800, marginBottom: "8px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                    <Handshake size={20} weight="duotone" />
-                    Join as Co-Founder
+                  <h3 style={{ fontSize: "15px", fontWeight: 600, marginBottom: "8px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "10px" }}>
+                    <Handshake size={20} weight="regular" />
+                    Join as co-founder
                   </h3>
                   <p style={{ fontSize: "13px", color: "var(--text-secondary)", maxWidth: "400px", lineHeight: "1.5" }}>
                     The creator is looking for a partner to build this project. Ready to join the mission?
@@ -568,22 +562,20 @@ export default function ProjectDetail() {
                     border: project.hasAppliedToCofounder ? "1px solid var(--border-hairline)" : "none",
                     borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
-                    fontWeight: 900,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
+                    fontWeight: 600,
                     cursor: project.hasAppliedToCofounder ? "default" : "pointer",
                     whiteSpace: "nowrap",
                     opacity: project.hasAppliedToCofounder ? 0.7 : 1
                   }}
                 >
-                  {project.hasAppliedToCofounder ? "ALREADY APPLIED" : "Apply to Join"}
+                  {project.hasAppliedToCofounder ? "Already applied" : "Apply to join"}
                 </button>
               </div>
             )}
 
             {project.technologies_used && project.technologies_used.length > 0 && (
               <div style={{ marginBottom: "40px" }}>
-                <h3 style={{ fontSize: "12px", fontWeight: 600, marginBottom: "16px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Tech Stack</h3>
+                <h3 style={{ fontSize: "13px", fontWeight: 600, marginBottom: "16px", color: "var(--text-tertiary)" }}>Tech stack</h3>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {project.technologies_used.map((tech, idx) => (
                     <span
@@ -594,13 +586,11 @@ export default function ProjectDetail() {
                         padding: "6px 14px",
                         backgroundColor: "var(--bg-page)",
                         color: "var(--text-secondary)",
-                        borderRadius: "0",
+                        borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                         fontWeight: 500,
-                        fontFamily: "var(--font-mono)",
                         cursor: "pointer",
                         transition: "all 0.15s ease",
-                        textTransform: "uppercase"
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.borderColor = "var(--text-primary)";
@@ -618,11 +608,9 @@ export default function ProjectDetail() {
                   ))}
                 </div>
               </div>
-            )}
-
-            {project.contributors && project.contributors.length > 0 && (
+            )}            {project.contributors && project.contributors.length > 0 && (
               <div style={{ marginBottom: "40px" }}>
-                <h3 style={{ fontSize: "12px", fontWeight: 600, marginBottom: "16px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Contributors</h3>
+                <h3 style={{ fontSize: "13px", fontWeight: 600, marginBottom: "16px", color: "var(--text-tertiary)" }}>Contributors</h3>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
                   {project.contributors.map((contrib) => (
                     <div
@@ -647,7 +635,7 @@ export default function ProjectDetail() {
                         alt={contrib.username}
                         style={{ width: "28px", height: "28px", borderRadius: "var(--radius-sm)" }}
                       />
-                      <span style={{ fontWeight: 700, fontSize: "13px", display: "flex", alignItems: "center", color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                      <span style={{ fontWeight: 600, fontSize: "13px", display: "flex", alignItems: "center", color: "var(--text-primary)" }}>
                         {contrib.name || contrib.username}
                         <VerifiedBadge username={contrib.username} size="12px" />
                       </span>
@@ -658,7 +646,7 @@ export default function ProjectDetail() {
             )}
 
             <div style={{ marginBottom: "40px" }}>
-              <h3 style={{ fontSize: "12px", fontWeight: 600, marginBottom: "16px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Community Rating</h3>
+              <h3 style={{ fontSize: "13px", fontWeight: 600, marginBottom: "16px", color: "var(--text-tertiary)" }}>Community rating</h3>
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -676,11 +664,11 @@ export default function ProjectDetail() {
                       transform: hoverRating >= star ? "scale(1.1)" : "scale(1)"
                     }}
                   >
-                    <Star size={22} weight={(hoverRating || userRating) >= star ? "fill" : "bold"} />
+                    <Star size={22} weight={(hoverRating || userRating) >= star ? "fill" : "regular"} />
                   </button>
                 ))}
-                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", marginLeft: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
-                  {project.rating ? `${project.rating.toFixed(1)} / ${project.rating_count || 0} RATINGS` : "NO RATINGS YET"}
+                <span style={{ fontSize: "12px", color: "var(--text-tertiary)", marginLeft: "12px", fontWeight: 500 }}>
+                  {project.rating ? `${project.rating.toFixed(1)} / ${project.rating_count || 0} ratings` : "No ratings yet"}
                 </span>
               </div>
             </div>
@@ -702,15 +690,13 @@ export default function ProjectDetail() {
                     textDecoration: "none",
                     fontSize: "13px",
                     fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
                     transition: "opacity 0.2s ease",
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
                   onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                 >
-                  <GithubLogo size={18} weight="thin" />
-                  Source Code
+                  <GithubLogo size={18} weight="regular" />
+                  Source code
                 </a>
               )}
               {project.live_demo && (
@@ -730,8 +716,6 @@ export default function ProjectDetail() {
                     textDecoration: "none",
                     fontSize: "13px",
                     fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
                     transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
@@ -743,8 +727,8 @@ export default function ProjectDetail() {
                     e.currentTarget.style.borderColor = "var(--border-hairline)";
                   }}
                 >
-                  <Globe size={18} weight="thin" />
-                  Live Preview
+                  <Globe size={18} weight="regular" />
+                  Live preview
                 </a>
               )}
             </div>
@@ -759,24 +743,21 @@ export default function ProjectDetail() {
                 borderRadius: "var(--radius-sm)",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                  <Code size={18} weight="thin" color="var(--text-tertiary)" />
+                  <Code size={18} weight="regular" color="var(--text-tertiary)" />
                   <h3 style={{
-                    fontSize: "11px",
-                    fontWeight: 800,
-                    fontFamily: "var(--font-mono)",
+                    fontSize: "12px",
+                    fontWeight: 600,
                     color: "var(--text-tertiary)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
                     margin: 0
                   }}>
-                    Embed Badge
+                    Embed badge
                   </h3>
                 </div>
 
                 <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "24px", alignItems: isMobile ? "flex-start" : "center" }}>
                   {/* Badge Preview */}
                   <div style={{ flexShrink: 0 }}>
-                    <div style={{ fontSize: "9px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase" }}>Preview</div>
+                    <div style={{ fontSize: "10px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 600 }}>Preview</div>
                     <a href={window.location.href} target="_blank" rel="noopener noreferrer">
                       <img
                         src={`${window.location.origin}/badges/listed-on-codeown.svg`}
@@ -789,7 +770,7 @@ export default function ProjectDetail() {
                   {/* Embed Code */}
                   <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                      <div style={{ fontSize: "9px", color: "var(--text-tertiary)", fontWeight: 700, textTransform: "uppercase" }}>Embed HTML Code</div>
+                      <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 600 }}>Embed HTML code</div>
                       <button
                         onClick={() => {
                           const code = `<a href="${window.location.origin}/project/${project.id}" target="_blank">\n  <img src="${window.location.origin}/badges/listed-on-codeown.svg" alt="Listed on Codeown" width="170" height="40" />\n</a>`;
@@ -801,15 +782,12 @@ export default function ProjectDetail() {
                           background: "none",
                           border: "none",
                           color: copiedBadge ? "#4ade80" : "var(--text-primary)",
-                          fontSize: "9px",
-                          fontWeight: 800,
+                          fontSize: "10px",
+                          fontWeight: 600,
                           cursor: "pointer",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          fontFamily: "var(--font-mono)"
                         }}
                       >
-                        {copiedBadge ? "COPIED" : "COPY CODE"}
+                        {copiedBadge ? "Copied" : "Copy code"}
                       </button>
                     </div>
                     <div style={{
@@ -846,19 +824,18 @@ export default function ProjectDetail() {
                     borderRadius: "var(--radius-sm)",
                     cursor: "pointer",
                     fontWeight: 600,
-                    fontSize: "12px",
+                    fontSize: "13px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "8px",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
+                    transition: "all 0.15s ease",
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
-                  <PencilSimple size={16} weight="thin" />
-                  EDIT
+                  <PencilSimple size={18} weight="regular" />
+                  Edit
                 </button>
                 <button
                   onClick={handleDeleteClick}
@@ -871,19 +848,18 @@ export default function ProjectDetail() {
                     borderRadius: "var(--radius-sm)",
                     cursor: isDeleting ? "not-allowed" : "pointer",
                     fontWeight: 600,
-                    fontSize: "12px",
+                    fontSize: "13px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "8px",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
+                    transition: "all 0.15s ease",
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.05)"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
-                  <Trash size={16} weight="thin" />
-                  DELETE
+                  <Trash size={18} weight="regular" />
+                  Delete
                 </button>
               </>
             )}
@@ -892,7 +868,7 @@ export default function ProjectDetail() {
 
         <div style={{
           display: "flex",
-          flexDirection: isMobile ? "row" : "row",
+          flexDirection: "row",
           gap: isMobile ? "8px" : "16px",
           padding: isMobile ? "12px" : "20px",
           backgroundColor: "var(--bg-page)",
@@ -911,20 +887,17 @@ export default function ProjectDetail() {
               backgroundColor: isLiked ? "var(--text-primary)" : "transparent",
               color: isLiked ? "var(--bg-page)" : "var(--text-primary)",
               cursor: currentUser ? "pointer" : "not-allowed",
-              fontWeight: 800,
-              fontSize: "12px",
+              fontWeight: 600,
+              fontSize: "13px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
               transition: "all 0.15s ease",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em"
             }}
           >
-            <Star size={20} weight={isLiked ? "fill" : "bold"} />
-            {likeCount > 0 ? `${likeCount} ` : ""}UPVOTE
+            <Star size={20} weight={isLiked ? "fill" : "regular"} />
+            {likeCount > 0 ? `${likeCount} ` : ""}Upvote
           </button>
 
           <button
@@ -938,23 +911,20 @@ export default function ProjectDetail() {
               backgroundColor: isSaved ? "var(--text-primary)" : "transparent",
               color: isSaved ? "var(--bg-page)" : "var(--text-primary)",
               cursor: currentUser ? "pointer" : "not-allowed",
-              fontWeight: 800,
-              fontSize: "12px",
+              fontWeight: 600,
+              fontSize: "13px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
               transition: "all 0.15s ease",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em"
             }}
           >
             <BookmarkSimple
               size={20}
-              weight={isSaved ? "fill" : "thin"}
+              weight={isSaved ? "fill" : "regular"}
             />
-            {isSaved ? "SAVED" : "SAVE"}
+            {isSaved ? "Saved" : "Save"}
           </button>
 
           <button
@@ -967,22 +937,19 @@ export default function ProjectDetail() {
               backgroundColor: "transparent",
               color: "var(--text-primary)",
               cursor: "pointer",
-              fontWeight: 800,
-              fontSize: "12px",
+              fontWeight: 600,
+              fontSize: "13px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
               transition: "all 0.15s ease",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em"
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
           >
-            <ShareNetwork size={20} weight="thin" />
-            SHARE
+            <ShareNetwork size={20} weight="regular" />
+            Share
           </button>
 
           <button
@@ -995,22 +962,19 @@ export default function ProjectDetail() {
               backgroundColor: "transparent",
               color: "var(--text-primary)",
               cursor: "pointer",
-              fontWeight: 800,
-              fontSize: "12px",
+              fontWeight: 600,
+              fontSize: "13px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
               transition: "all 0.15s ease",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em"
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
           >
-            <PaperPlaneTilt size={20} weight="thin" />
-            SEND
+            <PaperPlaneTilt size={20} weight="regular" />
+            Send
           </button>
         </div>
 
@@ -1029,18 +993,14 @@ export default function ProjectDetail() {
                 background: "transparent",
                 border: "none",
                 padding: "12px 0",
-                fontSize: "11px",
-                fontWeight: 800,
-                fontFamily: "var(--font-mono)",
+                fontSize: "13px",
+                fontWeight: 600,
                 color: activeTab === "details" ? "var(--text-primary)" : "var(--text-tertiary)",
-                // borderBottom: activeTab === "details" ? "1px solid var(--text-primary)" : "1px solid transparent",
                 cursor: "pointer",
                 transition: "all 0.2s",
-                textTransform: "uppercase",
-                letterSpacing: "0.15em"
               }}
             >
-              OVERVIEW
+              Overview
             </button>
             <button
               onClick={() => setActiveTab("changelog")}
@@ -1048,18 +1008,14 @@ export default function ProjectDetail() {
                 background: "transparent",
                 border: "none",
                 padding: "12px 0",
-                fontSize: "11px",
-                fontWeight: 800,
-                fontFamily: "var(--font-mono)",
+                fontSize: "13px",
+                fontWeight: 600,
                 color: activeTab === "changelog" ? "var(--text-primary)" : "var(--text-tertiary)",
-                // borderBottom: activeTab === "changelog" ? "1px solid var(--text-primary)" : "1px solid transparent",
                 cursor: "pointer",
                 transition: "all 0.2s",
-                textTransform: "uppercase",
-                letterSpacing: "0.15em"
               }}
             >
-              CHANGELOG
+              Changelog
             </button>
           </div>
 
@@ -1079,7 +1035,7 @@ export default function ProjectDetail() {
         </div>
 
         <div>
-          <h2 style={{ fontSize: "11px", fontWeight: 800, marginBottom: "32px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.15em" }}>Discussions</h2>
+          <h2 style={{ fontSize: "14px", fontWeight: 600, marginBottom: "32px", color: "var(--text-tertiary)" }}>Discussions</h2>
           <CommentsSection
             resourceId={project.id}
             resourceType="project"
@@ -1089,49 +1045,52 @@ export default function ProjectDetail() {
             }}
           />
         </div>
-      </div>
 
-      {
-        project && (
+        {project && (
           <ProjectModal
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
             onUpdated={handleProjectUpdated}
             project={project}
           />
-        )
-      }
+        )}
 
-      <ShareModal
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-        url={shareUrl}
-        title="Share this project"
-      />
-      <ConfirmDeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDeleteConfirm}
-        title="Delete project"
-        message="Delete this project? This action cannot be undone."
-        confirmLabel="Delete"
-        isLoading={isDeleting}
-      />
-      <CoFounderRequestModal
-        isOpen={isCofounderModalOpen}
-        onClose={() => setIsCofounderModalOpen(false)}
-        onSuccess={fetchProject}
-        projectId={project.id}
-        projectTitle={project.title}
-      />
-      {project && (
-        <SendToChatModal
-          isOpen={isSendToChatModalOpen}
-          onClose={() => setIsSendToChatModalOpen(false)}
-          projectId={project.id}
-          initialMessage={`Check out this project: ${project.title}`}
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          url={shareUrl}
+          title="Share this project"
         />
-      )}
+
+        <ConfirmDeleteModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleDeleteConfirm}
+          title="Delete project"
+          message="Delete this project? This action cannot be undone."
+          confirmLabel="Delete"
+          isLoading={isDeleting}
+        />
+
+        {project && (
+          <CoFounderRequestModal
+            isOpen={isCofounderModalOpen}
+            onClose={() => setIsCofounderModalOpen(false)}
+            onSuccess={fetchProject}
+            projectId={project.id}
+            projectTitle={project.title}
+          />
+        )}
+
+        {project && (
+          <SendToChatModal
+            isOpen={isSendToChatModalOpen}
+            onClose={() => setIsSendToChatModalOpen(false)}
+            projectId={project.id}
+            initialMessage={`Check out this project: ${project.title}`}
+          />
+        )}
+      </div>
     </main>
   );
 }

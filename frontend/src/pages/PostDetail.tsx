@@ -284,7 +284,7 @@ export default function PostDetail() {
           >
             <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
           </button>
-          <span style={{ marginLeft: "20px", fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>POST</span>
+          <span style={{ marginLeft: "20px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>Post</span>
         </div>
 
         {/* Post Content */}
@@ -313,12 +313,12 @@ export default function PostDetail() {
               )}
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>
+                  <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
                     {userName}
                   </span>
                   <VerifiedBadge username={post.user?.username} size="12px" />
                 </div>
-                <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", marginTop: "2px", fontWeight: 600 }}>
+                <div style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "2px", fontWeight: 500 }}>
                   @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}
                 </div>
               </div>
@@ -356,7 +356,7 @@ export default function PostDetail() {
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
                   <ChartBar size={18} weight="bold" color="var(--text-primary)" />
-                  <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Poll</span>
+                  <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>Poll</span>
                 </div>
                 
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -399,20 +399,17 @@ export default function PostDetail() {
                         )}
                         <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
                           <span style={{
-                            fontSize: "13px",
-                            fontWeight: isSelected ? 800 : 700,
+                            fontSize: "14px",
+                            fontWeight: isSelected ? 700 : 500,
                             color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase"
                           }}>
                             {option}
                           </span>
                           {votedOption !== null && (
                             <span style={{
-                              fontSize: "12px",
-                              fontWeight: 800,
+                              fontSize: "13px",
+                              fontWeight: 700,
                               color: isSelected ? "var(--bg-page)" : "var(--text-tertiary)",
-                              fontFamily: "var(--font-mono)"
                             }}>
                               {percentage}%
                             </span>
@@ -423,7 +420,7 @@ export default function PostDetail() {
                   })}
                 </div>
                 <div style={{ marginTop: "4px" }}>
-                   <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                   <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}>
                       {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} Votes • {votedOption !== null ? "Final results" : "Select an option to vote"}
                    </span>
                 </div>
@@ -446,20 +443,20 @@ export default function PostDetail() {
                   const replyBox = document.querySelector('textarea');
                   if (replyBox) replyBox.focus();
                 }}
-                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 600 }}
+                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}
               >
                 <ChatTeardropText size={18} weight="thin" />
-                {comments.length > 0 && <span style={{ fontFamily: "var(--font-mono)" }}>{comments.length}</span>}
+                {comments.length > 0 && <span>{comments.length}</span>}
               </button>
 
               {/* Like */}
               <button
                 onClick={toggleLike}
                 disabled={likeLoading}
-                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 600 }}
+                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}
               >
                 <Heart size={18} weight={isLiked ? "fill" : "thin"} />
-                {likeCount > 0 && <span style={{ fontFamily: "var(--font-mono)" }}>{likeCount}</span>}
+                {likeCount > 0 && <span>{likeCount}</span>}
               </button>
 
               {/* Share */}
@@ -528,13 +525,10 @@ export default function PostDetail() {
                     color: commentContent.trim() && !isSubmitting ? "var(--bg-page)" : "var(--text-tertiary)",
                     border: "1px solid var(--border-hairline)",
                     borderRadius: "var(--radius-sm)",
-                    fontWeight: 900,
-                    fontSize: "11px",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
+                    fontWeight: 600,
+                    fontSize: "12px",
                     cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
                     transition: "all 0.15s ease",
-                    letterSpacing: "0.1em"
                   }}
                   onMouseEnter={(e) => {
                     if (commentContent.trim() && !isSubmitting) {
@@ -547,7 +541,7 @@ export default function PostDetail() {
                     e.currentTarget.style.boxShadow = "none";
                   }}
                 >
-                  {isSubmitting ? "SENDING..." : "POST REPLY"}
+                  {isSubmitting ? "Sending..." : "Post reply"}
                 </button>
               </div>
             </div>
@@ -561,10 +555,8 @@ export default function PostDetail() {
               padding: "64px 24px",
               textAlign: "center",
               color: "var(--text-tertiary)",
-              fontSize: "13px",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em"
+              fontSize: "14px",
+              fontWeight: 500
             }}>
               No replies yet — ask them something about this
             </div>

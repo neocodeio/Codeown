@@ -244,10 +244,8 @@ export default function Onboarding() {
             border: "0.5px solid var(--border-hairline)",
             backgroundColor: "transparent",
             color: "var(--text-secondary)",
-            fontSize: "12px",
-            fontWeight: 700,
-            fontFamily: "var(--font-mono)",
-            textTransform: "uppercase",
+            fontSize: "13px",
+            fontWeight: 600,
             cursor: "pointer",
             transition: "all 0.15s ease",
           }}
@@ -272,10 +270,8 @@ export default function Onboarding() {
           border: "none",
           backgroundColor: disabled ? "var(--border-hairline)" : "var(--text-primary)",
           color: disabled ? "var(--text-tertiary)" : "var(--bg-page)",
-          fontSize: "12px",
-          fontWeight: 700,
-          fontFamily: "var(--font-mono)",
-          textTransform: "uppercase",
+          fontSize: "13px",
+          fontWeight: 600,
           cursor: disabled ? "not-allowed" : "pointer",
           display: "flex",
           alignItems: "center",
@@ -307,13 +303,10 @@ export default function Onboarding() {
 
   const labelStyle: React.CSSProperties = {
     fontSize: "12px",
-    fontWeight: 700,
+    fontWeight: 600,
     color: "var(--text-tertiary)",
     marginBottom: "8px",
     display: "block",
-    fontFamily: "var(--font-mono)",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em"
   };
 
   // --- Steps ---
@@ -336,12 +329,10 @@ export default function Onboarding() {
             <p
               style={{
                 fontSize: "12px",
-                fontWeight: 700,
+                fontWeight: 600,
                 color: "var(--text-primary)",
-                letterSpacing: "0.1em",
+                letterSpacing: "0.05em",
                 marginBottom: "24px",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase"
               }}
             >
               Step 1 of {TOTAL_STEPS}
@@ -354,7 +345,6 @@ export default function Onboarding() {
                 lineHeight: 1,
                 marginBottom: "32px",
                 letterSpacing: "-0.04em",
-                textTransform: "uppercase"
               }}
             >
               The home for<br />developers
@@ -405,7 +395,7 @@ export default function Onboarding() {
                 letterSpacing: "-0.04em",
               }}
             >
-              YOUR LAUNCHPAD AWAITS
+              Your launchpad awaits
             </h1>
             <p
               style={{
@@ -425,13 +415,10 @@ export default function Onboarding() {
                     padding: "10px 20px",
                     borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: "var(--text-primary)",
                     backgroundColor: "transparent",
                     border: "0.5px solid var(--border-hairline)",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em"
                   }}
                 >
                   {f.label}
@@ -442,8 +429,6 @@ export default function Onboarding() {
               style={{
                 fontSize: "13px",
                 color: "var(--text-tertiary)",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase"
               }}
             >
               Complete your profile to join the community.
@@ -477,7 +462,7 @@ export default function Onboarding() {
                 letterSpacing: "-0.04em",
               }}
             >
-              TELL US ABOUT YOURSELF
+              Tell us about yourself
             </h1>
             <p
               style={{
@@ -496,7 +481,7 @@ export default function Onboarding() {
                 </label>
                 <input
                   type="text"
-                  placeholder="E.G. FULL STACK DEVELOPER"
+                  placeholder="e.g. Full Stack Developer"
                   value={jobTitle}
                   onChange={(e) => setJobTitle(e.target.value)}
                   style={inputStyle}
@@ -515,7 +500,7 @@ export default function Onboarding() {
                 </label>
                 <input
                   type="text"
-                  placeholder="E.G. LONDON, UK"
+                  placeholder="e.g. London, UK"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   style={inputStyle}
@@ -538,7 +523,7 @@ export default function Onboarding() {
                   </span>
                 </div>
                 <textarea
-                  placeholder="TELL THE WORLD YOUR STORY..."
+                  placeholder="Tell the world your story..."
                   value={bio}
                   onChange={(e) => {
                     if (e.target.value.length <= 160) setBio(e.target.value);
@@ -587,7 +572,7 @@ export default function Onboarding() {
                 letterSpacing: "-0.04em",
               }}
             >
-              WHAT'S YOUR STACK?
+              What's your stack?
             </h1>
             <p
               style={{
@@ -609,11 +594,8 @@ export default function Onboarding() {
                     style={{
                       padding: "10px 20px",
                       borderRadius: "var(--radius-sm)",
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      fontFamily: "var(--font-mono)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
+                      fontSize: "13px",
+                      fontWeight: 500,
                       border: isSelected ? "0.5px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
                       backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
                       color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
@@ -661,7 +643,7 @@ export default function Onboarding() {
                 letterSpacing: "-0.04em",
               }}
             >
-              ALMOST THERE
+              Almost there
             </h1>
             <p
               style={{
@@ -695,7 +677,7 @@ export default function Onboarding() {
                   </span>
                   <input
                     type="text"
-                    placeholder="USERNAME"
+                    placeholder="Username"
                     value={githubUrl}
                     onChange={(e) => setGithubUrl(e.target.value)}
                     style={{ ...inputStyle, paddingLeft: "112px" }}
@@ -730,7 +712,7 @@ export default function Onboarding() {
                   </span>
                   <input
                     type="text"
-                    placeholder="USERNAME"
+                    placeholder="Username"
                     value={twitterUrl}
                     onChange={(e) => setTwitterUrl(e.target.value)}
                     style={{ ...inputStyle, paddingLeft: "36px" }}
@@ -765,7 +747,7 @@ export default function Onboarding() {
                   </span>
                   <input
                     type="text"
-                    placeholder="USERNAME"
+                    placeholder="Username"
                     value={linkedinUrl}
                     onChange={(e) => setLinkedinUrl(e.target.value)}
                     style={{ ...inputStyle, paddingLeft: "134px" }}
@@ -785,7 +767,7 @@ export default function Onboarding() {
                 </label>
                 <input
                   type="text"
-                  placeholder="HTTPS://YOURSITE.COM"
+                  placeholder="https://yoursite.com"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   style={inputStyle}

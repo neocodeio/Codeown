@@ -265,11 +265,10 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               <span
                 onClick={handleUserClick}
                 style={{
-                  fontSize: "14px",
-                  fontWeight: 800,
+                  fontSize: "15px",
+                  fontWeight: 600,
                   color: "var(--text-primary)",
                   letterSpacing: "-0.012em",
-                  textTransform: "uppercase",
                   cursor: "pointer"
                 }}
               >
@@ -277,12 +276,12 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               </span>
             </UserHoverCard>
             <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
-            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+            <span style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 400 }}>
               @{post.user?.username || 'user'}
             </span>
             <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
-            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", letterSpacing: "0.02em" }}>
-              {formatRelativeDate(post.created_at).toUpperCase()}
+            <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
+              {formatRelativeDate(post.created_at)}
             </span>
           </div>
 
@@ -319,7 +318,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       <button key={i} onClick={item.onClick} style={{
                         width: "100%", padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px",
                         border: "none", background: "none", cursor: "pointer", borderRadius: "var(--radius-sm)",
-                        fontSize: "11px", fontWeight: 800, color: item.color, fontFamily: "var(--font-mono)", textTransform: "uppercase"
+                        fontSize: "12px", fontWeight: 600, color: item.color,
                       }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
                         <item.icon size={16} weight="thin" />
@@ -334,12 +333,12 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
         {/* Post Text */}
         <div style={{
-          fontSize: "14.5px",
-          lineHeight: "1.6",
-          color: "var(--text-secondary)", // Better readability across themes
-          marginBottom: "20px",
+          fontSize: "15.5px",
+          lineHeight: "1.5",
+          color: "var(--text-primary)",
+          marginBottom: "16px",
         }}>
-          {post.title && <h2 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", letterSpacing: "-0.01em", textTransform: "uppercase" }}>{post.title}</h2>}
+          {post.title && <h2 style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: "0 0 10px", letterSpacing: "-0.015em" }}>{post.title}</h2>}
           <ContentRenderer content={post.content} />
         </div>
 
@@ -353,20 +352,20 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         {post.poll && post.poll.options && post.poll.options.length > 0 && (
           <div style={{
             marginBottom: "24px",
-            padding: "20px",
+            padding: "16px",
             backgroundColor: "var(--bg-hover)",
             border: "0.5px solid var(--border-hairline)",
-            borderRadius: "var(--radius-sm)",
+            borderRadius: "var(--radius-md)",
             display: "flex",
             flexDirection: "column",
-            gap: "12px"
+            gap: "10px"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
               <ChartBar size={18} weight="bold" color="var(--text-primary)" />
-              <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Poll</span>
+              <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>Poll</span>
             </div>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {post.poll.options.map((option, idx) => {
                 const votes = post.poll?.votes || {};
                 const voteCount = Number(votes[idx] || 0);
@@ -382,7 +381,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     style={{
                       position: "relative",
                       width: "100%",
-                      padding: "14px 16px",
+                      padding: "12px 14px",
                       backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
                       border: "0.5px solid var(--border-hairline)",
                       borderRadius: "var(--radius-sm)",
@@ -400,26 +399,23 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                         bottom: 0,
                         width: `${percentage}%`,
                         backgroundColor: isSelected ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-                        transition: "width 1s cubic-bezier(0.4, 0, 0.2, 1)",
+                        transition: "width 1s var(--ease-smooth)",
                         zIndex: 0
                       }} />
                     )}
                     <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
                       <span style={{
-                        fontSize: "13px",
-                        fontWeight: isSelected ? 800 : 700,
+                        fontSize: "14px",
+                        fontWeight: isSelected ? 600 : 500,
                         color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase"
                       }}>
                         {option}
                       </span>
                       {votedOption !== null && (
                         <span style={{
-                          fontSize: "11px",
-                          fontWeight: 800,
+                          fontSize: "13px",
+                          fontWeight: 600,
                           color: isSelected ? "var(--bg-page)" : "var(--text-tertiary)",
-                          fontFamily: "var(--font-mono)"
                         }}>
                           {percentage}%
                         </span>
@@ -430,8 +426,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               })}
             </div>
             <div style={{ marginTop: "4px" }}>
-               <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
-                  {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} Votes • {votedOption !== null ? "Final results" : "Select an option to vote"}
+               <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
+                  {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} votes • {votedOption !== null ? "Final results" : "Select an option to vote"}
                </span>
             </div>
           </div>
@@ -487,9 +483,9 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   display: "flex", alignItems: "center", gap: "6px",
                   background: "none", border: "none", padding: "4px 0",
                   cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
-                  transition: "all 0.15s ease",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "12px"
+                  transition: "all 0.2s ease",
+                  fontSize: "13px",
+                  fontWeight: 500
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === Heart ? "#ef4444" : "var(--text-primary)");
@@ -498,12 +494,12 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
                 }}
               >
-                <Icon size={22} weight={action.weight || "thin"} />
+                <Icon size={20} weight={action.weight || "regular"} />
                 {Icon === Heart ? (
-                  <RollingNumber value={action.count || 0} fontWeight={800} fontSize="12px" color="inherit" />
+                  <RollingNumber value={action.count || 0} fontWeight={500} fontSize="13px" color="inherit" />
                 ) : (
                   action.count !== undefined && action.count > 0 && (
-                    <span style={{ fontWeight: 800, letterSpacing: "0.05em" }}>{action.count}</span>
+                    <span>{action.count}</span>
                   )
                 )}
               </button>

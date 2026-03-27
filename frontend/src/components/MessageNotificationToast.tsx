@@ -182,26 +182,21 @@ export default function MessageNotificationToast() {
               <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "3px" }}>
                 <span
                   style={{
-                    fontSize: "11px",
-                    fontWeight: 800,
-                    fontFamily: "var(--font-mono)",
+                    fontSize: "12px",
+                    fontWeight: 700,
                     color: "var(--text-primary)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.03em"
                   }}
                 >
-                  {toast.message.sender?.name || "New Message"}
+                  {toast.message.sender?.name || "New message"}
                 </span>
                 <span
                   style={{
-                    fontSize: "9px",
+                    fontSize: "10px",
                     fontWeight: 600,
-                    fontFamily: "var(--font-mono)",
                     color: "var(--text-tertiary)",
-                    textTransform: "uppercase"
                   }}
                 >
-                  NOW
+                  Now
                 </span>
               </div>
               <div

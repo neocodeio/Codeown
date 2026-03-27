@@ -60,9 +60,9 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
 
     if (loading) {
         return (
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "40px 0", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontSize: "12px", textTransform: "uppercase" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "40px 0", color: "var(--text-tertiary)", fontSize: "13px" }}>
                 <div style={{ width: "16px", height: "16px", border: "1px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "99px", animation: "spin 0.8s linear infinite" }} />
-                FETCHING_LOGS...
+                Fetching logs...
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
         );
@@ -84,11 +84,8 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                                 border: "1px solid var(--border-hairline)",
                                 borderRadius: "var(--radius-sm)",
                                 color: "var(--text-primary)",
-                                fontWeight: 700,
-                                fontSize: "11px",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em",
+                                fontWeight: 600,
+                                fontSize: "12px",
                                 cursor: "pointer",
                                 transition: "all 0.15s ease"
                             }}
@@ -104,7 +101,7 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                             }}
                         >
                             <Plus size={14} weight="bold" />
-                            ADD_BUILD_UPDATE
+                            Add build update
                         </button>
                     ) : (
                         <div style={{
@@ -114,9 +111,9 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                             padding: "20px",
                             animation: "slideIn 0.3s ease-out"
                         }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", color: "var(--text-tertiary)", fontSize: "10px", fontFamily: "var(--font-mono)", textTransform: "uppercase", fontWeight: 700 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 600 }}>
                                 <Terminal size={14} weight="bold" />
-                                SYSTEM_INPUT_ACTIVE
+                                System input active
                             </div>
                             <textarea
                                 value={newLog}
@@ -152,17 +149,15 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                                         background: "transparent",
                                         border: "none",
                                         color: "var(--text-tertiary)",
-                                        fontWeight: 700,
+                                        fontWeight: 600,
                                         cursor: "pointer",
-                                        fontSize: "11px",
-                                        fontFamily: "var(--font-mono)",
-                                        textTransform: "uppercase"
+                                        fontSize: "12px",
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
                                     onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
                                 >
                                     <X size={14} weight="bold" />
-                                    CANCEL
+                                    Cancel
                                 </button>
                                 <button
                                     onClick={handleAddLog}
@@ -173,18 +168,16 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                                         color: "var(--bg-page)",
                                         border: "none",
                                         borderRadius: "var(--radius-sm)",
-                                        fontWeight: 800,
+                                        fontWeight: 600,
                                         cursor: (isSubmitting || !newLog.trim()) ? "not-allowed" : "pointer",
                                         opacity: (isSubmitting || !newLog.trim()) ? 0.5 : 1,
-                                        fontSize: "11px",
-                                        fontFamily: "var(--font-mono)",
-                                        textTransform: "uppercase",
+                                        fontSize: "12px",
                                         transition: "all 0.15s ease"
                                     }}
                                     onMouseEnter={e => { if(!isSubmitting && newLog.trim()) e.currentTarget.style.opacity = "0.9" }}
                                     onMouseLeave={e => { if(!isSubmitting && newLog.trim()) e.currentTarget.style.opacity = "1" }}
                                 >
-                                    {isSubmitting ? "PROCESSING..." : "POST_UPDATE"}
+                                    {isSubmitting ? "Processing..." : "Post update"}
                                 </button>
                             </div>
                             <style>{`@keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
@@ -208,8 +201,8 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
                 }}>
                     <ListPlus size={32} weight="thin" />
                     <div>
-                        <p style={{ fontWeight: 800, color: "var(--text-primary)", margin: 0, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                            NO_LOGS_DETECTED
+                        <p style={{ fontWeight: 700, color: "var(--text-primary)", margin: 0, fontSize: "13px" }}>
+                            No build log entries yet
                         </p>
                         <p style={{ fontSize: "11px", color: "var(--text-tertiary)", marginTop: "6px" }}>
                             Document your engineering progress and share build updates.
@@ -245,16 +238,13 @@ export default function ProjectChangelog({ projectId, isOwner }: { projectId: nu
 
                             {/* Metadata */}
                             <div style={{
-                                fontSize: "10px",
+                                fontSize: "11px",
                                 color: "var(--text-tertiary)",
-                                fontWeight: 700,
+                                fontWeight: 600,
                                 marginBottom: "12px",
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "10px",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em"
                             }}>
                                 <span style={{ color: "var(--text-primary)" }}>
                                     {new Date(log.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}

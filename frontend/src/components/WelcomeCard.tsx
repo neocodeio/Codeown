@@ -47,29 +47,25 @@ export default function WelcomeCard() {
                             backgroundColor: "var(--bg-hover)",
                             color: "var(--text-tertiary)",
                             borderRadius: "var(--radius-sm)",
-                            fontSize: "10px",
-                            fontWeight: 800,
-                            letterSpacing: "0.08em",
+                            fontSize: "11px",
+                            fontWeight: 600,
                             display: "flex",
                             alignItems: "center",
                             gap: "8px",
                             border: "0.5px solid var(--border-hairline)",
-                            fontFamily: "var(--font-mono)"
                         }}>
                             <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: "10px" }} />
-                            <span>ANNOUNCEMENT</span>
+                            <span>Announcement</span>
                         </div>
                     </div>
 
                     <div>
                         <h2 style={{
                             fontSize: isMobile ? "28px" : "36px",
-                            fontWeight: 800,
+                            fontWeight: 700,
                             color: "var(--text-primary)",
                             margin: 0,
-                            letterSpacing: "-0.04em",
                             lineHeight: "1.2",
-                            textTransform: "uppercase"
                         }}>
                             Welcome to Codeown <span style={{ color: "var(--text-primary)" }}>🚀</span>
                         </h2>
@@ -100,17 +96,14 @@ export default function WelcomeCard() {
                                 backgroundColor: "var(--text-primary)",
                                 border: "none",
                                 color: "var(--bg-page)",
-                                fontWeight: 800,
-                                fontSize: "12px",
+                                fontWeight: 600,
+                                fontSize: "13px",
                                 cursor: "pointer",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 gap: "10px",
                                 transition: "all 0.15s ease",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em"
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.opacity = "0.9";
@@ -120,7 +113,7 @@ export default function WelcomeCard() {
                             }}
                         >
                             <FontAwesomeIcon icon={faRocket} style={{ fontSize: "14px" }} />
-                            Launch a Project
+                            Launch a project
                         </button>
 
                         <button
@@ -131,17 +124,14 @@ export default function WelcomeCard() {
                                 backgroundColor: "transparent",
                                 border: "0.5px solid var(--border-hairline)",
                                 color: "var(--text-primary)",
-                                fontWeight: 800,
-                                fontSize: "12px",
+                                fontWeight: 600,
+                                fontSize: "13px",
                                 cursor: "pointer",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 gap: "10px",
                                 transition: "all 0.15s ease",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em"
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.backgroundColor = "var(--bg-hover)";
@@ -151,7 +141,7 @@ export default function WelcomeCard() {
                             }}
                         >
                             <FontAwesomeIcon icon={faAdd} style={{ fontSize: "14px", opacity: 0.7 }} />
-                            Share a Thought
+                            Share a thought
                         </button>
                     </div>
 
@@ -161,10 +151,8 @@ export default function WelcomeCard() {
                         alignItems: "center",
                         gap: "8px",
                         color: "var(--text-tertiary)",
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase"
+                        fontSize: "12px",
+                        fontWeight: 500,
                     }}>
                         <span>Made with</span>
                         <FontAwesomeIcon icon={faHeart} style={{ color: "#ef4444", fontSize: "12px" }} />

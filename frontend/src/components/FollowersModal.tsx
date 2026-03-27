@@ -137,12 +137,9 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
           }}>
             <h2 style={{ 
               margin: 0, 
-              fontSize: "14px", 
-              fontWeight: 800, 
+              fontSize: "16px", 
+              fontWeight: 700, 
               color: "var(--text-primary)", 
-              textTransform: "uppercase", 
-              fontFamily: "var(--font-mono)",
-              letterSpacing: "0.1em" 
             }}>
               {title}
             </h2>
@@ -172,8 +169,8 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
               </div>
             ) : users.length === 0 ? (
               <div style={{ textAlign: "center", padding: "60px 32px", color: "var(--text-tertiary)" }}>
-                <p style={{ margin: 0, fontSize: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
-                  {type === "followers" ? "NO FOLLOWERS DATA" : "NOT FOLLOWING ANYONE"}
+                <p style={{ margin: 0, fontSize: "13px", fontWeight: 500 }}>
+                  {type === "followers" ? "No followers yet" : "Not following anyone"}
                 </p>
               </div>
             ) : (
@@ -190,12 +187,12 @@ export default function FollowersModal({ isOpen, onClose, userId, type, title }:
                     <img src={user.avatar_url || getAvatarUrl(user.name)} alt={user.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "6px" }}>
                       {user.name}
                       <VerifiedBadge username={user.username} size="14px" />
                     </div>
                     {user.username && (
-                      <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                      <div style={{ fontSize: "12px", fontWeight: 500, color: "var(--text-tertiary)" }}>
                         @{user.username}
                       </div>
                     )}

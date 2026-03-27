@@ -388,7 +388,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     }
                     .form-input, .form-textarea, .form-select {
                         width: 100%;
-                        padding: 14px 18px;
+                        padding: 12px 14px;
                         border: 0.5px solid var(--border-hairline);
                         border-radius: var(--radius-sm);
                         font-size: 14px;
@@ -405,13 +405,11 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     }
                     .form-item-label {
                         display: block;
-                        margin-bottom: 12px;
-                        font-family: var(--font-mono);
-                        font-size: 11px;
-                        font-weight: 700;
+                        margin-bottom: 10px;
+                        font-family: var(--font-main);
+                        font-size: 13px;
+                        font-weight: 600;
                         color: var(--text-tertiary);
-                        text-transform: uppercase;
-                        letter-spacing: 0.05em;
                     }
                     .responsive-grid {
                         display: grid;
@@ -422,7 +420,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 `}</style>
                 {/* Fixed Header */}
                 <div style={{ 
-                    padding: isMobile ? "20px" : "32px 40px", 
+                    padding: isMobile ? "20px" : "24px 32px", 
                     borderBottom: "0.5px solid var(--border-hairline)", 
                     position: "relative",
                     flexShrink: 0 // Prevent header from shrinking
@@ -431,7 +429,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         onClick={onClose}
                         style={{
                             position: "absolute",
-                            top: isMobile ? "22px" : "28px",
+                            top: isMobile ? "18px" : "22px",
                             right: isMobile ? "20px" : "32px",
                             background: "transparent",
                             border: "none",
@@ -448,35 +446,32 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
                         onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-tertiary)")}
                     >
-                        <X size={20} weight="thin" />
+                        <X size={20} weight="regular" />
                     </button>
-                    <h2 className="modal-header-title" style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                        {project ? "EDIT PROJECT" : "NEW PROJECT"}
+                    <h2 className="modal-header-title" style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>
+                        {project ? "Edit project" : "New project"}
                     </h2>
                 </div>
 
                 {/* Scrolling Content */}
                 <div style={{ 
-                    padding: isMobile ? "24px 20px" : "40px", 
+                    padding: isMobile ? "24px 20px" : "32px", 
                     overflowY: "auto", 
                     flex: 1, 
                     display: "flex", 
                     flexDirection: "column", 
-                    gap: "32px",
+                    gap: "28px",
                     minHeight: 0 // Crucial for flexbox scroll behavior
                 }}>
                     {error && (
                         <div style={{
-                            backgroundColor: "transparent",
+                            backgroundColor: "rgba(239, 68, 68, 0.05)",
                             color: "#ef4444",
-                            padding: "16px 20px",
+                            padding: "12px 16px",
                             borderRadius: "var(--radius-sm)",
-                            fontSize: "11px",
-                            fontWeight: 700,
-                            fontFamily: "var(--font-mono)",
+                            fontSize: "13px",
+                            fontWeight: 600,
                             border: "0.5px solid #ef4444",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em"
                         }}>
                             {error}
                         </div>
@@ -484,7 +479,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                     <div>
                         <label className="form-item-label">
-                            Project Name *
+                            Project name *
                         </label>
                         <input
                             type="text"
@@ -492,13 +487,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             value={formData.title}
                             onChange={handleInputChange}
                             className="form-input"
-                            placeholder="GIVE IT A NAME..."
+                            placeholder="My awesome project"
                         />
                     </div>
 
                     <div>
                         <label className="form-item-label">
-                            Project Description *
+                            Project description *
                         </label>
                         <textarea
                             name="description"
@@ -506,21 +501,21 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             onChange={handleInputChange}
                             rows={3}
                             className="form-textarea"
-                            placeholder="WHAT IS THIS ABOUT?"
+                            placeholder="A brief overview of your project"
                         />
                     </div>
 
                     <div>
                         <label className="form-item-label">
-                            Technologies Used *
+                            Technologies used *
                         </label>
-                        <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+                        <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
                             <input
                                 type="text"
                                 value={techInput}
                                 onChange={(e) => setTechInput(e.target.value)}
                                 onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
-                                placeholder="E.G. REACT, NODE.JS..."
+                                placeholder="e.g. React, Node.js"
                                 className="form-input"
                                 style={{ flex: 1 }}
                             />
@@ -528,27 +523,27 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 type="button"
                                 onClick={handleAddTech}
                                 style={{
-                                    padding: "0 24px",
+                                    padding: "0 20px",
                                     borderRadius: "var(--radius-sm)",
-                                    fontSize: "11px",
-                                    fontWeight: 800,
+                                    fontSize: "13px",
+                                    fontWeight: 600,
                                     cursor: "pointer",
                                     background: "transparent",
-                                    color: "var(--text-tertiary)",
+                                    color: "var(--text-primary)",
                                     border: "0.5px solid var(--border-hairline)",
-                                    fontFamily: "var(--font-mono)",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.05em",
                                     display: "flex",
-                                    alignItems: "center"
+                                    alignItems: "center",
+                                    transition: "all 0.15s ease"
                                 }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                             >
-                                ADD
+                                Add
                             </button>
                         </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                             {formData.technologies_used.map((tech, index) => (
-                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "6px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)" }}>
                                     {tech}
                                     <button
                                         type="button"
@@ -564,7 +559,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                             padding: 0
                                         }}
                                     >
-                                        <X size={12} />
+                                        <X size={12} weight="regular" />
                                     </button>
                                 </div>
                             ))}
@@ -574,15 +569,15 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                     <div>
                         <label className="form-item-label">
-                            Contributors (Usernames)
+                            Contributors (usernames)
                         </label>
-                        <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+                        <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
                             <input
                                 type="text"
                                 value={contributorInput}
                                 onChange={(e) => setContributorInput(e.target.value)}
                                 onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddContributor())}
-                                placeholder="ENTER USERNAME..."
+                                placeholder="Enter username"
                                 className="form-input"
                                 style={{ flex: 1 }}
                             />
@@ -590,27 +585,27 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 type="button"
                                 onClick={handleAddContributor}
                                 style={{
-                                    padding: "0 24px",
+                                    padding: "0 20px",
                                     borderRadius: "var(--radius-sm)",
-                                    fontSize: "11px",
-                                    fontWeight: 800,
+                                    fontSize: "13px",
+                                    fontWeight: 600,
                                     cursor: "pointer",
                                     background: "transparent",
-                                    color: "var(--text-tertiary)",
+                                    color: "var(--text-primary)",
                                     border: "0.5px solid var(--border-hairline)",
-                                    fontFamily: "var(--font-mono)",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.05em",
                                     display: "flex",
-                                    alignItems: "center"
+                                    alignItems: "center",
+                                    transition: "all 0.15s ease"
                                 }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                             >
-                                ADD
+                                Add
                             </button>
                         </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                             {(formData.contributors || []).map((contributor, index) => (
-                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "11px", fontWeight: 700, border: "0.5px solid var(--border-hairline)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "6px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)" }}>
                                     @{contributor}
                                     <VerifiedBadge username={contributor} size="12px" />
                                     <button
@@ -628,7 +623,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                             marginLeft: "4px"
                                         }}
                                     >
-                                        <X size={12} />
+                                        <X size={12} weight="regular" />
                                     </button>
                                 </div>
                             ))}
@@ -637,7 +632,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                     <div>
                         <label className="form-item-label">
-                            Project Status *
+                            Project status *
                         </label>
                         <select
                             name="status"
@@ -645,13 +640,13 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             onChange={handleInputChange}
                             className="form-select"
                         >
-                            <option value="in_progress">IN PROGRESS</option>
-                            <option value="completed">COMPLETED</option>
-                            <option value="paused">PAUSED</option>
+                            <option value="in_progress">In progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="paused">Paused</option>
                         </select>
                     </div>
 
-                        <div style={{ marginBottom: "32px" }}>
+                        <div style={{ marginBottom: "12px" }}>
                             <label style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}>
                                 <div style={{ position: "relative", width: "18px", height: "18px" }}>
                                     <input
@@ -671,10 +666,10 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                         {formData.looking_for_contributors && <Check size={12} weight="bold" color="var(--bg-page)" />}
                                     </div>
                                 </div>
-                                <span style={{ fontWeight: 700, fontSize: "13px", color: "var(--text-primary)", letterSpacing: "-0.01em" }}>Looking for Co-Founder</span>
+                                <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--text-primary)" }}>Looking for co-founder</span>
                             </label>
-                            <p style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "8px", marginLeft: "30px", lineHeight: 1.5, letterSpacing: "-0.01em" }}>
-                                Enable this to let other developers know you're open for a Co-Founder to join your mission.
+                            <p style={{ fontSize: "13px", color: "var(--text-tertiary)", marginTop: "8px", marginLeft: "30px", lineHeight: 1.5 }}>
+                                Enable this to let other developers know you're open for a co-founder to join your mission.
                             </p>
                         </div>
 
@@ -689,7 +684,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     marginBottom: "10px" 
                                 }}>
                                     <label className="form-item-label" style={{ marginBottom: 0 }}>
-                                        GitHub Repository
+                                        GitHub repository
                                     </label>
                                     <button
                                         type="button"
@@ -699,16 +694,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                             backgroundColor: "transparent",
                                             border: "0.5px solid var(--border-hairline)",
                                             color: fetchingGitHub || !formData.github_repo ? "var(--text-tertiary)" : "var(--text-primary)",
-                                            padding: "6px 14px",
+                                            padding: "6px 12px",
                                             borderRadius: "var(--radius-sm)",
-                                            fontSize: "10px",
-                                            fontWeight: 800,
-                                            fontFamily: "var(--font-mono)",
+                                            fontSize: "11px",
+                                            fontWeight: 600,
                                             display: "flex",
                                             alignItems: "center",
                                             gap: "6px",
                                             cursor: fetchingGitHub || !formData.github_repo ? "not-allowed" : "pointer",
-                                            textTransform: "uppercase",
                                             transition: "all 0.15s ease"
                                         }}
                                         onMouseEnter={e => {
@@ -722,8 +715,8 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                             e.currentTarget.style.borderColor = "var(--border-hairline)";
                                         }}
                                     >
-                                        <GithubLogo size={14} weight="fill" />
-                                        {fetchingGitHub ? "IMPORTING..." : "IMPORT DATA"}
+                                        <GithubLogo size={14} weight="regular" />
+                                        {fetchingGitHub ? "Importing..." : "Import data"}
                                     </button>
                                 </div>
                                 <input
@@ -738,7 +731,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                             <div>
                                 <label className="form-item-label">
-                                    Live Demo
+                                    Live demo
                                 </label>
                                 <input
                                     type="url"
@@ -751,9 +744,9 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             </div>
                         </div>
 
-                        <div style={{ marginBottom: "32px" }}>
+                        <div style={{ marginBottom: "12px" }}>
                             <label className="form-item-label">
-                                Cover Image
+                                Cover image
                             </label>
                             {formData.cover_image && (
                                 <div style={{ marginBottom: "16px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
@@ -774,14 +767,14 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                     accept="image/*"
                                     onChange={handleImageUpload}
                                     className="form-input"
-                                    style={{ padding: "12px" }}
+                                    style={{ padding: "10px" }}
                                 />
                             </div>
                         </div>
 
                     <div>
                         <label className="form-item-label">
-                            Project Details *
+                            Project details *
                         </label>
                         <textarea
                             name="project_details"
@@ -789,66 +782,70 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             onChange={handleInputChange}
                             rows={8}
                             className="form-textarea"
-                            placeholder="DEEP DIVE INTO THE TECHNICAL DETAILS..."
+                            placeholder="A deep dive into the technical details of your project..."
                         />
                     </div>
                 </div>
 
                 {/* Fixed Footer */}
                 <div style={{ 
-                    padding: isMobile ? "16px 20px calc(16px + env(safe-area-inset-bottom))" : "24px 40px", 
-                    backgroundColor: "var(--bg-page)", 
-                    borderTop: "0.5px solid var(--border-hairline)", 
-                    display: "flex", 
-                    flexDirection: "row",
-                    gap: "10px", 
+                    padding: isMobile ? "16px 20px calc(16px + env(safe-area-inset-bottom))" : "20px 32px", 
+                    backgroundColor: "transparent", 
+                    borderTop: "0.5px solid var(--border-hairline)",
+                    display: "flex",
                     justifyContent: "flex-end",
-                    zIndex: 10,
-                    flexShrink: 0 // Prevent footer from shrinking
+                    gap: "12px",
+                    flexShrink: 0
                 }}>
                     <button
+                        type="button"
                         onClick={onClose}
-                        style={{ 
-                            padding: isMobile ? "12px 16px" : "14px 24px", 
-                            borderRadius: "var(--radius-sm)", 
-                            fontSize: isMobile ? "10px" : "11px", 
-                            fontWeight: 800, 
-                            transition: "all 0.15s ease", 
-                            cursor: "pointer", 
-                            background: "transparent", 
-                            color: "var(--text-tertiary)", 
-                            border: "0.5px solid var(--border-hairline)", 
-                            fontFamily: "var(--font-mono)", 
-                            textTransform: "uppercase", 
-                            letterSpacing: "0.1em",
-                            flex: isMobile ? 1 : "none"
+                        style={{
+                            padding: "12px 24px",
+                            backgroundColor: "transparent",
+                            color: "var(--text-secondary)",
+                            border: "0.5px solid var(--border-hairline)",
+                            borderRadius: "var(--radius-sm)",
+                            fontSize: "14px",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
-                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--text-tertiary)"; }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                            e.currentTarget.style.color = "var(--text-primary)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "transparent";
+                            e.currentTarget.style.color = "var(--text-secondary)";
+                        }}
                     >
-                        CANCEL
+                        Cancel
                     </button>
                     <button
-                        onClick={handleSubmit}
+                        type="submit"
                         disabled={loading}
-                        style={{ 
-                            padding: isMobile ? "12px 16px" : "14px 32px", 
-                            borderRadius: "var(--radius-sm)", 
-                            fontSize: isMobile ? "10px" : "11px", 
-                            fontWeight: 800, 
-                            transition: "all 0.15s ease", 
-                            cursor: "pointer", 
-                            background: "var(--text-primary)", 
-                            color: "var(--bg-page)", 
-                            border: "none", 
-                            opacity: loading ? 0.3 : 1, 
-                            fontFamily: "var(--font-mono)", 
-                            textTransform: "uppercase", 
-                            letterSpacing: "0.15em",
-                            flex: isMobile ? 1 : "none"
+                        onClick={() => handleSubmit()}
+                        style={{
+                            padding: "12px 32px",
+                            backgroundColor: "var(--text-primary)",
+                            color: "var(--bg-page)",
+                            border: "none",
+                            borderRadius: "var(--radius-sm)",
+                            fontSize: "14px",
+                            fontWeight: 700,
+                            cursor: loading ? "not-allowed" : "pointer",
+                            opacity: loading ? 0.7 : 1,
+                            transition: "all 0.15s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!loading) e.currentTarget.style.opacity = "0.9";
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!loading) e.currentTarget.style.opacity = "1";
                         }}
                     >
-                        {loading ? "SAVING..." : (project ? "SAVE" : "LAUNCH")}
+                        {loading ? "Processing..." : project ? "Update project" : "Launch project"}
                     </button>
                 </div>
             </div>

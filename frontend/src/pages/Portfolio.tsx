@@ -121,9 +121,8 @@ export default function Portfolio() {
         alignItems: "center", 
         justifyContent: "center",
         color: "#fff",
-        fontFamily: "var(--font-mono)"
       }}>
-        LOADING PORTFOLIO...
+        Loading portfolio...
       </div>
     );
   }
@@ -140,8 +139,8 @@ export default function Portfolio() {
         color: "#fff",
         gap: "24px"
       }}>
-        <h1 style={{ fontSize: "24px", fontWeight: 800 }}>USER NOT FOUND</h1>
-        <Link to="/" style={{ color: "#fff", textDecoration: "underline" }}>Return Home</Link>
+        <h1 style={{ fontSize: "24px", fontWeight: 700 }}>User not found</h1>
+        <Link to="/" style={{ color: "#fff", textDecoration: "underline", fontSize: "14px" }}>Return home</Link>
       </div>
     );
   }
@@ -187,11 +186,10 @@ export default function Portfolio() {
           gap: "8px", 
           color: "rgba(255, 255, 255, 0.6)", 
           textDecoration: "none",
-          fontSize: isMobile ? "10px" : "12px",
+          fontSize: isMobile ? "11px" : "13px",
           fontWeight: 600,
-          fontFamily: "var(--font-mono)"
         }}>
-          <ArrowLeft size={isMobile ? 14 : 16} /> {isMobile ? "BACK" : "BACK TO PROFILE"}
+          <ArrowLeft size={isMobile ? 14 : 16} /> {isMobile ? "Back" : "Back to profile"}
         </Link>
         <div style={{ display: "flex", gap: isMobile ? "8px" : "12px" }}>
           <button 
@@ -200,19 +198,18 @@ export default function Portfolio() {
               padding: isMobile ? "8px 12px" : "10px 20px",
               backgroundColor: "rgba(255, 255, 255, 0.05)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
-              borderRadius: "var(--radius-lg)",
+              borderRadius: "var(--radius-sm)",
               color: "#fff",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              fontSize: isMobile ? "10px" : "11px",
-              fontWeight: 700,
-              fontFamily: "var(--font-mono)",
+              fontSize: isMobile ? "11px" : "12px",
+              fontWeight: 600,
               transition: "all 0.2s ease"
             }}
           >
-            <ShareNetwork size={isMobile ? 14 : 16} /> SHARE
+            <ShareNetwork size={isMobile ? 14 : 16} /> Share
           </button>
           <button 
             onClick={handleDownload}
@@ -220,19 +217,18 @@ export default function Portfolio() {
               padding: isMobile ? "8px 12px" : "10px 24px",
               backgroundColor: "#fff",
               border: "none",
-              borderRadius: "var(--radius-lg)",
+              borderRadius: "var(--radius-sm)",
               color: "#000",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              fontSize: isMobile ? "10px" : "11px",
-              fontWeight: 800,
-              fontFamily: "var(--font-mono)",
+              fontSize: isMobile ? "11px" : "12px",
+              fontWeight: 600,
               transition: "all 0.2s ease"
             }}
           >
-            <Download size={isMobile ? 14 : 16} /> {isMobile ? "PNG" : "DOWNLOAD"}
+            <Download size={isMobile ? 14 : 16} /> {isMobile ? "PNG" : "Download"}
           </button>
         </div>
       </div>
@@ -269,11 +265,10 @@ export default function Portfolio() {
                 backgroundColor: "#fff",
                 color: "#000",
                 fontSize: "10px",
-                fontWeight: 900,
+                fontWeight: 600,
                 padding: "4px 8px",
                 borderRadius: "var(--radius-md)",
-                fontFamily: "var(--font-mono)"
-              }}>PRO</span>
+              }}>Pro</span>
             )}
           </div>
           
@@ -283,7 +278,6 @@ export default function Portfolio() {
             lineHeight: 1, 
             letterSpacing: "-0.04em",
             marginBottom: "16px",
-            textTransform: "uppercase"
           }}>
             {user.name}
           </h1>
@@ -303,8 +297,7 @@ export default function Portfolio() {
             justifyContent: "center", 
             gap: isMobile ? "16px" : "24px",
             color: "rgba(255, 255, 255, 0.4)",
-            fontSize: isMobile ? "12px" : "14px",
-            fontFamily: "var(--font-mono)"
+            fontSize: isMobile ? "13px" : "15px",
           }}>
             {user.location && (
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -313,7 +306,7 @@ export default function Portfolio() {
             )}
             {user.website_url && (
               <a href={user.website_url.startsWith('http') ? user.website_url : `https://${user.website_url}`} target="_blank" style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "6px" }}>
-                <Globe size={16} /> WEBSITE
+                <Globe size={16} /> Website
               </a>
             )}
           </div>
@@ -361,17 +354,16 @@ export default function Portfolio() {
           }}>
             <div>
               <label style={{ 
-                fontFamily: "var(--font-mono)", 
                 fontSize: "12px", 
-                letterSpacing: "0.2em",
                 color: "rgba(255, 255, 255, 0.4)",
                 display: "block",
-                marginBottom: "12px"
-              }}>PORTFOLIO</label>
-              <h2 style={{ fontSize: isMobile ? "32px" : "40px", fontWeight: 800, textTransform: "uppercase" }}>Selected Works</h2>
+                marginBottom: "12px",
+                fontWeight: 600
+              }}>Portfolio</label>
+              <h2 style={{ fontSize: isMobile ? "32px" : "40px", fontWeight: 800 }}>Selected works</h2>
             </div>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: isMobile ? "12px" : "14px", color: "rgba(255, 255, 255, 0.6)" }}>
-              {projects.length} PROJECTS
+            <div style={{ fontSize: isMobile ? "12px" : "14px", color: "rgba(255, 255, 255, 0.6)", fontWeight: 600 }}>
+              {projects.length} Projects
             </div>
           </div>
 
@@ -414,14 +406,14 @@ export default function Portfolio() {
                     alignItems: "center",
                     marginBottom: "12px"
                   }}>
-                    <h3 style={{ fontSize: isMobile ? "20px" : "24px", fontWeight: 800, textTransform: "uppercase" }}>{project.title}</h3>
+                    <h3 style={{ fontSize: isMobile ? "20px" : "24px", fontWeight: 800 }}>{project.title}</h3>
                     <span style={{ 
-                      fontSize: "10px", 
-                      fontFamily: "var(--font-mono)", 
+                      fontSize: "11px", 
                       color: "rgba(255, 255, 255, 0.4)",
                       padding: "4px 8px",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
-                      borderRadius: "var(--radius-sm)"
+                      borderRadius: "var(--radius-sm)",
+                      fontWeight: 600
                     }}>
                       0{idx + 1}
                     </span>
@@ -432,12 +424,12 @@ export default function Portfolio() {
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                     {project.technologies_used.map(tech => (
                       <span key={tech} style={{
-                        fontSize: "11px",
-                        fontFamily: "var(--font-mono)",
+                        fontSize: "12px",
                         color: "rgba(255, 255, 255, 0.8)",
                         padding: "4px 0",
-                        marginRight: "16px"
-                      }}>#{tech.toUpperCase()}</span>
+                        marginRight: "16px",
+                        fontWeight: 600
+                      }}>#{tech}</span>
                     ))}
                   </div>
                 </div>
@@ -454,7 +446,7 @@ export default function Portfolio() {
             border: "1px solid rgba(255, 255, 255, 0.05)",
             borderRadius: "var(--radius-sm)"
           }}>
-            <h2 style={{ fontSize: "12px", fontFamily: "var(--font-mono)", letterSpacing: "0.2em", color: "rgba(255, 255, 255, 0.4)", marginBottom: isMobile ? "32px" : "40px", textAlign: "center" }}>TECHNICAL STACK</h2>
+            <h2 style={{ fontSize: "12px", fontWeight: 600, color: "rgba(255, 255, 255, 0.4)", marginBottom: isMobile ? "32px" : "40px", textAlign: "center" }}>Technical stack</h2>
             <div style={{ 
               display: "flex", 
               flexWrap: "wrap", 
@@ -463,9 +455,8 @@ export default function Portfolio() {
             }}>
               {user.skills?.map(skill => (
                 <span key={skill} style={{
-                  fontSize: isMobile ? "18px" : "32px",
+                  fontSize: isMobile ? "20px" : "32px",
                   fontWeight: 800,
-                  textTransform: "uppercase",
                   color: isMobile ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.2)",
                   transition: "all 0.3s ease"
                 }}
@@ -481,7 +472,7 @@ export default function Portfolio() {
 
         {/* Contact Footer */}
         <section style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center", paddingBottom: "60px" }}>
-          <h2 style={{ fontSize: isMobile ? "32px" : "calc(1.5rem + 2vw)", fontWeight: 800, marginBottom: "40px" }}>LET'S BUILD SOMETHING.<br/>TOGETHER.</h2>
+          <h2 style={{ fontSize: isMobile ? "32px" : "calc(1.5rem + 2vw)", fontWeight: 800, marginBottom: "40px" }}>Let's build something.<br/>Together.</h2>
           <div style={{ display: "flex", justifyContent: "center", gap: "40px" }}>
             {user.github_url && <a href={user.github_url} target="_blank" style={{ color: "#fff", opacity: 0.6 }}><GithubLogo size={isMobile ? 28 : 32} /></a>}
             {user.twitter_url && <a href={user.twitter_url} target="_blank" style={{ color: "#fff", opacity: 0.6 }}><TwitterLogo size={isMobile ? 28 : 32} /></a>}
@@ -495,10 +486,10 @@ export default function Portfolio() {
         padding: "40px", 
         borderTop: "1px solid rgba(255, 255, 255, 0.05)",
         color: "rgba(255, 255, 255, 0.3)",
-        fontSize: "11px",
-        fontFamily: "var(--font-mono)"
+        fontSize: "12px",
+        fontWeight: 600
       }}>
-        PUBLISHED VIA CODEOWN © {new Date().getFullYear()}
+        Published via codeown © {new Date().getFullYear()}
       </footer>
 
       {/* Share Modal Integration */}

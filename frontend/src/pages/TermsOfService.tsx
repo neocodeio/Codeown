@@ -15,10 +15,8 @@ export default function TermsOfService() {
                     background: "none",
                     border: "none",
                     color: "var(--text-tertiary)",
-                    fontWeight: 700,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    fontSize: "11px",
+                    fontWeight: 600,
+                    fontSize: "12px",
                     cursor: "pointer",
                     marginBottom: "48px",
                     padding: 0,
@@ -28,13 +26,13 @@ export default function TermsOfService() {
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
             >
                 <CaretLeft size={16} weight="bold" />
-                BACK
+                Back
             </button>
 
-            <h1 style={{ fontSize: "32px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
-                TERMS OF SERVICE
+            <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em" }}>
+                Terms of service
             </h1>
-            <p style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "11px", marginBottom: "48px", textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "var(--font-mono)" }}>
+            <p style={{ color: "var(--text-tertiary)", fontWeight: 600, fontSize: "12px", marginBottom: "48px" }}>
                 Last updated: 2026/01/27
             </p>
 
@@ -44,67 +42,67 @@ export default function TermsOfService() {
                 </p>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>1. USE OF THE WEBSITE</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>1. Use of the website</h2>
                     <p>You agree to use the website only for lawful purposes and in a way that does not violate any applicable laws or regulations.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>2. USER ACCOUNTS</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>2. User accounts</h2>
                     <ul style={{ paddingLeft: "24px", marginTop: "12px", listStyleType: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> You are responsible for maintaining the confidentiality of your account.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> You must provide accurate information when creating an account.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> You are responsible for all activities that occur under your account.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> You are responsible for maintaining the confidentiality of your account.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> You must provide accurate information when creating an account.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> You are responsible for all activities that occur under your account.</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>3. USER CONTENT</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>3. User content</h2>
                     <ul style={{ paddingLeft: "24px", marginTop: "12px", listStyleType: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> You retain ownership of the content you submit.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> You grant us the right to display and manage your content on the platform.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> We reserve the right to remove any content that violates these terms.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> You retain ownership of the content you submit.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> You grant us the right to display and manage your content on the platform.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> We reserve the right to remove any content that violates these terms.</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>4. PROHIBITED ACTIVITIES</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>4. Prohibited activities</h2>
                     <p>Users are not allowed to:</p>
                     <ul style={{ paddingLeft: "24px", marginTop: "12px", listStyleType: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Post illegal, harmful, or abusive content.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Attempt to hack, disrupt, or misuse the website.</li>
-                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>—</span> Impersonate others or provide false information.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Post illegal, harmful, or abusive content.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Attempt to hack, disrupt, or misuse the website.</li>
+                        <li style={{ display: "flex", gap: "12px" }}><span style={{ color: "var(--text-tertiary)" }}>—</span> Impersonate others or provide false information.</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>5. PRO SUBSCRIPTIONS & REFUNDS</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>5. Pro subscriptions & refunds</h2>
                     <p>For our PRO subscriptions, refunds are handled on a case-by-case basis. If you are unsatisfied with the service, please contact us within 7 days of purchase.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>6. LIMITATION OF LIABILITY</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>6. Limitation of liability</h2>
                     <p>We are not responsible for any direct or indirect damages resulting from the use of the website.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>7. TERMINATION</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>7. Termination</h2>
                     <p>We reserve the right to suspend or terminate accounts that violate these Terms of Service.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>8. CHANGES TO THE TERMS</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>8. Changes to the terms</h2>
                     <p>We may update these Terms at any time. Continued use of the website means you accept the updated terms.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>9. GOVERNING LAW</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>9. Governing law</h2>
                     <p>These Terms shall be governed and interpreted according to applicable laws.</p>
                 </section>
 
                 <section>
-                    <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>10. CONTACT</h2>
+                    <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>10. Contact</h2>
                     <p>If you have any questions regarding these Terms, please contact us at:</p>
-                    <a href="mailto:codeown.neocode@outlook.com" style={{ color: "var(--text-primary)", fontWeight: 700, textDecoration: "underline", fontFamily: "var(--font-mono)", fontSize: "14px" }}>codeown.neocode@outlook.com</a>
+                    <a href="mailto:codeown.neocode@outlook.com" style={{ color: "var(--text-primary)", fontWeight: 600, textDecoration: "underline", fontSize: "14px" }}>codeown.neocode@outlook.com</a>
                 </section>
             </div>
         </div>

@@ -137,13 +137,11 @@ export default function Navbar() {
           flexShrink: 0
         }} />
         <span style={{
-          fontSize: "10px",
-          fontFamily: "var(--font-mono)",
+          fontSize: "11px",
           color: "var(--text-secondary)",
-          fontWeight: 700,
-          letterSpacing: "0.05em"
+          fontWeight: 600,
         }}>
-          {activeCount.toString().padStart(2, '0')} BUILDERS ONLINE
+          {activeCount} builders online
         </span>
       </div>
     );
@@ -160,18 +158,15 @@ export default function Navbar() {
       alignItems: "center",
       gap: "14px",
       padding: "10px 16px",
-      borderRadius: "10px",
+      borderRadius: "12px",
       textDecoration: "none",
       color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
       backgroundColor: isActive ? "var(--bg-hover)" : "transparent",
-      fontWeight: 800,
-      fontSize: "13px",
+      fontWeight: 600,
+      fontSize: "14px",
       transition: "all 0.15s ease",
-      marginBottom: "0px",
+      marginBottom: "2px",
       border: isActive ? "0.5px solid var(--border-hairline)" : "0.5px solid transparent",
-      textTransform: "uppercase",
-      letterSpacing: "0.05em",
-      fontFamily: "var(--font-mono)"
     };
   };
   const SidebarContent = () => (
@@ -183,7 +178,7 @@ export default function Navbar() {
             <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "36px", width: "auto" }} />
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <h2 style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
-                <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
+                <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
                   Codeown
                 </span>
               </h2>
@@ -215,7 +210,7 @@ export default function Navbar() {
             }}
             aria-label="Toggle theme"
           >
-            {theme === 'light' ? <Moon size={20} weight="thin" /> : <Sun size={20} weight="thin" />}
+            {theme === 'light' ? <Moon size={20} weight="regular" /> : <Sun size={20} weight="regular" />}
           </button>
         </div>
       </div>
@@ -223,40 +218,39 @@ export default function Navbar() {
       {/* Nav Links */}
       <nav style={{ flex: 1, marginTop: "16px" }} aria-label="Main Navigation">
         <Link to="/" style={linkStyle("/")} aria-label="Home Feed">
-          <House size={20} weight={location.pathname === "/" ? "bold" : "thin"} />
-          FEED
+          <House size={20} weight={location.pathname === "/" ? "bold" : "regular"} />
+          Feed
         </Link>
         <Link to="/search" style={linkStyle("/search")} aria-label="Search and Discover">
-          <MagnifyingGlass size={20} weight={location.pathname === "/search" ? "bold" : "thin"} />
-          SEARCH
+          <MagnifyingGlass size={20} weight={location.pathname === "/search" ? "bold" : "regular"} />
+          Search
         </Link>
         <Link to="/leaderboard" style={linkStyle("/leaderboard")} aria-label="Leaderboard">
-          <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
-          LEADERBOARD
+          <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "regular"} />
+          Leaderboard
         </Link>
         <Link to="/changelog" style={linkStyle("/changelog")} aria-label="View Changelog">
-          <Scroll size={20} weight={location.pathname === "/changelog" ? "bold" : "thin"} />
-          CHANGELOG
+          <Scroll size={20} weight={location.pathname === "/changelog" ? "bold" : "regular"} />
+          Changelog
         </Link>
         {isSignedIn && (
           <>
             <Link to="/messages" style={linkStyle("/messages")} aria-label={`Messages, ${messageUnreadCount} unread`}>
               <div style={{ position: "relative", display: "flex", alignItems: "center", gap: "8px" }}>
-                <ChatCircle size={20} weight={location.pathname === "/messages" ? "bold" : "thin"} />
+                <ChatCircle size={20} weight={location.pathname === "/messages" ? "bold" : "regular"} />
                 {messageUnreadCount > 0 && (
                   <span
                     style={{
                       position: "absolute",
-                      top: -2,
-                      right: -6,
-                      minWidth: "14px",
-                      height: "14px",
-                      padding: "0 2px",
+                      top: -4,
+                      right: -8,
+                      minWidth: "16px",
+                      height: "16px",
+                      padding: "0 4px",
                       backgroundColor: "var(--text-primary)",
                       color: "var(--bg-page)",
-                      borderRadius: "var(--radius-md)",
-                      fontSize: "9px",
-                      fontFamily: "var(--font-mono)",
+                      borderRadius: "100px",
+                      fontSize: "10px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -267,7 +261,7 @@ export default function Navbar() {
                   </span>
                 )}
               </div>
-              CHAT
+              Chat
             </Link>
 
             <Link
@@ -276,18 +270,18 @@ export default function Navbar() {
               aria-label={`Notifications, ${unreadCount} unread`}
             >
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <Bell size={20} weight={location.pathname === "/notifications" ? "bold" : "thin"} />
+                <Bell size={20} weight={location.pathname === "/notifications" ? "bold" : "regular"} />
                 {unreadCount > 0 && (
                   <span style={{
                     position: "absolute",
-                    top: "-2px",
-                    right: "-6px",
+                    top: "-4px",
+                    right: "-8px",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
-                    minWidth: "14px",
-                    height: "14px",
-                    fontSize: "9px",
-                    fontFamily: "var(--font-mono)",
+                    minWidth: "16px",
+                    height: "16px",
+                    fontSize: "10px",
+                    borderRadius: "100px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -297,7 +291,7 @@ export default function Navbar() {
                   </span>
                 )}
               </div>
-              NOTIFICATIONS
+              Notifications
             </Link>
 
             <div
@@ -306,8 +300,8 @@ export default function Navbar() {
               aria-label="Create new post"
               role="button"
             >
-              <Plus size={20} weight="thin" />
-              POST
+              <Plus size={20} weight="regular" />
+              Post
             </div>
 
             <div
@@ -316,8 +310,8 @@ export default function Navbar() {
               aria-label="Launch new project"
               role="button"
             >
-              <Rocket size={20} weight="thin" />
-              LAUNCH
+              <Rocket size={20} weight="regular" />
+              Launch
             </div>
 
             <div
@@ -330,8 +324,8 @@ export default function Navbar() {
               aria-label="View your profile"
               role="link"
             >
-              <UserIcon size={20} weight={location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "bold" : "thin"} />
-              PROFILE
+              <UserIcon size={20} weight={location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "bold" : "regular"} />
+              Profile
             </div>
           </>
         )}
@@ -378,7 +372,7 @@ export default function Navbar() {
                 <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "4px" }}>
                   {profile?.name || user.fullName || "User"}
                 </div>
-                <div style={{ color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
+                <div style={{ color: "var(--text-tertiary)", fontSize: "13px", fontWeight: 400 }}>
                   @{profile?.username || user.username || "user"}
                 </div>
               </div>
@@ -412,14 +406,12 @@ export default function Navbar() {
                         display: "flex", alignItems: "center", gap: "10px",
                         width: "100%", padding: "12px",
                         background: "none", border: "none",
-                        color: "#ef4444", fontWeight: 800, fontSize: "11px",
+                        color: "#ef4444", fontWeight: 600, fontSize: "13px",
                         cursor: "pointer",
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase"
                       }}
                       aria-label="Logout"
                     >
-                      <SignOut size={18} weight="thin" />
+                      <SignOut size={18} weight="regular" />
                       Logout
                     </button>
                   </div>
@@ -464,20 +456,18 @@ export default function Navbar() {
               color: "var(--bg-page)",
               border: "none",
               borderRadius: "var(--radius-sm)",
-              fontWeight: 800,
+              fontWeight: 600,
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
-              fontSize: "12px",
-              fontFamily: "var(--font-mono)",
-              letterSpacing: "0.05em"
+              fontSize: "14px",
             }}
               aria-label="Sign In"
             >
-              <SignIn size={20} weight="thin" />
-              SIGN IN
+              <SignIn size={20} weight="regular" />
+              Sign In
             </button>
           </Link>
         )}
@@ -532,14 +522,12 @@ export default function Navbar() {
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
             <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "24px", width: "auto" }} />
             <span style={{
-              fontSize: "14px",
-              fontWeight: 800,
+              fontSize: "16px",
+              fontWeight: 700,
               color: "var(--text-primary)",
-              letterSpacing: "0.05em",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase"
+              letterSpacing: "-0.02em",
             }}>
-              CODEOWN
+              Codeown
             </span>
           </Link>
         </div>
@@ -609,15 +597,15 @@ export default function Navbar() {
         boxSizing: "border-box"
       }}>
         <Link to="/" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <House size={22} weight={location.pathname === "/" ? "bold" : "thin"} />
+          <House size={22} weight={location.pathname === "/" ? "bold" : "regular"} />
         </Link>
 
         <Link to="/search" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <MagnifyingGlass size={22} weight={location.pathname === "/search" ? "bold" : "thin"} />
+          <MagnifyingGlass size={22} weight={location.pathname === "/search" ? "bold" : "regular"} />
         </Link>
 
         <Link to="/leaderboard" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/leaderboard" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <UsersThree size={22} weight={location.pathname === "/leaderboard" ? "bold" : "thin"} />
+          <UsersThree size={22} weight={location.pathname === "/leaderboard" ? "bold" : "regular"} />
         </Link>
 
         <div
@@ -635,7 +623,7 @@ export default function Navbar() {
         >
           <Plus
             size={24}
-            weight={isCreateMenuOpen ? "bold" : "thin"}
+            weight="regular"
             style={{
               transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)",
               transition: "transform 0.15s"
@@ -661,17 +649,17 @@ export default function Navbar() {
             }}>
               <div
                 onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}
-                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
               >
-                <Plus size={16} weight="thin" />
-                POST
+                <Plus size={18} weight="regular" />
+                Post
               </div>
               <div
                 onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}
-                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
               >
-                <Rocket size={16} weight="thin" />
-                LAUNCH
+                <Rocket size={18} weight="regular" />
+                Launch
               </div>
             </div>
           )}
@@ -690,26 +678,24 @@ export default function Navbar() {
             position: "relative",
           }}
         >
-          <ChatCircle size={22} weight={location.pathname === "/messages" ? "bold" : "thin"} />
+          <ChatCircle size={22} weight={location.pathname === "/messages" ? "bold" : "regular"} />
           {messageUnreadCount > 0 && (
             <span
               style={{
                 position: "absolute",
                 top: "12px",
                 right: "calc(50% - 16px)",
-                minWidth: "14px",
-                height: "14px",
-                padding: "0 2px",
+                minWidth: "16px",
+                height: "16px",
+                padding: "0 4px",
                 backgroundColor: "var(--text-primary)",
                 color: "var(--bg-page)",
-                fontSize: "9px",
-                fontFamily: "var(--font-mono)",
+                fontSize: "10px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontWeight: 800,
-                borderRadius: "var(--radius-xs)",
-                letterSpacing: "0.05em"
+                fontWeight: 700,
+                borderRadius: "100px",
               }}
             >
               {messageUnreadCount > 9 ? "9+" : messageUnreadCount}
@@ -730,7 +716,7 @@ export default function Navbar() {
             position: "relative",
           }}
         >
-          <Bell size={22} weight={location.pathname === "/notifications" ? "bold" : "thin"} />
+          <Bell size={22} weight={location.pathname === "/notifications" ? "bold" : "regular"} />
           {unreadCount > 0 && (
             <span
               style={{
@@ -743,13 +729,11 @@ export default function Navbar() {
                 backgroundColor: "var(--text-primary)",
                 color: "var(--bg-page)",
                 fontSize: "9px",
-                fontFamily: "var(--font-mono)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontWeight: 800,
+                fontWeight: 700,
                 borderRadius: "var(--radius-xs)",
-                letterSpacing: "0.05em"
               }}
             >
               {unreadCount > 9 ? "9+" : unreadCount}

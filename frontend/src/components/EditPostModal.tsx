@@ -434,11 +434,9 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
             >
               {content.length > 0 && (
                 <div style={{
-                  fontSize: "10px",
-                  fontFamily: "var(--font-mono)",
-                  fontWeight: 700,
+                  fontSize: "11px",
+                  fontWeight: 600,
                   color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
-                  letterSpacing: "0.1em"
                 }}>
                   {content.length.toString().padStart(3, '0')}/{charLimit}
                 </div>

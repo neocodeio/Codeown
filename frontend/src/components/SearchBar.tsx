@@ -70,7 +70,7 @@ export default function SearchBar() {
     <div ref={searchRef} style={{ position: "relative", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
       <input
         type="text"
-        placeholder="SEARCH..."
+        placeholder="Search..."
         value={query}
         onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
         onFocus={() => setIsOpen(true)}
@@ -83,7 +83,6 @@ export default function SearchBar() {
           backgroundColor: "#f1f5f9",
           fontSize: "12px",
           fontWeight: 700,
-          letterSpacing: "0.05em",
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && query.trim().length >= 2) {
@@ -113,7 +112,7 @@ export default function SearchBar() {
           {!query && history.length > 0 && (
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 8px 12px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase" }}>Recent Searches</span>
+                <span style={{ fontSize: "12px", fontWeight: 600, color: "#94a3b8" }}>Recent searches</span>
               </div>
               {history.map((h, i) => (
                 <div key={i} onClick={() => handleHistoryClick(h)} style={{
@@ -144,7 +143,7 @@ export default function SearchBar() {
             <>
               {users.length > 0 && (
                 <div style={{ padding: "8px 0" }}>
-                  <span style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase", padding: "0 10px 12px", display: "block" }}>People</span>
+                  <span style={{ fontSize: "12px", fontWeight: 600, color: "#94a3b8", padding: "0 10px 12px", display: "block" }}>People</span>
                   {users.map((u) => (
                     <div key={u.id} onClick={() => handleUserClick(u.id)} style={{
                       display: "flex",
@@ -164,7 +163,7 @@ export default function SearchBar() {
               )}
               {posts.length > 0 && (
                 <div style={{ padding: "8px 0", borderTop: "1px solid #f1f5f9", marginTop: "8px" }}>
-                  <span style={{ fontSize: "11px", fontWeight: 800, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase", padding: "12px 10px", display: "block" }}>Posts</span>
+                  <span style={{ fontSize: "12px", fontWeight: 600, color: "#94a3b8", padding: "12px 10px", display: "block" }}>Posts</span>
                   {posts.map((p) => (
                     <div key={p.id} onClick={() => handlePostClick(p.id)} style={{
                       padding: "12px",

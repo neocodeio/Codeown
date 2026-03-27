@@ -103,9 +103,9 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
     const username = notification.actor?.username;
 
     const nameWrapper = (
-      <span style={{ fontWeight: 800, display: "inline-flex", alignItems: "center", color: "var(--text-primary)", letterSpacing: "-0.01em", textTransform: "uppercase", fontSize: "13px", fontFamily: "var(--font-mono)" }}>
+      <span style={{ fontWeight: 600, display: "inline-flex", alignItems: "center", color: "var(--text-primary)", fontSize: "14px" }}>
         {username ? `@${username}` : actorName}
-        <VerifiedBadge username={username} size="12px" />
+        <VerifiedBadge username={username} size="14px" />
       </span>
     );
 
@@ -179,8 +179,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontWeight: 900,
-                  fontFamily: "var(--font-mono)",
+                  fontWeight: 700,
                 }}
               >
                 {unreadCount > 9 ? "9+" : unreadCount}
@@ -253,9 +252,9 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
               zIndex: 10
             }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: "14px", fontWeight: "800", color: "var(--text-primary)", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>Notifications</h3>
-                <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-tertiary)", fontWeight: "700", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  {unreadCount > 0 ? `${unreadCount.toString().padStart(2, '0')} UNREAD` : "SYSTEMS NOMINAL"}
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "var(--text-primary)" }}>Notifications</h3>
+                <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-tertiary)", fontWeight: "500" }}>
+                  {unreadCount > 0 ? `${unreadCount} unread` : "Everything is up to date"}
                 </p>
               </div>
               <div style={{ display: "flex", gap: "8px" }}>
@@ -271,15 +270,13 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                       color: "var(--text-primary)",
                       padding: "8px 14px",
                       borderRadius: "var(--radius-sm)",
-                      fontSize: "11px",
-                      fontWeight: "800",
+                      fontSize: "12px",
+                      fontWeight: "600",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
                       gap: "6px",
                       transition: "all 0.2s",
-                      fontFamily: "var(--font-mono)",
-                      textTransform: "uppercase"
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.backgroundColor = "var(--bg-hover)";
@@ -295,9 +292,9 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                 {isMobile && (
                   <button
                     onClick={() => setIsOpen(false)}
-                    style={{ background: "var(--text-primary)", border: "none", color: "var(--bg-page)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontWeight: "800", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}
+                    style={{ background: "var(--text-primary)", border: "none", color: "var(--bg-page)", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontWeight: "600", fontSize: "12px" }}
                   >
-                    CLOSE
+                    Close
                   </button>
                 )}
               </div>
@@ -321,9 +318,9 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                   }}>
                     <HugeiconsIcon icon={Notification01Icon} style={{ fontSize: "24px" }} />
                   </div>
-                  <h4 style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>All quiet</h4>
-                  <p style={{ margin: 0, fontSize: "11px", color: "var(--text-tertiary)", lineHeight: "1.5", fontWeight: 700, textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>
-                    NO NEW DATA PACKETS RECEIVED.
+                  <h4 style={{ margin: "0 0 8px", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>All quiet</h4>
+                  <p style={{ margin: 0, fontSize: "13px", color: "var(--text-tertiary)", lineHeight: "1.5", fontWeight: 500 }}>
+                    No new notifications yet.
                   </p>
                 </div>
               ) : (
@@ -383,7 +380,7 @@ export default function NotificationDropdown(props: NotificationDropdownProps) {
                         }}>
                           {getNotificationMessage(notification)}
                         </p>
-                        <p style={{ margin: 0, fontSize: "11px", color: "var(--text-tertiary)", fontWeight: "800", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                        <p style={{ margin: 0, fontSize: "12px", color: "var(--text-tertiary)", fontWeight: "500" }}>
                           {formatCompactRelativeDate(notification.created_at)}
                         </p>
                       </div>

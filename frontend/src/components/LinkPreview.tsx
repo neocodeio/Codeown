@@ -58,7 +58,7 @@ export default function LinkPreview({ url }: { url: string }) {
                 justifyContent: "center",
                 animation: "pulse 1.5s ease-in-out infinite"
             }}>
-                <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: "0.05em" }}>UNFURLING...</div>
+                <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}>Unfurling...</div>
             </div>
         );
     }
@@ -131,7 +131,7 @@ export default function LinkPreview({ url }: { url: string }) {
                             onError={(e) => (e.currentTarget.style.display = "none")}
                         />
                     )}
-                    <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>
+                    <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>
                         {metadata.hostname}
                     </span>
                 </div>

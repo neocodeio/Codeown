@@ -104,13 +104,10 @@ export default function FeedbackButton() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
           <h2 style={{ 
             margin: 0, 
-            fontSize: "14px", 
-            fontWeight: 800, 
+            fontSize: "16px", 
+            fontWeight: 700, 
             color: "var(--text-primary)", 
-            fontFamily: "var(--font-mono)",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em"
-          }}>Submit Feedback</h2>
+          }}>Submit feedback</h2>
           <button
             type="button"
             onClick={handleClose}
@@ -135,18 +132,18 @@ export default function FeedbackButton() {
             <div style={{ width: "48px", height: "48px", background: "var(--bg-hover)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
               <CheckCircle size={24} weight="thin" />
             </div>
-            <h3 style={{ margin: "0 0 8px", color: "var(--text-primary)", fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", fontWeight: 800 }}>Feedback Received</h3>
-            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Analysis complete. Thank you.</p>
+            <h3 style={{ margin: "0 0 8px", color: "var(--text-primary)", fontSize: "14px", fontWeight: 700 }}>Feedback received</h3>
+            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "13px" }}>Thank you for your feedback.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Identity Name</label>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Full name</label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="NAME"
+                placeholder="Name"
                 style={{
                   width: "100%",
                   padding: "12px 16px",
@@ -154,22 +151,20 @@ export default function FeedbackButton() {
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
-                  fontSize: "12px",
+                  fontSize: "13px",
                   outline: "none",
                   boxSizing: "border-box",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase"
                 }}
               />
             </div>
 
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Communication Channel</label>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Email address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="EMAIL ADDRESS"
+                placeholder="Email address"
                 style={{
                   width: "100%",
                   padding: "12px 16px",
@@ -177,22 +172,20 @@ export default function FeedbackButton() {
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
-                  fontSize: "12px",
+                  fontSize: "13px",
                   outline: "none",
                   boxSizing: "border-box",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase"
                 }}
               />
             </div>
 
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Username (Optional)</label>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Username (optional)</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="@UID"
+                placeholder="@username"
                 style={{
                   width: "100%",
                   padding: "12px 16px",
@@ -200,21 +193,19 @@ export default function FeedbackButton() {
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
-                  fontSize: "12px",
+                  fontSize: "13px",
                   outline: "none",
                   boxSizing: "border-box",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase"
                 }}
               />
             </div>
 
             <div style={{ marginBottom: "32px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Report / Message</label>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Message</label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="DESCRIBE OBSERVATIONS..."
+                placeholder="Details of your feedback..."
                 rows={4}
                 style={{
                   width: "100%",
@@ -223,13 +214,11 @@ export default function FeedbackButton() {
                   border: "0.5px solid var(--border-hairline)",
                   backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
-                  fontSize: "12px",
+                  fontSize: "13px",
                   outline: "none",
                   resize: "vertical",
                   minHeight: "100px",
                   boxSizing: "border-box",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase"
                 }}
               />
             </div>
@@ -241,11 +230,9 @@ export default function FeedbackButton() {
                 backgroundColor: "rgba(239, 68, 68, 0.1)",
                 color: "#ef4444",
                 borderRadius: "var(--radius-sm)",
-                fontSize: "10px",
-                fontFamily: "var(--font-mono)",
+                fontSize: "12px",
                 marginBottom: "20px",
                 textAlign: "center",
-                textTransform: "uppercase"
               }}>
                 {error}
               </div>
@@ -261,18 +248,15 @@ export default function FeedbackButton() {
                 color: "var(--bg-page)",
                 border: "none",
                 borderRadius: "var(--radius-sm)",
-                fontWeight: 800,
-                fontSize: "12px",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
+                fontWeight: 600,
+                fontSize: "13px",
                 cursor: sending ? "not-allowed" : "pointer",
                 transition: "all 0.2s",
                 opacity: sending ? 0.7 : 1,
                 boxSizing: "border-box"
               }}
             >
-              {sending ? "TRANSMITTING..." : "SUBMIT FEEDBACK"}
+              {sending ? "Sending..." : "Submit feedback"}
             </button>
           </form>
         )}

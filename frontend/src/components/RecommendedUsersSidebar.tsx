@@ -110,21 +110,21 @@ export default function RecommendedUsersSidebar() {
             <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-                .sidebar-section { padding: 40px 24px; border-bottom: 0.5px solid var(--border-hairline); }
+                .sidebar-section { padding: 32px 24px; border-bottom: 0.5px solid var(--border-hairline); }
                 .sidebar-section:last-child { border-bottom: none; }
-                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-                .sidebar-title { font-size: 11px; font-family: var(--font-mono); font-weight: 800; color: var(--text-tertiary); margin: 0; letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+                .sidebar-title { font-size: 14px; font-weight: 600; color: var(--text-tertiary); margin: 0; display: flex; align-items: center; gap: 8px; }
                 .sidebar-item { transition: opacity 0.15s ease; }
                 .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: var(--radius-sm); animation: skeleton-pulse 2s infinite ease-in-out; }
                 @keyframes skeleton-pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
             `}</style>
 
-            {/* Section 1: WHO TO FOLLOW */}
+            {/* Section 1: Who to follow */}
             <div className="sidebar-section">
                 <div className="sidebar-title-row">
                     <h3 className="sidebar-title">
-                        <Users size={14} weight="thin" />
-                        WHO TO FOLLOW
+                        <Users size={16} weight="regular" />
+                        Who to Follow
                     </h3>
                     {streakCount > 0 && <StreakBadge count={streakCount} />}
                 </div>
@@ -137,7 +137,7 @@ export default function RecommendedUsersSidebar() {
                                 key={user.id}
                                 style={{
                                     display: "flex",
-                                    alignItems: "flex-start",
+                                    alignItems: "center",
                                     justifyContent: "space-between",
                                     gap: "10px"
                                 }}
@@ -148,8 +148,8 @@ export default function RecommendedUsersSidebar() {
                                         to={user.username ? `/${user.username}` : `/user/${user.id}`}
                                         style={{
                                             display: "flex",
-                                            alignItems: "flex-start",
-                                            gap: "10px",
+                                            alignItems: "center",
+                                            gap: "12px",
                                             textDecoration: "none",
                                             flex: 1,
                                             minWidth: 0
@@ -158,7 +158,7 @@ export default function RecommendedUsersSidebar() {
                                         <AvailabilityBadge
                                             avatarUrl={user.avatar_url}
                                             name={user.name || "User"}
-                                            size={48}
+                                            size={44}
                                             isOpenToOpportunities={user.is_pro && user.is_hirable}
                                             isOG={user.is_og}
                                             username={user.username}
@@ -166,28 +166,22 @@ export default function RecommendedUsersSidebar() {
                                         <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
                                                 <span style={{ 
-                                                    fontSize: "14px", 
-                                                    fontWeight: 700, 
+                                                    fontSize: "14.5px", 
+                                                    fontWeight: 600, 
                                                     color: "var(--text-primary)", 
-                                                    letterSpacing: "-0.01em",
                                                     overflow: "hidden",
                                                     textOverflow: "ellipsis",
                                                     whiteSpace: "nowrap"
                                                 }}>
-                                                    {(user.name || "User").split(" ")[0]}
+                                                    {user.name || "User"}
                                                 </span>
                                                 <VerifiedBadge 
                                                     username={user.username} 
                                                     isPro={user.is_pro || user.is_premium} 
                                                     size="14px"
                                                 />
-                                                {user.streak_count > 0 && (
-                                                    <div style={{ flexShrink: 0 }}>
-                                                        <StreakBadge count={user.streak_count} mini />
-                                                    </div>
-                                                )}
                                             </div>
-                                            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, textTransform: "uppercase" }}>
+                                            <span style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 400 }}>
                                                 @{user.username}
                                             </span>
                                         </div>
@@ -196,19 +190,17 @@ export default function RecommendedUsersSidebar() {
                                 <button
                                     onClick={() => handleFollow(user.id, user.isFollowing)}
                                     style={{
-                                        padding: "0 12px",
+                                        padding: "0 14px",
                                         height: "28px",
-                                        borderRadius: "var(--radius-md)",
+                                        borderRadius: "var(--radius-sm)",
                                         backgroundColor: user.isFollowing ? "transparent" : "var(--text-primary)",
                                         color: user.isFollowing ? "var(--text-primary)" : "var(--bg-page)",
-                                        border: "0.5px solid var(--border-hairline)",
-                                        fontSize: "10px",
-                                        fontWeight: 800,
+                                        border: user.isFollowing ? "0.5px solid var(--border-hairline)" : "none",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
                                         cursor: "pointer",
-                                        textTransform: "uppercase",
-                                        letterSpacing: "0.05em",
-                                        fontFamily: "var(--font-mono)",
-                                        flexShrink: 0
+                                        flexShrink: 0,
+                                        transition: "all 0.15s ease"
                                     }}
                                 >
                                     {user.isFollowing ? "Unfollow" : "Follow"}
@@ -219,27 +211,24 @@ export default function RecommendedUsersSidebar() {
                 </div>
             </div>
 
-            {/* Section 2: COMMUNITY SPOTLIGHT */}
+            {/* Section 2: Leaderboard */}
             {!spotlightLoading && spotlight.length > 0 && (
                 <div className="sidebar-section">
                     <div className="sidebar-title-row">
                         <h3 className="sidebar-title">
-                            <Star size={14} weight="thin" />
-                            LEADERBOARD
+                            <Star size={16} weight="regular" />
+                            Leaderboard
                         </h3>
                         <Link
                             to="/leaderboard"
                             style={{
-                                fontSize: "10px",
+                                fontSize: "12px",
                                 color: "var(--text-tertiary)",
                                 textDecoration: "none",
-                                fontWeight: 800,
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em"
+                                fontWeight: 500,
                             }}
                         >
-                            THIS WEEK
+                            This week
                         </Link>
                     </div>
                     <div
@@ -252,7 +241,6 @@ export default function RecommendedUsersSidebar() {
                     >
                         {(() => {
                             const top3 = spotlight.slice(0, 3);
-                            // Render order: #2 (left), #1 (center), #3 (right)
                             const ordered = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3;
                             return ordered.map((user: any, idx: number) => {
                                 const rank = top3.length >= 3 ? (idx === 0 ? 2 : idx === 1 ? 1 : 3) : idx + 1;
@@ -296,16 +284,14 @@ export default function RecommendedUsersSidebar() {
                                                     position: "absolute",
                                                     top: "-4px",
                                                     left: "-4px",
-                                                    padding: "0px 6px",
+                                                    padding: "1px 6px",
                                                     backgroundColor: "var(--text-primary)",
                                                     color: "var(--bg-page)",
                                                     display: "flex",
                                                     alignItems: "center",
                                                     justifyContent: "center",
                                                     fontSize: "10px",
-                                                    fontFamily: "var(--font-mono)",
-                                                    fontWeight: 800,
-                                                    letterSpacing: "0.05em",
+                                                    fontWeight: 700,
                                                     borderRadius: "var(--radius-xs)",
                                                     zIndex: 10,
                                                 }}
@@ -317,12 +303,11 @@ export default function RecommendedUsersSidebar() {
                                         <div
                                             style={{
                                                 fontSize: "13px",
-                                                fontWeight: 700,
+                                                fontWeight: 600,
                                                 color: "var(--text-primary)",
                                                 overflow: "hidden",
                                                 textOverflow: "ellipsis",
                                                 whiteSpace: "nowrap",
-                                                letterSpacing: "-0.01em",
                                                 display: "flex",
                                                 alignItems: "center",
                                                 justifyContent: "center",
@@ -349,19 +334,13 @@ export default function RecommendedUsersSidebar() {
                                         >
                                             <div
                                                 style={{
-                                                    fontSize: "11px",
-                                                    fontWeight: 800,
+                                                    fontSize: "12px",
+                                                    fontWeight: 500,
                                                     color: "var(--text-secondary)",
-                                                    fontFamily: "var(--font-mono)",
                                                 }}
                                             >
-                                                {user.pulse_score}P
+                                                {user.pulse_score}p
                                             </div>
-                                            {user.streak_count > 0 && (
-                                                <div style={{ flexShrink: 0 }}>
-                                                    <StreakBadge count={user.streak_count} mini />
-                                                </div>
-                                            )}
                                         </div>
                                     </Link>
                                 );
@@ -371,32 +350,32 @@ export default function RecommendedUsersSidebar() {
                 </div>
             )}
 
-            {/* Section 3: RECENT LAUNCHES */}
+            {/* Section 3: Recent Launches */}
             {!projectsLoading && projects.length > 0 && (
                 <div className="sidebar-section">
                     <div className="sidebar-title-row">
                         <h3 className="sidebar-title">
-                            <Rocket size={14} weight="thin" />
-                            RECENT LAUNCHES
+                            <Rocket size={16} weight="regular" />
+                            Recent Launches
                         </h3>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         {projects.map(project => (
                             <Link key={project.id} to={`/project/${project.id}`} style={{ display: "flex", gap: "16px", textDecoration: "none" }} className="sidebar-item">
-                                <div style={{ width: "44px", height: "44px", borderRadius: "var(--radius-sm)", overflow: "hidden", backgroundColor: "var(--bg-hover)", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}>
+                                <div style={{ width: "44px", height: "44px", borderRadius: "10px", overflow: "hidden", backgroundColor: "var(--bg-hover)", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}>
                                     {project.cover_image ? (
                                         <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
                                     ) : (
                                         <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: "var(--text-tertiary)" }}>•</div>
                                     )}
                                 </div>
-                                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center", gap: "2px" }}>
-                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "-0.01em" }}>{project.title}</span>
+                                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center", gap: "1px" }}>
+                                    <span style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{project.title}</span>
                                     <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                        <span style={{ fontSize: "10.5px", color: "var(--text-secondary)", fontWeight: 700 }}>By {project.user?.name || "User"}</span>
+                                        <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 400 }}>By {project.user?.name || "User"}</span>
                                         <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="12px" />
                                     </div>
-                                    <span style={{ fontSize: "9px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, marginTop: "2px" }}>{formatRelativeDate(project.created_at).toUpperCase()}</span>
+                                    <span style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "1px" }}>{formatRelativeDate(project.created_at)}</span>
                                 </div>
                             </Link>
                         ))}

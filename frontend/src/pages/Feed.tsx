@@ -143,25 +143,23 @@ export default function Feed() {
                     backgroundColor: "var(--bg-page)"
                 }}>
 
-                    {/* ── Minimal Apple-Style Header ── */}
+                    {/* ── Minimalist Clean Header ── */}
                     <div style={{
                         position: "sticky",
                         top: 0,
                         zIndex: 100,
-                        backgroundColor: "color-mix(in srgb, var(--bg-page), transparent 15%)", // theme-aware glass
-                        backdropFilter: "blur(12px)",
-                        WebkitBackdropFilter: "blur(12px)",
+                        backgroundColor: "var(--bg-page)",
+                        backdropFilter: "blur(20px)",
+                        WebkitBackdropFilter: "blur(20px)",
                         borderBottom: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
                             display: "flex",
                             alignItems: "center",
                             height: "56px",
-                            marginBottom: "-8px",
                             width: "100%",
                             position: "relative",
                             justifyContent: "center",
-                            gap: "8px"
                         }}>
                             {/* "For You" Tab with Dropdown */}
                             <div style={{ position: "relative" }} ref={dropdownRef}>
@@ -171,74 +169,67 @@ export default function Feed() {
                                         else handleFilterChange("all");
                                     }}
                                     style={{
-                                        background: "none", border: "none", padding: "0 24px",
-                                        height: "40px", cursor: "pointer",
-                                        display: "flex", alignItems: "center", gap: "8px",
-                                        fontSize: "12px",
+                                        background: "none", 
+                                        border: "none", 
+                                        padding: "0 20px",
+                                        height: "56px", 
+                                        cursor: "pointer",
+                                        display: "flex", 
+                                        alignItems: "center", 
+                                        gap: "6px",
+                                        fontSize: "15px",
                                         fontWeight: feedFilter === "all" ? "700" : "500",
                                         color: feedFilter === "all" ? "var(--text-primary)" : "var(--text-tertiary)",
-                                        transition: "all 0.15s ease",
-                                        fontFamily: "var(--font-mono)",
-                                        textTransform: "uppercase",
-                                        letterSpacing: "0.1em",
-                                        borderRadius: "var(--radius-sm)"
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        if (feedFilter !== "all") e.currentTarget.style.color = "var(--text-secondary)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        if (feedFilter !== "all") e.currentTarget.style.color = "var(--text-tertiary)";
+                                        transition: "all 0.2s ease",
+                                        position: "relative"
                                     }}
                                 >
-                                    {feedType === "posts" ? "DISCOVER" : "PROJECTS"}
-                                    <CaretDown size={12} weight="bold" style={{
+                                    {feedType === "posts" ? "Posts" : "Projects"}
+                                    <CaretDown size={14} weight="bold" style={{
                                         transition: "transform 0.2s ease",
                                         transform: isDropdownOpen ? "rotate(-180deg)" : "none",
-                                        opacity: feedFilter === "all" ? 1 : 0.5
+                                        opacity: 0.5
                                     }} />
                                     {feedFilter === "all" && (
                                         <div style={{
-                                            position: "absolute", bottom: "0px", left: "20px", right: "20px",
-                                            height: "2px", backgroundColor: "var(--text-primary)",
+                                            position: "absolute", bottom: "0px", left: "0", right: "0",
+                                            height: "3px", backgroundColor: "var(--text-primary)",
+                                            borderRadius: "100px 100px 0 0"
                                         }} />
                                     )}
                                 </button>
 
-                                {/* Dropdown Menu */}
+                                {/* Simple Minimal Dropdown */}
                                 {isDropdownOpen && (
                                     <div style={{
-                                        position: "absolute", top: "100%", left: "25%", transform: "translateX(-50%)",
-                                        marginTop: "4px", backgroundColor: "var(--bg-page)",
+                                        position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)",
+                                        marginTop: "8px", backgroundColor: "var(--bg-card)",
                                         border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-md)",
-                                        boxShadow: "0 4px 20px rgba(0,0,0,0.5)", zIndex: 100,
-                                        width: "180px", padding: "8px", display: "flex", flexDirection: "column", gap: "4px"
+                                        boxShadow: "0 10px 30px rgba(0,0,0,0.1)", zIndex: 100,
+                                        width: "140px", padding: "6px", display: "flex", flexDirection: "column", gap: "2px"
                                     }}>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); updateParams({ type: "posts" }); setIsDropdownOpen(false); }}
                                             style={{
-                                                textAlign: "left", padding: "12px 16px", borderRadius: "var(--radius-sm)",
+                                                textAlign: "left", padding: "10px 12px", borderRadius: "var(--radius-sm)",
                                                 background: "none", border: "none", cursor: "pointer",
-                                                color: feedType === "posts" ? "var(--text-primary)" : "var(--text-secondary)",
-                                                fontSize: "12px", fontWeight: feedType === "posts" ? "800" : "600",
-                                                fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em",
-                                                display: "flex", alignItems: "center", justifyContent: "space-between",
-                                                transition: "all 0.15s ease"
+                                                color: "var(--text-primary)",
+                                                fontSize: "14px", fontWeight: feedType === "posts" ? "600" : "400",
+                                                transition: "background-color 0.2s ease"
                                             }}
                                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                                         >
-                                            All
+                                            Posts
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); updateParams({ type: "projects" }); setIsDropdownOpen(false); }}
                                             style={{
-                                                textAlign: "left", padding: "12px 16px", borderRadius: "var(--radius-sm)",
+                                                textAlign: "left", padding: "10px 12px", borderRadius: "var(--radius-sm)",
                                                 background: "none", border: "none", cursor: "pointer",
-                                                color: feedType === "projects" ? "var(--text-primary)" : "var(--text-secondary)",
-                                                fontSize: "12px", fontWeight: feedType === "projects" ? "800" : "600",
-                                                fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em",
-                                                display: "flex", alignItems: "center", justifyContent: "space-between",
-                                                transition: "all 0.15s ease"
+                                                color: "var(--text-primary)",
+                                                fontSize: "14px", fontWeight: feedType === "projects" ? "600" : "400",
+                                                transition: "background-color 0.2s ease"
                                             }}
                                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
@@ -254,29 +245,24 @@ export default function Feed() {
                                 <button
                                     onClick={() => handleFilterChange("following")}
                                     style={{
-                                        background: "none", border: "none", padding: "0 24px",
-                                        height: "40px", cursor: "pointer",
-                                        fontSize: "12px",
+                                        background: "none", 
+                                        border: "none", 
+                                        padding: "0 20px",
+                                        height: "56px", 
+                                        cursor: "pointer",
+                                        fontSize: "15px",
                                         fontWeight: feedFilter === "following" ? "700" : "500",
                                         color: feedFilter === "following" ? "var(--text-primary)" : "var(--text-tertiary)",
-                                        transition: "all 0.15s ease",
-                                        fontFamily: "var(--font-mono)",
-                                        textTransform: "uppercase",
-                                        letterSpacing: "0.1em",
-                                        borderRadius: "var(--radius-sm)"
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        if (feedFilter !== "following") e.currentTarget.style.color = "var(--text-secondary)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        if (feedFilter !== "following") e.currentTarget.style.color = "var(--text-tertiary)";
+                                        transition: "all 0.2s ease",
+                                        position: "relative"
                                     }}
                                 >
                                     Following
                                     {feedFilter === "following" && (
                                         <div style={{
-                                            position: "absolute", bottom: "0px", left: "20px", right: "20px",
-                                            height: "2px", backgroundColor: "var(--text-primary)",
+                                            position: "absolute", bottom: "0px", left: "0", right: "0",
+                                            height: "3px", backgroundColor: "var(--text-primary)",
+                                            borderRadius: "100px 100px 0 0"
                                         }} />
                                     )}
                                 </button>
@@ -294,28 +280,37 @@ export default function Feed() {
                                 backgroundColor: "var(--bg-page)"
                             }} className="no-scrollbar">
                                 {["All", "React", "TypeScript", "Next.js", "Node.js", "Python", "Tailwind"].map(tag => {
-                                    const isSelected = (tag === "All" && !selectedTag) || selectedTag === tag;
-                                    return (
-                                        <button
-                                            key={tag}
-                                            onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
-                                            aria-label={`Filter by ${tag}`}
-                                            style={{
-                                                flexShrink: 0, padding: "8px 16px", borderRadius: "var(--radius-sm)",
-                                                border: "none",
-                                                backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-hover)",
-                                                color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
-                                                fontSize: "11px", fontWeight: "700", cursor: "pointer",
-                                                transition: "all 0.15s ease",
-                                                fontFamily: "var(--font-mono)",
-                                                textTransform: "uppercase",
-                                                letterSpacing: "0.05em"
-                                            }}
-                                        >
-                                            {tag}
-                                        </button>
-                                    );
-                                })}
+                                     const isSelected = (tag === "All" && !selectedTag) || selectedTag === tag;
+                                     return (
+                                         <button
+                                             key={tag}
+                                             onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
+                                             aria-label={`Filter by ${tag}`}
+                                             style={{
+                                                 flexShrink: 0, padding: "8px 16px", borderRadius: "100px",
+                                                 border: isSelected ? "1px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
+                                                 backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
+                                                 color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
+                                                 fontSize: "13px", fontWeight: "500", cursor: "pointer",
+                                                 transition: "all 0.15s ease",
+                                             }}
+                                             onMouseEnter={(e) => {
+                                                 if (!isSelected) {
+                                                     e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                                     e.currentTarget.style.color = "var(--text-primary)";
+                                                 }
+                                             }}
+                                             onMouseLeave={(e) => {
+                                                 if (!isSelected) {
+                                                     e.currentTarget.style.backgroundColor = "transparent";
+                                                     e.currentTarget.style.color = "var(--text-secondary)";
+                                                 }
+                                             }}
+                                         >
+                                             {tag}
+                                         </button>
+                                     );
+                                 })}
                             </div>
                         )}
                     </div>
@@ -338,9 +333,9 @@ export default function Feed() {
                             </div>
                         ) : currentItems.length === 0 && !loading ? (
                             <div style={{ padding: "120px 24px", textAlign: "center" }}>
-                                <div style={{ marginBottom: "20px", fontSize: "32px", opacity: 0.1 }}>🧊</div>
-                                <h3 style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "8px", letterSpacing: "0.05em", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Quiet in here</h3>
-                                <p style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>Be the first to share something amazing with the community.</p>
+                                <div style={{ marginBottom: "20px", fontSize: "32px", opacity: 0.2 }}>🧊</div>
+                                <h3 style={{ fontSize: "16px", fontWeight: "600", color: "var(--text-primary)", marginBottom: "8px" }}>Quiet in here</h3>
+                                <p style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>Be the first to share something amazing with the community.</p>
                             </div>
                         ) : (
                             <>
@@ -362,10 +357,10 @@ export default function Feed() {
                                         </div>
                                     ))
                                 }
-                                {loading && <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontWeight: "600", fontFamily: "var(--font-mono)" }}>LOADING...</div>}
+                                {loading && <div style={{ padding: "60px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px", fontWeight: "400" }}>Loading more content...</div>}
                                 <style>{`
                                 @keyframes slideDownFadeIn {
-                                    from { opacity: 0; transform: translateY(-10px); }
+                                    from { opacity: 0; transform: translateY(-5px); }
                                     to { opacity: 1; transform: translateY(0); }
                                 }
                             `}</style>

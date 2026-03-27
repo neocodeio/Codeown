@@ -49,15 +49,12 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                             padding: "6px 10px",
                             border: "0.5px solid var(--border-hairline)",
                             borderRadius: "var(--radius-sm)",
-                            fontSize: "10px",
-                            fontFamily: "var(--font-mono)",
-                            fontWeight: 500,
+                            fontSize: "11px",
+                            fontWeight: 600,
                             whiteSpace: "nowrap",
                             zIndex: 1000,
                             pointerEvents: "none",
                             animation: "tooltipFadeIn 0.15s ease",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em"
                         }}
                     >
                         <style>{`

@@ -61,7 +61,7 @@ export default function Analytics() {
         return (
             <div style={{ padding: "80px 24px", textAlign: "center", maxWidth: "400px", margin: "0 auto", backgroundColor: "var(--bg-page)", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                 <ChartBar size={48} weight="thin" color="var(--border-hairline)" style={{ marginBottom: "24px" }} />
-                <h1 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "16px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Analytics Access</h1>
+                <h1 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "16px" }}>Analytics Access</h1>
                 <p style={{ color: "var(--text-tertiary)", marginBottom: "32px", fontSize: "14px", lineHeight: 1.6 }}>{error}</p>
                 <button
                     onClick={() => navigate("/profile")}
@@ -71,9 +71,7 @@ export default function Analytics() {
                         color: "var(--bg-page)",
                         border: "none",
                         borderRadius: "var(--radius-sm)",
-                        fontWeight: 700,
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase",
+                        fontWeight: 600,
                         fontSize: "12px",
                         cursor: "pointer"
                     }}
@@ -98,10 +96,8 @@ export default function Analytics() {
                         background: "none",
                         border: "none",
                         color: "var(--text-tertiary)",
-                        fontWeight: 700,
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase",
-                        fontSize: "11px",
+                        fontWeight: 600,
+                        fontSize: "12px",
                         cursor: "pointer",
                         marginBottom: "32px",
                         padding: 0,
@@ -111,12 +107,12 @@ export default function Analytics() {
                     onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
                 >
                     <CaretLeft size={16} weight="bold" />
-                    BACK
+                    Back
                 </button>
 
                 <div style={{ marginBottom: "56px" }}>
-                    <h1 style={{ fontSize: "32px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em", textTransform: "uppercase" }}>
-                        ANALYTICS
+                    <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em" }}>
+                        Analytics
                     </h1>
                     <p style={{ color: "var(--text-secondary)", fontSize: "15px", maxWidth: "500px", lineHeight: 1.6 }}>
                         Track your performance and see who's interested in your work.
@@ -150,10 +146,10 @@ export default function Analytics() {
                         }}>
                             <Eye size={18} weight="thin" />
                         </div>
-                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", fontFamily: "var(--font-mono)" }}>
+                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", letterSpacing: "0.05em", marginBottom: "8px" }}>
                             Project Views
                         </p>
-                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>
+                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>
                             {stats?.summary?.total_project_views || 0}
                         </h2>
                     </div>
@@ -177,10 +173,10 @@ export default function Analytics() {
                         }}>
                             <FileText size={18} weight="thin" />
                         </div>
-                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", fontFamily: "var(--font-mono)" }}>
+                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", letterSpacing: "0.05em", marginBottom: "8px" }}>
                             Post Views
                         </p>
-                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>
+                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>
                             {stats?.summary?.total_post_views || 0}
                         </h2>
                     </div>
@@ -204,10 +200,10 @@ export default function Analytics() {
                         }}>
                             <MouseSimple size={18} weight="thin" />
                         </div>
-                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", fontFamily: "var(--font-mono)" }}>
+                        <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", letterSpacing: "0.05em", marginBottom: "8px" }}>
                             Opp. Clicks
                         </p>
-                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>
+                        <h2 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>
                             {stats?.summary?.total_opportunity_clicks || 0}
                         </h2>
                     </div>
@@ -215,9 +211,9 @@ export default function Analytics() {
 
                 {/* Recent Activities */}
                 <div>
-                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "32px", display: "flex", alignItems: "center", gap: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "32px", display: "flex", alignItems: "center", gap: "12px" }}>
                         <Clock size={18} weight="thin" />
-                        RECENT ACTIVITY
+                        Recent activity
                     </h3>
 
                     {stats?.recent_events?.length === 0 ? (
@@ -228,7 +224,7 @@ export default function Analytics() {
                             borderRadius: "var(--radius-sm)",
                             border: "0.5px dashed var(--border-hairline)"
                         }}>
-                            <p style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>No recent activity to show.</p>
+                            <p style={{ color: "var(--text-tertiary)", fontWeight: 600, fontSize: "12px" }}>No recent activity to show.</p>
                         </div>
                     ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -276,12 +272,12 @@ export default function Analytics() {
                                                 ) : event.event_type === "project_created" ? (
                                                     <>You launched <span style={{ textDecoration: "underline" }}>{event.project?.title || "a new project"}</span></>
                                                 ) : event.event_type === "opportunity_click" ? (
-                                                    <>Clicked your <span style={{ fontWeight: 800 }}>"OPEN TO OPPORTUNITIES"</span></>
+                                                    <>Clicked your <span style={{ fontWeight: 700 }}>"Open to opportunities"</span></>
                                                 ) : (
                                                     <>Interacted with your profile</>
                                                 )}
                                             </p>
-                                            <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", fontWeight: 700 }}>
+                                            <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>
                                                 {formatRelativeDate(event.created_at)}
                                             </p>
                                         </div>
@@ -305,12 +301,12 @@ export default function Analytics() {
                                                 alt={event.actor.name}
                                                 style={{ width: "20px", height: "20px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}
                                             />
-                                            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{event.actor.username}</span>
+                                            <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-primary)" }}>{event.actor.username}</span>
                                         </div>
                                     ) : (
                                         <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", opacity: 0.5 }}>
                                             <User size={14} weight="thin" />
-                                            <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Anonymous</span>
+                                            <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Anonymous</span>
                                         </div>
                                     )}
                                 </div>

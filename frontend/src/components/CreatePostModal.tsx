@@ -238,8 +238,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
             height: 36px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            borderRadius: "var(--radius-sm)",
+            justifyContent: center;
+            border-radius: var(--radius-sm);
             border: 0.5px solid transparent;
             background: transparent;
             color: var(--text-secondary);
@@ -253,17 +253,15 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           }
           .tab-btn {
             padding: 10px 20px;
-            font-size: 11px;
-            font-weight: 700;
-            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--font-main);
             border: none;
             background: transparent;
             color: var(--text-tertiary);
             cursor: pointer;
             border-bottom: 2px solid transparent;
             transition: all 0.15s;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
           }
           .tab-btn.active {
             color: var(--text-primary);
@@ -284,31 +282,30 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
         `}</style>
 
         {/* Header */}
-        <div className="modal-header" style={{ padding: "32px 40px", borderBottom: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Create Post</h2>
+        <div className="modal-header" style={{ padding: "24px 32px", borderBottom: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>Create post</h2>
           <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "24px", color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "4px" }}>&times;</button>
         </div>
 
         {/* Body */}
-        <div className="modal-body" style={{ padding: "40px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
+        <div className="modal-body" style={{ padding: "32px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "28px" }}>
           {/* Title Input */}
           <input
             type="text"
             className="title-input"
-            placeholder="POST TITLE..."
+            placeholder="Post title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             style={{
               width: "100%",
               fontSize: "24px",
-              fontWeight: 800,
+              fontWeight: 700,
               border: "none",
               outline: "none",
               padding: "0",
               color: "var(--text-primary)",
               backgroundColor: "transparent",
-              letterSpacing: "-0.04em",
-              textTransform: "uppercase"
+              letterSpacing: "-0.02em",
             }}
           />
 
@@ -325,14 +322,14 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           {activeTab === "write" ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {/* Toolbar */}
-               <div className="toolbar-container" style={{ display: "flex", gap: "6px", padding: "6px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", flexWrap: "wrap", alignItems: "center" }}>
+               <div className="toolbar-container" style={{ display: "flex", gap: "4px", padding: "6px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", flexWrap: "wrap", alignItems: "center" }}>
                 <button className="toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><FontAwesomeIcon icon={faBold} /></button>
                 <button className="toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><FontAwesomeIcon icon={faItalic} /></button>
                 <button className="toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><FontAwesomeIcon icon={faHeading} /></button>
-                <div className="divider" style={{ width: "1px", height: "20px", backgroundColor: "var(--border-hairline)", margin: "0 6px" }} />
+                <div className="divider" style={{ width: "1px", height: "18px", backgroundColor: "var(--border-hairline)", margin: "0 4px" }} />
                 <button className="toolbar-btn" title="Quote" onClick={() => insertBlockMarkdown("> ")}><FontAwesomeIcon icon={faQuoteRight} /></button>
                 <button className="toolbar-btn" title="Bullet List" onClick={() => insertBlockMarkdown("- ")}><FontAwesomeIcon icon={faListUl} /></button>
-                <div className="divider" style={{ width: "1px", height: "20px", backgroundColor: "var(--border-hairline)", margin: "0 6px" }} />
+                <div className="divider" style={{ width: "1px", height: "18px", backgroundColor: "var(--border-hairline)", margin: "0 4px" }} />
                 <button className="toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><FontAwesomeIcon icon={faLink} /></button>
                 <button className="toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><FontAwesomeIcon icon={faCode} /></button>
                 <button className="toolbar-btn" title="Code Block" onClick={() => insertMarkdown("\n```javascript\n", "\n```\n")}><FontAwesomeIcon icon={faCode} style={{ fontSize: "12px" }} /></button>
@@ -344,15 +341,15 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 value={content}
                 onChange={setContent}
                 placeholder="Share your thoughts, code, or ideas... (Markdown supported)"
-                minHeight="200px"
+                minHeight="240px"
               />
             </div>
           ) : (
-             <div style={{ minHeight: "200px", padding: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", overflowY: "auto" }}>
+             <div style={{ minHeight: "240px", padding: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", overflowY: "auto" }}>
               {content ? (
                 <ContentRenderer content={content} />
               ) : (
-                <div style={{ color: "var(--text-tertiary)", textAlign: "center", marginTop: "40px", fontSize: "12px", fontFamily: "var(--font-mono)", fontWeight: 700 }}>VOID...</div>
+                <div style={{ color: "var(--text-tertiary)", textAlign: "center", marginTop: "80px", fontSize: "13px", fontWeight: 500 }}>No preview available</div>
               )}
             </div>
           )}
@@ -372,26 +369,24 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           </div>
 
           {/* Tags Section */}
-          <div className="tags-section" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "4px" }}>
-            <label className="tags-label" style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Tags / Hashtags (Optional)</label>
+          <div className="tags-section" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <label className="tags-label" style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-tertiary)" }}>Tags / Hashtags (Optional)</label>
 
-             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {tags.map((tag, idx) => (
                 <span
                   key={idx}
                   style={{
                     backgroundColor: "var(--bg-hover)",
                     color: "var(--text-primary)",
-                    padding: "6px 14px",
-                    borderRadius: "var(--radius-sm)",
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    fontFamily: "var(--font-mono)",
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    fontSize: "12px",
+                    fontWeight: 600,
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
                     border: "0.5px solid var(--border-hairline)",
-                    textTransform: "uppercase"
                   }}
                 >
                   #{tag}
@@ -408,7 +403,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
              <input
               type="text"
               className="tag-input"
-              placeholder="ADD TAGS... (ENTER OR COMMA)"
+              placeholder="Add tags... (Enter or comma)"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) => {
@@ -423,58 +418,53 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               }}
               style={{
                 width: "100%",
-                padding: "14px 18px",
+                padding: "12px 14px",
                 borderRadius: "var(--radius-sm)",
                 border: "0.5px solid var(--border-hairline)",
-                fontSize: "11px",
-                fontFamily: "var(--font-mono)",
-                fontWeight: 700,
+                fontSize: "14px",
                 outline: "none",
                 backgroundColor: "var(--bg-hover)",
                 color: "var(--text-primary)",
-                letterSpacing: "0.05em"
+                transition: "all 0.15s ease",
               }}
+              onFocus={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
+              onBlur={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
             />
-             <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.05em" }}>
-              {tags.length.toString().padStart(2, '0')}/10 TAGS. USE #HASHTAG TO AUTO-ADD.
+             <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+              {tags.length}/10 tags. Use #hashtag in content to auto-add.
             </div>
           </div>
         </div>
 
         {/* Footer */}
-         <div className="modal-footer" style={{ padding: "32px 40px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "16px" }}>
+         <div className="modal-footer" style={{ padding: "24px 32px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "16px" }}>
           {content.length > 0 && (
             <div style={{
-              fontSize: "10px",
-              fontFamily: "var(--font-mono)",
-              fontWeight: 700,
+              fontSize: "11px",
+              fontWeight: 600,
               color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
-              letterSpacing: "0.1em"
             }}>
-              {content.length.toString().padStart(3, '0')}/{charLimit}
+              {content.length}/{charLimit}
             </div>
           )}
-          <button onClick={onClose} style={{ padding: "12px 24px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", background: "transparent", color: "var(--text-tertiary)", fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.1em" }}>CANCEL</button>
+          <button onClick={onClose} style={{ padding: "10px 20px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", background: "transparent", color: "var(--text-secondary)", fontWeight: 600, fontSize: "13px", cursor: "pointer", transition: "all 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}>Cancel</button>
           <button
             onClick={submit}
             disabled={!content.trim() || isSubmitting || content.length > charLimit}
             style={{
-              padding: "12px 32px",
+              padding: "10px 24px",
               borderRadius: "var(--radius-sm)",
               border: "none",
               background: "var(--text-primary)",
               color: "var(--bg-page)",
-              fontWeight: 800,
-              fontSize: "11px",
-              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              fontSize: "13px",
               cursor: (!content.trim() || isSubmitting || content.length > charLimit) ? "not-allowed" : "pointer",
               opacity: (!content.trim() || isSubmitting || content.length > charLimit) ? 0.3 : 1,
-              textTransform: "uppercase",
-              letterSpacing: "0.15em",
               transition: "all 0.15s ease"
             }}
           >
-            {isSubmitting ? "POSTING..." : "POST IT"}
+            {isSubmitting ? "Posting..." : "Post"}
           </button>
         </div>
       </div>

@@ -42,22 +42,22 @@ export default function SignUpPage() {
                 elements: {
                   rootBox: "mx-auto",
                   card: "shadow-none border-0 bg-transparent p-0 m-0",
-                  headerTitle: "text-2xl font-bold tracking-tight text-black uppercase",
+                  headerTitle: "text-2xl font-bold tracking-tight text-black",
                   headerSubtitle: "text-gray-500 mt-2 text-sm",
-                  socialButtonsBlockButton: "border-[0.5px] border-gray-200 hover:bg-gray-50 transition-all rounded-[2px]",
-                  formButtonPrimary: "bg-black hover:bg-zinc-800 transition-all rounded-[2px] py-3 text-xs uppercase font-bold tracking-widest",
+                  socialButtonsBlockButton: "border-[0.5px] border-gray-200 hover:bg-gray-50 transition-all rounded-[var(--radius-sm)]",
+                  formButtonPrimary: "bg-black hover:bg-zinc-800 transition-all rounded-[var(--radius-sm)] py-3 text-sm font-semibold",
                   footerActionLink: "text-black hover:underline",
-                  formFieldInput: "rounded-[2px] border-[0.5px] border-gray-200 focus:border-black transition-all",
+                  formFieldInput: "rounded-[var(--radius-sm)] border-[0.5px] border-gray-200 focus:border-black transition-all",
                   dividerLine: "bg-gray-100",
-                  dividerText: "text-gray-400 text-[10px] uppercase font-bold",
+                  dividerText: "text-gray-400 text-[11px] font-bold",
                   socialButtonsBlockButtonText: "text-sm font-medium",
-                  formFieldLabel: "text-[11px] uppercase font-bold text-gray-400 mb-1"
+                  formFieldLabel: "text-[12px] font-semibold text-gray-500 mb-1"
                 }
               }}
           />
         ) : (
           <div style={{ textAlign: "center" }}>
-            <h1 style={{ marginBottom: "16px", fontSize: "24px", fontWeight: 700, color: "var(--text-primary)", textTransform: "uppercase" }}>Sign Up</h1>
+            <h1 style={{ marginBottom: "16px", fontSize: "24px", fontWeight: 700, color: "var(--text-primary)" }}>Sign Up</h1>
             <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>Please configure Clerk to continue.</p>
           </div>
         )}

@@ -167,8 +167,8 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
         }
       `}</style>
       {loading ? (
-        <div style={{ padding: "32px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)" }}>
-          LOADING...
+        <div style={{ padding: "32px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px" }}>
+          Loading...
         </div>
       ) : user ? (
         <>
@@ -195,7 +195,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                   </span>
                   <VerifiedBadge username={user.username} isPro={user.is_pro} size="12px" />
                 </div>
-                <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+                <span style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>
                   @{user.username || "user"}
                 </span>
               </div>
@@ -226,11 +226,11 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
               borderTop: "0.5px solid var(--border-hairline)",
             }}
           >
-            <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 800, letterSpacing: "0.05em" }}>
-              <span style={{ color: "var(--text-primary)", fontWeight: 800 }}>{followerCount ?? user.follower_count ?? 0}</span> FOLLOWERS
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>
+              <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{followerCount ?? user.follower_count ?? 0}</span> followers
             </span>
-            <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 800, letterSpacing: "0.05em" }}>
-              <span style={{ color: "var(--text-primary)", fontWeight: 800 }}>{followingCount ?? user.following_count ?? 0}</span> FOLLOWING
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>
+              <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{followingCount ?? user.following_count ?? 0}</span> following
             </span>
           </div>
           {!isOwnProfile && (
@@ -243,25 +243,22 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                   padding: "10px 16px",
                   borderRadius: "var(--radius-sm)",
                   border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
-                  fontSize: "11px",
-                  fontWeight: 800,
-                  fontFamily: "var(--font-mono)",
+                  fontSize: "12px",
+                  fontWeight: 600,
                   cursor: followLoading ? "wait" : "pointer",
                   backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
                   color: isFollowing ? "var(--text-primary)" : "var(--bg-page)",
                   transition: "all 0.15s ease",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
                 }}
               >
-                {followLoading ? "..." : isFollowing ? "FOLLOWING" : "FOLLOW"}
+                {followLoading ? "..." : isFollowing ? "Following" : "Follow"}
               </button>
             </div>
           )}
         </>
       ) : (
-        <div style={{ padding: "32px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)" }}>
-          USER NOT FOUND
+        <div style={{ padding: "32px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px" }}>
+          User not found
         </div>
       )}
     </div>

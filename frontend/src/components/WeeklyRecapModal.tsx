@@ -53,20 +53,15 @@ export default function WeeklyRecapModal({ isOpen, onClose, stats }: WeeklyRecap
                     <h2 style={{
                         color: "var(--text-primary)",
                         margin: 0,
-                        fontSize: "14px",
-                        fontWeight: 800,
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em"
-                    }}>Weekly Recap</h2>
+                        fontSize: "18px",
+                        fontWeight: 700,
+                    }}>Weekly recap</h2>
                     <p style={{
                         color: "var(--text-tertiary)",
                         margin: "8px 0 0 0",
-                        fontSize: "12px",
+                        fontSize: "14px",
                         fontWeight: 600,
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase"
-                    }}>Performance Analysis • Week Overview</p>
+                    }}>Performance analysis • Week overview</p>
 
                     <button
                         onClick={onClose}
@@ -103,8 +98,8 @@ export default function WeeklyRecapModal({ isOpen, onClose, stats }: WeeklyRecap
                                 <Users size={18} weight="thin" />
                             </div>
                             <div>
-                                <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>+{stats.new_followers.toString().padStart(2, '0')}</div>
-                                <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", marginTop: "4px" }}>New Followers</div>
+                                <div style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>+{stats.new_followers}</div>
+                                <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginTop: "4px" }}>New followers</div>
                             </div>
                         </div>
 
@@ -120,8 +115,8 @@ export default function WeeklyRecapModal({ isOpen, onClose, stats }: WeeklyRecap
                                 <Eye size={18} weight="thin" />
                             </div>
                             <div>
-                                <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{(stats.project_views + stats.post_views).toString().padStart(2, '0')}</div>
-                                <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", marginTop: "4px" }}>Total Views</div>
+                                <div style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>{stats.project_views + stats.post_views}</div>
+                                <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginTop: "4px" }}>Total views</div>
                             </div>
                         </div>
 
@@ -137,8 +132,8 @@ export default function WeeklyRecapModal({ isOpen, onClose, stats }: WeeklyRecap
                                 <Heart size={18} weight="thin" />
                             </div>
                             <div>
-                                <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{stats.new_likes.toString().padStart(2, '0')}</div>
-                                <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", marginTop: "4px" }}>Likes Received</div>
+                                <div style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>{stats.new_likes}</div>
+                                <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginTop: "4px" }}>Likes received</div>
                             </div>
                         </div>
 
@@ -154,8 +149,8 @@ export default function WeeklyRecapModal({ isOpen, onClose, stats }: WeeklyRecap
                                 <Fire size={18} weight="bold" />
                             </div>
                             <div>
-                                <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{stats.streak.toString().padStart(2, '0')}D</div>
-                                <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-primary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", marginTop: "4px" }}>Current Streak</div>
+                                <div style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)" }}>{stats.streak}D</div>
+                                <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-primary)", marginTop: "4px" }}>Current streak</div>
                             </div>
                         </div>
                     </div>
@@ -171,8 +166,8 @@ export default function WeeklyRecapModal({ isOpen, onClose, stats }: WeeklyRecap
                         gap: "16px",
                     }}>
                         <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", fontFamily: "var(--font-mono)", marginBottom: "4px" }}>Next Milestone</div>
-                            <div style={{ fontSize: "11px", color: "var(--text-secondary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Launch a new project to accelerate these metrics.</div>
+                            <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>Next milestone</div>
+                            <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>Launch a new project to accelerate these metrics.</div>
                         </div>
                         <Rocket size={24} weight="thin" style={{ color: "var(--text-tertiary)" }} />
                     </div>
@@ -187,12 +182,9 @@ export default function WeeklyRecapModal({ isOpen, onClose, stats }: WeeklyRecap
                                 color: "var(--text-primary)",
                                 border: "0.5px solid var(--border-hairline)",
                                 borderRadius: "var(--radius-sm)",
-                                fontSize: "12px",
-                                fontWeight: 800,
+                                fontSize: "13px",
+                                fontWeight: 600,
                                 cursor: "pointer",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em"
                             }}
                             className="btn-weekly-close"
                         >
@@ -210,12 +202,9 @@ export default function WeeklyRecapModal({ isOpen, onClose, stats }: WeeklyRecap
                                 color: "var(--bg-page)",
                                 border: "none",
                                 borderRadius: "var(--radius-sm)",
-                                fontSize: "12px",
-                                fontWeight: 800,
+                                fontSize: "13px",
+                                fontWeight: 600,
                                 cursor: "pointer",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em"
                             }}
                             onClick={() => {
                                 alert("Stats copied to clipboard! Share your progress.");

@@ -76,12 +76,9 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
           <h2
             style={{
               margin: 0,
-              fontSize: "14px",
-              fontWeight: 800,
+              fontSize: "18px",
+              fontWeight: 700,
               color: "var(--text-primary)",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
             }}
           >
             {title}
@@ -107,10 +104,9 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
         </div>
 
         <p style={{ 
-          fontSize: "12px", 
+          fontSize: "14px", 
           color: "var(--text-secondary)", 
           margin: "0 0 16px 0",
-          fontFamily: "var(--font-mono)",
           lineHeight: "1.5"
         }}>
           Copy the unique link below to share this content.
@@ -121,14 +117,13 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
             borderRadius: "var(--radius-sm)",
             border: "0.5px solid var(--border-hairline)",
             padding: "12px",
-            fontSize: "12px",
+            fontSize: "13px",
             color: "var(--text-primary)",
             backgroundColor: "var(--bg-input)",
             marginBottom: "20px",
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            fontFamily: "var(--font-mono)",
           }}
           title={url}
         >
@@ -145,16 +140,13 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
               border: "0.5px solid var(--border-hairline)",
               backgroundColor: "var(--text-primary)",
               color: "var(--bg-page)",
-              fontSize: "12px",
-              fontWeight: 800,
+              fontSize: "13px",
+              fontWeight: 600,
               cursor: "pointer",
               transition: "all 0.15s ease",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em"
             }}
           >
-            {copied ? "COPIED TO CLIPBOARD" : "COPY LINK"}
+            {copied ? "Copied!" : "Copy link"}
           </button>
 
           <button
@@ -166,17 +158,14 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
               border: "0.5px solid var(--border-hairline)",
               backgroundColor: "transparent",
               color: "var(--text-primary)",
-              fontSize: "12px",
-              fontWeight: 800,
+              fontSize: "13px",
+              fontWeight: 600,
               cursor: "pointer",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
               transition: "all 0.1s ease"
             }}
             className="cancel-button"
           >
-            CANCEL
+            Cancel
           </button>
         </div>
         <style>{`

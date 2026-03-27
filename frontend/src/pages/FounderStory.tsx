@@ -28,10 +28,8 @@ export default function FounderStory() {
                         background: "none",
                         border: "none",
                         color: "var(--text-tertiary)",
-                        fontWeight: 700,
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase",
-                        fontSize: "11px",
+                        fontWeight: 600,
+                        fontSize: "12px",
                         cursor: "pointer",
                         marginBottom: "48px",
                         padding: 0,
@@ -41,7 +39,7 @@ export default function FounderStory() {
                     onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
                 >
                     <CaretLeft size={16} weight="bold" />
-                    BACK
+                    Back
                 </button>
                 <header style={{ marginBottom: "56px" }}>
                     <h1 style={{
@@ -50,10 +48,9 @@ export default function FounderStory() {
                         color: "var(--text-primary)",
                         marginBottom: "16px",
                         lineHeight: "1.2",
-                        textTransform: "uppercase",
                         letterSpacing: "-0.02em"
                     }}>
-                        Building Codeown at 15
+                        Building codeown at 15
                     </h1>
                     <p style={{
                         fontSize: "15px",
@@ -79,11 +76,9 @@ export default function FounderStory() {
                             fontWeight: 700,
                             color: "var(--text-primary)",
                             marginBottom: "24px",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.1em"
+                            letterSpacing: "0.05em"
                         }}>
-                            THE BEGINNING
+                            The beginning
                         </h2>
                         <p style={{ marginBottom: "20px" }}>
                             I was 15 years old when I started building Codeown. Like many developers, I had been coding for years, sharing my projects on various platforms, but something always felt missing. I wanted a space that wasn't just about code—it was about the people behind it, their stories, their growth, and their journey.
@@ -100,11 +95,9 @@ export default function FounderStory() {
                             fontWeight: 700,
                             color: "var(--text-primary)",
                             marginBottom: "32px",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.1em"
+                            letterSpacing: "0.05em"
                         }}>
-                            THE OBSTACLES
+                            The obstacles
                         </h2>
 
                         <div style={{ marginBottom: "32px" }}>
@@ -113,9 +106,8 @@ export default function FounderStory() {
                                 fontWeight: 700,
                                 color: "var(--text-primary)",
                                 marginBottom: "12px",
-                                textTransform: "uppercase"
                             }}>
-                                Being Taken Seriously
+                                Being taken seriously
                             </h3>
                             <p style={{ marginBottom: "20px" }}>
                                 The hardest obstacle was being 15. When you're young, people doubt you. They see your age before they see your vision. I had to prove myself with every line of code, every feature I shipped, every user who joined the platform. I learned that actions speak louder than age.
@@ -128,9 +120,8 @@ export default function FounderStory() {
                                 fontWeight: 700,
                                 color: "var(--text-primary)",
                                 marginBottom: "12px",
-                                textTransform: "uppercase"
                             }}>
-                                Learning Advanced Technologies
+                                Learning advanced technologies
                             </h3>
                             <p style={{ marginBottom: "20px" }}>
                                 Building Codeown required technologies I had never used before—React, Node.js, PostgreSQL, real-time features, authentication systems. I spent countless nights reading documentation, watching tutorials, debugging errors that seemed impossible to solve. Every bug was a lesson. Every error message was a teacher.
@@ -143,9 +134,8 @@ export default function FounderStory() {
                                 fontWeight: 700,
                                 color: "var(--text-primary)",
                                 marginBottom: "12px",
-                                textTransform: "uppercase"
                             }}>
-                                Balancing School and Building
+                                Balancing school and building
                             </h3>
                             <p style={{ marginBottom: "20px" }}>
                                 Being in school while building a startup was brutal. I coded before school, during lunch breaks, and late into the night. I sacrificed sleep, social events, and free time. My parents worried. My teachers questioned. But I knew what I was building mattered.
@@ -158,9 +148,8 @@ export default function FounderStory() {
                                 fontWeight: 700,
                                 color: "var(--text-primary)",
                                 marginBottom: "12px",
-                                textTransform: "uppercase"
                             }}>
-                                Technical Challenges
+                                Technical challenges
                             </h3>
                             <p style={{ marginBottom: "20px" }}>
                                 Building a real-time messaging system, handling users, optimizing database queries, implementing authentication securely, making everything responsive—these weren't easy problems. I learned by doing, by failing, by iterating. I rewrote the codebase three times before getting it right.
@@ -173,9 +162,8 @@ export default function FounderStory() {
                                 fontWeight: 700,
                                 color: "var(--text-primary)",
                                 marginBottom: "12px",
-                                textTransform: "uppercase"
                             }}>
-                                Finding the First Users
+                                Finding the first users
                             </h3>
                             <p style={{ marginBottom: "20px" }}>
                                 Getting people to join was terrifying. What if they didn't like it? What if it broke? What if no one cared? I shared Codeown everywhere—on Reddit, Twitter, Discord servers. The first user felt like a miracle. Every new user motivated me to build better features.
@@ -190,11 +178,9 @@ export default function FounderStory() {
                             fontWeight: 700,
                             color: "var(--text-primary)",
                             marginBottom: "32px",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.1em"
+                            letterSpacing: "0.05em"
                         }}>
-                            WHAT I LEARNED
+                            What i learned
                         </h2>
                         <ul style={{
                             listStyle: "none",
@@ -221,7 +207,7 @@ export default function FounderStory() {
                                     gap: "12px",
                                     alignItems: "flex-start"
                                 }}>
-                                    <span style={{ color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>{idx + 1}.</span>
+                                    <span style={{ color: "var(--text-tertiary)", fontWeight: 700 }}>{idx + 1}.</span>
                                     {lesson}
                                 </li>
                             ))}
@@ -235,11 +221,9 @@ export default function FounderStory() {
                             fontWeight: 700,
                             color: "var(--text-primary)",
                             marginBottom: "32px",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.1em"
+                            letterSpacing: "0.05em"
                         }}>
-                            THE VISION FORWARD
+                            The vision forward
                         </h2>
                         <p style={{ marginBottom: "20px" }}>
                             Codeown is more than a platform—it's a movement. A place where developers of all ages, backgrounds, and skill levels can showcase their work, connect with others, and grow together. Where your code speaks louder than your credentials. Where your projects matter more than your job title.
@@ -262,14 +246,12 @@ export default function FounderStory() {
                         marginBottom: "48px"
                     }}>
                         <p style={{
-                            fontSize: "11px",
+                            fontSize: "12px",
                             fontWeight: 700,
                             marginBottom: "16px",
                             color: "var(--text-primary)",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase"
                         }}>
-                            TO EVERY YOUNG BUILDER:
+                            To every young builder:
                         </p>
                         <p style={{
                             fontSize: "15px",
@@ -288,11 +270,9 @@ export default function FounderStory() {
                         borderTop: "0.5px solid var(--border-hairline)"
                     }}>
                         <p style={{
-                            fontSize: "12px",
+                            fontSize: "13px",
                             color: "var(--text-tertiary)",
                             marginBottom: "24px",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase"
                         }}>
                             Want to be part of the journey?
                         </p>
@@ -304,13 +284,11 @@ export default function FounderStory() {
                                 backgroundColor: "var(--text-primary)",
                                 color: "var(--bg-page)",
                                 borderRadius: "var(--radius-sm)",
-                                fontSize: "12px",
-                                fontWeight: 700,
+                                fontSize: "13px",
+                                fontWeight: 600,
                                 textDecoration: "none",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
                                 transition: "all 0.15s ease",
-                                letterSpacing: "0.05em"
+                                letterSpacing: "0.02em"
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.opacity = "0.9";
@@ -319,7 +297,7 @@ export default function FounderStory() {
                                 e.currentTarget.style.opacity = "1";
                             }}
                         >
-                            Join Codeown Today
+                            Join codeown today
                         </Link>
                         <div style={{ marginTop: "32px", display: "flex", justifyContent: "center" }}>
                             <a
@@ -331,13 +309,11 @@ export default function FounderStory() {
                                     alignItems: "center",
                                     gap: "8px",
                                     color: "var(--text-tertiary)",
-                                    fontSize: "11px",
-                                    fontWeight: 700,
+                                    fontSize: "12px",
+                                    fontWeight: 600,
                                     textDecoration: "none",
-                                    fontFamily: "var(--font-mono)",
-                                    textTransform: "uppercase",
                                     transition: "all 0.15s ease",
-                                    letterSpacing: "0.05em",
+                                    letterSpacing: "0.02em",
                                     padding: "4px 8px",
                                     border: "0.5px solid var(--border-hairline)",
                                     borderRadius: "var(--radius-xs)",

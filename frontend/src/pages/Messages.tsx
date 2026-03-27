@@ -689,18 +689,15 @@ export default function Messages() {
             >
               <h1
                 style={{
-                  fontSize: "14px",
+                  fontSize: "16px",
                   fontWeight: 700,
                   color: "var(--text-primary)",
                   margin: 0,
-                  letterSpacing: "0.05em",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase",
                   flex: 1,
                   minWidth: 0
                 }}
               >
-                MESSAGES
+                Messages
               </h1>
               <button
                 onClick={() => setIsNewMessageModalOpen(true)}
@@ -752,7 +749,7 @@ export default function Messages() {
               />
               <input
                 type="text"
-                placeholder="SEARCH..."
+                placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -760,11 +757,9 @@ export default function Messages() {
                   background: "none",
                   flex: 1,
                   outline: "none",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  fontFamily: "var(--font-mono)",
+                  fontSize: "14px",
+                  fontWeight: 500,
                   color: "var(--text-primary)",
-                  textTransform: "uppercase"
                 }}
               />
             </div>
@@ -826,8 +821,8 @@ export default function Messages() {
                   />
                 </div>
                 <div>
-                  <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "14px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
-                    NO CONVERSATIONS
+                  <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "14px" }}>
+                    No conversations
                   </p>
                   <p style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "6px" }}>
                     Start a conversation with someone from the community.
@@ -840,16 +835,14 @@ export default function Messages() {
                     borderRadius: "var(--radius-sm)",
                     fontSize: "12px",
                     fontWeight: 600,
-                    fontFamily: "var(--font-mono)",
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
                     border: "none",
                     cursor: "pointer",
                     transition: "all 0.15s ease",
-                    textTransform: "uppercase"
                   }}
                 >
-                  NEW MESSAGE
+                  New message
                 </button>
               </div>
             ) : null}
@@ -914,7 +907,7 @@ export default function Messages() {
                       <VerifiedBadge username={convo.partner.username} size="13px" />
                     </div>
                     {convo.last_message && (
-                      <span style={{ fontSize: "10px", color: "var(--text-tertiary)", flexShrink: 0, fontFamily: "var(--font-mono)" }}>
+                      <span style={{ fontSize: "11px", color: "var(--text-tertiary)", flexShrink: 0 }}>
                         {new Date(convo.last_message.created_at).toLocaleDateString() ===
                           new Date().toLocaleDateString()
                           ? new Date(convo.last_message.created_at).toLocaleTimeString([], {
@@ -944,11 +937,11 @@ export default function Messages() {
                   >
                     <div style={{ display: "flex", gap: "6px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", alignItems: "center" }}>
                       {typingUsers[convo.partner.id] ? (
-                        <span style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: "10px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}>typing...</span>
+                        <span style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: "12px", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}>Typing...</span>
                       ) : convo.last_message ? (
                         <>
                           {convo.last_message.sender_id === currentUser?.id && (
-                            <span style={{ color: "var(--text-tertiary)", fontWeight: 700, fontSize: "11px", fontFamily: "var(--font-mono)" }}>YOU:</span>
+                            <span style={{ color: "var(--text-tertiary)", fontWeight: 600, fontSize: "12px" }}>You:</span>
                           )}
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
                             {convo.last_message.content || (
@@ -1051,20 +1044,18 @@ export default function Messages() {
                       style={{
                         fontWeight: 700,
                         cursor: "pointer",
-                        fontSize: "14px",
+                        fontSize: "16px",
                         color: "var(--text-primary)",
                         display: "flex",
                         alignItems: "center",
                         gap: "6px",
-                        fontFamily: "var(--font-mono)",
-                        letterSpacing: "0.05em"
                       }}
                       onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
                     >
-                      {activeConvo.partner.name.toUpperCase()}
+                      {activeConvo.partner.name}
                       <VerifiedBadge username={activeConvo.partner.username} size="14px" />
                     </div>
-                    <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+                    <div style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
                       @{activeConvo.partner.username || "user"}
                     </div>
                   </div>
@@ -1136,10 +1127,10 @@ export default function Messages() {
                       />
                     </div>
                     <div>
-                      <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
-                        NO MESSAGES
+                      <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "14px" }}>
+                        No messages
                       </p>
-                      <p style={{ fontSize: "11px", color: "var(--text-tertiary)", marginTop: "6px" }}>
+                      <p style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "6px" }}>
                         Say hello and start the conversation
                       </p>
                     </div>
@@ -1164,14 +1155,11 @@ export default function Messages() {
                       {/* Name Label - Only show for received messages */}
                       {!isMine && (
                         <span style={{
-                          fontSize: "10px",
-                          fontWeight: 800,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
+                          fontSize: "11px",
+                          fontWeight: 600,
                           color: "var(--text-secondary)",
                           marginBottom: "4px",
                           padding: "0 4px",
-                          fontFamily: "var(--font-mono)"
                         }}>
                           {activeConvo.partner.name}
                         </span>
@@ -1197,8 +1185,8 @@ export default function Messages() {
                             el?.scrollIntoView({ behavior: "smooth", block: "center" });
                           }}
                         >
-                          <div style={{ fontWeight: 800, fontSize: "9px", textTransform: "uppercase", marginBottom: "2px" }}>
-                            {msg.reply_to.sender_id === currentUser?.id ? "YOU" : activeConvo.partner.name}
+                          <div style={{ fontWeight: 700, fontSize: "10px", marginBottom: "2px" }}>
+                            {msg.reply_to.sender_id === currentUser?.id ? "You" : activeConvo.partner.name}
                           </div>
                           <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {msg.reply_to.content || (
@@ -1261,13 +1249,10 @@ export default function Messages() {
                               {deletingMessageId === msg.id ? (
                                 <div style={{ padding: "12px 14px" }}>
                                   <div style={{
-                                    fontSize: "11px",
-                                    fontWeight: 700,
-                                    fontFamily: "var(--font-mono)",
+                                    fontSize: "13px",
+                                    fontWeight: 600,
                                     color: "var(--text-primary)",
                                     marginBottom: "10px",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.03em"
                                   }}>
                                     Delete for everyone?
                                   </div>
@@ -1281,11 +1266,9 @@ export default function Messages() {
                                         borderRadius: "var(--radius-sm)",
                                         background: "transparent",
                                         color: "var(--text-primary)",
-                                        fontSize: "11px",
-                                        fontWeight: 700,
-                                        fontFamily: "var(--font-mono)",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
                                         cursor: "pointer",
-                                        textTransform: "uppercase",
                                         transition: "background 0.15s"
                                       }}
                                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
@@ -1303,10 +1286,8 @@ export default function Messages() {
                                         backgroundColor: "#ef4444",
                                         color: "#fff",
                                         fontSize: "11px",
-                                        fontWeight: 700,
-                                        fontFamily: "var(--font-mono)",
+                                        fontWeight: 600,
                                         cursor: "pointer",
-                                        textTransform: "uppercase",
                                         transition: "opacity 0.15s"
                                       }}
                                       onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
@@ -1328,11 +1309,8 @@ export default function Messages() {
                                     alignItems: "center",
                                     gap: "10px",
                                     cursor: "pointer",
-                                    fontSize: "12px",
-                                    fontWeight: 700,
-                                    fontFamily: "var(--font-mono)",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.03em",
+                                    fontSize: "13px",
+                                    fontWeight: 600,
                                     color: "#ef4444",
                                     transition: "background 0.15s ease"
                                   }}
@@ -1340,7 +1318,7 @@ export default function Messages() {
                                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                                 >
                                   <Trash size={15} weight="bold" />
-                                  Delete Message
+                                  Delete message
                                 </button>
                               )}
                             </div>
@@ -1469,7 +1447,7 @@ export default function Messages() {
                               />
                             )}
                             <div style={{ padding: "12px" }}>
-                              <div style={{ fontSize: "9px", fontWeight: 800, fontFamily: "var(--font-mono)", color: isMine ? "inherit" : "var(--text-tertiary)", opacity: isMine ? 0.6 : 1, textTransform: "uppercase", marginBottom: "4px" }}>
+                              <div style={{ fontSize: "10px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-tertiary)", opacity: isMine ? 0.7 : 1, marginBottom: "4px" }}>
                                 Shared Post • {msg.shared_post.user?.name || "User"}
                               </div>
                               <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
@@ -1506,7 +1484,7 @@ export default function Messages() {
                               />
                             )}
                             <div style={{ padding: "12px" }}>
-                              <div style={{ fontSize: "9px", fontWeight: 800, fontFamily: "var(--font-mono)", color: isMine ? "inherit" : "var(--text-tertiary)", opacity: isMine ? 0.6 : 1, textTransform: "uppercase", marginBottom: "4px" }}>
+                              <div style={{ fontSize: "10px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-tertiary)", opacity: isMine ? 0.7 : 1, marginBottom: "4px" }}>
                                 Shared Project • {msg.shared_project.user?.name || "User"}
                               </div>
                               <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
@@ -1523,10 +1501,9 @@ export default function Messages() {
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
                         <span
                           style={{
-                            fontSize: "10px",
+                            fontSize: "11px",
                             color: "var(--text-tertiary)",
                             fontWeight: 500,
-                            fontFamily: "var(--font-mono)"
                           }}
                         >
                           {new Date(msg.created_at).toLocaleTimeString([], {
@@ -1543,11 +1520,9 @@ export default function Messages() {
                             border: "none",
                             padding: 0,
                             color: "var(--text-tertiary)",
-                            fontSize: "10px",
-                            fontWeight: 700,
+                            fontSize: "12px",
+                            fontWeight: 600,
                             cursor: "pointer",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase"
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                           onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
@@ -1567,7 +1542,7 @@ export default function Messages() {
                           }
                           return idx === lastMyMsgIdx;
                         })() && (
-                            <span style={{ fontSize: "10px", color: "var(--text-primary)", fontWeight: 700, marginLeft: "4px", fontFamily: "var(--font-mono)" }}>SEEN</span>
+                            <span style={{ fontSize: "11px", color: "var(--text-primary)", fontWeight: 700, marginLeft: "4px" }}>Seen</span>
                           )}
                       </div>
 
@@ -1701,7 +1676,7 @@ export default function Messages() {
                     }}
                   >
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", color: "var(--text-secondary)", marginBottom: "4px" }}>
+                      <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "4px" }}>
                         Replying to {replyingTo.sender_id === currentUser?.id ? "yourself" : activeConvo.partner.name}
                       </div>
                       <div style={{ fontSize: "12px", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -2066,16 +2041,13 @@ export default function Messages() {
               <div>
                 <h3
                   style={{
-                    fontSize: "14px",
+                    fontSize: "18px",
                     fontWeight: 700,
                     color: "var(--text-primary)",
                     margin: 0,
-                    letterSpacing: "0.05em",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
                   }}
                 >
-                  YOUR MESSAGES
+                  Your messages
                 </h3>
                 <p
                   style={{

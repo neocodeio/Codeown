@@ -22,7 +22,6 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const [images, setImages] = useState<string[]>([]);
     const [isPoll, setIsPoll] = useState(false);
     const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
-    const [isFocused, setIsFocused] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { getToken, isLoaded } = useClerkAuth();
@@ -186,7 +185,6 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             setImages([]);
             setIsPoll(false);
             setPollOptions(["", ""]);
-            setIsFocused(false); // Remove blur/focus on success
             onCreated();
         } catch (error) {
             console.error("Failed to post:", error);
@@ -200,60 +198,26 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
     return (
         <div 
-            onFocus={() => setIsFocused(true)}
-            onBlur={(e) => {
-                if (!e.currentTarget.contains(e.relatedTarget)) {
-                    setIsFocused(false);
-                }
-            }}
             style={{
-                padding: isMobile ? "24px 16px" : "24px 40px",
-                borderBottom: "0.7px solid var(--border-hairline)",
+                padding: isMobile ? "20px 16px" : "24px 40px",
+                borderBottom: "0.5px solid var(--border-hairline)",
                 backgroundColor: "var(--bg-page)",
                 display: "flex",
-                gap: "24px",
+                gap: "20px",
                 position: "relative",
-                zIndex: isFocused ? 1001 : 1,
-                transition: "all 0.4s cubic-bezier(0.2, 0, 0, 1)"
             }}
         >
-            {/* Immersive Glassmorphism Backdrop Blur when focused */}
-            {isFocused && (
-                <div 
-                    onClick={() => setIsFocused(false)}
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: "rgba(0,0,0,0.01)",
-                        backdropFilter: "blur(6px)",
-                        zIndex: -1,
-                        animation: "fadeInBlur 0.4s ease-out",
-                        pointerEvents: "auto"
-                    }} 
-                />
-            )}
-            
-            <style>{`
-                @keyframes fadeInBlur {
-                    from { opacity: 0; backdrop-filter: blur(0px); }
-                    to { opacity: 1; backdrop-filter: blur(6px); }
-                }
-            `}</style>
-
             <AvailabilityBadge
                 avatarUrl={avatarUrl}
                 name={user?.fullName || user?.username || "User"}
-                size={36}
+                size={40}
                 username={user?.username}
                 isOG={isOG}
             />
             <div style={{ flex: 1 }}>
-                <div style={{ marginBottom: "20px" }}>
+                <div style={{ marginBottom: "16px" }}>
                     {isPoll && (
-                        <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase", marginBottom: "8px", letterSpacing: "0.05em" }}>
+                        <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>
                             Question
                         </div>
                     )}
@@ -274,24 +238,20 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 <div style={{ 
                                     display: "flex", 
                                     flexWrap: "wrap", 
-                                    gap: "8px", 
+                                    gap: "6px", 
                                     marginTop: "12px",
-                                    padding: "4px 0"
                                 }}>
                                     {[...new Set(hashtags)].map((tag, i) => (
                                         <span 
                                             key={i} 
                                             style={{ 
-                                                fontSize: "11px", 
-                                                fontWeight: 700, 
+                                                fontSize: "12px", 
+                                                fontWeight: 500, 
                                                 color: "var(--text-primary)", 
                                                 backgroundColor: "var(--bg-hover)",
                                                 padding: "4px 10px",
-                                                borderRadius: "var(--radius-sm)",
-                                                fontFamily: "var(--font-mono)",
+                                                borderRadius: "100px",
                                                 border: "0.5px solid var(--border-hairline)",
-                                                textTransform: "uppercase",
-                                                letterSpacing: "0.05em"
                                             }}
                                         >
                                             {tag}
@@ -320,7 +280,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         gridTemplateColumns: images.length === 1 ? "1fr" : "1fr 1fr",
                         gap: "10px",
                         marginBottom: "16px",
-                        borderRadius: "var(--radius-sm)",
+                        borderRadius: "var(--radius-md)",
                         overflow: "hidden",
                         border: "0.5px solid var(--border-hairline)"
                     }}>
@@ -336,34 +296,30 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     style={{
                                         position: "absolute",
                                         top: "8px",
-                                        right: "9px",
-                                        backgroundColor: "#000",
-                                        border: "1px solid rgba(255,255,255,0.2)",
-                                        borderRadius: "var(--radius-sm)",
-                                        width: "22px",
-                                        height: "22px",
+                                        right: "8px",
+                                        backgroundColor: "rgba(0,0,0,0.6)",
+                                        backdropFilter: "blur(4px)",
+                                        border: "none",
+                                        borderRadius: "100px",
+                                        width: "28px",
+                                        height: "28px",
                                         cursor: "pointer",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
                                         zIndex: 100,
-                                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                                        color: "#fff",
                                         padding: 0,
-                                        transition: "all 0.15s var(--ease-smooth)",
+                                        transition: "all 0.2s ease",
                                     }}
                                     onMouseEnter={(e) => {
-                                        e.currentTarget.style.backgroundColor = "#333";
-                                        e.currentTarget.style.transform = "scale(1.05)";
+                                        e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.8)";
                                     }}
                                     onMouseLeave={(e) => {
-                                        e.currentTarget.style.backgroundColor = "#000";
-                                        e.currentTarget.style.transform = "scale(1)";
+                                        e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.6)";
                                     }}
                                 >
-                                    <div style={{ position: "relative", width: "10px", height: "10px" }}>
-                                        <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.5px", backgroundColor: "#fff", transform: "rotate(45deg)", borderRadius: "var(--radius-xs)" }} />
-                                        <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.5px", backgroundColor: "#fff", transform: "rotate(-45deg)", borderRadius: "var(--radius-xs)" }} />
-                                    </div>
+                                    ✕
                                 </button>
                             </div>
                         ))}
@@ -374,44 +330,27 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     <div style={{
                         marginTop: "12px",
                         marginBottom: "20px",
-                        padding: "20px",
+                        padding: "16px",
                         backgroundColor: "var(--bg-hover)",
                         border: "0.5px solid var(--border-hairline)",
-                        borderRadius: "var(--radius-md)",
+                        borderRadius: "var(--radius-sm)",
                         display: "flex",
                         flexDirection: "column",
-                        gap: "12px"
+                        gap: "8px"
                     }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                            <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Poll Options</span>
+                            <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)" }}>Poll options</span>
                             <button 
                                 onClick={() => setIsPoll(false)}
                                 style={{ 
                                     background: "none", 
-                                    border: "0.5px solid var(--border-hairline)", 
+                                    border: "none", 
                                     color: "var(--text-tertiary)", 
                                     cursor: "pointer", 
-                                    display: "flex", 
-                                    alignItems: "center", 
-                                    padding: "6px",
-                                    borderRadius: "var(--radius-sm)",
-                                    transition: "all 0.15s var(--ease-smooth)",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = "var(--bg-page)";
-                                    e.currentTarget.style.color = "var(--text-primary)";
-                                    e.currentTarget.style.borderColor = "var(--text-primary)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = "transparent";
-                                    e.currentTarget.style.color = "var(--text-tertiary)";
-                                    e.currentTarget.style.borderColor = "var(--border-hairline)";
+                                    fontSize: "12px"
                                 }}
                             >
-                                <div style={{ position: "relative", width: "10px", height: "10px" }}>
-                                    <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.2px", backgroundColor: "currentColor", transform: "rotate(45deg)", borderRadius: "var(--radius-xs)" }} />
-                                    <div style={{ position: "absolute", top: "50%", left: "0", width: "100%", height: "1.2px", backgroundColor: "currentColor", transform: "rotate(-45deg)", borderRadius: "var(--radius-xs)" }} />
-                                </div>
+                                Remove
                             </button>
                         </div>
                         {pollOptions.map((option, index) => (
@@ -427,8 +366,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         backgroundColor: "var(--bg-page)",
                                         border: "0.5px solid var(--border-hairline)",
                                         color: "var(--text-primary)",
-                                        fontSize: "13px",
-                                        fontFamily: "var(--font-mono)",
+                                        fontSize: "14px",
                                         outline: "none",
                                         borderRadius: "var(--radius-sm)"
                                     }}
@@ -438,7 +376,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         onClick={() => removePollOption(index)}
                                         style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}
                                     >
-                                        <MinusCircle size={20} weight="thin" />
+                                        <MinusCircle size={20} />
                                     </button>
                                 )}
                             </div>
@@ -450,20 +388,18 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     alignSelf: "flex-start",
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: "8px",
+                                    gap: "6px",
                                     background: "none",
                                     border: "none",
                                     color: "var(--text-primary)",
-                                    fontSize: "11px",
-                                    fontWeight: 700,
+                                    fontSize: "12px",
+                                    fontWeight: 600,
                                     cursor: "pointer",
                                     marginTop: "4px",
-                                    fontFamily: "var(--font-mono)",
-                                    textTransform: "uppercase"
                                 }}
                             >
-                                <PlusCircle size={18} weight="thin" />
-                                Add Option
+                                <PlusCircle size={18} />
+                                Add option
                             </button>
                         )}
                     </div>
@@ -473,10 +409,10 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    paddingTop: "20px",
+                    paddingTop: "16px",
                     borderTop: (content.length > 0 || images.length > 0 || isPoll) ? "0.5px solid var(--border-hairline)" : "none"
                 }}>
-                    <div style={{ display: "flex", gap: "10px", color: "var(--text-tertiary)" }}>
+                    <div style={{ display: "flex", gap: "8px", color: "var(--text-tertiary)" }}>
                         <input
                             type="file"
                             multiple
@@ -493,13 +429,19 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 color: "inherit",
                                 cursor: "pointer",
                                 padding: "8px",
-                                borderRadius: "var(--radius-sm)",
-                                transition: "all 0.15s"
+                                borderRadius: "100px",
+                                transition: "all 0.2s"
                             }}
-                            onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
-                            onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.color = "var(--text-primary)";
+                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.color = "var(--text-tertiary)";
+                                e.currentTarget.style.backgroundColor = "transparent";
+                            }}
                         >
-                            <ImageIcon size={22} weight="thin" />
+                            <ImageIcon size={22} weight="regular" />
                         </button>
                         <button
                             onClick={() => setIsPoll(!isPoll)}
@@ -509,47 +451,49 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 color: isPoll ? "var(--text-primary)" : "inherit",
                                 cursor: "pointer",
                                 padding: "8px",
-                                borderRadius: "var(--radius-sm)",
-                                transition: "all 0.15s"
+                                borderRadius: "100px",
+                                transition: "all 0.2s"
                             }}
-                            onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
-                            onMouseLeave={e => !isPoll && (e.currentTarget.style.color = "var(--text-tertiary)")}
-                            title="Add Poll"
+                            onMouseEnter={e => {
+                                e.currentTarget.style.color = "var(--text-primary)";
+                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                            }}
+                            onMouseLeave={e => {
+                                if (!isPoll) {
+                                    e.currentTarget.style.color = "var(--text-tertiary)";
+                                    e.currentTarget.style.backgroundColor = "transparent";
+                                }
+                            }}
                         >
-                            <ListPlus size={22} weight="thin" />
+                            <ListPlus size={22} weight="regular" />
                         </button>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                         <span style={{
-                            fontSize: "11px",
-                            fontFamily: "var(--font-mono)",
+                            fontSize: "12px",
                             color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
-                            opacity: content.length > 0 ? 1 : 0,
+                            opacity: content.length > (charLimit * 0.8) ? 1 : 0,
                             transition: "opacity 0.2s",
-                            fontWeight: 700,
-                            letterSpacing: "0.05em"
+                            fontWeight: 500,
                         }}>
-                            {content.length.toString().padStart(3, '0')} / {charLimit}
+                            {charLimit - content.length}
                         </span>
                         <button
                             onClick={handleSubmit}
                             disabled={(!content.trim() && images.length === 0 && !isPoll) || isSubmitting || content.length > charLimit}
                             style={{
-                                padding: "8px 24px",
-                                backgroundColor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "transparent",
+                                padding: "8px 20px",
+                                backgroundColor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "var(--bg-hover)",
                                 color: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
-                                border: "1.50px solid var(--border-hairline)",
-                                borderRadius: "10px",
-                                fontWeight: 800,
-                                fontSize: "11px",
-                                fontFamily: "var(--font-mono)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.1em",
+                                border: "none",
+                                borderRadius: "100px",
+                                fontWeight: "600",
+                                fontSize: "14px",
                                 cursor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
-                                transition: "all 0.15s ease"
+                                transition: "all 0.2s ease"
                             }}
                         >
-                            {isSubmitting ? "WAIT..." : "POST"}
+                            {isSubmitting ? "Posting..." : "Post"}
                         </button>
                     </div>
                 </div>

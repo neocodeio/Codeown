@@ -56,9 +56,8 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
             </div>
             <span style={{
                 fontSize: "11px",
-                fontWeight: 800,
+                fontWeight: 700,
                 color: isActive ? "var(--text-primary)" : "var(--text-tertiary)",
-                fontFamily: "var(--font-mono)"
             }}>
                 {count}
             </span>

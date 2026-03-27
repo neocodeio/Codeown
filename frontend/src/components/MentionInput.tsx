@@ -276,12 +276,12 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
           }}
         >
           {loading ? (
-            <div style={{ padding: "16px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.05em" }}>
-              LOADING...
+            <div style={{ padding: "16px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 600 }}>
+              Loading...
             </div>
           ) : suggestions.length === 0 ? (
-            <div style={{ padding: "16px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "11px", fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.05em" }}>
-              {searchQuery ? "NO USERS FOUND" : "TYPE TO SEARCH"}
+            <div style={{ padding: "16px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 600 }}>
+              {searchQuery ? "No users found" : "Type to search"}
             </div>
           ) : (
             suggestions.map((user, index) => (
@@ -309,10 +309,9 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "18px",
+                     fontSize: "18px",
                     fontWeight: 800,
                     color: "var(--text-tertiary)",
-                    fontFamily: "var(--font-mono)"
                   }}>
                     #
                   </div>
@@ -340,23 +339,21 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {trigger === "#" ? user.username?.toUpperCase() : user.name}
+                    {trigger === "#" ? user.username : user.name}
                   </div>
                    {user.username && trigger === "@" && (
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        color: "var(--text-tertiary)",
-                        fontFamily: "var(--font-mono)",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        textTransform: "uppercase",
-                        fontWeight: 700
-                      }}
-                    >
-                      @{user.username}
-                    </div>
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          color: "var(--text-tertiary)",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          fontWeight: 500
+                        }}
+                      >
+                        @{user.username}
+                      </div>
                   )}
                 </div>
               </div>

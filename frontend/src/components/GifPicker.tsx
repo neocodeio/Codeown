@@ -100,7 +100,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
           <MagnifyingGlass size={16} color="var(--text-tertiary)" />
           <input
             type="text"
-            placeholder="SEARCH GIFS..."
+            placeholder="Search GIFs..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
@@ -109,11 +109,9 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
               background: "none",
               border: "none",
               outline: "none",
-              fontSize: "12px",
+              fontSize: "13px",
               color: "var(--text-primary)",
-              fontWeight: 800,
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase"
+              fontWeight: 500,
             }}
           />
         </div>
@@ -205,13 +203,11 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
         alignItems: "center"
       }}>
         <span style={{ 
-          fontSize: "9px", 
+          fontSize: "10px", 
           color: "var(--text-tertiary)", 
-          fontWeight: 800, 
-          fontFamily: "var(--font-mono)",
-          letterSpacing: "0.05em"
+          fontWeight: 600, 
         }}>
-          POWERED BY GIPHY
+          Powered by Giphy
         </span>
       </div>
 

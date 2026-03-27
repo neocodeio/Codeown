@@ -56,15 +56,12 @@ export default function RecentProjectLaunches() {
                 }
             `}</style>
             <h3 style={{
-                fontSize: "13px",
-                fontWeight: 800,
+                fontSize: "14px",
+                fontWeight: 700,
                 color: "var(--text-primary)",
                 margin: "0 0 20px 0",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                fontFamily: "var(--font-mono)"
             }}>
-                Recent Launches
+                Recent launches
             </h3>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -117,14 +114,12 @@ export default function RecentProjectLaunches() {
                                     whiteSpace: "nowrap",
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "-0.01em"
                                 }}
                             >
                                 {project.title}
                             </span>
-                            <span style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
-                                {formatRelativeDate(project.created_at).toUpperCase()}
+                            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                                {formatRelativeDate(project.created_at)}
                             </span>
                         </div>
                     </Link>
@@ -136,18 +131,15 @@ export default function RecentProjectLaunches() {
                 style={{
                     display: "block",
                     marginTop: "20px",
-                    fontSize: "11px",
-                    fontWeight: 800,
+                    fontSize: "12px",
+                    fontWeight: 600,
                     color: "var(--text-primary)",
                     textDecoration: "none",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em"
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = "0.7"}
                 onMouseLeave={e => e.currentTarget.style.opacity = "1"}
             >
-                View all launches &rarr;
+                View all launches →
             </Link>
         </div>
     );

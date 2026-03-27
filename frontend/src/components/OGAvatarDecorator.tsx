@@ -95,17 +95,13 @@ const OGAvatarDecorator = memo(({ children, is_og = false }: OGAvatarDecoratorPr
                 right: "-1px",
                 backgroundColor: ringColor,
                 color: "var(--bg-page)",
-                fontSize: "7.5px",
-                fontWeight: 900,
-                padding: "4px 0.5px",
-                paddingLeft: "1px",
+                fontSize: "8px",
+                fontWeight: 800,
+                padding: "4px 2px",
                 borderRadius: "var(--radius-xs)",
-                fontFamily: "var(--font-mono)",
                 zIndex: 10,
                 border: "1px solid #000",
                 boxShadow: "0 2px 5px rgba(0,0,0,0.4)",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase"
             }}>
                 OG
             </div>

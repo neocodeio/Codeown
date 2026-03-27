@@ -49,9 +49,7 @@ export default function NotFound() {
                         fontSize: "96px",
                         fontWeight: 700,
                         color: "var(--text-primary)",
-                        opacity: 0.05,
-                        letterSpacing: "0.1em",
-                        fontFamily: "var(--font-mono)",
+                        opacity: 0.1,
                         userSelect: "none"
                     }}>
                         404
@@ -60,15 +58,12 @@ export default function NotFound() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                     <h1 style={{
-                        fontSize: "14px",
+                        fontSize: "24px",
                         fontWeight: 700,
                         color: "var(--text-primary)",
-                        margin: 0,
-                        fontFamily: "var(--font-mono)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em"
+                        margin: "0 0 8px",
                     }}>
-                        LOST IN SPACE
+                        Page not found
                     </h1>
                     <p style={{
                         fontSize: "14px",
@@ -98,15 +93,13 @@ export default function NotFound() {
                             gap: "8px",
                             padding: "12px 24px",
                             borderRadius: "var(--radius-sm)",
-                            fontSize: "12px",
-                            fontWeight: 700,
+                            fontSize: "13px",
+                            fontWeight: 600,
                             backgroundColor: "transparent",
                             color: "var(--text-primary)",
                             border: "0.5px solid var(--border-hairline)",
                             cursor: "pointer",
                             transition: "all 0.15s ease",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase"
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor = "var(--bg-hover)";
@@ -127,15 +120,13 @@ export default function NotFound() {
                             gap: "8px",
                             padding: "12px 24px",
                             borderRadius: "var(--radius-sm)",
-                            fontSize: "12px",
-                            fontWeight: 700,
+                            fontSize: "13px",
+                            fontWeight: 600,
                             backgroundColor: "var(--text-primary)",
                             color: "var(--bg-page)",
                             border: "none",
                             cursor: "pointer",
                             transition: "all 0.15s ease",
-                            fontFamily: "var(--font-mono)",
-                            textTransform: "uppercase"
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.opacity = "0.9";

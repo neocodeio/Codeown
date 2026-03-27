@@ -117,8 +117,8 @@ export default function ConnectionStatus() {
                         </div>
 
                         <div>
-                            <h2 style={{ fontSize: "32px", fontWeight: 900, color: "var(--text-primary)", marginBottom: "16px", letterSpacing: "-0.04em" }}>
-                                Connection Lost
+                            <h2 style={{ fontSize: "24px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "16px" }}>
+                                Connection lost
                             </h2>
                             <p style={{ color: "#64748b", fontSize: "17px", lineHeight: "1.7", fontWeight: 500, margin: 0 }}>
                                 It seems your internet connection is currently unstable. We'll automatically reconnect once you're back.
@@ -132,11 +132,9 @@ export default function ConnectionStatus() {
                             padding: "10px 24px",
                             background: "#f8fafc",
                             borderRadius: "16px",
-                            fontSize: "14px",
-                            fontWeight: 800,
+                            fontSize: "13px",
+                            fontWeight: 600,
                             color: "#94a3b8",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em"
                         }}>
                             <div style={{
                                 width: "8px",
@@ -145,7 +143,7 @@ export default function ConnectionStatus() {
                                 background: "#ef4444",
                                 boxShadow: "0 0 10px rgba(239, 68, 68, 0.5)"
                             }} />
-                            Searching for Signal...
+                            Searching for signal...
                         </div>
                     </div>
                 </div>
@@ -176,7 +174,7 @@ export default function ConnectionStatus() {
                             <HugeiconsIcon icon={Wifi01Icon} style={{ fontSize: "20px" }} />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontWeight: 800, fontSize: "15px", letterSpacing: "-0.01em" }}>Back Online</span>
+                            <span style={{ fontWeight: 700, fontSize: "15px" }}>Back online</span>
                             <span style={{ fontSize: "12px", opacity: 0.8, fontWeight: 500 }}>All systems are live again.</span>
                         </div>
                     </div>

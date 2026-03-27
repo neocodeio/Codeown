@@ -118,8 +118,8 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ padding: "20px", borderBottom: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ margin: 0, fontSize: "14px", fontWeight: 800, fontFamily: "var(--font-mono)", textTransform: "uppercase", color: "var(--text-primary)" }}>
-            Share to Chat
+          <h2 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "var(--text-primary)" }}>
+            Share to chat
           </h2>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer" }}>
             <X size={20} weight="bold" />
@@ -143,7 +143,6 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
                 color: "var(--text-primary)",
                 fontSize: "13px",
                 outline: "none",
-                fontFamily: "var(--font-mono)"
               }}
             />
           </div>
@@ -151,12 +150,12 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
 
         <div style={{ flex: 1, overflowY: "auto", padding: "8px" }}>
           {loading ? (
-            <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)" }}>
-              LOADING CONVERSATIONS...
+            <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px" }}>
+              Loading conversations...
             </div>
           ) : filtered.length === 0 ? (
-            <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "12px", fontFamily: "var(--font-mono)" }}>
-              NO CONVERSATIONS FOUND
+            <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px" }}>
+              No conversations found
             </div>
           ) : (
             filtered.map((convo) => (
@@ -178,7 +177,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
                   <AvailabilityBadge avatarUrl={convo.partner.avatar_url} name={convo.partner.name} size={36} />
                   <div>
                     <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>{convo.partner.name}</div>
-                    <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>@{convo.partner.username}</div>
+                    <div style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>@{convo.partner.username}</div>
                   </div>
                 </div>
                 <button
@@ -189,17 +188,15 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
                     border: "none",
-                    fontSize: "11px",
-                    fontWeight: 800,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
+                    fontSize: "12px",
+                    fontWeight: 600,
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     gap: "6px"
                   }}
                 >
-                  {sendingId === convo.id ? "..." : <><PaperPlaneTilt size={14} weight="bold" /> SEND</>}
+                  {sendingId === convo.id ? "..." : <><PaperPlaneTilt size={14} weight="bold" /> Send</>}
                 </button>
               </div>
             ))

@@ -119,11 +119,11 @@ export default function CoFounderRequestModal({
               <Handshake size={18} weight="duotone" color="#fff" />
             </div>
             <div>
-              <h2 style={{ fontSize: "14px", fontWeight: 800, color: "#fff", textTransform: "uppercase", letterSpacing: "0.1em", margin: 0 }}>
-                Co-Founder Application
+              <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#fff", margin: 0 }}>
+                Co-founder application
               </h2>
-              <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", margin: "4px 0 0 0", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
-                Target Project: {projectTitle}
+              <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: "4px 0 0 0", fontWeight: 500 }}>
+                Target project: {projectTitle}
               </p>
             </div>
           </div>
@@ -158,15 +158,15 @@ export default function CoFounderRequestModal({
           }}>
             <Info size={20} weight="duotone" color="var(--text-tertiary)" style={{ flexShrink: 0 }} />
             <div style={{ fontSize: "12px", color: "var(--text-tertiary)", lineHeight: 1.6 }}>
-                <strong>Eligibility Check:</strong> To prevent spam, you must have at least 1 post, 1 project, and tech skills on your profile to apply.
+                <strong>Eligibility check:</strong> To prevent spam, you must have at least 1 post, 1 project, and tech skills on your profile to apply.
             </div>
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             {/* Skills */}
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>
-                Core Skills for this Mission
+              <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-primary)" }}>
+                Core skills for this mission
               </label>
               <input 
                 type="text"
@@ -181,7 +181,6 @@ export default function CoFounderRequestModal({
                   borderRadius: "var(--radius-sm)",
                   color: "var(--text-primary)",
                   fontSize: "14px",
-                  fontFamily: "var(--font-mono)",
                   outline: "none",
                   transition: "border-color 0.2s"
                 }}
@@ -192,8 +191,8 @@ export default function CoFounderRequestModal({
 
             {/* Commitment */}
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>
-                Weekly Commitment (Hours)
+              <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-primary)" }}>
+                Weekly commitment (hours)
               </label>
               <input 
                 type="number"
@@ -217,7 +216,7 @@ export default function CoFounderRequestModal({
 
             {/* Why Join */}
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>
+              <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-primary)" }}>
                 Why do you want to join this project?
               </label>
               <textarea 
@@ -242,7 +241,7 @@ export default function CoFounderRequestModal({
 
             {/* Contribution */}
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <label style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "var(--font-mono)" }}>
+              <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-primary)" }}>
                 What can you bring to the table?
               </label>
               <textarea 
@@ -275,10 +274,8 @@ export default function CoFounderRequestModal({
                 color: "var(--bg-page)",
                 border: "none",
                 borderRadius: "var(--radius-sm)",
-                fontSize: "12px",
-                fontWeight: 900,
-                textTransform: "uppercase",
-                letterSpacing: "0.15em",
+                fontSize: "13px",
+                fontWeight: 600,
                 cursor: loading ? "not-allowed" : "pointer",
                 marginTop: "12px",
                 display: "flex",
@@ -293,11 +290,11 @@ export default function CoFounderRequestModal({
               {loading ? (
                 <>
                   <div className="spinner" style={{ width: "16px", height: "16px", border: "2px solid rgba(0,0,0,0.1)", borderTopColor: "#000", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
-                  TRANSMITTING...
+                  Transmitting...
                 </>
               ) : (
                 <>
-                  SUBMIT APPLICATION
+                  Submit application
                 </>
               )}
             </button>

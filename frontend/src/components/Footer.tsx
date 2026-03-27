@@ -48,12 +48,9 @@ export default function Footer() {
             <div style={{
                 textAlign: "center",
                 color: "var(--text-tertiary)",
-                fontSize: "14px",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em"
+                fontSize: "13px",
             }}>
-                <p style={{ margin: "0 0 8px 0", fontWeight: 700 }}>
+                <p style={{ margin: "0 0 8px 0", fontWeight: 600 }}>
                     © {new Date().getFullYear()} Codeown.
                 </p>
                 <div style={{
@@ -64,11 +61,11 @@ export default function Footer() {
                     fontSize: "11px",
                     fontWeight: 700
                 }}>
-                    <a href="/privacy" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>PRIVACY</a>
+                    <a href="/privacy" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Privacy</a>
                     <span style={{ color: "var(--border-hairline)" }}>•</span>
-                    <a href="/terms" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>TERMS</a>
+                    <a href="/terms" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Terms</a>
                     <span style={{ color: "var(--border-hairline)" }}>•</span>
-                    <a href="/about" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>ABOUT</a>
+                    <a href="/about" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>About</a>
                 </div>
             </div>
         </footer>

@@ -81,20 +81,17 @@ export default function Leaderboard() {
                   background: "transparent", 
                   padding: "6px 14px", 
                   borderRadius: "var(--radius-sm)", 
-                  color: "var(--text-primary)", 
-                  fontSize: "10px", 
-                  fontWeight: 800, 
-                  marginBottom: "24px", 
+                  color: "var(--text-tertiary)", 
+                  fontSize: "12px", 
+                  fontWeight: 600, 
+                  marginBottom: "20px", 
                   border: "0.5px solid var(--border-hairline)",
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em"
                 }}>
-                    <Rocket size={14} weight="thin" /> GLOBAL PULSE
+                    <Rocket size={16} weight="regular" /> Global Pulse
                 </div>
-                <h1 style={{ fontSize: isMobile ? "32px" : "56px", fontWeight: 700, marginBottom: "20px", letterSpacing: "-0.04em", textTransform: "uppercase" }}>LEADERBOARD</h1>
+                <h1 style={{ fontSize: isMobile ? "32px" : "48px", fontWeight: 700, marginBottom: "16px", color: "var(--text-primary)" }}>Leaderboard</h1>
                 <p style={{ color: "var(--text-secondary)", fontSize: "15px", maxWidth: "600px", lineHeight: "1.6" }}>
-                    Global developer community rankings based on consistency, and meaningful contributions.
+                    Global developer community rankings based on consistency and meaningful contributions.
                 </p>
             </div>
 
@@ -111,50 +108,50 @@ export default function Leaderboard() {
                         gridRow: isMobile ? "auto" : "span 2",
                         background: "var(--text-primary)",
                         borderRadius: "var(--radius-sm)",
-                        padding: isMobile ? "32px" : "56px",
+                        padding: isMobile ? "32px" : "48px",
                         position: "relative",
                         overflow: "hidden",
                         color: "var(--bg-page)",
                         border: "0.5px solid var(--text-primary)"
                     }}>
                         <div style={{ position: "relative", zIndex: 1 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "48px" }}>
-                                <div style={{ border: "0.5px solid rgba(255,255,255,0.2)", width: "48px", height: "48px", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <Trophy size={28} weight="thin" color="currentColor" />
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
+                                <div style={{ border: "0.5px solid rgba(255,255,255,0.2)", width: "48px", height: "48px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <Trophy size={28} weight="regular" color="currentColor" />
                                 </div>
                                 <div style={{ textAlign: "right" }}>
-                                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.6)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "var(--font-mono)" }}>PULSE SCORE</div>
-                                    <div style={{ fontSize: "40px", fontWeight: 800, color: "var(--bg-page)", fontFamily: "var(--font-mono)", marginTop: "4px" }}>{top3[0].pulse_score.toLocaleString()}P</div>
+                                    <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>Pulse score</div>
+                                    <div style={{ fontSize: "32px", fontWeight: 700, color: "var(--bg-page)", marginTop: "4px" }}>{top3[0].pulse_score.toLocaleString()}p</div>
                                 </div>
                             </div>
 
-                            <div style={{ display: "flex", alignItems: "center", gap: "24px", marginBottom: "48px" }}>
-                                <img src={top3[0].avatar_url || `https://ui-avatars.com/api/?name=${top3[0].name}&background=random`} style={{ width: "80px", height: "80px", borderRadius: "var(--radius-sm)", border: "0.5px solid rgba(255,255,255,0.2)" }} alt="" />
+                            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "40px" }}>
+                                <img src={top3[0].avatar_url || `https://ui-avatars.com/api/?name=${top3[0].name}&background=random`} style={{ width: "72px", height: "72px", borderRadius: "12px", border: "0.5px solid rgba(255,255,255,0.2)" }} alt="" />
                                 <div style={{ minWidth: 0 }}>
-                                    <h2 style={{ fontSize: "24px", fontWeight: 800, margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
+                                    <h2 style={{ fontSize: "24px", fontWeight: 700, margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
                                         {top3[0].name}
-                                        <VerifiedBadge username={top3[0].username} size="18px" />
+                                        <VerifiedBadge username={top3[0].username} size="20px" />
                                     </h2>
-                                    <Link to={`/${top3[0].username}`} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "14px", fontFamily: "var(--font-mono)", marginTop: "4px", display: "block" }}>@{top3[0].username}</Link>
+                                    <Link to={`/${top3[0].username}`} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "14px", marginTop: "4px", display: "block" }}>@{top3[0].username}</Link>
                                 </div>
                             </div>
 
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "48px" }}>
-                                <StatItem icon={<Flame size={14} weight="thin" />} label="Streak" value={`${top3[0].streak_count.toString().padStart(2, '0')}D`} isDark={true} />
-                                <StatItem icon={<ChartBar size={14} weight="thin" />} label="Rank" value="#01" isDark={true} />
-                                <StatItem icon={<TrendUp size={14} weight="thin" />} label="Tier" value={top3[0].tier.toUpperCase()} isDark={true} />
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "40px" }}>
+                                <StatItem icon={<Flame size={14} weight="regular" />} label="Streak" value={`${top3[0].streak_count}d`} isDark={true} />
+                                <StatItem icon={<Trophy size={14} weight="regular" />} label="Rank" value="#1" isDark={true} />
+                                <StatItem icon={<TrendUp size={14} weight="regular" />} label="Tier" value={top3[0].tier} isDark={true} />
                             </div>
 
                             {top3[0].latest_project && (
-                                <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "var(--radius-sm)", padding: "24px", border: "0.5px solid rgba(255,255,255,0.1)" }}>
-                                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", fontWeight: 700, marginBottom: "16px", textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>Latest Project</div>
-                                    <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                                        <div style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "0.5px solid rgba(255,255,255,0.1)", overflow: "hidden" }}>
+                                <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "var(--radius-sm)", padding: "20px", border: "0.5px solid rgba(255,255,255,0.1)" }}>
+                                    <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", fontWeight: 600, marginBottom: "12px" }}>Latest launch</div>
+                                    <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                                        <div style={{ width: "72px", height: "44px", borderRadius: "8px", border: "0.5px solid rgba(255,255,255,0.1)", overflow: "hidden" }}>
                                             <img src={top3[0].latest_project.cover_image || "/placeholder.png"} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
                                         </div>
                                         <div style={{ minWidth: 0 }}>
-                                            <div style={{ fontSize: "15px", fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{top3[0].latest_project.title}</div>
-                                            <Link to={`/project/${top3[0].latest_project.id}`} style={{ fontSize: "11px", color: "currentColor", opacity: 0.6, display: "flex", alignItems: "center", gap: "4px", marginTop: "6px", textTransform: "uppercase", fontWeight: 700, fontFamily: "var(--font-mono)", textDecoration: "none" }}>View Project <CaretRight size={10} /></Link>
+                                            <div style={{ fontSize: "14.5px", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{top3[0].latest_project.title}</div>
+                                            <Link to={`/project/${top3[0].latest_project.id}`} style={{ fontSize: "12px", color: "currentColor", opacity: 0.6, display: "flex", alignItems: "center", gap: "4px", marginTop: "4px", fontWeight: 500, textDecoration: "none" }}>View launch <CaretRight size={10} /></Link>
                                         </div>
                                     </div>
                                 </div>
@@ -169,56 +166,56 @@ export default function Leaderboard() {
                         <div key={user.id} style={{
                             background: "var(--bg-page)",
                             borderRadius: "var(--radius-sm)",
-                            padding: "32px 24px",
+                            padding: "24px",
                             border: "0.5px solid var(--border-hairline)",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
                             position: "relative"
                         }}>
-                            <div style={{ position: "absolute", top: "16px", right: "20px", border: "0.5px solid var(--border-hairline)", padding: "4px 10px", borderRadius: "var(--radius-sm)", fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
-                                RANK #{idx + 2}
+                            <div style={{ position: "absolute", top: "16px", right: "16px", border: "0.5px solid var(--border-hairline)", padding: "4px 10px", borderRadius: "var(--radius-sm)", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>
+                                Rank #{idx + 2}
                             </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-                                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "56px", height: "56px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} alt="" />
+                            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
+                                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "52px", height: "52px", borderRadius: "10px", border: "0.5px solid var(--border-hairline)" }} alt="" />
                                 <div>
-                                    <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: "-0.01em" }}>{user.name}</h3>
-                                    <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 800, fontFamily: "var(--font-mono)", marginTop: "2px" }}>{user.pulse_score.toString().padStart(4, '0')}P</div>
+                                    <h3 style={{ fontSize: "15px", fontWeight: 600, margin: 0 }}>{user.name}</h3>
+                                    <div style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 500, marginTop: "2px" }}>{user.pulse_score}p</div>
                                 </div>
                             </div>
-                            <div style={{ display: "flex", gap: "24px" }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-secondary)", fontSize: "10px", fontWeight: 800, fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
-                                    <Flame size={14} weight="thin" /> {user.streak_count.toString().padStart(2, '0')}D STREAK
+                            <div style={{ display: "flex", gap: "16px" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 500 }}>
+                                    <Flame size={14} weight="regular" /> {user.streak_count}d streak
                                 </div>
-                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-secondary)", fontSize: "10px", fontWeight: 800, fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
-                                    <TrendUp size={14} weight="thin" /> {user.tier.toUpperCase()} TIER
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 500 }}>
+                                    <TrendUp size={14} weight="regular" /> {user.tier}
                                 </div>
                             </div>
                         </div>
                     ))}
 
                     {/* Simple Info Block */}
-                    <div style={{ background: "var(--bg-hover)", borderRadius: "var(--radius-sm)", padding: "32px 24px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "20px", border: "0.5px solid var(--border-hairline)" }}>
-                        <Flame size={32} weight="thin" />
+                    <div style={{ background: "var(--bg-hover)", borderRadius: "var(--radius-sm)", padding: "24px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "16px", border: "0.5px solid var(--border-hairline)" }}>
+                        <Flame size={32} weight="regular" />
                         <div>
-                            <div style={{ fontWeight: 800, fontSize: "12px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Persistence Pays</div>
-                            <div style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "4px", lineHeight: "1.5" }}>Consistent daily activity unlocks advanced Pulse multipliers and exclusive badges.</div>
+                            <div style={{ fontWeight: 600, fontSize: "13px" }}>Persistence pays</div>
+                            <div style={{ fontSize: "13px", color: "var(--text-tertiary)", marginTop: "4px", lineHeight: "1.5" }}>Consistent daily activity unlocks advanced pulse multipliers and exclusive badges.</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* The List */}
-            <div style={{ marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <h2 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.15em", fontFamily: "var(--font-mono)" }}>World Ranking</h2>
-                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>{theRest.length} ACTIVE DEVELOPERS</span>
+            <div style={{ marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                <h2 style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-tertiary)" }}>World ranking</h2>
+                <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>{theRest.length} builders active this week</span>
             </div>
 
             <div style={{ background: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", marginBottom: "48px" }}>
                 {theRest.length === 0 ? (
-                    <div style={{ padding: "120px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
-                        <ChartBar size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "24px", display: "block", margin: "0 auto" }} />
-                        <p style={{ fontSize: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.1em" }}>The rankings are heating up.</p>
+                    <div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
+                        <ChartBar size={48} weight="regular" style={{ opacity: 0.1, marginBottom: "24px", display: "block", margin: "0 auto" }} />
+                        <p style={{ fontSize: "14px", fontWeight: 600 }}>The rankings are heating up.</p>
                     </div>
                 ) : (
                     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -251,14 +248,14 @@ function StatItem({ icon, label, value, isDark = false }: { icon: any, label: st
     return (
         <div style={{
             background: isDark ? "rgba(255,255,255,0.03)" : "var(--bg-hover)",
-            padding: "16px",
+            padding: "14px",
             borderRadius: "var(--radius-sm)",
             border: isDark ? "0.5px solid rgba(255,255,255,0.08)" : "0.5px solid var(--border-hairline)"
         }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: isDark ? "rgba(255,255,255,0.4)" : "var(--text-tertiary)", fontSize: "9px", fontWeight: 800, textTransform: "uppercase", marginBottom: "8px", fontFamily: "var(--font-mono)", letterSpacing: "0.05em" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", color: isDark ? "rgba(255,255,255,0.4)" : "var(--text-tertiary)", fontSize: "11px", fontWeight: 600, marginBottom: "6px" }}>
                 {icon} {label}
             </div>
-            <div style={{ fontSize: "16px", fontWeight: 800, color: isDark ? "var(--bg-page)" : "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{value}</div>
+            <div style={{ fontSize: "15px", fontWeight: 600, color: isDark ? "var(--bg-page)" : "var(--text-primary)" }}>{value}</div>
         </div>
     );
 }
@@ -274,33 +271,33 @@ function LeaderboardRow({ user, rank, isMobile }: { user: LeaderboardUser, rank:
             style={{
                 display: "flex",
                 alignItems: "center",
-                padding: isMobile ? "20px 16px" : "24px 32px",
+                padding: isMobile ? "16px" : "20px 32px",
                 borderBottom: "0.5px solid var(--border-hairline)",
                 transition: "all 0.15s ease",
                 position: "relative",
                 cursor: "pointer"
             }}
         >
-            <div style={{ width: "40px", fontSize: "12px", fontWeight: 800, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>{rank.toString().padStart(2, '0')}</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1 }}>
-                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "40px", height: "40px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} alt="" />
+            <div style={{ width: "40px", fontSize: "13px", fontWeight: 600, color: "var(--text-tertiary)" }}>#{rank}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
+                <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "40px", height: "40px", borderRadius: "10px", border: "0.5px solid var(--border-hairline)" }} alt="" />
                 <div>
-                    <div style={{ fontWeight: 800, fontSize: "14px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px", textTransform: "uppercase" }}>
+                    <div style={{ fontWeight: 600, fontSize: "14.5px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
                         {user.name}
                         <VerifiedBadge username={user.username} size="14px" />
                     </div>
-                    <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", marginTop: "2px" }}>{user.tier} TIER</div>
+                    <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500, marginTop: "2px" }}>{user.tier}</div>
                 </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>
-                    <Flame size={16} weight="thin" />
-                    <span style={{ fontSize: "13px", fontWeight: 800 }}>{user.streak_count.toString().padStart(2, '0')}D</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+                <div style={{ display: isMobile ? "none" : "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)" }}>
+                    <Flame size={16} weight="regular" />
+                    <span style={{ fontSize: "13px", fontWeight: 500 }}>{user.streak_count}d</span>
                 </div>
-                <div style={{ width: "120px", textAlign: "right" }}>
-                    <div style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{user.pulse_score.toString().padStart(4, '0')}P</div>
-                    <div style={{ fontSize: "9px", color: "var(--text-tertiary)", fontWeight: 800, textTransform: "uppercase", fontFamily: "var(--font-mono)", letterSpacing: "0.1em" }}>PULSE SCORE</div>
+                <div style={{ width: "100px", textAlign: "right" }}>
+                    <div style={{ fontSize: "15px", fontWeight: 600, color: "var(--text-primary)" }}>{user.pulse_score}p</div>
+                    {!isMobile && <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 500, marginTop: "2px" }}>Pulse score</div>}
                 </div>
             </div>
 
@@ -324,9 +321,9 @@ function LeaderboardRow({ user, rank, isMobile }: { user: LeaderboardUser, rank:
                     whiteSpace: "nowrap",
                     animation: "tooltip-pop 0.2s ease-out"
                 }}>
-                    <img src={user.latest_project.cover_image || "/placeholder.png"} style={{ width: "48px", height: "30px", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "0.5px solid rgba(255,255,255,0.1)" }} alt="" />
+                    <img src={user.latest_project.cover_image || "/placeholder.png"} style={{ width: "48px", height: "30px", objectFit: "cover", borderRadius: "8px", border: "0.5px solid rgba(255,255,255,0.1)" }} alt="" />
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                        <div style={{ fontSize: "9px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontFamily: "var(--font-mono)" }}>MASTERPIECE</div>
+                        <div style={{ fontSize: "10px", fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>Latest project</div>
                         <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--bg-page)" }}>{user.latest_project.title}</div>
                     </div>
                 </div>

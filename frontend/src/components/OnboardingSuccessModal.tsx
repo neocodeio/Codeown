@@ -156,13 +156,12 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
               </div>
               <h2 style={{ 
                 fontSize: "24px", 
-                fontWeight: 900, 
+                fontWeight: 700, 
                 color: "var(--text-primary)", 
-                textTransform: "uppercase",
                 letterSpacing: "-0.02em",
                 marginBottom: "16px" 
               }}>
-                Welcome, Founder #{founderNumber || "..."}! 🏆
+                Welcome, founder #{founderNumber || "..."}! 🏆
               </h2>
 
 
@@ -183,10 +182,8 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
                   backgroundColor: "var(--text-primary)",
                   color: "var(--bg-page)",
                   border: "none",
-                  fontSize: "12px",
-                  fontWeight: 900,
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase",
+                  fontSize: "14px",
+                  fontWeight: 600,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -219,9 +216,8 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
               </div>
               <h2 style={{ 
                 fontSize: "24px", 
-                fontWeight: 900, 
+                fontWeight: 700, 
                 color: "var(--text-primary)", 
-                textTransform: "uppercase",
                 letterSpacing: "-0.02em",
                 marginBottom: "16px" 
               }}>
@@ -245,10 +241,8 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
                     backgroundColor: "var(--text-primary)",
                     color: "var(--bg-page)",
                     border: "none",
-                    fontSize: "12px",
-                    fontWeight: 900,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
+                    fontSize: "14px",
+                    fontWeight: 600,
                     cursor: "pointer",
                     transition: "all 0.15s ease"
                   }}
@@ -267,10 +261,8 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
                     backgroundColor: "transparent",
                     color: "var(--text-tertiary)",
                     border: "none",
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
+                    fontSize: "13px",
+                    fontWeight: 500,
                     cursor: "pointer",
                   }}
                 >
@@ -297,13 +289,12 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
               </div>
               <h2 style={{ 
                 fontSize: "24px", 
-                fontWeight: 900, 
+                fontWeight: 700, 
                 color: "var(--text-primary)", 
-                textTransform: "uppercase",
                 letterSpacing: "-0.02em",
                 marginBottom: "16px" 
               }}>
-                Follow the Leaders 🤝
+                Follow the leaders 🤝
               </h2>
               <p style={{ 
                 fontSize: "15px", 
@@ -349,7 +340,7 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
                           <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>{u.name.split(" ")[0]}</span>
                           <VerifiedBadge username={u.username} isPro={u.is_pro} size="14px" />
                         </div>
-                        <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>@{u.username}</span>
+                        <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>@{u.username}</span>
                       </div>
                       <button 
                         onClick={() => handleFollow(u.id, u.isFollowing)}
@@ -359,10 +350,8 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
                           backgroundColor: u.isFollowing ? "transparent" : "var(--text-primary)",
                           color: u.isFollowing ? "var(--text-primary)" : "var(--bg-page)",
                           border: u.isFollowing ? "1px solid var(--border-hairline)" : "none",
-                          fontSize: "10px",
-                          fontWeight: 900,
-                          fontFamily: "var(--font-mono)",
-                          textTransform: "uppercase",
+                          fontSize: "12px",
+                          fontWeight: 600,
                           cursor: "pointer"
                         }}
                       >
@@ -382,10 +371,8 @@ export default function OnboardingSuccessModal({ isOpen, onClose }: OnboardingSu
                   backgroundColor: "var(--text-primary)",
                   color: "var(--bg-page)",
                   border: "none",
-                  fontSize: "12px",
-                  fontWeight: 900,
-                  fontFamily: "var(--font-mono)",
-                  textTransform: "uppercase",
+                  fontSize: "14px",
+                  fontWeight: 600,
                   cursor: "pointer",
                   transition: "all 0.15s ease"
                 }}

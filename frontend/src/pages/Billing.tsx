@@ -112,14 +112,11 @@ export default function Billing() {
             </div>
             <h1 style={{
               margin: 0,
-              fontSize: "14px",
+              fontSize: "16px",
               fontWeight: 700,
               color: "var(--text-primary)",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
             }}>
-              PRO MEMBERSHIP
+              Pro membership
             </h1>
             <p style={{
               margin: "12px 0 0",
@@ -148,11 +145,9 @@ export default function Billing() {
                     alignItems: "center",
                     gap: 16,
                     padding: "8px 0",
-                    fontSize: 13,
+                    fontSize: 14,
                     color: "var(--text-secondary)",
-                    lineHeight: 1.4,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase"
+                    lineHeight: 1.5,
                   }}
                 >
                   <Check size={14} weight="bold" color="var(--text-primary)" />
@@ -184,39 +179,33 @@ export default function Billing() {
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "8px",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase"
               }}
             >
               {isPro ? (
                 <>
                   <Check size={16} weight="bold" />
-                  ACTIVE SUBSCRIPTION
+                  Active subscription
                 </>
               ) : (
-                "UPGRADE TO PRO"
+                "Upgrade to Pro"
               )}
             </button>
             {isPro && (
               <p style={{
                 textAlign: "center",
                 marginTop: "16px",
-                fontSize: "11px",
+                fontSize: "12px",
                 color: "var(--text-tertiary)",
-                fontFamily: "var(--font-mono)",
-                textTransform: "uppercase"
               }}>
                 Thank you for supporting Codeown.
               </p>
             )}
             <p style={{
               margin: "16px 0 0",
-              fontSize: 11,
+              fontSize: 12,
               color: "var(--text-tertiary)",
               textAlign: "center",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em"
+              letterSpacing: "0.02em"
             }}>
               Secure checkout via Dodo Payments.
             </p>
@@ -235,14 +224,12 @@ export default function Billing() {
             display: "inline-flex",
             alignItems: "center",
             gap: "8px",
-            fontFamily: "var(--font-mono)",
-            textTransform: "uppercase",
             transition: "all 0.15s ease"
           }}
           onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
           onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
           >
-            <CaretLeft size={16} weight="bold" /> BACK TO PROFILE
+            <CaretLeft size={16} weight="bold" /> Back to profile
           </Link>
         </p>
       </div>

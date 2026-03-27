@@ -70,13 +70,10 @@ export default function ConfirmDeleteModal({
         <h2
           id="confirm-delete-title"
           style={{
-            margin: "0 0 16px",
-            fontSize: "14px",
-            fontWeight: 800,
+            fontSize: "24px",
+            fontWeight: 700,
             color: "var(--text-primary)",
-            fontFamily: "var(--font-mono)",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em"
+            marginBottom: "16px",
           }}
         >
           {title}
@@ -84,7 +81,7 @@ export default function ConfirmDeleteModal({
         <p
           style={{
             margin: "0 0 32px",
-            fontSize: "14px",
+            fontSize: "15px",
             lineHeight: 1.6,
             color: "var(--text-secondary)",
           }}
@@ -106,13 +103,10 @@ export default function ConfirmDeleteModal({
               borderRadius: "var(--radius-sm)",
               border: "0.5px solid var(--border-hairline)",
               backgroundColor: "transparent",
-              fontSize: "12px",
-              fontWeight: 800,
+              fontSize: "15px",
+              fontWeight: 600,
               color: "var(--text-tertiary)",
               cursor: isLoading ? "not-allowed" : "pointer",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
               transition: "all 0.15s ease",
             }}
             onMouseEnter={(e) => {
@@ -124,7 +118,7 @@ export default function ConfirmDeleteModal({
               e.currentTarget.style.color = "var(--text-tertiary)";
             }}
           >
-            CANCEL
+            Cancel
           </button>
           <button
             onClick={handleConfirm}
@@ -134,18 +128,15 @@ export default function ConfirmDeleteModal({
               borderRadius: "var(--radius-sm)",
               border: "none",
               backgroundColor: "#ef4444",
-              fontSize: "12px",
-              fontWeight: 800,
+              fontSize: "15px",
+              fontWeight: 600,
               color: "#fff",
               cursor: isLoading ? "not-allowed" : "pointer",
-              fontFamily: "var(--font-mono)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
               transition: "opacity 0.15s ease",
               opacity: isLoading ? 0.6 : 1,
             }}
           >
-            {isLoading ? "DELETING..." : confirmLabel.toUpperCase()}
+            {isLoading ? "Deleting..." : confirmLabel}
           </button>
         </div>
       </div>

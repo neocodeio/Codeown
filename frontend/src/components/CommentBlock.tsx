@@ -114,26 +114,26 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
         {/* Content Area */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
             <span
               onClick={() => {
                 if (comment.user?.username) navigate(`/${comment.user.username}`);
                 else if (comment.user_id) navigate(`/user/${comment.user_id}`);
               }}
-              style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", textTransform: "uppercase", letterSpacing: "0.02em" }}
+              style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
             >
               {name}
               <VerifiedBadge username={comment.user?.username} size="14px" />
               {comment.user?.is_pro && (
-                <span style={{ fontSize: "9px", fontWeight: "900", padding: "2px 6px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", letterSpacing: "0.1em", marginLeft: "4px", fontFamily: "var(--font-mono)", lineHeight: 1 }}>PRO</span>
+                <span style={{ fontSize: "10px", fontWeight: 600, padding: "1px 8px", borderRadius: "100px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", marginLeft: "4px" }}>Pro</span>
               )}
             </span>
-            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 800, fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.8 }}>
+            <span style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 400 }}>
               • {formatRelativeDate(comment.created_at)}
             </span>
           </div>
 
-          <div style={{ fontSize: "16px", lineHeight: "1.7", color: "var(--text-primary)", wordBreak: "break-word", marginBottom: "12px", fontWeight: 500, opacity: 0.95 }}>
+          <div style={{ fontSize: "15px", lineHeight: "1.5", color: "var(--text-primary)", wordBreak: "break-word", marginBottom: "10px", fontWeight: 400 }}>
             <ContentRenderer content={comment.content} />
           </div>
 
@@ -142,17 +142,17 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
             <button
               onClick={toggleLike}
               disabled={!isSignedIn || likeLoading}
-              style={{ display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none", padding: 0, color: isLiked ? "#ff4b4b" : "var(--text-tertiary)", fontSize: "12px", fontWeight: 800, fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", transition: "all 0.15s ease", letterSpacing: "0.1em" }}
+              style={{ display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none", padding: 0, color: isLiked ? "#ff4b4b" : "var(--text-tertiary)", fontSize: "13px", fontWeight: 500, cursor: "pointer", transition: "all 0.15s ease" }}
             >
-              <FontAwesomeIcon icon={isLiked ? faHeartSolid : faHeartRegular} style={{ fontSize: "16px" }} />
-              <RollingNumber value={likeCount || 0} fontWeight={800} fontSize="12px" color="inherit" />
-              {likeCount === 0 && <span style={{ marginLeft: "-2px" }}>LIKE</span>}
+              <FontAwesomeIcon icon={isLiked ? faHeartSolid : faHeartRegular} style={{ fontSize: "15px" }} />
+              <RollingNumber value={likeCount || 0} fontWeight={500} fontSize="13px" color="inherit" />
+              {likeCount === 0 && <span style={{ marginLeft: "-2px" }}>Like</span>}
             </button>
 
             {isSignedIn && (
               <button
                 onClick={() => setShowReply((s) => !s)}
-                style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 800, fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", transition: "color 0.15s ease", letterSpacing: "0.1em" }}
+                style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "13px", fontWeight: 500, cursor: "pointer", transition: "color 0.15s ease" }}
                 onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
               >
@@ -163,7 +163,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
             {isSignedIn && (comment.user_id === user?.id) && (
               <button
                 onClick={() => onDelete?.(comment.id)}
-                style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 800, fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", transition: "color 0.15s ease", letterSpacing: "0.1em" }}
+                style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "13px", fontWeight: 500, cursor: "pointer", transition: "color 0.15s ease" }}
                 onMouseEnter={(e) => e.currentTarget.style.color = "#ff4b4b"}
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
               >
@@ -173,7 +173,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
           </div>
 
           {showReply && (
-            <div style={{ marginTop: "16px", padding: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)" }}>
+            <div style={{ marginTop: "16px", padding: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}>
               {selectedGif && (
                 <div style={{ position: "relative", width: "fit-content", marginBottom: "12px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                   <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "120px", display: "block" }} />
@@ -182,9 +182,9 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
               )}
               <MentionInput value={replyContent} onChange={setReplyContent} placeholder="Write a reply..." style={{ minHeight: "80px", fontSize: "14px", borderRadius: "var(--radius-sm)" }} />
               <div style={{ display: "flex", gap: "12px", marginTop: "16px", justifyContent: "flex-end" }}>
-                <button onClick={() => { setShowReply(false); setReplyContent(""); }} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "none", fontWeight: 900, cursor: "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>Cancel</button>
+                <button onClick={() => { setShowReply(false); setReplyContent(""); }} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "none", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}>Cancel</button>
                 <div style={{ position: "relative" }}>
-                   <button type="button" onClick={() => setIsGifPickerOpen(!isGifPickerOpen)} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontWeight: 900, cursor: "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                   <button type="button" onClick={() => setIsGifPickerOpen(!isGifPickerOpen)} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}>
                      <Gif size={18} weight={isGifPickerOpen ? "fill" : "regular"} />
                    </button>
                    {isGifPickerOpen && (
@@ -193,7 +193,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
                      </div>
                    )}
                 </div>
-                <button onClick={handleReplySubmit} disabled={(!replyContent.trim() && !selectedGif) || submitting} style={{ padding: "8px 24px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "var(--radius-sm)", fontWeight: 900, cursor: submitting ? "not-allowed" : "pointer", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{submitting ? "..." : "Send"}</button>
+                <button onClick={handleReplySubmit} disabled={(!replyContent.trim() && !selectedGif) || submitting} style={{ padding: "8px 24px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "var(--radius-sm)", fontWeight: 600, cursor: submitting ? "not-allowed" : "pointer", fontSize: "13px" }}>{submitting ? "Sending..." : "Send"}</button>
               </div>
             </div>
           )}
