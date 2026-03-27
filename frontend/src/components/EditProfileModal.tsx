@@ -289,16 +289,20 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
             errorMessage = `${errorData.error || "Failed to update profile"}: ${errorData.details}`;
           } else if (errorData.error) {
             errorMessage = errorData.error;
-            if (errorMessage.includes("14 days") || errorMessage.includes("taken")) {
-              setUsernameError(errorMessage);
-            }
           }
         }
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
 
-      if (!usernameError) {
+      // If the error is related to username, show it under the input, otherwise alert
+      if (
+        errorMessage.includes("14 days") ||
+        errorMessage.toLowerCase().includes("taken") ||
+        errorMessage.toLowerCase().includes("8 characters")
+      ) {
+        setUsernameError(errorMessage);
+      } else {
         alert(`Failed to update profile: ${errorMessage}`);
       }
     } finally {
