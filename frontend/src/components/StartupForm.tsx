@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Startup } from '../types/startup';
 import { ArrowLeft, FloppyDiskBack, HardDrive, PaperPlaneTilt, Link as LinkIcon, Calendar, UserPlus } from 'phosphor-react';
@@ -9,8 +9,13 @@ interface StartupFormProps {
   isEditing?: boolean;
 }
 
+import { useParams } from 'react-router-dom';
+import { createStartup, updateStartup, getStartup } from '../api/startups.ts';
+
 export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing = false }) => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     tagline: initialData?.tagline || '',
@@ -21,19 +26,60 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
     status: initialData?.status || 'Active',
     looking_for_cofounder: initialData?.looking_for_cofounder || false,
     is_hiring: initialData?.is_hiring || false,
-    tech_stack: initialData?.tech_stack?.join(', ') || ''
+    tech_stack: (initialData?.tech_stack as string[]) || []
   });
 
+  const [currentTechInput, setCurrentTechInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(isEditing && !!id && !initialData);
+
+  useEffect(() => {
+    if (isEditing && id && !initialData) {
+      const fetchData = async () => {
+        setIsLoadingData(true);
+        try {
+          const data = await getStartup(id);
+          setFormData({
+            name: data.name,
+            tagline: data.tagline,
+            description: data.description,
+            logo_url: data.logo_url,
+            website_url: data.website_url || '',
+            founded_date: data.founded_date,
+            status: data.status,
+            looking_for_cofounder: data.looking_for_cofounder,
+            is_hiring: data.is_hiring,
+            tech_stack: data.tech_stack
+          });
+        } catch (err) {
+          toast.error("Failed to load startup data.");
+          navigate('/startups');
+        } finally {
+          setIsLoadingData(false);
+        }
+      };
+      fetchData();
+    }
+  }, [id, isEditing, initialData]);
+
+  if (isLoadingData) {
+      return (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--bg-page)' }}>
+              <div style={{ width: '32px', height: '32px', border: '2px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <p style={{ color: 'var(--text-tertiary)', fontSize: '14px', fontWeight: 600, marginTop: '20px' }}>LOADING DATA...</p>
+          </div>
+      );
+  }
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) newErrors.name = 'Startup name is required.';
     if (formData.name.length > 50) newErrors.name = 'Startup name cannot exceed 50 characters.';
     if (!formData.tagline.trim()) newErrors.tagline = 'Tagline is required.';
-    if (formData.tagline.length > 100) newErrors.tagline = 'Tagline cannot exceed 100 characters.';
+    if (formData.tagline.length > 65) newErrors.tagline = 'Tagline cannot exceed 65 characters.';
     if (!formData.description.trim()) newErrors.description = 'Description is required.';
+    if (formData.description.length > 550) newErrors.description = 'Description cannot exceed 550 characters.';
     if (formData.website_url && !/^https?:\/\/.+/.test(formData.website_url)) {
       newErrors.website_url = 'Please enter a valid URL (starting with http:// or https://).';
     }
@@ -69,9 +115,15 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
 
     setIsSubmitting(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success(isEditing ? 'Startup updated successfully.' : 'Startup launched successfully!');
-      navigate('/startups');
+      if (isEditing && initialData?.id) {
+        await updateStartup(initialData.id, formData);
+        toast.success('Startup updated successfully.');
+        navigate(`/startup/${initialData.id}`);
+      } else {
+        const result = await createStartup(formData);
+        toast.success('Startup launched successfully!');
+        navigate(`/startup/${result.id}`);
+      }
     } catch (err) {
       toast.error('Failed to save startup. Please try again.');
     } finally {
@@ -171,11 +223,15 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
         </div>
 
         <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tagline (Unique Selling Proposition)</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tagline (Max 65 Letters)</label>
+                <span style={{ fontSize: '10px', color: formData.tagline.length >= 60 ? '#ef4444' : 'var(--text-tertiary)', fontWeight: 700 }}>{formData.tagline.length}/65</span>
+            </div>
             <input
                 type="text"
                 placeholder="A one-sentence pitch of what you build."
                 value={formData.tagline}
+                maxLength={65}
                 onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
                 style={{ border: errors.tagline ? '0.5px solid #ef4444' : '0.5px solid var(--border-hairline)' }}
             />
@@ -183,10 +239,14 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
         </div>
 
         <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Description (Markdown supported)</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Description (Max 550 Letters)</label>
+                <span style={{ fontSize: '10px', color: formData.description.length >= 500 ? '#ef4444' : 'var(--text-tertiary)', fontWeight: 700 }}>{formData.description.length}/550</span>
+            </div>
             <textarea
                 placeholder="Detailed explanation, roadmap, and vision..."
                 value={formData.description}
+                maxLength={550}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={8}
                 style={{ border: errors.description ? '0.5px solid #ef4444' : '0.5px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)' }}
@@ -247,13 +307,65 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
                 </div>
             </div>
             <div>
-                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', textTransform: 'uppercase' }}>Tech Stack (Optional)</label>
-                 <input
-                    type="text"
-                    placeholder="e.g. TypeScript, Rust, Postgres"
-                    value={formData.tech_stack}
-                    onChange={(e) => setFormData({ ...formData, tech_stack: e.target.value })}
-                />
+                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', textTransform: 'uppercase' }}>Tech Stack (Press Enter)</label>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <input
+                        type="text"
+                        placeholder="e.g. React, Node, Python..."
+                        value={currentTechInput}
+                        onChange={(e) => {
+                            if (e.target.value.endsWith(',')) {
+                                const newTech = e.target.value.slice(0, -1).trim();
+                                if (newTech && !formData.tech_stack.includes(newTech)) {
+                                    setFormData({ ...formData, tech_stack: [...formData.tech_stack, newTech] });
+                                }
+                                setCurrentTechInput('');
+                            } else {
+                                setCurrentTechInput(e.target.value);
+                            }
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const newTech = currentTechInput.trim();
+                                if (newTech && !formData.tech_stack.includes(newTech)) {
+                                    setFormData({ ...formData, tech_stack: [...formData.tech_stack, newTech] });
+                                }
+                                setCurrentTechInput('');
+                            }
+                        }}
+                    />
+                    
+                    {formData.tech_stack.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {formData.tech_stack.map((tech, index) => (
+                                <div 
+                                    key={index}
+                                    onClick={() => setFormData({ ...formData, tech_stack: formData.tech_stack.filter((_, i) => i !== index) })}
+                                    style={{
+                                        padding: '4px 10px',
+                                        backgroundColor: 'var(--bg-hover)',
+                                        border: '0.5px solid var(--border-hairline)',
+                                        borderRadius: 'var(--radius-xs)',
+                                        fontSize: '11px',
+                                        fontWeight: 800,
+                                        color: 'var(--text-secondary)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.15s ease'
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ef4444')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-hairline)')}
+                                >
+                                    {tech}
+                                    <span style={{ fontSize: '14px', fontWeight: 400, opacity: 0.6 }}>×</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                 </div>
             </div>
         </div>
 

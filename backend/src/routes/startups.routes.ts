@@ -1,0 +1,30 @@
+import { Router } from "express";
+import { 
+    getStartups, 
+    getStartup, 
+    createStartup, 
+    updateStartup, 
+    deleteStartup, 
+    getStartupMembers, 
+    getStartupJobs, 
+    getStartupFeed, 
+    postStartupUpdate 
+} from "../controllers/startups.controller.js";
+import { requireAuth } from "../middlewares/auth.middleware.js";
+
+const router = Router();
+
+// Public routes
+router.get("/", getStartups);
+router.get("/:id", getStartup);
+router.get("/:id/members", getStartupMembers);
+router.get("/:id/jobs", getStartupJobs);
+router.get("/:id/updates", getStartupFeed);
+
+// Protected routes
+router.post("/", requireAuth, createStartup);
+router.put("/:id", requireAuth, updateStartup);
+router.delete("/:id", requireAuth, deleteStartup);
+router.post("/:id/updates", requireAuth, postStartupUpdate);
+
+export default router;

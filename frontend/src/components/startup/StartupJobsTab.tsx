@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Startup, JobPosting } from '../../types/startup.ts';
 import { useWindowSize } from '../../hooks/useWindowSize.ts';
 import { Briefcase, Plus, PaperPlaneTilt, Question, Clock } from 'phosphor-react';
 import { toast } from 'react-toastify';
+import { getStartupJobs } from '../../api/startups.ts';
 
 interface StartupJobsTabProps {
   startup: Startup;
@@ -12,9 +13,25 @@ interface StartupJobsTabProps {
 export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner }) => {
   const { width } = useWindowSize();
   const isMobile = width < 640;
-  const [jobs] = useState<JobPosting[]>([]);
+  const [jobs, setJobs] = useState<JobPosting[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      try {
+        const data = await getStartupJobs(startup.id);
+        setJobs(data);
+      } catch (err) {
+        toast.error("Failed to load job postings.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, [startup.id]);
 
   const handleApply = (job: JobPosting) => {
     setSelectedJob(job);
@@ -52,59 +69,66 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {jobs.length > 0 ? jobs.map(job => (
-              <div key={job.id} style={{
-                  padding: isMobile ? '24px' : '32px',
-                  backgroundColor: 'var(--bg-card)',
-                  border: '1px solid var(--border-hairline)',
-                  borderRadius: 'var(--radius-lg)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '20px',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => !isMobile && (e.currentTarget.style.borderColor = 'var(--text-tertiary)')}
-              onMouseLeave={(e) => !isMobile && (e.currentTarget.style.borderColor = 'var(--border-hairline)')}
-              >
-                  <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '8px' : '16px' }}>
-                      <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 800, color: 'var(--text-primary)' }}>{job.title}</h3>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-tertiary)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          <Clock size={14} weight="bold" />
-                          Hiring
-                      </div>
-                  </div>
-
-                  <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6', opacity: 0.8 }}>
-                      {job.description.split('\n')[0]}...
-                  </p>
-
-                  <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      paddingTop: '20px',
-                      borderTop: '0.5px solid var(--border-hairline)' 
-                  }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Question size={16} color="var(--text-tertiary)" />
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-tertiary)' }}>{job.custom_questions.length} questions</span>
-                      </div>
-
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleApply(job); }}
-                        className="primary"
-                        style={{
-                            padding: '8px 20px',
-                            fontWeight: 800,
-                            fontSize: '13px'
-                        }}
-                      >
-                          Apply
-                      </button>
-                  </div>
+          {loading ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 0', gap: '20px' }}>
+                  <div style={{ width: '32px', height: '32px', border: '2px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  <p style={{ color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 600 }}>SEARCHING ROLES...</p>
               </div>
-          )) : (
+          ) : jobs.length > 0 ? (
+              jobs.map(job => (
+                  <div key={job.id} style={{
+                      padding: isMobile ? '24px' : '32px',
+                      backgroundColor: 'var(--bg-card)',
+                      border: '1px solid var(--border-hairline)',
+                      borderRadius: 'var(--radius-lg)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '20px',
+                      transition: 'all 0.2s ease',
+                      cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => !isMobile && (e.currentTarget.style.borderColor = 'var(--text-tertiary)')}
+                  onMouseLeave={(e) => !isMobile && (e.currentTarget.style.borderColor = 'var(--border-hairline)')}
+                  >
+                      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '8px' : '16px' }}>
+                          <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 800, color: 'var(--text-primary)' }}>{job.title}</h3>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-tertiary)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                              <Clock size={14} weight="bold" />
+                              Hiring
+                          </div>
+                      </div>
+
+                      <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6', opacity: 0.8 }}>
+                          {job.description.split('\n')[0]}...
+                      </p>
+
+                      <div style={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center',
+                          paddingTop: '20px',
+                          borderTop: '0.5px solid var(--border-hairline)' 
+                      }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <Question size={16} color="var(--text-tertiary)" />
+                              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-tertiary)' }}>{job.custom_questions.length} questions</span>
+                          </div>
+
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleApply(job); }}
+                            className="primary"
+                            style={{
+                                padding: '8px 20px',
+                                fontWeight: 800,
+                                fontSize: '13px'
+                            }}
+                          >
+                              Apply
+                          </button>
+                      </div>
+                  </div>
+              ))
+          ) : (
             <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '0.5px solid var(--border-hairline)' }}>
                  <Briefcase size={48} weight="thin" style={{ marginBottom: '16px' }} />
                  <p>No open positions at the moment.</p>

@@ -102,7 +102,7 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup }) => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>by</span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>@{startup.owner_id}</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>@{startup.user?.username || startup.owner_id}</span>
           </div>
           
           <div style={{ display: 'flex', gap: '12px' }}>

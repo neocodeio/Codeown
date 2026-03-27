@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Startup, StartupMember } from '../../types/startup.ts';
 import { useWindowSize } from '../../hooks/useWindowSize.ts';
 import { UserPlus, Trash, Shield, Users, MagnifyingGlass } from 'phosphor-react';
 import { toast } from 'react-toastify';
+import { getStartupMembers } from '../../api/startups.ts';
 
 interface StartupMembersProps {
   startup: Startup;
@@ -13,13 +14,42 @@ export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner
   const { width } = useWindowSize();
   const isMobile = width < 640;
   const [members, setMembers] = useState<StartupMember[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      setLoading(true);
+      try {
+        const data = await getStartupMembers(startup.id);
+        if (Array.isArray(data)) {
+          // Normalize the data for the component
+          setMembers(data.map(m => ({
+            user_id: m.user.id,
+            name: m.user.name,
+            username: m.user.username,
+            avatar_url: m.user.avatar_url,
+            role: m.role as any
+          })));
+        } else {
+          setMembers([]);
+        }
+      } catch (err) {
+        toast.error("Failed to load team members.");
+        setMembers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMembers();
+  }, [startup.id]);
 
   const handleRemoveMember = (userId: string) => {
     if (userId === startup.owner_id) {
         toast.error("Cannot remove the owner.");
         return;
     }
+    // Simulation for now as delete endpoint is pending
     setMembers(members.filter(m => m.user_id !== userId));
     toast.success("Member removed.");
   };
@@ -28,17 +58,9 @@ export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner
     e.preventDefault();
     if (!searchQuery.trim()) return;
     
-    const newMember: StartupMember = {
-        user_id: `user_${Math.random().toString(36).substr(2, 5)}`,
-        role: 'Member',
-        name: searchQuery,
-        username: searchQuery.toLowerCase().replace(/ /g, '_'),
-        avatar_url: null
-    };
-    
-    setMembers([...members, newMember]);
+    // In a real app, this would be an API call to invite/add
+    toast.info("Invite functionality will be connected shortly.");
     setSearchQuery('');
-    toast.success(`${searchQuery} added to the team.`);
   };
 
   return (
@@ -90,64 +112,72 @@ export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {members.length > 0 ? members.map(member => (
-              <div key={member.user_id} style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: isMobile ? '16px' : '20px',
-                  backgroundColor: 'var(--bg-card)',
-                  border: '0.5px solid var(--border-hairline)',
-                  borderRadius: 'var(--radius-md)',
-                  transition: 'background-color 0.2s ease'
-              }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '16px' }}>
-                      <div style={{
-                          width: isMobile ? '36px' : '40px',
-                          height: isMobile ? '36px' : '40px',
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--bg-hover)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '0.5px solid var(--border-hairline)',
-                          flexShrink: 0
-                      }}>
-                          {member.avatar_url ? (
-                              <img src={member.avatar_url} alt={member.name} style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
-                          ) : (
-                              <Users size={isMobile ? 18 : 20} weight="thin" color="var(--text-tertiary)" />
-                          )}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1px', flexWrap: 'wrap' }}>
-                              <span style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{member.name}</span>
-                              {member.role === 'Owner' && <div title="Startup Owner"><Shield size={13} weight="fill" color="#3b82f6" /></div>}
-                              <span style={{ fontSize: '9px', fontWeight: 900, padding: '2px 6px', backgroundColor: 'var(--bg-hover)', borderRadius: 'var(--radius-xs)', color: 'var(--text-tertiary)', letterSpacing: '0.05em' }}>{member.role.toUpperCase()}</span>
-                          </div>
-                          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>@{member.username}</span>
-                      </div>
-                  </div>
-
-                  {isOwner && member.role !== 'Owner' && (
-                      <button
-                        onClick={() => handleRemoveMember(member.user_id)}
-                        style={{
-                          padding: '8px',
-                          border: 'none',
-                          color: '#ef4444',
-                          backgroundColor: 'transparent',
-                          opacity: 0.6,
-                          borderRadius: 'var(--radius-xs)',
-                          cursor: 'pointer',
-                          flexShrink: 0
-                        }}
-                      >
-                         <Trash size={18} weight="thin" />
-                      </button>
-                  )}
+          {loading ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 0', gap: '20px' }}>
+                  <div style={{ width: '32px', height: '32px', border: '2px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  <p style={{ color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 600 }}>ASSEMBLING TEAM...</p>
               </div>
-          )) : (
+          ) : (Array.isArray(members) && members.length > 0) ? (
+              members.map(member => (
+                  <div key={member.user_id} style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: isMobile ? '16px' : '20px',
+                      backgroundColor: 'var(--bg-card)',
+                      border: '0.5px solid var(--border-hairline)',
+                      borderRadius: 'var(--radius-md)',
+                      transition: 'background-color 0.2s ease'
+                  }}>
+                      {/* ... rest of member item ... */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '16px' }}>
+                          <div style={{
+                              width: isMobile ? '36px' : '40px',
+                              height: isMobile ? '36px' : '40px',
+                              borderRadius: '50%',
+                              backgroundColor: 'var(--bg-hover)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              border: '0.5px solid var(--border-hairline)',
+                              flexShrink: 0
+                          }}>
+                              {member.avatar_url ? (
+                                  <img src={member.avatar_url} alt={member.name} style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
+                              ) : (
+                                  <Users size={isMobile ? 18 : 20} weight="thin" color="var(--text-tertiary)" />
+                              )}
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1px', flexWrap: 'wrap' }}>
+                                  <span style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{member.name}</span>
+                                  {member.role === 'Owner' && <div title="Startup Owner"><Shield size={13} weight="fill" color="#3b82f6" /></div>}
+                                  <span style={{ fontSize: '9px', fontWeight: 900, padding: '2px 6px', backgroundColor: 'var(--bg-hover)', borderRadius: 'var(--radius-xs)', color: 'var(--text-tertiary)', letterSpacing: '0.05em' }}>{member.role.toUpperCase()}</span>
+                              </div>
+                              <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>@{member.username}</span>
+                          </div>
+                      </div>
+
+                      {isOwner && member.role !== 'Owner' && (
+                          <button
+                            onClick={() => handleRemoveMember(member.user_id)}
+                            style={{
+                              padding: '8px',
+                              border: 'none',
+                              color: '#ef4444',
+                              backgroundColor: 'transparent',
+                              opacity: 0.6,
+                              borderRadius: 'var(--radius-xs)',
+                              cursor: 'pointer',
+                              flexShrink: 0
+                            }}
+                          >
+                             <Trash size={18} weight="thin" />
+                          </button>
+                      )}
+                  </div>
+              ))
+          ) : (
               <div style={{ textAlign: 'center', padding: '48px', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '0.5px solid var(--border-hairline)' }}>
                   <Users size={40} weight="thin" color="var(--text-tertiary)" style={{ marginBottom: '12px' }} />
                   <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>No members found yet.</p>

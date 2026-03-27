@@ -15,6 +15,12 @@ export interface Startup {
   member_count: number;
   created_at: string;
   updated_at: string;
+  user?: {
+    id: string;
+    name: string;
+    username: string;
+    avatar_url: string | null;
+  };
 }
 
 export interface Milestone {
@@ -48,4 +54,18 @@ export interface JobApplication {
   answers: { question_id: string; answer: string }[];
   status: 'pending' | 'reviewed' | 'accepted' | 'rejected';
   created_at: string;
+}
+export interface StartupUpdate {
+  id: string;
+  startup_id: string;
+  user_id: string;
+  content: string;
+  is_broadcast: boolean;
+  created_at: string;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    avatar_url: string | null;
+  };
 }

@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { Startup } from '../types/startup';
-import { useClerkUser } from '../hooks/useClerkUser';
-import { useWindowSize } from '../hooks/useWindowSize';
+import type { Startup } from '../types/startup.ts';
+import { useClerkUser } from '../hooks/useClerkUser.ts';
+import { useWindowSize } from '../hooks/useWindowSize.ts';
 import { StartupOverview } from "../components/startup/StartupOverview.tsx";
 import { StartupMembers } from "../components/startup/StartupMembers.tsx";
 import { StartupJobsTab } from "../components/startup/StartupJobsTab.tsx";
 import { StartupFeedTab } from "../components/startup/StartupFeedTab.tsx";
+import { getStartup } from '../api/startups.ts';
+import { toast } from 'react-toastify';
 import { 
     Layout, 
     Users, 
     Briefcase, 
     Rss, 
     Globe, 
-    PencilSimple, 
+    PencilSimple,
     Rocket,
     Warning
 } from 'phosphor-react';
@@ -30,12 +32,19 @@ export const StartupProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-        setStartup(null); 
+    if (!id) return;
+    const fetchStartup = async () => {
+      setLoading(true);
+      try {
+        const data = await getStartup(id);
+        setStartup(data);
+      } catch (err) {
+        toast.error("Startup not found.");
+      } finally {
         setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+      }
+    };
+    fetchStartup();
   }, [id]);
 
   const isOwner = currentUser?.id === startup?.owner_id;

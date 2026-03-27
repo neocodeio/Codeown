@@ -1,48 +1,56 @@
-import React, { useState } from 'react';
-import type { Startup } from '../../types/startup.ts';
+import React, { useState, useEffect } from 'react';
+import type { Startup, StartupUpdate } from '../../types/startup.ts';
 import { useWindowSize } from '../../hooks/useWindowSize.ts';
 import { Megaphone, Globe, PaperPlaneTilt, Clock, Broadcast, Rss } from 'phosphor-react';
 import { toast } from 'react-toastify';
 import ContentRenderer from '../ContentRenderer.tsx';
+import { getStartupUpdates, postStartupUpdate } from '../../api/startups.ts';
 
 interface StartupFeedTabProps {
   startup: Startup;
   isOwner: boolean;
 }
 
-interface StartupUpdate {
-    id: string;
-    content: string;
-    is_broadcast: boolean;
-    created_at: string;
-}
-
 export const StartupFeedTab: React.FC<StartupFeedTabProps> = ({ startup, isOwner }) => {
   const { width } = useWindowSize();
   const isMobile = width < 640;
   const [updates, setUpdates] = useState<StartupUpdate[]>([]);
+  const [loading, setLoading] = useState(true);
   const [newUpdate, setNewUpdate] = useState('');
   const [shouldBroadcast, setShouldBroadcast] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handlePostUpdate = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchUpdates = async () => {
+      setLoading(true);
+      try {
+        const data = await getStartupUpdates(startup.id);
+        setUpdates(data);
+      } catch (err) {
+        toast.error("Failed to load startup feed.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUpdates();
+  }, [startup.id]);
+
+  const handlePostUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newUpdate.trim()) return;
 
     setIsSubmitting(true);
-    setTimeout(() => {
-        const update: StartupUpdate = {
-            id: `u_${Date.now()}`,
-            content: newUpdate,
-            is_broadcast: shouldBroadcast,
-            created_at: new Date().toISOString()
-        };
-        setUpdates([update, ...updates]);
+    try {
+        const posted = await postStartupUpdate(startup.id, newUpdate, shouldBroadcast);
+        setUpdates([posted, ...updates]);
         setNewUpdate('');
         setShouldBroadcast(false);
-        setIsSubmitting(false);
         toast.success(shouldBroadcast ? "Update broadcasted to main feed!" : "Update posted to startup feed.");
-    }, 1000);
+    } catch (err) {
+        toast.error("Failed to post update.");
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   return (
@@ -120,7 +128,12 @@ export const StartupFeedTab: React.FC<StartupFeedTabProps> = ({ startup, isOwner
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {updates.length > 0 ? (
+          {loading ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 0', gap: '20px' }}>
+                  <div style={{ width: '32px', height: '32px', border: '2px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  <p style={{ color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 600 }}>TAPPING INTO FEED...</p>
+              </div>
+          ) : updates.length > 0 ? (
               updates.map(update => (
                   <div key={update.id} style={{
                     position: 'relative',
