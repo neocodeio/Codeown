@@ -157,8 +157,8 @@ export const StartupProfile: React.FC = () => {
                    flex: isMobile ? 2 : 'none'
                  }}
                >
-                 <PencilSimple size={18} />
-                 {isMobile ? 'EDIT' : 'EDIT_PROFILE'}
+                 <PencilSimple size={16} />
+                 {isMobile ? 'EDIT' : 'Edit Startup'}
                </button>
              )}
           </div>

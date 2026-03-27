@@ -62,8 +62,8 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
                 className="primary" 
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 20px', fontWeight: 800, width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}
               >
-                  <Plus size={18} weight="bold" />
-                  POST_JOB
+                  <Plus size={16} weight="bold" />
+                  Post Job
               </button>
           )}
       </div>
