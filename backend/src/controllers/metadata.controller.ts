@@ -1,18 +1,33 @@
 import type { Request, Response } from "express";
 
 export async function unfurlUrl(req: Request, res: Response) {
+    const rawUrl = req.query.url;
+    if (!rawUrl || typeof rawUrl !== "string") {
+        return res.status(400).json({ error: "URL is required" });
+    }
+
+    const url = rawUrl;
+    let urlObj: URL;
     try {
-        const { url } = req.query;
+        urlObj = new URL(url);
+    } catch (e) {
+        return res.status(400).json({ error: "Invalid URL" });
+    }
 
-        if (!url || typeof url !== "string") {
-            return res.status(400).json({ error: "URL is required" });
-        }
-
-        // Basic URL validation
-        try {
-            new URL(url);
-        } catch (e) {
-            return res.status(400).json({ error: "Invalid URL" });
+    try {
+        // SSRF Protection: Block localhost and common private IP ranges
+        const hostname = urlObj.hostname.toLowerCase();
+        if (
+            hostname === "localhost" ||
+            hostname === "127.0.0.1" ||
+            hostname === "0.0.0.0" ||
+            hostname.startsWith("169.254.") || // Cloud metadata
+            hostname.startsWith("192.168.") || // Private LAN
+            hostname.startsWith("10.") ||      // Private LAN
+            hostname.endsWith(".internal") ||  // Common cloud internal DNS
+            hostname.endsWith(".local")        // mDNS
+        ) {
+            return res.status(400).json({ error: "Access to private or local addresses is not allowed." });
         }
 
         console.log(`Unfurling URL: ${url}`);
@@ -23,7 +38,7 @@ export async function unfurlUrl(req: Request, res: Response) {
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
                 "Accept-Language": "en-US,en;q=0.5",
             },
-            signal: AbortSignal.timeout(5000), // 5 second timeout
+            signal: (AbortSignal as any).timeout(5000), // 5 second timeout
         });
 
         if (!response.ok) {
@@ -31,14 +46,13 @@ export async function unfurlUrl(req: Request, res: Response) {
             return res.status(200).json({
                 error: true,
                 message: `Failed to fetch URL: ${response.statusText}`,
-                title: "", description: "", image: "", favicon: "", url, hostname: new URL(url).hostname
+                title: "", description: "", image: "", favicon: "", url, hostname: urlObj.hostname
             });
         }
 
         const html = await response.text();
 
         // Extract basic metadata using regex
-        // This is safer than a full HTML parser for simple needs, though less robust
         const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
         const ogTitleMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ||
             html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
@@ -55,18 +69,25 @@ export async function unfurlUrl(req: Request, res: Response) {
         const iconMatch = html.match(/<link[^>]+rel=["'](?:shortcut )?icon["'][^>]+href=["']([^"']+)["']/i) ||
             html.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["'](?:shortcut )?icon["']/i);
 
-        let title = (ogTitleMatch ? ogTitleMatch[1] : (titleMatch ? titleMatch[1] : "")).trim();
-        let description = (ogDescriptionMatch ? ogDescriptionMatch[1] : (descriptionMatch ? descriptionMatch[1] : "")).trim();
-        let image = ogImageMatch ? ogImageMatch[1] : "";
-        let favicon = iconMatch ? iconMatch[1] : "";
+        let title = (ogTitleMatch ? (ogTitleMatch[1] || "") : (titleMatch ? (titleMatch[1] || "") : "")).trim();
+        let description = (ogDescriptionMatch ? (ogDescriptionMatch[1] || "") : (descriptionMatch ? (descriptionMatch[1] || "") : "")).trim();
+        let image = ogImageMatch ? (ogImageMatch[1] || "") : "";
+        let favicon = iconMatch ? (iconMatch[1] || "") : "";
 
         // Resolve relative URLs for image and favicon
-        const urlObj = new URL(url);
         if (image && !image.startsWith("http")) {
-            image = new URL(image, urlObj.origin).toString();
+            try {
+                image = new URL(image, urlObj.origin).toString();
+            } catch (e) {
+                image = "";
+            }
         }
         if (favicon && !favicon.startsWith("http")) {
-            favicon = new URL(favicon, urlObj.origin).toString();
+            try {
+                favicon = new URL(favicon, urlObj.origin).toString();
+            } catch (e) {
+                favicon = `${urlObj.origin}/favicon.ico`;
+            }
         } else if (!favicon) {
             favicon = `${urlObj.origin}/favicon.ico`;
         }
@@ -84,7 +105,7 @@ export async function unfurlUrl(req: Request, res: Response) {
         return res.status(200).json({
             error: true,
             message: "Internal server error fetching metadata",
-            title: "", description: "", image: "", favicon: "", url: req.query.url, hostname: ""
+            title: "", description: "", image: "", favicon: "", url, hostname: ""
         });
     }
 }

@@ -51,8 +51,8 @@ const corsOptions = {
 
     const normalizedOrigin = origin.toLowerCase();
     const isAllowed = allowedOrigins.some(o => o.toLowerCase() === normalizedOrigin) ||
-      normalizedOrigin.includes("codeown.space") ||
-      normalizedOrigin.includes("localhost");
+      /^https?:\/\/([a-z0-9-]+\.)?codeown\.space$/i.test(normalizedOrigin) ||
+      /^https?:\/\/localhost(:\d+)?$/i.test(normalizedOrigin);
 
     if (isAllowed) {
       callback(null, true);

@@ -33,8 +33,9 @@ export async function uploadImage(req: MulterRequest, res: Response) {
       return res.status(400).json({ error: "Image size must not exceed 1MB. Please choose a smaller image." });
     }
 
-    // Generate unique filename
-    const fileExt = file.originalname.split('.').pop();
+    // Generate unique filename - sanitize extension
+    const rawExt = file.originalname.split('.').pop() || "png";
+    const fileExt = rawExt.replace(/[^a-z0-9]/gi, '').toLowerCase();
     const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
     // Upload to Supabase Storage
@@ -90,8 +91,9 @@ export async function uploadAudio(req: MulterRequest, res: Response) {
       return res.status(400).json({ error: "Audio size must not exceed 5MB." });
     }
 
-    // Generate unique filename (.webm is what web MediaRecorder uses by default for audio)
-    const fileExt = file.originalname.split('.').pop() || "webm";
+    // Generate unique filename - sanitize extension
+    const rawExt = file.originalname.split('.').pop() || "webm";
+    const fileExt = rawExt.replace(/[^a-z0-9]/gi, '').toLowerCase();
     const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
     const { data, error } = await supabase.storage

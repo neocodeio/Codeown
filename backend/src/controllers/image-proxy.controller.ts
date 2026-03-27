@@ -14,8 +14,8 @@ export async function proxyImage(req: Request, res: Response) {
       return res.status(400).json({ error: 'Image URL is required' });
     }
 
-    // Only allow Supabase storage URLs
-    if (!imageUrl.includes('supabase.co/storage/v1/object/public/')) {
+    // Only allow Supabase storage URLs (strictly validated)
+    if (!imageUrl.startsWith('https://') || !imageUrl.includes('.supabase.co/storage/v1/object/public/')) {
       return res.status(400).json({ error: 'Invalid image URL' });
     }
 
