@@ -340,7 +340,7 @@ export default function Navbar() {
       <div style={{ flex: 1 }}></div>
 
       {/* Footer Links & Profile */}
-      <div style={{ padding: "0 16px 20px 16px", borderTop: "0.5px solid var(--border-hairline)" }}>
+      <div style={{ padding: "0 16px 20px 16px" }}>
 
         {/* Profile Card */}
         {isSignedIn && user ? (
