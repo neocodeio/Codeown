@@ -15,6 +15,7 @@ import { createStartup, updateStartup, getStartup } from '../api/startups.ts';
 export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing = false }) => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
@@ -86,8 +87,6 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleLogoClick = () => {
     fileInputRef.current?.click();
