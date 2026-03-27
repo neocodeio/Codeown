@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
+import { ensureUserExists } from "./users.controller.js";
 
 export async function getStartups(req: Request, res: Response) {
   try {
@@ -54,8 +55,15 @@ export async function getStartup(req: Request, res: Response) {
 
 export async function createStartup(req: Request, res: Response) {
   try {
-    const userId = (req as any).user?.sub || (req as any).user?.id;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Ensure user exists in Supabase before creating startup
+    try {
+        await ensureUserExists(userId, (req as any).user);
+    } catch (userErr) {
+        console.warn("[createStartup] ensureUserExists non-fatal error:", userErr);
+    }
 
     const startupData = {
       ...req.body,
@@ -73,7 +81,10 @@ export async function createStartup(req: Request, res: Response) {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+        console.error("[createStartup] INSERT ERROR:", error);
+        throw error;
+    }
 
     // Add owner as the first member
     await supabase.from("startup_members").insert({
@@ -84,6 +95,7 @@ export async function createStartup(req: Request, res: Response) {
 
     res.status(201).json(data);
   } catch (err: any) {
+    console.error("[createStartup] CATCH ERROR:", err);
     res.status(500).json({ error: "Failed to create startup", details: err.message });
   }
 }
@@ -91,11 +103,19 @@ export async function createStartup(req: Request, res: Response) {
 export async function updateStartup(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const userId = (req as any).user?.sub || (req as any).user?.id;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     
     // Check ownership
-    const { data: startup } = await supabase.from("startups").select("owner_id").eq("id", id).single();
-    if (!startup || startup.owner_id !== userId) {
+    const { data: startup, error: findError } = await supabase
+        .from("startups")
+        .select("owner_id")
+        .eq("id", id)
+        .maybeSingle();
+
+    if (findError) throw findError;
+    if (!startup) return res.status(404).json({ error: "Startup not found" });
+    
+    if (startup.owner_id !== userId) {
       return res.status(403).json({ error: "Not authorized to edit this startup" });
     }
 
