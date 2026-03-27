@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { StartupCard } from '../components/StartupCard.tsx';
 import type { Startup } from '../types/startup.ts';
 import { useWindowSize } from '../hooks/useWindowSize.ts';
-import { MagnifyingGlass, Rocket } from 'phosphor-react';
+import { MagnifyingGlass } from 'phosphor-react';
 import { Link } from 'react-router-dom';
 import { getStartups, getCooldownStatus, type CooldownStatus } from '../api/startups.ts';
 import { toast } from 'react-toastify';
@@ -65,8 +65,8 @@ export const StartupDirectory: React.FC = () => {
       }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <Rocket size={20} weight="fill" color="var(--text-primary)" />
-              <span style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Ecosystem Explorer</span>
+              {/* <Rocket size={20} weight="fill" color="var(--text-primary)" /> */}
+              {/* <span style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Ecosystem Explorer</span> */}
           </div>
           <h1 style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: 800, marginBottom: '20px', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>The Startup Directory</h1>
           <p style={{ fontSize: '16px', color: 'var(--text-secondary)', fontWeight: 500, lineHeight: 1.6, maxWidth: '520px' }}>
