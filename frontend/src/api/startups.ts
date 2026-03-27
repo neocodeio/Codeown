@@ -1,11 +1,13 @@
 import api from './axios.ts';
-import type { Startup, StartupMember, JobPosting, StartupUpdate } from '../types/startup.ts';
+import type { Startup, JobPosting, StartupUpdate } from '../types/startup.ts';
 
 export const getStartups = async (searchQuery?: string, status?: string) => {
-    const params = new URLSearchParams();
-    if (searchQuery) params.append('searchQuery', searchQuery);
-    if (status && status !== 'All') params.append('status', status);
-    const { data } = await api.get<Startup[]>(`/startups?${params.toString()}`);
+    const { data } = await api.get<Startup[]>('/startups', {
+        params: {
+            searchQuery: searchQuery || undefined,
+            status: (status && status !== 'All') ? status : undefined
+        }
+    });
     return data;
 };
 
@@ -25,7 +27,10 @@ export const updateStartup = async (id: string, startupData: Partial<Startup>) =
 };
 
 export const getStartupMembers = async (id: string) => {
-    const { data } = await api.get<{ role: string; user: any }[]>(`/startups/${id}/members`);
+    const { data } = await api.get<{ 
+        role: string; 
+        user: { id: string; name: string; username: string; avatar_url: string | null } 
+    }[]>(`/startups/${id}/members`);
     return data;
 };
 
