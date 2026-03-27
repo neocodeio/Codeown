@@ -114,16 +114,18 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
 
     setIsSubmitting(true);
     try {
-      if (isEditing && initialData?.id) {
-        await updateStartup(initialData.id, formData);
+      const targetId = initialData?.id || id;
+      if (isEditing && targetId) {
+        await updateStartup(targetId, formData);
         toast.success('Startup updated successfully.');
-        navigate(`/startup/${initialData.id}`);
+        navigate(`/startup/${targetId}`);
       } else {
         const result = await createStartup(formData);
         toast.success('Startup launched successfully!');
         navigate(`/startup/${result.id}`);
       }
     } catch (err) {
+      console.error("[StartupForm] SAVE ERROR:", err);
       toast.error('Failed to save startup. Please try again.');
     } finally {
       setIsSubmitting(false);
