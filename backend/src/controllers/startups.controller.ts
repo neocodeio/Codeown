@@ -76,6 +76,28 @@ export async function createStartup(req: Request, res: Response) {
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
+    // Check for 35-day cooldown between startup creations
+    const { data: recentStartup } = await supabase
+      .from("startups")
+      .select("created_at")
+      .eq("owner_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (recentStartup) {
+      const lastCreated = new Date(recentStartup.created_at);
+      const now = new Date();
+      const diffMs = now.getTime() - lastCreated.getTime();
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 35) {
+        return res.status(403).json({ 
+          error: `You can only launch one startup every 35 days. Please wait ${35 - diffDays} more days.` 
+        });
+      }
+    }
+
     // Ensure user exists in Supabase before creating startup
     try {
         await ensureUserExists(userId, (req as any).user);
@@ -427,5 +449,54 @@ export async function postStartupUpdate(req: Request, res: Response) {
     res.status(201).json(data);
   } catch (err: any) {
     res.status(500).json({ error: "Failed to post update", details: err.message });
+  }
+}
+
+export async function getCooldownStatus(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Last created startup
+    const { data: recentStartup } = await supabase
+      .from("startups")
+      .select("created_at")
+      .eq("owner_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!recentStartup) {
+      return res.json({ isInCooldown: false, daysLeft: 0, nextLaunchDate: null });
+    }
+
+    const lastCreated = new Date(recentStartup.created_at);
+    const now = new Date();
+    const COOLDOWN_DAYS = 35;
+    const cooldownMs = COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
+    const nextLaunchDate = new Date(lastCreated.getTime() + cooldownMs);
+    
+    // Exact diff for countdown
+    const diffMs = nextLaunchDate.getTime() - now.getTime();
+    const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMs > 0) {
+      return res.json({ 
+        isInCooldown: true, 
+        daysLeft, 
+        nextLaunchDate: nextLaunchDate.toISOString(),
+        lastLaunchDate: lastCreated.toISOString(),
+        diffMs // Send ms for raw countdown timer
+      });
+    }
+
+    res.json({ 
+      isInCooldown: false, 
+      daysLeft: 0, 
+      nextLaunchDate: nextLaunchDate.toISOString() 
+    });
+  } catch (err: any) {
+    console.error("[getCooldownStatus] ERROR:", err);
+    res.status(500).json({ error: "Failed to fetch cooldown status" });
   }
 }

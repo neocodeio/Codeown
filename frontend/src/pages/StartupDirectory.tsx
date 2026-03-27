@@ -4,16 +4,20 @@ import type { Startup } from '../types/startup.ts';
 import { useWindowSize } from '../hooks/useWindowSize.ts';
 import { MagnifyingGlass, Funnel, Plus, Rocket } from 'phosphor-react';
 import { Link } from 'react-router-dom';
-import { getStartups } from '../api/startups.ts';
+import { getStartups, getCooldownStatus, type CooldownStatus } from '../api/startups.ts';
 import { toast } from 'react-toastify';
+import { LaunchCooldownTimer } from '../components/startup/LaunchCooldownTimer.tsx';
+import { useClerkUser } from '../hooks/useClerkUser.ts';
 
 export const StartupDirectory: React.FC = () => {
   const [startups, setStartups] = useState<Startup[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'All' | 'Active' | 'Built' | 'Paused'>('All');
+  const [cooldown, setCooldown] = useState<CooldownStatus | null>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const { isSignedIn } = useClerkUser();
 
   useEffect(() => {
     const fetchStartups = async () => {
@@ -23,7 +27,6 @@ export const StartupDirectory: React.FC = () => {
         if (Array.isArray(data)) {
           setStartups(data);
         } else {
-          console.error("Expected startups array but got:", data);
           setStartups([]);
         }
       } catch (err) {
@@ -37,6 +40,12 @@ export const StartupDirectory: React.FC = () => {
     const timer = setTimeout(fetchStartups, 300); // Debounce search
     return () => clearTimeout(timer);
   }, [searchQuery, filterStatus]);
+
+  useEffect(() => {
+    if (isSignedIn) {
+        getCooldownStatus().then(setCooldown).catch(() => {});
+    }
+  }, [isSignedIn]);
 
   const filteredStartups = useMemo(() => {
     if (!Array.isArray(startups)) return [];
@@ -55,32 +64,36 @@ export const StartupDirectory: React.FC = () => {
         flexDirection: isMobile ? 'column' : 'row',
         justifyContent: 'space-between',
         alignItems: isMobile ? 'flex-start' : 'center',
-        gap: isMobile ? '32px' : '20px',
+        gap: isMobile ? '32px' : '32px',
         marginBottom: isMobile ? '40px' : '60px'
       }}>
-        <div>
+        <div style={{ flex: 1 }}>
           <h1 style={{ fontSize: isMobile ? '28px' : '36px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-primary)' }}>Startup Directory</h1>
-          <p style={{ fontSize: isMobile ? '14px' : '16px', color: 'var(--text-secondary)', fontWeight: 500, lineHeight: 1.5 }}>
+          <p style={{ fontSize: isMobile ? '14px' : '16px', color: 'var(--text-secondary)', fontWeight: 500, lineHeight: 1.5, maxWidth: '600px' }}>
             Discover and connect with the next generation of technology builders.
           </p>
         </div>
         
-        <Link to="/startup/new" style={{ textDecoration: 'none', width: isMobile ? '100%' : 'auto' }}>
-          <button className="primary" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            padding: '12px 24px',
-            fontWeight: 800,
-            width: isMobile ? '100%' : 'auto',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}>
-            <Plus size={20} weight="bold" />
-            Launch Startup
-          </button>
-        </Link>
+        {cooldown?.isInCooldown && cooldown.diffMs ? (
+            <LaunchCooldownTimer diffMs={cooldown.diffMs} />
+        ) : (
+            <Link to="/startup/new" style={{ textDecoration: 'none', width: isMobile ? '100%' : 'auto' }}>
+            <button className="primary" style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                padding: '16px 32px',
+                fontWeight: 800,
+                width: isMobile ? '100%' : 'auto',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+            }}>
+                <Plus size={20} weight="bold" />
+                Launch Startup
+            </button>
+            </Link>
+        )}
       </div>
 
       {/* Discovery UI Bar */}

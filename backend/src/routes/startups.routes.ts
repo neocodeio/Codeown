@@ -12,7 +12,8 @@ import {
     addStartupMember,
     removeStartupMember,
     createStartupJob,
-    deleteStartupJob
+    deleteStartupJob,
+    getCooldownStatus
 } from "../controllers/startups.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
@@ -20,6 +21,7 @@ const router = Router();
 
 // Public routes
 router.get("/", getStartups);
+router.get("/cooldown/status", requireAuth, getCooldownStatus);
 router.get("/:id", getStartup);
 router.get("/:id/members", getStartupMembers);
 router.get("/:id/jobs", getStartupJobs);

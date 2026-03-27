@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { Startup } from '../types/startup';
-import { ArrowLeft, FloppyDiskBack, HardDrive, PaperPlaneTilt, Link as LinkIcon, Calendar, UserPlus } from 'phosphor-react';
+import { ArrowLeft, FloppyDiskBack, HardDrive, PaperPlaneTilt, Link as LinkIcon, Calendar, UserPlus, Timer } from 'phosphor-react';
 import { toast } from 'react-toastify';
+import { createStartup, updateStartup, getStartup, getCooldownStatus, type CooldownStatus } from '../api/startups.ts';
+import { LaunchCooldownTimer } from './startup/LaunchCooldownTimer.tsx';
+import { useClerkUser } from '../hooks/useClerkUser.ts';
 
 interface StartupFormProps {
   initialData?: Partial<Startup>;
   isEditing?: boolean;
 }
 
-import { useParams } from 'react-router-dom';
-import { createStartup, updateStartup, getStartup } from '../api/startups.ts';
-
 export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing = false }) => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { isSignedIn } = useClerkUser();
   
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
@@ -34,6 +35,7 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(isEditing && !!id && !initialData);
+  const [cooldown, setCooldown] = useState<CooldownStatus | null>(null);
 
   useEffect(() => {
     if (isEditing && id && !initialData) {
@@ -64,11 +66,33 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
     }
   }, [id, isEditing, initialData]);
 
+  useEffect(() => {
+    if (!isEditing && isSignedIn) {
+       getCooldownStatus().then(setCooldown).catch(() => {});
+    }
+  }, [isEditing, isSignedIn]);
+
   if (isLoadingData) {
       return (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--bg-page)' }}>
               <div style={{ width: '32px', height: '32px', border: '2px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
               <p style={{ color: 'var(--text-tertiary)', fontSize: '14px', fontWeight: 600, marginTop: '20px' }}>LOADING DATA...</p>
+          </div>
+      );
+  }
+
+  if (!isEditing && cooldown?.isInCooldown && cooldown.diffMs) {
+      return (
+          <div className="container" style={{ padding: '100px 40px', maxWidth: '600px', textAlign: 'center' }}>
+              <Timer size={64} weight="thin" color="var(--text-tertiary)" style={{ marginBottom: '32px' }} />
+              <h1 style={{ fontSize: '28px', fontWeight: 800, marginBottom: '16px' }}>Creation Locked</h1>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '40px', lineHeight: 1.6 }}>
+                  You recently launched a startup. To maintain quality across the hub, we require a 35-day focus period before your next launch.
+              </p>
+              <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+                  <LaunchCooldownTimer diffMs={cooldown.diffMs} />
+              </div>
+              <button onClick={() => navigate('/startups')} className="secondary" style={{ marginTop: '48px', fontWeight: 700 }}>RETURN TO HUB</button>
           </div>
       );
   }
@@ -124,9 +148,10 @@ export const StartupForm: React.FC<StartupFormProps> = ({ initialData, isEditing
         toast.success('Startup launched successfully!');
         navigate(`/startup/${result.id}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("[StartupForm] SAVE ERROR:", err);
-      toast.error('Failed to save startup. Please try again.');
+      const msg = err.response?.data?.error || 'Failed to save startup. Please try again.';
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

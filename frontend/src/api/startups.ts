@@ -68,3 +68,16 @@ export const deleteStartupJob = async (id: string, jobId: string) => {
     const { data } = await api.delete(`/startups/${id}/jobs/${jobId}`);
     return data;
 };
+
+export interface CooldownStatus {
+    isInCooldown: boolean;
+    daysLeft: number;
+    nextLaunchDate: string | null;
+    lastLaunchDate?: string;
+    diffMs?: number;
+}
+
+export const getCooldownStatus = async () => {
+    const { data } = await api.get<CooldownStatus>('/startups/cooldown/status');
+    return data;
+};
