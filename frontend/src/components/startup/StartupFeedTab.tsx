@@ -89,18 +89,18 @@ export const StartupFeedTab: React.FC<StartupFeedTabProps> = ({ startup, isOwner
                   }}>
                       <div 
                         onClick={() => setShouldBroadcast(!shouldBroadcast)}
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '12px', 
-                          cursor: 'pointer',
-                          padding: '10px 14px',
-                          borderRadius: 'var(--radius-sm)',
-                          backgroundColor: shouldBroadcast ? 'var(--bg-hover)' : 'transparent',
-                          border: shouldBroadcast ? '1px solid var(--text-primary)' : '1px solid var(--border-hairline)',
-                          transition: 'all 0.2s ease',
-                          flex: 1
-                        }}
+                        // style={{ 
+                        //   display: 'flex', 
+                        //   alignItems: 'center', 
+                        //   gap: '12px', 
+                        //   cursor: 'pointer',
+                        //   padding: '10px 14px',
+                        //   borderRadius: 'var(--radius-sm)',
+                        //   backgroundColor: shouldBroadcast ? 'var(--bg-hover)' : 'transparent',
+                        //   border: shouldBroadcast ? '1px solid var(--text-primary)' : '1px solid var(--border-hairline)',
+                        //   transition: 'all 0.2s ease',
+                        //   flex: 1
+                        // }}
                       >
                           {/* <Broadcast size={20} weight={shouldBroadcast ? "fill" : "regular"} color={shouldBroadcast ? "var(--text-primary)" : "var(--text-tertiary)"} /> */}
                           {/* <div>
