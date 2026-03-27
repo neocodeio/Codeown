@@ -8,9 +8,10 @@ import { getStartupMembers, addStartupMember, removeStartupMember } from '../../
 interface StartupMembersProps {
   startup: Startup;
   isOwner: boolean;
+  onUpdate?: () => void;
 }
 
-export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner }) => {
+export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner, onUpdate }) => {
   const { width } = useWindowSize();
   const isMobile = width < 640;
   const [members, setMembers] = useState<StartupMember[]>([]);
@@ -54,6 +55,7 @@ export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner
         await removeStartupMember(startup.id, userId);
         toast.success("Member removed.");
         fetchMembers();
+        if (onUpdate) onUpdate();
     } catch (err: any) {
         toast.error(err.response?.data?.error || "Failed to remove member.");
     }
@@ -68,6 +70,7 @@ export const StartupMembers: React.FC<StartupMembersProps> = ({ startup, isOwner
         toast.success(`Sent invite to @${searchQuery.trim()}`);
         setSearchQuery('');
         fetchMembers();
+        if (onUpdate) onUpdate();
     } catch (err: any) {
         toast.error(err.response?.data?.error || "User not found or already on team.");
     }

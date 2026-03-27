@@ -31,19 +31,20 @@ export const StartupProfile: React.FC = () => {
   const [startup, setStartup] = useState<Startup | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchStartup = async () => {
     if (!id) return;
-    const fetchStartup = async () => {
-      setLoading(true);
-      try {
-        const data = await getStartup(id);
-        setStartup(data);
-      } catch (err) {
-        toast.error("Startup not found.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    try {
+      const data = await getStartup(id);
+      setStartup(data);
+    } catch (err) {
+      toast.error("Startup not found.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchStartup();
   }, [id]);
 
@@ -158,7 +159,7 @@ export const StartupProfile: React.FC = () => {
                  }}
                >
                  <PencilSimple size={16} />
-                 {isMobile ? 'EDIT' : 'Edit Startup'}
+                 {isMobile ? 'Edit' : 'Edit Startup'}
                </button>
              )}
           </div>
@@ -206,7 +207,7 @@ export const StartupProfile: React.FC = () => {
       {/* Tab Content */}
       <div style={{ animation: 'fadeIn 0.4s ease forwards' }}>
         {activeTab === 'overview' && <StartupOverview startup={startup} />}
-        {activeTab === 'members' && <StartupMembers startup={startup} isOwner={isOwner} />}
+        {activeTab === 'members' && <StartupMembers startup={startup} isOwner={isOwner} onUpdate={fetchStartup} />}
         {activeTab === 'jobs' && <StartupJobsTab startup={startup} isOwner={isOwner} />}
         {activeTab === 'feed' && <StartupFeedTab startup={startup} isOwner={isOwner} />}
       </div>
