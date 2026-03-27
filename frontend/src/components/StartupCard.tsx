@@ -1,45 +1,35 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Startup } from '../types/startup';
-import { Rocket, Users, Briefcase, MinusCircle, CheckCircle } from 'phosphor-react';
+import { Rocket, Users, Briefcase } from 'phosphor-react';
 
 interface StartupCardProps {
   startup: Startup;
 }
 
 export const StartupCard: React.FC<StartupCardProps> = ({ startup }) => {
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'Active': return <Rocket size={14} weight="fill" color="#10b981" />;
-      case 'Built': return <CheckCircle size={14} weight="fill" color="var(--text-primary)" />;
-      case 'Paused': return <MinusCircle size={14} weight="fill" color="var(--text-tertiary)" />;
-      default: return null;
-    }
-  };
-
   return (
-    <Link to={`/startup/${startup.id}`} className="startup-card-link">
+    <Link to={`/startup/${startup.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
       <div style={{
-        backgroundColor: 'var(--bg-card)',
+        backgroundColor: 'var(--bg-hover)',
         border: '0.5px solid var(--border-hairline)',
         borderRadius: 'var(--radius-sm)',
-        padding: '24px',
-        transition: 'all 0.2s var(--ease-smooth)',
-        height: '100%',
+        padding: '32px',
+        transition: 'all 0.3s ease',
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px',
-        position: 'relative',
-        overflow: 'hidden'
+        gap: '24px',
+        height: '100%',
+        animation: 'fadeIn 0.4s ease'
       }}
       className="startup-card"
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: 'var(--radius-sm)',
-            backgroundColor: 'var(--bg-hover)',
+            width: '56px',
+            height: '56px',
+            borderRadius: '8px',
+            backgroundColor: 'var(--bg-page)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -52,41 +42,39 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup }) => {
               <Rocket size={24} weight="thin" color="var(--text-tertiary)" />
             )}
           </div>
+          
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '4px 10px',
-            backgroundColor: 'var(--bg-hover)',
-            borderRadius: 'var(--radius-xs)',
-            fontSize: '11px',
-            fontWeight: 700,
-            color: 'var(--text-primary)',
-            border: '0.5px solid var(--border-hairline)'
+            padding: '4px 8px',
+            backgroundColor: 'var(--text-primary)',
+            borderRadius: '4px',
+            fontSize: '9px',
+            fontWeight: 900,
+            color: 'var(--bg-page)',
+            letterSpacing: '0.05em'
           }}>
-            {getStatusIcon(startup.status)}
-            <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>{startup.status}</span>
+            {startup.status.toUpperCase()}
           </div>
         </div>
 
         <div>
           <h3 style={{
-            fontSize: '18px',
-            fontWeight: 700,
-            marginBottom: '6px',
-            color: 'var(--text-primary)'
+            fontSize: '20px',
+            fontWeight: 800,
+            marginBottom: '10px',
+            color: 'var(--text-primary)',
+            letterSpacing: '-0.01em'
           }}>
             {startup.name}
           </h3>
           <p style={{
             fontSize: '14px',
             color: 'var(--text-secondary)',
-            lineHeight: '1.5',
+            lineHeight: '1.6',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            height: '42px'
+            height: '44px'
           }}>
             {startup.tagline}
           </p>
@@ -97,24 +85,26 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup }) => {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between',
-          paddingTop: '16px',
+          paddingTop: '20px',
           borderTop: '0.5px solid var(--border-hairline)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>by</span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>@{startup.user?.username || startup.owner_id}</span>
+            <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>
+              @{startup.user?.username || 'builder'}
+            </span>
           </div>
           
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '16px' }}>
             {startup.is_hiring && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#3b82f6' }} title="Hiring">
-                <Briefcase size={16} weight="bold" />
-                <span style={{ fontSize: '11px', fontWeight: 700 }}>HIRING</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-primary)' }}>
+                <Briefcase size={14} weight="bold" />
+                <span style={{ fontSize: '10px', fontWeight: 900 }}>JOBS</span>
               </div>
             )}
             {startup.looking_for_cofounder && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#f59e0b' }} title="Looking for Co-founder">
-                <Users size={16} weight="bold" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-primary)' }}>
+                <Users size={14} weight="fill" />
+                <span style={{ fontSize: '10px', fontWeight: 900 }}>PARTNERS</span>
               </div>
             )}
           </div>
@@ -122,13 +112,9 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup }) => {
 
         <style>{`
           .startup-card:hover {
-            border-color: var(--text-secondary);
-            transform: translateY(-2px);
+            border-color: var(--text-primary);
             background-color: var(--bg-hover) !important;
-          }
-          .startup-card-link {
-            text-decoration: none;
-            color: inherit;
+            transform: translateY(-4px);
           }
         `}</style>
       </div>

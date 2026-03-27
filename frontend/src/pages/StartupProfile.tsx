@@ -51,131 +51,128 @@ export const StartupProfile: React.FC = () => {
   const isOwner = currentUser?.id === startup?.owner_id;
 
   const tabs = [
-    { id: 'overview', label: isMobile ? '' : 'Overview', icon: Layout },
-    { id: 'members', label: isMobile ? '' : 'Members', icon: Users },
-    { id: 'jobs', label: isMobile ? '' : 'Jobs', icon: Briefcase },
-    { id: 'feed', label: isMobile ? '' : 'Feed', icon: Rss },
+    { id: 'overview', label: 'Overview', icon: Layout },
+    { id: 'members', label: 'Team', icon: Users },
+    { id: 'jobs', label: 'Roles', icon: Briefcase },
+    { id: 'feed', label: 'Updates', icon: Rss },
   ];
 
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-        <div style={{ width: '24px', height: '24px', border: '2px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: '20px', height: '20px', border: '1.5px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </div>
     );
   }
 
   if (!startup) {
     return (
-      <div style={{ padding: isMobile ? '60px 20px' : '100px 40px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-          <Warning size={48} weight="thin" color="var(--text-tertiary)" style={{ marginBottom: '24px' }} />
-          <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px' }}>Startup Not Found</h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>This startup might have been removed or the link is incorrect.</p>
-          <button className="primary" onClick={() => navigate('/startups')}>RETURN TO DIRECTORY</button>
+      <div style={{ padding: '100px 20px', textAlign: 'center', maxWidth: '400px', margin: '0 auto' }}>
+          <Warning size={32} weight="thin" color="var(--text-tertiary)" style={{ marginBottom: '24px' }} />
+          <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px' }}>UNABLE TO LOCATE UNIT</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '13px' }}>The requested startup record does not exist or has been archived.</p>
+          <button className="primary" onClick={() => navigate('/startups')} style={{ padding: '12px 24px', fontSize: '11px', fontWeight: 800 }}>RETURN TO INDEX</button>
       </div>
     );
   }
 
   return (
-    <div className="container" style={{ padding: isMobile ? '20px' : '60px 40px', maxWidth: 'var(--max-width)' }}>
-      {/* Profile Header */}
+    <div style={{ padding: isMobile ? '32px 20px' : '64px 40px', maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Refined Header */}
       <div style={{
-        backgroundColor: 'var(--bg-card)',
-        padding: isMobile ? '32px 24px' : '60px 40px',
-        borderRadius: 'var(--radius-lg)',
-        border: '0.5px solid var(--border-hairline)',
-        marginBottom: '32px',
         display: 'flex',
-        flexDirection: 'column',
-        gap: '24px'
+        flexDirection: isMobile ? 'column' : 'row',
+        justifyContent: 'space-between',
+        alignItems: isMobile ? 'flex-start' : 'center',
+        gap: '40px',
+        marginBottom: '64px'
       }}>
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: isMobile ? 'column' : 'row',
-          justifyContent: 'space-between', 
-          alignItems: isMobile ? 'flex-start' : 'center', 
-          gap: isMobile ? '24px' : '20px' 
-        }}>
-          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '16px' : '24px', alignItems: isMobile ? 'flex-start' : 'center' }}>
-            <div style={{
-              width: isMobile ? '64px' : '80px',
-              height: isMobile ? '64px' : '80px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--bg-hover)',
-              border: '0.5px solid var(--border-hairline)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              overflow: 'hidden',
-              flexShrink: 0
-            }}>
-              {startup.logo_url ? (
-                <img src={startup.logo_url} alt={startup.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <Rocket size={isMobile ? 32 : 40} weight="thin" color="var(--text-tertiary)" />
-              )}
-            </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
-                <h1 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: 800, color: 'var(--text-primary)' }}>{startup.name}</h1>
-                <div style={{
-                  padding: '4px 8px',
-                  backgroundColor: 'var(--bg-hover)',
-                  borderRadius: 'var(--radius-xs)',
-                  fontSize: '10px',
-                  fontWeight: 800,
-                  color: 'var(--text-primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}>
-                   {startup.status.toUpperCase()}
-                </div>
-              </div>
-              <p style={{ fontSize: isMobile ? '14px' : '16px', color: 'var(--text-secondary)' }}>{startup.tagline}</p>
-            </div>
+        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+          <div style={{
+            width: isMobile ? '72px' : '96px',
+            height: isMobile ? '72px' : '96px',
+            borderRadius: '12px',
+            backgroundColor: 'var(--bg-hover)',
+            border: '0.5px solid var(--border-hairline)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            flexShrink: 0
+          }}>
+            {startup.logo_url ? (
+              <img src={startup.logo_url} alt={startup.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <Rocket size={40} weight="thin" color="var(--text-tertiary)" />
+            )}
           </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
+              <h1 style={{ fontSize: isMobile ? '24px' : '36px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>{startup.name}</h1>
+              <span style={{
+                padding: '4px 8px',
+                backgroundColor: 'var(--text-primary)',
+                borderRadius: '4px',
+                fontSize: '9px',
+                fontWeight: 900,
+                color: 'var(--bg-page)',
+                letterSpacing: '0.05em'
+              }}>
+                 {startup.status.toUpperCase()}
+              </span>
+            </div>
+            <p style={{ fontSize: isMobile ? '15px' : '18px', color: 'var(--text-secondary)', fontWeight: 500 }}>{startup.tagline}</p>
+          </div>
+        </div>
 
-          <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto' }}>
-             {startup.website_url && (
-               <a href={startup.website_url} target="_blank" rel="noreferrer" style={{ flex: isMobile ? 1 : 'none' }}>
-                 <button style={{ color: 'var(--text-secondary)', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                    <Globe size={18} />
-                 </button>
-               </a>
-             )}
-             
-             {isOwner && (
-               <button 
-                 onClick={() => navigate(`/startup/${startup.id}/edit`)}
-                 style={{
-                   display: 'flex',
-                   alignItems: 'center',
+        <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto' }}>
+           {startup.website_url && (
+             <a href={startup.website_url} target="_blank" rel="noreferrer">
+               <button style={{ 
+                   height: '44px', 
+                   width: '44px', 
+                   display: 'flex', 
+                   alignItems: 'center', 
                    justifyContent: 'center',
-                   gap: '8px',
-                   padding: '10px 20px',
-                   fontWeight: 700,
-                   flex: isMobile ? 2 : 'none'
-                 }}
-               >
-                 <PencilSimple size={16} />
-                 {isMobile ? 'Edit' : 'Edit Startup'}
+                   backgroundColor: 'transparent',
+                   border: '0.5px solid var(--border-hairline)',
+                   borderRadius: 'var(--radius-sm)',
+                   color: 'var(--text-primary)'
+               }}>
+                  <Globe size={18} />
                </button>
-             )}
-          </div>
+             </a>
+           )}
+           
+           {isOwner && (
+             <button 
+               onClick={() => navigate(`/startup/${startup.id}/edit`)}
+               style={{
+                 display: 'flex',
+                 alignItems: 'center',
+                 gap: '10px',
+                 padding: '0 24px',
+                 height: '44px',
+                 fontWeight: 800,
+                 fontSize: '11px',
+                 backgroundColor: 'var(--bg-hover)',
+                 border: '0.5px solid var(--border-hairline)',
+                 borderRadius: 'var(--radius-sm)'
+               }}
+             >
+               <PencilSimple size={14} weight="bold" />
+               EDIT PROFILE
+             </button>
+           )}
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {/* Navigation Ribbons */}
       <div style={{
         display: 'flex',
-        gap: '4px',
-        padding: '4px',
-        backgroundColor: 'var(--bg-card)',
-        borderRadius: 'var(--radius-md)',
-        border: '0.5px solid var(--border-hairline)',
-        marginBottom: '32px',
-        width: isMobile ? '100%' : 'max-content',
+        gap: isMobile ? '20px' : '40px',
+        marginBottom: '64px',
+        borderBottom: '0.5px solid var(--border-hairline)',
         overflowX: isMobile ? 'auto' : 'visible'
       }}>
         {tabs.map((tab) => (
@@ -183,28 +180,29 @@ export const StartupProfile: React.FC = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             style={{
-              flex: isMobile ? 1 : 'none',
-              padding: isMobile ? '12px' : '12px 24px',
-              borderRadius: 'var(--radius-sm)',
+              padding: '16px 0',
               border: 'none',
-              backgroundColor: activeTab === tab.id ? 'var(--bg-hover)' : 'transparent',
+              backgroundColor: 'transparent',
               color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-tertiary)',
-              fontWeight: 700,
+              fontWeight: 800,
+              fontSize: '11px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
+              gap: '8px',
+              borderBottom: activeTab === tab.id ? '2px solid var(--text-primary)' : '2px solid transparent',
               transition: 'all 0.2s ease',
-              minWidth: isMobile ? '60px' : 'auto'
+              whiteSpace: 'nowrap'
             }}
           >
-            <tab.icon size={20} weight={activeTab === tab.id ? 'fill' : 'regular'} />
+            <tab.icon size={16} weight={activeTab === tab.id ? 'fill' : 'regular'} />
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Tab Content */}
+      {/* Primary Workspace */}
       <div style={{ animation: 'fadeIn 0.4s ease forwards' }}>
         {activeTab === 'overview' && <StartupOverview startup={startup} isOwner={isOwner} onUpdate={fetchStartup} />}
         {activeTab === 'members' && <StartupMembers startup={startup} isOwner={isOwner} onUpdate={fetchStartup} />}
