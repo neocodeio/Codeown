@@ -206,7 +206,7 @@ export const StartupProfile: React.FC = () => {
 
       {/* Tab Content */}
       <div style={{ animation: 'fadeIn 0.4s ease forwards' }}>
-        {activeTab === 'overview' && <StartupOverview startup={startup} />}
+        {activeTab === 'overview' && <StartupOverview startup={startup} isOwner={isOwner} onUpdate={fetchStartup} />}
         {activeTab === 'members' && <StartupMembers startup={startup} isOwner={isOwner} onUpdate={fetchStartup} />}
         {activeTab === 'jobs' && <StartupJobsTab startup={startup} isOwner={isOwner} />}
         {activeTab === 'feed' && <StartupFeedTab startup={startup} isOwner={isOwner} />}
