@@ -157,6 +157,7 @@ export default function Feed() {
                             display: "flex",
                             alignItems: "center",
                             height: "56px",
+                            marginBottom: "-8px",
                             width: "100%",
                             position: "relative",
                             justifyContent: "center",
