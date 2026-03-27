@@ -43,6 +43,9 @@ export interface JobPosting {
   startup_id: string;
   title: string;
   description: string;
+  type: string;
+  location: string;
+  salary_range?: string;
   custom_questions: { id: string; question: string; type: 'text' | 'choice'; options?: string[] }[];
   created_at: string;
 }

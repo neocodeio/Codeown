@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import type { Startup, JobPosting } from '../../types/startup.ts';
 import { useWindowSize } from '../../hooks/useWindowSize.ts';
-import { Briefcase, Plus, PaperPlaneTilt, Question, Clock } from 'phosphor-react';
+import { Briefcase, Plus, PaperPlaneTilt, Globe, Clock, X } from 'phosphor-react';
 import { toast } from 'react-toastify';
-import { getStartupJobs } from '../../api/startups.ts';
+import { getStartupJobs, createStartupJob } from '../../api/startups.ts';
 
 interface StartupJobsTabProps {
   startup: Startup;
@@ -15,31 +15,52 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
   const isMobile = width < 640;
   const [jobs, setJobs] = useState<JobPosting[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null);
+  const [isPostingModalOpen, setIsPostingModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [jobForm, setJobForm] = useState({
+      title: '',
+      description: '',
+      type: 'Full-time',
+      location: 'Remote',
+      salary_range: ''
+  });
+
+  const fetchJobs = async () => {
+    setLoading(true);
+    try {
+      const data = await getStartupJobs(startup.id);
+      setJobs(data);
+    } catch (err) {
+      toast.error("Failed to load job postings.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true);
-      try {
-        const data = await getStartupJobs(startup.id);
-        setJobs(data);
-      } catch (err) {
-        toast.error("Failed to load job postings.");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchJobs();
   }, [startup.id]);
 
-  const handleApply = (job: JobPosting) => {
-    setSelectedJob(job);
-    setIsApplicationModalOpen(true);
-  };
+  const handlePostJob = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!jobForm.title || !jobForm.description) {
+          toast.error("Please fill in basic job details.");
+          return;
+      }
 
-  const handlePostJob = () => {
-      toast.info("Opening job creation wizard...");
+      setIsSubmitting(true);
+      try {
+          await createStartupJob(startup.id, jobForm);
+          toast.success("Job posted successfully!");
+          setIsPostingModalOpen(false);
+          setJobForm({ title: '', description: '', type: 'Full-time', location: 'Remote', salary_range: '' });
+          fetchJobs();
+      } catch (err) {
+          toast.error("Failed to post job.");
+      } finally {
+          setIsSubmitting(false);
+      }
   };
 
   return (
@@ -58,7 +79,7 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
           </h2>
           {isOwner && (
               <button 
-                onClick={handlePostJob}
+                onClick={() => setIsPostingModalOpen(true)}
                 className="primary" 
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 20px', fontWeight: 800, width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}
               >
@@ -67,6 +88,108 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
               </button>
           )}
       </div>
+
+      {isPostingModalOpen && (
+          <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.85)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 2000,
+              backdropFilter: 'blur(8px)',
+              padding: '20px'
+          }}>
+              <div 
+                style={{
+                    backgroundColor: 'var(--bg-card)',
+                    width: '100%',
+                    maxWidth: '500px',
+                    borderRadius: 'var(--radius-lg)',
+                    border: '1px solid var(--border-hairline)',
+                    padding: '32px',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                    maxHeight: '90vh',
+                    overflowY: 'auto'
+                }}
+              >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                      <h3 style={{ fontSize: '20px', fontWeight: 800 }}>Hire Your Team</h3>
+                      <button onClick={() => setIsPostingModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer' }}>
+                          <X size={24} />
+                      </button>
+                  </div>
+
+                  <form onSubmit={handlePostJob} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      <div className="input-group">
+                          <label style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Job Title</label>
+                          <input 
+                            value={jobForm.title}
+                            onChange={e => setJobForm({...jobForm, title: e.target.value})}
+                            placeholder="e.g. Senior Frontend Engineer" 
+                            style={{ width: '100%' }}
+                          />
+                      </div>
+                      
+                      <div className="input-group">
+                          <label style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Description</label>
+                          <textarea 
+                            value={jobForm.description}
+                            onChange={e => setJobForm({...jobForm, description: e.target.value})}
+                            placeholder="Tell potential candidates about the role..." 
+                            style={{ minHeight: '120px', width: '100%' }}
+                          />
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                          <div className="input-group">
+                              <label style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Type</label>
+                              <select 
+                                value={jobForm.type}
+                                onChange={e => setJobForm({...jobForm, type: e.target.value})}
+                                style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-hairline)', backgroundColor: 'var(--bg-hover)', color: 'var(--text-primary)' }}
+                              >
+                                  <option>Full-time</option>
+                                  <option>Contract</option>
+                                  <option>Part-time</option>
+                                  <option>Internship</option>
+                              </select>
+                          </div>
+                          <div className="input-group">
+                             <label style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Location</label>
+                             <input 
+                               value={jobForm.location}
+                               onChange={e => setJobForm({...jobForm, location: e.target.value})}
+                               placeholder="e.g. Remote or NYC" 
+                               style={{ width: '100%' }}
+                             />
+                          </div>
+                      </div>
+
+                      <div className="input-group">
+                          <label style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Salary Range (Optional)</label>
+                          <input 
+                            value={jobForm.salary_range}
+                            onChange={e => setJobForm({...jobForm, salary_range: e.target.value})}
+                            placeholder="e.g. $120k - $160k" 
+                            style={{ width: '100%' }}
+                          />
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                          <button type="button" onClick={() => setIsPostingModalOpen(false)} style={{ flex: 1, backgroundColor: 'transparent', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', fontWeight: 700, padding: '12px' }}>CANCEL</button>
+                          <button type="submit" disabled={isSubmitting} className="primary" style={{ flex: 2, fontWeight: 800, padding: '12px' }}>
+                              {isSubmitting ? 'POSTING...' : 'PUBLISH ROLE'}
+                          </button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {loading ? (
@@ -84,12 +207,8 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '20px',
-                      transition: 'all 0.2s ease',
-                      cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => !isMobile && (e.currentTarget.style.borderColor = 'var(--text-tertiary)')}
-                  onMouseLeave={(e) => !isMobile && (e.currentTarget.style.borderColor = 'var(--border-hairline)')}
-                  >
+                      transition: 'all 0.2s ease'
+                  }}>
                       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '8px' : '16px' }}>
                           <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 800, color: 'var(--text-primary)' }}>{job.title}</h3>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-tertiary)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -97,166 +216,41 @@ export const StartupJobsTab: React.FC<StartupJobsTabProps> = ({ startup, isOwner
                               Hiring
                           </div>
                       </div>
+                      
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                              <Briefcase size={16} weight="thin" />
+                              {job.type}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                              <Globe size={16} weight="thin" />
+                              {job.location}
+                          </div>
+                          {job.salary_range && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                                  <PaperPlaneTilt size={16} weight="thin" />
+                                  {job.salary_range}
+                              </div>
+                          )}
+                      </div>
 
-                      <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6', opacity: 0.8 }}>
-                          {job.description.split('\n')[0]}...
+                      <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                          {job.description}
                       </p>
 
-                      <div style={{ 
-                          display: 'flex', 
-                          justifyContent: 'space-between', 
-                          alignItems: 'center',
-                          paddingTop: '20px',
-                          borderTop: '0.5px solid var(--border-hairline)' 
-                      }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <Question size={16} color="var(--text-tertiary)" />
-                              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-tertiary)' }}>{job.custom_questions.length} questions</span>
-                          </div>
-
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); handleApply(job); }}
-                            className="primary"
-                            style={{
-                                padding: '8px 20px',
-                                fontWeight: 800,
-                                fontSize: '13px'
-                            }}
-                          >
-                              Apply
-                          </button>
-                      </div>
+                      <button className="primary" style={{ alignSelf: 'flex-start', padding: '10px 24px', fontWeight: 800, borderRadius: 'var(--radius-sm)' }}>
+                          APPLY NOW
+                      </button>
                   </div>
               ))
           ) : (
-            <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-tertiary)', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '0.5px solid var(--border-hairline)' }}>
-                 <Briefcase size={48} weight="thin" style={{ marginBottom: '16px' }} />
-                 <p>No open positions at the moment.</p>
-            </div>
+              <div style={{ textAlign: 'center', padding: '64px 32px', border: '1px dashed var(--border-hairline)', borderRadius: 'var(--radius-lg)' }}>
+                  <Briefcase size={40} weight="thin" color="var(--text-tertiary)" style={{ marginBottom: '16px' }} />
+                  <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>No active job openings at the moment.</p>
+                  {isOwner && <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '8px' }}>Click "Post Job" to start growing your team!</p>}
+              </div>
           )}
       </div>
-
-      {isApplicationModalOpen && selectedJob && (
-          <JobApplicationModal 
-            startupName={startup.name}
-            job={selectedJob} 
-            isMobile={isMobile}
-            onClose={() => setIsApplicationModalOpen(false)} 
-            onSubmit={() => {
-                setIsApplicationModalOpen(false);
-                toast.success("Application sent to the founder!");
-            }}
-          />
-      )}
     </div>
   );
-};
-
-// Internal Modal Component for Task 3
-const JobApplicationModal = ({ startupName, job, isMobile, onClose, onSubmit }: { startupName: string, job: JobPosting, isMobile: boolean, onClose: () => void, onSubmit: () => void }) => {
-    const [answers, setAnswers] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setTimeout(onSubmit, 1500);
-    };
-
-    return (
-        <div style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.85)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: isMobile ? '12px' : '24px'
-        }} onClick={onClose}>
-            <div 
-                style={{
-                    backgroundColor: 'var(--bg-page)',
-                    width: '100%',
-                    maxWidth: '500px',
-                    maxHeight: '90vh',
-                    overflowY: 'auto',
-                    borderRadius: 'var(--radius-lg)',
-                    border: '1px solid var(--border-hairline)',
-                    padding: isMobile ? '28px 20px' : '48px',
-                    position: 'relative'
-                }} 
-                onClick={e => e.stopPropagation()}
-                className="scale-in"
-            >
-                <div style={{ marginBottom: '32px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '10px', fontWeight: 900, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Join {startupName}</span>
-                        <span style={{ color: 'var(--border-hairline)', fontSize: '10px' }}>•</span>
-                        <span style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{job.title}</span>
-                    </div>
-                    <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 800, color: 'var(--text-primary)' }}>Founder's Questions</h2>
-                </div>
-
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {job.custom_questions.map(q => (
-                        <div key={q.id}>
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>{q.question}</label>
-                            {q.type === 'text' ? (
-                                <textarea 
-                                    required
-                                    rows={3}
-                                    placeholder="Your answer..."
-                                    value={answers[q.id] || ''}
-                                    onChange={e => setAnswers({ ...answers, [q.id]: e.target.value })}
-                                />
-                            ) : (
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    {q.options?.map(opt => (
-                                        <button
-                                            key={opt}
-                                            type="button"
-                                            onClick={() => setAnswers({ ...answers, [q.id]: opt })}
-                                            style={{
-                                                flex: 1,
-                                                padding: '12px',
-                                                backgroundColor: answers[q.id] === opt ? 'var(--text-primary)' : 'var(--bg-hover)',
-                                                color: answers[q.id] === opt ? 'var(--bg-page)' : 'var(--text-primary)',
-                                                border: 'none',
-                                                borderRadius: 'var(--radius-sm)',
-                                                fontSize: '13px',
-                                                fontWeight: 800,
-                                                transition: 'all 0.15s ease'
-                                            }}
-                                        >
-                                            {opt.toUpperCase()}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-
-                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column-reverse' : 'row', gap: '12px', marginTop: '16px' }}>
-                        <button type="button" onClick={onClose} style={{ flex: 1, fontWeight: 700, padding: '12px' }}>CANCEL</button>
-                        <button 
-                            type="submit" 
-                            className="primary" 
-                            disabled={isSubmitting}
-                            style={{ flex: 1, height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontWeight: 800 }}
-                        >
-                            {isSubmitting ? (
-                                <div style={{ width: '16px', height: '16px', border: '1.5px solid var(--bg-page)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
-                            ) : (
-                                <>
-                                    <PaperPlaneTilt size={20} weight="bold" />
-                                    SEND APPLICATION
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
 };

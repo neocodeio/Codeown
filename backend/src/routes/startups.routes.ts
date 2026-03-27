@@ -10,7 +10,8 @@ import {
     getStartupFeed, 
     postStartupUpdate,
     addStartupMember,
-    removeStartupMember
+    removeStartupMember,
+    createStartupJob
 } from "../controllers/startups.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
@@ -29,6 +30,7 @@ router.put("/:id", requireAuth, updateStartup);
 router.delete("/:id", requireAuth, deleteStartup);
 router.post("/:id/members", requireAuth, addStartupMember);
 router.delete("/:id/members/:userId", requireAuth, removeStartupMember);
+router.post("/:id/jobs", requireAuth, createStartupJob);
 router.post("/:id/updates", requireAuth, postStartupUpdate);
 
 export default router;

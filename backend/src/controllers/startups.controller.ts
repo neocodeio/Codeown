@@ -9,7 +9,11 @@ export async function getStartups(req: Request, res: Response) {
     
     let query = supabase
       .from("startups")
-      .select("*, user:owner_id(id, name, username, avatar_url)")
+      .select(`
+        *, 
+        user:owner_id(id, name, username, avatar_url),
+        members:startup_members(count)
+      `)
       .order("created_at", { ascending: false });
 
     if (searchQuery) {
@@ -27,8 +31,13 @@ export async function getStartups(req: Request, res: Response) {
        throw error;
     }
     
-    console.log(`[getStartups] SUCCESS: Found ${data?.length || 0} startups`);
-    res.json(data || []);
+    const normalizedData = (data || []).map(s => ({
+        ...s,
+        member_count: s.members?.[0]?.count || s.member_count || 1
+    }));
+    
+    console.log(`[getStartups] SUCCESS: Found ${normalizedData.length} startups`);
+    res.json(normalizedData);
   } catch (err: any) {
     console.error("[getStartups] CATCH ERROR:", err);
     res.status(500).json({ error: "Failed to fetch startups", details: err.message });
@@ -40,12 +49,21 @@ export async function getStartup(req: Request, res: Response) {
     const { id } = req.params;
     const { data, error } = await supabase
       .from("startups")
-      .select("*")
+      .select(`
+        *,
+        members:startup_members(count)
+      `)
       .eq("id", id)
       .single();
 
-    if (error) throw error;
-    if (!data) return res.status(404).json({ error: "Startup not found" });
+    if (error) {
+        if (error.code === 'PGRST116') return res.status(404).json({ error: "Startup not found" });
+        throw error;
+    }
+    
+    if (data) {
+        data.member_count = data.members?.[0]?.count || data.member_count || 1;
+    }
     
     res.json(data);
   } catch (err: any) {
@@ -277,6 +295,43 @@ export async function getStartupJobs(req: Request, res: Response) {
     res.json(data);
   } catch (err: any) {
     res.status(500).json({ error: "Failed to fetch jobs", details: err.message });
+  }
+}
+
+export async function createStartupJob(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    const { data: startup } = await supabase.from("startups").select("owner_id").eq("id", id).single();
+    if (!startup || startup.owner_id !== userId) {
+      return res.status(403).json({ error: "Only owner can post jobs" });
+    }
+
+    const jobData = {
+      title: req.body.title,
+      description: req.body.description,
+      type: req.body.type || 'Full-time',
+      location: req.body.location || 'Remote',
+      salary_range: req.body.salary_range,
+      startup_id: id,
+      created_at: new Date().toISOString()
+    };
+
+    const { data, error } = await supabase
+      .from("startup_job_postings")
+      .insert([jobData])
+      .select()
+      .single();
+
+    if (error) {
+        console.error("Supabase Error [createJob]:", error);
+        throw error;
+    }
+    
+    res.status(201).json(data);
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to create job", details: err.message });
   }
 }
 

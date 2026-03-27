@@ -103,10 +103,10 @@ export const StartupFeedTab: React.FC<StartupFeedTabProps> = ({ startup, isOwner
                         }}
                       >
                           <Broadcast size={20} weight={shouldBroadcast ? "fill" : "regular"} color={shouldBroadcast ? "var(--text-primary)" : "var(--text-tertiary)"} />
-                          <div>
+                          {/* <div>
                               <div style={{ fontSize: '12px', fontWeight: 800, color: shouldBroadcast ? 'var(--text-primary)' : 'var(--text-secondary)' }}>Broadcast to main feed</div>
                               <div style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>Visible to the whole community</div>
-                          </div>
+                          </div> */}
                       </div>
 
                       <button 
