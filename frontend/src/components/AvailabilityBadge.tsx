@@ -26,7 +26,7 @@ const AvailabilityBadge = memo(({
     const briefcaseIconSize = Math.max(8, Math.round(briefcaseBgSize * 0.45));
 
     return (
-        <OGAvatarDecorator is_og={isOG}>
+        <OGAvatarDecorator is_og={isOG} size={size}>
             <div
                 className="availability-badge-container"
                 title={showBadge ? tooltipText : undefined}
@@ -72,17 +72,18 @@ const AvailabilityBadge = memo(({
                     <div
                         style={{
                             position: "absolute",
-                            bottom: "-4px",
-                            right: "-4px",
+                            bottom: "-2px",
+                            right: "-2px",
                             width: briefcaseBgSize,
                             height: briefcaseBgSize,
                             backgroundColor: "var(--text-primary)",
                             color: "var(--bg-page)",
-                            borderRadius: "0",
+                            borderRadius: "50%",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            border: "1px solid var(--bg-page)",
+                            border: "2px solid var(--bg-page)",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
                             zIndex: 10,
                         }}
                     >
