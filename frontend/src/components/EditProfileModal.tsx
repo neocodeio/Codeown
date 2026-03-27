@@ -199,6 +199,12 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       return;
     }
 
+    // Check username length
+    if (username.trim().length > 0 && username.trim().length < 8) {
+      setUsernameError("Username must be at least 8 characters long.");
+      return;
+    }
+
     // Check username change restriction
     if (username !== currentUser.username && !canChangeUsername()) {
       const lastChanged = new Date(currentUser.username_changed_at!);
@@ -283,7 +289,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
             errorMessage = `${errorData.error || "Failed to update profile"}: ${errorData.details}`;
           } else if (errorData.error) {
             errorMessage = errorData.error;
-            if (errorMessage.includes("14 days")) {
+            if (errorMessage.includes("14 days") || errorMessage.includes("taken")) {
               setUsernameError(errorMessage);
             }
           }

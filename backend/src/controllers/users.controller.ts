@@ -792,6 +792,12 @@ export async function updateUserProfile(req: Request, res: Response) {
 
         // Check username change restriction (14 days)
         if (username && username !== currentUser?.username) {
+            if (username.trim().length > 0 && username.trim().length < 8) {
+                return res.status(400).json({
+                    error: "Username must be at least 8 characters long."
+                });
+            }
+
             if (currentUser?.username_changed_at) {
                 const lastChanged = new Date(currentUser.username_changed_at);
                 const daysSinceChange = (Date.now() - lastChanged.getTime()) / (1000 * 60 * 60 * 24);
@@ -802,6 +808,20 @@ export async function updateUserProfile(req: Request, res: Response) {
                         error: `Username can only be changed once every 14 days. You can change it again in ${daysRemaining} day(s).`
                     });
                 }
+            }
+
+            // Check if username is already taken by another user
+            const { data: existingUser } = await supabase
+                .from("users")
+                .select("id")
+                .eq("username", username.trim())
+                .neq("id", userId)
+                .maybeSingle();
+
+            if (existingUser) {
+                return res.status(400).json({
+                    error: "Username is already taken."
+                });
             }
         }
 

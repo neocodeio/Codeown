@@ -29,6 +29,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
   const [language, setLanguage] = useState<"en" | "ar">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
+  const charLimit = 280;
 
   useEffect(() => {
     if (isOpen && post) {
@@ -87,8 +88,8 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
     }
 
     // title is optional
-    if (!content.trim()) {
-      alert("Content is required");
+    if (!content.trim() || content.length > charLimit) {
+      alert("Content must be 280 characters or less");
       return;
     }
 
@@ -424,12 +425,24 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
               style={{
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: "8px",
+                alignItems: "center",
+                gap: "16px",
                 padding: "16px 20px",
                 borderTop: "1px solid #e4e7eb",
                 flexShrink: 0,
               }}
             >
+              {content.length > 0 && (
+                <div style={{
+                  fontSize: "10px",
+                  fontFamily: "var(--font-mono)",
+                  fontWeight: 700,
+                  color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
+                  letterSpacing: "0.1em"
+                }}>
+                  {content.length.toString().padStart(3, '0')}/{charLimit}
+                </div>
+              )}
               <button
                 type="button"
                 onClick={onClose}
@@ -452,14 +465,14 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
               <button
                 type="button"
                 onClick={submit}
-                disabled={!isLoaded || !content.trim() || isSubmitting}
+                disabled={!isLoaded || !content.trim() || isSubmitting || content.length > charLimit}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: isLoaded && content.trim() && !isSubmitting ? "#212121" : "#e4e7eb",
+                  backgroundColor: isLoaded && content.trim() && !isSubmitting && content.length <= charLimit ? "#212121" : "#e4e7eb",
                   border: "none",
-                  color: isLoaded && content.trim() && !isSubmitting ? "#ffffff" : "#94a3b8",
+                  color: isLoaded && content.trim() && !isSubmitting && content.length <= charLimit ? "#ffffff" : "#94a3b8",
                   borderRadius: "var(--radius-sm)",
-                  cursor: isLoaded && content.trim() && !isSubmitting ? "pointer" : "not-allowed",
+                  cursor: isLoaded && content.trim() && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
                   fontSize: "15px",
                   fontWeight: 500,
                   transition: "all 0.15s",

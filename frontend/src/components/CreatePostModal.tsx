@@ -35,6 +35,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const { getToken, isLoaded } = useClerkAuth();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const charLimit = 280;
 
   // Reset form when modal closes
   useEffect(() => {
@@ -165,7 +166,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   };
 
   const submit = async () => {
-    if (!isLoaded || !content.trim()) return;
+    if (!isLoaded || !content.trim() || content.length > charLimit) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
@@ -441,11 +442,22 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
         </div>
 
         {/* Footer */}
-         <div className="modal-footer" style={{ padding: "32px 40px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", gap: "16px" }}>
+         <div className="modal-footer" style={{ padding: "32px 40px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "16px" }}>
+          {content.length > 0 && (
+            <div style={{
+              fontSize: "10px",
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
+              letterSpacing: "0.1em"
+            }}>
+              {content.length.toString().padStart(3, '0')}/{charLimit}
+            </div>
+          )}
           <button onClick={onClose} style={{ padding: "12px 24px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", background: "transparent", color: "var(--text-tertiary)", fontWeight: 800, fontSize: "11px", fontFamily: "var(--font-mono)", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.1em" }}>CANCEL</button>
           <button
             onClick={submit}
-            disabled={!content.trim() || isSubmitting}
+            disabled={!content.trim() || isSubmitting || content.length > charLimit}
             style={{
               padding: "12px 32px",
               borderRadius: "var(--radius-sm)",
@@ -455,8 +467,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               fontWeight: 800,
               fontSize: "11px",
               fontFamily: "var(--font-mono)",
-              cursor: (!content.trim() || isSubmitting) ? "not-allowed" : "pointer",
-              opacity: (!content.trim() || isSubmitting) ? 0.3 : 1,
+              cursor: (!content.trim() || isSubmitting || content.length > charLimit) ? "not-allowed" : "pointer",
+              opacity: (!content.trim() || isSubmitting || content.length > charLimit) ? 0.3 : 1,
               textTransform: "uppercase",
               letterSpacing: "0.15em",
               transition: "all 0.15s ease"
