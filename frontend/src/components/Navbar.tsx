@@ -232,7 +232,7 @@ export default function Navbar() {
         </Link>
         <Link to="/startups" style={linkStyle("/startups")} aria-label="Startup Hub">
           <Buildings size={20} weight={location.pathname === "/startups" ? "bold" : "regular"} />
-          Startups
+          Startups Hub
         </Link>
         <Link to="/changelog" style={linkStyle("/changelog")} aria-label="View Changelog">
           <Scroll size={20} weight={location.pathname === "/changelog" ? "bold" : "regular"} />
@@ -671,7 +671,7 @@ export default function Navbar() {
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
               >
                 <Buildings size={18} weight="regular" />
-                Startups
+                Startups Hub
               </div>
             </div>
           )}
