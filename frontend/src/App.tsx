@@ -170,6 +170,25 @@ export default function App() {
     };
   }, [queryClient, isSignedIn, user?.id]);
 
+  // Global axios interceptor for auth
+  useEffect(() => {
+    const interceptor = api.interceptors.request.use(async (config) => {
+      try {
+        const token = await getToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      } catch (err) {
+        console.error("Error setting auth header:", err);
+      }
+      return config;
+    });
+
+    return () => {
+      api.interceptors.request.eject(interceptor);
+    };
+  }, [getToken]);
+
   // Check onboarding status for signed-in users
   useEffect(() => {
     const checkOnboarding = async () => {
