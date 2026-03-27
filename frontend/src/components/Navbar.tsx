@@ -23,7 +23,8 @@ import {
   UsersThree,
   Sun,
   Moon,
-  Scroll
+  Scroll,
+  Buildings
 } from "phosphor-react";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -228,6 +229,10 @@ export default function Navbar() {
         <Link to="/leaderboard" style={linkStyle("/leaderboard")} aria-label="Leaderboard">
           <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "regular"} />
           Leaderboard
+        </Link>
+        <Link to="/startups" style={linkStyle("/startups")} aria-label="Startup Hub">
+          <Buildings size={20} weight={location.pathname === "/startups" ? "bold" : "regular"} />
+          Startups
         </Link>
         <Link to="/changelog" style={linkStyle("/changelog")} aria-label="View Changelog">
           <Scroll size={20} weight={location.pathname === "/changelog" ? "bold" : "regular"} />
@@ -660,6 +665,13 @@ export default function Navbar() {
               >
                 <Rocket size={18} weight="regular" />
                 Launch
+              </div>
+              <div
+                onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
+              >
+                <Buildings size={18} weight="regular" />
+                Startups
               </div>
             </div>
           )}
