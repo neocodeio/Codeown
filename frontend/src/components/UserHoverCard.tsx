@@ -6,6 +6,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useFollow } from "../hooks/useFollow";
 import VerifiedBadge from "./VerifiedBadge";
+import StreakBadge from "./StreakBadge";
 
 interface UserProfile {
   id: string;
@@ -16,6 +17,7 @@ interface UserProfile {
   follower_count: number;
   following_count: number;
   is_pro: boolean;
+  streak_count: number;
 }
 
 interface UserHoverCardProps {
@@ -194,6 +196,11 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                     {user.name}
                   </span>
                   <VerifiedBadge username={user.username} isPro={user.is_pro} size="12px" />
+                  {user.streak_count > 0 && (
+                    <div style={{ marginLeft: "2px" }}>
+                       <StreakBadge count={user.streak_count} mini />
+                    </div>
+                  )}
                 </div>
                 <span style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>
                   @{user.username || "user"}
