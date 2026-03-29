@@ -14,10 +14,10 @@ interface UserProfile {
   username: string | null;
   avatar_url: string | null;
   bio: string | null;
-  follower_count: number;
-  following_count: number;
+  follower_count?: number;
+  following_count?: number;
   is_pro: boolean;
-  streak_count: number;
+  streak_count?: number;
 }
 
 interface UserHoverCardProps {
@@ -37,7 +37,9 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
   const { getToken } = useClerkAuth();
   const [show, setShow] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(initialUser ?? null);
-  const [hasLoadedUser, setHasLoadedUser] = useState<boolean>(!!initialUser);
+  const [hasLoadedUser, setHasLoadedUser] = useState<boolean>(
+    !!initialUser && initialUser.streak_count !== undefined
+  );
   const [hasLoadedFollow, setHasLoadedFollow] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [position, setPosition] = useState<{ top?: number; bottom?: number; left: number }>({ left: 0 });
@@ -196,7 +198,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                     {user.name}
                   </span>
                   <VerifiedBadge username={user.username} isPro={user.is_pro} size="12px" />
-                  {user.streak_count > 0 && (
+                  {user.streak_count !== undefined && user.streak_count > 0 && (
                     <div style={{ marginLeft: "2px" }}>
                        <StreakBadge count={user.streak_count} mini />
                     </div>
