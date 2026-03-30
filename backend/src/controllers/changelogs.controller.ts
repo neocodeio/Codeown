@@ -29,14 +29,19 @@ export async function createChangelog(req: Request, res: Response) {
             return res.status(401).json({ error: "Unauthorized" });
         }
 
-        // Check if user is amin.ceo
-        const { data: userData, error: userError } = await supabase
+        // Check if user is amin.ceo or matches CEO_CLERK_ID
+        const ceoId = process.env.CEO_CLERK_ID;
+        const isCeoById = ceoId && userId === ceoId;
+
+        const { data: userData } = await supabase
             .from("users")
             .select("username")
             .eq("id", userId)
             .single();
 
-        if (userError || !userData || userData.username !== "amin.ceo") {
+        const isCeoByUsername = userData?.username?.toLowerCase() === "amin.ceo";
+
+        if (!isCeoById && !isCeoByUsername) {
             return res.status(403).json({ error: "Only amin.ceo can post changelogs" });
         }
 

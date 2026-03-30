@@ -16,7 +16,7 @@ interface ChangelogEntry {
 export default function Changelog() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
-    const { user } = useClerkUser();
+    const { user, isLoaded } = useClerkUser();
     const { getToken } = useClerkAuth();
     
     const [changelogs, setChangelogs] = useState<ChangelogEntry[]>([]);
@@ -25,7 +25,7 @@ export default function Changelog() {
     const [newContent, setNewContent] = useState("");
     const [isPosting, setIsPosting] = useState(false);
 
-    const isAminCeo = user?.username === "amin.ceo";
+    const isAminCeo = user?.username?.toLowerCase() === "amin.ceo";
 
     const fetchChangelogs = async () => {
         setIsLoading(true);
@@ -62,10 +62,11 @@ export default function Changelog() {
             });
             setNewContent("");
             setNewVersion("");
+            alert("Update published successfully.");
             fetchChangelogs();
         } catch (err) {
             console.error("Failed to post changelog", err);
-            alert("Failed to post changelog.");
+            alert("Failed to post changelog. Ensure you have the permissions or try again.");
         } finally {
             setIsPosting(false);
         }
@@ -110,7 +111,7 @@ export default function Changelog() {
                 </p>
             </header>
 
-            {isAminCeo && (
+            {isLoaded && isAminCeo && (
                 <div style={{
                     marginBottom: "60px",
                     padding: "30px",
