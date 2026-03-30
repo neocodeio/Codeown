@@ -14,29 +14,72 @@ import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 
 const TechIcon = ({ name, size = 12 }: { name: string, size?: number }) => {
-  const normalized = name.toLowerCase().trim();
+  // Normalize: remove dots (next.js -> nextjs), handle spaces, etc.
+  const input = name.toLowerCase().trim();
+  const normalized = input.replace(/\.js$/, "").replace(/\.js\s/, "").replace(/\./g, "dot");
+  
   const iconMap: Record<string, string> = {
-    react: "https://cdn.simpleicons.org/react/white",
-    nextjs: "https://cdn.simpleicons.org/nextdotjs/white",
-    nodejs: "https://cdn.simpleicons.org/nodedotjs/white",
-    go: "https://cdn.simpleicons.org/go/white",
-    typescript: "https://cdn.simpleicons.org/typescript/white",
-    python: "https://cdn.simpleicons.org/python/white",
-    tailwind: "https://cdn.simpleicons.org/tailwindcss/white",
-    supabase: "https://cdn.simpleicons.org/supabase/white",
-    postgresql: "https://cdn.simpleicons.org/postgresql/white",
-    docker: "https://cdn.simpleicons.org/docker/white",
-    rust: "https://cdn.simpleicons.org/rust/white",
-    github: "https://cdn.simpleicons.org/github/white",
-    aws: "https://cdn.simpleicons.org/amazonaws/white",
-    firebase: "https://cdn.simpleicons.org/firebase/white",
-    flutter: "https://cdn.simpleicons.org/flutter/white",
-    vue: "https://cdn.simpleicons.org/vuedotjs/white",
-    angular: "https://cdn.simpleicons.org/angular/white",
+    react: "react",
+    reactjs: "react",
+    nextjs: "nextdotjs",
+    nextdotjs: "nextdotjs",
+    node: "nodedotjs",
+    nodejs: "nodedotjs",
+    nodedotjs: "nodedotjs",
+    go: "go",
+    golang: "go",
+    typescript: "typescript",
+    ts: "typescript",
+    javascript: "javascript",
+    js: "javascript",
+    python: "python",
+    tailwind: "tailwindcss",
+    tailwindcss: "tailwindcss",
+    supabase: "supabase",
+    postgresql: "postgresql",
+    postgres: "postgresql",
+    docker: "docker",
+    rust: "rust",
+    github: "github",
+    aws: "amazonaws",
+    amazonaws: "amazonaws",
+    firebase: "firebase",
+    flutter: "flutter",
+    vue: "vuedotjs",
+    vuejs: "vuedotjs",
+    vuedotjs: "vuedotjs",
+    angular: "angular",
+    mongodb: "mongodb",
+    redis: "redis",
+    mysql: "mysql",
+    vite: "vite",
+    stripe: "stripe",
+    clerk: "clerk",
+    vercel: "vercel",
+    html: "html5",
+    css: "css3",
+    sass: "sass",
+    framer: "framer",
+    figma: "figma"
   };
   
-  if (iconMap[normalized]) {
-    return <img src={iconMap[normalized]} alt={name} style={{ width: size, height: size, opacity: 0.6, transition: "opacity 0.15s ease" }} />;
+  const slug = iconMap[normalized] || iconMap[input] || null;
+  
+  if (slug) {
+    const url = `https://cdn.simpleicons.org/${slug}/fff`;
+    return <img 
+      src={url} 
+      alt={name} 
+      style={{ 
+        width: size, 
+        height: size, 
+        opacity: 0.7, 
+        display: "block",
+        transition: "opacity 0.15s ease" 
+      }} 
+      onLoad={(e) => (e.currentTarget.style.display = "block")}
+      onError={(e) => (e.currentTarget.style.display = "none")}
+    />;
   }
   return null;
 }
