@@ -9,7 +9,7 @@ import { formatRelativeDate } from "../utils/date";
 import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
-import { ArrowLeft, PencilSimple, Trash, Globe, GithubLogo, Star, ShareNetwork, BookmarkSimple, Handshake, Code, Sparkle } from "phosphor-react";
+import { ArrowLeft, PencilSimple, Trash, Globe, GithubLogo, Star, ShareNetwork, BookmarkSimple, Handshake, Code, Sparkle, Rocket } from "phosphor-react";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
@@ -448,6 +448,42 @@ export default function ProjectDetail() {
             }}>
               {project.description}
             </p>
+
+            {project.founder_vision && (
+              <div style={{
+                marginBottom: "48px",
+                padding: "20px 24px",
+                backgroundColor: "rgba(255, 255, 255, 0.03)",
+                borderLeft: "2px solid var(--text-primary)",
+                borderRadius: "var(--radius-sm)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px"
+              }}>
+                <div style={{ 
+                  display: "flex", 
+                  alignItems: "center", 
+                  gap: "8px", 
+                  fontSize: "11px", 
+                  fontWeight: 700, 
+                  color: "var(--text-tertiary)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em"
+                }}>
+                  <Rocket size={14} weight="fill" />
+                  Founder's Vision
+                </div>
+                <div style={{ 
+                  fontSize: "15px", 
+                  fontWeight: 500, 
+                  color: "var(--text-primary)",
+                  lineHeight: "1.5",
+                  fontStyle: "italic"
+                }}>
+                  "{project.founder_vision}"
+                </div>
+              </div>
+            )}
 
             {/* OWNER REVIEW SECTION */}
             {isOwnProject && Array.isArray(project.cofounderRequests) && project.cofounderRequests.length > 0 && (

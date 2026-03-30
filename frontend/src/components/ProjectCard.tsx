@@ -12,6 +12,34 @@ import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, 
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
+
+const TechIcon = ({ name, size = 12 }: { name: string, size?: number }) => {
+  const normalized = name.toLowerCase().trim();
+  const iconMap: Record<string, string> = {
+    react: "https://cdn.simpleicons.org/react/white",
+    nextjs: "https://cdn.simpleicons.org/nextdotjs/white",
+    nodejs: "https://cdn.simpleicons.org/nodedotjs/white",
+    go: "https://cdn.simpleicons.org/go/white",
+    typescript: "https://cdn.simpleicons.org/typescript/white",
+    python: "https://cdn.simpleicons.org/python/white",
+    tailwind: "https://cdn.simpleicons.org/tailwindcss/white",
+    supabase: "https://cdn.simpleicons.org/supabase/white",
+    postgresql: "https://cdn.simpleicons.org/postgresql/white",
+    docker: "https://cdn.simpleicons.org/docker/white",
+    rust: "https://cdn.simpleicons.org/rust/white",
+    github: "https://cdn.simpleicons.org/github/white",
+    aws: "https://cdn.simpleicons.org/amazonaws/white",
+    firebase: "https://cdn.simpleicons.org/firebase/white",
+    flutter: "https://cdn.simpleicons.org/flutter/white",
+    vue: "https://cdn.simpleicons.org/vuedotjs/white",
+    angular: "https://cdn.simpleicons.org/angular/white",
+  };
+  
+  if (iconMap[normalized]) {
+    return <img src={iconMap[normalized]} alt={name} style={{ width: size, height: size, opacity: 0.6, transition: "opacity 0.15s ease" }} />;
+  }
+  return null;
+}
 import AvailabilityBadge from "./AvailabilityBadge";
 import { getOptimizedImageUrl } from "../utils/image";
 import ShareModal from "./ShareModal";
@@ -370,28 +398,36 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                     e.stopPropagation();
                     navigate(`/?type=projects&tag=${encodeURIComponent(tech)}`);
                   }}
-                    style={{
+                  style={{
                     padding: "4px 12px",
                     borderRadius: "100px",
                     border: "0.5px solid var(--border-hairline)",
                     backgroundColor: "transparent",
                     color: "var(--text-tertiary)",
-                    fontSize: "12px",
-                    fontWeight: 500,
+                    fontSize: "11px",
+                    fontWeight: 600,
                     cursor: "pointer",
                     transition: "all 0.15s ease",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px"
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "var(--text-primary)";
                     e.currentTarget.style.color = "var(--text-primary)";
                     e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    const img = e.currentTarget.querySelector('img');
+                    if (img) img.style.opacity = "1";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "var(--border-hairline)";
                     e.currentTarget.style.color = "var(--text-tertiary)";
                     e.currentTarget.style.backgroundColor = "transparent";
+                    const img = e.currentTarget.querySelector('img');
+                    if (img) img.style.opacity = "0.6";
                   }}
                 >
+                  <TechIcon name={tech} />
                   {tech}
                 </button>
               ))}

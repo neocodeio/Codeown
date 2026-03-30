@@ -387,7 +387,8 @@ export async function createProject(req: Request, res: Response) {
       live_demo,
       cover_image,
       project_details,
-      looking_for_contributors
+      looking_for_contributors,
+      founder_vision
     } = req.body;
 
     let { contributors } = req.body;
@@ -438,8 +439,7 @@ export async function createProject(req: Request, res: Response) {
       cover_image: cover_image || null,
       project_details: project_details.trim(),
       looking_for_contributors: !!looking_for_contributors,
-      // like_count: 0, // Usually has default in DB
-      // comment_count: 0, // Usually has default in DB
+      founder_vision: founder_vision ? String(founder_vision).substring(0, 140) : null,
       created_at: now,
       updated_at: now
     };
@@ -563,7 +563,8 @@ export async function updateProject(req: Request, res: Response) {
       live_demo,
       cover_image,
       project_details,
-      looking_for_contributors
+      looking_for_contributors,
+      founder_vision
     } = req.body;
 
     // Validate required fields
@@ -583,17 +584,21 @@ export async function updateProject(req: Request, res: Response) {
         title,
         description,
         technologies_used,
-        status,
+        status: status,
         github_repo: github_repo || null,
         live_demo: live_demo || null,
         cover_image: cover_image || null,
-        project_details,
-        looking_for_contributors: looking_for_contributors || false,
+        project_details: project_details,
+        looking_for_contributors: looking_for_contributors === true,
+        founder_vision: founder_vision ? String(founder_vision).substring(0, 140) : null,
         updated_at: new Date().toISOString()
       })
       .eq("id", id)
       .eq("user_id", userId)
-      .select()
+      .select(`
+        *,
+        user:user_id(id, name, avatar_url, username, is_hirable, is_pro, is_og)
+      `)
       .single();
 
     if (projectError) {

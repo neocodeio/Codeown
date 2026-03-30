@@ -35,6 +35,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         live_demo: "",
         cover_image: "",
         project_details: "",
+        founder_vision: "",
         contributors: [],
     });
     const [contributorInput, setContributorInput] = useState("");
@@ -50,6 +51,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 live_demo: project.live_demo || "",
                 cover_image: project.cover_image || "",
                 project_details: project.project_details,
+                founder_vision: project.founder_vision || "",
                 contributors: (project.contributors || []).map(c => c.username),
             });
         } else {
@@ -62,6 +64,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 live_demo: "",
                 cover_image: "",
                 project_details: "",
+                founder_vision: "",
                 contributors: [],
             });
         }
@@ -502,6 +505,21 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             rows={3}
                             className="form-textarea"
                             placeholder="A brief overview of your project"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="form-item-label">
+                            Founder's Vision (What's next?)
+                        </label>
+                        <input
+                            type="text"
+                            name="founder_vision"
+                            value={formData.founder_vision}
+                            onChange={handleInputChange}
+                            maxLength={140}
+                            className="form-input"
+                            placeholder="Working on Auth... or Finalizing UI... (max 140 chars)"
                         />
                     </div>
 

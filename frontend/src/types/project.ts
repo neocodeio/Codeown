@@ -9,6 +9,7 @@ export interface Project {
   live_demo?: string;
   cover_image?: string;
   project_details: string;
+  founder_vision?: string;
   created_at: string;
   updated_at: string;
   like_count: number;
@@ -72,6 +73,7 @@ export interface ProjectFormData {
   project_details: string;
   contributors?: string[]; // Array of usernames
   looking_for_contributors?: boolean;
+  founder_vision?: string;
 }
 
 export interface ProjectReaction {
