@@ -2,29 +2,9 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
+import { notify } from "../services/notification.service.js";
 
-// Helper function to create project comment notifications
-async function createProjectCommentNotification(
-  userId: string,
-  type: "comment" | "reply",
-  actorId: string,
-  projectId: number,
-  commentId?: number
-) {
-  try {
-    await supabase.from("notifications").insert({
-      user_id: userId,
-      type: type,
-      actor_id: actorId,
-      project_id: projectId,
-      comment_id: commentId,
-      read: false,
-      created_at: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error("Error creating project comment notification:", error);
-  }
-}
+// createProjectCommentNotification is now handled by NotificationService.notify
 
 export async function getProjectComments(req: Request, res: Response) {
   try {
@@ -108,10 +88,22 @@ export async function createProjectComment(req: Request, res: Response) {
     if (parent_id) {
       const { data: pc } = await supabase.from("project_comments").select("user_id").eq("id", parent_id).single();
       if (pc && pc.user_id !== userId) {
-        await createProjectCommentNotification(pc.user_id, "reply", userId, parseInt(id as string), comment.id);
+        await notify({
+          userId: pc.user_id,
+          actorId: userId,
+          type: "reply",
+          projectId: parseInt(id as string),
+          commentId: comment.id
+        });
       }
     } else if (project.user_id !== userId) {
-      await createProjectCommentNotification(project.user_id, "comment", userId, parseInt(id as string), comment.id);
+      await notify({
+        userId: project.user_id,
+        actorId: userId,
+        type: "comment",
+        projectId: parseInt(id as string),
+        commentId: comment.id
+      });
     }
 
     // Create notifications for mentioned users (@username)
@@ -127,23 +119,19 @@ export async function createProjectComment(req: Request, res: Response) {
           .in("username", mentionedUsernames);
 
         if (mentionedUsers && mentionedUsers.length > 0) {
-          const mentionNotifications = mentionedUsers
-            .filter((u: any) => u.id !== userId && u.id !== project.user_id)
-            .map((u: any) => ({
-              user_id: u.id,
-              type: "mention",
-              actor_id: userId,
-              project_id: parseInt(id as string),
-              comment_id: comment.id,
-              read: false,
-            }));
-
-          if (mentionNotifications.length > 0) {
-            const { error: mentionNotifError } = await supabase.from("notifications").insert(mentionNotifications);
-            if (mentionNotifError) {
-              console.error("Error creating project comment mention notifications:", mentionNotifError);
-            } else {
-              console.log(`Created ${mentionNotifications.length} mention notifications for project comment`);
+          for (const u of mentionedUsers) {
+            if (u.id !== userId && u.id !== project.user_id) {
+              try {
+                await notify({
+                  userId: u.id,
+                  actorId: userId,
+                  type: "mention",
+                  projectId: parseInt(id as string),
+                  commentId: comment.id
+                });
+              } catch (err) {
+                console.error("Error creating mention notification:", err);
+              }
             }
           }
         }

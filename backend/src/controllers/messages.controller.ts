@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
-import { sendNewMessageEmail } from "../lib/email.js";
+import { notify } from "../services/notification.service.js";
 
 // Helper to ensure conversation exists or create one
 export async function getOrCreateConversation(user1Id: string, user2Id: string) {
@@ -373,70 +373,29 @@ export async function sendMessage(req: Request, res: Response) {
             }
 
             if (finalRecipientId) {
-                const { error: notifErr } = await supabase.from("notifications").insert({
-                    user_id: finalRecipientId,
-                    type: "message",
-                    actor_id: userId,
-                    read: false,
-                });
-
-                if (notifErr) {
-                    console.error("Database error creating message notification:", notifErr);
-                } else {
-                    console.log(`Notification sent to ${finalRecipientId}`);
+                try {
+                    await notify({
+                        userId: finalRecipientId,
+                        actorId: userId,
+                        type: "message"
+                    });
 
                     // Emit real-time message to recipient
-                    try {
-                        const { getIO } = await import("../lib/socket.js");
-                        const io = getIO();
-                        
-                        // Fetch sender info for the notification toast
-                        const { data: senderInfo } = await supabase
-                            .from("users")
-                            .select("name, username, avatar_url")
-                            .eq("id", userId)
-                            .single();
+                    const { getIO } = await import("../lib/socket.js");
+                    const io = getIO();
+                    
+                    const { data: senderInfo } = await supabase
+                        .from("users")
+                        .select("name, username, avatar_url")
+                        .eq("id", userId)
+                        .single();
 
-                        io.to(finalRecipientId).emit("new_message", {
-                            ...message,
-                            sender: senderInfo || { name: "Someone", username: null, avatar_url: null }
-                        });
-                    } catch (ioErr) {
-                        console.error("Error emitting new_message to socket:", ioErr);
-                    }
-
-                    // Fetch user details for email
-                    const [{ data: sender }, { data: recipient }] = await Promise.all([
-                        supabase.from("users").select("name, username, is_og").eq("id", userId).single(),
-                        supabase.from("users").select("name, email, is_og").eq("id", finalRecipientId).single()
-                    ]);
-
-                    if (sender && recipient && recipient.email) {
-                        try {
-                            const { isUserOnline } = await import("../lib/socket.js");
-                            const isOnline = isUserOnline(finalRecipientId);
-                            
-                            if (!isOnline) {
-                                sendNewMessageEmail(
-                                    recipient.email,
-                                    recipient.name || "User",
-                                    sender.name || "Someone",
-                                    sender.username || "someone"
-                                );
-                            } else {
-                                console.log(`Recipient ${finalRecipientId} is online, skipping email.`);
-                            }
-                        } catch (socketErr) {
-                            console.error("Error checking user online status:", socketErr);
-                            // Fallback to sending email if check fails
-                            sendNewMessageEmail(
-                                recipient.email,
-                                recipient.name || "User",
-                                sender.name || "Someone",
-                                sender.username || "someone"
-                            );
-                        }
-                    }
+                    io.to(finalRecipientId).emit("new_message", {
+                        ...message,
+                        sender: senderInfo || { name: "Someone", username: null, avatar_url: null }
+                    });
+                } catch (notifError) {
+                    console.error("Error creating message notification or socket emission:", notifError);
                 }
             }
         } catch (notifError) {

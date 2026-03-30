@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
-import { clerkClient } from "@clerk/clerk-sdk-node";
-import { sendNewFollowerEmail } from "../lib/email.js";
+import { notify } from "../services/notification.service.js";
 
 export async function followUser(req: Request, res: Response) {
   try {
@@ -70,30 +69,13 @@ export async function followUser(req: Request, res: Response) {
         return res.status(500).json({ error: "Failed to follow user", details: error.message });
       }
 
-      // Create notification for the followed user
       try {
-        await supabase.from("notifications").insert({
-          user_id: targetUserId,
-          type: "follow",
-          actor_id: userId,
-          read: false,
+        await notify({
+          userId: targetUserId,
+          actorId: userId,
+          type: "follow"
         });
         console.log(`Created follow notification for user ${targetUserId} from ${userId}`);
-        
-        // Send email notification
-        const [{ data: follower }, { data: targetUser }] = await Promise.all([
-          supabase.from("users").select("name, username").eq("id", userId).single(),
-          supabase.from("users").select("name, email").eq("id", targetUserId).single()
-        ]);
-        
-        if (targetUser?.email && follower?.name && follower?.username) {
-          sendNewFollowerEmail(
-            targetUser.email, 
-            targetUser.name || "User", 
-            follower.name, 
-            follower.username
-          );
-        }
       } catch (notifError) {
         console.error("Error creating follow notification or email:", notifError);
       }

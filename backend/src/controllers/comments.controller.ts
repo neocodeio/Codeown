@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
-import { sendNewCommentEmail } from "../lib/email.js";
+import { notify } from "../services/notification.service.js";
 
 export async function getComments(req: Request, res: Response) {
   try {
@@ -271,48 +271,30 @@ export async function createComment(req: Request, res: Response) {
       .eq("id", postIdInt)
       .single();
 
-    // Create notification for post owner (if not the commenter)
     if (post && post.user_id !== userId) {
       try {
-        await supabase.from("notifications").insert({
-          user_id: post.user_id,
+        await notify({
+          userId: post.user_id,
+          actorId: userId,
           type: "comment",
-          actor_id: userId,
-          post_id: postIdInt,
-          comment_id: commentId,
-          read: false,
+          postId: postIdInt,
+          commentId: commentId
         });
-
-        const [{ data: commenter }, { data: postOwner }] = await Promise.all([
-          supabase.from("users").select("name").eq("id", userId).single(),
-          supabase.from("users").select("name, email").eq("id", post.user_id).single()
-        ]);
-        
-        if (postOwner?.email && commenter?.name) {
-          sendNewCommentEmail(
-            postOwner.email,
-            postOwner.name || "User",
-            commenter.name,
-            postIdInt
-          );
-        }
       } catch (notifError) {
         console.error("Error creating comment notification or email:", notifError);
       }
     }
 
-    // Create "reply" notification for parent comment author
     if (parentIdInt != null) {
       const { data: parentComment } = await supabase.from("comments").select("user_id").eq("id", parentIdInt).single();
       if (parentComment && parentComment.user_id !== userId) {
         try {
-          await supabase.from("notifications").insert({
-            user_id: parentComment.user_id,
+          await notify({
+            userId: parentComment.user_id,
+            actorId: userId,
             type: "reply",
-            actor_id: userId,
-            post_id: postIdInt,
-            comment_id: commentId,
-            read: false,
+            postId: postIdInt,
+            commentId: commentId
           });
         } catch (replyNotifErr) {
           console.error("Error creating reply notification:", replyNotifErr);
@@ -320,7 +302,6 @@ export async function createComment(req: Request, res: Response) {
       }
     }
 
-    // Create notifications for mentioned users
     if (mentionedUsernames.length > 0) {
       const { data: mentionedUsers } = await supabase
         .from("users")
@@ -328,27 +309,19 @@ export async function createComment(req: Request, res: Response) {
         .in("username", mentionedUsernames);
 
       if (mentionedUsers && mentionedUsers.length > 0) {
-        const mentionNotifications = mentionedUsers
-          .filter((u: any) => u.id !== userId && u.id !== post?.user_id) // Don't notify commenter or post owner
-          .map((u: any) => ({
-            user_id: u.id,
-            type: "mention",
-            actor_id: userId,
-            post_id: postIdInt,
-            comment_id: commentId,
-            read: false,
-          }));
-
-        if (mentionNotifications.length > 0) {
-          try {
-            const { error: mentionNotifError } = await supabase.from("notifications").insert(mentionNotifications);
-            if (mentionNotifError) {
-              console.error("Error creating mention notifications:", mentionNotifError);
-            } else {
-              console.log(`Created ${mentionNotifications.length} mention notifications`);
+        for (const u of mentionedUsers) {
+          if (u.id !== userId && u.id !== post?.user_id) {
+            try {
+              await notify({
+                userId: u.id,
+                actorId: userId,
+                type: "mention",
+                postId: postIdInt,
+                commentId: commentId
+              });
+            } catch (err) {
+              console.error("Error creating mention notification:", err);
             }
-          } catch (mentionNotifError) {
-            console.error("Error creating mention notifications:", mentionNotifError);
           }
         }
       }

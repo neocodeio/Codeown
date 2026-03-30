@@ -326,23 +326,48 @@ export async function sendNewLikeEmail(email: string, userName: string, likerNam
   }
 }
 
-export async function sendNewCommentEmail(email: string, userName: string, commenterName: string, postId: number) {
+export async function sendNewCommentEmail(email: string, userName: string, commenterName: string, contentId: number, contentType: 'post' | 'project' = 'post') {
   if (!resend) return;
   try {
+    const url = contentType === 'project' ? `/project/${contentId}` : `/`;
+    const typeLabel = contentType === 'project' ? 'project' : 'post';
+    
     await resend.emails.send({
       from: "Codeown <notifications@codeown.space>",
       to: email,
-      subject: `${commenterName} commented on your post! 💬`,
+      subject: `${commenterName} commented on your ${typeLabel}! 💬`,
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
           <h2>Hey ${userName},</h2>
-          <p><strong>${commenterName}</strong> just commented on your post.</p>
-          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View Comment</a>
+          <p><strong>${commenterName}</strong> just commented on your ${typeLabel}.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View Comment</a>
         </div>
       `
     });
   } catch (err) {
     console.error("Error sending comment email:", err);
+  }
+}
+
+export async function sendNewMentionEmail(email: string, userName: string, actorName: string, contentId: number, contentType: 'post' | 'project' | 'comment') {
+  if (!resend) return;
+  try {
+    const url = contentType === 'project' ? `/project/${contentId}` : contentType === 'comment' ? `/comment/${contentId}` : `/`;
+    
+    await resend.emails.send({
+      from: "Codeown <notifications@codeown.space>",
+      to: email,
+      subject: `${actorName} mentioned you on Codeown! ✨`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px;">
+          <h2>Hey ${userName},</h2>
+          <p><strong>${actorName}</strong> just mentioned you in a ${contentType}.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View Mention</a>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Error sending mention email:", err);
   }
 }
 

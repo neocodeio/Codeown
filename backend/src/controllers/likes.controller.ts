@@ -1,7 +1,7 @@
 
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
-import { sendNewLikeEmail } from "../lib/email.js";
+import { notify } from "../services/notification.service.js";
 
 export async function likePost(req: Request, res: Response) {
   try {
@@ -77,30 +77,12 @@ export async function likePost(req: Request, res: Response) {
 
       if (post && post.user_id !== userId) {
         try {
-          const { error: notifError } = await supabase.from("notifications").insert({
-            user_id: post.user_id,
+          await notify({
+            userId: post.user_id,
+            actorId: userId,
             type: "like",
-            actor_id: userId,
-            post_id: postIdNum,
-            read: false,
+            postId: postIdNum
           });
-          
-          if (!notifError) {
-            const [{ data: liker }, { data: postOwner }] = await Promise.all([
-              supabase.from("users").select("name").eq("id", userId).single(),
-              supabase.from("users").select("name, email").eq("id", post.user_id).single()
-            ]);
-
-            if (postOwner?.email && liker?.name) {
-              sendNewLikeEmail(
-                postOwner.email,
-                postOwner.name,
-                liker.name,
-                'post',
-                postIdNum
-              );
-            }
-          }
         } catch (notifErr) {
           console.error("Error creating like notification:", notifErr);
         }
@@ -219,19 +201,18 @@ export async function likeComment(req: Request, res: Response) {
       try {
         const { data: c } = await supabase.from(commentsTable).select("user_id, " + (actualType === 'project' ? 'project_id' : 'post_id')).eq("id", commentId).single();
         if (c && (c as any).user_id !== userId) {
-          const notif: any = {
-            user_id: (c as any).user_id,
+          await notify({
+            userId: (c as any).user_id,
+            actorId: userId,
             type: "like",
-            actor_id: userId,
-            comment_id: commentId,
-            read: false,
-          };
-          if (actualType === 'project') notif.project_id = (c as any).project_id;
-          else notif.post_id = (c as any).post_id;
-          
-          await supabase.from("notifications").insert(notif);
+            commentId: commentId,
+            projectId: actualType === 'project' ? (c as any).project_id : undefined,
+            postId: actualType === 'post' ? (c as any).post_id : undefined
+          });
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error("Error creating comment like notification:", e);
+      }
 
       const { count } = await supabase.from(likesTable).select("*", { count: "exact", head: true }).eq("comment_id", commentId);
       const newCount = count || 0;

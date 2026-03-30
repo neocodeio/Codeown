@@ -170,7 +170,33 @@ export default function App() {
     };
   }, [queryClient, isSignedIn, user?.id]);
 
-  // Global axios interceptor for auth
+  // Global presence heartbeat
+  useEffect(() => {
+    let interval: any;
+
+    const pingActivity = async () => {
+      if (isSignedIn && user?.id) {
+        try {
+          await api.post("/users/active/ping");
+        } catch (err) {
+          // Fail silently for pings
+        }
+      }
+    };
+
+    if (isSignedIn && user?.id) {
+      // Initial ping
+      pingActivity();
+      // Periodic pings every 45s
+      interval = setInterval(pingActivity, 45000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isSignedIn, user?.id]);
+
+  // Globalaxios interceptor for auth
   useEffect(() => {
     const interceptor = api.interceptors.request.use(async (config) => {
       try {

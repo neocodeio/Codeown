@@ -1,30 +1,11 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
-import { sendNewLikeEmail, sendCofounderRequestEmail } from "../lib/email.js";
+import { notify } from "../services/notification.service.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { emitUpdate } from "../lib/socket.js";
 
-// Helper function to create notifications
-async function createProjectNotification(
-  userId: string,
-  type: "like" | "comment" | "save" | "cofounder_request",
-  actorId: string,
-  projectId: number
-) {
-  try {
-    await supabase.from("notifications").insert({
-      user_id: userId,
-      type: type,
-      actor_id: actorId,
-      project_id: projectId,
-      read: false,
-      created_at: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error("Error creating project notification:", error);
-  }
-}
+// createProjectNotification is now handled by NotificationService.notify
 
 // Changelogs features
 export async function getProjectChangelogs(req: Request, res: Response) {
@@ -741,27 +722,16 @@ export async function toggleProjectLike(req: Request, res: Response) {
         });
       isLiked = true;
 
-      // Create notification for project owner (if not the liker)
       if (project.user_id !== String(userId)) {
-        await createProjectNotification(project.user_id, "like", String(userId!), parseInt(id as string));
-        
         try {
-          const [{ data: liker }, { data: projOwner }] = await Promise.all([
-            supabase.from("users").select("name").eq("id", String(userId)).single(),
-            supabase.from("users").select("name, email").eq("id", String(project.user_id)).single()
-          ]);
-          
-          if (projOwner?.email && liker?.name) {
-            sendNewLikeEmail(
-              projOwner.email,
-              projOwner.name || "User",
-              liker.name,
-              'project',
-              parseInt(id as string)
-            );
-          }
+          await notify({
+            userId: String(project.user_id),
+            actorId: String(userId!),
+            type: "like",
+            projectId: parseInt(id as string)
+          });
         } catch (e) {
-          console.error("Error sending project like email:", e);
+          console.error("Error creating project like notification:", e);
         }
       }
 
@@ -876,9 +846,13 @@ export async function toggleProjectSave(req: Request, res: Response) {
         });
       isSaved = true;
 
-      // Create notification for project owner (if not the saver)
       if (project.user_id !== String(userId)) {
-        await createProjectNotification(String(project.user_id), "save", String(userId!), parseInt(String(id)));
+        await notify({
+          userId: String(project.user_id),
+          actorId: String(userId!),
+          type: "save",
+          projectId: parseInt(String(id))
+        });
       }
 
     }
@@ -1068,24 +1042,24 @@ export async function submitCofounderRequest(req: Request, res: Response) {
     }
 
     // 4. Send Notifications
-    // Create platform notification
-    await createProjectNotification(String(project.user_id), "cofounder_request", String(userId), parseInt(id || "0"));
-
-    // Send Email
-    if (project.user?.email) {
-      await sendCofounderRequestEmail(
-        project.user.email,
-        project.user.name || "Project Owner",
-        requester.name || requester.username || "A Developer",
-        requester.username || "anon",
-        project.title,
-        {
-          skills: skills || [],
-          hoursPerWeek: String(hoursPerWeek),
-          reason: String(reason || ""),
-          contribution: String(contribution || "")
+    try {
+      await notify({
+        userId: String(project.user_id),
+        actorId: String(userId),
+        type: "cofounder_request",
+        projectId: parseInt(id || "0"),
+        data: {
+          projectTitle: project.title,
+          applicationData: {
+            skills: skills || [],
+            hoursPerWeek: String(hoursPerWeek),
+            reason: String(reason || ""),
+            contribution: String(contribution || "")
+          }
         }
-      );
+      });
+    } catch (notifErr) {
+      console.error("Error creating cofounder request notification:", notifErr);
     }
 
     return res.json({ 
