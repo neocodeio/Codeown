@@ -250,7 +250,7 @@ export default function Changelog() {
                     color: "var(--text-tertiary)", 
                     fontWeight: 500,
                 }}>
-                    Codeown Engine v1.0.0
+                    From the begining of Codeown 2026/02/05
                 </div>
             </footer>
         </div>
