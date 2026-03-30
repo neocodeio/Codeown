@@ -69,40 +69,35 @@ export default function Feed() {
         loading: postsLoading,
         fetchPosts,
         hasMore: postsHasMore
-    } = usePosts(10, feedFilter, getToken, selectedTag, selectedLang || undefined, true);
+    } = usePosts(20, feedFilter, getToken, selectedTag, selectedLang || undefined, true);
 
     const {
         projects,
         loading: projectsLoading,
         fetchProjects,
         hasMore: projectsHasMore
-    } = useProjects(10, feedFilter, getToken, selectedTag, true);
+    } = useProjects(20, feedFilter, getToken, selectedTag, true);
 
     const loading = feedType === "posts" ? postsLoading : projectsLoading;
     const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;
 
-    useEffect(() => {
-        let throttleTimeout: ReturnType<typeof setTimeout> | null = null;
+    const observer = useRef<IntersectionObserver | null>(null);
+    const lastElementRef = useCallback((node: HTMLDivElement | null) => {
+        if (loading) return;
+        if (observer.current) observer.current.disconnect();
         
-        const handleScroll = () => {
-            if (throttleTimeout) return;
-            
-            throttleTimeout = setTimeout(() => {
-                const scrolledToBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1200;
-                if (scrolledToBottom && hasMore && !loading) {
-                    if (feedType === "posts") fetchPosts(undefined, true);
-                    else fetchProjects(undefined, true);
-                }
-                throttleTimeout = null;
-            }, 200);
-        };
-
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            if (throttleTimeout) clearTimeout(throttleTimeout);
-        };
-    }, [hasMore, loading, fetchPosts, fetchProjects, feedType]);
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                if (feedType === "posts") fetchPosts(undefined, true);
+                else fetchProjects(undefined, true);
+            }
+        }, {
+            // Trigger load when within 3000px of viewport bottom
+            rootMargin: "0px 0px 3000px 0px"
+        });
+        
+        if (node) observer.current.observe(node);
+    }, [loading, hasMore, fetchPosts, fetchProjects, feedType]);
 
     const currentItems = feedType === "posts" ? posts : projects;
 
@@ -361,7 +356,22 @@ export default function Feed() {
                                         </div>
                                     ))
                                 }
-                                {loading && <div style={{ padding: "60px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px", fontWeight: "400" }}>Loading more content...</div>}
+                                {/* PRE-TRIGGER SENTINEL (Above Loader) */}
+                                <div ref={lastElementRef} style={{ height: "100px", width: "100%", visibility: "hidden" }} />
+
+                                {loading && (
+                                    <div style={{ padding: "60px", textAlign: "center", display: "flex", justifyContent: "center" }}>
+                                        <div style={{
+                                            width: "20px",
+                                            height: "20px",
+                                            border: "2px solid var(--border-hairline)",
+                                            borderTopColor: "var(--text-primary)",
+                                            borderRadius: "50%",
+                                            animation: "spin 0.8s linear infinite"
+                                        }} />
+                                    </div>
+                                )}
+                                
                                 <style>{`
                                 @keyframes slideDownFadeIn {
                                     from { opacity: 0; transform: translateY(-5px); }
