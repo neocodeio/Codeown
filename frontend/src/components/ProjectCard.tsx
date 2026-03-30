@@ -52,6 +52,15 @@ const TechIcon = ({ name, size = 12 }: { name: string, size?: number }) => {
     mongodb: "mongodb",
     redis: "redis",
     mysql: "mysql",
+    mariadb: "mariadb",
+    sqlite: "sqlite",
+    drizzle: "drizzle",
+    drizzleorm: "drizzle",
+    prisma: "prisma",
+    cloudflare: "cloudflare",
+    workers: "cloudflareworkers",
+    worker: "cloudflareworkers",
+    cloudflareworkers: "cloudflareworkers",
     vite: "vite",
     stripe: "stripe",
     clerk: "clerk",
@@ -60,22 +69,25 @@ const TechIcon = ({ name, size = 12 }: { name: string, size?: number }) => {
     css: "css3",
     sass: "sass",
     framer: "framer",
-    figma: "figma"
+    figma: "figma",
+    openai: "openai",
+    anthropic: "anthropic",
   };
   
   const slug = iconMap[normalized] || iconMap[input] || null;
   
   if (slug) {
-    const url = `https://cdn.simpleicons.org/${slug}/fff`;
+    // Using official brand colors (removed /fff) so they are visible on light & dark mode
+    const url = `https://cdn.simpleicons.org/${slug}`;
     return <img 
       src={url} 
       alt={name} 
       style={{ 
         width: size, 
         height: size, 
-        opacity: 0.7, 
+        opacity: 0.9, 
         display: "block",
-        transition: "opacity 0.15s ease" 
+        transition: "transform 0.15s ease" 
       }} 
       onLoad={(e) => (e.currentTarget.style.display = "block")}
       onError={(e) => (e.currentTarget.style.display = "none")}
