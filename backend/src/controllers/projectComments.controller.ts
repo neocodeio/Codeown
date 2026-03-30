@@ -84,29 +84,44 @@ export async function createProjectComment(req: Request, res: Response) {
     const { count } = await supabase.from("project_comments").select("*", { count: "exact", head: true }).eq("project_id", id);
     await supabase.from("projects").update({ comment_count: count || 0 }).eq("id", id);
 
-    // Notification
+    // Notification Logic with Deduplication
+    let parentCommentOwnerId: string | null = null;
     if (parent_id) {
       const { data: pc } = await supabase.from("project_comments").select("user_id").eq("id", parent_id).single();
-      if (pc && pc.user_id !== userId) {
+      parentCommentOwnerId = pc?.user_id || null;
+    }
+
+    // 1. Notify parent owner (if it's a reply and not their own comment)
+    if (parentCommentOwnerId && parentCommentOwnerId !== userId) {
+      try {
         await notify({
-          userId: pc.user_id,
+          userId: parentCommentOwnerId,
           actorId: userId,
           type: "reply",
           projectId: parseInt(id as string),
           commentId: comment.id
         });
+      } catch (err) {
+        console.error("Error creating project reply notification:", err);
       }
-    } else if (project.user_id !== userId) {
-      await notify({
-        userId: project.user_id,
-        actorId: userId,
-        type: "comment",
-        projectId: parseInt(id as string),
-        commentId: comment.id
-      });
     }
 
-    // Create notifications for mentioned users (@username)
+    // 2. Notify project owner (if not their own project AND they aren't the parent owner who already got a 'reply' notification)
+    if (project.user_id !== userId && project.user_id !== parentCommentOwnerId) {
+      try {
+        await notify({
+          userId: String(project.user_id),
+          actorId: userId,
+          type: "comment",
+          projectId: parseInt(id as string),
+          commentId: comment.id
+        });
+      } catch (err) {
+        console.error("Error creating project comment notification:", err);
+      }
+    }
+
+    // 3. Notify mentioned users (if they aren't the actor, project owner, or parent owner)
     try {
       const mentionRegex = /@(\w+(?:\.\w+)*)/g;
       const mentions = content.match(mentionRegex) || [];
@@ -120,7 +135,7 @@ export async function createProjectComment(req: Request, res: Response) {
 
         if (mentionedUsers && mentionedUsers.length > 0) {
           for (const u of mentionedUsers) {
-            if (u.id !== userId && u.id !== project.user_id) {
+            if (u.id !== userId && u.id !== project.user_id && u.id !== parentCommentOwnerId) {
               try {
                 await notify({
                   userId: u.id,
@@ -130,7 +145,7 @@ export async function createProjectComment(req: Request, res: Response) {
                   commentId: comment.id
                 });
               } catch (err) {
-                console.error("Error creating mention notification:", err);
+                console.error("Error creating project mention notification:", err);
               }
             }
           }

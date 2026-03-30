@@ -271,7 +271,29 @@ export async function createComment(req: Request, res: Response) {
       .eq("id", postIdInt)
       .single();
 
-    if (post && post.user_id !== userId) {
+    let parentCommentOwnerId: string | null = null;
+    if (parentIdInt != null) {
+      const { data: parentComment } = await supabase.from("comments").select("user_id").eq("id", parentIdInt).single();
+      parentCommentOwnerId = parentComment?.user_id || null;
+    }
+
+    // 1. Notify parent owner (if it's a reply and not their own comment)
+    if (parentCommentOwnerId && parentCommentOwnerId !== userId) {
+      try {
+        await notify({
+          userId: parentCommentOwnerId,
+          actorId: userId,
+          type: "reply",
+          postId: postIdInt,
+          commentId: commentId
+        });
+      } catch (replyNotifErr) {
+        console.error("Error creating reply notification:", replyNotifErr);
+      }
+    }
+
+    // 2. Notify post owner (if not their own post AND they aren't the parent owner who already got a 'reply' notification)
+    if (post && post.user_id !== userId && post.user_id !== parentCommentOwnerId) {
       try {
         await notify({
           userId: post.user_id,
@@ -285,23 +307,7 @@ export async function createComment(req: Request, res: Response) {
       }
     }
 
-    if (parentIdInt != null) {
-      const { data: parentComment } = await supabase.from("comments").select("user_id").eq("id", parentIdInt).single();
-      if (parentComment && parentComment.user_id !== userId) {
-        try {
-          await notify({
-            userId: parentComment.user_id,
-            actorId: userId,
-            type: "reply",
-            postId: postIdInt,
-            commentId: commentId
-          });
-        } catch (replyNotifErr) {
-          console.error("Error creating reply notification:", replyNotifErr);
-        }
-      }
-    }
-
+    // 3. Notify mentioned users (if they aren't the actor, post owner, or parent owner)
     if (mentionedUsernames.length > 0) {
       const { data: mentionedUsers } = await supabase
         .from("users")
@@ -310,7 +316,7 @@ export async function createComment(req: Request, res: Response) {
 
       if (mentionedUsers && mentionedUsers.length > 0) {
         for (const u of mentionedUsers) {
-          if (u.id !== userId && u.id !== post?.user_id) {
+          if (u.id !== userId && u.id !== post?.user_id && u.id !== parentCommentOwnerId) {
             try {
               await notify({
                 userId: u.id,
