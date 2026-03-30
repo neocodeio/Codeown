@@ -162,12 +162,12 @@ export default function Navbar() {
       borderRadius: "12px",
       textDecoration: "none",
       color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
-      backgroundColor: isActive ? "var(--bg-hover)" : "transparent",
-      fontWeight: 600,
+      backgroundColor: isActive ? "transparent" : "transparent",
+      fontWeight: isActive ? "bold" : "500",
       fontSize: "14px",
       transition: "all 0.15s ease",
       marginBottom: "2px",
-      border: isActive ? "0.5px solid var(--border-hairline)" : "0.5px solid transparent",
+      border: isActive ? "0.5px solid transparent" : "0.5px solid transparent",
     };
   };
   const SidebarContent = () => (
