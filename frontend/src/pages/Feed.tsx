@@ -18,7 +18,7 @@ import { SEO } from "../components/SEO";
 export default function Feed() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
-    const isDesktop = width >= 1100;
+    const isDesktop = width >= 1200;
     const [searchParams, setSearchParams] = useSearchParams();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -127,17 +127,21 @@ export default function Feed() {
 
             <div style={{
                 display: "flex",
-                justifyContent: "center",
-                width: "100%",
-                maxWidth: "1100px",
-                margin: "0 auto",
-                padding: isDesktop ? "0 20px" : "0",
+                justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center",
+                width: isDesktop ? "1020px" : "100%",
+                maxWidth: "1020px",
+                margin: (isDesktop && !isMobile) ? "0" : "0 auto",
+                padding: "0",
             }}>
                 {/* ── Main Feed Column ── */}
                 <div style={{
                     width: isDesktop ? "var(--feed-width)" : "100%",
+                    maxWidth: isDesktop ? "var(--feed-width)" : "700px",
+                    margin: isDesktop ? "0" : "0 auto",
                     flexShrink: 0,
-                    border: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
+                    border: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)",
+                    borderLeft: (isDesktop && !isMobile) ? "none" : "none",
+                    borderRight: (isDesktop && !isMobile) ? "0.5px solid var(--border-hairline)" : "none",
                     minHeight: "100vh",
                     position: "relative",
                     backgroundColor: "var(--bg-page)"

@@ -71,6 +71,7 @@ export default function App() {
   const navigate = useNavigate();
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const isDesktop = width >= 1200;
   const { user, isLoaded: userLoaded, isSignedIn } = useClerkUser();
   const { getToken } = useClerkAuth();
   const queryClient = useQueryClient();
@@ -271,6 +272,7 @@ export default function App() {
     location.pathname.startsWith("/portfolio") ||
     location.pathname === "/onboarding";
 
+  const isFeedPage = location.pathname === "/";
   const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
 
   return (
@@ -278,13 +280,16 @@ export default function App() {
       display: "flex",
       flexDirection: layoutDirection,
       minHeight: "100vh",
-      backgroundColor: "var(--bg-page)"
+      backgroundColor: "var(--bg-page)",
+      justifyContent: (isFeedPage && isDesktop) ? "center" : "flex-start"
     }}>
       {!isAuthRoute && <Navbar />}
       <div 
         id="main-content"
         style={{
-          flex: 1,
+          flex: (isFeedPage && isDesktop) ? "0 0 1020px" : 1,
+          width: (isFeedPage && isDesktop) ? "1020px" : "100%",
+          maxWidth: "100%",
           position: "relative",
           minWidth: 0,
           paddingTop: isMobile && !isAuthRoute ? "64px" : "0px",
