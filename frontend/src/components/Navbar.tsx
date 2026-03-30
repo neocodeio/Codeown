@@ -103,6 +103,12 @@ export default function Navbar() {
 
   const StatusBadge = () => {
     const [activeCount, setActiveCount] = useState(1);
+    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true 
+    }));
 
     useEffect(() => {
       const fetchActiveCount = async () => {
@@ -116,33 +122,58 @@ export default function Navbar() {
 
       fetchActiveCount();
       const countInterval = setInterval(fetchActiveCount, 30000); // 30s
+      
+      const timeInterval = setInterval(() => {
+        setCurrentTime(new Date().toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true 
+        }));
+      }, 1000);
 
       return () => {
         clearInterval(countInterval);
+        clearInterval(timeInterval);
       };
     }, []);
 
     return (
       <div style={{
         display: "flex",
-        alignItems: "center",
-        gap: "3px",
+        flexDirection: "column",
+        gap: "1px",
         marginTop: "2px",
-        flexWrap: "wrap"
       }}>
         <div style={{
-          width: "4px",
-          height: "4px",
-          borderRadius: "var(--radius-xs)",
-          backgroundColor: "#22c55e",
-          flexShrink: 0
-        }} />
-        <span style={{
-          fontSize: "11px",
-          color: "var(--text-secondary)",
-          fontWeight: 600,
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
         }}>
-          {activeCount} builders online
+          <div style={{
+            width: "4px",
+            height: "4px",
+            borderRadius: "50%",
+            backgroundColor: "#22c55e",
+            flexShrink: 0
+          }} />
+          <span style={{
+            fontSize: "11px",
+            color: "var(--text-secondary)",
+            fontWeight: 600,
+            whiteSpace: "nowrap"
+          }}>
+            {activeCount} builders online
+          </span>
+        </div>
+        <span style={{
+            fontSize: "10px",
+            color: "var(--text-tertiary)",
+            fontWeight: 500,
+            paddingLeft: "8px",
+            letterSpacing: "0.02em"
+        }}>
+            {currentTime}
         </span>
       </div>
     );
