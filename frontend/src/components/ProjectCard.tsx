@@ -500,7 +500,8 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         {/* Interactions */}
         <div style={{ 
           display: "flex", 
-          gap: isMobile ? "20px" : "40px", 
+          marginTop: "44px",
+          gap: isMobile ? "32px" : "96px", 
           alignItems: "center",
           justifyContent: "flex-start"
         }}>

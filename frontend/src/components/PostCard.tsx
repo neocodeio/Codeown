@@ -436,8 +436,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         {/* Interaction Tray */}
         <div style={{ 
           display: "flex", 
-          marginTop: "24px",
-          gap: isMobile ? "20px" : "40px", 
+          marginTop: "44px",
+          gap: isMobile ? "32px" : "96px", 
           alignItems: "center",
           justifyContent: "flex-start"
         }}>
