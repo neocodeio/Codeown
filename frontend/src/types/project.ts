@@ -18,6 +18,12 @@ export interface Project {
   isLiked?: boolean;
   isSaved?: boolean;
   hasAppliedToCofounder?: boolean;
+  tech_match?: number;
+  techMatch?: {
+    percentage: number;
+    matchedSkills: string[];
+    missingSkills: string[];
+  } | null;
   user?: {
     id: string;
     name: string;

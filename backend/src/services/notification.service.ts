@@ -42,7 +42,7 @@ export async function isUserActive(userId: string): Promise<boolean> {
     return false;
 }
 
-export type NotificationType = 'like' | 'follow' | 'comment' | 'message' | 'mention' | 'reply' | 'cofounder_request';
+export type NotificationType = 'like' | 'follow' | 'comment' | 'message' | 'mention' | 'reply' | 'cofounder_request' | 'save';
 
 interface SendNotificationParams {
     userId: string; // Recipient
@@ -145,6 +145,11 @@ export async function notify(params: SendNotificationParams) {
                         data.applicationData
                     );
                 }
+                break;
+            case 'save':
+                // For now, project saves don't trigger emails by default to avoid spam
+                // but we might add a case here if the user wants them.
+                console.log(`[NotificationService] No-op for 'save' notification email.`);
                 break;
         }
     } catch (emailErr) {

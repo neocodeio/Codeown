@@ -8,7 +8,7 @@ import api from "../api/axios";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, Trash, DotsThree, PaperPlaneTilt, PushPin } from "phosphor-react";
+import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, Trash, DotsThree, PaperPlaneTilt, PushPin, Sparkle } from "phosphor-react";
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -274,6 +274,26 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   borderRadius: "100px",
                 }}>
                   <span style={{ fontSize: "11px", fontWeight: 600, color: "#16a34a" }}>Seeking Co-founder</span>
+                </div>
+              </>
+            )}
+
+            {project.tech_match !== undefined && project.tech_match > 0 && (
+              <>
+                <span style={{ color: "var(--border-hairline)" }}>•</span>
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  backgroundColor: project.tech_match >= 80 ? "rgba(74, 222, 128, 0.08)" : "rgba(56, 189, 248, 0.08)",
+                  border: project.tech_match >= 80 ? "0.5px solid rgba(74, 222, 128, 0.2)" : "0.5px solid rgba(56, 189, 248, 0.2)",
+                  padding: "2px 10px",
+                  borderRadius: "100px",
+                }}>
+                  <Sparkle size={12} weight="fill" color={project.tech_match >= 80 ? "#16a34a" : "#0284c7"} />
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: project.tech_match >= 80 ? "#16a34a" : "#0284c7" }}>
+                    {project.tech_match}% Match
+                  </span>
                 </div>
               </>
             )}

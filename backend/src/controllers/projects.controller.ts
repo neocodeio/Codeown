@@ -147,11 +147,22 @@ export async function getProjects(req: Request, res: Response) {
       const likedProjectIds = new Set((likesRes.data || []).map(l => l.project_id));
       const savedProjectIds = new Set((savesRes.data || []).map(s => s.project_id));
 
-      finalProjects = projectsWithDetails.map(p => ({
-        ...p,
-        isLiked: likedProjectIds.has(p.id),
-        isSaved: savedProjectIds.has(p.id)
-      }));
+      // Fetch current user skills for tech compatibility matcher
+      const { data: currentUserData } = await supabase.from("users").select("skills").eq("id", currentUserId).single();
+      const userSkills = (currentUserData?.skills || []).map((s: string) => s.toLowerCase());
+
+      finalProjects = projectsWithDetails.map(p => {
+        const projectStack = p.technologies_used || [];
+        const matches = projectStack.filter((tech: string) => userSkills.includes(tech.toLowerCase()));
+        const techMatchPercent = projectStack.length > 0 ? Math.round((matches.length / projectStack.length) * 100) : 0;
+
+        return {
+          ...p,
+          isLiked: likedProjectIds.has(p.id),
+          isSaved: savedProjectIds.has(p.id),
+          tech_match: techMatchPercent
+        };
+      });
     }
 
     return res.json({
@@ -286,6 +297,20 @@ export async function getProject(req: Request, res: Response) {
       isLiked: likesRes?.data ? true : false,
       isSaved: savesRes?.data ? true : false,
       hasAppliedToCofounder: cofounderRes?.data ? true : false,
+      techMatch: await (async () => {
+        if (!userId) return null;
+        const { data: userStats } = await supabase.from("users").select("skills").eq("id", userId).single();
+        const userSkills = (userStats?.skills || []).map((s: string) => s.toLowerCase());
+        const projectStack = project.technologies_used || [];
+        const matches = projectStack.filter((tech: string) => userSkills.includes(tech.toLowerCase()));
+        const missing = projectStack.filter((tech: string) => !userSkills.includes(tech.toLowerCase()));
+        
+        return {
+          percentage: projectStack.length > 0 ? Math.round((matches.length / projectStack.length) * 100) : 0,
+          matchedSkills: matches,
+          missingSkills: missing
+        };
+      })(),
       cofounderRequests: cofounderRequests // Only populated for owners
     });
   } catch (error: any) {

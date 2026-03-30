@@ -9,7 +9,7 @@ import { formatRelativeDate } from "../utils/date";
 import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
-import { ArrowLeft, PencilSimple, Trash, Globe, GithubLogo, Star, ShareNetwork, BookmarkSimple, Handshake, Code } from "phosphor-react";
+import { ArrowLeft, PencilSimple, Trash, Globe, GithubLogo, Star, ShareNetwork, BookmarkSimple, Handshake, Code, Sparkle } from "phosphor-react";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
@@ -570,6 +570,82 @@ export default function ProjectDetail() {
                 >
                   {project.hasAppliedToCofounder ? "Already applied" : "Apply to join"}
                 </button>
+              </div>
+            )}
+
+            {project.techMatch && project.techMatch.percentage > 0 && (
+              <div style={{
+                marginBottom: "40px",
+                padding: "24px",
+                backgroundColor: "rgba(255, 255, 255, 0.02)",
+                borderRadius: "var(--radius-sm)",
+                border: "1px solid var(--border-hairline)",
+                position: "relative",
+                overflow: "hidden"
+              }}>
+                {/* Background Glow */}
+                <div style={{
+                  position: "absolute",
+                  top: "-50%",
+                  left: "-20%",
+                  width: "140%",
+                  height: "200%",
+                  background: project.techMatch.percentage >= 80 
+                    ? "radial-gradient(circle at center, rgba(74, 222, 128, 0.05) 0%, transparent 70%)"
+                    : "radial-gradient(circle at center, rgba(56, 189, 248, 0.04) 0%, transparent 70%)",
+                  pointerEvents: "none"
+                }} />
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "12px",
+                      backgroundColor: project.techMatch.percentage >= 80 ? "rgba(74, 222, 128, 0.1)" : "rgba(56, 189, 248, 0.1)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: project.techMatch.percentage >= 80 ? "#4ade80" : "#38bdf8",
+                    }}>
+                      <Sparkle size={20} weight="fill" />
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
+                        Tech Compatibility
+                      </h4>
+                      <p style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                        {project.techMatch.percentage === 100 
+                          ? "Perfect match for your stack! 🚀" 
+                          : `You know ${project.techMatch.matchedSkills.length} out of ${project.technologies_used?.length || 0} skills.`}
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ 
+                      fontSize: "24px", 
+                      fontWeight: 800, 
+                      letterSpacing: "-0.04em",
+                      color: project.techMatch.percentage >= 80 ? "#4ade80" : "var(--text-primary)"
+                    }}>
+                      {project.techMatch.percentage}%
+                    </div>
+                    <div style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", color: "var(--text-tertiary)", letterSpacing: "0.05em" }}>Match</div>
+                  </div>
+                </div>
+
+                {project.techMatch.missingSkills.length > 0 && (
+                  <div style={{ marginTop: "20px", paddingTop: "16px", borderTop: "0.5px solid var(--border-hairline)" }}>
+                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 600 }}>Missing from your profile:</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      {project.techMatch.missingSkills.map(skill => (
+                        <span key={skill} style={{ fontSize: "10px", padding: "3px 8px", backgroundColor: "rgba(239, 68, 68, 0.05)", border: "0.5px solid rgba(239, 68, 68, 0.2)", borderRadius: "4px", color: "#f87171" }}>
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
