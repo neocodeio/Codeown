@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 import { notify } from "../services/notification.service.js";
 
 export async function followUser(req: Request, res: Response) {
   try {
-    const user = req.user;
+    const user = (req as any).user;
     const userId = user?.sub || user?.id || user?.userId;
     const { userId: targetUserId } = req.params;
 
@@ -96,7 +97,7 @@ export async function followUser(req: Request, res: Response) {
 
 export async function getFollowStatus(req: Request, res: Response) {
   try {
-    const user = req.user;
+    const user = (req as any).user;
     const userId = user?.sub || user?.id || user?.userId;
     const { userId: targetUserId } = req.params;
 

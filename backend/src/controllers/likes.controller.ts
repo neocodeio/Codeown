@@ -5,7 +5,7 @@ import { notify } from "../services/notification.service.js";
 
 export async function likePost(req: Request, res: Response) {
   try {
-    const user = req.user;
+    const user = (req as any).user;
     const userId = user?.sub || user?.id || user?.userId;
     const { postId } = req.params;
 
@@ -148,7 +148,7 @@ export async function getPostLikes(req: Request, res: Response) {
 
 export async function likeComment(req: Request, res: Response) {
   try {
-    const user = req.user;
+    const user = (req as any).user;
     const userId = user?.sub || user?.id || user?.userId;
     const { commentId: rawCommentId } = req.params;
     const { type } = req.query;
