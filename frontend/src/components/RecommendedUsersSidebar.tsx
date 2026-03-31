@@ -173,7 +173,7 @@ export default function RecommendedUsersSidebar() {
                                                     textOverflow: "ellipsis",
                                                     whiteSpace: "nowrap"
                                                 }}>
-                                                    {user.name || "User"}
+                                                    {(user.name || "User").split(" ")[0]}
                                                 </span>
                                                 <VerifiedBadge 
                                                     username={user.username} 
@@ -372,7 +372,7 @@ export default function RecommendedUsersSidebar() {
                                 <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center", gap: "1px" }}>
                                     <span style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{project.title}</span>
                                     <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                        <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 400 }}>By {project.user?.name || "User"}</span>
+                                        <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 400 }}>By {(project.user?.name || "User").split(" ")[0]}</span>
                                         <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="12px" />
                                     </div>
                                     <span style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "1px" }}>{formatRelativeDate(project.created_at)}</span>
