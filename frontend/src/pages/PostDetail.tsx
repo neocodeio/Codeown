@@ -226,14 +226,15 @@ export default function PostDetail() {
   const avatarUrl = post.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=212121&color=ffffff&bold=true`;
 
   return (
-    <main style={{ 
-      backgroundColor: "var(--bg-page)", 
-      minHeight: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      width: "100%",
-    }}>
-      <SEO
+    <div style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
+      <main style={{ 
+        backgroundColor: "var(--bg-page)", 
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+      }}>
+        <SEO
         title={post.title || (post.content.length > 30 ? post.content.substring(0, 30) + "..." : post.content)}
         description={post.content.length > 160 ? post.content.substring(0, 157) + "..." : post.content}
         image={post.images && post.images.length > 0 ? post.images[0] : avatarUrl}
@@ -561,6 +562,7 @@ export default function PostDetail() {
           initialMessage={`Check out this post on Codeown: ${post.title || post.content.substring(0, 50)}...`}
         />
       )}
-    </main>
+      </main>
+    </div>
   );
 }
