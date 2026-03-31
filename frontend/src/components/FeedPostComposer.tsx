@@ -364,12 +364,18 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 onClick={() => setIsPoll(false)}
                                 style={{ 
                                     background: "none", 
-                                    border: "1px soild #000", 
-                                    color: "#000", 
+                                    border: "1px solid var(--text-primary)", 
+                                    color: "var(--text-primary)", 
                                     cursor: "pointer", 
-                                    fontSize: "12px",
-                                    borderRadius: "100%",
-                                    padding:"2px 5px"
+                                    fontSize: "10px",
+                                    fontWeight: 700,
+                                    borderRadius: "50%",
+                                    width: "20px",
+                                    height: "20px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    padding: 0
                                 }}
                             >
                                 X
