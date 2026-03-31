@@ -5,6 +5,7 @@ import { isClerkEnabled, clerkPublishableKey } from "../lib/clerk";
 import { useWindowSize } from "../hooks/useWindowSize";
 import logo from "../assets/icon-removebg.png";
 import logoWhite from "../assets/logo-white.png";
+import authBanner from "../assets/auth_banner_1774960075949.png";
 import { useTheme } from "../context/ThemeContext";
 
 export default function SignUpPage() {
@@ -100,7 +101,7 @@ export default function SignUpPage() {
         }}>
           {/* Background Image */}
           <img 
-            src="/auth_banner_1774960075949.png" 
+            src={authBanner} 
             alt="Auth Background" 
             style={{
               position: "absolute",
@@ -108,7 +109,7 @@ export default function SignUpPage() {
               width: "100%",
               height: "100%",
               objectFit: "cover",
-              opacity: 0.6,
+              opacity: 10,
               filter: "contrast(1.1) brightness(0.9)"
             }} 
           />
@@ -145,7 +146,7 @@ export default function SignUpPage() {
           </div>
 
           <div style={{ position: "relative", zIndex: 2, fontSize: "12px", color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>
-             &copy; 2024 Codeown Space. Built for the bold.
+             &copy; 2026 Codeown. All rights reserved.
           </div>
         </div>
       )}
