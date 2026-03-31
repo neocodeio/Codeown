@@ -21,6 +21,7 @@ import {
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
+import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 
 export default function NotificationsPage() {
     const { notifications, unreadCount, markAsRead, loading } = useNotifications();
@@ -133,43 +134,53 @@ export default function NotificationsPage() {
         }
     };
 
+    const isMobile = width < 768;
+    const isDesktop = width >= 1200;
+
     if (!isSignedIn && !loading) {
         navigate("/sign-in");
         return null;
     }
 
     return (
-        <main style={{ padding: 0, backgroundColor: "var(--bg-page)", width: "100%" }}>
+        <main style={{
+            display: "flex",
+            justifyContent: isDesktop ? "center" : "flex-start",
+            backgroundColor: "var(--bg-page)",
+            minHeight: "100vh",
+            width: "100%",
+        }}>
             <SEO
                 title="Notifications"
                 description="Stay updated with your latest interactions on Codeown."
             />
 
             <div style={{
-                display: "grid",
-                gridTemplateColumns: width >= 1400 ? "1fr 600px 1fr" : width >= 1280 ? "100px 600px 1fr" : "1fr",
-                width: "100%",
-                backgroundColor: "var(--bg-page)",
+                display: "flex",
+                width: isDesktop ? "1020px" : "100%",
+                maxWidth: "1020px",
+                position: "relative",
             }}>
-                {/* Left Balance Spacer (only desktop) */}
-                {width >= 1280 && <div />}
                 {/* Main Notifications Column */}
                 <div style={{
-                    maxWidth: width >= 1024 ? "600px" : "100%",
-                    width: "100%",
+                    flex: 1,
+                    width: isDesktop ? "var(--feed-width)" : "100%",
+                    maxWidth: isDesktop ? "var(--feed-width)" : "700px",
                     backgroundColor: "var(--bg-page)",
-                    borderLeft: width >= 1024 ? "0.5px solid var(--border-hairline)" : "none",
-                    borderRight: width >= 1024 ? "0.5px solid var(--border-hairline)" : "none",
+                    borderLeft: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
+                    borderRight: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
                     minHeight: "100vh",
-                    margin: width >= 1280 ? "0" : "0 auto"
+                    margin: isDesktop ? "0" : "0 auto",
+                    position: "relative",
                 }}>
                     {/* Header */}
                     <header style={{
                         position: "sticky",
                         top: 0,
-                        backgroundColor: "var(--bg-page)",
+                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        backdropFilter: "blur(20px)",
                         zIndex: 100,
-                        padding: "20px 24px",
+                        padding: "16px 24px",
                         display: "flex",
                         alignItems: "center",
                         gap: "24px",
@@ -201,6 +212,7 @@ export default function NotificationsPage() {
                             }}>
                                 Notifications
                             </h1>
+                            {unreadCount > 0 && <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>{unreadCount} unread</span>}
                         </div>
 
                         {unreadCount > 0 && (
@@ -277,9 +289,9 @@ export default function NotificationsPage() {
                                     key={notification.id}
                                     onClick={() => handleNotificationClick(notification)}
                                     style={{
-                                        padding: "24px",
+                                        padding: "20px 24px",
                                         display: "flex",
-                                        gap: "24px",
+                                        gap: "20px",
                                         cursor: "pointer",
                                         transition: "all 0.15s ease",
                                         backgroundColor: notification.read ? "var(--bg-page)" : "var(--bg-hover)",
@@ -399,8 +411,19 @@ export default function NotificationsPage() {
                     </div>
                 </div>
 
-                {/* Right Balance Spacer (only desktop) */}
-                {width >= 1280 && <div />}
+                {/* Right Sidebar - Desktop Only */}
+                {isDesktop && !isMobile && (
+                    <aside style={{
+                        width: "340px",
+                        padding: "24px 0 24px 32px",
+                        position: "sticky",
+                        top: 0,
+                        alignSelf: "flex-start",
+                        flexShrink: 0,
+                    }}>
+                        <RecommendedUsersSidebar />
+                    </aside>
+                )}
             </div>
         </main>
     );
