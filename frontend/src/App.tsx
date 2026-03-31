@@ -272,7 +272,15 @@ export default function App() {
     location.pathname.startsWith("/portfolio") ||
     location.pathname === "/onboarding";
 
-  const isStandardPage = location.pathname === "/" || location.pathname === "/profile" || location.pathname === "/notifications" || location.pathname === "/changelog" || location.pathname.startsWith("/user/") || (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup"].includes(location.pathname.split("/")[1]));
+  const isStandardPage = 
+    location.pathname === "/" || 
+    location.pathname === "/profile" || 
+    location.pathname === "/notifications" || 
+    location.pathname === "/changelog" || 
+    location.pathname.startsWith("/post/") || 
+    location.pathname.startsWith("/project/") || 
+    location.pathname.startsWith("/user/") || 
+    (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup"].includes(location.pathname.split("/")[1]));
 
   const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
 

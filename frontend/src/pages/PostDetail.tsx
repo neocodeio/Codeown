@@ -15,18 +15,19 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import { useWindowSize } from "../hooks/useWindowSize";
 import ShareModal from "../components/ShareModal";
+import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { 
   CaretLeft,
   ChatTeardropText,
   Heart,
   ShareNetwork,
   BookmarkSimple,
-  ChartBar
+  ChartBar,
+  PaperPlaneTilt
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
 import SendToChatModal from "../components/SendToChatModal";
-import { PaperPlaneTilt } from "phosphor-react";
 
 interface Post {
   id: number;
@@ -85,8 +86,7 @@ export default function PostDetail() {
       fetchLikeStatus();
       fetchSavedStatus();
     }
-  }, [id]);
-
+  }, [id, fetchLikeStatus, fetchSavedStatus]);
 
   useEffect(() => {
     let isMounted = true;
@@ -134,7 +134,7 @@ export default function PostDetail() {
       const token = await getToken();
       await api.post("/comments", { post_id: id, content: commentContent.trim() }, { headers: { Authorization: `Bearer ${token}` } });
       setCommentContent("");
-      const res = await api.get(`/comments/${id}?sort=${commentSort}`);
+      const res = await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
       setComments(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error(error);
@@ -146,7 +146,7 @@ export default function PostDetail() {
   const handleReply = async (parentId: number | string, content: string) => {
     const token = await getToken();
     await api.post("/comments", { post_id: id, content, parent_id: parentId }, { headers: { Authorization: `Bearer ${token}` } });
-    const res = await api.get(`/comments/${id}?sort=${commentSort}`);
+    const res = await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
     setComments(Array.isArray(res.data) ? res.data : []);
   };
 
@@ -176,11 +176,13 @@ export default function PostDetail() {
       });
       setVotedOption(optionIndex);
       toast.success("Vote recorded!");
-      // Optionally refetch post to get latest vote counts
+      // Refresh post to update counts
+      const postRes = await api.get(`/posts/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      setPost(postRes.data);
     } catch (error) {
       console.error("Error voting:", error);
       setVotedOption(optionIndex);
-      toast.info("Vote simulated (backend support pending)");
+      toast.info("Vote simulated");
     } finally {
       setIsVoting(false);
     }
@@ -208,6 +210,7 @@ export default function PostDetail() {
   }
 
   const { width } = useWindowSize();
+  const isDesktop = width >= 1024;
   const isMobile = width < 768;
 
   if (loading) return (
@@ -216,14 +219,20 @@ export default function PostDetail() {
     </div>
   );
 
-  if (!post) return <div style={{ textAlign: "center", padding: "100px" }}>Post not found</div>;
+  if (!post) return <div style={{ textAlign: "center", padding: "100px", color: "var(--text-tertiary)" }}>Post not found</div>;
 
   const userName = post.user?.name || "User";
   const shareUrl = `${window.location.origin}/post/${id}`;
   const avatarUrl = post.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=212121&color=ffffff&bold=true`;
 
   return (
-    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
+    <main style={{ 
+      backgroundColor: "var(--bg-page)", 
+      minHeight: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      width: "100%",
+    }}>
       <SEO
         title={post.title || (post.content.length > 30 ? post.content.substring(0, 30) + "..." : post.content)}
         description={post.content.length > 160 ? post.content.substring(0, 157) + "..." : post.content}
@@ -233,92 +242,79 @@ export default function PostDetail() {
         author={userName}
         publishedTime={post.created_at}
         keywords={post.tags || ["post", "developer", "coding"]}
-        schema={{
-          "@context": "https://schema.org",
-          "@type": "BlogPosting",
-          "headline": post.title || post.content.substring(0, 60),
-          "image": post.images && post.images.length > 0 ? post.images : [avatarUrl],
-          "datePublished": post.created_at,
-          "author": [{
-            "@type": "Person",
-            "name": userName,
-            "url": `${window.location.origin}/user/${post.user?.username || post.user_id}`
-          }],
-          "description": post.content.substring(0, 160)
-        }}
       />
 
       <div style={{
-        maxWidth: "600px",
-        margin: "0 auto",
-        backgroundColor: "var(--bg-page)",
-        borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-        borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-        minHeight: "100vh"
-      }}>
-        {/* Header: Back Button */}
-        <div style={{
-          height: "56px",
           display: "flex",
-          alignItems: "center",
-          padding: "0 24px",
-          position: "sticky",
-          top: 0,
-          backgroundColor: "var(--bg-page)", // Removed blur for flat look or kept very subtle
-          zIndex: 10,
-          borderBottom: "0.5px solid var(--border-hairline)"
+          width: isDesktop ? "1020px" : "100%",
+          maxWidth: "1020px",
+          position: "relative",
+      }}>
+        {/* Main Post Column */}
+        <div style={{
+            flex: 1,
+            width: isDesktop ? "var(--feed-width)" : "100%",
+            maxWidth: isDesktop ? "var(--feed-width)" : "700px",
+            backgroundColor: "var(--bg-page)",
+            borderLeft: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
+            borderRight: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
+            minHeight: "100vh",
+            margin: isDesktop ? "0" : "0 auto",
+            position: "relative",
         }}>
-          <button
-            onClick={() => navigate(-1)}
-            style={{
-              padding: "4px",
-              borderRadius: "var(--radius-sm)",
-              border: "none",
-              background: "none",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 0.15s ease",
-            }}
-          >
-            <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
-          </button>
-          <span style={{ marginLeft: "20px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>Post</span>
-        </div>
+          {/* Header */}
+          <header style={{
+            position: "sticky",
+            top: 0,
+            backgroundColor: "rgba(var(--bg-page-rgb, 255, 255, 255), 0.8)",
+            backdropFilter: "blur(20px)",
+            zIndex: 100,
+            padding: "16px 24px",
+            display: "flex",
+            alignItems: "center",
+            gap: "24px",
+            borderBottom: "0.5px solid var(--border-hairline)"
+          }}>
+            <button
+              onClick={() => navigate(-1)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px",
+                borderRadius: "var(--radius-sm)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.15s ease",
+              }}
+            >
+              <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
+            </button>
+            <h1 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
+              Post
+            </h1>
+          </header>
 
-        {/* Post Content */}
-        <article style={{ padding: isMobile ? "24px 16px" : "32px 24px", display: "flex", gap: "16px" }}>
-          {/* Left Column: Avatar */}
-          {!isMobile && (
-            <div style={{ flexShrink: 0 }}>
+          {/* Post Content */}
+          <article style={{ padding: isMobile ? "20px 16px" : "32px 24px" }}>
+            <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
               <img
                 src={avatarUrl}
                 alt={userName}
-                style={{ width: "48px", height: "48px", borderRadius: "var(--radius-sm)", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+                style={{ width: "48px", height: "48px", borderRadius: "12px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
               />
-            </div>
-          )}
-
-          {/* Right Column: Content */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {/* User Info Line */}
-            <div style={{ marginBottom: "20px", display: "flex", gap: "12px", alignItems: "center" }}>
-              {isMobile && (
-                <img
-                  src={avatarUrl}
-                  alt={userName}
-                  style={{ width: "36px", height: "36px", borderRadius: "var(--radius-sm)", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
-                />
-              )}
-              <div>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
+                  <span 
+                    onClick={() => navigate(`/${post.user?.username || post.user_id}`)}
+                    style={{ fontSize: "14.5px", fontWeight: 700, color: "var(--text-primary)", cursor: "pointer" }}
+                  >
                     {userName}
                   </span>
-                  <VerifiedBadge username={post.user?.username} size="12px" />
+                  <VerifiedBadge username={post.user?.username} size="14px" />
                 </div>
-                <div style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "2px", fontWeight: 500 }}>
+                <div style={{ fontSize: "12.5px", color: "var(--text-tertiary)", marginTop: "1px", fontWeight: 500 }}>
                   @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}
                 </div>
               </div>
@@ -326,18 +322,18 @@ export default function PostDetail() {
 
             {/* Content Text */}
             <div dir="auto" style={{
-              fontSize: "15px",
+              fontSize: "16px",
               lineHeight: "1.6",
               color: "var(--text-primary)",
               wordBreak: "break-word",
-              marginBottom: "32px"
+              marginBottom: "24px"
             }}>
               <ContentRenderer content={post.content} />
             </div>
 
             {/* Media/Images */}
             {post.images && post.images.length > 0 && (
-              <div style={{ marginBottom: "24px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
+              <div style={{ marginBottom: "24px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                 <ImageSlider images={post.images} onImageClick={handleImageClick} />
               </div>
             )}
@@ -349,7 +345,7 @@ export default function PostDetail() {
                 padding: "24px",
                 backgroundColor: "var(--bg-hover)",
                 border: "0.5px solid var(--border-hairline)",
-                borderRadius: "var(--radius-sm)",
+                borderRadius: "var(--radius-md)",
                 display: "flex",
                 flexDirection: "column",
                 gap: "16px"
@@ -375,10 +371,10 @@ export default function PostDetail() {
                         style={{
                           position: "relative",
                           width: "100%",
-                          padding: "16px",
+                          padding: "14px 16px",
                           backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
                           border: "0.5px solid var(--border-hairline)",
-                          borderRadius: "var(--radius-xs)",
+                          borderRadius: "var(--radius-sm)",
                           cursor: votedOption !== null ? "default" : "pointer",
                           textAlign: "left",
                           overflow: "hidden",
@@ -401,7 +397,7 @@ export default function PostDetail() {
                           <span style={{
                             fontSize: "14px",
                             fontWeight: isSelected ? 700 : 500,
-                            color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
+                            color: isSelected ? "var(--white)" : "var(--text-primary)",
                           }}>
                             {option}
                           </span>
@@ -409,7 +405,7 @@ export default function PostDetail() {
                             <span style={{
                               fontSize: "13px",
                               fontWeight: 700,
-                              color: isSelected ? "var(--bg-page)" : "var(--text-tertiary)",
+                              color: isSelected ? "var(--white)" : "var(--text-tertiary)",
                             }}>
                               {percentage}%
                             </span>
@@ -432,144 +428,118 @@ export default function PostDetail() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              maxWidth: "400px",
+              width: "100%",
               marginTop: "32px",
               borderTop: "0.5px solid var(--border-hairline)",
-              paddingTop: "16px"
+              borderBottom: "0.5px solid var(--border-hairline)",
+              padding: "16px 0"
             }}>
-              {/* Comment */}
-              <button
-                onClick={() => {
-                  const replyBox = document.querySelector('textarea');
-                  if (replyBox) replyBox.focus();
-                }}
-                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}
-              >
-                <ChatTeardropText size={18} weight="thin" />
-                {comments.length > 0 && <span>{comments.length}</span>}
-              </button>
-
-              {/* Like */}
-              <button
-                onClick={toggleLike}
-                disabled={likeLoading}
-                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}
-              >
-                <Heart size={18} weight={isLiked ? "fill" : "thin"} />
-                {likeCount > 0 && <span>{likeCount}</span>}
-              </button>
-
-              {/* Share */}
-              <button
-                onClick={handleShare}
-                style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}
-              >
-                <ShareNetwork size={18} weight="thin" />
-              </button>
-
-              {/* Send to Chat */}
-              <button
-                onClick={handleSendToChat}
-                style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}
-              >
-                <PaperPlaneTilt size={18} weight="thin" />
-              </button>
-
-              {/* Save */}
-              <button
-                onClick={toggleSave}
-                style={{ background: "none", border: "none", color: isSaved ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", padding: "4px" }}
-              >
-                <BookmarkSimple size={18} weight={isSaved ? "fill" : "thin"} />
-              </button>
-            </div>
-          </div>
-        </article>
-
-        {/* Comment Composer */}
-        {isSignedIn && (
-          <div style={{
-            padding: isMobile ? "24px 16px" : "32px 24px",
-            borderBottom: "1px solid var(--border-hairline)",
-            display: "flex",
-            gap: isMobile ? "12px" : "16px",
-            backgroundColor: "rgba(var(--text-primary-rgb), 0.01)"
-          }}>
-            <img
-              src={currentUserAvatarUrl}
-              alt="My Avatar"
-              style={{ 
-                width: isMobile ? "32px" : "44px", 
-                height: isMobile ? "32px" : "44px", 
-                borderRadius: "var(--radius-sm)", 
-                objectFit: "cover", 
-                border: "1px solid var(--border-hairline)",
-                flexShrink: 0
-              }}
-            />
-            <div style={{ flex: 1 }}>
-              <MentionInput
-                value={commentContent}
-                onChange={setCommentContent}
-                placeholder="Share your thoughts..."
-                transparent={true}
-                minHeight="40px"
-              />
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
+              <div style={{ display: "flex", gap: "24px" }}>
                 <button
-                  onClick={handleSubmitComment}
-                  disabled={!commentContent.trim() || isSubmitting}
-                  style={{
-                    padding: "10px 24px",
-                    backgroundColor: commentContent.trim() && !isSubmitting ? "var(--text-primary)" : "transparent",
-                    color: commentContent.trim() && !isSubmitting ? "var(--bg-page)" : "var(--text-tertiary)",
-                    border: "1px solid var(--border-hairline)",
-                    borderRadius: "var(--radius-sm)",
-                    fontWeight: 600,
-                    fontSize: "12px",
-                    cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
-                    transition: "all 0.15s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (commentContent.trim() && !isSubmitting) {
-                      e.currentTarget.style.transform = "translateY(-1px)";
-                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "none";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
+                  onClick={() => document.querySelector('textarea')?.focus()}
+                  style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }}
                 >
-                  {isSubmitting ? "Sending..." : "Post reply"}
+                  <ChatTeardropText size={20} weight="thin" />
+                  <span style={{ fontSize: "13px", fontWeight: 600 }}>{comments.length}</span>
+                </button>
+
+                <button
+                  onClick={toggleLike}
+                  disabled={likeLoading}
+                  style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "#f91880" : "var(--text-secondary)", cursor: "pointer" }}
+                >
+                  <Heart size={20} weight={isLiked ? "fill" : "thin"} />
+                  <span style={{ fontSize: "13px", fontWeight: 600 }}>{likeCount}</span>
+                </button>
+              </div>
+
+              <div style={{ display: "flex", gap: "16px" }}>
+                <button onClick={handleShare} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
+                  <ShareNetwork size={20} weight="thin" />
+                </button>
+                <button onClick={handleSendToChat} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
+                  <PaperPlaneTilt size={20} weight="thin" />
+                </button>
+                <button onClick={toggleSave} style={{ background: "none", border: "none", color: isSaved ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
+                  <BookmarkSimple size={20} weight={isSaved ? "fill" : "thin"} />
                 </button>
               </div>
             </div>
-          </div>
-        )}
+          </article>
 
-        {/* Comments Section Container */}
-        <section style={{ padding: "0" }}>
-          {comments.length === 0 ? (
+          {/* Comment Composer */}
+          {isSignedIn && (
             <div style={{
-              padding: "64px 24px",
-              textAlign: "center",
-              color: "var(--text-tertiary)",
-              fontSize: "14px",
-              fontWeight: 500
+              padding: isMobile ? "20px 16px" : "24px 24px",
+              borderBottom: "0.5px solid var(--border-hairline)",
+              display: "flex",
+              gap: "16px",
             }}>
-              No replies yet — ask them something about this
+              <img
+                src={currentUserAvatarUrl}
+                alt=""
+                style={{ width: "40px", height: "40px", borderRadius: "10px", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0 }}
+              />
+              <div style={{ flex: 1 }}>
+                <MentionInput
+                  value={commentContent}
+                  onChange={setCommentContent}
+                  placeholder="Post your reply"
+                  transparent={true}
+                  minHeight="40px"
+                />
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "12px" }}>
+                  <button
+                    onClick={handleSubmitComment}
+                    disabled={!commentContent.trim() || isSubmitting}
+                    style={{
+                      padding: "8px 20px",
+                      backgroundColor: commentContent.trim() && !isSubmitting ? "var(--text-primary)" : "rgba(var(--text-primary-rgb), 0.5)",
+                      color: "var(--bg-page)",
+                      border: "none",
+                      borderRadius: "var(--radius-xl)",
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
+                      transition: "opacity 0.2s",
+                    }}
+                  >
+                    {isSubmitting ? "..." : "Reply"}
+                  </button>
+                </div>
+              </div>
             </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {buildTree(comments).map(c => (
+          )}
+
+          {/* Comments Section */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {comments.length === 0 ? (
+              <div style={{ padding: "64px 24px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "14px" }}>
+                No replies yet.
+              </div>
+            ) : (
+              buildTree(comments).map(c => (
                 <div key={c.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                   <CommentBlock comment={c} depth={0} onReply={handleReply} resourceType="post" />
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Right Sidebar */}
+        {isDesktop && (
+          <aside style={{
+              width: "340px",
+              padding: "24px 0 24px 32px",
+              position: "sticky",
+              top: 0,
+              alignSelf: "flex-start",
+              flexShrink: 0,
+          }}>
+              <RecommendedUsersSidebar />
+          </aside>
+        )}
       </div>
 
       <ShareModal
@@ -588,13 +558,9 @@ export default function PostDetail() {
           isOpen={isSendToChatModalOpen}
           onClose={() => setIsSendToChatModalOpen(false)}
           postId={post.id}
-          initialMessage={`Check out this post: ${post.title || post.content.substring(0, 50)}...`}
+          initialMessage={`Check out this post on Codeown: ${post.title || post.content.substring(0, 50)}...`}
         />
       )}
-
-      <style>{`
-        body { background-color: var(--bg-page) !important; }
-      `}</style>
     </main>
   );
 }
