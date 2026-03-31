@@ -5,9 +5,10 @@ interface VerifiedBadgeProps {
     username?: string | null;
     isPro?: boolean;
     size?: string;
+    color?: string;
 }
 
-export default function VerifiedBadge({ username, isPro, size = "14px" }: VerifiedBadgeProps) {
+export default function VerifiedBadge({ username, isPro, size = "14px", color }: VerifiedBadgeProps) {
     const [showTooltip, setShowTooltip] = useState(false);
 
     const isVerified = username?.toLowerCase() === "amin.ceo";
@@ -29,7 +30,7 @@ export default function VerifiedBadge({ username, isPro, size = "14px" }: Verifi
                     weight="fill"
                     aria-label="Verified Official Account"
                     style={{
-                        color: isPro ? "var(--text-primary)" : "var(--text-tertiary)",
+                        color: color ? color : (isPro ? "var(--text-primary)" : "var(--text-tertiary)"),
                         marginLeft: "0px",
                         marginRight: "4.5px",
                         verticalAlign: "middle",

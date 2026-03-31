@@ -102,6 +102,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                         flexDirection: "column",
                         position: "relative",
                         overflow: "hidden",
+                        color: "#ffffff", // Ensure text is visible in light mode
                     }}
                 >
                     {/* Texture & Glow */}
@@ -119,7 +120,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             </div>
                             <div style={{ fontSize: "8px", opacity: 0.3, marginTop: "2px" }}>Core archive • v4.0.0</div>
                         </div>
-                        <div style={{ fontSize: "10px", fontWeight: 600, opacity: 0.4, border: "0.5px solid rgba(255,255,255,0.2)", padding: "7px 10px", borderRadius: "var(--radius-sm)" }}>Developer ID</div>
+                        <div style={{ fontSize: "10px", fontWeight: 600, opacity: 0.4, border: "0.5px solid rgba(255,255,255,0.2)", padding: "7px 10px", borderRadius: "var(--radius-sm)", color: "#ffffff" }}>Developer ID</div>
 
                     </div>
 
@@ -142,7 +143,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                             </div>
                             {user.is_pro && (
                                 <div style={{ position: "absolute", top: "-6px", right: "-6px", background: "#000", padding: "3px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.2)" }}>
-                                    <VerifiedBadge username={user.username} isPro={true} size="16px" />
+                                    <VerifiedBadge username={user.username} isPro={true} size="16px" color="#ffffff" />
                                 </div>
                             )}
                         </div>
@@ -160,11 +161,11 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                     <div style={{ position: "relative", zIndex: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", border: "0.5px solid rgba(255,255,255,0.1)", padding: "8px", background: "rgba(255,255,255,0.02)", marginBottom: "12px" }}>
                         <div>
                             <div style={{ fontSize: "8px", opacity: 0.3, marginBottom: "2px" }}>Deployment</div>
-                            <div style={{ fontSize: "11px", fontWeight: 700 }}>{joinDate}</div>
+                            <div style={{ fontSize: "11px", fontWeight: 700, color: "#ffffff" }}>{joinDate}</div>
                         </div>
                         <div>
                             <div style={{ fontSize: "8px", opacity: 0.3, marginBottom: "2px" }}>Units</div>
-                            <div style={{ fontSize: "11px", fontWeight: 700 }}>{projectsCount.toString().padStart(3, '0')} projects</div>
+                            <div style={{ fontSize: "11px", fontWeight: 700, color: "#ffffff" }}>{projectsCount.toString().padStart(3, '0')} projects</div>
                         </div>
                         <div style={{ gridColumn: "span 2" }}>
                             <div style={{ fontSize: "8px", opacity: 0.3, marginBottom: "6px" }}>Tech stacks</div>
@@ -179,7 +180,7 @@ export default function DeveloperIDCardModal({ isOpen, onClose, user, projectsCo
                     <div style={{ position: "relative", zIndex: 10, marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ fontSize: "8px", opacity: 0.3, marginBottom: "4px" }}>Identification</div>
-                            <div style={{ fontSize: "10px", fontWeight: 700 }}>{serialNumber}</div>
+                            <div style={{ fontSize: "10px", fontWeight: 700, color: "#ffffff" }}>{serialNumber}</div>
                             <div style={{ display: "flex", gap: "1px", height: "12px", marginTop: "4px", opacity: 0.4 }}>
                                 {[2, 1, 3, 1, 2, 1, 1, 2, 1, 3, 1, 2].map((w, i) => (
                                     <div key={i} style={{ width: `${w}px`, height: "100%", backgroundColor: "#fff" }} />

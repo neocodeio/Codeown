@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { createPortal } from "react-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -20,6 +19,7 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
+import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import ProfileStrength from "../components/ProfileStrength";
 import {
   PencilSimple,
@@ -82,9 +82,7 @@ export default function Profile() {
   const { user, isLoaded, isSignedIn } = useClerkUser();
   const { width } = useWindowSize();
   const isMobile = width < 768;
-  const isTablet = width >= 768 && width < 1024;
-  const containerPadding = isMobile ? "0" : isTablet ? "24px 16px" : "40px 20px";
-  const innerPaddingX = isMobile ? 16 : isTablet ? 20 : 24;
+  const isDesktop = width >= 1200;
   const { signOut, getToken } = useClerkAuth();
   const navigate = useNavigate();
   const userId = user?.id || null;
@@ -310,18 +308,34 @@ export default function Profile() {
       `}</style>
 
       <div style={{
-        maxWidth: "1000px",
-        margin: "0 auto",
-        padding: containerPadding
+        display: "flex",
+        justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center",
+        width: isDesktop ? "1020px" : "100%",
+        maxWidth: "1020px",
+        margin: (isDesktop && !isMobile) ? "0" : "0 auto",
+        padding: "0",
+        position: "relative",
       }}>
+        {/* Main Content Column */}
+        <div style={{
+          width: isDesktop ? "var(--feed-width)" : "100%",
+          maxWidth: isDesktop ? "var(--feed-width)" : "700px",
+          margin: isDesktop ? "0" : "0 auto",
+          flexShrink: 0,
+          borderLeft: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)",
+          borderRight: (isDesktop && !isMobile) ? "0.5px solid var(--border-hairline)" : "none",
+          backgroundColor: "var(--bg-page)",
+          minHeight: "100vh",
+          position: "relative",
+        }}>
+
         {/* Banner Section */}
         <div style={{
           width: "100%",
           height: isMobile ? "160px" : "240px",
-          backgroundColor: "#fcfcfc",
+          backgroundColor: "var(--bg-hover)",
           position: "relative",
           overflow: "hidden",
-          borderRadius: "12px",
           borderBottom: "0.5px solid var(--border-hairline)",
           marginBottom: 0
         }}>
@@ -375,7 +389,7 @@ export default function Profile() {
 
         {/* Profile Header - single column layout */}
         <div style={{
-          padding: `0 ${innerPaddingX}px`,
+          padding: isMobile ? "0 16px" : "0 24px",
           position: "relative",
           marginTop: isMobile ? "-48px" : "-56px",
           marginBottom: "32px",
@@ -387,8 +401,6 @@ export default function Profile() {
               width: isMobile ? "96px" : "120px",
               height: isMobile ? "96px" : "120px",
               borderRadius: "var(--radius-sm)",
-              border: "4px solid var(--bg-page)",
-              backgroundColor: "var(--bg-page)",
               cursor: "pointer",
               flexShrink: 0,
               marginBottom: "20px",
@@ -459,7 +471,6 @@ export default function Profile() {
               }}>
                 {userProfile?.name || user?.fullName || ""}
                 <VerifiedBadge username={userProfile?.username || user?.username} isPro={userProfile?.is_pro} size={isMobile ? "18px" : "22px"} />
-                {/* {userProfile && userProfile.streak_count > 0 && <StreakBadge count={userProfile.streak_count} />} */}
                 {userProfile?.is_pro === true && (
                   <span style={{
                     fontSize: isMobile ? 10 : 11,
@@ -471,30 +482,6 @@ export default function Profile() {
                   }}>PRO</span>
                 )}
               </h1>
-              {/* {userProfile?.is_pro !== true && (
-                <Link
-                  to="/billing"
-                  style={{
-                    padding: "10px 18px",
-                    borderRadius: "30px",
-                    fontSize: "14px",
-                    fontWeight: 800,
-                    backgroundColor: "var(--text-primary)",
-                    color: "var(--bg-page)",
-                    border: "none",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    whiteSpace: "nowrap",
-                    transition: "all 0.2s ease",
-                    boxShadow: "0 4px 12px rgba(15, 23, 42, 0.1)"
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.backgroundColor = "#1e293b"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.backgroundColor = "var(--text-primary)"; }}
-                >
-                  Upgrade to Pro
-                </Link>
-              )} */}
                 <button
                   onClick={() => {
                     const u = userProfile?.username || user?.username;
@@ -639,77 +626,69 @@ export default function Profile() {
                 >
                   <DotsThreeVertical size={18} weight="thin" />
                 </button>
-                {isMenuOpen && createPortal(
-                  <>
-                    <div
-                      onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
+                {isMenuOpen && (
+                  <div style={{
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    marginTop: "8px",
+                    width: "200px",
+                    zIndex: 100,
+                    backgroundColor: "var(--bg-page)",
+                    borderRadius: "var(--radius-sm)",
+                    border: "0.5px solid var(--border-hairline)",
+                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                    animation: "tabContentEnter 0.2s ease-out"
+                  }}>
+                    <button
                       style={{
-                        position: "fixed",
-                        inset: 0,
-                        backgroundColor: "rgba(0,0,0,0.3)",
-                        zIndex: 10000,
+                        width: "100%",
+                        padding: "12px 16px",
+                        border: "none",
+                        background: "none",
+                        textAlign: "left",
                         cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        fontWeight: 600,
+                        fontSize: "13px",
+                        color: "var(--text-primary)",
+                        transition: "background-color 0.15s ease"
                       }}
-                    />
-                    <div style={{
-                      position: "fixed",
-                      bottom: isMobile ? "0" : "auto",
-                      left: isMobile ? "0" : "auto",
-                      right: isMobile ? "0" : "80px",
-                      top: isMobile ? "auto" : "120px",
-                      width: isMobile ? "100%" : "280px",
-                      zIndex: 10001,
-                      padding: "12px",
-                      backgroundColor: "var(--bg-page)",
-                      borderRadius: "var(--radius-sm)",
-                      border: "0.5px solid var(--border-hairline)",
-                      boxShadow: "none",
-                    }} onClick={(e) => e.stopPropagation()}>
-                       <button
-                        style={{
-                          width: "100%",
-                          padding: "10px 14px",
-                          border: "none",
-                          background: "none",
-                          borderRadius: "var(--radius-sm)",
-                          textAlign: "left",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "12px",
-                          fontWeight: 600,
-                          fontSize: "13px",
-                          color: "var(--text-primary)",
-                        }}
-                        onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }}
-                      >
-                        <Key size={18} weight="thin" />
-                        Reset Password
-                      </button>
-                      <button
-                        style={{
-                          width: "100%",
-                          padding: "10px 14px",
-                          border: "none",
-                          background: "none",
-                          borderRadius: "var(--radius-sm)",
-                          textAlign: "left",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "12px",
-                          fontWeight: 600,
-                          fontSize: "13px",
-                          color: "#ef4444",
-                        }}
-                        onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
-                      >
-                        <SignOut size={18} weight="thin" />
-                        Sign Out
-                      </button>
-                    </div>
-                  </>,
-                  document.body
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }}
+                    >
+                      <Key size={18} weight="thin" />
+                      Reset Password
+                    </button>
+                    <button
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        border: "none",
+                        background: "none",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        fontWeight: 600,
+                        fontSize: "13px",
+                        color: "#ef4444",
+                        borderTop: "0.5px solid var(--border-hairline)",
+                        transition: "background-color 0.15s ease"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
+                    >
+                      <SignOut size={18} weight="thin" />
+                      Sign Out
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -857,7 +836,7 @@ export default function Profile() {
         </div>
 
         {/* Profile Strength */}
-        <div style={{ padding: `0 ${innerPaddingX}px` }}>
+        <div style={{ padding: isMobile ? "0 16px" : "0 24px" }}>
           <ProfileStrength 
             user={userProfile} 
             projectsCount={projects?.length || 0} 
@@ -866,8 +845,7 @@ export default function Profile() {
 
         {/* Tabs + Content */}
         <div style={{
-          padding: `0 ${innerPaddingX}px`,
-          // borderTop: "0.5px solid var(--border-hairline)",
+          padding: isMobile ? "0 16px" : "0 24px",
         }}>
           <div className="tabs-row" style={{
             display: "flex",
@@ -893,7 +871,6 @@ export default function Profile() {
                   padding: "16px 0",
                   backgroundColor: "transparent",
                   border: "none",
-                  // borderBottom: activeTab === tab.id ? "1.5px solid var(--text-primary)" : "1.5px solid transparent",
                   color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)",
                   fontSize: "13px",
                   fontWeight: activeTab === tab.id ? 700 : 500,
@@ -1170,6 +1147,14 @@ export default function Profile() {
           projectsCount={projects.length}
         />
       )}
+
+        {/* Right Sidebar - Desktop Only */}
+        {isDesktop && !isMobile && (
+          <aside style={{ width: "340px", padding: "24px 0 24px 32px", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}>
+             <RecommendedUsersSidebar />
+          </aside>
+        )}
+      </div>
     </main>
   );
 }

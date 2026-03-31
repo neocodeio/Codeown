@@ -272,7 +272,8 @@ export default function App() {
     location.pathname.startsWith("/portfolio") ||
     location.pathname === "/onboarding";
 
-  const isFeedPage = location.pathname === "/";
+  const isStandardPage = location.pathname === "/" || location.pathname === "/profile" || location.pathname.startsWith("/user/") || (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup"].includes(location.pathname.split("/")[1]));
+
   const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
 
   return (
@@ -281,14 +282,14 @@ export default function App() {
       flexDirection: layoutDirection,
       minHeight: "100vh",
       backgroundColor: "var(--bg-page)",
-      justifyContent: (isFeedPage && isDesktop) ? "center" : "flex-start"
+      justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start"
     }}>
       {!isAuthRoute && <Navbar />}
       <div 
         id="main-content"
         style={{
-          flex: (isFeedPage && isDesktop) ? "0 0 1020px" : 1,
-          width: (isFeedPage && isDesktop) ? "1020px" : "100%",
+          flex: (isStandardPage && isDesktop) ? "0 0 1020px" : 1,
+          width: (isStandardPage && isDesktop) ? "1020px" : "100%",
           maxWidth: "100%",
           position: "relative",
           minWidth: 0,
