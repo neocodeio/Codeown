@@ -364,13 +364,15 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 onClick={() => setIsPoll(false)}
                                 style={{ 
                                     background: "none", 
-                                    border: "none", 
-                                    color: "var(--text-tertiary)", 
+                                    border: "1px soild #000", 
+                                    color: "#000", 
                                     cursor: "pointer", 
-                                    fontSize: "12px"
+                                    fontSize: "12px",
+                                    borderRadius: "100%",
+                                    padding:"2px 5px"
                                 }}
                             >
-                                Remove
+                                X
                             </button>
                         </div>
                         {pollOptions.map((option, index) => (
