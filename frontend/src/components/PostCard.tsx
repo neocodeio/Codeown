@@ -352,26 +352,47 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         {post.poll && post.poll.options && post.poll.options.length > 0 && (
           <div style={{
             marginBottom: "24px",
-            padding: "16px",
+            padding: "20px",
             backgroundColor: "var(--bg-hover)",
             border: "0.5px solid var(--border-hairline)",
             borderRadius: "var(--radius-md)",
             display: "flex",
             flexDirection: "column",
-            gap: "10px"
+            gap: "12px",
+            position: "relative",
+            overflow: "hidden"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-              <ChartBar size={18} weight="bold" color="var(--text-primary)" />
-              <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>Poll</span>
+            {/* Shimmer Animation Style */}
+            <style>{`
+              @keyframes shimmer {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+              }
+            `}</style>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <ChartBar size={18} weight="bold" color="var(--text-primary)" />
+                <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>Poll</span>
+              </div>
+              {votedOption !== null && (
+                 <div style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Results
+                 </div>
+              )}
             </div>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               {post.poll.options.map((option, idx) => {
                 const votes = post.poll?.votes || {};
                 const voteCount = Number(votes[idx] || 0);
                 const totalVotes = Object.values(votes).reduce((a: number, b: any) => a + Number(b), 0) || (votedOption !== null ? 1 : 0);
                 const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
                 const isSelected = votedOption === idx;
+                
+                // Logic for "Founder's Choice" (Creator's vote)
+                // If the poll has creatorVoteIndex, use it. Otherwise, if author is current user, use votedOption.
+                const isCreatorVote = post.poll?.creatorVoteIndex === idx || (isOwnPost && votedOption === idx);
 
                 return (
                   <button
@@ -381,16 +402,20 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     style={{
                       position: "relative",
                       width: "100%",
-                      padding: "12px 14px",
+                      padding: "14px 16px",
                       backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
                       border: "0.5px solid var(--border-hairline)",
                       borderRadius: "var(--radius-sm)",
                       cursor: votedOption !== null ? "default" : "pointer",
                       textAlign: "left",
                       overflow: "hidden",
-                      transition: "all 0.2s ease"
+                      transition: "all 0.3s var(--ease-smooth)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px"
                     }}
                   >
+                    {/* Glassmorphic Progress Bar */}
                     {votedOption !== null && (
                       <div style={{
                         position: "absolute",
@@ -398,24 +423,59 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                         left: 0,
                         bottom: 0,
                         width: `${percentage}%`,
-                        backgroundColor: isSelected ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                        backgroundColor: isSelected ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.04)",
                         transition: "width 1s var(--ease-smooth)",
-                        zIndex: 0
-                      }} />
-                    )}
-                    <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-                      <span style={{
-                        fontSize: "14px",
-                        fontWeight: isSelected ? 600 : 500,
-                        color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
+                        zIndex: 0,
+                        overflow: "hidden"
                       }}>
-                        {option}
-                      </span>
+                        {/* Shimmer Effect */}
+                        <div style={{
+                          position: "absolute",
+                          inset: 0,
+                          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
+                          animation: "shimmer 2s infinite linear",
+                          display: isSelected ? "block" : "none"
+                        }} />
+                      </div>
+                    )}
+
+                    <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1, width: "100%" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{
+                          fontSize: "14px",
+                          fontWeight: isSelected ? 700 : 500,
+                          color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
+                        }}>
+                          {option}
+                        </span>
+                        {isCreatorVote && votedOption !== null && (
+                          <div 
+                            title="Founder's Choice"
+                            style={{ 
+                              fontSize: "10px", 
+                              backgroundColor: isSelected ? "rgba(255,255,255,0.2)" : "var(--bg-hover)",
+                              color: isSelected ? "var(--bg-page)" : "var(--text-tertiary)",
+                              padding: "2px 6px",
+                              borderRadius: "4px",
+                              fontWeight: 700,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              border: isSelected ? "none" : "0.5px solid var(--border-hairline)"
+                            }}
+                          >
+                            <PushPin size={10} weight="fill" />
+                            FOUNDER
+                          </div>
+                        )}
+                      </div>
+                      
                       {votedOption !== null && (
                         <span style={{
                           fontSize: "13px",
-                          fontWeight: 600,
-                          color: isSelected ? "var(--bg-page)" : "var(--text-tertiary)",
+                          fontWeight: 700,
+                          color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
+                          opacity: isSelected ? 1 : 0.6
                         }}>
                           {percentage}%
                         </span>
@@ -425,10 +485,17 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 );
               })}
             </div>
-            <div style={{ marginTop: "4px" }}>
-               <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
-                  {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} votes • {votedOption !== null ? "Final results" : "Select an option to vote"}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px" }}>
+               <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                  {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} votes • {votedOption !== null ? "Results" : "Select to vote"}
                </span>
+               {votedOption !== null && (
+                 <div style={{ display: "flex", gap: "4px" }}>
+                    {[1, 2, 3].map(i => (
+                       <div key={i} style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)", opacity: 0.4 }} />
+                    ))}
+                 </div>
+               )}
             </div>
           </div>
         )}

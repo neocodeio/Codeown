@@ -33,6 +33,7 @@ export interface Post {
     options: string[];
     votes?: Record<number, number>;
     userVoted?: number;
+    creatorVoteIndex?: number;
   } | null;
 }
 
