@@ -110,7 +110,7 @@ export default function Changelog() {
                     <header style={{
                         position: "sticky",
                         top: 0,
-                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        backgroundColor: "var(--bg-header)",
                         backdropFilter: "blur(20px)",
                         zIndex: 100,
                         padding: "16px 24px",
