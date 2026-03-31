@@ -205,15 +205,35 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 display: "flex",
                 gap: "20px",
                 position: "relative",
+                overflow: "hidden" // Keep the guard contained
             }}
         >
-            <AvailabilityBadge
-                avatarUrl={avatarUrl}
-                name={user?.fullName || user?.username || "User"}
-                size={40}
-                username={user?.username}
-                isOG={isOG}
-            />
+            {/* OG Presence Guard - Vertical Pill anchor */}
+            {isOG && (
+                <div style={{
+                    position: "absolute",
+                    top: "12px",
+                    left: isMobile ? "8px" : "32px",
+                    // width: "56px",
+                    // height: "calc(100% - 24px)",
+                    borderRadius: "100px",
+                    border: "1px solid var(--border-hairline)",
+                    backgroundColor: "transparent",
+                    opacity: 0.6,
+                    pointerEvents: "none",
+                    zIndex: 0
+                }} />
+            )}
+
+            <div style={{ position: "relative", zIndex: 1 }}> {/* Lift avatar above guard */}
+                <AvailabilityBadge
+                    avatarUrl={avatarUrl}
+                    name={user?.fullName || user?.username || "User"}
+                    size={40}
+                    username={user?.username}
+                    isOG={isOG}
+                />
+            </div>
             <div style={{ flex: 1 }}>
                 <div style={{ marginBottom: "16px" }}>
                     {isPoll && (
