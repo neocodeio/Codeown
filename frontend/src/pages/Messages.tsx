@@ -959,14 +959,12 @@ export default function Messages() {
                         </span>
 
                         <div 
-                          className="convo-dots-container"
+                          className={`convo-dots-container ${convoMenuId === convo.id ? "is-open" : ""}`}
                           style={{ 
                             position: "absolute", 
                             right: "-8px", 
                             top: "50%",
                             transform: "translateY(-50%)",
-                            opacity: convoMenuId === convo.id ? 1 : 0, 
-                            pointerEvents: convoMenuId === convo.id ? "auto" : "none",
                             transition: "opacity 0.15s ease",
                             zIndex: 10
                           }} 
@@ -2354,11 +2352,13 @@ export default function Messages() {
           pointer-events: none;
           transition: opacity 0.2s ease;
         }
-        .convo-container:hover .convo-dots-container {
+        .convo-container:hover .convo-dots-container,
+        .convo-container .convo-dots-container.is-open {
           opacity: 1;
           pointer-events: auto;
         }
-        .convo-container:hover .convo-timestamp {
+        .convo-container:hover .convo-timestamp,
+        .convo-container .is-open + .convo-timestamp {
           opacity: 0;
         }
         @media (max-width: 768px) {
