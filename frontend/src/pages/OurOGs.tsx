@@ -286,23 +286,14 @@ export default function OurOGs() {
                 {isDesktop && (
                     <aside style={{
                         width: "340px",
-                        paddingLeft: "24px",
+                        paddingLeft: "0",
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
                         flexShrink: 0,
                         zIndex: 1,
-                        paddingTop: "60px"
+                        paddingTop: "0"
                     }}>
-                        <div style={{ marginBottom: "32px", padding: "24px", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-hover)" }}>
-                            <h3 style={{ fontSize: "14px", fontWeight: "800", marginBottom: "12px", color: "var(--text-primary)", letterSpacing: "-0.02em" }}>About the Hall</h3>
-                            <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "16px" }}>
-                                The Founding OGs are the first 100 explorers who believed in a decentralized future. They hold permanent priority status within the ecosystem.
-                            </p>
-                            <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-primary)", textTransform: "uppercase", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={() => navigate('/founder-story')}>
-                                Read our vision →
-                            </div>
-                        </div>
                         <RecommendedUsersSidebar />
                     </aside>
                 )}
@@ -311,6 +302,7 @@ export default function OurOGs() {
             <BackToTop />
             <style>{`
                 .spin { animation: spin 1s linear infinite; }
+                .sidebar-section:first-child { padding-top: 0 !important; }
                 @keyframes pageEnter {
                     from { opacity: 0; transform: translateY(12px); }
                     to { opacity: 1; transform: translateY(0); }
