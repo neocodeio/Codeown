@@ -68,7 +68,6 @@ export default function OurOGs() {
             minHeight: "100vh", 
             padding: 0,
             position: "relative",
-            overflow: "hidden"
         }}>
             <SEO title="The Founding OGs | Codeown" description="Celebrating the first 100 pioneers who laid the foundation of Codeown." />
             
@@ -294,7 +293,6 @@ export default function OurOGs() {
                 {isDesktop && (
                     <aside style={{
                         width: "340px",
-                        height: "100vh",
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
