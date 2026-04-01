@@ -709,6 +709,13 @@ export default function Navbar() {
                 <Buildings size={18} weight="regular" />
                 Startups Hub
               </div>
+              <div
+                onClick={() => { setIsCreateMenuOpen(false); navigate("/ogs"); }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
+              >
+                <Medal size={18} weight="regular" />
+                Our OGs
+              </div>
             </div>
           )}
         </div>
