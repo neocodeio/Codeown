@@ -1321,7 +1321,7 @@ export default function Messages() {
                       lineHeight: "1.6",
                       margin: 0
                     }}>
-                      This is the beginning of your chat history. Say hello and start building something together.
+                      Say hello and start building something together.
                     </p>
 
                     <div style={{
