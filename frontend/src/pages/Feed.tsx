@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
@@ -20,6 +20,7 @@ export default function Feed() {
     const isMobile = width < 768;
     const isDesktop = width >= 1200;
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +63,7 @@ export default function Feed() {
 
     const handleFilterChange = (filter: FeedFilter) => updateParams({ filter });
 
-    const { getToken } = useClerkAuth();
+    const { getToken, isSignedIn } = useClerkAuth();
 
     const {
         posts,
@@ -316,6 +317,59 @@ export default function Feed() {
 
                     {/* ── Content ── */}
                     <div style={{ minHeight: "100vh" }}>
+                        {/* ── Minimal OG Seats Banner ── */}
+                        {!isSignedIn && (
+                            <div 
+                                onClick={() => navigate("/sign-in")}
+                                style={{
+                                    margin: isMobile ? "12px 16px" : "16px 24px",
+                                    padding: "16px 20px",
+                                    borderRadius: "var(--radius-md)",
+                                    backgroundColor: "var(--bg-hover)",
+                                    border: "0.5px solid var(--border-hairline)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: "12px",
+                                    cursor: "pointer",
+                                    transition: "background-color 0.2s ease"
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.02)"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                            >
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                    <div style={{
+                                        width: "8px",
+                                        height: "8px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#ff4d4d",
+                                        boxShadow: "0 0 8px rgba(255, 77, 77, 0.4)"
+                                    }} />
+                                    <span style={{
+                                        fontSize: "14px",
+                                        fontWeight: "600",
+                                        color: "var(--text-primary)",
+                                        letterSpacing: "-0.01em"
+                                    }}>
+                                        ONLY 16 OG SEATS LEFT!
+                                    </span>
+                                </div>
+                                <button style={{
+                                    background: "none",
+                                    border: "none",
+                                    padding: "0",
+                                    color: "var(--text-tertiary)",
+                                    fontSize: "13px",
+                                    fontWeight: "500",
+                                    cursor: "pointer",
+                                    transition: "color 0.2s ease"
+                                }} 
+                                >
+                                    Secure your spot →
+                                </button>
+                            </div>
+                        )}
+
                         {feedType === "posts" && (
                             <div style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                                 <FeedPostComposer onCreated={handlePostCreated} />
