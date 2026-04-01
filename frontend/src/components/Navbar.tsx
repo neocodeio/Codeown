@@ -24,7 +24,8 @@ import {
   Sun,
   Moon,
   Scroll,
-  Buildings
+  Buildings,
+  Medal
 } from "phosphor-react";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -260,6 +261,10 @@ export default function Navbar() {
         <Link to="/leaderboard" style={linkStyle("/leaderboard")} aria-label="Leaderboard">
           <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "regular"} />
           Leaderboard
+        </Link>
+        <Link to="/ogs" style={linkStyle("/ogs")} aria-label="Founding OGs">
+          <Medal size={20} weight={location.pathname === "/ogs" ? "bold" : "regular"} />
+          Our OGs
         </Link>
         <Link to="/startups" style={linkStyle("/startups")} aria-label="Startup Hub">
           <Buildings size={20} weight={location.pathname === "/startups" ? "bold" : "regular"} />

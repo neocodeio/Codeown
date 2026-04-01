@@ -1186,3 +1186,25 @@ export function getActiveCount(req: Request, res: Response) {
         return res.status(200).json({ count: 1 }); // Fallback
     }
 }
+/**
+ * Returns the first 100 users (Founding OGs)
+ */
+export async function getOGUsers(req: Request, res: Response) {
+    try {
+        const { data: users, error } = await supabase
+            .from("users")
+            .select("id, name, username, avatar_url, bio, created_at, is_pro, is_og, streak_count")
+            .order("created_at", { ascending: true })
+            .limit(100);
+
+        if (error) {
+            console.error("[getOGUsers] Error:", error);
+            return res.status(500).json({ error: "Failed to fetch OG users" });
+        }
+
+        return res.json(users);
+    } catch (error) {
+        console.error("[getOGUsers] Unexpected error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
