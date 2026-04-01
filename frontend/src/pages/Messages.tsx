@@ -1943,8 +1943,8 @@ export default function Messages() {
                       onClick={clearAudio}
                       type="button"
                       style={{
-                        width: "32px",
-                        height: "32px",
+                        width: "28px",
+                        height: "28px",
                         borderRadius: "50%",
                         backgroundColor: "var(--bg-input)",
                         color: "var(--text-primary)",
@@ -1954,7 +1954,7 @@ export default function Messages() {
                         justifyContent: "center",
                         cursor: "pointer",
                         flexShrink: 0,
-                        padding: 0,
+                        padding: "4px",
                         margin: 0
                       }}
                       onMouseEnter={(e) => {
@@ -2121,7 +2121,7 @@ export default function Messages() {
                         disabled={!!audioBlob}
                         style={{
                           width: "100%",
-                          padding: "12px 16px",
+                          padding: "10px 14px",
                           borderRadius: "var(--radius-sm)",
                           border: "0.5px solid var(--border-hairline)",
                           outline: "none",

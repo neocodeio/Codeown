@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { MagnifyingGlass, X } from "phosphor-react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "./VerifiedBadge";
 
 interface User {
@@ -21,6 +22,8 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
     const [searchQuery, setSearchQuery] = useState("");
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
+    const { width } = useWindowSize();
+    const isMobile = width < 768;
     const { getToken } = useClerkAuth();
     const modalRef = useRef<HTMLDivElement>(null);
 
@@ -134,13 +137,13 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                 </div>
 
                 {/* Search Bar */}
-                <div style={{ padding: "24px 32px" }}>
+                <div style={{ padding: isMobile ? "16px 20px" : "20px 32px" }}>
                     <div style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "12px",
+                        gap: "10px",
                         backgroundColor: "var(--bg-input)",
-                        padding: "12px 16px",
+                        padding: "10px 14px",
                         borderRadius: "var(--radius-sm)",
                         border: "0.5px solid var(--border-hairline)",
                     }}>
@@ -158,6 +161,9 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                 outline: "none",
                                 fontSize: "14px",
                                 color: "var(--text-primary)",
+                                padding: 0,
+                                margin: 0,
+                                width: "100%"
                             }}
                         />
                     </div>
