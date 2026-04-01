@@ -913,7 +913,7 @@ export default function Messages() {
                   isOG={convo.partner.is_og}
                   username={convo.partner.username}
                 />
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ flex: 1, minWidth: 0, paddingRight: activeConvo?.id === convo.id ? "40px" : "0px" }}>
                   <div
                     style={{
                       display: "flex",
@@ -998,8 +998,14 @@ export default function Messages() {
                   </div>
                 </div>
 
+
+
                 {/* Conversation Action Menu Trigger */}
-                <div style={{ position: "absolute", right: "20px", top: "50%", transform: "translateY(-50%)" }} onClick={(e) => e.stopPropagation()}>
+                <div 
+                  className="convo-dots-container"
+                  style={{ position: "relative", flexShrink: 0, display: "flex", alignItems: "center" }} 
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     className="convo-dots-trigger"
                     onClick={(e) => {
@@ -1023,7 +1029,7 @@ export default function Messages() {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--border-hairline)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                   >
-                    <DotsThree size={32} weight="bold" style={{ width: "32px", height: "32px" }} />
+                    <DotsThree size={24} weight="bold" style={{ width: "24px", height: "24px" }} />
                   </button>
 
                   {convoMenuId === convo.id && (
@@ -1031,8 +1037,9 @@ export default function Messages() {
                       className="convo-action-menu"
                       style={{
                         position: "absolute",
-                        top: "40px",
+                        top: "100%",
                         right: 0,
+                        marginTop: "8px",
                         backgroundColor: "var(--bg-elevated)",
                         borderRadius: "14px",
                         padding: "6px",
@@ -2323,15 +2330,15 @@ export default function Messages() {
             opacity: 1;
           }
         }
-        .convo-container .convo-dots-trigger {
+        .convo-container .convo-dots-container {
           opacity: 0;
           transition: opacity 0.2s ease, transform 0.2s ease;
         }
-        .convo-container:hover .convo-dots-trigger {
+        .convo-container:hover .convo-dots-container {
           opacity: 1;
         }
         @media (max-width: 768px) {
-          .convo-container .convo-dots-trigger {
+          .convo-container .convo-dots-container {
             opacity: 1;
           }
         }
