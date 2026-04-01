@@ -523,7 +523,15 @@ export default function Messages() {
       clearAudio();
 
       if (activeConvo?.id === 0) {
-        await fetchConversations();
+        // If it was a new convo, the response has the true conversation_id
+        const newConvoId = res.data.conversation_id;
+        
+        // Update the active convo with the real ID and add the message
+        setActiveConvo(prev => prev ? { ...prev, id: newConvoId, last_message: res.data } : null);
+        setMessages([res.data]);
+        
+        // Refresh conversations to get the full list ordered correctly
+        await fetchConversations(false);
       } else {
         setMessages((prev) => [...prev, res.data]);
 
