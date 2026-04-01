@@ -1821,10 +1821,10 @@ export default function Messages() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "var(--radius-sm)",
-                      border: "0.5px solid var(--border-hairline)",
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "14px",
+                      border: "1px solid var(--border-hairline)",
                       backgroundColor: "transparent",
                       color: "var(--text-primary)",
                       display: "flex",
@@ -1837,7 +1837,7 @@ export default function Messages() {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
-                    <ImageIcon size={30} weight="regular" />
+                    <ImageIcon size={28} weight="regular" style={{ width: "28px", height: "28px" }} />
                   </button>
 
                   {/* Gif Button */}
@@ -1846,10 +1846,10 @@ export default function Messages() {
                       type="button"
                       onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
                       style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "var(--radius-sm)",
-                        border: "0.5px solid var(--border-hairline)",
+                        width: "48px",
+                        height: "48px",
+                        borderRadius: "14px",
+                        border: "1px solid var(--border-hairline)",
                         backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
                         color: "var(--text-primary)",
                         display: "flex",
@@ -1864,7 +1864,7 @@ export default function Messages() {
                         if (!isGifPickerOpen) e.currentTarget.style.backgroundColor = "transparent";
                       }}
                     >
-                      <Gif size={30} weight={isGifPickerOpen ? "fill" : "regular"} />
+                      <Gif size={28} weight={isGifPickerOpen ? "bold" : "regular"} style={{ width: "28px", height: "28px" }} />
                     </button>
 
                     {isGifPickerOpen && (
@@ -1893,10 +1893,10 @@ export default function Messages() {
                       type="button"
                       onClick={isRecording ? stopRecording : startRecording}
                       style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "var(--radius-sm)",
-                        border: "0.5px solid var(--border-hairline)",
+                        width: "48px",
+                        height: "48px",
+                        borderRadius: "14px",
+                        border: "1px solid var(--border-hairline)",
                         backgroundColor: isRecording ? "var(--text-error, #ff4444)" : "transparent",
                         color: isRecording ? "#fff" : "var(--text-primary)",
                         display: "flex",
@@ -1913,7 +1913,7 @@ export default function Messages() {
                         if (!isRecording) e.currentTarget.style.backgroundColor = "transparent";
                       }}
                     >
-                      {isRecording ? <StopCircle size={30} weight="fill" /> : <Microphone size={30} weight="regular" />}
+                      {isRecording ? <StopCircle size={28} weight="fill" style={{ width: "28px", height: "28px" }} /> : <Microphone size={28} weight="regular" style={{ width: "28px", height: "28px" }} />}
                     </button>
                   )}
 
@@ -1980,11 +1980,11 @@ export default function Messages() {
                     type="submit"
                     disabled={(!newMessage.trim() && !selectedImage && !audioBlob) || sending || uploadingImage || isUploadingAudio || isRecording}
                     style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "var(--radius-sm)",
-                      border: "0.5px solid var(--border-hairline)",
-                      backgroundColor: (newMessage.trim() || selectedImage || audioBlob) ? "var(--text-primary)" : "transparent",
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "14px",
+                      border: "none",
+                      backgroundColor: (newMessage.trim() || selectedImage || audioBlob) ? "var(--text-primary)" : "var(--bg-hover)",
                       color: (newMessage.trim() || selectedImage || audioBlob) ? "var(--bg-page)" : "var(--text-tertiary)",
                       cursor: (newMessage.trim() || selectedImage) ? "pointer" : "default",
                       display: "flex",
@@ -1995,11 +1995,12 @@ export default function Messages() {
                     }}
                   >
                     {uploadingImage || isUploadingAudio ? (
-                      <ArrowClockwise size={20} weight="thin" className="spin-animation" />
+                      <ArrowClockwise size={26} weight="bold" style={{ width: "26px", height: "26px" }} className="spin-animation" />
                     ) : (
                       <PaperPlaneTilt
-                        size={20}
-                        weight="thin"
+                        size={26}
+                        weight="fill"
+                        style={{ width: "26px", height: "26px" }}
                       />
                     )}
                   </button>
