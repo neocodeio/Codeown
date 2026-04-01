@@ -539,3 +539,35 @@ export async function deleteMessage(req: Request, res: Response) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
+export async function deleteConversation(req: Request, res: Response) {
+    try {
+        const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+        const { id } = req.params;
+
+        // Verify participation
+        const { data: participation } = await supabase
+            .from("conversation_participants")
+            .select("*")
+            .eq("conversation_id", id)
+            .eq("user_id", userId)
+            .single();
+
+        if (!participation) return res.status(403).json({ error: "Access denied" });
+
+        // Delete messages first to handle missing ON DELETE CASCADE, then participants, then conversation
+        await supabase.from("messages").delete().eq("conversation_id", id);
+        await supabase.from("conversation_participants").delete().eq("conversation_id", id);
+        const { error: deleteErr } = await supabase.from("conversations").delete().eq("id", id);
+
+        if (deleteErr) throw deleteErr;
+
+        return res.json({ success: true });
+
+    } catch (error: any) {
+        console.error("Error deleting conversation:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}

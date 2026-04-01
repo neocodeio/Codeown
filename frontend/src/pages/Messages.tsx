@@ -11,6 +11,7 @@ import {
   NotePencil,
   MagnifyingGlass,
   Image as ImageIcon,
+  User as UserIcon,
   X,
   ArrowClockwise,
   Trash,
@@ -136,6 +137,8 @@ export default function Messages() {
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
   const [messageMenuId, setMessageMenuId] = useState<number | null>(null);
   const [deletingMessageId, setDeletingMessageId] = useState<number | null>(null);
+  const [convoMenuId, setConvoMenuId] = useState<number | null>(null);
+  const [deletingConvoId, setDeletingConvoId] = useState<number | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleScroll = () => {
@@ -248,17 +251,20 @@ export default function Messages() {
   }, [currentUser?.id, activeConvo?.id]);
 
   useEffect(() => {
-    if (reactingTo !== null || messageMenuId !== null) {
+    if (reactingTo !== null || messageMenuId !== null || convoMenuId !== null) {
       const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
         const picker = document.querySelector(".emoji-picker-overlay");
         const menu = document.querySelector(".message-action-menu");
-        if ((picker && !picker.contains(e.target as Node)) && (menu && !menu.contains(e.target as Node))) {
+        const convoMenu = document.querySelector(".convo-action-menu");
+        
+        if (picker && !picker.contains(e.target as Node)) {
           setReactingTo(null);
+        }
+        if (menu && !menu.contains(e.target as Node)) {
           setMessageMenuId(null);
-        } else if (picker && !picker.contains(e.target as Node)) {
-          setReactingTo(null);
-        } else if (menu && !menu.contains(e.target as Node)) {
-          setMessageMenuId(null);
+        }
+        if (convoMenu && !convoMenu.contains(e.target as Node)) {
+          setConvoMenuId(null);
         }
       };
 
@@ -269,7 +275,7 @@ export default function Messages() {
         document.removeEventListener("touchstart", handleOutsideClick);
       };
     }
-  }, [reactingTo, messageMenuId]);
+  }, [reactingTo, messageMenuId, convoMenuId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -598,6 +604,27 @@ export default function Messages() {
     }
   };
 
+  const handleDeleteConversation = async (convoId: number) => {
+    try {
+      setDeletingConvoId(convoId);
+      const token = await getToken();
+      await api.delete(`/messages/conversation/${convoId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Optimistic update
+      setConversations(prev => prev.filter(c => c.id !== convoId));
+      if (activeConvo?.id === convoId) {
+        setActiveConvo(null);
+      }
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+    } finally {
+      setDeletingConvoId(null);
+      setConvoMenuId(null);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
 
@@ -850,6 +877,7 @@ export default function Messages() {
             {!loading && filteredConversations.map((convo) => (
               <div
                 key={convo.id}
+                className="convo-container"
                 onClick={() => {
                   setActiveConvo(convo);
                   if (convo.unread_count && convo.unread_count > 0) {
@@ -862,7 +890,7 @@ export default function Messages() {
                   padding: "20px",
                   cursor: "pointer",
                   backgroundColor: activeConvo?.id === convo.id ? "var(--bg-hover)" : "transparent",
-                  // borderRadius: "var(--radius-sm)",
+                  position: "relative",
                   display: "flex",
                   alignItems: "center",
                   gap: "16px",
@@ -968,6 +996,119 @@ export default function Messages() {
                       }} />
                     )}
                   </div>
+                </div>
+
+                {/* Conversation Action Menu Trigger */}
+                <div style={{ position: "absolute", right: "20px", top: "50%", transform: "translateY(-50%)" }} onClick={(e) => e.stopPropagation()}>
+                  <button
+                    className="convo-dots-trigger"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setConvoMenuId(convoMenuId === convo.id ? null : convo.id);
+                    }}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--bg-hover)",
+                      border: "none",
+                      padding: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      color: "var(--text-primary)",
+                      transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--border-hairline)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                  >
+                    <DotsThree size={32} weight="bold" style={{ width: "32px", height: "32px" }} />
+                  </button>
+
+                  {convoMenuId === convo.id && (
+                    <div
+                      className="convo-action-menu"
+                      style={{
+                        position: "absolute",
+                        top: "40px",
+                        right: 0,
+                        backgroundColor: "var(--bg-elevated)",
+                        borderRadius: "14px",
+                        padding: "6px",
+                        minWidth: "160px",
+                        boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)",
+                        border: "0.5px solid var(--border-hairline)",
+                        zIndex: 100,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "4px"
+                      }}
+                    >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/user/${convo.partner.id}`);
+                          setConvoMenuId(null);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          width: "100%",
+                          padding: "10px",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          fontFamily: "var(--font-main)",
+                          fontSize: "13px",
+                          fontWeight: 500,
+                          color: "var(--text-primary)",
+                          transition: "background-color 0.15s",
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <UserIcon size={18} weight="regular" /> Profile
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteConversation(convo.id);
+                        }}
+                        disabled={deletingConvoId === convo.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          width: "100%",
+                          padding: "10px",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          borderRadius: "8px",
+                          cursor: deletingConvoId === convo.id ? "not-allowed" : "pointer",
+                          fontFamily: "var(--font-main)",
+                          fontSize: "13px",
+                          fontWeight: 500,
+                          color: "#ff4444",
+                          transition: "background-color 0.15s",
+                          opacity: deletingConvoId === convo.id ? 0.7 : 1,
+                        }}
+                        onMouseEnter={(e) => {
+                          if (deletingConvoId !== convo.id) e.currentTarget.style.backgroundColor = "rgba(255, 68, 68, 0.05)";
+                        }}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        {deletingConvoId === convo.id ? (
+                          <ArrowClockwise size={18} weight="regular" className="spin-animation" />
+                        ) : (
+                          <Trash size={18} weight="regular" />
+                        )} 
+                        Delete chat
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -1225,7 +1366,7 @@ export default function Messages() {
                             onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-tertiary)"; e.currentTarget.style.backgroundColor = "transparent"; }}
                           >
-                            <DotsThree size={18} weight="bold" />
+                            <DotsThree size={24} weight="bold" style={{ width: "24px", height: "24px" }} />
                           </button>
 
                           {/* Small dropdown menu */}
@@ -2179,6 +2320,18 @@ export default function Messages() {
         @media (max-width: 768px) {
           .message-container .reply-button,
           .message-container .msg-dots-trigger {
+            opacity: 1;
+          }
+        }
+        .convo-container .convo-dots-trigger {
+          opacity: 0;
+          transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .convo-container:hover .convo-dots-trigger {
+          opacity: 1;
+        }
+        @media (max-width: 768px) {
+          .convo-container .convo-dots-trigger {
             opacity: 1;
           }
         }
