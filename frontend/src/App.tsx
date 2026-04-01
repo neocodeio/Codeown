@@ -285,6 +285,8 @@ export default function App() {
 
   const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
 
+  const shouldShowNavbar = !isAuthRoute || (isMobile && (location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up")));
+
   return (
     <div style={{
       display: "flex",
@@ -293,7 +295,7 @@ export default function App() {
       backgroundColor: "var(--bg-page)",
       justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start"
     }}>
-      {!isAuthRoute && <Navbar />}
+      {shouldShowNavbar && <Navbar />}
       <div 
         id="main-content"
         style={{
@@ -302,8 +304,8 @@ export default function App() {
           maxWidth: "100%",
           position: "relative",
           minWidth: 0,
-          paddingTop: isMobile && !isAuthRoute ? "64px" : "0px",
-          paddingBottom: isMobile && !isAuthRoute ? "80px" : "0px"
+          paddingTop: isMobile && shouldShowNavbar ? "64px" : "0px",
+          paddingBottom: isMobile && shouldShowNavbar ? "80px" : "0px"
         }}
       >
         <ErrorBoundary>
