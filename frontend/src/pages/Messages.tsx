@@ -18,7 +18,9 @@ import {
   DotsThree,
   Microphone,
   StopCircle,
-  Gif
+  Gif,
+  ChatTeardropDots,
+  Info
 } from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
 import GifPicker from "../components/GifPicker";
@@ -1257,79 +1259,117 @@ export default function Messages() {
                           width: "200px",
                           height: "60px",
                           backgroundColor: "var(--bg-hover)",
-                          borderRadius: "var(--radius-sm)",
+                                  borderRadius: "var(--radius-sm)",
                           animation: "shimmer 1.5s infinite linear"
                         }} />
                       </div>
                     ))}
                   </div>
-                ) : messages.length === 0 && activeConvo.id !== 0 && (
+                ) : messages.length === 0 ? (
                   <div
                     style={{
-                      textAlign: "center",
-                      padding: "60px 24px",
+                      flex: 1,
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
-                      gap: "16px",
+                      justifyContent: "center",
+                      padding: "80px 24px",
+                      textAlign: "center",
+                      animation: "reactionFadeUp 0.4s ease-out"
                     }}
                   >
-                    <div
-                      style={{
-                        width: "64px",
-                        height: "64px",
-                        borderRadius: "var(--radius-sm)",
-                        backgroundColor: "var(--bg-hover)",
+                    <div style={{ position: "relative", marginBottom: "24px" }}>
+                      <AvailabilityBadge
+                        avatarUrl={activeConvo.partner.avatar_url}
+                        name={activeConvo.partner.name}
+                        size={84}
+                        isOG={activeConvo.partner.is_og}
+                        username={activeConvo.partner.username}
+                      />
+                      <div style={{
+                        position: "absolute",
+                        bottom: "-4px",
+                        right: "-4px",
+                        width: "32px",
+                        height: "32px",
+                        backgroundColor: "var(--bg-page)",
+                        borderRadius: "50%",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        border: "0.5px solid var(--border-hairline)"
-                      }}
-                    >
-                      <ChatTeardropText
-                        size={24}
-                        weight="thin"
-                        style={{ color: "var(--text-tertiary)" }}
-                      />
+                        border: "0.5px solid var(--border-hairline)",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
+                      }}>
+                        <ChatTeardropDots size={18} weight="fill" color="var(--text-primary)" />
+                      </div>
                     </div>
-                    <div>
-                      <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "14px" }}>
-                        No messages
-                      </p>
-                      <p style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "6px" }}>
-                        Say hello and start the conversation
-                      </p>
+                    
+                    <h3 style={{ 
+                      fontSize: "20px", 
+                      fontWeight: 800, 
+                      color: "var(--text-primary)", 
+                      margin: "0 0 8px 0",
+                      letterSpacing: "-0.01em"
+                    }}>
+                      Start of conversation with {activeConvo.partner.name.split(' ')[0]}
+                    </h3>
+                    
+                    <p style={{ 
+                      fontSize: "14px", 
+                      color: "var(--text-tertiary)", 
+                      maxWidth: "280px",
+                      lineHeight: "1.6",
+                      margin: 0
+                    }}>
+                      This is the beginning of your chat history. Say hello and start building something together.
+                    </p>
+
+                    <div style={{
+                      marginTop: "32px",
+                      padding: "10px 16px",
+                      backgroundColor: "var(--bg-hover)",
+                      borderRadius: "var(--radius-sm)",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: "var(--text-tertiary)",
+                      border: "0.5px solid var(--border-hairline)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px"
+                    }}>
+                      <Info size={14} weight="bold" />
+                      Messages are encrypted end-to-end
                     </div>
                   </div>
-                )}
-                {messages.map((msg, idx) => {
-                  const isMine = msg.sender_id === currentUser?.id;
-                  return (
-                    <div
-                      key={msg.id || idx}
-                      style={{
-                        alignSelf: isMine ? "flex-end" : "flex-start",
-                        maxWidth: isMobile ? "88%" : "70%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: isMine ? "flex-end" : "flex-start",
-                        gap: "2px",
-                        position: "relative"
-                      }}
-                      className="message-container"
-                    >
-                      {/* Name Label - Only show for received messages */}
-                      {!isMine && (
-                        <span style={{
-                          fontSize: "11px",
-                          fontWeight: 600,
-                          color: "var(--text-secondary)",
-                          marginBottom: "4px",
-                          padding: "0 4px",
-                        }}>
-                          {activeConvo.partner.name}
-                        </span>
-                      )}
+                ) : (
+                  messages.map((msg, idx) => {
+                    const isMine = msg.sender_id === currentUser?.id;
+                    return (
+                      <div
+                        key={msg.id || idx}
+                        id={`msg-${msg.id}`}
+                        className="message-row"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: isMine ? "flex-end" : "flex-start",
+                          gap: "4px",
+                          width: "100%",
+                          position: "relative"
+                        }}
+                      >
+                        {/* Name Label - Only show for received messages */}
+                        {!isMine && (
+                          <span style={{
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            color: "var(--text-secondary)",
+                            marginBottom: "4px",
+                            padding: "0 4px",
+                          }}>
+                            {activeConvo.partner.name}
+                          </span>
+                        )}
 
                       {/* Reply Context */}
                       {msg.reply_to && (
@@ -1792,7 +1832,8 @@ export default function Messages() {
                       )}
                     </div>
                   );
-                })}
+                })
+              )}
 
                 {activeConvo && typingUsers[activeConvo.partner.id] && (
                   <div
