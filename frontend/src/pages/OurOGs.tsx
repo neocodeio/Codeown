@@ -6,6 +6,8 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import BackToTop from "../components/BackToTop";
 import OGAvatarDecorator from "../components/OGAvatarDecorator";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import BioRenderer from "../components/BioRenderer";
+import StreakBadge from "../components/StreakBadge";
 
 interface OGUser {
     id: string;
@@ -19,21 +21,10 @@ interface OGUser {
     streak_count: number;
 }
 
-const NoiseOverlay = () => (
-    <div style={{
-        position: "fixed",
-        top: 0, left: 0, width: "100%", height: "100%",
-        pointerEvents: "none",
-        zIndex: 100,
-        opacity: 0.03,
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-    }} />
-);
-
 export default function OurOGs() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
-    const isDesktop = width >= 1240;
+    const isDesktop = width >= 1200;
     const navigate = useNavigate();
     
     const [users, setUsers] = useState<OGUser[]>([]);
@@ -55,207 +46,274 @@ export default function OurOGs() {
         fetchOGs();
     }, []);
 
+    const formatDate = (dateStr: string) => {
+        return new Date(dateStr).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
     return (
-        <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", position: "relative", overflow: "hidden" }}>
-            <NoiseOverlay />
-            <SEO title="Founders — Codeown" description="Celebrating the pioneers who built the foundation of Codeown." />
+        <main style={{ 
+            backgroundColor: "var(--bg-page)", 
+            minHeight: "100vh", 
+            padding: 0,
+            position: "relative",
+            overflow: "hidden"
+        }}>
+            <SEO title="The Founding OGs | Codeown" description="Celebrating the first 100 pioneers who laid the foundation of Codeown." />
             
+            {/* ── High-End Noise/Grain Overlay (Subtle) ── */}
+            <div style={{
+                position: "fixed",
+                top: 0, left: 0, width: "100%", height: "100%",
+                pointerEvents: "none",
+                opacity: 0.015,
+                zIndex: 9999,
+                background: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            }} />
+
             <div style={{
                 display: "flex",
-                justifyContent: (isDesktop) ? "center" : "center",
-                width: isDesktop ? "100%" : "100%",
-                maxWidth: "1440px",
-                margin: "0 auto",
+                justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center",
+                width: isDesktop ? "1020px" : "100%",
+                maxWidth: "1020px",
+                margin: (isDesktop && !isMobile) ? "0" : "0 auto",
                 padding: "0",
+                position: "relative"
             }}>
+                {/* ── Main content Area ── */}
                 <div style={{
+                    width: isDesktop ? "var(--feed-width)" : "100%",
+                    maxWidth: isDesktop ? "var(--feed-width)" : "720px",
+                    margin: isDesktop ? "0" : "0 auto",
+                    flexShrink: 0,
+                    borderRight: (isDesktop && !isMobile) ? "0.5px solid var(--border-hairline)" : "none",
+                    minHeight: "100vh",
+                    padding: isMobile ? "24px 16px 80px" : "60px 32px 100px",
+                    backgroundColor: "var(--bg-page)",
                     display: "flex",
-                    width: isDesktop ? "1200px" : "100%",
-                    justifyContent: "flex-start",
-                    position: "relative"
+                    flexDirection: "column",
                 }}>
-                    {/* ── Main Column ── */}
-                    <div style={{
-                        width: isDesktop ? "var(--feed-width)" : "100%",
-                        maxWidth: isDesktop ? "var(--feed-width)" : "700px",
-                        margin: isDesktop ? "0" : "0 auto",
-                        flexShrink: 0,
-                        borderRight: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
-                        minHeight: "100vh",
-                        padding: isMobile ? "40px 20px" : "80px 40px",
-                        backgroundColor: "var(--bg-page)",
-                        zIndex: 2,
-                        position: "relative"
+                    {/* ── Bespoke Hero Section ── */}
+                    <header style={{ 
+                        textAlign: "left", 
+                        marginBottom: isMobile ? "40px" : "80px", 
+                        animation: "pageEnter 0.6s var(--ease-smooth) forwards" 
                     }}>
-                        {/* ── Hero Section ── */}
-                        <header style={{ textAlign: "left", marginBottom: "100px" }}>
-                            <div style={{
-                                letterSpacing: "0.2em",
-                                fontSize: "10px",
-                                fontWeight: 800,
-                                textTransform: "uppercase",
-                                color: "var(--text-tertiary)",
-                                marginBottom: "16px",
-                                opacity: 0.8
-                            }}>
-                                The Collective
-                            </div>
-                            <h1 style={{
-                                fontSize: isMobile ? "42px" : "64px",
-                                fontWeight: 900,
-                                letterSpacing: "-0.05em",
-                                lineHeight: "0.9",
-                                color: "var(--text-primary)",
-                                marginBottom: "24px"
-                            }}>
-                                Founding<br />
-                                <span style={{ opacity: 0.15, WebkitTextStroke: "1px var(--text-primary)", WebkitTextFillColor: "transparent" }}>Pioneers</span>
-                            </h1>
-                            <p style={{
-                                fontSize: isMobile ? "16px" : "18px",
+                        <h1 style={{
+                            fontSize: isMobile ? "32px" : "52px",
+                            fontWeight: "900",
+                            letterSpacing: "-0.04em",
+                            lineHeight: "0.95",
+                            color: "var(--text-primary)",
+                            marginBottom: "20px"
+                        }}>
+                            The Founding<br/>
+                            <span style={{ 
                                 color: "var(--text-secondary)",
-                                maxWidth: "440px",
-                                lineHeight: "1.4",
-                                fontWeight: 400
-                            }}>
-                                The first 100 creators who joined Codeown to redefine the digital frontier.
-                            </p>
-                        </header>
+                                background: "linear-gradient(90deg, var(--text-primary) 0%, var(--text-tertiary) 100%)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                            }}>Codeown OGs</span>
+                        </h1>
+                        <p style={{
+                            fontSize: isMobile ? "16px" : "18px",
+                            color: "var(--text-secondary)",
+                            maxWidth: "520px",
+                            lineHeight: "1.6",
+                            fontWeight: "400",
+                            letterSpacing: "-0.01em"
+                        }}>
+                            A living record of the first 100 builders who joined our mission to redefine personal digital ownership.
+                        </p>
+                    </header>
 
-                        {/* ── Custom Grid Section ── */}
-                        {loading ? (
-                            <div style={{ display: "flex", justifyContent: "left", padding: "100px 0" }}>
-                                <div style={{
-                                    width: "24px",
-                                    height: "24px",
-                                    border: "1.5px solid var(--border-hairline)",
-                                    borderTopColor: "var(--text-primary)",
-                                    borderRadius: "50%",
-                                    animation: "spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite"
-                                }} />
-                            </div>
-                        ) : (
+                    {/* ── The Gallery ── */}
+                    {loading ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "40px 0", color: "var(--text-tertiary)" }}>
+                            <div className="spin" style={{ width: "16px", height: "16px", border: "1.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "50%" }} />
+                            <span style={{ fontSize: "13px", fontWeight: "600", letterSpacing: "0.02em" }}>Retrieving pioneer records...</span>
+                        </div>
+                    ) : (
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "40px"
+                        }}>
+                            {/* TOP 3 FEATURED SECTION */}
                             <div style={{
                                 display: "grid",
-                                gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-                                gap: isMobile ? "24px" : "40px",
+                                gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                                gap: "16px",
+                                marginBottom: "20px"
                             }}>
-                                {users.map((user, index) => (
+                                {users.slice(0, 3).map((user, i) => (
                                     <div 
                                         key={user.id}
-                                        onClick={() => navigate(`/${user.username || user.id}`)}
+                                        onClick={() => navigate(`/${user.username}`)}
                                         style={{
+                                            backgroundColor: "var(--bg-card)",
+                                            border: "0.5px solid var(--border-hairline)",
+                                            borderRadius: "var(--radius-md)",
+                                            padding: "32px 24px",
                                             display: "flex",
                                             flexDirection: "column",
-                                            alignItems: isMobile ? "center" : "flex-start",
-                                            textAlign: isMobile ? "center" : "left",
+                                            alignItems: "center",
+                                            textAlign: "center",
                                             cursor: "pointer",
                                             transition: "all 0.4s var(--ease-smooth)",
                                             position: "relative",
+                                            animation: `pageEnter 0.8s var(--ease-smooth) ${i * 0.1}s forwards`,
+                                            opacity: 0,
+                                            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.01)"
                                         }}
-                                        className="og-card"
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = "translateY(-6px)";
+                                            e.currentTarget.style.borderColor = "var(--text-primary)";
+                                            e.currentTarget.style.boxShadow = "0 20px 25px -5px rgba(0, 0, 0, 0.05)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = "translateY(0)";
+                                            e.currentTarget.style.borderColor = "var(--border-hairline)";
+                                            e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.01)";
+                                        }}
                                     >
-                                        <div style={{ 
-                                            position: "relative", 
-                                            marginBottom: "20px",
-                                            transition: "transform 0.4s var(--ease-smooth)"
-                                        }} className="avatar-wrap">
-                                            <OGAvatarDecorator is_og={true} size={isMobile ? 80 : 110}>
-                                                <img 
-                                                    src={user.avatar_url || "/default-avatar.png"} 
-                                                    alt={user.name}
-                                                    style={{
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        borderRadius: "50%",
-                                                        objectFit: "cover",
-                                                        filter: "grayscale(1) contrast(1.1)",
-                                                        transition: "filter 0.4s ease"
-                                                    }}
-                                                    onMouseEnter={(e) => e.currentTarget.style.filter = "grayscale(0) contrast(1)"}
-                                                    onMouseLeave={(e) => e.currentTarget.style.filter = "grayscale(1) contrast(1.1)"}
-                                                />
+                                        <div style={{
+                                            position: "absolute",
+                                            top: "16px", left: "16px",
+                                            fontSize: "9px",
+                                            fontWeight: "900",
+                                            color: "var(--text-tertiary)",
+                                            letterSpacing: "0.05em"
+                                        }}>
+                                            ENTRY 00{i + 1}
+                                        </div>
+                                        <div style={{ marginBottom: "20px" }}>
+                                            <OGAvatarDecorator is_og={true} size={88}>
+                                                <img src={user.avatar_url || "/default-avatar.png"} alt="" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
                                             </OGAvatarDecorator>
-                                            
-                                            <div style={{
-                                                position: "absolute",
-                                                top: "-10px",
-                                                left: "-10px",
-                                                fontSize: "12px",
-                                                fontWeight: 900,
-                                                color: "var(--text-primary)",
-                                                opacity: 0.1,
-                                                fontFamily: "var(--font-mono)"
-                                            }}>
-                                                {String(index + 1).padStart(2, '0')}
+                                        </div>
+                                        <div style={{ width: "100%" }}>
+                                            <h3 style={{ fontSize: "17px", fontWeight: "800", color: "var(--text-primary)", marginBottom: "2px" }}>{user.name}</h3>
+                                            <p style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: "500", marginBottom: "12px" }}>@{user.username}</p>
+                                            <div style={{ display: "flex", justifyContent: "center", scale: "0.8" }}>
+                                                <StreakBadge count={user.streak_count} />
                                             </div>
                                         </div>
-
-                                        <h3 style={{
-                                            fontSize: "15px",
-                                            fontWeight: 800,
-                                            color: "var(--text-primary)",
-                                            marginBottom: "4px",
-                                            letterSpacing: "-0.01em"
-                                        }}>
-                                            {user.name}
-                                        </h3>
-                                        <p style={{
-                                            fontSize: "13px",
-                                            color: "var(--text-tertiary)",
-                                            fontWeight: 500,
-                                            opacity: 0.6
-                                        }}>
-                                            @{user.username || "user"}
-                                        </p>
                                     </div>
                                 ))}
                             </div>
-                        )}
 
-                        <footer style={{ marginTop: "120px", opacity: 0.3 }}>
-                            <p style={{ color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                                ©2026 Codeown Infrastructure
-                            </p>
-                        </footer>
-                    </div>
-
-                    {/* ── Right Sidebar ── */}
-                    {isDesktop && (
-                        <aside style={{
-                            width: "340px",
-                            paddingLeft: "40px",
-                            paddingTop: "80px",
-                            position: "sticky",
-                            top: 0,
-                            alignSelf: "flex-start",
-                            flexShrink: 0,
-                            zIndex: 1,
-                        }}>
-                            <div style={{ opacity: 0.9 }}>
-                                <RecommendedUsersSidebar />
+                            {/* THE REST OF THE GRID */}
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: isMobile ? "repeat(1, 1fr)" : "repeat(2, 1fr)",
+                                gap: "12px"
+                            }}>
+                                {users.slice(3).map((user, i) => (
+                                    <div 
+                                        key={user.id}
+                                        onClick={() => navigate(`/${user.username}`)}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "16px",
+                                            padding: "16px",
+                                            borderRadius: "var(--radius-md)",
+                                            border: "0.5px solid var(--border-hairline)",
+                                            backgroundColor: "var(--bg-card)",
+                                            cursor: "pointer",
+                                            transition: "all 0.3s var(--ease-smooth)",
+                                            animation: `pageEnter 0.8s var(--ease-smooth) ${0.3 + (i * 0.02)}s forwards`,
+                                            opacity: 0,
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                            e.currentTarget.style.borderColor = "var(--text-tertiary)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = "var(--bg-card)";
+                                            e.currentTarget.style.borderColor = "var(--border-hairline)";
+                                        }}
+                                    >
+                                        <OGAvatarDecorator is_og={true} size={50}>
+                                            <img src={user.avatar_url || "/default-avatar.png"} alt="" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+                                        </OGAvatarDecorator>
+                                        
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2px" }}>
+                                                <h4 style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                                    {user.name}
+                                                </h4>
+                                                <span style={{ fontSize: "10px", fontWeight: "800", color: "var(--text-tertiary)", opacity: 0.6 }}>#{i + 4}</span>
+                                            </div>
+                                            <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: "500", marginBottom: "4px" }}>
+                                                @{user.username} • {formatDate(user.created_at)}
+                                            </div>
+                                            <div style={{ 
+                                                fontSize: "12px", 
+                                                color: "var(--text-secondary)", 
+                                                lineHeight: "1.4",
+                                                display: "-webkit-box",
+                                                WebkitBoxOrient: "vertical",
+                                                WebkitLineClamp: 1,
+                                                overflow: "hidden"
+                                            }}>
+                                                {user.bio ? <BioRenderer bio={user.bio} /> : "Vanguard builder."}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        </aside>
+                        </div>
                     )}
+
+                    <footer style={{ marginTop: "120px", borderTop: "0.5px solid var(--border-hairline)", paddingTop: "40px" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                            <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                                CODEOWN FOUNDING MEMBERS
+                            </div>
+                            <div style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
+                                © 2026 Codeown. All rights reserved.
+                            </div>
+                        </div>
+                    </footer>
                 </div>
+
+                {/* ── Premium Sticky Sidebar ── */}
+                {isDesktop && (
+                    <aside style={{
+                        width: "340px",
+                        paddingLeft: "24px",
+                        position: "sticky",
+                        top: 0,
+                        alignSelf: "flex-start",
+                        flexShrink: 0,
+                        zIndex: 1,
+                        paddingTop: "60px"
+                    }}>
+                        <div style={{ marginBottom: "32px", padding: "24px", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-hover)" }}>
+                            <h3 style={{ fontSize: "14px", fontWeight: "800", marginBottom: "12px", color: "var(--text-primary)", letterSpacing: "-0.02em" }}>About the Hall</h3>
+                            <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "16px" }}>
+                                The Founding OGs are the first 100 explorers who believed in a decentralized future. They hold permanent priority status within the ecosystem.
+                            </p>
+                            <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-primary)", textTransform: "uppercase", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={() => navigate('/founder-story')}>
+                                Read our vision →
+                            </div>
+                        </div>
+                        <RecommendedUsersSidebar />
+                    </aside>
+                )}
             </div>
             
             <BackToTop />
             <style>{`
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                .og-card:hover .avatar-wrap {
-                    transform: translateY(-8px) scale(1.02);
-                }
-                .og-card:hover h3 {
-                    color: var(--text-primary);
-                }
-                @media (max-width: 768px) {
-                    .og-card {
-                        align-items: center;
-                        text-align: center;
-                    }
+                .spin { animation: spin 1s linear infinite; }
+                @keyframes pageEnter {
+                    from { opacity: 0; transform: translateY(12px); }
+                    to { opacity: 1; transform: translateY(0); }
                 }
             `}</style>
         </main>
