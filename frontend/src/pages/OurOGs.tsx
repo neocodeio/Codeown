@@ -36,6 +36,14 @@ export default function OurOGs() {
                 const res = await api.get("/users/ogs");
                 const excludedUsernames = ["aminceo", "jj.99dev", "max1999.d"];
                 const filtered = res.data.filter((u: OGUser) => !excludedUsernames.includes(u.username));
+                
+                // Reorder: Move amin.ceo to the front
+                const aminIndex = filtered.findIndex((u: OGUser) => u.username === "amin.ceo");
+                if (aminIndex !== -1) {
+                    const amin = filtered.splice(aminIndex, 1)[0];
+                    filtered.unshift(amin);
+                }
+                
                 setUsers(filtered);
             } catch (err) {
                 console.error("Failed to fetch OGs:", err);
@@ -188,7 +196,7 @@ export default function OurOGs() {
                                             color: "var(--text-tertiary)",
                                             letterSpacing: "0.05em"
                                         }}>
-                                            ENTRY 00{i + 1}
+                                            ENTRY {i + 1}
                                         </div>
                                         <div style={{ marginBottom: "20px" }}>
                                             <OGAvatarDecorator is_og={true} size={88}>
@@ -286,13 +294,12 @@ export default function OurOGs() {
                 {isDesktop && (
                     <aside style={{
                         width: "340px",
-                        paddingLeft: "0",
+                        height: "100vh",
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
                         flexShrink: 0,
                         zIndex: 1,
-                        paddingTop: "0"
                     }}>
                         <RecommendedUsersSidebar />
                     </aside>
