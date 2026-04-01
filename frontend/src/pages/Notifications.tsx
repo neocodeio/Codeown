@@ -177,7 +177,7 @@ export default function NotificationsPage() {
                     <header style={{
                         position: "sticky",
                         top: 0,
-                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        backgroundColor: "var(--bg-header)",
                         backdropFilter: "blur(20px)",
                         zIndex: 100,
                         padding: "16px 24px",
@@ -415,7 +415,7 @@ export default function NotificationsPage() {
                 {isDesktop && !isMobile && (
                     <aside style={{
                         width: "340px",
-                        padding: "24px 0 24px 32px",
+                        padding: "0 0 24px 12px",
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",

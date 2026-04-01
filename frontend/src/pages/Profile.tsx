@@ -1150,7 +1150,7 @@ export default function Profile() {
 
         {/* Right Sidebar - Desktop Only */}
         {isDesktop && !isMobile && (
-          <aside style={{ width: "340px", padding: "24px 0 24px 32px", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}>
+          <aside style={{ width: "340px", padding: "0 0 24px 12px", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}>
              <RecommendedUsersSidebar />
           </aside>
         )}

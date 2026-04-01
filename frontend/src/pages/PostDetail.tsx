@@ -532,7 +532,7 @@ export default function PostDetail() {
         {isDesktop && (
           <aside style={{
               width: "340px",
-              padding: "24px 0 24px 32px",
+              padding: "0 0 24px 12px",
               position: "sticky",
               top: 0,
               alignSelf: "flex-start",
