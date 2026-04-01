@@ -861,7 +861,7 @@ export default function Messages() {
                   padding: "20px",
                   cursor: "pointer",
                   backgroundColor: activeConvo?.id === convo.id ? "var(--bg-hover)" : "transparent",
-                  borderRadius: "var(--radius-sm)",
+                  // borderRadius: "var(--radius-sm)",
                   display: "flex",
                   alignItems: "center",
                   gap: "16px",

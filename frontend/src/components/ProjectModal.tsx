@@ -510,7 +510,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
 
                     <div>
                         <label className="form-item-label">
-                            Founder's Vision (What's next?)
+                            Founder's Vision (What's next?) (Optional)
                         </label>
                         <input
                             type="text"
