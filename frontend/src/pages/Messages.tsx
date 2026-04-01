@@ -760,6 +760,7 @@ export default function Messages() {
                   fontSize: "14px",
                   fontWeight: 500,
                   color: "var(--text-primary)",
+                  padding: "2px 0",
                 }}
               />
             </div>
