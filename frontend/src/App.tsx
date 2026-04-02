@@ -95,7 +95,6 @@ export default function App() {
     }
 
     const handleUpdate = ({ type, data }: { type: string, data: any }) => {
-      console.log(`[Socket] Received update: ${type}`, data);
       
       // Post related updates
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {

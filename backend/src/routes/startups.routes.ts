@@ -16,14 +16,15 @@ import {
     getCooldownStatus,
     upvoteStartup
 } from "../controllers/startups.controller.js";
-import { requireAuth } from "../middlewares/auth.middleware.js";
+import { requireAuth, optionalAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 // Public routes
-router.get("/", getStartups);
+router.get("/", optionalAuth, getStartups);
 router.get("/cooldown/status", requireAuth, getCooldownStatus);
-router.get("/:id", getStartup);
+router.get("/:id", optionalAuth, getStartup);
+
 router.get("/:id/members", getStartupMembers);
 router.get("/:id/jobs", getStartupJobs);
 router.get("/:id/updates", getStartupFeed);
