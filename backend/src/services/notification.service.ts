@@ -63,6 +63,7 @@ export async function notify(params: SendNotificationParams) {
         type,
         actor_id: actorId,
         read: false,
+        metadata: data || {}
     };
 
     if (postId) insertData.post_id = postId;

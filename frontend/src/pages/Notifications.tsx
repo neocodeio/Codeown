@@ -134,7 +134,8 @@ export default function NotificationsPage() {
                     </div>
                 );
             case "startup_upvote":
-                return <>{nameWrapper} Upvoted your startup</>;
+                const startupName = notification.metadata?.startupName || "your startup";
+                return <>{nameWrapper} Upvoted <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{startupName}</span></>;
             default:
                 return <>{notification.content || "New notification"}</>;
         }
