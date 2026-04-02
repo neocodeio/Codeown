@@ -50,7 +50,7 @@ export default function Dashboard() {
         fetchStats();
     }, [getToken]);
 
-    const StatCard = ({ title, value, icon: Icon, color }: any) => {
+    const StatCard = ({ title, value, icon: Icon, color, spanFull }: any) => {
         return (
             <div style={{
                 background: "var(--bg-card)",
@@ -62,6 +62,7 @@ export default function Dashboard() {
                 gap: "16px",
                 transition: "border-color 0.15s ease",
                 cursor: "default",
+                gridColumn: spanFull ? "1 / -1" : "auto",
             }}
             onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--text-tertiary)"}
             onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border-hairline)"}
@@ -178,7 +179,7 @@ export default function Dashboard() {
                             <StatCard title="Project Upvotes" value={stats?.total_project_upvotes} icon={ArrowCircleUp} color="#f59e0b" />
                             <StatCard title="Followers" value={stats?.follower_count} icon={Users} color="#3b82f6" />
                             <StatCard title="Profile Visitors" value={stats?.profile_views} icon={Eye} color="#06b6d4" />
-                            <StatCard title="Total Comments" value={stats?.total_comments} icon={ChatText} color="#10b981" />
+                            <StatCard title="Total Comments" value={stats?.total_comments} icon={ChatText} color="#10b981" spanFull={!isMobile} />
                         </div>
                     </section>
                 </div>
