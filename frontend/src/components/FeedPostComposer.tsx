@@ -199,7 +199,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     return (
         <div 
             style={{
-                padding: isMobile ? "20px 16px" : "28px 32px",
+                padding: isMobile ? "20px 16px" : "24px",
                 borderBottom: "0.5px solid var(--border-hairline)",
                 backgroundColor: "var(--bg-page)",
                 display: "flex",

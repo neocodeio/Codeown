@@ -218,7 +218,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       className="fade-in"
       style={{
         cursor: "pointer",
-        padding: isMobile ? "24px 20px" : "40px",
+        padding: isMobile ? "20px 16px" : "24px",
         backgroundColor: "var(--bg-page)",
         borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
