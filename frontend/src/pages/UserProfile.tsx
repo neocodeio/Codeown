@@ -485,7 +485,17 @@ export default function UserProfile() {
 
         {/* Right Sidebar - Desktop Only */}
         {isDesktop && !isMobile && (
-          <aside style={{ width: "340px", padding: "24px 0 24px 32px", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}>
+          <aside style={{ 
+            width: "340px", 
+            position: "sticky", 
+            top: 0, 
+            height: "100vh", 
+            flexShrink: 0,
+            zIndex: 1,
+            overflowY: "auto",
+            msOverflowStyle: "none",
+            scrollbarWidth: "none"
+          }}>
              <RecommendedUsersSidebar />
           </aside>
         )}
