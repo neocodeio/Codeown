@@ -79,8 +79,8 @@ export async function getConversations(req: Request, res: Response) {
         const groupConvosRaw = groupConvos || [];
         const groupConvoIds = groupConvosRaw.map(c => c.id);
         
-        // Combine all unique IDs
-        const allConvoIds = Array.from(new Set([...participantConvoIds, ...groupConvoIds]));
+        // Combine all unique IDs (including a forced check for the Public Hub)
+        const allConvoIds = Array.from(new Set([...participantConvoIds, ...groupConvoIds, '00000000-0000-0000-0000-000000000001']));
 
         if (allConvoIds.length === 0) return res.json([]);
 
@@ -124,25 +124,32 @@ export async function getConversations(req: Request, res: Response) {
                     .neq("sender_id", userId)
             ]);
 
+            // Ensure Public Hub is treated correctly even if query failed
+            const isGroup = groupInfo?.is_group || convoId === '00000000-0000-0000-0000-000000000001';
+            const groupName = groupInfo?.name || (convoId === '00000000-0000-0000-0000-000000000001' ? 'Public Hub' : null);
+
             return {
                 id: convoId,
-                is_group: groupInfo?.is_group || false,
-                name: groupInfo?.name || null,
+                is_group: isGroup,
+                name: groupName,
                 avatar_url: groupInfo?.avatar_url || null,
-                partner: partner || (groupInfo ? { id: 'group', name: groupInfo.name || 'Group', username: 'group', avatar_url: groupInfo.avatar_url || null } : { id: 'unknown', name: 'Unknown', username: 'unknown', avatar_url: null }),
+                partner: partner || (isGroup ? { id: 'group', name: groupName || 'Public Hub', username: 'hub', avatar_url: groupInfo?.avatar_url || null } : { id: 'unknown', name: 'Unknown', username: 'unknown', avatar_url: null }),
                 last_message: lastMsgRes.data,
                 unread_count: unreadRes.count || 0
             };
         }));
 
-        // Sort by last message time
-        conversations.sort((a, b) => {
+        // Sort by groups first, then by last message time
+        const sorted = conversations.sort((a, b) => {
+            if (a.is_group && !b.is_group) return -1;
+            if (!a.is_group && b.is_group) return 1;
+            
             const timeA = a.last_message ? new Date(a.last_message.created_at).getTime() : 0;
             const timeB = b.last_message ? new Date(b.last_message.created_at).getTime() : 0;
             return timeB - timeA;
         });
 
-        return res.json(conversations);
+        return res.json(sorted);
     } catch (error: any) {
         console.error("Error getting conversations:", error);
         return res.status(500).json({ error: "Internal server error" });
