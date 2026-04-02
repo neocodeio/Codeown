@@ -1208,3 +1208,70 @@ export async function getOGUsers(req: Request, res: Response) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
+/**
+ * GET DASHBOARD STATS
+ * Aggregates all user performance metrics into one dashboard view.
+ */
+export async function getDashboardStats(req: Request, res: Response) {
+    try {
+        const user = req.user;
+        const userId = user?.sub || user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        // Parallel fetch for speed
+        const [
+            postsCount,
+            projectsCount,
+            postLikes,
+            projectLikes,
+            postComments,
+            projectComments,
+            followers,
+            profileViews,
+            userStreak
+        ] = await Promise.all([
+            // 1. Posts count
+            supabase.from("posts").select("*", { count: "exact", head: true }).eq("user_id", userId),
+            // 2. Projects count
+            supabase.from("projects").select("*", { count: "exact", head: true }).eq("user_id", userId),
+            // 3. Post Likes (summing performance column for efficiency)
+            supabase.from("posts").select("like_count").eq("user_id", userId),
+            // 4. Project Upvotes
+            supabase.from("projects").select("like_count").eq("user_id", userId),
+            // 5. Post Comments (on posts)
+            supabase.from("comments").select("*", { count: "exact", head: true }).eq("user_id", userId),
+            // 6. Project Comments (on projects)
+            supabase.from("project_comments").select("*", { count: "exact", head: true }).eq("user_id", userId),
+            // 7. Followers
+            supabase.from("follows").select("*", { count: "exact", head: true }).eq("following_id", userId),
+            // 8. Profile Views (Analytics)
+            supabase.from("analytics_events").select("*", { count: "exact", head: true }).eq("target_user_id", userId).eq("event_type", "profile_view"),
+            // 9. Streak (direct from user)
+            supabase.from("users").select("streak_count").eq("id", userId).single()
+        ]);
+
+        // Aggregate sums
+        const totalPostLikes = (postLikes.data || []).reduce((acc: number, curr: any) => acc + (curr.like_count || 0), 0);
+        const totalProjectLikes = (projectLikes.data || []).reduce((acc: number, curr: any) => acc + (curr.like_count || 0), 0);
+        const totalComments = (postComments.count || 0) + (projectComments.count || 0);
+
+        return res.json({
+            posts_count: postsCount.count || 0,
+            projects_count: projectsCount.count || 0,
+            total_post_likes: totalPostLikes,
+            total_project_upvotes: totalProjectLikes,
+            total_comments: totalComments,
+            follower_count: followers.count || 0,
+            profile_views: profileViews.count || 0,
+            streak_count: userStreak.data?.streak_count || 0
+        });
+
+    } catch (error: any) {
+        console.error("[getDashboardStats] Error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}

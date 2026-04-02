@@ -38,6 +38,7 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Changelog = lazy(() => import("./pages/Changelog"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const OurOGs = lazy(() => import("./pages/OurOGs"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 const StartupDirectory = lazy(() => import("./pages/StartupDirectory").then(m => ({ default: m.StartupDirectory })));
 const StartupProfile = lazy(() => import("./pages/StartupProfile").then(m => ({ default: m.StartupProfile })));
 const StartupForm = lazy(() => import("./components/StartupForm").then(m => ({ default: m.StartupForm })));
@@ -273,6 +274,7 @@ export default function App() {
   const isStandardPage = 
     location.pathname === "/" || 
     location.pathname === "/profile" || 
+    location.pathname === "/dashboard" ||
     location.pathname === "/notifications" || 
     location.pathname === "/changelog" || 
     location.pathname.startsWith("/post/") ||
@@ -319,6 +321,7 @@ export default function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/billing" element={<Billing />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />

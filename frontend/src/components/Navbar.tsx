@@ -25,7 +25,8 @@ import {
   Moon,
   Scroll,
   Buildings,
-  Medal
+  Medal,
+  ChartBar
 } from "phosphor-react";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -265,6 +266,10 @@ export default function Navbar() {
         <Link to="/ogs" style={linkStyle("/ogs")} aria-label="Founding OGs">
           <Medal size={20} weight={location.pathname === "/ogs" ? "bold" : "regular"} />
           Our OGs
+        </Link>
+        <Link to="/dashboard" style={linkStyle("/dashboard")} aria-label="Creator Dashboard">
+          <ChartBar size={20} weight={location.pathname === "/dashboard" ? "bold" : "regular"} />
+          Analytics
         </Link>
         <Link to="/startups" style={linkStyle("/startups")} aria-label="Startup Hub">
           <Buildings size={20} weight={location.pathname === "/startups" ? "bold" : "regular"} />
@@ -708,6 +713,13 @@ export default function Navbar() {
               >
                 <Buildings size={18} weight="regular" />
                 Startups Hub
+              </div>
+              <div
+                onClick={() => { setIsCreateMenuOpen(false); navigate("/dashboard"); }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
+              >
+                <ChartBar size={18} weight="regular" />
+                Dashboard
               </div>
               <div
                 onClick={() => { setIsCreateMenuOpen(false); navigate("/ogs"); }}
