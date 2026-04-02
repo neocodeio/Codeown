@@ -5,13 +5,15 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { MagnifyingGlass, Users, Layout, Rocket, CaretDown, Clock, X } from "phosphor-react";
+import { MagnifyingGlass, Users, Layout, Rocket, CaretDown, Clock, X, Buildings } from "phosphor-react";
 import type { Post } from "../hooks/usePosts";
 import type { Project } from "../types/project";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
+import { StartupCard } from "../components/StartupCard";
+import type { Startup } from "../types/startup";
 
 interface SearchUser {
   id: string;
@@ -45,7 +47,7 @@ interface SearchProject {
   user?: { name: string; email: string | null; avatar_url: string | null; username?: string | null };
 }
 
-type FilterType = "people" | "posts" | "projects";
+type FilterType = "people" | "posts" | "projects" | "startups";
 type SortOption = "best" | "newest";
 
 export default function Search() {
@@ -64,6 +66,7 @@ export default function Search() {
   const [users, setUsers] = useState<SearchUser[]>([]);
   const [posts, setPosts] = useState<SearchPost[]>([]);
   const [projects, setProjects] = useState<SearchProject[]>([]);
+  const [startups, setStartups] = useState<Startup[]>([]);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [currentUserFollowing, setCurrentUserFollowing] = useState<string[]>([]);
@@ -96,6 +99,7 @@ export default function Search() {
         setUsers([]);
         setPosts([]);
         setProjects([]);
+        setStartups([]);
         return;
       }
 
@@ -124,28 +128,32 @@ export default function Search() {
         const isMention = query.startsWith("@");
         const cleanQ = isTag || isMention ? query.slice(1) : query;
 
-        let userPromise, postPromise, projectPromise;
+        let userPromise, postPromise, projectPromise, startupPromise;
 
         if (isMention) {
           userPromise = api.get(`/search/users?q=${encodeURIComponent(cleanQ)}`);
           postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
           projectPromise = api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20&cofounder=${showOnlyCofounder}`);
+          startupPromise = api.get(`/search/startups?q=${encodeURIComponent(cleanQ)}&limit=20`);
         } else if (isTag) {
           userPromise = Promise.resolve({ data: [] });
           postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
           projectPromise = api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20&cofounder=${showOnlyCofounder}`);
+          startupPromise = api.get(`/search/startups?q=${encodeURIComponent(cleanQ)}&limit=20`);
         } else {
           userPromise = api.get(`/search/users?q=${encodeURIComponent(query)}`);
           postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
           projectPromise = api.get(`/search/projects?q=${encodeURIComponent(query)}&limit=20&cofounder=${showOnlyCofounder}`);
+          startupPromise = api.get(`/search/startups?q=${encodeURIComponent(query)}&limit=20`);
         }
 
-        const [uRes, pRes, prRes] = await Promise.all([userPromise, postPromise, projectPromise]);
+        const [uRes, pRes, prRes, stRes] = await Promise.all([userPromise, postPromise, projectPromise, startupPromise]);
 
         if (!cancelled) {
           setUsers(Array.isArray(uRes.data) ? uRes.data : []);
           setPosts(pRes.data?.posts || []);
           setProjects(prRes.data?.projects || []);
+          setStartups(stRes.data?.startups || []);
         }
       } catch (e) {
         console.error(e);
@@ -244,6 +252,13 @@ export default function Search() {
         )
       : projects;
 
+  const startupsSorted =
+    sortOption === "newest"
+      ? [...startups].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+      : startups;
+
   return (
     <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", paddingBottom: "64px" }}>
 
@@ -337,7 +352,7 @@ export default function Search() {
                 onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
                 onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
               >
-                {activeFilter === "people" ? <Users size={16} /> : activeFilter === "posts" ? <Layout size={16} /> : <Rocket size={16} />}
+                {activeFilter === "people" ? <Users size={16} /> : activeFilter === "posts" ? <Layout size={16} /> : activeFilter === "projects" ? <Rocket size={16} /> : <Buildings size={16} />}
                 <span style={{ textTransform: "capitalize" }}>{activeFilter}</span>
                 <CaretDown size={12} weight="bold" />
               </button>
@@ -359,7 +374,8 @@ export default function Search() {
                   {[
                     { id: "people", icon: Users, label: "People" },
                     { id: "posts", icon: Layout, label: "Posts" },
-                    { id: "projects", icon: Rocket, label: "Projects" }
+                    { id: "projects", icon: Rocket, label: "Projects" },
+                    { id: "startups", icon: Buildings, label: "Startups" }
                   ].map(opt => (
                     <button
                       key={opt.id}
@@ -460,7 +476,7 @@ export default function Search() {
               </div>
             )}
           </div>
-        ) : !loading && !users.length && !posts.length && !projects.length ? (
+        ) : !loading && !users.length && !posts.length && !projects.length && !startups.length ? (
           <div style={{ textAlign: "center", padding: "80px 40px", color: "var(--text-tertiary)" }}>
             <div style={{ fontSize: "15px", fontWeight: 600 }}>No results found for "{query}"</div>
           </div>
@@ -490,7 +506,7 @@ export default function Search() {
                   “{query}”
                 </span>
                 <span style={{ marginLeft: "12px" }}>
-                  · {peopleResults.length} people · {posts.length} posts · {projects.length} projects
+                  · {peopleResults.length} people · {posts.length} posts · {projects.length} projects · {startups.length} startups
                 </span>
               </div>
 
@@ -506,6 +522,7 @@ export default function Search() {
                   { id: "people", label: "People" },
                   { id: "posts", label: "Posts" },
                   { id: "projects", label: "Projects" },
+                  { id: "startups", label: "Startups" },
                 ].map((opt) => (
                   <button
                     key={opt.id}
@@ -669,6 +686,19 @@ export default function Search() {
                   <ProjectCard key={project.id} project={project as Project} />
                 ))}
                 {projectsSorted.length === 0 && <EmptyState type="Projects" />}
+              </div>
+            )}
+
+            {activeFilter === "startups" && (
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(320px, 1fr))",
+                gap: "20px"
+              }}>
+                {startupsSorted.map((startup) => (
+                  <StartupCard key={startup.id} startup={startup} />
+                ))}
+                {startupsSorted.length === 0 && <EmptyState type="Startups" />}
               </div>
             )}
           </div>

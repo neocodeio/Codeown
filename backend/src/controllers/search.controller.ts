@@ -197,17 +197,64 @@ export async function searchProjects(req: Request, res: Response) {
   }
 }
 
+export async function searchStartups(req: Request, res: Response) {
+  try {
+    const { q, page = "1", limit = "20" } = req.query;
+    const query = (q as string)?.trim() || "";
+    const pageNum = parseInt(page as string, 10) || 1;
+    const limitNum = parseInt(limit as string, 10) || 20;
+    const offset = (pageNum - 1) * limitNum;
+
+    if (!query || query.length < 2) {
+      return res.json({ startups: [], total: 0, page: pageNum, limit: limitNum });
+    }
+
+    const { data: startups, error, count } = await supabase
+      .from("startups")
+      .select(`
+        *,
+        user:owner_id(id, name, username, avatar_url),
+        members:startup_members(count),
+        upvotes:startup_upvotes(count)
+      `, { count: "exact" })
+      .or(`name.ilike.%${query}%,tagline.ilike.%${query}%`)
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limitNum - 1);
+
+    if (error) {
+      console.error("Error searching startups:", error);
+      return res.status(500).json({ error: "Failed to search startups" });
+    }
+
+    const normalizedData = (startups || []).map((s: any) => ({
+      ...s,
+      member_count: s.members?.[0]?.count || 0,
+      upvotes_count: s.upvotes?.[0]?.count || 0,
+    }));
+
+    return res.json({
+      startups: normalizedData,
+      total: count || 0,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil((count || 0) / limitNum),
+    });
+  } catch (error: any) {
+    console.error("Unexpected error in searchStartups:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 export async function searchAll(req: Request, res: Response) {
   try {
     const { q } = req.query;
     const query = (q as string)?.trim() || "";
 
     if (!query || query.length < 2) {
-      return res.json({ users: [], posts: [], projects: [] });
+      return res.json({ users: [], posts: [], projects: [], startups: [] });
     }
 
-    // Search users, posts, and projects
-    const [usersResult, postsResult, projectsResult] = await Promise.all([
+    const [usersResult, postsResult, projectsResult, startupsResult] = await Promise.all([
       supabase
         .from("users")
         .select("id, name, username, avatar_url, is_hirable, is_pro")
@@ -225,12 +272,19 @@ export async function searchAll(req: Request, res: Response) {
         .or(`title.ilike.%${query}%,description.ilike.%${query}%,technologies_used.cs.{${query}}`)
         .order("created_at", { ascending: false })
         .limit(5),
+      supabase
+        .from("startups")
+        .select("id, name, tagline, logo_url, owner_id, created_at")
+        .or(`name.ilike.%${query}%,tagline.ilike.%${query}%`)
+        .order("created_at", { ascending: false })
+        .limit(5),
     ]);
 
     return res.json({
       users: usersResult.data || [],
       posts: postsResult.data || [],
       projects: projectsResult.data || [],
+      startups: startupsResult.data || [],
     });
   } catch (error: any) {
     console.error("Unexpected error in searchAll:", error);
