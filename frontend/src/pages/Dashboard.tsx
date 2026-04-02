@@ -158,7 +158,7 @@ export default function Dashboard() {
                         }}>
                             <StatCard title="Total Posts" value={stats?.posts_count} icon={NotePencil} color="#6366f1" />
                             <StatCard title="Projects Launched" value={stats?.projects_count} icon={RocketLaunch} color="#8b5cf6" />
-                            <StatCard title="Consistency Streak" value={stats?.streak_count} icon={Lightning} color="#ef4444" />
+                            <StatCard title="Consistency Streak" value={stats?.streak_count} icon={Lightning} color="#ef4444" spanFull={!isMobile} />
                         </div>
                     </section>
 
