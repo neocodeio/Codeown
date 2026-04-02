@@ -99,6 +99,12 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
     onChange(newValue);
     setCursorPosition(cursorPos);
 
+    // Auto-resize logic
+    if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+
     // Check for triggers: @ (mention) or # (hashtag)
     const textBeforeCursor = newValue.slice(0, cursorPos);
     const lastAtIndex = textBeforeCursor.lastIndexOf("@");
@@ -226,6 +232,14 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Auto-resize on initial mount and value changes
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [value, minHeight]);
+
   return (
     <div style={{ position: "relative" }}>
       <textarea
@@ -242,16 +256,17 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
           padding: transparent ? "0" : "16px",
           border: transparent ? "none" : "0.5px solid var(--border-hairline)",
           borderRadius: "var(--radius-sm)",
-          fontSize: transparent ? "18px" : "14px",
+          fontSize: transparent ? "19px" : "14px",
           fontFamily: "var(--font-main)",
           resize: "none",
           outline: "none",
-          transition: "all 0.15s",
+          transition: "border-color 0.15s ease",
           color: "var(--text-primary)",
           backgroundColor: transparent ? "transparent" : "var(--bg-input)",
           boxSizing: "border-box",
-          lineHeight: 1.6,
+          lineHeight: 1.5,
           fontWeight: 400,
+          overflow: "hidden", // Crucial for auto-resize
           ...style,
         }}
       />

@@ -199,11 +199,11 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     return (
         <div 
             style={{
-                padding: isMobile ? "20px 16px" : "24px 40px",
+                padding: isMobile ? "20px 16px" : "28px 32px",
                 borderBottom: "0.5px solid var(--border-hairline)",
                 backgroundColor: "var(--bg-page)",
                 display: "flex",
-                gap: "20px",
+                gap: "16px",
                 position: "relative",
                 overflow: "hidden" // Keep the guard contained
             }}
@@ -245,7 +245,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         value={content}
                         onChange={setContent}
                         placeholder={isPoll ? "Ask a question..." : placeholderText}
-                        minHeight="40px"
+                        minHeight="60px"
                         transparent={true}
                     />
                     
@@ -510,15 +510,28 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             onClick={handleSubmit}
                             disabled={(!content.trim() && images.length === 0 && !isPoll) || isSubmitting || content.length > charLimit}
                             style={{
-                                padding: "8px 20px",
+                                padding: "10px 24px",
                                 backgroundColor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "var(--bg-hover)",
                                 color: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
                                 borderRadius: "100px",
-                                fontWeight: "600",
+                                fontWeight: "700",
                                 fontSize: "14px",
                                 cursor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
-                                transition: "all 0.2s ease"
+                                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                                transform: isSubmitting ? "scale(0.98)" : "scale(1)",
+                                opacity: isSubmitting ? 0.8 : 1,
+                                boxShadow: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "0 4px 12px rgba(0,0,0,0.1)" : "none"
+                            }}
+                            onMouseEnter={(e) => {
+                                if ((content.trim() || images.length > 0 || isPoll) && !isSubmitting) {
+                                    e.currentTarget.style.filter = "brightness(0.9)";
+                                    e.currentTarget.style.transform = "translateY(-1px)";
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.filter = "none";
+                                e.currentTarget.style.transform = "translateY(0)";
                             }}
                         >
                             {isSubmitting ? "Posting..." : "Post"}
