@@ -95,26 +95,19 @@ export default function App() {
     }
 
     const handleUpdate = ({ type, data }: { type: string, data: any }) => {
-      
       // Post related updates
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
         if (type === "post_created") {
           // Prepend to all active post feeds
           queryClient.setQueriesData({ queryKey: ["posts"] }, (oldData: any) => {
             if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
-            
-            // Avoid duplicates
             const firstPage = oldData.pages[0];
             const exists = firstPage.posts.some((p: any) => p.id === data.id);
             if (exists) return oldData;
-
             return {
               ...oldData,
               pages: [
-                {
-                  ...firstPage,
-                  posts: [data, ...firstPage.posts]
-                },
+                { ...firstPage, posts: [data, ...firstPage.posts] },
                 ...oldData.pages.slice(1)
               ]
             };
@@ -131,34 +124,17 @@ export default function App() {
       
       // Project related updates
       else if (type.startsWith("project_") || (type === "comment_liked" && data.type === "project")) {
-        if (type === "project_created") {
-          // Prepend to all active project feeds
-          queryClient.setQueriesData({ queryKey: ["projects"] }, (oldData: any) => {
-            if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
-            
-            // Avoid duplicates
-            const firstPage = oldData.pages[0];
-            const exists = firstPage.projects.some((p: any) => p.id === data.id);
-            if (exists) return oldData;
-
-            return {
-              ...oldData,
-              pages: [
-                {
-                  ...firstPage,
-                  projects: [data, ...firstPage.projects]
-                },
-                ...oldData.pages.slice(1)
-              ]
-            };
-          });
-        } else {
-          // Invalidate for updates/likes/comments
-          queryClient.invalidateQueries({ queryKey: ["projects"] });
-          if (data.id || data.projectId) {
-            queryClient.invalidateQueries({ queryKey: ["project", String(data.id || data.projectId)] });
-            queryClient.invalidateQueries({ queryKey: ["project_comments", String(data.id || data.projectId)] });
-          }
+        queryClient.invalidateQueries({ queryKey: ["projects"] });
+        if (data.id || data.projectId) {
+          queryClient.invalidateQueries({ queryKey: ["project", String(data.id || data.projectId)] });
+        }
+      }
+      
+      // Startup related updates
+      else if (type === "startup_upvote") {
+        queryClient.invalidateQueries({ queryKey: ["startups"] });
+        if (data.id) {
+          queryClient.invalidateQueries({ queryKey: ["startup", String(data.id)] });
         }
       }
     };
