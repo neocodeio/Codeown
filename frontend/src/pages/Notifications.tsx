@@ -41,6 +41,8 @@ export default function NotificationsPage() {
             navigate(`/project/${notification.project_id}`);
         } else if (notification.type === "message") {
             navigate(`/messages?userId=${notification.actor_id}`);
+        } else if (notification.startup_id) {
+            navigate(`/startup/${notification.startup_id}`);
         } else if (notification.actor?.username) {
             navigate(`/${notification.actor.username}`);
         } else if (notification.actor_id) {
@@ -77,6 +79,8 @@ export default function NotificationsPage() {
                 return { icon: <Flame size={size} weight={weight} />, color: "#f97316" }; // Orange color for fire
             case "milestone":
                 return { icon: <Trophy size={size} weight={weight} />, color: "#fff" };
+            case "startup_upvote":
+                return { icon: <ArrowUp size={size} weight={weight} />, color: "var(--text-primary)" };
             default:
                 return { icon: <Bell size={size} weight={weight} />, color: "var(--text-primary)" };
         }
@@ -129,6 +133,8 @@ export default function NotificationsPage() {
                         </div>
                     </div>
                 );
+            case "startup_upvote":
+                return <>{nameWrapper} Upvoted your startup</>;
             default:
                 return <>{notification.content || "New notification"}</>;
         }

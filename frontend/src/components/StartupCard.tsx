@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Startup } from '../types/startup';
 import { Rocket, Users, Briefcase, MinusCircle, CheckCircle, CaretUp } from 'phosphor-react';
 import { upvoteStartup } from '../api/startups';
 import { toast } from 'react-toastify';
 import { useClerkUser } from '../hooks/useClerkUser';
+import { socket } from '../lib/socket.js';
 
 interface StartupCardProps {
   startup: Startup;
@@ -16,6 +17,26 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
   const [hasUpvoted, setHasUpvoted] = useState(startup.has_upvoted || false);
   const [isUpvoting, setIsUpvoting] = useState(false);
   const { isSignedIn } = useClerkUser();
+
+  useEffect(() => {
+    // Connect socket if not connected
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    const handleContentUpdate = (payload: { type: string; data: any }) => {
+      if (payload.type === 'startup_upvote' && payload.data.id === startup.id) {
+        setUpvotes(payload.data.upvotes_count);
+      }
+    };
+
+    socket.on('content_update', handleContentUpdate);
+
+    return () => {
+      socket.off('content_update', handleContentUpdate);
+    };
+  }, [startup.id]);
+
 
   const handleUpvote = async (e: React.MouseEvent) => {
     e.preventDefault();

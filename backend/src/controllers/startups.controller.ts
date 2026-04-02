@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { notify } from "../services/notification.service.js";
+import { emitUpdate } from "../lib/socket.js";
 
 export async function getStartups(req: Request, res: Response) {
   try {
@@ -618,9 +619,17 @@ export async function upvoteStartup(req: Request, res: Response) {
     
     if (countError) throw countError;
 
+    const upvotesCount = upvotes?.[0]?.count || 0;
+
+    // Emit real-time update
+    emitUpdate('startup_upvote', { 
+        id, 
+        upvotes_count: upvotesCount 
+    });
+
     res.json({ 
         success: true, 
-        upvotes_count: upvotes?.[0]?.count || 0,
+        upvotes_count: upvotesCount,
         has_upvoted: !existing
     });
   } catch (err: any) {
@@ -628,5 +637,6 @@ export async function upvoteStartup(req: Request, res: Response) {
     res.status(500).json({ error: "Failed to upvote", details: err.message });
   }
 }
+
 
 
