@@ -58,7 +58,7 @@ export async function getConversations(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-        // Get all conversation IDs for user
+        // 1. Get all conversation IDs where user is a participant
         const { data: myConvos, error: err1 } = await supabase
             .from("conversation_participants")
             .select("conversation_id")
@@ -66,51 +66,70 @@ export async function getConversations(req: Request, res: Response) {
 
         if (err1) throw err1;
 
-        const convoIds = myConvos.map(c => c.conversation_id);
-        if (convoIds.length === 0) return res.json([]);
+        const participantConvoIds = myConvos.map(c => c.conversation_id);
 
-        // Get details: last message (optional optimization) and other participant
-        // For simplicity, we just fetch participants and filter out self
-        const { data: participants, error: err2 } = await supabase
-            .from("conversation_participants")
-            .select("conversation_id, user_id")
-            .in("conversation_id", convoIds)
-            .neq("user_id", userId);
+        // 2. Get all group conversations (anyone can see these)
+        const { data: groupConvos, error: groupErr } = await supabase
+            .from("conversations")
+            .select("id, name, is_group, avatar_url")
+            .eq("is_group", true);
 
-        if (err2) throw err2;
+        if (groupErr) throw groupErr;
 
-        // Get users details
-        const otherUserIds = participants.map(p => p.user_id);
-        const { data: users, error: err3 } = await supabase
-            .from("users")
-            .select("id, name, username, avatar_url, is_og")
-            .in("id", otherUserIds);
+        const groupConvosRaw = groupConvos || [];
+        const groupConvoIds = groupConvosRaw.map(c => c.id);
+        
+        // Combine all unique IDs
+        const allConvoIds = Array.from(new Set([...participantConvoIds, ...groupConvoIds]));
 
-        if (err3) throw err3;
+        if (allConvoIds.length === 0) return res.json([]);
 
-        // Get last messages and unread counts
-        const conversations = await Promise.all(participants.map(async (p) => {
-            const user = users.find(u => u.id === p.user_id);
+        // 3. Fetch details for each conversation
+        const conversations = await Promise.all(allConvoIds.map(async (convoId) => {
+            const groupInfo = groupConvosRaw.find(g => g.id === convoId);
+            
+            let partner = null;
+            if (!groupInfo) {
+                // Fetch other participant for private convo
+                const { data: participants } = await supabase
+                    .from("conversation_participants")
+                    .select("user_id")
+                    .eq("conversation_id", convoId)
+                    .neq("user_id", userId)
+                    .limit(1);
+                
+                if (participants && participants.length > 0) {
+                    const { data: user } = await supabase
+                        .from("users")
+                        .select("id, name, username, avatar_url, is_og")
+                        .eq("id", participants?.[0]?.user_id)
+                        .single();
+                    partner = user;
+                }
+            }
 
             const [lastMsgRes, unreadRes] = await Promise.all([
                 supabase
                     .from("messages")
                     .select("*")
-                    .eq("conversation_id", p.conversation_id)
+                    .eq("conversation_id", convoId)
                     .order("created_at", { ascending: false })
                     .limit(1)
-                    .single(),
+                    .maybeSingle(),
                 supabase
                     .from("messages")
                     .select("id", { count: 'exact' })
-                    .eq("conversation_id", p.conversation_id)
+                    .eq("conversation_id", convoId)
                     .eq("is_read", false)
                     .neq("sender_id", userId)
             ]);
 
             return {
-                id: p.conversation_id,
-                partner: user || { id: p.user_id, name: 'Unknown', username: 'unknown', avatar_url: null },
+                id: convoId,
+                is_group: groupInfo?.is_group || false,
+                name: groupInfo?.name || null,
+                avatar_url: groupInfo?.avatar_url || null,
+                partner: partner || (groupInfo ? { id: 'group', name: groupInfo.name || 'Group', username: 'group', avatar_url: groupInfo.avatar_url || null } : { id: 'unknown', name: 'Unknown', username: 'unknown', avatar_url: null }),
                 last_message: lastMsgRes.data,
                 unread_count: unreadRes.count || 0
             };
@@ -137,23 +156,37 @@ export async function getMessages(req: Request, res: Response) {
 
         const { id } = req.params; // conversationId
 
-        // Verify participation
-        const { data: participation, error: partError } = await supabase
-            .from("conversation_participants")
-            .select("*")
-            .eq("conversation_id", id)
-            .eq("user_id", userId)
-            .maybeSingle();
+        // Verify participation OR if it is a group chat
+        const { data: convo } = await supabase
+            .from("conversations")
+            .select("is_group")
+            .eq("id", id)
+            .single();
 
-        if (partError || !participation) {
-            console.error("Participation check failed:", partError);
-            return res.status(403).json({ error: "Access denied" });
+        if (!convo?.is_group) {
+            const { data: participation } = await supabase
+                .from("conversation_participants")
+                .select("*")
+                .eq("conversation_id", id)
+                .eq("user_id", userId)
+                .maybeSingle();
+
+            if (!participation) {
+                return res.status(403).json({ error: "Access denied" });
+            }
         }
 
         const { data: messages, error } = await supabase
             .from("messages")
             .select(`
                 *,
+                sender:sender_id (
+                    id,
+                    name,
+                    username,
+                    avatar_url,
+                    is_og
+                ),
                 reply_to:reply_to_message_id (
                     id,
                     content,
@@ -190,26 +223,7 @@ export async function getMessages(req: Request, res: Response) {
             .eq("conversation_id", id)
             .order("created_at", { ascending: true });
 
-        if (error) {
-            console.error("Primary selection failed, falling back to basic:", error);
-            // Fallback for when new columns don't exist yet
-            const { data: basicMessages, error: basicError } = await supabase
-                .from("messages")
-                .select(`
-                    *,
-                    reply_to:reply_to_message_id (
-                        id,
-                        content,
-                        sender_id,
-                        image_url
-                    )
-                `)
-                .eq("conversation_id", id)
-                .order("created_at", { ascending: true });
-            
-            if (basicError) throw basicError;
-            return res.json(basicMessages);
-        }
+        if (error) throw error;
 
         // Mark messages as read (those sent by partner)
         await supabase
@@ -218,25 +232,6 @@ export async function getMessages(req: Request, res: Response) {
             .eq("conversation_id", id)
             .neq("sender_id", userId)
             .eq("is_read", false);
-
-        // Mark related notifications as read
-        // Find other participant id first
-        const { data: otherParticipant } = await supabase
-            .from("conversation_participants")
-            .select("user_id")
-            .eq("conversation_id", id)
-            .neq("user_id", userId)
-            .single();
-
-        if (otherParticipant) {
-            await supabase
-                .from("notifications")
-                .update({ read: true })
-                .eq("user_id", userId)
-                .eq("actor_id", otherParticipant.user_id)
-                .eq("type", "message")
-                .eq("read", false);
-        }
 
         return res.json(messages);
 
@@ -256,24 +251,32 @@ export async function sendMessage(req: Request, res: Response) {
         let targetConvoId = conversationId;
 
         if (!targetConvoId && recipientId) {
-            // Start new conversation flow
             targetConvoId = await getOrCreateConversation(userId, recipientId);
         }
 
-        if (targetConvoId) {
-            // Verify participation to prevent IDOR
-            const { data: participation, error: partError } = await supabase
+        if (!targetConvoId) {
+            return res.status(400).json({ error: "Recipient or Conversation ID required" });
+        }
+
+        // Check if it is a group chat
+        const { data: convo } = await supabase
+            .from("conversations")
+            .select("is_group, name")
+            .eq("id", targetConvoId)
+            .single();
+
+        if (!convo?.is_group) {
+            // Verify participation for private convos
+            const { data: participation } = await supabase
                 .from("conversation_participants")
                 .select("*")
                 .eq("conversation_id", targetConvoId)
                 .eq("user_id", userId)
                 .single();
 
-            if (partError || !participation) {
+            if (!participation) {
                 return res.status(403).json({ error: "You are not a participant in this conversation" });
             }
-        } else {
-            return res.status(400).json({ error: "Recipient or Conversation ID required" });
         }
 
         let { data: message, error } = await supabase
@@ -290,6 +293,13 @@ export async function sendMessage(req: Request, res: Response) {
             })
             .select(`
                 *,
+                sender:sender_id (
+                    id,
+                    name,
+                    username,
+                    avatar_url,
+                    is_og
+                ),
                 reply_to:reply_to_message_id (
                     id,
                     content,
@@ -325,81 +335,39 @@ export async function sendMessage(req: Request, res: Response) {
             `)
             .single();
 
-        if (error) {
-            console.error("SendMessage PRIMARY failed:", error);
-            // Fallback to basic message if columns don't exist OR if selection fails
-            const { data: basicMsg, error: basicErr } = await supabase
-                .from("messages")
-                .insert({
-                    conversation_id: targetConvoId,
-                    sender_id: userId,
-                    content: content || (sharedPostId || sharedProjectId ? "Shared content (please update DB to view previews)" : ""),
-                    reply_to_message_id: replyToMessageId,
-                    image_url: imageUrl
-                })
-                .select(`
-                    *,
-                    reply_to:reply_to_message_id (
-                        id,
-                        content,
-                        sender_id,
-                        image_url
-                    )
-                `)
-                .single();
-            
-            if (basicErr) {
-                console.error("SendMessage FALLBACK also failed:", basicErr);
-                throw basicErr;
-            }
-            message = basicMsg;
-        }
+        if (error) throw error;
 
-        // Create notification for recipient
+        // Emit real-time message
         try {
-            let finalRecipientId = recipientId;
-
-            // If we don't have recipientId (returning to existing convo), find it
-            if (!finalRecipientId) {
+            const { getIO } = await import("../lib/socket.js");
+            const io = getIO();
+            
+            if (convo?.is_group) {
+                // Broadcast to everyone for public group chat
+                io.emit("new_message", message);
+            } else {
+                // Private message: emit to participants
                 const { data: participants } = await supabase
                     .from("conversation_participants")
                     .select("user_id")
-                    .eq("conversation_id", targetConvoId)
-                    .neq("user_id", userId);
+                    .eq("conversation_id", targetConvoId);
 
-                if (participants && participants.length > 0) {
-                    finalRecipientId = (participants[0] as any).user_id;
+                if (participants) {
+                    participants.forEach(p => {
+                        if (p.user_id !== userId) {
+                            io.to(p.user_id).emit("new_message", message);
+                            // Also create notification
+                            notify({
+                                userId: p.user_id,
+                                actorId: userId,
+                                type: "message"
+                            }).catch(console.error);
+                        }
+                    });
                 }
             }
-
-            if (finalRecipientId) {
-                try {
-                    await notify({
-                        userId: finalRecipientId,
-                        actorId: userId,
-                        type: "message"
-                    });
-
-                    // Emit real-time message to recipient
-                    const { getIO } = await import("../lib/socket.js");
-                    const io = getIO();
-                    
-                    const { data: senderInfo } = await supabase
-                        .from("users")
-                        .select("name, username, avatar_url")
-                        .eq("id", userId)
-                        .single();
-
-                    io.to(finalRecipientId).emit("new_message", {
-                        ...message,
-                        sender: senderInfo || { name: "Someone", username: null, avatar_url: null }
-                    });
-                } catch (notifError) {
-                    console.error("Error creating message notification or socket emission:", notifError);
-                }
-            }
-        } catch (notifError) {
-            console.error("Crash error creating message notification:", notifError);
+        } catch (socketErr) {
+            console.error("Error emitting socket message:", socketErr);
         }
 
         // Update conversation updated_at for sorting
@@ -423,7 +391,6 @@ export async function toggleReaction(req: Request, res: Response) {
 
         if (!emoji) return res.status(400).json({ error: "Emoji required" });
 
-        // 1. Get current message and reactions
         const { data: message, error: fetchErr } = await supabase
             .from("messages")
             .select("reactions, conversation_id")
@@ -432,24 +399,26 @@ export async function toggleReaction(req: Request, res: Response) {
 
         if (fetchErr || !message) return res.status(404).json({ error: "Message not found" });
 
-        // Verify participation
-        const { data: participation } = await supabase
-            .from("conversation_participants")
-            .select("*")
-            .eq("conversation_id", message.conversation_id)
-            .eq("user_id", userId)
-            .single();
+        // Check if group or participant
+        const { data: convo } = await supabase.from("conversations").select("is_group").eq("id", message.conversation_id).single();
 
-        if (!participation) return res.status(403).json({ error: "Access denied" });
+        if (!convo?.is_group) {
+            const { data: participation } = await supabase
+                .from("conversation_participants")
+                .select("*")
+                .eq("conversation_id", message.conversation_id)
+                .eq("user_id", userId)
+                .single();
+
+            if (!participation) return res.status(403).json({ error: "Access denied" });
+        }
 
         let reactions = message.reactions || {};
         let userIds = reactions[emoji] || [];
 
         if (userIds.includes(userId)) {
-            // Remove
             userIds = userIds.filter((id: string) => id !== userId);
         } else {
-            // Add
             userIds = [...userIds, userId];
         }
 
@@ -459,7 +428,6 @@ export async function toggleReaction(req: Request, res: Response) {
             reactions[emoji] = userIds;
         }
 
-        // 2. Update
         const { error: updateErr } = await supabase
             .from("messages")
             .update({ reactions })
@@ -482,7 +450,6 @@ export async function deleteMessage(req: Request, res: Response) {
 
         const { messageId } = req.params;
 
-        // 1. Get message to check ownership/participation
         const { data: message, error: fetchErr } = await supabase
             .from("messages")
             .select("conversation_id, sender_id")
@@ -491,17 +458,12 @@ export async function deleteMessage(req: Request, res: Response) {
 
         if (fetchErr || !message) return res.status(404).json({ error: "Message not found" });
 
-        // 2. Verify participation (only participants can delete messages in the convo)
-        const { data: participation } = await supabase
-            .from("conversation_participants")
-            .select("*")
-            .eq("conversation_id", message.conversation_id)
-            .eq("user_id", userId)
-            .single();
+        // Only sender can delete their own message in group, 
+        // OR any participant in private? Usually only sender.
+        if (message.sender_id !== userId) {
+             return res.status(403).json({ error: "Access denied" });
+        }
 
-        if (!participation) return res.status(403).json({ error: "Access denied" });
-
-        // 3. Delete
         const { error: deleteErr } = await supabase
             .from("messages")
             .delete()
@@ -509,25 +471,10 @@ export async function deleteMessage(req: Request, res: Response) {
 
         if (deleteErr) throw deleteErr;
 
-        // 4. Emit socket event for real-time deletion
         try {
-            const { getIO, isUserOnline } = await import("../lib/socket.js");
+            const { getIO } = await import("../lib/socket.js");
             const io = getIO();
-            
-            // Find other participant to notify
-            const { data: otherParticipant } = await supabase
-                .from("conversation_participants")
-                .select("user_id")
-                .eq("conversation_id", message.conversation_id)
-                .neq("user_id", userId)
-                .single();
-
-            if (otherParticipant) {
-                io.to(otherParticipant.user_id).emit("message_deleted", { 
-                    messageId, 
-                    conversationId: message.conversation_id 
-                });
-            }
+            io.emit("message_deleted", { messageId, conversationId: message.conversation_id });
         } catch (socketErr) {
             console.error("Error emitting message_deleted:", socketErr);
         }
@@ -547,7 +494,11 @@ export async function deleteConversation(req: Request, res: Response) {
 
         const { id } = req.params;
 
-        // Verify participation
+        const { data: convo } = await supabase.from("conversations").select("is_group").eq("id", id).single();
+        if (convo?.is_group) {
+            return res.status(403).json({ error: "Cannot delete public group chats" });
+        }
+
         const { data: participation } = await supabase
             .from("conversation_participants")
             .select("*")
@@ -557,7 +508,6 @@ export async function deleteConversation(req: Request, res: Response) {
 
         if (!participation) return res.status(403).json({ error: "Access denied" });
 
-        // Delete messages first to handle missing ON DELETE CASCADE, then participants, then conversation
         await supabase.from("messages").delete().eq("conversation_id", id);
         await supabase.from("conversation_participants").delete().eq("conversation_id", id);
         const { error: deleteErr } = await supabase.from("conversations").delete().eq("id", id);

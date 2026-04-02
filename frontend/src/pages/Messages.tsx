@@ -37,9 +37,10 @@ interface Partner {
 }
 
 interface Message {
-  id: number;
-  conversation_id: number;
+  id: string;
+  conversation_id: string;
   sender_id: string;
+  sender?: Partner;
   content: string;
   created_at: string;
   is_read?: boolean;
@@ -80,8 +81,11 @@ interface Message {
 }
 
 interface Conversation {
-  id: number;
+  id: string;
   partner: Partner;
+  is_group?: boolean;
+  name?: string | null;
+  avatar_url?: string | null;
   last_message: Message | null;
   unread_count?: number;
 }
@@ -116,7 +120,7 @@ export default function Messages() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const [reactingTo, setReactingTo] = useState<number | null>(null);
+  const [reactingTo, setReactingTo] = useState<string | null>(null);
   const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Audio Recording states
@@ -137,10 +141,10 @@ export default function Messages() {
   }, [initialMessage]);
 
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
-  const [messageMenuId, setMessageMenuId] = useState<number | null>(null);
-  const [deletingMessageId, setDeletingMessageId] = useState<number | null>(null);
-  const [convoMenuId, setConvoMenuId] = useState<number | null>(null);
-  const [deletingConvoId, setDeletingConvoId] = useState<number | null>(null);
+  const [messageMenuId, setMessageMenuId] = useState<string | null>(null);
+  const [deletingMessageId, setDeletingMessageId] = useState<string | null>(null);
+  const [convoMenuId, setConvoMenuId] = useState<string | null>(null);
+  const [deletingConvoId, setDeletingConvoId] = useState<string | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleScroll = () => {
@@ -186,17 +190,17 @@ export default function Messages() {
       setTypingUsers((prev) => ({ ...prev, [senderId]: false }));
     };
 
-    const handleMessagesRead = ({ conversationId, readerId }: { conversationId: number, readerId: string }) => {
+    const handleMessagesRead = ({ conversationId, readerId }: { conversationId: string, readerId: string }) => {
       setMessages((prev) => prev.map(m => (m.conversation_id === conversationId && !m.is_read && m.sender_id !== readerId) ? { ...m, is_read: true } : m));
     };
 
-    const handleMessageDeleted = ({ messageId, conversationId: _conversationId }: { messageId: number, conversationId: number }) => {
-      setMessages((prev) => prev.filter(m => m.id !== Number(messageId)));
+    const handleMessageDeleted = ({ messageId, conversationId: _conversationId }: { messageId: string, conversationId: string }) => {
+      setMessages((prev) => prev.filter(m => m.id !== messageId));
     };
 
     const handleNewMessage = (payload: any) => {
       // 1. Update messages list if this is the active conversation
-      if (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) {
+      if (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === "0" && activeConvo.partner.id === payload.sender_id))) {
         setMessages((prev) => {
           const exists = prev.some(m => m.id === payload.id);
           if (exists) return prev;
@@ -213,7 +217,7 @@ export default function Messages() {
 
       // 2. Update conversations list (snippet, order, unread count)
       setConversations((prev) => {
-        const convoIndex = prev.findIndex(c => c.id === payload.conversation_id || (c.id === 0 && c.partner.id === payload.sender_id));
+        const convoIndex = prev.findIndex(c => c.id === payload.conversation_id || (c.id === "0" && c.partner.id === payload.sender_id));
         if (convoIndex === -1) {
           fetchConversations(false);
           return prev;
@@ -226,7 +230,7 @@ export default function Messages() {
           ...convo,
           id: payload.conversation_id, // ensure ID is correct if it was a placeholder
           last_message: payload,
-          unread_count: (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id)))
+          unread_count: (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === "0" && activeConvo.partner.id === payload.sender_id)))
             ? 0
             : (convo.unread_count || 0) + 1
         };
@@ -319,7 +323,7 @@ export default function Messages() {
       });
       if (res.data) {
         const placeholder: Conversation = {
-          id: 0,
+          id: "0",
           partner: {
             id: res.data.id,
             name: res.data.name,
@@ -336,8 +340,8 @@ export default function Messages() {
     }
   };
 
-  const fetchMessages = async (convoId: number, partnerId?: string, isInitial = false) => {
-    if (convoId === 0) {
+  const fetchMessages = async (convoId: string, partnerId?: string, isInitial = false) => {
+    if (convoId === "0") {
       setMessages([]);
       return;
     }
@@ -367,7 +371,7 @@ export default function Messages() {
   }, [targetUserId]);
 
   useEffect(() => {
-    if (activeConvo && activeConvo.id !== 0) {
+    if (activeConvo && activeConvo.id !== "0") {
       fetchMessages(activeConvo.id, activeConvo.partner.id, true);
       setIsAtBottom(true);
       setTimeout(() => scrollToBottom(true), 100);
@@ -505,8 +509,8 @@ export default function Messages() {
       const res = await api.post(
         "/messages",
         {
-          conversationId: activeConvo?.id === 0 ? undefined : activeConvo?.id,
-          recipientId: activeConvo?.id === 0 ? activeConvo?.partner.id : undefined,
+          conversationId: activeConvo?.id === "0" ? undefined : activeConvo?.id,
+          recipientId: activeConvo?.id === "0" ? activeConvo?.partner.id : undefined,
           content: newMessage.trim(),
           replyToMessageId: replyingTo?.id,
           imageUrl: imageUrl,
@@ -522,7 +526,7 @@ export default function Messages() {
       clearImage();
       clearAudio();
 
-      if (activeConvo?.id === 0) {
+      if (activeConvo?.id === "0") {
         // If it was a new convo, the response has the true conversation_id
         const newConvoId = res.data.conversation_id;
         
@@ -556,7 +560,7 @@ export default function Messages() {
     }
   };
 
-  const handleReaction = async (messageId: number, emoji: string) => {
+  const handleReaction = async (messageId: string, emoji: string) => {
     try {
       const token = await getToken();
       await api.patch(`/messages/message/${messageId}/reaction`, { emoji }, {
@@ -595,7 +599,7 @@ export default function Messages() {
     }
   };
 
-  const handleDeleteMessage = async (messageId: number) => {
+  const handleDeleteMessage = async (messageId: string) => {
     try {
       const token = await getToken();
       await api.delete(`/messages/message/${messageId}`, {
@@ -614,7 +618,7 @@ export default function Messages() {
     }
   };
 
-  const handleDeleteConversation = async (convoId: number) => {
+  const handleDeleteConversation = async (convoId: string) => {
     try {
       setDeletingConvoId(convoId);
       const token = await getToken();
@@ -916,13 +920,32 @@ export default function Messages() {
                     e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
-                <AvailabilityBadge
-                  avatarUrl={convo.partner.avatar_url}
-                  name={convo.partner.name}
-                  size={48}
-                  isOG={convo.partner.is_og}
-                  username={convo.partner.username}
-                />
+                {convo.is_group ? (
+                  <div style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "12px",
+                    backgroundColor: "var(--text-primary)",
+                    color: "var(--bg-page)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    fontWeight: 800,
+                    fontSize: "18px",
+                    border: "0.5px solid var(--border-hairline)"
+                  }}>
+                    {convo.name?.charAt(0).toUpperCase() || "G"}
+                  </div>
+                ) : (
+                  <AvailabilityBadge
+                    avatarUrl={convo.partner.avatar_url}
+                    name={convo.partner.name}
+                    size={48}
+                    isOG={convo.partner.is_og}
+                    username={convo.partner.username}
+                  />
+                )}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{
@@ -942,8 +965,20 @@ export default function Messages() {
                         gap: "4px",
                       }}
                     >
-                      {convo.partner.name}
-                      <VerifiedBadge username={convo.partner.username} size="13px" />
+                      {convo.is_group ? convo.name : convo.partner.name}
+                      {!convo.is_group && <VerifiedBadge username={convo.partner.username} size="13px" />}
+                      {convo.is_group && (
+                        <span style={{
+                          fontSize: "10px",
+                          padding: "2px 6px",
+                          borderRadius: "4px",
+                          backgroundColor: "var(--bg-input)",
+                          color: "var(--text-tertiary)",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px"
+                        }}>Group</span>
+                      )}
                     </div>
                     {convo.last_message && (
                       <div className="time-action-wrapper" style={{ position: "relative", width: "40px", height: "16px", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
@@ -1197,45 +1232,65 @@ export default function Messages() {
                     />
                   </button>
                 )}
-                <div
-                  onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
-                  style={{ cursor: "pointer", flexShrink: 0 }}
-                >
-                  <AvailabilityBadge
-                    avatarUrl={activeConvo.partner.avatar_url}
-                    name={activeConvo.partner.name}
-                    size={36}
-                    isOG={activeConvo.partner.is_og}
-                    username={activeConvo.partner.username}
-                  />
-                </div>
-                {messagesLoading && activeConvo.id === 0 ? (
-                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
-                    <div style={{ width: "80px", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
-                  </div>
-                ) : (
-                  <div style={{ minWidth: 0, flex: 1 }}>
+                  {activeConvo.is_group ? (
+                    <div style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "10px",
+                      backgroundColor: "var(--text-primary)",
+                      color: "var(--bg-page)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 800,
+                      fontSize: "14px",
+                      border: "1px solid var(--border-hairline)",
+                      flexShrink: 0
+                    }}>
+                      {activeConvo.name?.charAt(0).toUpperCase() || "G"}
+                    </div>
+                  ) : (
                     <div
-                      style={{
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        fontSize: "16px",
-                        color: "var(--text-primary)",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                      }}
                       onClick={() => navigate(`/user/${activeConvo.partner.id}`)}
+                      style={{ cursor: "pointer", flexShrink: 0 }}
                     >
-                      {activeConvo.partner.name}
-                      <VerifiedBadge username={activeConvo.partner.username} size="14px" />
+                      <AvailabilityBadge
+                        avatarUrl={activeConvo.partner.avatar_url}
+                        name={activeConvo.partner.name}
+                        size={36}
+                        isOG={activeConvo.partner.is_og}
+                        username={activeConvo.partner.username}
+                      />
                     </div>
-                    <div style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
-                      @{activeConvo.partner.username || "user"}
+                  )}
+                  {messagesLoading && activeConvo.id === "0" ? (
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
+                      <div style={{ width: "80px", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div style={{ minWidth: 0, flex: 1, paddingLeft: "4px" }}>
+                      <div
+                        style={{
+                          fontWeight: 700,
+                          cursor: activeConvo.is_group ? "default" : "pointer",
+                          fontSize: "16px",
+                          color: "var(--text-primary)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          lineHeight: "1.2"
+                        }}
+                        onClick={() => !activeConvo.is_group && navigate(`/user/${activeConvo.partner.id}`)}
+                      >
+                        {activeConvo.is_group ? activeConvo.name : activeConvo.partner.name}
+                        {!activeConvo.is_group && <VerifiedBadge username={activeConvo.partner.username} size="14px" />}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "2px" }}>
+                        {activeConvo.is_group ? "Public Hub • Community Chat" : `@${activeConvo.partner.username || "user"}`}
+                      </div>
+                    </div>
+                  )}
 
               </div>
 
@@ -1287,13 +1342,32 @@ export default function Messages() {
                     }}
                   >
                     <div style={{ position: "relative", marginBottom: "24px" }}>
-                      <AvailabilityBadge
-                        avatarUrl={activeConvo.partner.avatar_url}
-                        name={activeConvo.partner.name}
-                        size={84}
-                        isOG={activeConvo.partner.is_og}
-                        username={activeConvo.partner.username}
-                      />
+                      {activeConvo.is_group ? (
+                        <div style={{
+                          width: "84px",
+                          height: "84px",
+                          borderRadius: "20px",
+                          backgroundColor: "var(--text-primary)",
+                          color: "var(--bg-page)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: 800,
+                          fontSize: "32px",
+                          border: "2px solid var(--border-hairline)",
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.15)"
+                        }}>
+                          {activeConvo.name?.charAt(0).toUpperCase() || "P"}
+                        </div>
+                      ) : (
+                        <AvailabilityBadge
+                          avatarUrl={activeConvo.partner.avatar_url}
+                          name={activeConvo.partner.name}
+                          size={84}
+                          isOG={activeConvo.partner.is_og}
+                          username={activeConvo.partner.username}
+                        />
+                      )}
                       <div style={{
                         position: "absolute",
                         bottom: "-4px",
@@ -1375,7 +1449,7 @@ export default function Messages() {
                             marginBottom: "4px",
                             padding: "0 4px",
                           }}>
-                            {activeConvo.partner.name}
+                            {activeConvo.is_group ? (msg.sender?.name || "Member") : activeConvo.partner.name}
                           </span>
                         )}
 
@@ -1400,7 +1474,7 @@ export default function Messages() {
                           }}
                         >
                           <div style={{ fontWeight: 700, fontSize: "10px", marginBottom: "2px" }}>
-                            {msg.reply_to.sender_id === currentUser?.id ? "You" : activeConvo.partner.name}
+                            {msg.reply_to.sender_id === currentUser?.id ? "You" : (activeConvo.is_group ? "Member" : activeConvo.partner.name)}
                           </div>
                           <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {msg.reply_to.content || (
