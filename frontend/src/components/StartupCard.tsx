@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Startup } from '../types/startup';
 import { Rocket, Users, Briefcase, MinusCircle, CheckCircle, CaretUp } from 'phosphor-react';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { upvoteStartup } from '../api/startups';
 import { toast } from 'react-toastify';
 import { useClerkUser } from '../hooks/useClerkUser';
@@ -17,6 +18,8 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
   const [hasUpvoted, setHasUpvoted] = useState(startup.has_upvoted || false);
   const [isUpvoting, setIsUpvoting] = useState(false);
   const { isSignedIn } = useClerkUser();
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     // Connect socket if not connected
@@ -94,12 +97,12 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
         backgroundColor: 'var(--bg-card)',
         border: '0.5px solid var(--border-hairline)',
         borderRadius: 'var(--radius-sm)',
-        padding: '24px',
+        padding: isMobile ? '20px' : '24px',
         transition: 'all 0.2s var(--ease-smooth)',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px',
+        gap: isMobile ? '12px' : '16px',
         position: 'relative',
         overflow: 'hidden'
       }}
@@ -131,10 +134,11 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
               padding: '4px 10px',
               backgroundColor: 'var(--bg-hover)',
               borderRadius: 'var(--radius-xs)',
-              fontSize: '11px',
+              fontSize: isMobile ? '10px' : '11px',
               fontWeight: 700,
               color: 'var(--text-primary)',
-              border: '0.5px solid var(--border-hairline)'
+              border: '0.5px solid var(--border-hairline)',
+              whiteSpace: 'nowrap'
             }}>
               {getStatusIcon(startup.status)}
               <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>{startup.status}</span>
@@ -147,8 +151,8 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '44px',
-                height: '52px',
+                width: isMobile ? '40px' : '44px',
+                height: isMobile ? '48px' : '52px',
                 padding: '4px',
                 backgroundColor: hasUpvoted ? 'var(--text-primary)' : 'transparent',
                 color: hasUpvoted ? 'var(--bg-card)' : 'var(--text-primary)',
@@ -195,24 +199,32 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingTop: '16px',
-          borderTop: '0.5px solid var(--border-hairline)'
+          paddingTop: isMobile ? '12px' : '16px',
+          borderTop: '0.5px solid var(--border-hairline)',
+          gap: '8px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>by</span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>@{startup.user?.username || startup.owner_id}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', flexShrink: 0 }}>by</span>
+            <span style={{ 
+              fontSize: isMobile ? '12px' : '13px', 
+              fontWeight: 600, 
+              color: 'var(--text-primary)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}>@{startup.user?.username || startup.owner_id}</span>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: isMobile ? '8px' : '12px', flexShrink: 0 }}>
             {startup.is_hiring && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#3b82f6' }} title="Hiring">
-                <Briefcase size={16} weight="bold" />
-                <span style={{ fontSize: '11px', fontWeight: 700 }}>HIRING</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#3b82f6' }}>
+                <Briefcase size={14} weight="bold" />
+                {!isMobile && <span style={{ fontSize: '11px', fontWeight: 700 }}>HIRING</span>}
               </div>
             )}
             {startup.looking_for_cofounder && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#f59e0b' }} title="Looking for Co-founder">
-                <Users size={16} weight="bold" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#f59e0b' }}>
+                <Users size={14} weight="bold" />
               </div>
             )}
           </div>
