@@ -101,6 +101,9 @@ export default function NotificationsPage() {
             case "message":
                 return <>{nameWrapper} Sent you a message</>;
             case "like":
+                if (notification.metadata?.startupName) {
+                    return <>{nameWrapper} Upvoted <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{notification.metadata.startupName}</span></>;
+                }
                 return <>{nameWrapper} {notification.project_id ? "Upvoted your project" : "Liked your post"}</>;
             case "comment":
                 return <>{nameWrapper} {notification.project_id ? "Commented on your project" : "Commented on your post"}</>;

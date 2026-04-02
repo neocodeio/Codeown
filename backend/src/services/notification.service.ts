@@ -77,12 +77,20 @@ export async function notify(params: SendNotificationParams) {
 
     let { error: notifError } = await supabase.from("notifications").insert(insertData);
 
-    // If it fails with startup_id, try once more without it (fallback for legacy schema)
-    if (notifError && startupId) {
-        console.warn(`[NotificationService] Insert with startup_id failed. Retrying without it...`);
-        const { startup_id, ...fallbackData } = insertData;
+    // If it fails with 'startup_upvote' (likely due to missing enum value), retry with a fallback type
+    if (notifError && type === 'startup_upvote') {
+        console.warn(`[NotificationService] Insert with startup_upvote type failed. Retrying with 'like' type fallback...`);
+        const fallbackData = { ...insertData, type: 'like' as any };
         const { error: retryError } = await supabase.from("notifications").insert(fallbackData);
         notifError = retryError;
+    }
+
+    // If it failed with startup_id (likely due to missing column), retry without it
+    if (notifError && insertData.startup_id) {
+        console.warn(`[NotificationService] Insert with startup_id column failed. Retrying without it...`);
+        const { startup_id, ...columnFallbackData } = insertData;
+        const { error: colRetryError } = await supabase.from("notifications").insert(columnFallbackData);
+        notifError = colRetryError;
     }
 
     if (notifError) {
