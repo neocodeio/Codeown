@@ -28,20 +28,35 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
 
     if (isUpvoting) return;
 
+    // Optimistic Update
+    const previousUpvotes = upvotes;
+    const previousHasUpvoted = hasUpvoted;
+    
+    const newHasUpvoted = !previousHasUpvoted;
+    const newUpvotes = newHasUpvoted ? previousUpvotes + 1 : Math.max(0, previousUpvotes - 1);
+    
+    setUpvotes(newUpvotes);
+    setHasUpvoted(newHasUpvoted);
     setIsUpvoting(true);
+
     try {
       const response = await upvoteStartup(startup.id);
+      // Sync with server response
       setUpvotes(response.upvotes_count);
       setHasUpvoted(response.has_upvoted);
       if (onUpvoteUpdated) {
         onUpvoteUpdated(startup.id, response.upvotes_count, response.has_upvoted);
       }
     } catch (err: any) {
+      // Revert on error
+      setUpvotes(previousUpvotes);
+      setHasUpvoted(previousHasUpvoted);
       toast.error(err.response?.data?.error || "Failed to upvote.");
     } finally {
       setIsUpvoting(false);
     }
   };
+
 
   const getStatusIcon = (status: string) => {
     switch (status) {
