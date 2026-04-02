@@ -163,12 +163,21 @@ export async function getMessages(req: Request, res: Response) {
 
         const { id } = req.params; // conversationId
 
-        // Verify participation OR if it is a group chat
-        const { data: convo } = await supabase
+        let { data: convo } = await supabase
             .from("conversations")
             .select("is_group")
             .eq("id", id)
-            .single();
+            .maybeSingle();
+
+        // Auto-check for the Public Hub
+        if (!convo && id === '00000000-0000-0000-0000-000000000001') {
+            await supabase.from("conversations").insert({
+                id: '00000000-0000-0000-0000-000000000001',
+                is_group: true,
+                name: 'Public Hub'
+            }).select().maybeSingle();
+            convo = { is_group: true };
+        }
 
         if (!convo?.is_group) {
             const { data: participation } = await supabase
@@ -266,11 +275,21 @@ export async function sendMessage(req: Request, res: Response) {
         }
 
         // Check if it is a group chat
-        const { data: convo } = await supabase
+        let { data: convo } = await supabase
             .from("conversations")
             .select("is_group, name")
             .eq("id", targetConvoId)
-            .single();
+            .maybeSingle();
+
+        // Auto-create Hub if missing during send
+        if (!convo && targetConvoId === '00000000-0000-0000-0000-000000000001') {
+            await supabase.from("conversations").insert({
+                id: '00000000-0000-0000-0000-000000000001',
+                is_group: true,
+                name: 'Public Hub'
+            });
+            convo = { is_group: true, name: 'Public Hub' };
+        }
 
         if (!convo?.is_group) {
             // Verify participation for private convos
