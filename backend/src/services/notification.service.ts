@@ -7,12 +7,9 @@ import {
   sendNewCommentEmail, 
   sendNewMessageEmail,
   sendNewMentionEmail,
-  sendCofounderRequestEmail 
+  sendCofounderRequestEmail,
+  sendStartupUpvoteEmail
 } from "../lib/email.js";
-
-// A reference to the active sessions map if we can access it, 
-// or we rely on last_active_at and socket.
-// For now, let's use socket + last_active_at (DB).
 
 export async function isUserActive(userId: string): Promise<boolean> {
     // 1. Check socket presence (Real-time)
@@ -42,7 +39,7 @@ export async function isUserActive(userId: string): Promise<boolean> {
     return false;
 }
 
-export type NotificationType = 'like' | 'follow' | 'comment' | 'message' | 'mention' | 'reply' | 'cofounder_request' | 'save';
+export type NotificationType = 'like' | 'follow' | 'comment' | 'message' | 'mention' | 'reply' | 'cofounder_request' | 'save' | 'startup_upvote';
 
 interface SendNotificationParams {
     userId: string; // Recipient
@@ -51,11 +48,14 @@ interface SendNotificationParams {
     postId?: number;
     projectId?: number;
     commentId?: number;
+    startupId?: string | undefined;
     data?: any; // Extra info for email
 }
 
+
+
 export async function notify(params: SendNotificationParams) {
-    const { userId, actorId, type, postId, projectId, commentId, data } = params;
+    const { userId, actorId, type, postId, projectId, commentId, startupId, data } = params;
 
     // 1. Always create the notification in the DB
     const { error: notifError } = await supabase.from("notifications").insert({
@@ -65,6 +65,7 @@ export async function notify(params: SendNotificationParams) {
         post_id: postId,
         project_id: projectId,
         comment_id: commentId,
+        startup_id: startupId,
         read: false,
     });
 
@@ -146,9 +147,19 @@ export async function notify(params: SendNotificationParams) {
                     );
                 }
                 break;
+            case 'startup_upvote':
+                if (data?.startupName && startupId) {
+                    await sendStartupUpvoteEmail(
+                        recipient.email,
+                        recipient.name,
+                        actor.name,
+                        data.startupName,
+                        startupId
+                    );
+                }
+                break;
             case 'save':
                 // For now, project saves don't trigger emails by default to avoid spam
-                // but we might add a case here if the user wants them.
                 console.log(`[NotificationService] No-op for 'save' notification email.`);
                 break;
         }

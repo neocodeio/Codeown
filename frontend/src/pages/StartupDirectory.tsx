@@ -13,7 +13,7 @@ export const StartupDirectory: React.FC = () => {
   const [startups, setStartups] = useState<Startup[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'All' | 'Active' | 'Built' | 'Paused'>('All');
+  const [filterStatus, setFilterStatus] = useState<'All' | 'Active' | 'Built' | 'Paused' | 'Most Upvoted'>('All');
   const [cooldown, setCooldown] = useState<CooldownStatus | null>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -129,7 +129,7 @@ export const StartupDirectory: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', overflowX: isMobile ? 'auto' : 'visible', paddingBottom: isMobile ? '8px' : '0' }}>
-          {['All', 'Active', 'Built', 'Paused'].map((status) => (
+          {['All', 'Active', 'Built', 'Paused', 'Most Upvoted'].map((status) => (
             <button
               key={status}
               onClick={() => setFilterStatus(status as any)}
@@ -147,6 +147,7 @@ export const StartupDirectory: React.FC = () => {
               {status.toUpperCase()}
             </button>
           ))}
+
           <div style={{ borderLeft: '1px solid var(--border-hairline)', margin: '0 8px' }} />
           <button style={{ backgroundColor: 'transparent', border: '0.5px solid var(--border-hairline)', color: 'var(--text-tertiary)', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Funnel size={18} />

@@ -314,6 +314,98 @@ export default function Feed() {
                             </div>
                         )}
                     </div>
+                    
+                    {/* ── OG Seats Banner ── */}
+                    <div style={{
+                        padding: isMobile ? '12px 16px' : '16px 24px',
+                        borderBottom: '0.5px solid var(--border-hairline)',
+                        backgroundColor: 'var(--bg-page)',
+                    }}>
+                        <div style={{
+                            background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+                            borderRadius: 'var(--radius-md)',
+                            padding: isMobile ? '16px' : '20px 24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            color: '#ffffff',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                            border: '1px solid rgba(255,255,255,0.1)'
+                        }}>
+                            {/* Decorative background elements */}
+                            <div style={{
+                                position: 'absolute',
+                                top: '-20px',
+                                right: '-20px',
+                                width: '100px',
+                                height: '100px',
+                                background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+                                pointerEvents: 'none'
+                            }} />
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 1 }}>
+                                <div style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '12px',
+                                    backgroundColor: 'rgba(255,255,255,1)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: '0 0 20px rgba(255,255,255,0.2)'
+                                }}>
+                                    <span style={{ color: '#000', fontWeight: 900, fontSize: '14px' }}>OG</span>
+                                </div>
+                                <div>
+                                    <h4 style={{ 
+                                        margin: 0, 
+                                        fontSize: isMobile ? '15px' : '17px', 
+                                        fontWeight: 800, 
+                                        letterSpacing: '-0.01em',
+                                        color: '#ffffff'
+                                    }}>
+                                        ONLY 16 OG SEATS LEFT!
+                                    </h4>
+                                    <p style={{ 
+                                        margin: '2px 0 0', 
+                                        fontSize: isMobile ? '12px' : '13px', 
+                                        opacity: 0.7,
+                                        fontWeight: 500 
+                                    }}>
+                                        Secure your spot in the inner circle today.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button style={{
+                                background: '#ffffff',
+                                color: '#000000',
+                                border: 'none',
+                                borderRadius: '100px',
+                                padding: isMobile ? '8px 16px' : '10px 20px',
+                                fontSize: '13px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                whiteSpace: 'nowrap',
+                                zIndex: 1,
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                            }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                    e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                }}
+                            >
+                                CLAIM SPOT
+                            </button>
+                        </div>
+                    </div>
 
                     {/* ── Content ── */}
                     <div style={{ minHeight: "100vh" }}>

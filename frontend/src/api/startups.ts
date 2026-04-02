@@ -81,3 +81,9 @@ export const getCooldownStatus = async () => {
     const { data } = await api.get<CooldownStatus>('/startups/cooldown/status');
     return data;
 };
+
+export const upvoteStartup = async (id: string) => {
+    const { data } = await api.post<{ success: boolean; upvotes_count: number; has_upvoted: boolean }>(`/startups/${id}/upvote`);
+    return data;
+};
+

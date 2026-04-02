@@ -15,6 +15,8 @@ export interface Startup {
   member_count: number;
   created_at: string;
   updated_at: string;
+  upvotes_count?: number;
+  has_upvoted?: boolean;
   user?: {
     id: string;
     name: string;

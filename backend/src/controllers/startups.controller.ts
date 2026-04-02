@@ -1,26 +1,37 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
+import { notify } from "../services/notification.service.js";
 
 export async function getStartups(req: Request, res: Response) {
   try {
     const { searchQuery, status } = req.query;
-    console.log(`[getStartups] QUERY: search=${searchQuery}, status=${status}`);
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    console.log(`[getStartups] QUERY: search=${searchQuery}, status=${status}, user=${userId}`);
     
     let query = supabase
       .from("startups")
       .select(`
         *, 
         user:owner_id(id, name, username, avatar_url),
-        members:startup_members(count)
+        members:startup_members(count),
+        upvotes:startup_upvotes(count)
       `)
       .order("created_at", { ascending: false });
+
+    // If logged in, check if user upvoted
+    if (userId) {
+       // We'll fetch upvotes separately or use a trick.
+       // Actually, fetching upvotes count is already done.
+       // For has_upvoted, we'll do a separate check or use a subquery if supported.
+       // Supabase subqueries for "exists" are tricky without RPC.
+    }
 
     if (searchQuery) {
       query = query.ilike("name", `%${searchQuery}%`);
     }
 
-    if (status && status !== "All") {
+    if (status && !["All", "Most Upvoted"].includes(status as string)) {
       query = query.eq("status", status);
     }
 
@@ -30,28 +41,53 @@ export async function getStartups(req: Request, res: Response) {
        console.error("[getStartups] SUPABASE ERROR:", error);
        throw error;
     }
+
+    // Fetch has_upvoted for each startup if userId exists
+    let userUpvotes: string[] = [];
+    if (userId && data && data.length > 0) {
+        const { data: upvotedData } = await supabase
+            .from("startup_upvotes")
+            .select("startup_id")
+            .eq("user_id", userId)
+            .in("startup_id", data.map(s => s.id));
+        
+        userUpvotes = (upvotedData || []).map(u => u.startup_id);
+    }
     
-    const normalizedData = (data || []).map(s => ({
+    let normalizedData = (data || []).map(s => ({
         ...s,
-        member_count: s.members?.[0]?.count || s.member_count || 1
+        member_count: s.members?.[0]?.count || s.member_count || 1,
+        upvotes_count: s.upvotes?.[0]?.count || 0,
+        has_upvoted: userUpvotes.includes(s.id)
     }));
+    
+    // Custom sort if "Most Upvoted" is selected
+    if (status === "Most Upvoted") {
+        normalizedData = normalizedData.sort((a, b) => (b.upvotes_count || 0) - (a.upvotes_count || 0));
+    }
     
     console.log(`[getStartups] SUCCESS: Found ${normalizedData.length} startups`);
     res.json(normalizedData);
+
   } catch (err: any) {
     console.error("[getStartups] CATCH ERROR:", err);
     res.status(500).json({ error: "Failed to fetch startups", details: err.message });
   }
 }
 
+
 export async function getStartup(req: Request, res: Response) {
   try {
     const { id } = req.params;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
     const { data, error } = await supabase
       .from("startups")
       .select(`
         *,
-        members:startup_members(count)
+        user:owner_id(id, name, username, avatar_url),
+        members:startup_members(count),
+        upvotes:startup_upvotes(count)
       `)
       .eq("id", id)
       .single();
@@ -61,8 +97,21 @@ export async function getStartup(req: Request, res: Response) {
         throw error;
     }
     
+    let hasUpvoted = false;
+    if (userId) {
+        const { data: upvote } = await supabase
+            .from("startup_upvotes")
+            .select("id")
+            .eq("startup_id", id)
+            .eq("user_id", userId)
+            .maybeSingle();
+        hasUpvoted = !!upvote;
+    }
+
     if (data) {
         data.member_count = data.members?.[0]?.count || data.member_count || 1;
+        data.upvotes_count = data.upvotes?.[0]?.count || 0;
+        data.has_upvoted = hasUpvoted;
     }
     
     res.json(data);
@@ -70,6 +119,7 @@ export async function getStartup(req: Request, res: Response) {
     res.status(500).json({ error: "Failed to fetch startup", details: err.message });
   }
 }
+
 
 export async function createStartup(req: Request, res: Response) {
   try {
@@ -500,3 +550,83 @@ export async function getCooldownStatus(req: Request, res: Response) {
     res.status(500).json({ error: "Failed to fetch cooldown status" });
   }
 }
+
+export async function upvoteStartup(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Fetch startup details for notification
+    const { data: startup, error: startupError } = await supabase
+      .from("startups")
+      .select("owner_id, name")
+      .eq("id", id)
+      .single();
+    
+    if (startupError || !startup) {
+      return res.status(404).json({ error: "Startup not found" });
+    }
+
+    // Check if already upvoted
+    const { data: existing, error: checkError } = await supabase
+      .from("startup_upvotes")
+      .select("id")
+      .eq("startup_id", id)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (checkError) throw checkError;
+
+    if (existing) {
+      // Remove upvote (toggle)
+      const { error: deleteError } = await supabase
+        .from("startup_upvotes")
+        .delete()
+        .eq("id", existing.id);
+      
+      if (deleteError) throw deleteError;
+    } else {
+      // Add upvote
+      const { error: insertError } = await supabase
+        .from("startup_upvotes")
+        .insert({ startup_id: id, user_id: userId });
+      
+      if (insertError) throw insertError;
+
+      // Notify the owner (if not the one who upvoted)
+      if (startup.owner_id !== userId) {
+          try {
+              await notify({
+                  userId: startup.owner_id,
+                  actorId: userId,
+                  type: 'startup_upvote',
+                  startupId: id,
+                  data: { startupName: startup.name }
+              });
+          } catch (notifErr) {
+              console.error("[upvoteStartup] Notification failure:", notifErr);
+          }
+      }
+    }
+
+    // Get fresh count
+    const { data: upvotes, error: countError } = await supabase
+        .from("startup_upvotes")
+        .select("count")
+        .eq("startup_id", id);
+    
+    if (countError) throw countError;
+
+    res.json({ 
+        success: true, 
+        upvotes_count: upvotes?.[0]?.count || 0,
+        has_upvoted: !existing
+    });
+  } catch (err: any) {
+    console.error("[upvoteStartup] ERROR:", err);
+    res.status(500).json({ error: "Failed to upvote", details: err.message });
+  }
+}
+
+

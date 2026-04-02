@@ -13,7 +13,8 @@ import {
     removeStartupMember,
     createStartupJob,
     deleteStartupJob,
-    getCooldownStatus
+    getCooldownStatus,
+    upvoteStartup
 } from "../controllers/startups.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
@@ -36,5 +37,7 @@ router.delete("/:id/members/:userId", requireAuth, removeStartupMember);
 router.post("/:id/jobs", requireAuth, createStartupJob);
 router.delete("/:id/jobs/:jobId", requireAuth, deleteStartupJob);
 router.post("/:id/updates", requireAuth, postStartupUpdate);
+router.post("/:id/upvote", requireAuth, upvoteStartup);
 
 export default router;
+

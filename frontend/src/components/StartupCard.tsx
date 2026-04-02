@@ -1,13 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Startup } from '../types/startup';
-import { Rocket, Users, Briefcase, MinusCircle, CheckCircle } from 'phosphor-react';
+import { Rocket, Users, Briefcase, MinusCircle, CheckCircle, CaretUp } from 'phosphor-react';
+import { upvoteStartup } from '../api/startups';
+import { toast } from 'react-toastify';
+import { useClerkUser } from '../hooks/useClerkUser';
 
 interface StartupCardProps {
   startup: Startup;
+  onUpvoteUpdated?: (id: string, count: number, hasUpvoted: boolean) => void;
 }
 
-export const StartupCard: React.FC<StartupCardProps> = ({ startup }) => {
+export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdated }) => {
+  const [upvotes, setUpvotes] = useState(startup.upvotes_count || 0);
+  const [hasUpvoted, setHasUpvoted] = useState(startup.has_upvoted || false);
+  const [isUpvoting, setIsUpvoting] = useState(false);
+  const { isSignedIn } = useClerkUser();
+
+  const handleUpvote = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isSignedIn) {
+      toast.info("Please sign in to upvote startups.");
+      return;
+    }
+
+    if (isUpvoting) return;
+
+    setIsUpvoting(true);
+    try {
+      const response = await upvoteStartup(startup.id);
+      setUpvotes(response.upvotes_count);
+      setHasUpvoted(response.has_upvoted);
+      if (onUpvoteUpdated) {
+        onUpvoteUpdated(startup.id, response.upvotes_count, response.has_upvoted);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to upvote.");
+    } finally {
+      setIsUpvoting(false);
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Active': return <Rocket size={14} weight="fill" color="#10b981" />;
@@ -52,20 +87,47 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup }) => {
               <Rocket size={24} weight="thin" color="var(--text-tertiary)" />
             )}
           </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '4px 10px',
-            backgroundColor: 'var(--bg-hover)',
-            borderRadius: 'var(--radius-xs)',
-            fontSize: '11px',
-            fontWeight: 700,
-            color: 'var(--text-primary)',
-            border: '0.5px solid var(--border-hairline)'
-          }}>
-            {getStatusIcon(startup.status)}
-            <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>{startup.status}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 10px',
+              backgroundColor: 'var(--bg-hover)',
+              borderRadius: 'var(--radius-xs)',
+              fontSize: '11px',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              border: '0.5px solid var(--border-hairline)'
+            }}>
+              {getStatusIcon(startup.status)}
+              <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>{startup.status}</span>
+            </div>
+            
+            <button
+              onClick={handleUpvote}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '44px',
+                height: '52px',
+                padding: '4px',
+                backgroundColor: hasUpvoted ? 'var(--text-primary)' : 'transparent',
+                color: hasUpvoted ? 'var(--bg-card)' : 'var(--text-primary)',
+                border: hasUpvoted ? '1px solid var(--text-primary)' : '1px solid var(--border-hairline)',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                zIndex: 2,
+                gap: '2px',
+              }}
+              className="upvote-button"
+            >
+              <CaretUp size={18} weight={hasUpvoted ? "bold" : "bold"} />
+              <span style={{ fontSize: '13px', fontWeight: 800 }}>{upvotes}</span>
+            </button>
           </div>
         </div>
 
@@ -130,8 +192,18 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup }) => {
             text-decoration: none;
             color: inherit;
           }
+          .upvote-button:hover {
+            background-color: var(--text-primary) !important;
+            color: var(--bg-card) !important;
+            border-color: var(--text-primary) !important;
+            transform: scale(1.05);
+          }
+          .upvote-button:active {
+            transform: scale(0.95);
+          }
         `}</style>
       </div>
     </Link>
   );
 };
+
