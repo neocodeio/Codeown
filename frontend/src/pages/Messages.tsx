@@ -23,6 +23,9 @@ import {
   Info
 } from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
+import logo from "../assets/icon-removebg.png";
+import logoWhite from "../assets/logo-white.png";
+import { useTheme } from "../context/ThemeContext";
 import GifPicker from "../components/GifPicker";
 import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
@@ -98,6 +101,7 @@ export default function Messages() {
   const { user: currentUser } = useClerkUser();
   const navigate = useNavigate();
   const { width } = useWindowSize();
+  const { theme } = useTheme();
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
 
@@ -924,18 +928,16 @@ export default function Messages() {
                   <div style={{
                     width: "48px",
                     height: "48px",
-                    borderRadius: "12px",
-                    backgroundColor: "var(--text-primary)",
-                    color: "var(--bg-page)",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--bg-hover)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     flexShrink: 0,
-                    fontWeight: 800,
-                    fontSize: "18px",
-                    border: "0.5px solid var(--border-hairline)"
+                    border: "0.5px solid var(--border-hairline)",
+                    overflow: "hidden"
                   }}>
-                    {convo.name?.charAt(0).toUpperCase() || "G"}
+                    <img src={theme === 'dark' ? logoWhite : logo} alt="Public Hub" style={{ width: "24px", height: "auto" }} />
                   </div>
                 ) : (
                   <AvailabilityBadge
@@ -1236,18 +1238,16 @@ export default function Messages() {
                     <div style={{
                       width: "36px",
                       height: "36px",
-                      borderRadius: "10px",
-                      backgroundColor: "var(--text-primary)",
-                      color: "var(--bg-page)",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--bg-hover)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontWeight: 800,
-                      fontSize: "14px",
-                      border: "1px solid var(--border-hairline)",
-                      flexShrink: 0
+                      border: "0.5px solid var(--border-hairline)",
+                      flexShrink: 0,
+                      overflow: "hidden"
                     }}>
-                      {activeConvo.name?.charAt(0).toUpperCase() || "G"}
+                      <img src={theme === 'dark' ? logoWhite : logo} alt="Hub" style={{ width: "18px", height: "auto" }} />
                     </div>
                   ) : (
                     <div
@@ -1346,18 +1346,16 @@ export default function Messages() {
                         <div style={{
                           width: "84px",
                           height: "84px",
-                          borderRadius: "20px",
-                          backgroundColor: "var(--text-primary)",
-                          color: "var(--bg-page)",
+                          borderRadius: "50%",
+                          backgroundColor: "var(--bg-hover)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          fontWeight: 800,
-                          fontSize: "32px",
-                          border: "2px solid var(--border-hairline)",
-                          boxShadow: "0 8px 32px rgba(0,0,0,0.15)"
+                          border: "1px solid var(--border-hairline)",
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+                          overflow: "hidden"
                         }}>
-                          {activeConvo.name?.charAt(0).toUpperCase() || "P"}
+                          <img src={theme === 'dark' ? logoWhite : logo} alt="Hub" style={{ width: "42px", height: "auto" }} />
                         </div>
                       ) : (
                         <AvailabilityBadge
