@@ -11,6 +11,8 @@ import { useClerkAuth } from "./hooks/useClerkAuth";
 import api from "./api/axios";
 import { socket } from "./lib/socket";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Lazy load pages
 const Feed = lazy(() => import("./pages/Feed"));
@@ -141,9 +143,29 @@ export default function App() {
 
     socket.on("content_update", handleUpdate);
     
+    const handleNewNotification = (notif: { type: string, actorId: string, data?: any }) => {
+      queryClient.invalidateQueries({ queryKey: ["unread_count"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      
+      // Show toast
+      if (notif.type === 'startup_upvote') {
+        toast(`🚀 Someone upvoted your startup!`, {
+          position: "bottom-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          theme: "dark"
+        });
+      }
+    };
+
+    socket.on("new_notification", handleNewNotification);
+    
     return () => {
       socket.off("connect", onConnect);
       socket.off("content_update", handleUpdate);
+      socket.off("new_notification", handleNewNotification);
     };
   }, [queryClient, isSignedIn, user?.id]);
 

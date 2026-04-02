@@ -58,20 +58,44 @@ export async function notify(params: SendNotificationParams) {
     const { userId, actorId, type, postId, projectId, commentId, startupId, data } = params;
 
     // 1. Always create the notification in the DB
-    const { error: notifError } = await supabase.from("notifications").insert({
+    const insertData: any = {
         user_id: userId,
         type,
         actor_id: actorId,
-        post_id: postId,
-        project_id: projectId,
-        comment_id: commentId,
-        startup_id: startupId,
         read: false,
-    });
+    };
+
+    if (postId) insertData.post_id = postId;
+    if (projectId) insertData.project_id = projectId;
+    if (commentId) insertData.comment_id = commentId;
+    
+    // Attempt to include startup_id if it exists in the schema
+    if (startupId) {
+        insertData.startup_id = startupId;
+    }
+
+    let { error: notifError } = await supabase.from("notifications").insert(insertData);
+
+    // If it fails with startup_id, try once more without it (fallback for legacy schema)
+    if (notifError && startupId) {
+        console.warn(`[NotificationService] Insert with startup_id failed. Retrying without it...`);
+        const { startup_id, ...fallbackData } = insertData;
+        const { error: retryError } = await supabase.from("notifications").insert(fallbackData);
+        notifError = retryError;
+    }
 
     if (notifError) {
         console.error(`[NotificationService] DB Insert Error:`, notifError);
-        return;
+        // We continue anyway so emails can still be sent
+    }
+
+    // 1.5 Emit socket event for the specific user so the UI updates instantly
+    const { getIO } = await import("../lib/socket.js");
+    try {
+        const io = getIO();
+        io.to(userId).emit("new_notification", { type, actorId, data });
+    } catch (sErr) {
+        // Socket initialization may not be ready in all contexts
     }
 
     // 2. Check if user is active on the platform
