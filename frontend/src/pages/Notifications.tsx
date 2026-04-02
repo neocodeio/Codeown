@@ -104,7 +104,13 @@ export default function NotificationsPage() {
                 if (notification.metadata?.startupName) {
                     return <>{nameWrapper} Upvoted <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{notification.metadata.startupName}</span></>;
                 }
-                return <>{nameWrapper} {notification.project_id ? "Upvoted your project" : "Liked your post"}</>;
+                if (notification.project_id) {
+                    return <>{nameWrapper} Upvoted your project</>;
+                }
+                if (notification.comment_id) {
+                    return <>{nameWrapper} Liked your comment</>;
+                }
+                return <>{nameWrapper} Liked your post</>;
             case "comment":
                 return <>{nameWrapper} {notification.project_id ? "Commented on your project" : "Commented on your post"}</>;
             case "follow":
