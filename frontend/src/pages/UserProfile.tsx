@@ -27,6 +27,7 @@ import { SEO } from "../components/SEO";
 import Lightbox from "../components/Lightbox";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import { HeatMap } from "../components/HeatMap";
 // import StreakBadge from "../components/StreakBadge";
 
 interface User {
@@ -370,6 +371,11 @@ export default function UserProfile() {
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* Activity Heatmap */}
+          <div style={{ marginTop: "32px", marginBottom: "40px", padding: isMobile ? "0" : "0" }}>
+            <HeatMap userId={user.id} githubUrl={user.github_url} />
           </div>
 
           {/* Tabs */}

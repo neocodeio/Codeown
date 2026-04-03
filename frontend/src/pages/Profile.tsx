@@ -21,6 +21,7 @@ import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import ProfileStrength from "../components/ProfileStrength";
+import { HeatMap } from "../components/HeatMap";
 import {
   PencilSimple,
   SignOut,
@@ -841,6 +842,11 @@ export default function Profile() {
             user={userProfile} 
             projectsCount={projects?.length || 0} 
           />
+        </div>
+
+        {/* Activity Heatmap */}
+        <div style={{ padding: isMobile ? "0 16px" : "0 24px", marginBottom: "40px" }}>
+          <HeatMap userId={userProfile?.id || ""} githubUrl={userProfile?.github_url} />
         </div>
 
         {/* Tabs + Content */}

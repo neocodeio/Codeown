@@ -28,16 +28,21 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
         let githubData: Record<string, number> = {};
         if (githubUrl) {
           try {
-            const githubUsername = githubUrl.split("/").pop()?.trim();
-            if (githubUsername) {
+            // Robust parsing: extract "username" from "https://github.com/username/", "github.com/username", etc.
+            let githubUsername = githubUrl.trim().replace(/\/$/, "").split("/").pop();
+            
+            if (githubUsername && githubUsername !== "github.com" && !githubUsername.includes("http")) {
               const ghRes = await fetch(`https://api.github.com/users/${githubUsername}/events/public`);
-              const ghEvents = await ghRes.json();
-              
-              if (Array.isArray(ghEvents)) {
-                ghEvents.forEach((event: any) => {
-                  const date = event.created_at.split("T")[0];
-                  githubData[date] = (githubData[date] || 0) + 1;
-                });
+              if (ghRes.ok) {
+                const ghEvents = await ghRes.json();
+                if (Array.isArray(ghEvents)) {
+                    ghEvents.forEach((event: any) => {
+                      if (event.created_at) {
+                        const date = event.created_at.split("T")[0];
+                        githubData[date] = (githubData[date] || 0) + 1;
+                      }
+                    });
+                }
               }
             }
           } catch (err) {
