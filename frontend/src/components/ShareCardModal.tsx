@@ -63,7 +63,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
   };
 
   const shareToX = () => {
-    const text = `Check out my progress on @Codeown! 🛠️\n\n${stats.map(s => `${s.label}: ${s.value.toLocaleString()}`).join('\n')}\n\nJoin me here: codeown.space/${user.username} #Codeown2026 #BuildInPublic`;
+    const text = `Check out my progress on @Codeown! 🛠️\n\n${stats.map(s => `${s.label}: ${s.value.toLocaleString()}`).join('\n')}\n\nJoin me here: codeown.space/${user.username} #Codeown2026 #BuildInPublic #IndieHacker`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
   };
