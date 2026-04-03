@@ -1,11 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
-import { useWindowSize } from "../hooks/useWindowSize";
-import { MagnifyingGlass, Users, Layout, Rocket, CaretDown, Clock, X, Buildings } from "phosphor-react";
+import { MagnifyingGlass, Users, Layout, Rocket, Clock, X, Buildings, CheckCircle } from "phosphor-react";
 import type { Post } from "../hooks/usePosts";
 import type { Project } from "../types/project";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -57,9 +56,6 @@ export default function Search() {
   const [query, setQuery] = useState(initialQuery);
   const [activeFilter, setActiveFilter] = useState<FilterType>("people");
   const [showOnlyCofounder, setShowOnlyCofounder] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
   const { getToken } = useClerkAuth();
   const { user: clerkUser, isLoaded } = useClerkUser();
 
@@ -71,19 +67,6 @@ export default function Search() {
   const [history, setHistory] = useState<string[]>([]);
   const [currentUserFollowing, setCurrentUserFollowing] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>("best");
-
-  const filterRef = useRef<HTMLDivElement>(null);
-
-  // Close filter dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-        setIsFilterOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   // Sync query state with URL
   useEffect(() => {
@@ -290,12 +273,12 @@ export default function Search() {
               type="text"
               value={query}
               onChange={handleSearch}
-              placeholder={`Search...`}
+              placeholder={`Search workers, projects, startups...`}
               style={{
                 flex: 1,
                 border: "none",
                 outline: "none",
-                fontSize: "15px",
+                fontSize: "16px",
                 fontWeight: 500,
                 color: "var(--text-primary)",
                 background: "transparent",
@@ -304,106 +287,26 @@ export default function Search() {
               autoFocus
             />
 
-            {/* Quick Filter: Seeking Co-Founder */}
-            {activeFilter === "projects" && (
-              <button
-                onClick={() => setShowOnlyCofounder(!showOnlyCofounder)}
+            {query && (
+               <button 
+                onClick={() => { setQuery(""); setSearchParams({}); }}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  backgroundColor: showOnlyCofounder ? "var(--text-primary)" : "transparent",
-                  color: showOnlyCofounder ? "var(--bg-page)" : "var(--text-tertiary)",
-                  border: showOnlyCofounder ? "none" : "0.5px solid var(--border-hairline)",
-                  borderRadius: "var(--radius-sm)",
-                  padding: "8px 14px",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  transition: "all 0.15s ease",
-                  marginRight: "4px"
-                }}
-              >
-                <Users size={14} weight={showOnlyCofounder ? "fill" : "regular"} />
-                {!isMobile && "Seeking Co-Founder"}
-              </button>
-            )}
-
-            {/* Filter Dropdown */}
-            <div style={{ position: "relative" }} ref={filterRef}>
-              <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  backgroundColor: "var(--text-primary)",
-                  color: "var(--bg-page)",
                   border: "none",
-                  borderRadius: "var(--radius-sm)",
-                  padding: "10px 16px",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  transition: "opacity 0.15s ease"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-              >
-                {activeFilter === "people" ? <Users size={16} /> : activeFilter === "posts" ? <Layout size={16} /> : activeFilter === "projects" ? <Rocket size={16} /> : <Buildings size={16} />}
-                <span style={{ textTransform: "capitalize" }}>{activeFilter}</span>
-                <CaretDown size={12} weight="bold" />
-              </button>
-
-              {isFilterOpen && (
-                <div style={{
-                  position: "absolute",
-                  top: "120%",
-                  right: 0,
-                  backgroundColor: "var(--bg-page)",
-                  borderRadius: "var(--radius-sm)",
-                  border: "0.5px solid var(--border-hairline)",
-                  padding: "4px",
-                  minWidth: "160px",
-                  flexDirection: "column",
+                  background: "var(--bg-hover)",
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
                   display: "flex",
-                  zIndex: 200
-                }}>
-                  {[
-                    { id: "people", icon: Users, label: "People" },
-                    { id: "posts", icon: Layout, label: "Posts" },
-                    { id: "projects", icon: Rocket, label: "Projects" },
-                    { id: "startups", icon: Buildings, label: "Startups" }
-                  ].map(opt => (
-                    <button
-                      key={opt.id}
-                      onClick={() => { setActiveFilter(opt.id as FilterType); setIsFilterOpen(false); }}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "10px",
-                        padding: "10px 14px",
-                        border: "none",
-                        background: activeFilter === opt.id ? "var(--bg-hover)" : "transparent",
-                        color: "var(--text-primary)",
-                        borderRadius: "var(--radius-sm)",
-                        fontWeight: 500,
-                        fontSize: "13px",
-                        cursor: "pointer",
-                        textAlign: "left",
-                      }}
-                      onMouseEnter={(e) => { if (activeFilter !== opt.id) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
-                      onMouseLeave={(e) => { if (activeFilter !== opt.id) e.currentTarget.style.backgroundColor = "transparent"; }}
-                    >
-                      <opt.icon size={16} />
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "var(--text-tertiary)"
+                }}
+               >
+                <X size={14} weight="bold" />
+               </button>
+            )}
           </div>
-
         </div>
       </div>
 
@@ -485,95 +388,34 @@ export default function Search() {
             <div
               style={{
                 display: "flex",
-                flexDirection: isMobile ? "column" : "row",
-                alignItems: isMobile ? "flex-start" : "center",
-                justifyContent: "space-between",
-                gap: "16px",
-                marginBottom: "32px",
+                flexDirection: "column",
+                gap: "24px",
+                marginBottom: "40px",
+                borderBottom: "0.5px solid var(--border-hairline)",
+                paddingBottom: "24px"
               }}
             >
-              <div style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 500 }}>
-                <span style={{ color: "var(--text-primary)" }}>Results for</span>{" "}
-                <span
-                  style={{
-                    padding: "4px 8px",
-                    borderRadius: "var(--radius-sm)",
-                    backgroundColor: "var(--bg-hover)",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                  }}
-                >
-                  “{query}”
-                </span>
-                <span style={{ marginLeft: "12px" }}>
-                  · {peopleResults.length} people · {posts.length} posts · {projects.length} projects · {startups.length} startups
-                </span>
-              </div>
-
-              {/* Secondary filter chips */}
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "8px",
-                }}
-              >
-                {[
-                  { id: "people", label: "People" },
-                  { id: "posts", label: "Posts" },
-                  { id: "projects", label: "Projects" },
-                  { id: "startups", label: "Startups" },
-                ].map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setActiveFilter(opt.id as FilterType)}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: "var(--radius-sm)",
-                      border: "0.5px solid",
-                      borderColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--border-hairline)",
-                      backgroundColor: activeFilter === opt.id ? "var(--text-primary)" : "transparent",
-                      color: activeFilter === opt.id ? "var(--bg-page)" : "var(--text-tertiary)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      transition: "all 0.15s ease",
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-
-                {activeFilter === "projects" && (
-                  <button
-                    onClick={() => setShowOnlyCofounder(!showOnlyCofounder)}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: "var(--radius-sm)",
-                      border: "0.5px solid",
-                      borderColor: showOnlyCofounder ? "var(--text-primary)" : "var(--border-hairline)",
-                      backgroundColor: showOnlyCofounder ? "var(--text-primary)" : "transparent",
-                      color: showOnlyCofounder ? "var(--bg-page)" : "var(--text-tertiary)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      transition: "all 0.15s ease",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px"
-                    }}
-                  >
-                    <Users size={14} weight={showOnlyCofounder ? "fill" : "regular"} />
-                    Seeking Co-Founder
-                  </button>
-                )}
+              <div style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "space-between",
+                gap: "20px",
+                flexWrap: "wrap"
+              }}>
+                <div style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                  <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{query}</span>
+                  <span style={{ marginLeft: "8px", opacity: 0.6 }}>
+                    · {peopleResults.length} people · {posts.length} posts · {projects.length} projects · {startups.length} startups
+                  </span>
+                </div>
 
                 <div
                   style={{
                     display: "inline-flex",
-                    borderRadius: "var(--radius-sm)",
+                    backgroundColor: "var(--bg-hover)",
+                    padding: "4px",
+                    borderRadius: "100px",
                     border: "0.5px solid var(--border-hairline)",
-                    overflow: "hidden",
                   }}
                 >
                   {[
@@ -584,14 +426,15 @@ export default function Search() {
                       key={opt.id}
                       onClick={() => setSortOption(opt.id as SortOption)}
                       style={{
-                        padding: "6px 12px",
-                        fontSize: "11px",
+                        padding: "6px 16px",
+                        fontSize: "12px",
                         fontWeight: 600,
                         border: "none",
+                        borderRadius: "100px",
                         backgroundColor: sortOption === opt.id ? "var(--text-primary)" : "transparent",
                         color: sortOption === opt.id ? "var(--bg-page)" : "var(--text-tertiary)",
                         cursor: "pointer",
-                        transition: "all 0.15s ease",
+                        transition: "all 0.2s ease",
                       }}
                     >
                       {opt.label}
@@ -599,13 +442,80 @@ export default function Search() {
                   ))}
                 </div>
               </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  overflowX: "auto",
+                  paddingBottom: "4px",
+                  scrollbarWidth: "none"
+                }}
+              >
+                {[
+                  { id: "people", label: "People", icon: Users },
+                  { id: "posts", label: "Posts", icon: Layout },
+                  { id: "projects", label: "Projects", icon: Rocket },
+                  { id: "startups", label: "Startups", icon: Buildings },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setActiveFilter(opt.id as FilterType)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "10px 20px",
+                      borderRadius: "100px",
+                      border: "0.5px solid",
+                      borderColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--border-hairline)",
+                      backgroundColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--bg-page)",
+                      color: activeFilter === opt.id ? "var(--bg-page)" : "var(--text-secondary)",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    <opt.icon size={16} weight={activeFilter === opt.id ? "bold" : "regular"} />
+                    {opt.label}
+                  </button>
+                ))}
+
+                {activeFilter === "projects" && (
+                  <button
+                    onClick={() => setShowOnlyCofounder(!showOnlyCofounder)}
+                    style={{
+                      padding: "10px 20px",
+                      borderRadius: "100px",
+                      border: "1px dashed",
+                      borderColor: showOnlyCofounder ? "var(--text-primary)" : "var(--border-hairline)",
+                      backgroundColor: showOnlyCofounder ? "rgba(var(--text-primary-rgb), 0.1)" : "transparent",
+                      color: showOnlyCofounder ? "var(--text-primary)" : "var(--text-tertiary)",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginLeft: "auto"
+                    }}
+                  >
+                    {showOnlyCofounder ? <CheckCircle size={16} weight="fill" /> : <Users size={16} />}
+                    Seeking Co-Founder
+                  </button>
+                )}
+              </div>
             </div>
 
             {activeFilter === "people" && (
               <div style={{
                 display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
-                gap: "20px"
+                gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
+                gap: "24px"
               }}>
                 {peopleResults.map((user) => (
                   <div key={user.id}
@@ -679,8 +589,8 @@ export default function Search() {
             {activeFilter === "projects" && (
               <div style={{
                 display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
-                gap: "20px"
+                gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))",
+                gap: "24px"
               }}>
                 {projectsSorted.map((project) => (
                   <ProjectCard key={project.id} project={project as Project} />
@@ -692,8 +602,8 @@ export default function Search() {
             {activeFilter === "startups" && (
               <div style={{
                 display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(320px, 1fr))",
-                gap: "20px"
+                gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))",
+                gap: "24px"
               }}>
                 {startupsSorted.map((startup) => (
                   <StartupCard key={startup.id} startup={startup} />

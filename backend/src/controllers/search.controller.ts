@@ -205,7 +205,7 @@ export async function searchStartups(req: Request, res: Response) {
     const limitNum = parseInt(limit as string, 10) || 20;
     const offset = (pageNum - 1) * limitNum;
 
-    if (!query || query.length < 2) {
+    if (!query || query.length < 1) {
       return res.json({ startups: [], total: 0, page: pageNum, limit: limitNum });
     }
 
@@ -217,7 +217,7 @@ export async function searchStartups(req: Request, res: Response) {
         members:startup_members(count),
         upvotes:startup_upvotes(count)
       `, { count: "exact" })
-      .or(`name.ilike.%${query}%,tagline.ilike.%${query}%`)
+      .or(`name.ilike."%${query}%",tagline.ilike."%${query}%",description.ilike."%${query}%"`)
       .order("created_at", { ascending: false })
       .range(offset, offset + limitNum - 1);
 
@@ -250,7 +250,7 @@ export async function searchAll(req: Request, res: Response) {
     const { q } = req.query;
     const query = (q as string)?.trim() || "";
 
-    if (!query || query.length < 2) {
+    if (!query || query.length < 1) {
       return res.json({ users: [], posts: [], projects: [], startups: [] });
     }
 
@@ -275,7 +275,7 @@ export async function searchAll(req: Request, res: Response) {
       supabase
         .from("startups")
         .select("id, name, tagline, logo_url, owner_id, created_at")
-        .or(`name.ilike.%${query}%,tagline.ilike.%${query}%`)
+        .or(`name.ilike."%${query}%",tagline.ilike."%${query}%",description.ilike."%${query}%"`)
         .order("created_at", { ascending: false })
         .limit(5),
     ]);

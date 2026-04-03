@@ -29,7 +29,7 @@ export async function getStartups(req: Request, res: Response) {
     }
 
     if (searchQuery) {
-      query = query.ilike("name", `%${searchQuery}%`);
+      query = query.or(`name.ilike."%${searchQuery}%",tagline.ilike."%${searchQuery}%",description.ilike."%${searchQuery}%"`);
     }
 
     if (status && !["All", "Most Upvoted"].includes(status as string)) {
