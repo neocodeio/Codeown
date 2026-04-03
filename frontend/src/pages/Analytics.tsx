@@ -15,6 +15,8 @@ import {
 } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import { SEO } from "../components/SEO";
+import { HeatMap } from "../components/HeatMap";
+import { ShareableAnalyticsCard } from "../components/ShareableAnalyticsCard";
 
 export default function Analytics() {
     const { getToken } = useClerkAuth();
@@ -24,16 +26,20 @@ export default function Analytics() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [userData, setUserData] = useState<any>(null);
+
     useEffect(() => {
         const fetchAnalytics = async () => {
             if (!isSignedIn) return;
             try {
                 setLoading(true);
                 const token = await getToken();
-                const res = await api.get("/analytics/summary", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setStats(res.data);
+                const [statsRes, userRes] = await Promise.all([
+                   api.get("/analytics/summary", { headers: { Authorization: `Bearer ${token}` } }),
+                   api.get("/users/me", { headers: { Authorization: `Bearer ${token}` } })
+                ]);
+                setStats(statsRes.data);
+                setUserData(userRes.data);
             } catch (err: any) {
                 console.error("Error fetching analytics:", err);
                 if (err.response?.status === 403) {
@@ -110,13 +116,38 @@ export default function Analytics() {
                     Back
                 </button>
 
-                <div style={{ marginBottom: "56px" }}>
-                    <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em" }}>
-                        Analytics
-                    </h1>
-                    <p style={{ color: "var(--text-secondary)", fontSize: "15px", maxWidth: "500px", lineHeight: 1.6 }}>
-                        Track your performance and see who's interested in your work.
-                    </p>
+                <div style={{ 
+                    display: "flex", 
+                    justifyContent: "space-between", 
+                    alignItems: "flex-end", 
+                    marginBottom: "56px",
+                    gap: "24px",
+                    flexWrap: "wrap"
+                }}>
+                    <div>
+                        <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "12px", letterSpacing: "-0.04em" }}>
+                            Analytics
+                        </h1>
+                        <p style={{ color: "var(--text-secondary)", fontSize: "15px", maxWidth: "500px", lineHeight: 1.6 }}>
+                            Track your performance and see who's interested in your work.
+                        </p>
+                    </div>
+
+                    {stats && userData && (
+                        <ShareableAnalyticsCard 
+                            user={{
+                                name: userData.name,
+                                username: userData.username,
+                                avatar_url: userData.avatar_url
+                            }}
+                            stats={[
+                                { label: "Project Views", value: stats.summary.total_project_views },
+                                { label: "Post Views", value: stats.summary.total_post_views },
+                                { label: "Opp. Clicks", value: stats.summary.total_opportunity_clicks }
+                            ]}
+                            title="Analytics Recap"
+                        />
+                    )}
                 </div>
 
                 {/* Summary Cards */}
@@ -207,6 +238,10 @@ export default function Analytics() {
                             {stats?.summary?.total_opportunity_clicks || 0}
                         </h2>
                     </div>
+                </div>
+
+                <div style={{ marginBottom: "56px" }}>
+                    <HeatMap userId={userData?.id} githubUrl={userData?.github_url} />
                 </div>
 
                 {/* Recent Activities */}

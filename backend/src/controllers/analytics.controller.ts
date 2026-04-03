@@ -187,3 +187,43 @@ export async function getWeeklyRecap(req: Request, res: Response) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
+export async function getUserActivityHeatmap(req: Request, res: Response) {
+    try {
+        const { userId } = req.params;
+        if (!userId) return res.status(400).json({ error: "User ID is required" });
+
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        const startIso = oneYearAgo.toISOString();
+
+        // Fetch multiple types of activity in parallel
+        const [postsRes, projectsRes, eventsRes] = await Promise.all([
+            supabase.from("posts").select("created_at").eq("user_id", userId).gte("created_at", startIso),
+            supabase.from("projects").select("created_at").eq("user_id", userId).gte("created_at", startIso),
+            supabase.from("analytics_events").select("created_at").eq("actor_id", userId).gte("created_at", startIso),
+        ]);
+
+        const activityMap: Record<string, number> = {};
+
+        const addActivity = (dateStr: string) => {
+            const date = new Date(dateStr).toISOString().split('T')[0];
+            activityMap[date] = (activityMap[date] || 0) + 1;
+        };
+
+        postsRes.data?.forEach(p => addActivity(p.created_at));
+        projectsRes.data?.forEach(p => addActivity(p.created_at));
+        eventsRes.data?.forEach(e => addActivity(e.created_at));
+
+        // Format for frontend: [{ date: '2023-01-01', count: 5 }, ...]
+        const heatmapData = Object.entries(activityMap).map(([date, count]) => ({
+            date,
+            count
+        }));
+
+        return res.json(heatmapData);
+    } catch (error) {
+        console.error("Error in getUserActivityHeatmap:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}

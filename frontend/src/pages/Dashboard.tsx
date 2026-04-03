@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useClerkUser } from "../hooks/useClerkUser";
+import { ShareableAnalyticsCard } from "../components/ShareableAnalyticsCard";
 import { 
     NotePencil, 
     Heart, 
@@ -30,6 +32,7 @@ export default function Dashboard() {
     const isMobile = width < 768;
     const isDesktop = width >= 1100;
     const { getToken } = useClerkAuth();
+    const { user } = useClerkUser();
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -128,19 +131,44 @@ export default function Dashboard() {
                     borderRight: isMobile ? "none" : "1px solid var(--border-hairline)",
                     padding: isMobile ? "24px 16px" : "48px 40px",
                 }}>
-                    <header style={{ marginBottom: "56px" }}>
-                        <h1 style={{ 
-                            fontSize: isMobile ? "32px" : "36px", 
-                            fontWeight: 700, 
-                            color: "var(--text-primary)", 
-                            margin: 0,
-                            letterSpacing: "-1px",
-                        }}>
-                            Analytics Overview
-                        </h1>
-                        <p style={{ marginTop: "12px", fontSize: "16px", color: "var(--text-tertiary)", fontWeight: 400, maxWidth: "600px", lineHeight: "1.5" }}>
-                            Get a clear picture of your contribution metrics and community reach through your personal dashboard.
-                        </p>
+                    <header style={{ 
+                        display: "flex", 
+                        justifyContent: "space-between", 
+                        alignItems: "flex-end", 
+                        marginBottom: "56px",
+                        gap: "24px",
+                        flexWrap: "wrap"
+                    }}>
+                        <div>
+                            <h1 style={{ 
+                                fontSize: isMobile ? "32px" : "36px", 
+                                fontWeight: 700, 
+                                color: "var(--text-primary)", 
+                                margin: 0,
+                                letterSpacing: "-1px",
+                            }}>
+                                Analytics Overview
+                            </h1>
+                            <p style={{ marginTop: "12px", fontSize: "16px", color: "var(--text-tertiary)", fontWeight: 400, maxWidth: "600px", lineHeight: "1.5" }}>
+                                Get a clear picture of your contribution metrics and community reach through your personal dashboard.
+                            </p>
+                        </div>
+
+                        {stats && user && (
+                            <ShareableAnalyticsCard 
+                                user={{
+                                    name: user.fullName || "User",
+                                    username: user.username || "",
+                                    avatar_url: user.imageUrl
+                                }}
+                                stats={[
+                                    { label: "Posts", value: stats.posts_count },
+                                    { label: "Projects", value: stats.projects_count },
+                                    { label: "Followers", value: stats.follower_count }
+                                ]}
+                                title="Contribution Snapshot"
+                            />
+                        )}
                     </header>
 
                     {/* Section 1: Core Activity */}
