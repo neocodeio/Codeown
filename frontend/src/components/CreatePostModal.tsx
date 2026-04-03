@@ -311,10 +311,10 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
 
           {/* Tabs */}
           <div style={{ display: "flex", gap: "8px", borderBottom: "0.5px solid var(--border-hairline)" }}>
-            <button className={`tab-btn ${activeTab === "write" ? "active" : ""}`} onClick={() => setActiveTab("write")}>
+            <button style={{ borderRadius: "0px" }} className={`tab-btn ${activeTab === "write" ? "active" : ""}`} onClick={() => setActiveTab("write")}>
               Write
             </button>
-            <button className={`tab-btn ${activeTab === "preview" ? "active" : ""}`} onClick={() => setActiveTab("preview")}>
+            <button style={{ borderRadius: "0px" }} className={`tab-btn ${activeTab === "preview" ? "active" : ""}`} onClick={() => setActiveTab("preview")}>
               Preview
             </button>
           </div>
