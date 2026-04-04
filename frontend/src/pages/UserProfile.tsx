@@ -61,8 +61,9 @@ interface User {
   linkedin_url: string | null;
   website_url: string | null;
   banner_url: string | null;
-  // streak_count: number;
   created_at: string | null;
+  streak_count: number;
+  contribution_count: number;
 }
 
 export default function UserProfile() {
@@ -387,13 +388,16 @@ export default function UserProfile() {
                 <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><Calendar size={16} /> Joined {formatProfileJoinDate(user.created_at || "")}</span>
               </div>
 
-              <div style={{ display: "flex", gap: "16px", marginTop: "16px" }}>
+              <div style={{ display: "flex", gap: "24px", marginTop: "16px", flexWrap: "wrap", alignItems: "center" }}>
                 <button onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "14px", color: "var(--text-primary)" }}>
                   <span style={{ fontWeight: 700 }}>{user.follower_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Followers</span>
                 </button>
                 <button onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "14px", color: "var(--text-primary)" }}>
                   <span style={{ fontWeight: 700 }}>{user.following_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Following</span>
                 </button>
+                <div style={{ fontSize: "14px", color: "var(--text-primary)" }}>
+                  <span style={{ fontWeight: 700 }}>{user.contribution_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Contributions</span>
+                </div>
               </div>
             </div>
           </div>
@@ -492,7 +496,11 @@ export default function UserProfile() {
                     <p style={{ fontWeight: 500, fontSize: "14px" }}>No startups yet</p>
                   </div>
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                  <div style={{ 
+                    display: "grid", 
+                    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", 
+                    gap: "20px" 
+                  }}>
                     {startups.map((s) => (
                       <StartupCard key={s.id} startup={s} />
                     ))}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 interface HeatMapProps {
   userId: string;
@@ -15,6 +16,10 @@ interface ActivityDay {
 export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
   const [data, setData] = useState<ActivityDay[]>([]);
   const [loading, setLoading] = useState(true);
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+
+  if (!githubUrl) return null;
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -135,30 +140,59 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
   }
 
   return (
-    <div style={{ padding: "24px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-        <h4 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Activity Heatmap</h4>
-        <div style={{ display: "flex", gap: "12px", fontSize: "10px", color: "var(--text-tertiary)" }}>
-           <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-             <div style={{ width: "8px", height: "8px", borderRadius: "1px", backgroundColor: "#238636" }} /> GitHub
+    <div style={{ 
+      padding: isMobile ? "20px" : "24px", 
+      borderRadius: "16px", 
+      border: "0.5px solid var(--border-hairline)", 
+      backgroundColor: "var(--bg-card)",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.02)"
+    }}>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "center", 
+        marginBottom: "24px",
+        flexWrap: "wrap",
+        gap: "12px"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <h4 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>
+            Contributions
+          </h4>
+          <span style={{ fontSize: "10px", fontWeight: 500, color: "var(--text-tertiary)", opacity: 0.6 }}>in the last year</span>
+        </div>
+        <div style={{ display: "flex", gap: "16px", fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+           <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+             <div style={{ width: "10px", height: "10px", borderRadius: "2px", backgroundColor: "#238636" }} /> GitHub
            </span>
-           <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-             <div style={{ width: "8px", height: "8px", borderRadius: "1px", backgroundColor: "var(--text-primary)" }} /> Codeown
+           <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+             <div style={{ width: "10px", height: "10px", borderRadius: "2px", backgroundColor: "var(--text-primary)" }} /> Codeown
            </span>
         </div>
       </div>
       <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(52, 1fr)", 
-          gridTemplateRows: "repeat(7, 1fr)",
-          gridAutoFlow: "column",
-          gap: "3px",
-          width: "100%",
           overflowX: "auto",
-          paddingBottom: "10px"
-      }}>
-        {renderSquares()}
+          width: "100%",
+          paddingBottom: "4px",
+          msOverflowStyle: "none",
+          scrollbarWidth: "none"
+      }} className="hide-scrollbar">
+        <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: "repeat(52, 1fr)", 
+            gridTemplateRows: "repeat(7, 1fr)",
+            gridAutoFlow: "column",
+            gap: "3.5px",
+            minWidth: "720px",
+            width: "max-content"
+        }}>
+          {renderSquares()}
+        </div>
       </div>
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .activity-square:hover { transform: scale(1.15); z-index: 10; border-radius: 4px !important; }
+      `}</style>
     </div>
   );
 };

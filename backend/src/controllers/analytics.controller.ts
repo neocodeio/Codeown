@@ -198,15 +198,19 @@ export async function getUserActivityHeatmap(req: Request, res: Response) {
         const startIso = oneYearAgo.toISOString();
 
         // Fetch multiple types of activity in parallel
-        const [postsRes, projectsRes, eventsRes] = await Promise.all([
+        const [postsRes, projectsRes, eventsRes, startupsRes, commentsRes, projectCommentsRes] = await Promise.all([
             supabase.from("posts").select("created_at").eq("user_id", userId).gte("created_at", startIso),
             supabase.from("projects").select("created_at").eq("user_id", userId).gte("created_at", startIso),
             supabase.from("analytics_events").select("created_at").eq("actor_id", userId).gte("created_at", startIso),
+            supabase.from("startups").select("created_at").eq("owner_id", userId).gte("created_at", startIso),
+            supabase.from("comments").select("created_at").eq("user_id", userId).gte("created_at", startIso),
+            supabase.from("project_comments").select("created_at").eq("user_id", userId).gte("created_at", startIso),
         ]);
 
         const activityMap: Record<string, number> = {};
 
         const addActivity = (dateStr: string) => {
+            if (!dateStr) return;
             const date = new Date(dateStr).toISOString().split('T')[0];
             activityMap[date] = (activityMap[date] || 0) + 1;
         };
@@ -214,6 +218,9 @@ export async function getUserActivityHeatmap(req: Request, res: Response) {
         postsRes.data?.forEach(p => addActivity(p.created_at));
         projectsRes.data?.forEach(p => addActivity(p.created_at));
         eventsRes.data?.forEach(e => addActivity(e.created_at));
+        startupsRes.data?.forEach(s => addActivity(s.created_at));
+        commentsRes.data?.forEach(c => addActivity(c.created_at));
+        projectCommentsRes.data?.forEach(pc => addActivity(pc.created_at));
 
         // Format for frontend: [{ date: '2023-01-01', count: 5 }, ...]
         const heatmapData = Object.entries(activityMap).map(([date, count]) => ({

@@ -609,7 +609,7 @@ export async function getUserProfile(req: Request, res: Response) {
         const targetUserId = userData.id;
 
         // Get accurate follow counts
-        const [followerResult, followingResult] = await Promise.all([
+        const [followerResult, followingResult, projectCount, startupCount, postCount, commentCount, pCommentCount] = await Promise.all([
             supabase
                 .from("follows")
                 .select("*", { count: "exact", head: true })
@@ -618,7 +618,34 @@ export async function getUserProfile(req: Request, res: Response) {
                 .from("follows")
                 .select("*", { count: "exact", head: true })
                 .eq("follower_id", targetUserId),
+            supabase
+                .from("projects")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", targetUserId),
+            supabase
+                .from("startups")
+                .select("*", { count: "exact", head: true })
+                .eq("owner_id", targetUserId),
+            supabase
+                .from("posts")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", targetUserId),
+            supabase
+                .from("comments")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", targetUserId),
+            supabase
+                .from("project_comments")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", targetUserId),
         ]);
+
+        const totalContributions = 
+            (projectCount.count || 0) + 
+            (startupCount.count || 0) + 
+            (postCount.count || 0) + 
+            (commentCount.count || 0) + 
+            (pCommentCount.count || 0);
 
         // Get total likes on user's posts
         const { data: userPosts } = await supabase
@@ -723,6 +750,7 @@ export async function getUserProfile(req: Request, res: Response) {
             linkedin_url: userData.linkedin_url || null,
             website_url: userData.website_url || null,
             streak_count: userData.streak_count || 0,
+            contribution_count: totalContributions,
             // Metadata
             created_at: userData.created_at || null,
             updated_at: userData.updated_at || null,

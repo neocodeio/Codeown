@@ -79,8 +79,9 @@ interface UserProfile {
   website_url: string | null;
   banner_url: string | null;
   created_at: string | null;
-  // streak_count: number;
   onboarding_completed: boolean;
+  streak_count: number;
+  contribution_count: number;
 }
 
 export default function Profile() {
@@ -835,6 +836,13 @@ export default function Profile() {
               >
                 {userProfile?.following_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Following</span>
               </button>
+              <div style={{
+                  fontSize: "14px",
+                  color: "var(--text-primary)",
+                  fontWeight: 600
+                }}>
+                {userProfile?.contribution_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Contributions</span>
+              </div>
             </div>
             <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
               {userProfile?.twitter_url && (
@@ -1022,7 +1030,11 @@ export default function Profile() {
                     </button>
                   </div>
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                  <div style={{ 
+                    display: "grid", 
+                    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", 
+                    gap: "20px" 
+                  }}>
                     {startups.map((s) => (
                       <StartupCard key={s.id} startup={s} />
                     ))}

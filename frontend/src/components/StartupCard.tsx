@@ -96,135 +96,139 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
       <div style={{
         backgroundColor: 'var(--bg-card)',
         border: '0.5px solid var(--border-hairline)',
-        borderRadius: 'var(--radius-sm)',
+        borderRadius: '16px',
         padding: isMobile ? '20px' : '24px',
-        transition: 'all 0.2s var(--ease-smooth)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        gap: isMobile ? '12px' : '16px',
         position: 'relative',
-        overflow: 'hidden'
+        boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
       }}
         className="startup-card"
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        {/* Top Section */}
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', alignItems: 'flex-start' }}>
           <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: 'var(--radius-sm)',
+            width: '60px',
+            height: '60px',
+            borderRadius: '12px',
             backgroundColor: 'var(--bg-hover)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
-            border: '0.5px solid var(--border-hairline)'
+            border: '0.5px solid var(--border-hairline)',
+            flexShrink: 0
           }}>
             {startup.logo_url ? (
               <img src={startup.logo_url} alt={startup.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <Rocket size={24} weight="thin" color="var(--text-tertiary)" />
+              <Rocket size={32} weight="thin" color="var(--text-tertiary)" />
             )}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '4px 10px',
-              backgroundColor: 'var(--bg-hover)',
-              borderRadius: 'var(--radius-xs)',
-              fontSize: isMobile ? '10px' : '11px',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              border: '0.5px solid var(--border-hairline)',
-              whiteSpace: 'nowrap'
-            }}>
-              {getStatusIcon(startup.status)}
-              <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>{startup.status}</span>
-            </div>
-            
-            <button
-              onClick={handleUpvote}
-              style={{
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '4px' }}>
+              <h3 style={{
+                fontSize: '18px',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                margin: 0,
+                lineHeight: 1.2
+              }}>
+                {startup.name}
+              </h3>
+              <div style={{
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                width: isMobile ? '40px' : '44px',
-                height: isMobile ? '48px' : '52px',
-                padding: '4px',
-                backgroundColor: hasUpvoted ? 'var(--text-primary)' : 'transparent',
-                color: hasUpvoted ? 'var(--bg-card)' : 'var(--text-primary)',
-                border: hasUpvoted ? '1px solid var(--text-primary)' : '1px solid var(--border-hairline)',
-                borderRadius: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                zIndex: 2,
-                gap: '2px',
-              }}
-              className="upvote-button"
-            >
-              <CaretUp size={18} weight={hasUpvoted ? "bold" : "bold"} />
-              <span style={{ fontSize: '13px', fontWeight: 800 }}>{upvotes}</span>
-            </button>
+                gap: '6px',
+                padding: '3px 8px',
+                backgroundColor: 'var(--bg-hover)',
+                borderRadius: '6px',
+                fontSize: '9px',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                border: '0.5px solid var(--border-hairline)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                {getStatusIcon(startup.status)}
+                {startup.status}
+              </div>
+            </div>
+            <p style={{
+              fontSize: '14px',
+              color: 'var(--text-secondary)',
+              lineHeight: '1.4',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              margin: 0,
+              height: '40px'
+            }}>
+              {startup.tagline}
+            </p>
           </div>
+          
+          <button
+            onClick={handleUpvote}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '44px',
+              height: '48px',
+              backgroundColor: hasUpvoted ? 'var(--text-primary)' : 'var(--bg-hover)',
+              color: hasUpvoted ? 'var(--bg-card)' : 'var(--text-primary)',
+              border: 'none',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+              gap: '2px',
+              flexShrink: 0
+            }}
+            className="upvote-btn"
+          >
+            <CaretUp size={16} weight="bold" />
+            <span style={{ fontSize: '13px', fontWeight: 800 }}>{upvotes}</span>
+          </button>
         </div>
 
-        <div>
-          <h3 style={{
-            fontSize: '18px',
-            fontWeight: 700,
-            marginBottom: '6px',
-            color: 'var(--text-primary)'
-          }}>
-            {startup.name}
-          </h3>
-          <p style={{
-            fontSize: '14px',
-            color: 'var(--text-secondary)',
-            lineHeight: '1.5',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            height: '42px'
-          }}>
-            {startup.tagline}
-          </p>
-        </div>
-
+        {/* Bottom Metadata */}
         <div style={{
           marginTop: 'auto',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingTop: isMobile ? '12px' : '16px',
+          paddingTop: '16px',
           borderTop: '0.5px solid var(--border-hairline)',
-          gap: '8px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', flexShrink: 0 }}>by</span>
-            <span style={{ 
-              fontSize: isMobile ? '12px' : '13px', 
-              fontWeight: 600, 
-              color: 'var(--text-primary)',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap'
-            }}>@{startup.user?.username || startup.owner_id}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+             <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>by</span>
+             <span style={{ 
+               fontSize: '13px', 
+               fontWeight: 600, 
+               color: 'var(--text-primary)',
+               whiteSpace: 'nowrap',
+               overflow: 'hidden',
+               textOverflow: 'ellipsis'
+             }}>@{startup.user?.username || "founder"}</span>
           </div>
 
-          <div style={{ display: 'flex', gap: isMobile ? '8px' : '12px', flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: '12px' }}>
             {startup.is_hiring && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#3b82f6' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#10b981' }}>
                 <Briefcase size={14} weight="bold" />
-                {!isMobile && <span style={{ fontSize: '11px', fontWeight: 700 }}>HIRING</span>}
+                <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.02em' }}>HIRING</span>
               </div>
             )}
             {startup.looking_for_cofounder && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#f59e0b' }}>
                 <Users size={14} weight="bold" />
+                <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.02em' }}>PARTNERS</span>
               </div>
             )}
           </div>
@@ -232,22 +236,17 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
 
         <style>{`
           .startup-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
             border-color: var(--text-secondary);
-            transform: translateY(-2px);
-            background-color: var(--bg-hover) !important;
           }
           .startup-card-link {
             text-decoration: none;
             color: inherit;
           }
-          .upvote-button:hover {
-            background-color: var(--text-primary) !important;
-            color: var(--bg-card) !important;
-            border-color: var(--text-primary) !important;
+          .upvote-btn:hover {
+            opacity: 0.9;
             transform: scale(1.05);
-          }
-          .upvote-button:active {
-            transform: scale(0.95);
           }
         `}</style>
       </div>
