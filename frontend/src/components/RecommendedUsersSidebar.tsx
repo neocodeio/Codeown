@@ -4,7 +4,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Users, Trophy, CaretUp, CaretRight } from "phosphor-react";
+import { Users, Trophy, CaretUp, CaretRight, TrendUp } from "phosphor-react";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
 import VerifiedBadge from "./VerifiedBadge";
@@ -151,7 +151,20 @@ export default function RecommendedUsersSidebar() {
         refetchOnWindowFocus: false,
     });
 
-    // 4. Streak count fetch
+    // 4. Trending Tags fetch
+    const { data: trendingTags = [], isLoading: trendingLoading } = useQuery({
+        queryKey: ["trendingTags"],
+        queryFn: async () => {
+            const response = await api.get("/posts/trending/tags");
+            return Array.isArray(response.data) ? response.data : [];
+        },
+        enabled: isDesktop,
+        staleTime: 60 * 1000,
+        refetchInterval: 60 * 1000,
+        refetchOnWindowFocus: false,
+    });
+
+    // 5. Streak count fetch
     const { data: streakData } = useQuery({
         queryKey: ["streakCount"],
         queryFn: async () => {
@@ -202,9 +215,9 @@ export default function RecommendedUsersSidebar() {
             <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-                .sidebar-section { padding: 32px 24px; border-bottom: 0.5px solid var(--border-hairline); }
+                .sidebar-section { padding: 24px 20px; border-bottom: 0.5px solid var(--border-hairline); }
                 .sidebar-section:last-child { border-bottom: none; }
-                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
                 .sidebar-title { font-size: 14px; font-weight: 600; color: var(--text-tertiary); margin: 0; display: flex; align-items: center; gap: 8px; }
                 .sidebar-item { transition: opacity 0.15s ease; }
                 .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: var(--radius-sm); animation: skeleton-pulse 2s infinite ease-in-out; }
@@ -467,6 +480,41 @@ export default function RecommendedUsersSidebar() {
                     </div>
                 </div>
             )}
+
+            {/* Section 4: Trending */}
+            {!trendingLoading && Array.isArray(trendingTags) && (
+                <div className="sidebar-section">
+                    <div className="sidebar-title-row">
+                        <h3 className="sidebar-title" style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: "14px" }}>
+                            <TrendUp size={18} weight="bold" />
+                            Trending
+                        </h3>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+                        {trendingTags.map((tag: any, idx: number) => (
+                            <Link 
+                                key={tag.name} 
+                                to={`/?tag=${tag.name}`}
+                                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none" }}
+                                className="sidebar-item"
+                            >
+                                <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
+                                    <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)", width: "12px" }}>
+                                        {idx + 1}
+                                    </span>
+                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                        #{tag.name}
+                                    </span>
+                                </div>
+                                <span style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 400 }}>
+                                    {tag.count} posts
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+

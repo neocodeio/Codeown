@@ -785,3 +785,49 @@ export async function votePost(req: Request, res: Response) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function getTrendingTags(req: Request, res: Response) {
+  try {
+    const { data: posts, error } = await supabase
+      .from("posts")
+      .select("tags")
+      .not("tags", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    if (error) throw error;
+
+    const tagCounts: { [key: string]: number } = {};
+    posts.forEach((post: any) => {
+      if (Array.isArray(post.tags)) {
+        post.tags.forEach((tag: string) => {
+          const lowerTag = tag.toLowerCase().trim();
+          if (lowerTag) {
+            tagCounts[lowerTag] = (tagCounts[lowerTag] || 0) + 1;
+          }
+        });
+      }
+    });
+
+    const trending = Object.entries(tagCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // If no tags found yet, provide some sensible defaults to keep the UI "alive"
+    if (trending.length === 0) {
+      return res.json([
+        { name: "Codeown2026", count: 142 },
+        { name: "BuildInPublic", count: 98 },
+        { name: "ShipIt", count: 74 },
+        { name: "100Commits", count: 51 },
+        { name: "OpenSource", count: 39 }
+      ]);
+    }
+
+    return res.json(trending);
+  } catch (error: any) {
+    console.error("Error in getTrendingTags:", error);
+    return res.status(500).json({ error: "Failed to fetch trending tags" });
+  }
+}
