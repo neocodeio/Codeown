@@ -13,6 +13,26 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
 import * as Sentry from "@sentry/react";
 
+// Fix "Loading chunk failed" permanently by detecting dynamic import failures
+// and triggering a controlled reload to pull the latest consistent state.
+window.addEventListener('error', (event) => {
+  const errorMsg = event.message || "";
+  const target = event.target as any;
+  const isChunkError = errorMsg.includes('Loading chunk') || 
+                      errorMsg.includes('Failed to fetch dynamically imported module') ||
+                      (event.error?.name === 'ChunkLoadError') ||
+                      (target?.tagName === 'SCRIPT' && (target?.src?.includes('clerk') || target?.src?.includes('chunk')));
+                      
+  if (isChunkError) {
+    const lastReload = sessionStorage.getItem('last-chunk-reload');
+    const now = Date.now();
+    if (!lastReload || now - parseInt(lastReload) > 5000) {
+      sessionStorage.setItem('last-chunk-reload', now.toString());
+      window.location.reload();
+    }
+  }
+}, true);
+
 Sentry.init({
   dsn: "https://err_eb74f2b31931879fd2d80af35c4d347b5fc1d43c388b2e8490@ingest.errgent.com/15",
   tracesSampleRate: 1.0,

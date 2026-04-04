@@ -22,10 +22,11 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, _errorInfo: React.ErrorInfo) {
     const isChunkLoadError = 
       error?.name === 'ChunkLoadError' || 
-      error?.message?.includes('Failed to fetch dynamically imported module') ||
-      error?.message?.includes('Importing a module script failed') ||
-      error?.message?.includes('network error') ||
-      error?.message?.includes('Load failed');
+      error?.message?.toLowerCase().includes('failed to fetch dynamically imported module') ||
+      error?.message?.toLowerCase().includes('importing a module script failed') ||
+      error?.message?.toLowerCase().includes('loading chunk') ||
+      error?.message?.toLowerCase().includes('clerk.browser') ||
+      error?.message?.toLowerCase().includes('load failed');
 
     if (isChunkLoadError) {
       console.warn("ChunkLoadError detected - Refreshing page...");
