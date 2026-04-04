@@ -316,6 +316,40 @@ export default function RecommendedUsersSidebar() {
                 </div>
             </div>
 
+            {/* Section 4: Trending */}
+            {!trendingLoading && Array.isArray(trendingTags) && (
+                <div className="sidebar-section">
+                    <div className="sidebar-title-row">
+                        <h3 className="sidebar-title" style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: "14px" }}>
+                            <TrendUp size={18} weight="bold" />
+                            Trending
+                        </h3>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+                        {trendingTags.map((tag: any, idx: number) => (
+                            <Link 
+                                key={tag.name} 
+                                to={`/?tag=${tag.name}`}
+                                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none" }}
+                                className="sidebar-item"
+                            >
+                                <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
+                                    <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)", width: "12px" }}>
+                                        {idx + 1}
+                                    </span>
+                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                        #{tag.name}
+                                    </span>
+                                </div>
+                                <span style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 400 }}>
+                                    {tag.count} posts
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Section 2: Leaderboard */}
             <div className="sidebar-section" style={{ paddingBottom: 0 }}>
                 <div className="sidebar-title-row">
@@ -481,39 +515,7 @@ export default function RecommendedUsersSidebar() {
                 </div>
             )}
 
-            {/* Section 4: Trending */}
-            {!trendingLoading && Array.isArray(trendingTags) && (
-                <div className="sidebar-section">
-                    <div className="sidebar-title-row">
-                        <h3 className="sidebar-title" style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: "14px" }}>
-                            <TrendUp size={18} weight="bold" />
-                            Trending
-                        </h3>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-                        {trendingTags.map((tag: any, idx: number) => (
-                            <Link 
-                                key={tag.name} 
-                                to={`/?tag=${tag.name}`}
-                                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none" }}
-                                className="sidebar-item"
-                            >
-                                <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
-                                    <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)", width: "12px" }}>
-                                        {idx + 1}
-                                    </span>
-                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                        #{tag.name}
-                                    </span>
-                                </div>
-                                <span style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 400 }}>
-                                    {tag.count} posts
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            )}
+            {/* Section 4 was here */}
         </div>
     );
 }
