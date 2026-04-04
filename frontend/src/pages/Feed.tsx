@@ -268,9 +268,9 @@ export default function Feed() {
                                     )}
                                 </button>
                             </div>
-                        </div>
 
-                        <ActivityIndicator />
+                            <ActivityIndicator />
+                        </div>
 
                         {feedType === "projects" && (
                             <div style={{

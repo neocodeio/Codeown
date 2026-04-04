@@ -31,7 +31,7 @@ export const initSocket = (server: any) => {
     });
     
     socket.on("broadcast_activity", ({ userId, userName, type }: { userId: string, userName: string, type: "posting" | "launching" | "chatting" | "commenting" | null }) => {
-      socket.broadcast.emit("global_activity", { userId, userName, type });
+      if (io) io.emit("global_activity", { userId, userName, type });
     });
 
     socket.on("disconnect", () => {

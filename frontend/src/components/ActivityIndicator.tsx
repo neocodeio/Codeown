@@ -68,18 +68,22 @@ export default function ActivityIndicator() {
     return (
         <div style={{
             position: "absolute",
-            bottom: "-24px",
+            top: "0px",
             left: "50%",
             transform: "translateX(-50%)",
             display: "flex",
             alignItems: "center",
-            gap: "8px",
-            padding: "4px 12px",
-            backgroundColor: "transparent",
-            borderRadius: "100px",
-            zIndex: 50,
+            gap: "10px",
+            padding: "6px 16px",
+            backgroundColor: "var(--bg-card)",
+            border: "0.5px solid var(--border-hairline)",
+            borderTop: "none",
+            borderRadius: "0 0 16px 16px",
+            zIndex: 1000,
             pointerEvents: "none",
-            animation: "fadeInUp 0.3s cubic-bezier(0.2, 0, 0, 1) forwards"
+            boxShadow: "0 8px 16px rgba(0,0,0,0.12)",
+            backdropFilter: "blur(8px)",
+            animation: "indicatorSlideDown 0.3s cubic-bezier(0.2, 0, 0, 1) forwards"
         }}>
             <div style={{ display: "flex", gap: "3px", alignItems: "center" }}>
                 <div className="dot" style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)", animation: "pulse 1.2s infinite 0s" }} />
@@ -100,8 +104,8 @@ export default function ActivityIndicator() {
             </div>
 
             <style>{`
-                @keyframes fadeInUp {
-                    from { opacity: 0; transform: translate(-50%, 4px); }
+                @keyframes indicatorSlideDown {
+                    from { opacity: 0; transform: translate(-50%, -6px); }
                     to { opacity: 1; transform: translate(-50%, 0); }
                 }
                 @keyframes pulse {
