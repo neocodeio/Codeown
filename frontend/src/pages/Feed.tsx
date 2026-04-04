@@ -13,6 +13,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { SEO } from "../components/SEO";
+import ActivityIndicator from "../components/ActivityIndicator";
 
 
 export default function Feed() {
@@ -268,6 +269,8 @@ export default function Feed() {
                                 </button>
                             </div>
                         </div>
+
+                        <ActivityIndicator />
 
                         {feedType === "projects" && (
                             <div style={{

@@ -10,6 +10,7 @@ import LinkPreview from "./LinkPreview";
 import { validateImageSize } from "../constants/upload";
 import AvailabilityBadge from "./AvailabilityBadge";
 import { compressImage } from "../utils/image";
+import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 
 interface FeedPostComposerProps {
     onCreated: () => void;
@@ -30,6 +31,11 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const { getToken, isLoaded } = useClerkAuth();
     const { user, isSignedIn } = useClerkUser();
     const [isOG, setIsOG] = useState(false);
+    const { announce } = useActivityBroadcast();
+
+    useEffect(() => {
+        if (content.trim()) announce("posting");
+    }, [content, announce]);
 
     useEffect(() => {
         const fetchUserData = async () => {

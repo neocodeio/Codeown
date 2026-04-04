@@ -29,6 +29,10 @@ export const initSocket = (server: any) => {
     socket.on("mark_read", ({ senderId, receiverId, conversationId }: { senderId: string, receiverId: string, conversationId: number }) => {
       if (io) io.to(receiverId).emit("messages_read", { conversationId, readerId: senderId });
     });
+    
+    socket.on("broadcast_activity", ({ userId, userName, type }: { userId: string, userName: string, type: "posting" | "launching" | "chatting" | "commenting" | null }) => {
+      socket.broadcast.emit("global_activity", { userId, userName, type });
+    });
 
     socket.on("disconnect", () => {
       console.log("Socket disconnected:", socket.id);

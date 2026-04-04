@@ -9,6 +9,7 @@ import VerifiedBadge from "./VerifiedBadge";
 import { validateImageSize } from "../constants/upload";
 import confetti from "canvas-confetti";
 import { toast } from "react-toastify";
+import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 
 interface ProjectModalProps {
     isOpen: boolean;
@@ -25,6 +26,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
     const [error, setError] = useState("");
     const [techInput, setTechInput] = useState("");
     const [fetchingGitHub, setFetchingGitHub] = useState(false);
+    const { announce } = useActivityBroadcast();
 
     const [formData, setFormData] = useState<ProjectFormData>({
         title: "",
@@ -76,6 +78,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        if (!project) announce("launching");
     };
 
     const handleAddTech = () => {

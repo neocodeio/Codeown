@@ -10,6 +10,8 @@ import { Gif, X } from "phosphor-react";
 import { useAvatar } from "../hooks/useAvatar";
 import GifPicker from "./GifPicker";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
+import { useEffect } from "react";
 
 interface CommentsSectionProps {
   resourceId: number;
@@ -23,7 +25,12 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const { announce } = useActivityBroadcast();
   const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (newComment.trim()) announce("commenting");
+  }, [newComment, announce]);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
   

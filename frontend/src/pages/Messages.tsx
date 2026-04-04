@@ -27,6 +27,7 @@ import GifPicker from "../components/GifPicker";
 import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { socket } from "../lib/socket";
+import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 
 interface Partner {
   id: string;
@@ -107,6 +108,7 @@ export default function Messages() {
   const [loading, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const { announce } = useActivityBroadcast();
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -637,6 +639,7 @@ export default function Messages() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
+    announce("chatting");
 
     if (activeConvo && activeConvo.partner.id && currentUser?.id) {
       socket.emit("typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
