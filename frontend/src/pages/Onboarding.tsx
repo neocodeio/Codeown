@@ -522,13 +522,19 @@ export default function Onboarding() {
                     {bio.length}/160
                   </span>
                 </div>
-                <textarea
-                  placeholder="Tell the world your story..."
-                  value={bio}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 160) setBio(e.target.value);
-                  }}
-                  rows={3}
+                  <textarea
+                    placeholder="Tell the world your story..."
+                    value={bio}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val.length <= 160) {
+                        setBio(val);
+                      } else {
+                        // Truncate to 160 so pasting long text still works (pulls the first 160)
+                        setBio(val.substring(0, 160));
+                      }
+                    }}
+                    rows={3}
                   style={{
                     ...inputStyle,
                     resize: "none",
