@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
 
@@ -18,6 +18,42 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
   const [loading, setLoading] = useState(true);
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Mouse Drag to Scroll Logic
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // scroll-fast
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  useEffect(() => {
+    if (scrollRef.current && !loading) {
+        // Smooth scroll to the end (most recent activity)
+        scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [loading, data]);
 
   useEffect(() => {
     if (!githubUrl) return;
@@ -171,13 +207,23 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
            </span>
         </div>
       </div>
-      <div style={{ 
+      <div 
+        ref={scrollRef}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        style={{ 
           overflowX: "auto",
           width: "100%",
           paddingBottom: "4px",
           msOverflowStyle: "none",
-          scrollbarWidth: "none"
-      }} className="hide-scrollbar">
+          scrollbarWidth: "none",
+          cursor: isDragging ? "grabbing" : "grab",
+          userSelect: "none"
+        }} 
+        className="hide-scrollbar"
+      >
         <div style={{ 
             display: "grid", 
             gridTemplateColumns: "repeat(52, 1fr)", 

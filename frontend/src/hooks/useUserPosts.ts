@@ -1,37 +1,26 @@
-import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import type { Post } from "./usePosts";
 
 export function useUserPosts(userId: string | null) {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  const { data: posts = [], isLoading: loading } = useQuery({
+    queryKey: ["userPosts", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      const res = await api.get(`/posts/user/${userId}`);
+      const postsData = Array.isArray(res.data) ? res.data : (res.data?.posts || res.data?.data || []);
+      return postsData as Post[];
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   const fetchUserPosts = async () => {
-    if (!userId) {
-      setLoading(false);
-      setPosts([]);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await api.get(`/posts/user/${userId}`);
-      // Ensure posts is always an array
-      const postsData = Array.isArray(res.data) ? res.data : (res.data?.posts || res.data?.data || []);
-      setPosts(postsData);
-    } catch (error) {
-      console.error("Error fetching user posts:", error);
-      setPosts([]);
-    } finally {
-      setLoading(false);
-    }
+    await queryClient.invalidateQueries({ queryKey: ["userPosts", userId] });
   };
-
-  useEffect(() => {
-    fetchUserPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
 
   return { posts, loading, fetchUserPosts };
 }
-

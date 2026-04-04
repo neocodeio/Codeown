@@ -1,37 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
-import { useClerkAuth } from "./useClerkAuth";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
-import type { Project } from "../types/project";
 
 export function useUserProjects(userId: string | null) {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { getToken } = useClerkAuth();
+  const queryClient = useQueryClient();
 
-  const fetchUserProjects = useCallback(async () => {
-    if (!userId) {
-      setProjects([]);
-      setLoading(false);
-      return;
-    }
+  const { data: projects = [], isLoading: loading } = useQuery({
+    queryKey: ["userProjects", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      const res = await api.get(`/projects/user/${userId}`);
+      const projectsData = Array.isArray(res.data) ? res.data : (res.data?.projects || res.data?.data || []);
+      return projectsData;
+    },
+    enabled: !!userId,
+    staleTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
-    try {
-      const token = await getToken();
-      const response = await api.get(`/users/${userId}/projects`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      setProjects(response.data || []);
-    } catch (error) {
-      console.error("Error fetching user projects:", error);
-      setProjects([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, getToken]);
-
-  useEffect(() => {
-    fetchUserProjects();
-  }, [userId]);
+  const fetchUserProjects = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["userProjects", userId] });
+  };
 
   return { projects, loading, fetchUserProjects };
 }
