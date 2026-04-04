@@ -442,7 +442,8 @@ export default function Feed() {
                 {isDesktop && (
                     <aside style={{
                         width: "340px",
-                        paddingLeft: "12px",
+                        paddingLeft: 0,
+                        paddingTop: 0,
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
