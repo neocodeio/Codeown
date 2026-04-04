@@ -5,14 +5,13 @@ import MentionInput from "./MentionInput";
 import { useCommentLikes } from "../hooks/useCommentLikes";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { faHeart as faHeartSolid, faHeart as faHeartRegular, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
-import { Gif, X } from "phosphor-react";
+import { Gif } from "phosphor-react";
 import GifPicker from "./GifPicker";
 import RollingNumber from "./RollingNumber";
 
@@ -43,7 +42,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
   const [submitting, setSubmitting] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
-  const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType, false, comment.like_count);
+  const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType, undefined, comment.like_count);
   const { isSignedIn, user } = useClerkUser();
   const navigate = useNavigate();
   const { width } = useWindowSize();
@@ -177,7 +176,30 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
               {selectedGif && (
                 <div style={{ position: "relative", width: "fit-content", marginBottom: "12px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                   <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "120px", display: "block" }} />
-                  <button onClick={() => setSelectedGif(null)} style={{ position: "absolute", top: "4px", right: "4px", backgroundColor: "rgba(0,0,0,0.6)", color: "#fff", border: "none", width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><X size={10} weight="bold" /></button>
+                  <button 
+                    onClick={() => setSelectedGif(null)} 
+                    style={{ 
+                      position: "absolute", top: "6px", right: "6px", 
+                      backgroundColor: "rgba(0,0,0,0.75)", color: "#fff", border: "none", 
+                      width: "24px", height: "24px", borderRadius: "50%", 
+                      display: "flex", alignItems: "center", justifyContent: "center", 
+                      cursor: "pointer", transition: "all 0.15s ease",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                      backdropFilter: "blur(4px)",
+                      zIndex: 10
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#000";
+                      e.currentTarget.style.transform = "scale(1.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.75)";
+                      e.currentTarget.style.transform = "scale(1)";
+                      e.currentTarget.style.color = "#ffffff";
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faXmark} style={{ fontSize: "14px" }} />
+                  </button>
                 </div>
               )}
               <MentionInput value={replyContent} onChange={setReplyContent} placeholder="Write a reply..." style={{ minHeight: "80px", fontSize: "14px", borderRadius: "var(--radius-sm)" }} />

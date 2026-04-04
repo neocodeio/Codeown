@@ -5,8 +5,8 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import CommentBlock, { type CommentWithMeta } from "./CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
-import { Gif, X } from "phosphor-react";
+import { faComment, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { Gif } from "phosphor-react";
 import { useAvatar } from "../hooks/useAvatar";
 import GifPicker from "./GifPicker";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
@@ -228,12 +228,27 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                 <button 
                   onClick={() => setSelectedGif(null)}
                   style={{
-                    position: "absolute", top: "4px", right: "4px", backgroundColor: "rgba(0,0,0,0.6)",
-                    color: "#fff", border: "none", width: "20px", height: "20px", borderRadius: "50%",
-                    display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "10px"
+                    position: "absolute", top: "6px", right: "6px",
+                    backgroundColor: "rgba(0,0,0,0.75)",
+                    color: "#ffffff", border: "none", width: "26px", height: "26px", borderRadius: "50%",
+                    display: "flex", alignItems: "center", justifyContent: "center", 
+                    cursor: "pointer", transition: "all 0.15s ease",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                    backdropFilter: "blur(4px)",
+                    zIndex: 10
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#000";
+                    e.currentTarget.style.transform = "scale(1.1)";
+                    e.currentTarget.style.color = "#fff";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.75)";
+                    e.currentTarget.style.transform = "scale(1)";
+                    e.currentTarget.style.color = "#ffffff";
                   }}
                 >
-                  <X size={12} weight="bold" />
+                  <FontAwesomeIcon icon={faXmark} style={{ fontSize: "14px" }} />
                 </button>
               </div>
             )}
