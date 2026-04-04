@@ -4,13 +4,103 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Rocket, Users, Trophy } from "phosphor-react";
+import { Users, Trophy, CaretUp, CaretRight } from "phosphor-react";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
 import VerifiedBadge from "./VerifiedBadge";
 import { formatRelativeDate } from "../utils/date";
+import { useProjectLikes } from "../hooks/useProjectLikes";
 
 import AvailabilityBadge from "./AvailabilityBadge";
+
+const getInitials = (title: string) => {
+    const parts = title.trim().split(/\s+/);
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return title.substring(0, 2).toUpperCase();
+};
+
+function RecentLaunchItem({ project }: { project: any }) {
+    const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id, project.isLiked, project.likes_count || project.like_count || 0);
+
+    return (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }} className="sidebar-item">
+            <Link 
+                to={`/project/${project.id}`} 
+                style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", flex: 1, minWidth: 0 }}
+            >
+                <div style={{ 
+                    width: "42px", 
+                    height: "42px", 
+                    borderRadius: "50%", 
+                    backgroundColor: "var(--bg-hover)", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    border: "0.5px solid var(--border-hairline)",
+                    fontSize: "14px",
+                    fontWeight: 800,
+                    color: "var(--text-primary)",
+                    letterSpacing: "-0.02em"
+                }}>
+                    {project.cover_image ? (
+                        <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} alt="" />
+                    ) : (
+                        getInitials(project.title)
+                    )}
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
+                    <span style={{ 
+                        fontSize: "14px", 
+                        fontWeight: 700, 
+                        color: "var(--text-primary)", 
+                        whiteSpace: "nowrap", 
+                        overflow: "hidden", 
+                        textOverflow: "ellipsis" 
+                    }}>
+                        {project.title}
+                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px", whiteSpace: "nowrap" }}>
+                        <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 400 }}>
+                            By {(project.user?.name || "User").split(" ")[0]} · {formatRelativeDate(project.created_at)}
+                        </span>
+                    </div>
+                </div>
+            </Link>
+            
+            <button 
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLike(); }}
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "42px",
+                    height: "48px",
+                    borderRadius: "14px",
+                    border: isLiked ? "none" : "0.5px solid var(--border-hairline)",
+                    backgroundColor: isLiked ? "var(--bg-hover)" : "transparent",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                    flexShrink: 0
+                }}
+                onMouseEnter={(e) => { if (!isLiked) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
+                onMouseLeave={(e) => { if (!isLiked) e.currentTarget.style.backgroundColor = "transparent"; }}
+            >
+                <CaretUp size={14} weight={isLiked ? "bold" : "regular"} style={{ color: isLiked ? "var(--text-primary)" : "var(--text-tertiary)", marginBottom: "-2px" }} />
+                <span style={{ 
+                    fontSize: "12px", 
+                    fontWeight: 800, 
+                    color: isLiked ? "var(--text-primary)" : "var(--text-secondary)" 
+                }}>
+                    {likeCount}
+                </span>
+            </button>
+        </div>
+    );
+}
 
 export default function RecommendedUsersSidebar() {
     const { width } = useWindowSize();
@@ -50,12 +140,14 @@ export default function RecommendedUsersSidebar() {
     const { data: projects = [], isLoading: projectsLoading } = useQuery({
         queryKey: ["recentProjects", "sidebar"],
         queryFn: async () => {
-            const response = await api.get("/projects?limit=6");
+            const token = await getToken();
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const response = await api.get("/projects?limit=5", { headers });
             const projectsData = response.data.projects || (Array.isArray(response.data) ? response.data : (response.data.data || []));
-            return projectsData.slice(0, 6);
+            return projectsData.slice(0, 5);
         },
         enabled: isDesktop,
-        staleTime: 10 * 60 * 1000,
+        staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: false,
     });
 
@@ -350,30 +442,27 @@ export default function RecommendedUsersSidebar() {
             {!projectsLoading && projects.length > 0 && (
                 <div className="sidebar-section">
                     <div className="sidebar-title-row">
-                        <h3 className="sidebar-title">
-                            <Rocket size={16} weight="regular" />
-                            Recent Launches
+                        <h3 className="sidebar-title" style={{ fontSize: "12px", fontWeight: "700", letterSpacing: "0.05em", color: "var(--text-primary)" }}>
+                            RECENT LAUNCHES
                         </h3>
+                        <Link
+                            to="/?type=projects"
+                            style={{
+                                fontSize: "11px",
+                                color: "var(--text-tertiary)",
+                                textDecoration: "none",
+                                fontWeight: 500,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "2px"
+                            }}
+                        >
+                            All <CaretRight size={10} />
+                        </Link>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                         {projects.map(project => (
-                            <Link key={project.id} to={`/project/${project.id}`} style={{ display: "flex", gap: "16px", textDecoration: "none" }} className="sidebar-item">
-                                <div style={{ width: "44px", height: "44px", borderRadius: "10px", overflow: "hidden", backgroundColor: "var(--bg-hover)", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}>
-                                    {project.cover_image ? (
-                                        <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
-                                    ) : (
-                                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: "var(--text-tertiary)" }}>•</div>
-                                    )}
-                                </div>
-                                <div style={{ display: "flex", flexDirection: "column", minWidth: 0, justifyContent: "center", gap: "1px" }}>
-                                    <span style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{project.title}</span>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                        <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: 400 }}>By {(project.user?.name || "User").split(" ")[0]}</span>
-                                        <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="12px" />
-                                    </div>
-                                    <span style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "1px" }}>{formatRelativeDate(project.created_at)}</span>
-                                </div>
-                            </Link>
+                            <RecentLaunchItem key={project.id} project={project} />
                         ))}
                     </div>
                 </div>
