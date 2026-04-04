@@ -4,7 +4,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Rocket, Users, Star, Trophy, Medal, Crown } from "phosphor-react";
+import { Rocket, Users, Trophy } from "phosphor-react";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
 import VerifiedBadge from "./VerifiedBadge";
