@@ -10,7 +10,7 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, Bug, Sparkle, Trophy, Question, Lightbulb } from "phosphor-react";
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, Bug, Sparkle, Trophy, Question, Lightbulb, ArrowsClockwise } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -283,7 +283,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
               {formatRelativeDate(post.created_at)}
             </span>
-            {post.post_type && post.post_type !== "Update" && (
+            {post.post_type && (
               <>
                 <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
                 <span style={{ 
@@ -299,6 +299,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   border: "0.5px solid var(--border-hairline)"
                 }}>
                   <span style={{ display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}>
+                    {post.post_type === "Update" && <ArrowsClockwise size={12} weight="bold" />}
                     {post.post_type === "Bug" && <Bug size={12} weight="bold" />}
                     {post.post_type === "Vibe" && <Sparkle size={12} weight="bold" />}
                     {post.post_type === "Milestone" && <Trophy size={12} weight="bold" />}

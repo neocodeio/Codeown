@@ -16,7 +16,7 @@ export async function getPosts(req: Request, res: Response) {
     // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, poll, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)", { count: "exact" })
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, poll, post_type, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)", { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
       .order("created_at", { ascending: false });
 
@@ -223,7 +223,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Fetch posts for the user with specific columns only
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, poll")
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, poll, post_type")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
