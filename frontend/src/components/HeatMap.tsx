@@ -19,9 +19,8 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
-  if (!githubUrl) return null;
-
   useEffect(() => {
+    if (!githubUrl) return;
     const fetchActivity = async () => {
       try {
         setLoading(true);
@@ -112,7 +111,7 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
             if (dayData?.source === 'github') color = "#238636"; // GitHub Green
             else if (dayData?.source === 'codeown') color = "var(--text-primary)"; // Codeown Theme Color
             else color = "var(--text-primary)"; // Mixed
-
+ 
             if (count > 10) opacity = 1;
             else if (count > 5) opacity = 0.7;
             else opacity = 0.4;
@@ -134,6 +133,8 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
     }
     return squares;
   };
+
+  if (!githubUrl) return null;
 
   if (loading) {
     return <div style={{ height: "100px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)", fontSize: "12px" }}>Loading contributions...</div>;
