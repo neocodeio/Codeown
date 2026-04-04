@@ -12,11 +12,13 @@ import { formatProfileJoinDate } from "../utils/date";
 import {
   Calendar,
   Rocket,
+  Buildings,
   SquaresFour,
   PushPin,
   MapPin,
   Link,
-  IdentificationCard
+  IdentificationCard,
+  FileText
 } from "phosphor-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,6 +30,8 @@ import Lightbox from "../components/Lightbox";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { HeatMap } from "../components/HeatMap";
+import { StartupCard } from "../components/StartupCard";
+import { getStartups } from "../api/startups";
 // import StreakBadge from "../components/StreakBadge";
 
 interface User {
@@ -78,7 +82,9 @@ export default function UserProfile() {
 
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
-  const [activeTab, setActiveTab] = useState<"posts" | "projects">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "startups">("posts");
+  const [startups, setStartups] = useState<any[]>([]);
+  const [loadingStartups, setLoadingStartups] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
   const isDesktop = width >= 1200;
@@ -147,6 +153,25 @@ export default function UserProfile() {
 
     fetchUser();
   }, [userId, username, isSignedIn, currentUser?.id, getToken]);
+
+  useEffect(() => {
+    const fetchStartups = async () => {
+      if (!user?.id || activeTab !== "startups") return;
+      try {
+        setLoadingStartups(true);
+        // Using our shared helper for consistency
+        const data = await getStartups(undefined, undefined, user.id);
+        // Explicit frontend filter as a failsafe
+        const ownerOnly = Array.isArray(data) ? data.filter(s => s.owner_id === user.id) : [];
+        setStartups(ownerOnly);
+      } catch (error) {
+        console.error("Error fetching user startups:", error);
+      } finally {
+        setLoadingStartups(false);
+      }
+    };
+    fetchStartups();
+  }, [user?.id, activeTab]);
 
   const handleFollow = async () => {
     const targetId = user?.id || userId;
@@ -390,8 +415,9 @@ export default function UserProfile() {
             scrollbarWidth: "none"
           }}>
             {[
-              { id: "posts", icon: Rocket, label: "Posts" },
-              { id: "projects", icon: SquaresFour, label: "Projects" }
+              { id: "posts", icon: FileText, label: "Posts" },
+              { id: "projects", icon: SquaresFour, label: "Projects" },
+              { id: "startups", icon: Buildings, label: "Startups" }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -450,6 +476,27 @@ export default function UserProfile() {
                       <PostCard post={p} onUpdated={fetchUserPosts} />
                     </div>
                   ))
+                )}
+              </div>
+            ) : activeTab === "startups" ? (
+              <div className="tab-content-enter">
+                {loadingStartups ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                    {[...Array(2)].map((_, i) => (
+                      <div key={i} className="skeleton-pulse" style={{ height: "160px", width: "100%", borderRadius: "var(--radius-sm)" }} />
+                    ))}
+                  </div>
+                ) : startups.length === 0 ? (
+                  <div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
+                    <Buildings size={40} weight="thin" style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
+                    <p style={{ fontWeight: 500, fontSize: "14px" }}>No startups yet</p>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                    {startups.map((s) => (
+                      <StartupCard key={s.id} startup={s} />
+                    ))}
+                  </div>
                 )}
               </div>
             ) : (

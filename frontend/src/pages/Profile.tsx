@@ -22,6 +22,8 @@ import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import ProfileStrength from "../components/ProfileStrength";
 import { HeatMap } from "../components/HeatMap";
+import { StartupCard } from "../components/StartupCard";
+import { getStartups } from "../api/startups";
 import {
   PencilSimple,
   SignOut,
@@ -30,6 +32,7 @@ import {
   CalendarBlank,
   SquaresFour,
   Rocket,
+  Buildings,
   BookmarkSimple,
   DotsThreeVertical,
   PushPin,
@@ -42,7 +45,8 @@ import {
   ChartBar,
   IdentificationCard,
   Plus,
-  Handshake
+  Handshake,
+  FileText
 } from "phosphor-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -94,11 +98,13 @@ export default function Profile() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "saved" | "applications">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "startups" | "saved" | "applications">("posts");
   const [savedSubTab, setSavedSubTab] = useState<"posts" | "projects">("posts");
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [startups, setStartups] = useState<any[]>([]);
+  const [loadingStartups, setLoadingStartups] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
   const [applications, setApplications] = useState<any[]>([]);
@@ -210,6 +216,25 @@ export default function Profile() {
     };
     fetchApplications();
   }, [userId, getToken, activeTab]);
+
+  useEffect(() => {
+    const fetchStartups = async () => {
+      if (!userId || activeTab !== "startups") return;
+      try {
+        setLoadingStartups(true);
+        // Use our centralized helper which correctly appends ?ownerId=
+        const data = await getStartups(undefined, undefined, userId);
+        // Fallback filter to be 100% sure the backend only returned OUR startups
+        const userOnlyStartups = Array.isArray(data) ? data.filter(s => s.owner_id === userId) : [];
+        setStartups(userOnlyStartups);
+      } catch (error) {
+        console.error("Error fetching user startups:", error);
+      } finally {
+        setLoadingStartups(false);
+      }
+    };
+    fetchStartups();
+  }, [userId, activeTab]);
 
   const handleSignOut = async () => {
     try {
@@ -862,8 +887,9 @@ export default function Profile() {
             padding: isMobile ? "0 16px" : "0"
           }}>
             {[
-              { id: "posts", icon: Rocket, label: "Posts" },
+              { id: "posts", icon: FileText, label: "Posts" },
               { id: "projects", icon: SquaresFour, label: "Projects" },
+              { id: "startups", icon: Buildings, label: "Startups" },
               { id: "applications", icon: Handshake, label: "Applications" },
               { id: "saved", icon: BookmarkSimple, label: "Saved" }
             ].map((tab) => (
@@ -963,6 +989,45 @@ export default function Profile() {
                   </div>
                 )
                 }
+              </div>
+            )}
+
+            {activeTab === "startups" && (
+              <div className="tab-content-enter">
+                {loadingStartups ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                    {[...Array(2)].map((_, i) => (
+                      <div key={i} className="skeleton-pulse" style={{ height: "160px", width: "100%", borderRadius: "var(--radius-sm)" }} />
+                    ))}
+                  </div>
+                ) : startups.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "80px 20px" }}>
+                    <Buildings size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                    <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px", marginBottom: "24px" }}>No startups founded yet.</p>
+                    <button
+                      onClick={() => navigate("/startup/new")}
+                      style={{
+                        margin: "0 auto",
+                        padding: "10px 24px",
+                        borderRadius: "var(--radius-sm)",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        backgroundColor: "var(--text-primary)",
+                        color: "var(--bg-page)",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Launch a Startup
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                    {startups.map((s) => (
+                      <StartupCard key={s.id} startup={s} />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

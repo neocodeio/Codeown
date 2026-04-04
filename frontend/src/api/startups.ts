@@ -1,11 +1,12 @@
 import api from './axios.ts';
 import type { Startup, JobPosting, StartupUpdate } from '../types/startup.ts';
 
-export const getStartups = async (searchQuery?: string, status?: string) => {
+export const getStartups = async (searchQuery?: string, status?: string, ownerId?: string) => {
     const { data } = await api.get<Startup[]>('/startups', {
         params: {
             searchQuery: searchQuery || undefined,
-            status: (status && status !== 'All') ? status : undefined
+            status: (status && status !== 'All') ? status : undefined,
+            ownerId: ownerId || undefined
         }
     });
     return data;

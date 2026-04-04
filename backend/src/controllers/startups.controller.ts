@@ -6,9 +6,10 @@ import { emitUpdate } from "../lib/socket.js";
 
 export async function getStartups(req: Request, res: Response) {
   try {
+    const ownerIdParam = req.query.ownerId || req.query.owner_id;
     const { searchQuery, status } = req.query;
     const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
-    console.log(`[getStartups] QUERY: search=${searchQuery}, status=${status}, user=${userId}`);
+    console.log(`[getStartups] QUERY: search=${searchQuery}, status=${status}, ownerId=${ownerIdParam}, user=${userId}`);
     
     let query = supabase
       .from("startups")
@@ -30,6 +31,10 @@ export async function getStartups(req: Request, res: Response) {
 
     if (searchQuery) {
       query = query.or(`name.ilike."%${searchQuery}%",tagline.ilike."%${searchQuery}%",description.ilike."%${searchQuery}%"`);
+    }
+
+    if (ownerIdParam) {
+      query = query.eq("owner_id", ownerIdParam);
     }
 
     if (status && !["All", "Most Upvoted"].includes(status as string)) {
