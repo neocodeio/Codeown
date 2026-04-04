@@ -34,6 +34,7 @@ export interface Post {
     votes?: Record<number, number>;
     userVoted?: number;
   } | null;
+  post_type?: string | null;
 }
 
 export type FeedFilter = "all" | "following" | "contributors";

@@ -393,7 +393,7 @@ export async function getPostsByUser(req: Request, res: Response) {
 export async function createPost(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { title, content, images, tags, language, poll } = req.body;
+    const { title, content, images, tags, language, poll, post_type } = req.body;
 
     // Validate input - Title is now optional
     const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
@@ -495,6 +495,7 @@ export async function createPost(req: Request, res: Response) {
         tags: allTags.length > 0 ? allTags : null,
         language: langCode,
         poll: poll || null,
+        post_type: post_type || "Update",
       })
       .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)")
       .single();

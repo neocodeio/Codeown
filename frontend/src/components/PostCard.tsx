@@ -10,7 +10,7 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin } from "phosphor-react";
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, Bug, Sparkle, Trophy, Question, Lightbulb } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -283,6 +283,32 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
               {formatRelativeDate(post.created_at)}
             </span>
+            {post.post_type && post.post_type !== "Update" && (
+              <>
+                <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
+                <span style={{ 
+                  fontSize: "11px", 
+                  fontWeight: 700, 
+                  color: "var(--text-primary)",
+                  backgroundColor: "var(--bg-hover)",
+                  padding: "2px 8px",
+                  borderRadius: "100px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  border: "0.5px solid var(--border-hairline)"
+                }}>
+                  <span style={{ display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}>
+                    {post.post_type === "Bug" && <Bug size={12} weight="bold" />}
+                    {post.post_type === "Vibe" && <Sparkle size={12} weight="bold" />}
+                    {post.post_type === "Milestone" && <Trophy size={12} weight="bold" />}
+                    {post.post_type === "Question" && <Question size={12} weight="bold" />}
+                    {post.post_type === "Idea" && <Lightbulb size={12} weight="bold" />}
+                  </span>
+                  {post.post_type}
+                </span>
+              </>
+            )}
           </div>
 
           {isOwnPost && (

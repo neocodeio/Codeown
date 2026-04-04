@@ -4,7 +4,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Image as ImageIcon, ListPlus, PlusCircle, MinusCircle } from "phosphor-react";
+import { Image as ImageIcon, ListPlus, PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Bug, Sparkle, Trophy, Question, Lightbulb } from "phosphor-react";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
 import { validateImageSize } from "../constants/upload";
@@ -22,8 +22,11 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const [images, setImages] = useState<string[]>([]);
     const [isPoll, setIsPoll] = useState(false);
     const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
+    const [postType, setPostType] = useState("Update");
+    const [isTypeMenuOpen, setIsTypeMenuOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const typeMenuRef = useRef<HTMLDivElement>(null);
     const { getToken, isLoaded } = useClerkAuth();
     const { user, isSignedIn } = useClerkUser();
     const [isOG, setIsOG] = useState(false);
@@ -139,6 +142,18 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         setPollOptions(newOptions);
     };
 
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (typeMenuRef.current && !typeMenuRef.current.contains(e.target as Node)) {
+                setIsTypeMenuOpen(false);
+            }
+        };
+        if (isTypeMenuOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isTypeMenuOpen]);
+
     const handleSubmit = async () => {
         if ((!content.trim() && images.length === 0 && !isPoll) || isSubmitting || !isLoaded) return;
 
@@ -162,7 +177,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 content: content.trim(),
                 images: images.length > 0 ? images : null,
                 poll: isPoll ? { options: pollOptions.filter(o => o.trim() !== "") } : null,
-                language: "en"
+                language: "en",
+                post_type: postType
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -205,7 +221,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 display: "flex",
                 gap: "16px",
                 position: "relative",
-                overflow: "hidden" // Keep the guard contained
+                zIndex: isTypeMenuOpen ? 2000 : 1 // Ensure it sits above feed posts when menu is open
             }}
         >
             {/* OG Presence Guard - Vertical Pill anchor */}
@@ -433,14 +449,16 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     </div>
                 )}
 
+
                 <div style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                     paddingTop: "16px",
-                    borderTop: (content.length > 0 || images.length > 0 || isPoll) ? "0.5px solid var(--border-hairline)" : "none"
+                    borderTop: (content.length > 0 || images.length > 0 || isPoll) ? "0.5px solid var(--border-hairline)" : "none",
+                    gap: "12px",
                 }}>
-                    <div style={{ display: "flex", gap: "8px", color: "var(--text-tertiary)" }}>
+                    <div style={{ display: "flex", gap: "10px", color: "var(--text-tertiary)", alignItems: "center" }}>
                         <input
                             type="file"
                             multiple
@@ -458,7 +476,10 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 cursor: "pointer",
                                 padding: "8px",
                                 borderRadius: "100px",
-                                transition: "all 0.2s"
+                                transition: "all 0.2s",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center"
                             }}
                             onMouseEnter={e => {
                                 e.currentTarget.style.color = "var(--text-primary)";
@@ -469,7 +490,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 e.currentTarget.style.backgroundColor = "transparent";
                             }}
                         >
-                            <ImageIcon size={22} weight="regular" />
+                            <ImageIcon size={20} weight="regular" />
                         </button>
                         <button
                             onClick={() => setIsPoll(!isPoll)}
@@ -480,7 +501,10 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 cursor: "pointer",
                                 padding: "8px",
                                 borderRadius: "100px",
-                                transition: "all 0.2s"
+                                transition: "all 0.2s",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center"
                             }}
                             onMouseEnter={e => {
                                 e.currentTarget.style.color = "var(--text-primary)";
@@ -492,9 +516,111 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     e.currentTarget.style.backgroundColor = "transparent";
                                 }
                             }}
+                            title="Add Poll"
                         >
-                            <ListPlus size={22} weight="regular" />
+                            <ListPlus size={20} weight="regular" />
                         </button>
+
+                        <div style={{ height: "16px", width: "1px", backgroundColor: "var(--border-hairline)", margin: "0 4px", opacity: 0.5 }} />
+
+                        {/* Post Type Dropdown */}
+                        <div style={{ position: "relative" }} ref={typeMenuRef}>
+                            <button
+                                onClick={() => setIsTypeMenuOpen(!isTypeMenuOpen)}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    padding: "5px 12px",
+                                    borderRadius: "100px",
+                                    border: "0.5px solid var(--border-hairline)",
+                                    backgroundColor: isTypeMenuOpen ? "var(--bg-hover)" : "transparent",
+                                    color: "var(--text-primary)",
+                                    fontSize: "12px",
+                                    fontWeight: 700,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s",
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                onMouseLeave={e => {
+                                    if (!isTypeMenuOpen) e.currentTarget.style.backgroundColor = "transparent";
+                                }}
+                            >
+                                <span style={{ display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}>
+                                    {postType === "Update" && <ArrowsClockwise size={14} weight="bold" />}
+                                    {postType === "Bug" && <Bug size={14} weight="bold" />}
+                                    {postType === "Vibe" && <Sparkle size={14} weight="bold" />}
+                                    {postType === "Milestone" && <Trophy size={14} weight="bold" />}
+                                    {postType === "Question" && <Question size={14} weight="bold" />}
+                                    {postType === "Idea" && <Lightbulb size={14} weight="bold" />}
+                                </span>
+                                <span style={{ textTransform: "uppercase", letterSpacing: "0.02em", fontSize: "10px", lineHeight: 1 }}>{postType}</span>
+                                <CaretDown size={10} weight="bold" style={{ opacity: 0.6 }} />
+                            </button>
+
+                            {isTypeMenuOpen && (
+                                <div style={{
+                                    position: "absolute",
+                                    top: "calc(100% + 8px)",
+                                    left: 0,
+                                    width: "160px",
+                                    backgroundColor: "var(--bg-card)",
+                                    border: "0.5px solid var(--border-hairline)",
+                                    borderRadius: "12px",
+                                    boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                                    padding: "6px",
+                                    zIndex: 1000,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "2px"
+                                }}>
+                                    {[
+                                        { label: "Update", icon: <ArrowsClockwise size={16} /> },
+                                        { label: "Bug", icon: <Bug size={16} /> },
+                                        { label: "Vibe", icon: <Sparkle size={16} /> },
+                                        { label: "Milestone", icon: <Trophy size={16} /> },
+                                        { label: "Question", icon: <Question size={16} /> },
+                                        { label: "Idea", icon: <Lightbulb size={16} /> }
+                                    ].map((type) => (
+                                        <button
+                                            key={type.label}
+                                            onClick={() => {
+                                                setPostType(type.label);
+                                                setIsTypeMenuOpen(false);
+                                            }}
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "10px",
+                                                padding: "8px 12px",
+                                                borderRadius: "8px",
+                                                border: "none",
+                                                backgroundColor: postType === type.label ? "var(--bg-hover)" : "transparent",
+                                                color: postType === type.label ? "var(--text-primary)" : "var(--text-secondary)",
+                                                fontSize: "13px",
+                                                fontWeight: 500,
+                                                cursor: "pointer",
+                                                textAlign: "left",
+                                                transition: "all 0.15s"
+                                            }}
+                                            onMouseEnter={e => {
+                                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                                e.currentTarget.style.color = "var(--text-primary)";
+                                            }}
+                                            onMouseLeave={e => {
+                                                if (postType !== type.label) {
+                                                    e.currentTarget.style.backgroundColor = "transparent";
+                                                    e.currentTarget.style.color = "var(--text-secondary)";
+                                                }
+                                            }}
+                                        >
+                                            <span style={{ color: "var(--text-tertiary)" }}>{type.icon}</span>
+                                            {type.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                         <span style={{
