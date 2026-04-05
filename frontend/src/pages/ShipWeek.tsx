@@ -378,13 +378,14 @@ export default function ShipWeek() {
                       <button 
                         className="btn-primary" 
                         onClick={handleJoin} 
-                        disabled={isJoining}
+                        disabled={isJoining || eligibility?.isJoined}
                         style={{ 
                           width: isMobile ? "200px" : "auto",
-                          opacity: isJoining ? 0.7 : 1 
+                          opacity: (isJoining || eligibility?.isJoined) ? 0.7 : 1,
+                          cursor: eligibility?.isJoined ? "default" : "pointer"
                         }}
                       >
-                        {isJoining ? "Joining..." : "Join Competition"}
+                        {isJoining ? "Joining..." : (eligibility?.isJoined ? "You are in! 🚀" : "Join Competition")}
                       </button>
                       {isAdmin && (
                         <button className="btn-secondary" onClick={() => setIsLaunchModalOpen(true)}>

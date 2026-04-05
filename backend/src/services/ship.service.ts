@@ -24,10 +24,18 @@ export class ShipService {
 
     if (error) throw error;
 
+    const { data: participation } = await supabase
+      .from("ship_participants")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("week_id", weekId)
+      .maybeSingle();
+
     return {
       eligible: (count || 0) >= 3,
       count: count || 0,
-      required: 3
+      required: 3,
+      isJoined: !!participation
     };
   }
 
