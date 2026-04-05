@@ -256,10 +256,6 @@ export default function Navbar() {
           <House size={20} weight={location.pathname === "/" ? "bold" : "regular"} />
           Feed
         </Link>
-        <Link to="/ship" style={linkStyle("/ship")} aria-label="Ship Week Competition">
-          <Trophy size={20} weight={location.pathname === "/ship" ? "bold" : "regular"} />
-          Ship Week
-        </Link>
         <Link to="/search" style={linkStyle("/search")} aria-label="Search and Discover">
           <MagnifyingGlass size={20} weight={location.pathname === "/search" ? "bold" : "regular"} />
           Search
@@ -267,6 +263,10 @@ export default function Navbar() {
         <Link to="/leaderboard" style={linkStyle("/leaderboard")} aria-label="Leaderboard">
           <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "regular"} />
           Leaderboard
+        </Link>
+        <Link to="/ship" style={linkStyle("/ship")} aria-label="Ship Week Competition">
+          <Trophy size={20} weight={location.pathname === "/ship" ? "bold" : "regular"} />
+          Ship Week
         </Link>
         <Link to="/ogs" style={linkStyle("/ogs")} aria-label="Founding OGs">
           <Medal size={20} weight={location.pathname === "/ogs" ? "bold" : "regular"} />
