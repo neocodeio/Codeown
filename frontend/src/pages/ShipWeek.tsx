@@ -242,12 +242,18 @@ export default function ShipWeek() {
                 <button 
                   onClick={() => setIsAdminModalOpen(true)}
                   style={{ 
-                    marginLeft: "16px", padding: "8px 14px", 
+                    marginLeft: "24px", 
+                    width: "44px", height: "44px",
+                    display: "inline-flex", alignItems: "center", justifyContent: "center",
                     backgroundColor: "var(--bg-hover)", border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "50%", cursor: "pointer", verticalAlign: "middle"
+                    borderRadius: "50%", cursor: "pointer", 
+                    verticalAlign: "middle",
+                    transition: "all 0.2s var(--ease-smooth)"
                   }}
+                  onMouseOver={(e) => e.currentTarget.style.borderColor = "var(--text-primary)"}
+                  onMouseOut={(e) => e.currentTarget.style.borderColor = "var(--border-hairline)"}
                 >
-                  <Plus size={24} weight="bold" />
+                  <Plus size={20} weight="bold" />
                 </button>
               )}
             </h1>
