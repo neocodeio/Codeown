@@ -4,7 +4,6 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import { 
-  Rocket, 
   Trophy, 
   Medal, 
   Plus, 
@@ -18,7 +17,7 @@ import {
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import { formatDistanceToNow } from "date-fns";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import LaunchCompetitionModal from "../components/LaunchCompetitionModal";
 import SubmitProjectModal from "../components/SubmitProjectModal";
 import GoldenShipBadge from "../components/GoldenShipBadge";
@@ -115,9 +114,17 @@ export default function ShipWeek() {
   if (loading) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
-        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
-            <Rocket size={32} weight="fill" color="var(--text-primary)" />
-        </motion.div>
+        <div style={{
+          width: "24px",
+          height: "24px",
+          border: "2px solid var(--border-hairline)",
+          borderTopColor: "var(--text-primary)",
+          borderRadius: "50%",
+          animation: "spin 0.8s linear infinite"
+        }} />
+        <style>{`
+          @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        `}</style>
       </div>
     );
   }
@@ -279,6 +286,48 @@ export default function ShipWeek() {
           border-radius: 20px;
           padding: 28px;
           margin-bottom: 24px;
+        }
+
+        .tooltip-container {
+          position: relative;
+          cursor: pointer;
+        }
+
+        .tooltip-box {
+          position: absolute;
+          bottom: 100%;
+          right: 0;
+          width: 200px;
+          background: var(--bg-card);
+          border: 1px solid var(--border-hairline);
+          padding: 12px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 500;
+          color: var(--text-secondary);
+          box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          transform: translateY(10px) scale(0.95);
+          z-index: 50;
+          margin-bottom: 8px;
+          pointer-events: none;
+        }
+
+        .tooltip-box::after {
+          content: '';
+          position: absolute;
+          top: 100%;
+          right: 4px;
+          border: 6px solid transparent;
+          border-top-color: var(--border-hairline);
+        }
+
+        .tooltip-container:hover .tooltip-box {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0) scale(1);
         }
       `}</style>
 
@@ -447,20 +496,65 @@ export default function ShipWeek() {
           {/* Eligibility Card */}
           {isSignedIn && competition && (
             <div className="sidebar-widget">
-              <h3 style={{ fontSize: "16px", fontWeight: 800, marginBottom: "18px", display: "flex", alignItems: "center", gap: "10px" }}>
-                Eligibility <CheckCircle size={20} weight="fill" color={eligibility?.eligible ? "#22c55e" : "var(--text-tertiary)"} />
-              </h3>
-              
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "var(--text-secondary)", fontWeight: 600 }}>
-                <span>Updates this week</span>
-                <span>{eligibility?.count || 0} / 3</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
+                <h3 style={{ fontSize: "16px", fontWeight: 800, margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
+                  Eligibility <CheckCircle size={20} weight="fill" color={eligibility?.eligible ? "#22c55e" : "var(--text-tertiary)"} />
+                </h3>
+                <div className="tooltip-container">
+                  <div style={{ 
+                    width: "20px", height: "200px", display: "none" // placeholder for tooltip logic
+                   }}></div>
+                   <div style={{ 
+                     background: "var(--bg-hover)", 
+                     width: "18px", height: "18px", 
+                     borderRadius: "50%", 
+                     display: "flex", alignItems: "center", justifyContent: "center",
+                     border: "1px solid var(--border-hairline)",
+                     color: "var(--text-tertiary)"
+                   }}>
+                     <Info size={12} weight="bold" />
+                   </div>
+                   <div className="tooltip-box">
+                      Post 3 "Update" or "Milestone" Posts this week on Codeown to unlock the final submission button. 🚢
+                   </div>
+                </div>
               </div>
               
-              <div className="progress-bar-container">
-                <div className="progress-bar-fill" style={{ width: `${Math.min(((eligibility?.count || 0) / 3) * 100, 100)}%` }} />
+              <div style={{ 
+                display: "flex", 
+                justifyContent: "center", 
+                alignItems: "center", 
+                position: "relative",
+                width: "120px",
+                height: "120px",
+                margin: "0 auto 24px"
+              }}>
+                <svg width="120" height="120" viewBox="0 0 120 120" style={{ transform: "rotate(-90deg)" }}>
+                  <circle
+                    cx="60" cy="60" r="54"
+                    fill="none"
+                    stroke="var(--bg-hover)"
+                    strokeWidth="8"
+                  />
+                  <motion.circle
+                    cx="60" cy="60" r="54"
+                    fill="none"
+                    stroke="var(--text-primary)"
+                    strokeWidth="8"
+                    strokeDasharray="339.29"
+                    initial={{ strokeDashoffset: 339.29 }}
+                    animate={{ strokeDashoffset: 339.29 - (339.29 * Math.min(((eligibility?.count || 0) / 3), 1)) }}
+                    transition={{ duration: 1, ease: "easeInOut" }}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div style={{ position: "absolute", textAlign: "center" }}>
+                    <div style={{ fontSize: "24px", fontWeight: 800 }}>{eligibility?.count || 0}/3</div>
+                    <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, textTransform: "uppercase" }}>Ships</div>
+                </div>
               </div>
 
-              <p style={{ fontSize: "13px", color: "var(--text-tertiary)", lineHeight: 1.5, marginBottom: "20px" }}>
+              <p style={{ fontSize: "13px", color: "var(--text-tertiary)", textAlign: "center", lineHeight: 1.5, marginBottom: "20px" }}>
                 {eligibility?.eligible 
                   ? "You've shipped enough updates to submit your final feature!" 
                   : `Ship ${3 - (eligibility?.count || 0)} more updates to unlock the "Submit Ship" button.`}
