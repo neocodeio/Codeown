@@ -150,7 +150,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
               color: #94a3b8;
               margin-bottom: 16px;
               font-weight: 500;
-            }
+              }
             .footer-links a {
               color: #64748b;
               text-decoration: none;
@@ -300,7 +300,14 @@ export async function sendNewFollowerEmail(email: string, userName: string, foll
   }
 }
 
-export async function sendNewLikeEmail(email: string, userName: string, likerName: string, contentType: 'post' | 'project' | 'comment', contentId: number) {
+export async function sendNewLikeEmail(
+  email: string, 
+  userName: string, 
+  likerName: string, 
+  contentType: 'post' | 'project' | 'comment', 
+  contentId: number,
+  isSave: boolean = false
+) {
   if (!resend) return;
   try {
     const url =
@@ -309,38 +316,54 @@ export async function sendNewLikeEmail(email: string, userName: string, likerNam
         : contentType === 'comment'
         ? `/comment/${contentId}`
         : `/`;
+    
+    const actionLabel = isSave ? 'saved' : 'liked';
+    const subjectEmoji = isSave ? '🔖' : '❤️';
+    const typeLabel = contentType === 'comment' ? 'comment' : contentType;
+
     await resend.emails.send({
       from: "Codeown <notifications@codeown.space>",
       to: email,
-      subject: `${likerName} liked your ${contentType === 'comment' ? 'comment' : contentType}! ❤️`,
+      subject: `${likerName} ${actionLabel} your ${typeLabel}! ${subjectEmoji}`,
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
-          <h2>Hey ${userName},</h2>
-          <p><strong>${likerName}</strong> just liked your ${contentType}.</p>
-          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View ${contentType}</a>
+          <h2>Hey ${userName || 'Developer'},</h2>
+          <p><strong>${likerName || 'Someone'}</strong> just ${actionLabel} your ${typeLabel}.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View ${typeLabel}</a>
         </div>
       `
     });
   } catch (err) {
-    console.error("Error sending like email:", err);
+    console.error("Error sending like/save email:", err);
   }
 }
 
-export async function sendNewCommentEmail(email: string, userName: string, commenterName: string, contentId: number, contentType: 'post' | 'project' = 'post') {
-  if (!resend) return;
+export async function sendNewCommentEmail(
+  email: string, 
+  userName: string, 
+  commenterName: string, 
+  contentId: number, 
+  contentType: 'post' | 'project' = 'post',
+  isReply: boolean = false
+) {
+  if (!resend) {
+    console.warn("[EmailService] Resend not configured. Skipping comment email.");
+    return;
+  }
   try {
     const url = contentType === 'project' ? `/project/${contentId}` : `/`;
     const typeLabel = contentType === 'project' ? 'project' : 'post';
+    const actionLabel = isReply ? 'replied to you' : `commented on your ${typeLabel}`;
     
     await resend.emails.send({
       from: "Codeown <notifications@codeown.space>",
       to: email,
-      subject: `${commenterName} commented on your ${typeLabel}! 💬`,
+      subject: `${commenterName} ${actionLabel}! 💬`,
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
-          <h2>Hey ${userName},</h2>
-          <p><strong>${commenterName}</strong> just commented on your ${typeLabel}.</p>
-          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View Comment</a>
+          <h2>Hey ${userName || 'Developer'},</h2>
+          <p><strong>${commenterName || 'Someone'}</strong> just ${actionLabel} on Codeown.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View Discussion</a>
         </div>
       `
     });
@@ -571,6 +594,7 @@ export async function sendCofounderRequestEmail(
     console.error("Error sending cofounder request email:", err);
   }
 }
+
 export async function sendNewMessageEmail(email: string, userName: string, senderName: string, senderUsername: string) {
   if (!resend) return;
   try {
@@ -594,6 +618,7 @@ export async function sendNewMessageEmail(email: string, userName: string, sende
     console.error("Error sending new message email:", err);
   }
 }
+
 export async function sendMilestoneEmail(email: string, name: string, milestone: string, emoji: string) {
   if (!resend) return;
 
@@ -691,4 +716,3 @@ export async function sendStartupUpvoteEmail(email: string, userName: string, up
     console.error("Error sending startup upvote email:", err);
   }
 }
-
