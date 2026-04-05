@@ -26,7 +26,8 @@ import {
   Scroll,
   Buildings,
   Medal,
-  ChartBar
+  ChartBar,
+  Lightning
 } from "phosphor-react";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -266,6 +267,10 @@ export default function Navbar() {
         <Link to="/ogs" style={linkStyle("/ogs")} aria-label="Founding OGs">
           <Medal size={20} weight={location.pathname === "/ogs" ? "bold" : "regular"} />
           Our OGs
+        </Link>
+        <Link to="/ship-week" style={linkStyle("/ship-week")} aria-label="The Ship Week">
+          <Lightning size={20} weight={location.pathname === "/ship-week" ? "bold" : "regular"} />
+          The Ship Week
         </Link>
         <Link to="/dashboard" style={linkStyle("/dashboard")} aria-label="Creator Dashboard">
           <ChartBar size={20} weight={location.pathname === "/dashboard" ? "bold" : "regular"} />

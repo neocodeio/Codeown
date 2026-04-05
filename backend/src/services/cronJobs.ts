@@ -1,6 +1,7 @@
 import { CronJob } from 'cron';
 import { supabase } from '../lib/supabase.js';
 import { sendWeeklyDigestEmail, sendStreakWarningEmail, sendPersonalWeeklyRecapEmail } from '../lib/email.js';
+import { ShipService } from './ship.service.js';
 
 export function initializeCronJobs() {
   console.log('[Cron] Initializing scheduled jobs...');
@@ -262,6 +263,17 @@ export function initializeCronJobs() {
   });
 
   milestoneJob.start();
+
+  // Ship Week Sunday Reset (Sunday at 23:59:59)
+  const shipWeekResetJob = new CronJob('59 59 23 * * 0', async () => {
+    console.log('[Cron] Running Ship Week Reset Job...');
+    try {
+      await ShipService.closeWeek();
+    } catch (error) {
+      console.error('[Cron] Error in Ship Week Reset Job:', error);
+    }
+  });
+  shipWeekResetJob.start();
 
   console.log('[Cron] Jobs scheduled.');
 }
