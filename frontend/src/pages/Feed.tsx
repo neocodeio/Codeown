@@ -147,7 +147,7 @@ export default function Feed() {
                     {/* ── Minimalist Clean Header ── */}
                     <div style={{
                         position: "sticky",
-                        top: 0,
+                        top: isMobile ? "64px" : 0, // Account for mobile top header
                         zIndex: 100,
                         backgroundColor: "var(--bg-page)",
                         backdropFilter: "blur(20px)",
@@ -157,7 +157,7 @@ export default function Feed() {
                         <div style={{
                             display: "flex",
                             alignItems: "center",
-                            height: "56px",
+                            height: isMobile ? "48px" : "56px",
                             width: "100%",
                             position: "relative",
                             justifyContent: "center",
@@ -460,6 +460,9 @@ export default function Feed() {
             <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                @media (max-width: 768px) {
+                    main { padding-bottom: 80px !important; }
+                }
             `}</style>
             <BackToTop />
         </main>

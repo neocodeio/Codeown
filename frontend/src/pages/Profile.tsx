@@ -259,25 +259,26 @@ export default function Profile() {
   const avatarUrl = userProfile?.avatar_url || user?.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || "U")}&background=212121&color=fff&bold=true`;
 
   return (
-  <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
-      <SEO title="My Profile" description="Manage your Codeown profile and settings." />
-      <style>{`
-        @keyframes tabContentEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .tab-content-enter { animation: tabContentEnter 0.25s ease-out forwards; }
-        .tabs-row { -ms-overflow-style: none; scrollbar-width: none; }
-        .tabs-row::-webkit-scrollbar { display: none; }
-        .app-card:hover { border-color: var(--text-primary) !important; background-color: var(--bg-hover) !important; }
-      `}</style>
+    <>
+      <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
+        <SEO title="My Profile" description="Manage your Codeown profile and settings." />
+        <style>{`
+          @keyframes tabContentEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+          .tab-content-enter { animation: tabContentEnter 0.25s ease-out forwards; }
+          .tabs-row { -ms-overflow-style: none; scrollbar-width: none; }
+          .tabs-row::-webkit-scrollbar { display: none; }
+          .app-card:hover { border-color: var(--text-primary) !important; background-color: var(--bg-hover) !important; }
+        `}</style>
 
-      <div style={{
-        display: "flex",
-        justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center",
-        width: isDesktop ? "1020px" : "100%",
-        maxWidth: "1020px",
-        margin: (isDesktop && !isMobile) ? "0" : "0 auto",
-        padding: "0",
-        position: "relative",
-      }}>
+        <div style={{
+          display: "flex",
+          justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center",
+          width: isDesktop ? "1020px" : "100%",
+          maxWidth: "1020px",
+          margin: (isDesktop && !isMobile) ? "0" : "0 auto",
+          padding: "0",
+          position: "relative",
+        }}>
         <div style={{
           width: isDesktop ? "var(--feed-width)" : "100%",
           maxWidth: isDesktop ? "var(--feed-width)" : "700px",
@@ -292,7 +293,7 @@ export default function Profile() {
 
         <div style={{
           width: "100%",
-          height: isMobile ? "160px" : "240px",
+          height: isMobile ? "120px" : "240px",
           backgroundColor: "var(--bg-hover)",
           position: "relative",
           overflow: "hidden",
@@ -329,11 +330,11 @@ export default function Profile() {
         }}>
           <div
             onClick={() => setIsEditModalOpen(true)}
-            style={{ width: isMobile ? "96px" : "120px", height: isMobile ? "96px" : "120px", borderRadius: "var(--radius-sm)", cursor: "pointer", flexShrink: 0, marginBottom: "20px", position: "relative", overflow: "visible", }}
+            style={{ width: isMobile ? "80px" : "120px", height: isMobile ? "80px" : "120px", borderRadius: "var(--radius-sm)", cursor: "pointer", flexShrink: 0, marginBottom: "16px", position: "relative", overflow: "visible", }}
           >
-            <AvailabilityBadge avatarUrl={avatarUrl} name={userProfile?.name || user?.fullName || "User"} size={isMobile ? 96 : 120} isOpenToOpportunities={userProfile?.is_pro === true && userProfile?.is_hirable === true} />
-            <div style={{ position: "absolute", bottom: "8px", right: "8px", width: "32px", height: "32px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--bg-page)", zIndex: 20, boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)", transition: "transform 0.2s ease" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"} >
-              <Camera size={18} weight="bold" />
+            <AvailabilityBadge avatarUrl={avatarUrl} name={userProfile?.name || user?.fullName || "User"} size={isMobile ? 80 : 120} isOpenToOpportunities={userProfile?.is_pro === true && userProfile?.is_hirable === true} />
+            <div style={{ position: "absolute", bottom: "4px", right: "4px", width: "24px", height: "24px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--bg-page)", zIndex: 20, boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)", transition: "transform 0.2s ease" }} >
+              <Camera size={12} weight="bold" />
             </div>
           </div>
 
@@ -580,7 +581,13 @@ export default function Profile() {
         <DeveloperIDCardModal isOpen={isIDCardModalOpen} onClose={() => setIsIDCardModalOpen(false)} user={{ name: userProfile.name, username: userProfile.username, avatar_url: userProfile.avatar_url, created_at: userProfile.created_at, skills: userProfile.skills || [], is_pro: userProfile.is_pro || false, bio: userProfile.bio || "" }} projectsCount={projects.length} />
       )}
         {isDesktop && !isMobile && ( <aside style={{ width: "340px", padding: "0 0 24px 12px", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}> <RecommendedUsersSidebar /> </aside> )}
-      </div>
-    </main>
+        </div>
+        <style>{`
+          @media (max-width: 768px) {
+            main { padding-top: 64px !important; padding-bottom: 100px !important; }
+          }
+        `}</style>
+      </main>
+    </>
   );
 }

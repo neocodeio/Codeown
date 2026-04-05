@@ -185,27 +185,28 @@ export default function UserProfile() {
   const lastName = lastNameParts.join(" ");
 
   return (
-    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
-      <SEO title={`${user.name} (@${user.username})`} description={seoDescription} image={avatarUrl} type="profile" author={user.name} username={user.username || undefined} firstName={firstName} lastName={lastName} keywords={[user.name, user.username || "", ...(user.skills || [])]} />
-      <style>{`
-        @keyframes tabContentEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .tab-content-enter { animation: tabContentEnter 0.25s ease-out forwards; }
-        .tabs-row { -ms-overflow-style: none; scrollbar-width: none; }
-        .tabs-row::-webkit-scrollbar { display: none; }
-      `}</style>
+    <>
+      <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
+        <SEO title={`${user.name} (@${user.username})`} description={seoDescription} image={avatarUrl} type="profile" author={user.name} username={user.username || undefined} firstName={firstName} lastName={lastName} keywords={[user.name, user.username || "", ...(user.skills || [])]} />
+        <style>{`
+          @keyframes tabContentEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+          .tab-content-enter { animation: tabContentEnter 0.25s ease-out forwards; }
+          .tabs-row { -ms-overflow-style: none; scrollbar-width: none; }
+          .tabs-row::-webkit-scrollbar { display: none; }
+        `}</style>
 
-      <div style={{ display: "flex", justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center", width: isDesktop ? "1020px" : "100%", maxWidth: "1020px", margin: (isDesktop && !isMobile) ? "0" : "0 auto", padding: "0", position: "relative", }}>
-        <div style={{ width: isDesktop ? "var(--feed-width)" : "100%", maxWidth: isDesktop ? "var(--feed-width)" : "700px", margin: isDesktop ? "0" : "0 auto", flexShrink: 0, borderLeft: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)", borderRight: (isDesktop && !isMobile) ? "0.5px solid var(--border-hairline)" : "none", backgroundColor: "var(--bg-page)", minHeight: "100vh", position: "relative", }}>
-          <div style={{ width: "100%", height: isMobile ? "160px" : "240px", backgroundColor: "var(--bg-hover)", position: "relative", overflow: "hidden", borderBottom: "0.5px solid var(--border-hairline)", }}>
-            {user.banner_url ? <img src={user.banner_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <div style={{ width: "100%", height: "100%", backgroundColor: "var(--bg-hover)" }} />}
-          </div>
-
-          <div style={{ padding: isMobile ? "0 16px" : "0 24px", position: "relative", marginTop: isMobile ? "-40px" : "-50px", marginBottom: "24px", }}>
-            <div onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }} style={{ width: isMobile ? "80px" : "100px", height: isMobile ? "80px" : "100px", borderRadius: "var(--radius-sm)", cursor: "pointer", marginBottom: "16px", position: "relative", }} >
-              <AvailabilityBadge avatarUrl={avatarUrl} name={user.name} size={isMobile ? 80 : 100} isOpenToOpportunities={user.is_pro === true && user.is_hirable === true} isOG={user.is_og} />
+        <div style={{ display: "flex", justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center", width: isDesktop ? "1020px" : "100%", maxWidth: "1020px", margin: (isDesktop && !isMobile) ? "0" : "0 auto", padding: "0", position: "relative", }}>
+          <div style={{ width: isDesktop ? "var(--feed-width)" : "100%", maxWidth: isDesktop ? "var(--feed-width)" : "700px", margin: isDesktop ? "0" : "0 auto", flexShrink: 0, borderLeft: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)", borderRight: (isDesktop && !isMobile) ? "0.5px solid var(--border-hairline)" : "none", backgroundColor: "var(--bg-page)", minHeight: "100vh", position: "relative", }}>
+            <div style={{ width: "100%", height: isMobile ? "120px" : "240px", backgroundColor: "var(--bg-hover)", position: "relative", overflow: "hidden", borderBottom: "0.5px solid var(--border-hairline)", }}>
+              {user.banner_url ? <img src={user.banner_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <div style={{ width: "100%", height: "100%", backgroundColor: "var(--bg-hover)" }} />}
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: isMobile ? "-48px" : "-56px", marginBottom: isMobile ? "24px" : "16px", flexWrap: "wrap" }}>
+            <div style={{ padding: isMobile ? "0 16px" : "0 24px", position: "relative", marginTop: isMobile ? "-40px" : "-50px", marginBottom: "24px", }}>
+              <div onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }} style={{ width: isMobile ? "80px" : "100px", height: isMobile ? "80px" : "100px", borderRadius: "var(--radius-sm)", cursor: "pointer", marginBottom: "16px", position: "relative", }} >
+                <AvailabilityBadge avatarUrl={avatarUrl} name={user.name} size={isMobile ? 80 : 100} isOpenToOpportunities={user.is_pro === true && user.is_hirable === true} isOG={user.is_og} />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: isMobile ? "-48px" : "-56px", marginBottom: isMobile ? "24px" : "16px", flexWrap: "wrap" }}>
               {isSignedIn && (
                 <button onClick={handleFollow} disabled={followLoading} style={{ padding: "8px 24px", borderRadius: "var(--radius-sm)", fontSize: "13px", fontWeight: 600, border: isFollowing ? "1px solid var(--border-hairline)" : "none", backgroundColor: isFollowing ? "var(--bg-page)" : "var(--text-primary)", color: isFollowing ? "var(--text-primary)" : "var(--bg-page)", cursor: "pointer", transition: "all 0.15s ease" }} onMouseEnter={(e) => { if (isFollowing) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; else e.currentTarget.style.opacity = "0.9"; }} onMouseLeave={(e) => { if (isFollowing) e.currentTarget.style.backgroundColor = "var(--bg-page)"; else e.currentTarget.style.opacity = "1"; }} >
                   {isFollowing ? "Following" : "Follow"}
@@ -276,6 +277,12 @@ export default function UserProfile() {
       {user && (
         <DeveloperIDCardModal isOpen={isIDCardModalOpen} onClose={() => setIsIDCardModalOpen(false)} user={{ name: user.name, username: user.username, avatar_url: user.avatar_url, created_at: user.created_at, skills: user.skills || [], is_pro: user.is_pro || false, bio: user.bio || "" }} projectsCount={projects.length} />
       )}
+      <style>{`
+        @media (max-width: 768px) {
+          main { padding-top: 64px !important; padding-bottom: 100px !important; }
+        }
+      `}</style>
     </main>
-  );
+  </>
+);
 }
