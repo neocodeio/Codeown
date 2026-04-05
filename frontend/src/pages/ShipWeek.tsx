@@ -163,14 +163,22 @@ export default function ShipWeek() {
     setSubmitting(true);
     try {
       const token = await getToken();
-      await api.post("/ship-week/admin/create-week", adminFormData, {
+      
+      // Ensure date is ISO string for Postgres
+      const isoEndDate = new Date(adminFormData.end_date).toISOString();
+
+      await api.post("/ship-week/admin/create-week", {
+        ...adminFormData,
+        end_date: isoEndDate
+      }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsAdminModalOpen(false);
       setAdminFormData({ theme: "", description: "", end_date: "" });
-      fetchData();
+      await fetchData(); // Refresh data to show new cycle
     } catch (err: any) {
-      alert(err.response?.data?.error || "Failed to create new cycle");
+      console.error("Admin error:", err);
+      alert(err.response?.data?.details || err.response?.data?.error || "Failed to create new cycle. Check console for details.");
     } finally {
       setSubmitting(false);
     }
