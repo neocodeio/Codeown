@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getOptimizedImageUrl, handleImageError } from "../utils/image";
+import { CaretLeft, CaretRight } from "phosphor-react";
 
 interface ImageSliderProps {
   images: string[];
@@ -34,24 +35,49 @@ export default function ImageSlider({ images, onImageClick }: ImageSliderProps) 
     <div style={{
       position: "relative",
       width: "100%",
-      marginTop: "16px",
       borderRadius: "var(--radius-md)",
       overflow: "hidden",
-      backgroundColor: "#f5f7fa",
+      backgroundColor: "transparent",
     }}>
-      {/* Main Image */}
+      <style>{`
+        .image-slide-enter {
+          animation: slideFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes slideFadeIn {
+          from { opacity: 0; transform: scale(1.02); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .nav-btn:hover {
+          transform: translateY(-50%) scale(1.15);
+          background-color: rgba(0, 0, 0, 0.8) !important;
+        }
+        .nav-btn:active {
+          transform: translateY(-50%) scale(0.95);
+        }
+      `}</style>
+
+      {/* Main Image Container */}
       <div 
-        style={{ position: "relative", width: "100%", paddingTop: "56.25%", cursor: onImageClick ? "pointer" : "default" }}
+        style={{ 
+          position: "relative", 
+          width: "100%", 
+          paddingTop: "56.25%", 
+          cursor: onImageClick ? "pointer" : "default",
+          overflow: "hidden",
+          borderRadius: "var(--radius-md)",
+        }}
         onClick={(e) => {
           if (onImageClick) {
             e.stopPropagation();
             onImageClick(currentIndex);
           }
         }}
-      > {/* 16:9 aspect ratio */}
+      >
         <img
+          key={currentIndex}
           src={getOptimizedImageUrl(images[currentIndex])}
           alt={`Slide ${currentIndex + 1}`}
+          className="image-slide-enter"
           style={{
             position: "absolute",
             top: 0,
@@ -64,101 +90,100 @@ export default function ImageSlider({ images, onImageClick }: ImageSliderProps) 
           loading="lazy"
         />
 
-        {/* Navigation Arrows - Only show if more than one image */}
+        {/* Navigation Arrows */}
         {images.length > 1 && (
           <>
             <button
-              onClick={(e) => goToPrevious(e)}
+              onClick={goToPrevious}
+              className="nav-btn"
               style={{
                 position: "absolute",
                 left: "12px",
                 top: "50%",
                 transform: "translateY(-50%)",
                 backgroundColor: "rgba(0, 0, 0, 0.5)",
+                backdropFilter: "blur(4px)",
                 border: "none",
                 color: "#ffffff",
-                width: "40px",
-                height: "40px",
-                borderRadius: "var(--radius-pill)",
+                width: "48px",
+                height: "48px",
+                borderRadius: "50%",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "20px",
-                transition: "all 0.2s",
-                zIndex: 2,
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                zIndex: 10,
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-              }}
+              aria-label="Previous image"
             >
-              ‹
+              <CaretLeft size={28} weight="bold" />
             </button>
             <button
-              onClick={(e) => goToNext(e)}
+              onClick={goToNext}
+              className="nav-btn"
               style={{
                 position: "absolute",
                 right: "12px",
                 top: "50%",
                 transform: "translateY(-50%)",
                 backgroundColor: "rgba(0, 0, 0, 0.5)",
+                backdropFilter: "blur(4px)",
                 border: "none",
                 color: "#ffffff",
-                width: "40px",
-                height: "40px",
-                borderRadius: "var(--radius-pill)",
+                width: "48px",
+                height: "48px",
+                borderRadius: "50%",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "20px",
-                transition: "all 0.2s",
-                zIndex: 2,
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                zIndex: 10,
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-              }}
+              aria-label="Next image"
             >
-              ›
+              <CaretRight size={28} weight="bold" />
             </button>
           </>
         )}
-      </div>
 
-      {/* Dots Indicator */}
-      {images.length > 1 && (
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "8px",
-          padding: "12px",
-          backgroundColor: "rgba(0, 0, 0, 0.05)",
-        }}>
-          {images.map((_, index) => (
-            <button
-              key={index}
-              onClick={(e) => goToSlide(e, index)}
-              style={{
-                width: index === currentIndex ? "24px" : "8px",
-                height: "8px",
-                borderRadius: "var(--radius-sm)",
-                border: "none",
-                backgroundColor: index === currentIndex ? "#000" : "#000",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                padding: 0,
-              }}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
+        {/* Floating Indicator Dots Overlay */}
+        {images.length > 1 && (
+          <div style={{
+            position: "absolute",
+            bottom: "16px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            justifyContent: "center",
+            gap: "6px",
+            padding: "8px 12px",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            backdropFilter: "blur(8px)",
+            borderRadius: "100px",
+            zIndex: 11,
+          }}>
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={(e) => goToSlide(e, index)}
+                style={{
+                  width: index === currentIndex ? "16px" : "6px",
+                  height: "6px",
+                  borderRadius: "100px",
+                  border: "none",
+                  backgroundColor: index === currentIndex ? "#fff" : "rgba(255, 255, 255, 0.5)",
+                  cursor: "pointer",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  padding: 0,
+                }}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
