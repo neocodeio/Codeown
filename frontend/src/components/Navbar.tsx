@@ -26,7 +26,8 @@ import {
   Scroll,
   Buildings,
   Medal,
-  ChartBar
+  ChartBar,
+  Trophy
 } from "phosphor-react";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -254,6 +255,10 @@ export default function Navbar() {
         <Link to="/" style={linkStyle("/")} aria-label="Home Feed">
           <House size={20} weight={location.pathname === "/" ? "bold" : "regular"} />
           Feed
+        </Link>
+        <Link to="/ship" style={linkStyle("/ship")} aria-label="Ship Week Competition">
+          <Trophy size={20} weight={location.pathname === "/ship" ? "bold" : "regular"} />
+          Ship Week
         </Link>
         <Link to="/search" style={linkStyle("/search")} aria-label="Search and Discover">
           <MagnifyingGlass size={20} weight={location.pathname === "/search" ? "bold" : "regular"} />
@@ -699,6 +704,13 @@ export default function Navbar() {
               >
                 <Plus size={18} weight="regular" />
                 Post
+              </div>
+              <div
+                onClick={() => { setIsCreateMenuOpen(false); navigate("/ship"); }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
+              >
+                <Trophy size={18} weight="regular" />
+                Ship Week
               </div>
               <div
                 onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}
