@@ -32,14 +32,15 @@ export default function ImageSlider({ images, onImageClick }: ImageSliderProps) 
   };
 
   return (
-    <div style={{
-      position: "relative",
-      width: "100%",
-      borderRadius: "var(--radius-md)",
-      overflow: "hidden",
-      backgroundColor: "transparent",
-    }}>
+    <div className="image-slider-container">
       <style>{`
+        .image-slider-container {
+          position: relative;
+          width: 100%;
+          border-radius: var(--radius-md);
+          overflow: hidden;
+          background-color: transparent;
+        }
         .image-slide-enter {
           animation: slideFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
@@ -47,12 +48,91 @@ export default function ImageSlider({ images, onImageClick }: ImageSliderProps) 
           from { opacity: 0; transform: scale(1.02); }
           to { opacity: 1; transform: scale(1); }
         }
+        .nav-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background-color: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: none;
+          color: #ffffff;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 10;
+          padding: 0;
+        }
         .nav-btn:hover {
-          transform: translateY(-50%) scale(1.15);
-          background-color: rgba(0, 0, 0, 0.8) !important;
+          background-color: rgba(0, 0, 0, 0.7);
+          transform: translateY(-50%) scale(1.1);
         }
         .nav-btn:active {
           transform: translateY(-50%) scale(0.95);
+        }
+        .indicator-pill {
+          position: absolute;
+          bottom: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 10px;
+          background-color: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-radius: 100px;
+          z-index: 11;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .dot {
+          height: 6px;
+          border-radius: 100px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          padding: 0;
+          flex-shrink: 0;
+          background-color: rgba(255, 255, 255, 0.4);
+        }
+        .dot.active {
+          background-color: #fff;
+          width: 12px;
+        }
+        .dot:not(.active) {
+          width: 6px;
+        }
+        
+        @media (max-width: 640px) {
+          .nav-btn {
+            width: 36px;
+            height: 36px;
+          }
+          .nav-btn svg {
+            width: 20px;
+            height: 20px;
+          }
+          .indicator-pill {
+            bottom: 8px;
+            padding: 4px 8px;
+            gap: 4px;
+          }
+          .dot {
+            height: 4px;
+          }
+          .dot.active {
+            width: 10px;
+          }
+          .dot:not(.active) {
+            width: 4px;
+          }
         }
       `}</style>
 
@@ -64,7 +144,6 @@ export default function ImageSlider({ images, onImageClick }: ImageSliderProps) 
           paddingTop: "56.25%", 
           cursor: onImageClick ? "pointer" : "default",
           overflow: "hidden",
-          borderRadius: "var(--radius-md)",
         }}
         onClick={(e) => {
           if (onImageClick) {
@@ -96,88 +175,30 @@ export default function ImageSlider({ images, onImageClick }: ImageSliderProps) 
             <button
               onClick={goToPrevious}
               className="nav-btn"
-              style={{
-                position: "absolute",
-                left: "12px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                backdropFilter: "blur(4px)",
-                border: "none",
-                color: "#ffffff",
-                width: "48px",
-                height: "48px",
-                borderRadius: "50%",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                zIndex: 10,
-              }}
+              style={{ left: "10px" }}
               aria-label="Previous image"
             >
-              <CaretLeft size={28} weight="bold" />
+              <CaretLeft weight="bold" />
             </button>
             <button
               onClick={goToNext}
               className="nav-btn"
-              style={{
-                position: "absolute",
-                right: "12px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                backdropFilter: "blur(4px)",
-                border: "none",
-                color: "#ffffff",
-                width: "48px",
-                height: "48px",
-                borderRadius: "50%",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                zIndex: 10,
-              }}
+              style={{ right: "10px" }}
               aria-label="Next image"
             >
-              <CaretRight size={28} weight="bold" />
+              <CaretRight weight="bold" />
             </button>
           </>
         )}
 
         {/* Floating Indicator Dots Overlay */}
         {images.length > 1 && (
-          <div style={{
-            position: "absolute",
-            bottom: "16px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            justifyContent: "center",
-            gap: "6px",
-            padding: "8px 12px",
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
-            backdropFilter: "blur(8px)",
-            borderRadius: "100px",
-            zIndex: 11,
-          }}>
+          <div className="indicator-pill">
             {images.map((_, index) => (
               <button
                 key={index}
                 onClick={(e) => goToSlide(e, index)}
-                style={{
-                  width: index === currentIndex ? "16px" : "6px",
-                  height: "6px",
-                  borderRadius: "100px",
-                  border: "none",
-                  backgroundColor: index === currentIndex ? "#fff" : "rgba(255, 255, 255, 0.5)",
-                  cursor: "pointer",
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  padding: 0,
-                }}
+                className={`dot ${index === currentIndex ? 'active' : ''}`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
@@ -187,6 +208,3 @@ export default function ImageSlider({ images, onImageClick }: ImageSliderProps) 
     </div>
   );
 }
-
-
-
