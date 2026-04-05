@@ -266,7 +266,7 @@ export default function Navbar() {
         </Link>
         <Link to="/ship" style={linkStyle("/ship")} aria-label="Ship Week Competition">
           <Trophy size={20} weight={location.pathname === "/ship" ? "bold" : "regular"} />
-          Ship Week
+          Ship Week (Beta)
         </Link>
         <Link to="/ogs" style={linkStyle("/ogs")} aria-label="Founding OGs">
           <Medal size={20} weight={location.pathname === "/ogs" ? "bold" : "regular"} />
