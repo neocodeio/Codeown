@@ -37,7 +37,6 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Changelog = lazy(() => import("./pages/Changelog"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const OurOGs = lazy(() => import("./pages/OurOGs"));
-const ShipWeek = lazy(() => import("./pages/ShipWeek"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const StartupDirectory = lazy(() => import("./pages/StartupDirectory").then(m => ({ default: m.StartupDirectory })));
 const StartupProfile = lazy(() => import("./pages/StartupProfile").then(m => ({ default: m.StartupProfile })));
@@ -333,7 +332,6 @@ export default function App() {
                 <Route path="/founder-story" element={<FounderStory />} />
                 <Route path="/changelog" element={<Changelog />} />
                 <Route path="/portfolio/:username" element={<Portfolio />} />
-                <Route path="/ship-week" element={<ShipWeek />} />
                 <Route path="/ogs" element={<OurOGs />} />
                 <Route path="/startups" element={<StartupDirectory />} />
                 <Route path="/startup/new" element={<StartupForm />} />
