@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect } from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 // import { useTheme } from "./hooks/useTheme";
 import Navbar from "./components/Navbar";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -31,7 +31,6 @@ const AboutUs = lazy(() => import("./pages/AboutUs"));
 const FounderStory = lazy(() => import("./pages/FounderStory"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const Billing = lazy(() => import("./pages/Billing"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -322,7 +321,7 @@ export default function App() {
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/billing" element={<Billing />} />
+                <Route path="/billing" element={<Navigate to="/" replace />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/notifications" element={<Notifications />} />
