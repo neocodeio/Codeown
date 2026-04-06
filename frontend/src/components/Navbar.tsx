@@ -266,7 +266,7 @@ export default function Navbar() {
         </Link>
         <Link to="/ship" style={linkStyle("/ship")} aria-label="Ship Week Competition">
           <Trophy size={20} weight={location.pathname === "/ship" ? "bold" : "regular"} />
-          Ship Week <span style={{ fontSize: "10px", color: "#fff", fontWeight: 700, letterSpacing: "0.02em", marginLeft: "-10px", marginTop: "2px", backgroundColor: "#000", padding: "0px 4px", borderRadius: "4px" }}>Beta</span>
+          Ship Week <span style={{ fontSize: "10px", color: "#fff", fontWeight: 700, letterSpacing: "0.02em", marginLeft: "-10px", marginTop: "2px", backgroundColor: "#000", padding: "0px 4px", borderRadius: "4px" }}>New</span>
         </Link>
         <Link to="/ogs" style={linkStyle("/ogs")} aria-label="Founding OGs">
           <Medal size={20} weight={location.pathname === "/ogs" ? "bold" : "regular"} />
