@@ -1,6 +1,12 @@
-import type { Request, Response } from "express";
+import type { Request as ExpressRequest, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ShipService } from "../services/ship.service.js";
+import { broadcastShipWeek } from "../services/notification.service.js";
+
+// Extend Request to include Clerk user data
+interface Request extends ExpressRequest {
+  user?: any;
+}
 
 /**
  * Admin check helper
@@ -38,6 +44,10 @@ export async function createCompetition(req: Request, res: Response) {
       .single();
 
     if (error) throw error;
+
+    // Trigger broadcast to everyone (Async)
+    broadcastShipWeek(userId, name, deadline).catch(e => console.error("Broadcast failed", e));
+
     return res.status(201).json(data);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });

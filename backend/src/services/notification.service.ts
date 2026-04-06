@@ -8,7 +8,8 @@ import {
   sendNewMessageEmail,
   sendNewMentionEmail,
   sendCofounderRequestEmail,
-  sendStartupUpvoteEmail
+  sendStartupUpvoteEmail,
+  sendShipWeekLaunchEmail
 } from "../lib/email.js";
 
 export async function isUserActive(userId: string): Promise<boolean> {
@@ -41,7 +42,7 @@ export async function isUserActive(userId: string): Promise<boolean> {
     return false;
 }
 
-export type NotificationType = 'like' | 'follow' | 'comment' | 'message' | 'mention' | 'reply' | 'cofounder_request' | 'save' | 'startup_upvote';
+export type NotificationType = 'like' | 'follow' | 'comment' | 'message' | 'mention' | 'reply' | 'cofounder_request' | 'save' | 'startup_upvote' | 'ship_week_launch';
 
 interface SendNotificationParams {
     userId: string; // Recipient
@@ -205,5 +206,47 @@ export async function notify(params: SendNotificationParams) {
         }
     } catch (emailErr) {
         console.error(`[NotificationService] Notification Processing / Email Error:`, emailErr);
+    }
+}
+
+/**
+ * Broadcast a new competition launch to everyone
+ */
+export async function broadcastShipWeek(adminId: string, competitionName: string, deadline: string) {
+    console.log(`[NotificationService] Broadcasting competition launch: ${competitionName}`);
+
+    // 1. Get all users
+    const { data: users } = await supabase
+        .from("users")
+        .select("id, email, name, last_active_at");
+
+    if (!users) return;
+
+    // 2. Insert notifications in bulk for efficiency
+    const notifs = users.map(u => ({
+        user_id: u.id,
+        type: 'ship_week_launch' as any,
+        actor_id: adminId,
+        metadata: { competitionName, deadline }
+    }));
+
+    await supabase.from("notifications").insert(notifs);
+
+    // 3. Send emails and emit socket events
+    for (const u of users) {
+        // Socket emission
+        try {
+            const { getIO } = await import("../lib/socket.js");
+            getIO().to(u.id).emit("new_notification", { 
+                type: "ship_week_launch", 
+                actorId: adminId, 
+                data: { competitionName, deadline } 
+            });
+        } catch (e) {}
+
+        // Email (Async)
+        if (u.email) {
+            sendShipWeekLaunchEmail(u.email, u.name || "Builder", competitionName, deadline);
+        }
     }
 }

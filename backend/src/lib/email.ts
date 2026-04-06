@@ -3,6 +3,36 @@ import { Resend } from "resend";
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
+export async function sendShipWeekLaunchEmail(email: string, name: string, competitionName: string, deadline: string) {
+  if (!resend) return;
+
+  try {
+    await resend.emails.send({
+      from: "Codeown <founders@codeown.space>",
+      to: email,
+      subject: `🚀 New Ship Week is LIVE: ${competitionName}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #0f172a;">
+          <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.04em;">Season 1 is Here.</h1>
+          <p style="font-size: 18px; line-height: 1.6; color: #475569;">
+            Hi ${name}, a new high-stakes competition has just been launched on Codeown.
+          </p>
+          <div style="background: #f8fafc; padding: 32px; border-radius: 24px; border: 1px solid #e2e8f0; margin: 32px 0;">
+            <h2 style="margin: 0 0 8px 0; font-size: 20px;">${competitionName}</h2>
+            <p style="margin: 0; color: #64748b; font-size: 14px;">Deadline: ${new Date(deadline).toLocaleDateString()} 11:59PM</p>
+          </div>
+          <p style="font-size: 16px; line-height: 1.6;">
+            Remember: You must ship <strong>3 daily updates</strong> this week to unlock the submission button.
+          </p>
+          <a href="https://codeown.space/ship" style="display: inline-block; background: #000; color: #fff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; margin-top: 24px;">ENTER THE HUB</a>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Failed to send competition email", err);
+  }
+}
+
 export async function sendWelcomeEmail(email: string, name: string) {
   if (!resend) {
     console.warn("Resend is not configured. Skipping welcome email.");
