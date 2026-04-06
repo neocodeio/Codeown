@@ -224,12 +224,24 @@ export default function UserProfile() {
               </h1>
               <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginBottom: "12px" }}>@{user.username}</p>
               {user.bio && <p style={{ fontSize: "15px", lineHeight: 1.5, marginBottom: "16px" }}>{user.bio}</p>}
-              <div style={{ display: "flex", gap: "16px", color: "var(--text-tertiary)", fontSize: "13px", flexWrap: "wrap" }}>
+              
+              <div style={{ display: "flex", gap: "16px", color: "var(--text-tertiary)", fontSize: "13px", flexWrap: "wrap", marginBottom: "20px" }}>
                 {user.location && <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><MapPin size={16} /> {user.location}</span>}
                 {user.website_url && <a href={user.website_url} style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-primary)" }}><Link size={16} /> {user.website_url.replace(/https?:\/\//, "")}</a>}
                 <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><Calendar size={16} /> Joined {formatProfileJoinDate(user.created_at || "")}</span>
               </div>
-              <div style={{ display: "flex", gap: "24px", marginTop: "16px", flexWrap: "wrap", alignItems: "center" }}>
+
+              {user.skills && user.skills.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "24px", }}>
+                  {user.skills.map((skill, index) => (
+                    <span key={index} style={{ fontSize: "12px", fontWeight: 600, padding: "6px 14px", backgroundColor: "var(--bg-hover)", color: "var(--text-primary)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "center" }}>
                 <button onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.follower_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Followers</span> </button>
                 <button onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.following_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Following</span> </button>
                 <div style={{ fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.contribution_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Contributions</span> </div>
