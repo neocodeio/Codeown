@@ -4,16 +4,16 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import { 
-  Trophy, 
   Medal, 
   Plus, 
   PaperPlaneTilt, 
   ArrowUp,
-  CheckCircle,
-  Clock,
   GithubLogo,
   Globe,
-  Info
+  Info,
+  Calendar,
+  UsersThree,
+  Timer
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import { formatDistanceToNow } from "date-fns";
@@ -29,6 +29,7 @@ export default function ShipWeek() {
   const navigate = useNavigate();
   const { width } = useWindowSize();
   const isMobile = width < 1024;
+  const isTablet = width < 1280;
 
   const [competition, setCompetition] = useState<any>(null);
   const [eligibility, setEligibility] = useState<any>(null);
@@ -131,161 +132,184 @@ export default function ShipWeek() {
 
   return (
     <div style={{ 
-      maxWidth: "1100px", 
+      maxWidth: "1400px", 
       margin: "0 auto", 
-      padding: isMobile ? "24px 16px" : "48px 24px",
+      padding: isMobile ? "20px 16px" : "40px 32px",
       minHeight: "100vh"
     }}>
       <style>{`
-        .ship-week-container {
-          display: grid;
-          grid-template-columns: ${isMobile ? "1fr" : "1fr 320px"};
-          gap: 32px;
-        }
-        
-        .hero-section {
-          background: var(--bg-card);
-          border: 1px solid var(--border-hairline);
-          border-radius: 24px;
-          padding: ${isMobile ? "32px 20px" : "48px 40px"};
-          margin-bottom: 32px;
-          position: relative;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            gap: 24px;
         }
 
-        .hero-glow {
-          position: absolute;
-          top: -20%;
-          right: -10%;
-          width: 400px;
-          height: 400px;
-          background: radial-gradient(circle, rgba(var(--text-primary-rgb), 0.03) 0%, transparent 70%);
-          pointer-events: none;
+        .header-title {
+            font-size: ${isMobile ? "32px" : "48px"};
+            font-weight: 950;
+            letter-spacing: -0.06em;
+            margin: 0;
+            line-height: 1;
+            color: var(--text-primary);
         }
 
-        .stat-pill {
-          background: var(--bg-hover);
-          padding: 6px 14px;
-          border-radius: 99px;
-          font-size: 13px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: var(--text-secondary);
-          border: 1px solid var(--border-hairline);
+        .header-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            max-width: 500px;
+            margin-top: 12px;
+            line-height: 1.5;
         }
 
-        .submission-grid {
-          display: grid;
-          grid-template-columns: ${width < 640 ? "1fr" : "repeat(auto-fill, minmax(340px, 1fr))"};
-          gap: 20px;
+        .main-layout {
+            display: grid;
+            grid-template-columns: ${isTablet ? "1fr" : "auto 360px"};
+            gap: 48px;
+            align-items: start;
         }
 
-        .submission-card {
-          background: var(--bg-card);
-          border: 1.5px solid var(--border-hairline);
-          border-radius: 20px;
-          padding: 24px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          display: flex;
-          flex-direction: column;
-          height: 100%;
+        .ship-grid {
+            display: grid;
+            grid-template-columns: ${width < 768 ? "1fr" : "repeat(auto-fill, minmax(400px, 1fr))"};
+            gap: 24px;
         }
 
-        .submission-card:hover {
-          border-color: var(--text-primary);
-          box-shadow: 0 12px 30px -10px rgba(0,0,0,0.08);
-          transform: translateY(-2px);
+        .ship-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-hairline);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
         }
 
-        .hof-item {
-          width: 100%;
-          aspect-ratio: 1;
-          border-radius: 16px;
-          overflow: hidden;
-          border: 2px solid var(--border-hairline);
-          transition: all 0.2s ease;
-          position: relative;
+        .ship-card:hover {
+            border-color: var(--text-primary);
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
         }
 
-        .hof-item:hover {
-          border-color: #FFD700;
-          transform: scale(1.05);
-          z-index: 10;
+        .ship-card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .btn-primary {
-          background: var(--text-primary);
-          color: var(--bg-page);
-          border: none;
-          padding: 12px 24px;
-          border-radius: 14px;
-          font-weight: 700;
-          font-size: 14px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 1px solid var(--border-hairline);
         }
 
-        .btn-primary:hover:not(:disabled) {
-          filter: brightness(1.1);
-          transform: translateY(-1px);
+        .ship-title {
+            font-size: 20px;
+            font-weight: 850;
+            letter-spacing: -0.03em;
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
         }
 
-        .btn-secondary {
-          background: transparent;
-          color: var(--text-primary);
-          border: 1px solid var(--border-hairline);
-          padding: 12px 24px;
-          border-radius: 14px;
-          font-weight: 700;
-          font-size: 14px;
-          cursor: pointer;
-          transition: all 0.2s ease;
+        .ship-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 32px;
+            flex-grow: 1;
         }
 
-        .btn-secondary:hover {
-          background: var(--bg-hover);
+        .voter-btn {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-hairline);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .progress-bar-container {
-          width: 100%;
-          height: 10px;
-          background: var(--bg-hover);
-          border-radius: 99px;
-          overflow: hidden;
-          margin: 16px 0;
-          border: 1px solid var(--border-hairline);
+        .voter-btn:hover {
+            background: var(--text-primary);
+            color: var(--bg-page);
+            border-color: var(--text-primary);
         }
 
-        .progress-bar-fill {
-          height: 100%;
-          background: var(--text-primary);
-          transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        .sidebar-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-hairline);
+            border-radius: 24px;
+            padding: 32px;
+            position: sticky;
+            top: 100px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
 
-        h2.section-title {
-          font-size: 18px;
-          font-weight: 800;
-          margin-bottom: 24px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          color: var(--text-primary);
-          letter-spacing: -0.02em;
+        .panel-title {
+            font-size: 18px;
+            font-weight: 850;
+            letter-spacing: -0.03em;
+            margin: 0 0 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .sidebar-widget {
-          background: var(--bg-card);
-          border: 1px solid var(--border-hairline);
-          border-radius: 20px;
-          padding: 28px;
-          margin-bottom: 24px;
+        .progress-ring-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-hairline);
+            margin-bottom: 32px;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .action-button.primary {
+            background: var(--text-primary);
+            color: var(--bg-page);
+        }
+
+        .action-button.primary:hover:not(:disabled) {
+            filter: brightness(1.2);
+            transform: translateY(-1px);
+        }
+
+        .action-button.secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-hairline);
+        }
+
+        .action-button.secondary:hover {
+            background: var(--bg-hover);
         }
 
         .tooltip-container {
@@ -297,31 +321,22 @@ export default function ShipWeek() {
           position: absolute;
           bottom: 100%;
           right: 0;
-          width: 200px;
-          background: var(--bg-card);
-          border: 1px solid var(--border-hairline);
-          padding: 12px;
+          width: 240px;
+          background: #000;
+          color: #fff;
+          padding: 14px;
           border-radius: 12px;
           font-size: 12px;
-          font-weight: 500;
-          color: var(--text-secondary);
-          box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+          font-weight: 600;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.2);
           opacity: 0;
           visibility: hidden;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           transform: translateY(10px) scale(0.95);
           z-index: 50;
-          margin-bottom: 8px;
+          margin-bottom: 12px;
           pointer-events: none;
-        }
-
-        .tooltip-box::after {
-          content: '';
-          position: absolute;
-          top: 100%;
-          right: 4px;
-          border: 6px solid transparent;
-          border-top-color: var(--border-hairline);
+          line-height: 1.5;
         }
 
         .tooltip-container:hover .tooltip-box {
@@ -329,272 +344,245 @@ export default function ShipWeek() {
           visibility: visible;
           transform: translateY(0) scale(1);
         }
+
+        .hof-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .hof-avatar {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid var(--border-hairline);
+            transition: all 0.2s ease;
+        }
+
+        .hof-avatar:hover {
+            border-color: #FFD700;
+            transform: scale(1.1);
+        }
+
+        .badge-pill {
+            background: var(--bg-hover);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border-hairline);
+            color: var(--text-secondary);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
       `}</style>
 
-      {/* Hero Section */}
-      <div className="hero-section">
-        <div className="hero-glow" />
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: isMobile ? "flex-start" : "center", gap: "12px", marginBottom: "24px" }}>
-            <span className="stat-pill"><Trophy size={16} weight="bold" /> Ship Week #1</span>
-            <span className="stat-pill" style={{ color: "#FFD700", background: "rgba(255, 215, 0, 0.05)", borderColor: "rgba(255, 215, 0, 0.2)" }}>
-              <Medal size={16} weight="fill" /> Golden Badge Award
-            </span>
-          </div>
-          
-          <h1 style={{ 
-            fontSize: isMobile ? "32px" : "48px", 
-            fontWeight: 900, 
-            marginBottom: "16px", 
-            letterSpacing: "-0.04em",
-            textAlign: isMobile ? "left" : "center"
-          }}>
-            {competition?.name || "The Ship Week"}
-          </h1>
-          <p style={{ 
-            fontSize: isMobile ? "16px" : "18px", 
-            color: "var(--text-secondary)", 
-            maxWidth: "640px", 
-            margin: isMobile ? "0 0 32px" : "0 auto 32px",
-            textAlign: isMobile ? "left" : "center",
-            lineHeight: 1.6
-          }}>
-            {competition?.description || "Build one major feature. Ship daily updates. Win eternal glory and the legendary Golden Ship Badge."}
-          </p>
+      {/* Header Area */}
+      <div className="page-header">
+        <div>
+           <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+              <span className="badge-pill">
+                  <div className="pulse-dot" /> LIVE Season 1
+              </span>
+              <span className="badge-pill"><Calendar size={18} /> Daily Ships</span>
+              <span className="badge-pill" style={{ color: "#FFD700", background: "rgba(255, 215, 0, 0.05)", borderColor: "rgba(255, 215, 0, 0.2)" }}>
+                  <Medal size={18} weight="fill" /> Golden Tier
+              </span>
+           </div>
+           <h1 className="header-title">{competition?.name || "The Ship Week"}</h1>
+           <p className="header-subtitle">
+               {competition?.description || "A high-stakes weekly sprint. Build one major project, ship three daily updates, and win the legendary Golden Ship Badge."}
+           </p>
+        </div>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: isMobile ? "flex-start" : "center", gap: "24px" }}>
-            {competition ? (
-              <>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", fontWeight: 700, color: "var(--text-tertiary)" }}>
-                  <Clock size={20} weight="bold" />
-                  <span>Competition ends {safeFormatDistance(competition.end_date)}</span>
-                </div>
-
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", width: isMobile ? "100%" : "auto" }}>
-                  {!isSignedIn ? (
-                    <button className="btn-primary" style={{ width: isMobile ? "100%" : "auto" }} onClick={() => navigate("/sign-in")}>Sign in to Join</button>
-                  ) : (
-                    <>
-                      <button 
-                        className="btn-primary" 
-                        onClick={handleJoin} 
-                        disabled={isJoining || eligibility?.isJoined}
-                        style={{ 
-                          width: isMobile ? "200px" : "auto",
-                          opacity: (isJoining || eligibility?.isJoined) ? 0.7 : 1,
-                          cursor: eligibility?.isJoined ? "default" : "pointer"
-                        }}
-                      >
-                        {isJoining ? "Joining..." : (eligibility?.isJoined ? "You are in! 🚀" : "Join Competition")}
-                      </button>
-                      {isAdmin && (
-                        <button className="btn-secondary" onClick={() => setIsLaunchModalOpen(true)}>
-                          <Plus size={18} weight="bold" />
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
-              </>
+        <div style={{ display: "flex", gap: "16px" }}>
+            {isAdmin && <button className="action-button secondary" onClick={() => setIsLaunchModalOpen(true)}><Plus size={20} weight="bold" /> Launch New Season</button>}
+            {!isSignedIn ? (
+                <button className="action-button primary" onClick={() => navigate("/sign-in")}>Join the Fight</button>
             ) : (
-              isAdmin && <button className="btn-primary" onClick={() => setIsLaunchModalOpen(true)}>Launch Season 1</button>
+                !eligibility?.isJoined && (
+                    <button 
+                        className="action-button primary" 
+                        onClick={handleJoin} 
+                        disabled={isJoining}
+                        style={{ width: "200px" }}
+                    >
+                        {isJoining ? "Joining..." : "Enter Competition"}
+                    </button>
+                )
             )}
-          </div>
         </div>
       </div>
 
-      <div className="ship-week-container">
-        {/* Main Content: Submissions */}
+      <div className="main-layout">
+        {/* Main Feed */}
         <div style={{ minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "28px" }}>
-            <h2 className="section-title">
-              Submissions <span style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>({(Array.isArray(competition?.submissions) ? competition.submissions : []).length})</span>
-            </h2>
-          </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px", borderBottom: "1.5px solid var(--border-hairline)", paddingBottom: "16px" }}>
+                <h2 style={{ fontSize: "20px", fontWeight: 900, margin: 0, display: "flex", alignItems: "center", gap: "12px" }}>
+                   <PaperPlaneTilt size={24} weight="bold" /> ACTIVE DOCK <span style={{ color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 600 }}>({(Array.isArray(competition?.submissions) ? competition.submissions : []).length} SHIPS)</span>
+                </h2>
+                <div style={{ display: "flex", gap: "8px", fontSize: "13px", fontWeight: 800, color: "var(--text-tertiary)" }}>
+                    <Timer size={18} /> {competition ? safeFormatDistance(competition.end_date) : "SOON"}
+                </div>
+            </div>
 
-          <div className="submission-grid">
-            {(Array.isArray(competition?.submissions) ? competition.submissions : []).filter((s: any) => s && s.user).map((sub: any) => (
-              <motion.div 
-                key={sub.id} 
-                className="submission-card"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                  <img src={sub.user?.avatar_url || ''} style={{ width: "36px", height: "36px", borderRadius: "12px", border: "1px solid var(--border-hairline)" }} alt="" />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 800, fontSize: "14px", display: "flex", alignItems: "center", gap: "4px" }}>
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub.user.name}</span>
-                      {sub.user.has_golden_ship_badge && <GoldenShipBadge show={true} size={14} />}
+            <div className="ship-grid">
+                {(Array.isArray(competition?.submissions) ? competition.submissions : []).filter((s: any) => s && s.user).map((sub: any) => (
+                    <motion.div 
+                        key={sub.id} 
+                        className="ship-card"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <div className="ship-card-header">
+                            <img src={sub.user?.avatar_url || ''} className="user-avatar" alt="" />
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                   <div style={{ fontWeight: 900, fontSize: "15px", color: "var(--text-primary)" }}>{sub.user.name}</div>
+                                   {sub.user.has_golden_ship_badge && <GoldenShipBadge show={true} size={15} />}
+                                </div>
+                                <div style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 600 }}>@{sub.user.username}</div>
+                            </div>
+                            <div style={{ textAlign: "right" }}>
+                                <div style={{ fontSize: "24px", fontWeight: 950, color: "var(--text-primary)", lineHeight: 1 }}>{sub.final_score.toFixed(1)}</div>
+                                <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 800, textTransform: "uppercase" }}>Rank Score</div>
+                            </div>
+                        </div>
+
+                        <h3 className="ship-title">{sub.title}</h3>
+                        <p className="ship-desc">{sub.description}</p>
+
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid var(--border-hairline)", paddingTop: "24px" }}>
+                            <div style={{ display: "flex", gap: "12px" }}>
+                                {sub.github_url && <a href={sub.github_url} target="_blank" rel="noreferrer" className="voter-btn" style={{ padding: "10px" }}><GithubLogo size={20} /></a>}
+                                {sub.demo_url && <a href={sub.demo_url} target="_blank" rel="noreferrer" className="voter-btn" style={{ padding: "10px" }}><Globe size={20} /></a>}
+                            </div>
+                            <button className="voter-btn" onClick={() => handleVote(sub.id)}>
+                                <ArrowUp size={18} weight="bold" /> {sub.votes_count} VOTES
+                            </button>
+                        </div>
+                    </motion.div>
+                ))}
+
+                {(Array.isArray(competition?.submissions) ? competition.submissions : []).length === 0 && (
+                     <div style={{ 
+                        gridColumn: "1/-1", 
+                        padding: "100px 32px", 
+                        textAlign: "center", 
+                        background: "var(--bg-card)", 
+                        borderRadius: "24px", 
+                        border: "1.5px dashed var(--border-hairline)",
+                        color: "var(--text-tertiary)"
+                    }}>
+                        <Rocket size={48} style={{ marginBottom: "20px", opacity: 0.5 }} />
+                        <h3 style={{ fontSize: "20px", fontWeight: 850, color: "var(--text-primary)", marginBottom: "8px" }}>The dock is empty.</h3>
+                        <p>Be the first developer to anchor your ship for Season 1.</p>
                     </div>
-                    <div style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>@{sub.user.username}</div>
-                  </div>
-                  <div style={{ background: "var(--bg-hover)", border: "1px solid var(--border-hairline)", color: "var(--text-primary)", padding: "4px 10px", borderRadius: "10px", fontSize: "12px", fontWeight: 800 }}>
-                    {sub.final_score.toFixed(1)}
-                  </div>
-                </div>
-
-                <h3 style={{ fontSize: "17px", fontWeight: 800, marginBottom: "8px", lineHeight: 1.4 }}>{sub.title}</h3>
-                <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginBottom: "24px", lineHeight: 1.6, flex: 1 }}>
-                  {sub.description}
-                </p>
-
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {sub.github_url && (
-                        <a href={sub.github_url} target="_blank" rel="noreferrer" style={{ width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", border: "1px solid var(--border-hairline)", color: "var(--text-secondary)" }}>
-                            <GithubLogo size={18} />
-                        </a>
-                    )}
-                    {sub.demo_url && (
-                        <a href={sub.demo_url} target="_blank" rel="noreferrer" style={{ width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", border: "1px solid var(--border-hairline)", color: "var(--text-secondary)" }}>
-                            <Globe size={18} />
-                        </a>
-                    )}
-                  </div>
-                  <button 
-                    onClick={() => handleVote(sub.id)}
-                    style={{ 
-                      display: "flex", alignItems: "center", gap: "8px", 
-                      padding: "8px 14px", borderRadius: "10px", border: "1.5px solid var(--border-hairline)",
-                      background: "transparent", cursor: "pointer", fontWeight: 700, fontSize: "13px",
-                      transition: "all 0.2s ease"
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--text-primary)"; e.currentTarget.style.background = "var(--bg-hover)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border-hairline)"; e.currentTarget.style.background = "transparent"; }}
-                  >
-                    <ArrowUp size={16} weight="bold" /> {sub.votes_count}
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-            
-            {(Array.isArray(competition?.submissions) ? competition.submissions : []).length === 0 && (
-                <div style={{ 
-                    gridColumn: "1/-1", 
-                    padding: "60px 20px", 
-                    textAlign: "center", 
-                    background: "var(--bg-card)", 
-                    borderRadius: "20px", 
-                    border: "1px dashed var(--border-hairline)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "12px"
-                }}>
-                    <Info size={32} color="var(--text-tertiary)" />
-                    <div>
-                        <p style={{ fontWeight: 700, color: "var(--text-primary)" }}>No ships yet</p>
-                        <p style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>Be the first one to ship a feature this week!</p>
-                    </div>
-                </div>
-            )}
-          </div>
+                )}
+            </div>
         </div>
 
-        {/* Sidebar Widgets */}
-        <div>
-          {/* Eligibility Card */}
-          {isSignedIn && competition && (
-            <div className="sidebar-widget">
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
-                <h3 style={{ fontSize: "16px", fontWeight: 800, margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
-                  Eligibility <CheckCircle size={20} weight="fill" color={eligibility?.eligible ? "#22c55e" : "var(--text-tertiary)"} />
-                </h3>
+        {/* Sidebar */}
+        <div className="sidebar-panel">
+            {/* Eligibility Ring */}
+            <div className="panel-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span>MISSION ELIGIBILITY</span>
                 <div className="tooltip-container">
-                  <div style={{ 
-                    width: "20px", height: "200px", display: "none" // placeholder for tooltip logic
-                   }}></div>
-                   <div style={{ 
-                     background: "var(--bg-hover)", 
-                     width: "18px", height: "18px", 
-                     borderRadius: "50%", 
-                     display: "flex", alignItems: "center", justifyContent: "center",
-                     border: "1px solid var(--border-hairline)",
-                     color: "var(--text-tertiary)"
-                   }}>
-                     <Info size={12} weight="bold" />
-                   </div>
-                   <div className="tooltip-box">
-                      Post 3 "Update" or "Milestone" Posts this week on Codeown to unlock the final submission button. 🚢
-                   </div>
+                    <Info size={18} weight="bold" color="var(--text-tertiary)" />
+                    <div className="tooltip-box">
+                       Submit 3 "Update" or "Milestone" posts to prove your work and unlock the final project submission. 🚢
+                    </div>
                 </div>
-              </div>
-              
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "center", 
-                alignItems: "center", 
-                position: "relative",
-                width: "120px",
-                height: "120px",
-                margin: "0 auto 24px"
-              }}>
-                <svg width="120" height="120" viewBox="0 0 120 120" style={{ transform: "rotate(-90deg)" }}>
-                  <circle
-                    cx="60" cy="60" r="54"
-                    fill="none"
-                    stroke="var(--bg-hover)"
-                    strokeWidth="8"
-                  />
-                  <motion.circle
-                    cx="60" cy="60" r="54"
-                    fill="none"
-                    stroke="var(--text-primary)"
-                    strokeWidth="8"
-                    strokeDasharray="339.29"
-                    initial={{ strokeDashoffset: 339.29 }}
-                    animate={{ strokeDashoffset: 339.29 - (339.29 * Math.min(((eligibility?.count || 0) / 3), 1)) }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <div style={{ position: "absolute", textAlign: "center" }}>
-                    <div style={{ fontSize: "24px", fontWeight: 800 }}>{eligibility?.count || 0}/3</div>
-                    <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 700, textTransform: "uppercase" }}>Ships</div>
-                </div>
-              </div>
-
-              <p style={{ fontSize: "13px", color: "var(--text-tertiary)", textAlign: "center", lineHeight: 1.5, marginBottom: "20px" }}>
-                {eligibility?.eligible 
-                  ? "You've shipped enough updates to submit your final feature!" 
-                  : `Ship ${3 - (eligibility?.count || 0)} more updates to unlock the "Submit Ship" button.`}
-              </p>
-
-              <button 
-                className="btn-primary" 
-                style={{ 
-                    width: "100%", 
-                    background: eligibility?.eligible ? "var(--text-primary)" : "var(--bg-hover)", 
-                    color: eligibility?.eligible ? "var(--bg-page)" : "var(--text-tertiary)",
-                    cursor: eligibility?.eligible ? "pointer" : "not-allowed"
-                }}
-                disabled={!eligibility?.eligible}
-                onClick={() => setIsSubmitModalOpen(true)}
-              >
-                <PaperPlaneTilt size={18} weight="bold" /> Submit Final Ship
-              </button>
             </div>
-          )}
 
-          {/* Wall of Fame */}
-          <div className="sidebar-widget">
-            <h3 style={{ fontSize: "16px", fontWeight: 800, marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-              <Medal size={20} weight="fill" color="#FFD700" /> Wall of Fame
-            </h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
-              {hallOfFame.filter(win => win && win.user).map((win) => (
-                <Link key={win.id} to={`/${win.user?.username}`} className="hof-item" title={win.user?.name}>
-                   <img src={win.user?.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
-                </Link>
-              ))}
-              {hallOfFame.length === 0 && (
-                <div style={{ gridColumn: "span 3", textAlign: "center", padding: "32px 16px", color: "var(--text-tertiary)", background: "var(--bg-hover)", borderRadius: "12px", fontSize: "13px" }}>
-                  No winners yet. <br/> Your face could be here.
+            {isSignedIn && competition ? (
+                <>
+                    <div className="progress-ring-container">
+                        <div style={{ position: "relative", width: "160px", height: "160px", display: "flex", alignItems: "center", justifyItems: "center" }}>
+                           <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: "rotate(-90deg)" }}>
+                               <circle
+                                 cx="80" cy="80" r="70"
+                                 fill="none"
+                                 stroke="var(--bg-hover)"
+                                 strokeWidth="10"
+                               />
+                               <motion.circle
+                                 cx="80" cy="80" r="70"
+                                 fill="none"
+                                 stroke="var(--text-primary)"
+                                 strokeWidth="10"
+                                 strokeDasharray="439.82"
+                                 initial={{ strokeDashoffset: 439.82 }}
+                                 animate={{ strokeDashoffset: 439.82 - (439.82 * Math.min(((eligibility?.count || 0) / 3), 1)) }}
+                                 transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                                 strokeLinecap="round"
+                               />
+                           </svg>
+                           <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                               <div style={{ fontSize: "32px", fontWeight: 950, color: "var(--text-primary)", lineHeight: 1 }}>{eligibility?.count || 0}<span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>/3</span></div>
+                               <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", marginTop: "4px" }}>Ships Verified</div>
+                           </div>
+                        </div>
+                    </div>
+
+                    <p style={{ fontSize: "14px", color: "var(--text-secondary)", fontWeight: 500, textAlign: "center", lineHeight: 1.6, marginBottom: "32px" }}>
+                        {eligibility?.eligible 
+                            ? "Status: READY TO DEPLOY. Your ship is cleared for the final submission dock."
+                            : `Status: INCOMPLETE. You need ${3 - (eligibility?.count || 0)} more verified updates to authorize submission.`}
+                    </p>
+
+                    <button 
+                        className="action-button primary" 
+                        disabled={!eligibility?.eligible}
+                        onClick={() => setIsSubmitModalOpen(true)}
+                        style={{ background: eligibility?.eligible ? "var(--text-primary)" : "var(--bg-hover)", color: eligibility?.eligible ? "var(--bg-page)" : "var(--text-tertiary)" }}
+                    >
+                        {eligibility?.isJoined ? (
+                            <>Submit Final Entry <PaperPlaneTilt size={20} weight="bold" /></>
+                        ) : (
+                            "Need to Join First"
+                        )}
+                    </button>
+                </>
+            ) : (
+                <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-tertiary)" }}>
+                    <UsersThree size={32} style={{ marginBottom: "16px" }} />
+                    <p style={{ fontSize: "14px", fontWeight: 600 }}>Sign in to track your eligibility and join the season.</p>
                 </div>
-              )}
+            )}
+
+            <div style={{ marginTop: "48px" }}>
+                <div className="panel-title"><Medal size={22} weight="fill" color="#FFD700" /> HALL OF FAME</div>
+                <div className="hof-grid">
+                    {hallOfFame.filter(win => win && win.user).map((win) => (
+                        <Link key={win.id} to={`/${win.user?.username}`} title={win.user?.name}>
+                            <img src={win.user?.avatar_url} className="hof-avatar" alt="" />
+                        </Link>
+                    ))}
+                    {hallOfFame.length === 0 && (
+                        <div style={{ gridColumn: "span 4", padding: "32px 16px", textAlign: "center", background: "var(--bg-hover)", borderRadius: "16px", fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 600 }}>
+                            No winners yet. <br/> Claim the first spot.
+                        </div>
+                    )}
+                </div>
             </div>
-          </div>
         </div>
       </div>
 
@@ -614,4 +602,14 @@ export default function ShipWeek() {
       )}
     </div>
   );
+}
+
+function Rocket({ size, style }: { size: number, style?: any }) {
+    return (
+        <svg viewBox="0 0 256 256" width={size} height={size} style={style}>
+            <rect width="256" height="256" fill="none"/>
+            <path d="M128,24S24,112,24,192a24,24,0,0,0,24,24c40,0,52-36,52-36h56s12,36,52,36a24,24,0,0,0,24-24C232,112,128,24,128,24Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"/>
+            <circle cx="128" cy="112" r="20" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="24"/>
+        </svg>
+    );
 }
