@@ -287,12 +287,24 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
               style={{ 
                 color: "var(--text-primary)", 
                 cursor: "pointer", 
-                fontWeight: 700, 
-                backgroundColor: "var(--bg-hover)", 
-                padding: "0 4px", 
-                borderRadius: "var(--radius-sm)",
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.95em"
+                fontWeight: 750, 
+                backgroundColor: "var(--bg-hover)",
+                padding: "1px 8px",
+                borderRadius: "100px",
+                fontSize: "13px",
+                border: "0.5px solid var(--border-hairline)",
+                transition: "all 0.15s ease",
+                display: "inline-block",
+                verticalAlign: "middle",
+                margin: "0 2px"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--text-primary)';
+                e.currentTarget.style.color = 'var(--bg-page)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+                e.currentTarget.style.color = 'var(--text-primary)';
               }}
             >
               #{tag}
