@@ -33,6 +33,41 @@ export async function sendShipWeekLaunchEmail(email: string, name: string, compe
   }
 }
 
+/**
+ * Send competition emails in hardware-optimized batches
+ */
+export async function sendShipWeekBatchEmail(recipients: { email: string; name: string }[], competitionName: string, deadline: string) {
+  if (!resend || !recipients.length) return;
+
+  const batchSize = 100;
+  for (let i = 0; i < recipients.length; i += batchSize) {
+    const chunk = recipients.slice(i, i + batchSize);
+    
+    try {
+      await resend.batch.send(chunk.map(u => ({
+        from: "Codeown <founders@codeown.space>",
+        to: u.email,
+        subject: `🚀 New Ship Week: ${competitionName}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #0f172a;">
+            <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.04em;">Season 1 Begins.</h1>
+            <p style="font-size: 18px; line-height: 1.6; color: #475569;">
+              Hi ${u.name}, a new high-stakes competition is live!
+            </p>
+            <div style="background: #f8fafc; padding: 32px; border-radius: 24px; border: 1px solid #e2e8f0; margin: 32px 0;">
+              <h2 style="margin: 0 0 8px 0; font-size: 20px;">${competitionName}</h2>
+              <p style="margin: 0; color: #64748b; font-size: 14px;">Deadline: ${new Date(deadline).toLocaleDateString()}</p>
+            </div>
+            <a href="https://codeown.space/ship" style="display: inline-block; background: #000; color: #fff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700;">ENTER THE HUB</a>
+          </div>
+        `
+      })));
+    } catch (err) {
+      console.error("Batch email failure", err);
+    }
+  }
+}
+
 export async function sendWelcomeEmail(email: string, name: string) {
   if (!resend) {
     console.warn("Resend is not configured. Skipping welcome email.");

@@ -9,7 +9,8 @@ import {
   sendNewMentionEmail,
   sendCofounderRequestEmail,
   sendStartupUpvoteEmail,
-  sendShipWeekLaunchEmail
+  sendShipWeekLaunchEmail,
+  sendShipWeekBatchEmail
 } from "../lib/email.js";
 
 export async function isUserActive(userId: string): Promise<boolean> {
@@ -232,9 +233,15 @@ export async function broadcastShipWeek(adminId: string, competitionName: string
 
     await supabase.from("notifications").insert(notifs);
 
-    // 3. Send emails and emit socket events
+    // 3. Send emails in batch
+    const validRecipients = users
+        .filter(u => u.email)
+        .map(u => ({ email: u.email!, name: u.name || "Builder" }));
+    
+    sendShipWeekBatchEmail(validRecipients, competitionName, deadline).catch(e => console.error("Batch fail", e));
+
+    // 4. Emit socket events (Real-time updates)
     for (const u of users) {
-        // Socket emission
         try {
             const { getIO } = await import("../lib/socket.js");
             getIO().to(u.id).emit("new_notification", { 
@@ -243,10 +250,5 @@ export async function broadcastShipWeek(adminId: string, competitionName: string
                 data: { competitionName, deadline } 
             });
         } catch (e) {}
-
-        // Email (Async)
-        if (u.email) {
-            sendShipWeekLaunchEmail(u.email, u.name || "Builder", competitionName, deadline);
-        }
     }
 }
