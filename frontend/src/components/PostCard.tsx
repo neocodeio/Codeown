@@ -408,14 +408,17 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     style={{
                       position: "relative",
                       width: "100%",
-                      padding: "12px 14px",
-                      backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
-                      border: "0.5px solid var(--border-hairline)",
-                      borderRadius: "var(--radius-sm)",
+                      padding: "14px 16px",
+                      backgroundColor: "transparent",
+                      border: isSelected ? "1.5px solid var(--text-primary)" : "1.5px solid var(--border-hairline)",
+                      borderRadius: "14px",
                       cursor: votedOption !== null ? "default" : "pointer",
                       textAlign: "left",
                       overflow: "hidden",
-                      transition: "all 0.2s ease"
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center"
                     }}
                   >
                     {votedOption !== null && (
@@ -425,24 +428,27 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                         left: 0,
                         bottom: 0,
                         width: `${percentage}%`,
-                        backgroundColor: isSelected ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-                        transition: "width 1s var(--ease-smooth)",
+                        backgroundColor: "var(--bg-hover)",
+                        borderRight: percentage > 0 ? "1px solid var(--border-hairline)" : "none",
+                        transition: "width 1s cubic-bezier(0.4, 0, 0.2, 1)",
                         zIndex: 0
                       }} />
                     )}
                     <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
                       <span style={{
                         fontSize: "14px",
-                        fontWeight: isSelected ? 600 : 500,
-                        color: isSelected ? "var(--bg-page)" : "var(--text-primary)",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        opacity: isSelected ? 1 : 0.8
                       }}>
-                        {option}
+                        {option || "Option " + (idx + 1)}
+                        {isSelected && <CheckCircle size={14} weight="fill" style={{ marginLeft: "8px", verticalAlign: "middle" }} />}
                       </span>
                       {votedOption !== null && (
                         <span style={{
                           fontSize: "13px",
-                          fontWeight: 600,
-                          color: isSelected ? "var(--bg-page)" : "var(--text-tertiary)",
+                          fontWeight: 800,
+                          color: isSelected ? "var(--text-primary)" : "var(--text-tertiary)",
                         }}>
                           {percentage}%
                         </span>
