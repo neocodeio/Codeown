@@ -10,7 +10,7 @@ import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, Bug, Sparkle, Trophy, Question, Lightbulb, ArrowsClockwise } from "phosphor-react";
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, Bug, Sparkle, Trophy, Question, Lightbulb, ArrowsClockwise, CheckCircle } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
