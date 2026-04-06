@@ -23,7 +23,8 @@ import {
   ShareNetwork,
   BookmarkSimple,
   ChartBar,
-  PaperPlaneTilt
+  PaperPlaneTilt,
+  CheckCircle
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
@@ -267,8 +268,9 @@ export default function PostDetail() {
           <header style={{
             position: "sticky",
             top: 0,
-            backgroundColor: "rgba(var(--bg-page-rgb, 255, 255, 255), 0.8)",
-            backdropFilter: "blur(20px)",
+            backgroundColor: "var(--bg-page)",
+            opacity: 0.98,
+            backdropFilter: "blur(24px)",
             zIndex: 100,
             padding: "16px 24px",
             display: "flex",
@@ -372,15 +374,18 @@ export default function PostDetail() {
                         style={{
                           position: "relative",
                           width: "100%",
-                          padding: "14px 16px",
-                          backgroundColor: isSelected ? "var(--text-primary)" : "var(--bg-page)",
-                          border: "0.5px solid var(--border-hairline)",
-                          borderRadius: "var(--radius-sm)",
-                          cursor: votedOption !== null ? "default" : "pointer",
-                          textAlign: "left",
-                          overflow: "hidden",
-                          transition: "all 0.2s ease"
-                        }}
+                        padding: "14px 16px",
+                        backgroundColor: "transparent",
+                        border: isSelected ? "1.5px solid var(--text-primary)" : "1.5px solid var(--border-hairline)",
+                        borderRadius: "14px",
+                        cursor: votedOption !== null ? "default" : "pointer",
+                        textAlign: "left",
+                        overflow: "hidden",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center"
+                      }}
                       >
                         {votedOption !== null && (
                           <div style={{
@@ -397,16 +402,18 @@ export default function PostDetail() {
                         <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
                           <span style={{
                             fontSize: "14px",
-                            fontWeight: isSelected ? 700 : 500,
-                            color: isSelected ? "var(--white)" : "var(--text-primary)",
+                            fontWeight: 700,
+                            color: "var(--text-primary)",
+                            opacity: isSelected ? 1 : 0.8
                           }}>
-                            {option}
+                            {option || "Option " + (idx + 1)}
+                            {isSelected && <CheckCircle size={14} weight="fill" style={{ marginLeft: "8px", verticalAlign: "middle" }} />}
                           </span>
                           {votedOption !== null && (
                             <span style={{
                               fontSize: "13px",
-                              fontWeight: 700,
-                              color: isSelected ? "var(--white)" : "var(--text-tertiary)",
+                              fontWeight: 800,
+                              color: isSelected ? "var(--text-primary)" : "var(--text-tertiary)",
                             }}>
                               {percentage}%
                             </span>
