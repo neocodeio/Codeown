@@ -94,8 +94,8 @@ export default function Feed() {
                 else fetchProjects(undefined, true);
             }
         }, {
-            // Trigger load when within 3000px of viewport bottom
-            rootMargin: "0px 0px 3000px 0px"
+            // Trigger load when within 1000px of viewport bottom
+            rootMargin: "0px 0px 1000px 0px"
         });
         
         if (node) observer.current.observe(node);

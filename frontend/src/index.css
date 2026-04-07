@@ -69,12 +69,22 @@
   --bg-header: rgba(10, 10, 10, 0.8);
 }
 
-/* Global transitions for theme switching */
-*, *::before, *::after {
-  transition: background-color 0.3s var(--ease-smooth), border-color 0.3s var(--ease-smooth), color 0.1s linear;
+/* Targeted transitions for theme switching - much more performant than global '*' selector */
+body {
+  transition: background-color 0.3s var(--ease-smooth);
 }
 
-/* Override for images and heavy transitions */
+.nav-link, button, input, textarea, a, .card {
+  transition: background-color 0.2s var(--ease-smooth), border-color 0.2s var(--ease-smooth), color 0.15s linear, opacity 0.2s ease, transform 0.2s var(--ease-smooth);
+}
+
+/* Optimization for long lists - tells browser to optimize content that isn't currently on screen */
+.feed-item, .post-card, .project-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 200px;
+}
+
+/* Override for images to prevent flickering */
 img, video, .no-transition {
   transition: none !important;
 }
