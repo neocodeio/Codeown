@@ -467,6 +467,30 @@ export async function toggleReaction(req: Request, res: Response) {
 
         if (updateErr) throw updateErr;
 
+        // 3. Emit real-time reaction update
+        try {
+            const { getIO } = await import("../lib/socket.js");
+            const io = getIO();
+
+            // Find other participant to notify
+            const { data: otherParticipant } = await supabase
+                .from("conversation_participants")
+                .select("user_id")
+                .eq("conversation_id", message.conversation_id)
+                .neq("user_id", userId)
+                .single();
+
+            if (otherParticipant) {
+                io.to(otherParticipant.user_id).emit("message_reaction", { 
+                    messageId, 
+                    reactions,
+                    userId // sender of reaction
+                });
+            }
+        } catch (socketErr) {
+            console.error("Error emitting message_reaction:", socketErr);
+        }
+
         return res.json({ success: true, reactions });
 
     } catch (error: any) {

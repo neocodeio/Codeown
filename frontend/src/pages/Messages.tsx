@@ -196,16 +196,19 @@ export default function Messages() {
       setMessages((prev) => prev.filter(m => m.id !== Number(messageId)));
     };
 
+    const handleMessageReaction = ({ messageId, reactions }: { messageId: string, reactions: any }) => {
+      setMessages(prev => prev.map(m => m.id === Number(messageId) ? { ...m, reactions } : m));
+    };
+
     const handleNewMessage = (payload: any) => {
-      // 1. Update messages list if this is the active conversation
+      setMessages((prev) => {
+        const exists = prev.some(m => m.id === payload.id);
+        if (exists) return prev;
+        return [...prev, payload];
+      });
+      scrollToBottom(true);
+      
       if (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) {
-        setMessages((prev) => {
-          const exists = prev.some(m => m.id === payload.id);
-          if (exists) return prev;
-          return [...prev, payload];
-        });
-        scrollToBottom(true);
-        // Mark as read via socket
         socket.emit("mark_read", {
           senderId: currentUser.id,
           receiverId: payload.sender_id,
@@ -213,29 +216,23 @@ export default function Messages() {
         });
       }
 
-      // 2. Update conversations list (snippet, order, unread count)
       setConversations((prev) => {
-        const convoIndex = prev.findIndex(c => c.id === payload.conversation_id || (c.id === 0 && c.partner.id === payload.sender_id));
+        const convoId = payload.conversation_id;
+        const convoIndex = prev.findIndex(c => c.id === convoId || (c.id === 0 && c.partner.id === payload.sender_id));
         if (convoIndex === -1) {
           fetchConversations(false);
           return prev;
         }
-
-        const updatedConvos = [...prev];
-        const convo = updatedConvos[convoIndex];
-
-        updatedConvos[convoIndex] = {
+        const updated = [...prev];
+        const convo = updated[convoIndex];
+        updated[convoIndex] = {
           ...convo,
-          id: payload.conversation_id, // ensure ID is correct if it was a placeholder
+          id: convoId,
           last_message: payload,
-          unread_count: (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id)))
-            ? 0
-            : (convo.unread_count || 0) + 1
+          unread_count: (activeConvo && activeConvo.id === convoId) ? 0 : (convo.unread_count || 0) + 1
         };
-
-        // Move to top
-        const [moved] = updatedConvos.splice(convoIndex, 1);
-        return [moved, ...updatedConvos];
+        const [moved] = updated.splice(convoIndex, 1);
+        return [moved, ...updated];
       });
     };
 
@@ -243,6 +240,7 @@ export default function Messages() {
     socket.on("stop_typing", handleStopTyping);
     socket.on("messages_read", handleMessagesRead);
     socket.on("message_deleted", handleMessageDeleted);
+    socket.on("message_reaction", handleMessageReaction);
     socket.on("new_message", handleNewMessage);
 
     return () => {
@@ -250,6 +248,7 @@ export default function Messages() {
       socket.off("stop_typing", handleStopTyping);
       socket.off("messages_read", handleMessagesRead);
       socket.off("message_deleted", handleMessageDeleted);
+      socket.off("message_reaction", handleMessageReaction);
       socket.off("new_message", handleNewMessage);
     };
   }, [currentUser?.id, activeConvo?.id]);
@@ -363,9 +362,6 @@ export default function Messages() {
 
   useEffect(() => {
     fetchConversations(true);
-    // Poll for new conversations/messages every 10 seconds
-    const interval = setInterval(() => fetchConversations(false), 10000);
-    return () => clearInterval(interval);
   }, [targetUserId]);
 
   useEffect(() => {
@@ -373,11 +369,6 @@ export default function Messages() {
       fetchMessages(activeConvo.id, activeConvo.partner.id, true);
       setIsAtBottom(true);
       setTimeout(() => scrollToBottom(true), 100);
-
-      const interval = setInterval(() => {
-        fetchMessages(activeConvo.id, activeConvo.partner.id);
-      }, 5000);
-      return () => clearInterval(interval);
     }
   }, [activeConvo?.id]);
 
@@ -442,7 +433,7 @@ export default function Messages() {
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       if (recordingTimerRef.current) {
