@@ -316,6 +316,65 @@ export default function RecommendedUsersSidebar() {
                 </div>
             </div>
 
+            {/* Sponsor Section: Don Workspace */}
+            <div className="sidebar-section" style={{ backgroundColor: "var(--bg-hover2)", borderBottom: "0.5px solid var(--border-hairline)" }}>
+                <a 
+                    href="https://www.donos.pro/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                >
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: "14px" }}>
+                        <div style={{ 
+                            width: "48px", 
+                            height: "48px", 
+                            borderRadius: "12px", 
+                            overflow: "hidden",
+                            backgroundColor: "#fff",
+                            border: "0.5px solid var(--border-hairline)",
+                            flexShrink: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "4px"
+                        }}>
+                             <img 
+                                src="/src/assets/donos.logo.png" 
+                                alt="Don Workspace" 
+                                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                            />
+                        </div>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
+                                <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Don Workspace</span>
+                                <span style={{ 
+                                    fontSize: "9px", 
+                                    fontWeight: 800, 
+                                    color: "var(--text-tertiary)", 
+                                    letterSpacing: "0.05em",
+                                    padding: "2px 6px",
+                                    borderRadius: "4px",
+                                    backgroundColor: "var(--bg-hover)",
+                                    border: "0.5px solid var(--border-hairline)"
+                                }}>SPONSOR</span>
+                            </div>
+                            <p style={{ 
+                                fontSize: "12.5px", 
+                                color: "var(--text-secondary)", 
+                                lineHeight: "1.5", 
+                                margin: 0,
+                                display: "-webkit-box",
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden"
+                            }}>
+                                The AI-powered workspace for modern builders. Organize your projects, tasks, and team in one sleek dashboard.
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
             {/* Section 4: Trending */}
             {!trendingLoading && Array.isArray(trendingTags) && (
                 <div className="sidebar-section">
