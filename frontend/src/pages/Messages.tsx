@@ -101,7 +101,7 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
   const animationRef = useRef<number | null>(null);
 
   const bars = useMemo(() => {
-    return Array.from({ length: 40 }).map(() => Math.random() * 0.8 + 0.2);
+    return Array.from({ length: 45 }).map(() => Math.random() * 0.7 + 0.3);
   }, []);
 
   const draw = () => {
@@ -111,24 +111,34 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
     if (!ctx) return;
 
     const progress = duration > 0 ? currentTime / duration : 0;
+    const time = performance.now() / 150; // For pulse animation
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    const barWidth = 3;
-    const gap = 2;
+    const barWidth = 2.5;
+    const gap = 1.5;
     const totalWidth = bars.length * (barWidth + gap);
     canvas.width = totalWidth;
-    canvas.height = 32;
+    canvas.height = 36;
 
     bars.forEach((heightMultiplier, i) => {
       const x = i * (barWidth + gap);
-      const h = heightMultiplier * canvas.height;
+      
+      // Add pulse effect if playing
+      let h = heightMultiplier * canvas.height * 0.8;
+      if (isPlaying) {
+        h += Math.sin(time + i * 0.5) * 4; // Rhythmic pulse
+      }
+      
       const y = (canvas.height - h) / 2;
-      
       const isPast = i / bars.length <= progress;
-      ctx.fillStyle = isPast ? (isMine ? "rgba(255,255,255,1)" : "var(--text-primary)") : (isMine ? "rgba(255,255,255,0.3)" : "var(--border-strong)");
       
-      // Draw rounded rect
+      ctx.fillStyle = isPast 
+        ? (isMine ? "rgba(255,255,255,1)" : "var(--text-primary)") 
+        : (isMine ? "rgba(255,255,255,0.25)" : "var(--border-strong)");
+      
       ctx.beginPath();
+      // Draw rounded line
       ctx.roundRect(x, y, barWidth, h, 2);
       ctx.fill();
     });
@@ -154,25 +164,36 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "4px 0" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "4px 0" }}>
       <button 
         onClick={togglePlay}
         style={{ 
-          width: "32px", 
-          height: "32px", 
+          width: "44px", 
+          height: "44px", 
           borderRadius: "50%", 
-          backgroundColor: isMine ? "rgba(255,255,255,0.15)" : "var(--bg-hover)", 
+          backgroundColor: isMine ? "rgba(255,255,255,0.98)" : "var(--bg-hover)", 
           border: "none", 
           display: "flex", 
           alignItems: "center", 
           justifyContent: "center",
           cursor: "pointer",
-          color: "inherit"
+          color: isMine ? "#000" : "var(--text-primary)", 
+          flexShrink: 0,
+          transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "scale(1.08)";
+          e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.15)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
         }}
       >
-        {isPlaying ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
+        {isPlaying ? <Pause size={22} weight="fill" /> : <Play size={22} weight="fill" style={{ marginLeft: isPlaying ? 0 : "2px" }} />}
       </button>
-      <canvas ref={canvasRef} style={{ height: "32px", cursor: "pointer" }} />
+      <canvas ref={canvasRef} style={{ height: "36px", flex: 1, maxWidth: "180px", cursor: "pointer" }} />
       <audio 
         ref={audioRef} 
         src={url} 
@@ -181,7 +202,7 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
         onEnded={() => setIsPlaying(false)}
         style={{ display: "none" }}
       />
-      <span style={{ fontSize: "10px", fontWeight: 700, opacity: 0.7, minWidth: "30px", textAlign: "right" }}>
+      <span style={{ fontSize: "11px", fontWeight: 700, opacity: 0.8, minWidth: "35px", textAlign: "right", fontFamily: "monospace" }}>
         {Math.floor(currentTime / 60)}:{(Math.floor(currentTime % 60)).toString().padStart(2, '0')}
       </span>
     </div>
