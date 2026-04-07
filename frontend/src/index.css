@@ -49,11 +49,11 @@
 }
 
 .dark {
-  --bg-page: #050505;
-  --bg-card: #0a0a0a;
-  --bg-elevated: #111111;
-  --bg-hover: #161616;
-  --bg-input: #0a0a0a;
+  --bg-page: #171717;
+  --bg-card: #1c1c1c;
+  --bg-elevated: #222222;
+  --bg-hover: #262626;
+  --bg-input: #1c1c1c;
 
   --text-primary: #ffffff;
   --text-secondary: #a1a1a1;
@@ -63,10 +63,10 @@
   --primary-contrast: #000000;
   --accent: #ffffff;
 
-  --border-light: #1f1f1f;
-  --border-hairline: rgba(255, 255, 255, 0.08);
+  --border-light: #262626;
+  --border-hairline: rgba(255, 255, 255, 0.06);
   --border-strong: #ffffff;
-  --bg-header: rgba(10, 10, 10, 0.8);
+  --bg-header: rgba(23, 23, 23, 0.85);
 }
 
 /* Targeted transitions for theme switching - much more performant than global '*' selector */
