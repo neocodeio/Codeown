@@ -312,6 +312,13 @@ export default function Messages() {
 
     const handleMessagesRead = ({ conversationId, readerId }: { conversationId: number, readerId: string }) => {
       setMessages((prev) => prev.map(m => (m.conversation_id === conversationId && !m.is_read && m.sender_id !== readerId) ? { ...m, is_read: true } : m));
+      
+      // Also update conversations list to clear unread count for that convo
+      setConversations(prev => prev.map(c => 
+        (c.id === conversationId && readerId === c.partner.id) 
+        ? { ...c, unread_count: 0 } 
+        : c
+      ));
     };
 
     const handleMessageDeleted = ({ messageId, conversationId: _conversationId }: { messageId: number, conversationId: number }) => {

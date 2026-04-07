@@ -26,8 +26,20 @@ export const initSocket = (server: any) => {
       if (io) io.to(receiverId).emit("stop_typing", { senderId });
     });
 
-    socket.on("mark_read", ({ senderId, receiverId, conversationId }: { senderId: string, receiverId: string, conversationId: number }) => {
+    socket.on("mark_read", async ({ senderId, receiverId, conversationId }: { senderId: string, receiverId: string, conversationId: number }) => {
       if (io) io.to(receiverId).emit("messages_read", { conversationId, readerId: senderId });
+      
+      try {
+        const { supabase } = await import("./supabase.js");
+        await supabase
+          .from("messages")
+          .update({ is_read: true })
+          .eq("conversation_id", conversationId)
+          .neq("sender_id", senderId)
+          .eq("is_read", false);
+      } catch (dbErr) {
+        console.error("Error updating read status in DB:", dbErr);
+      }
     });
     
     socket.on("broadcast_activity", ({ userId, userName, type }: { userId: string, userName: string, type: "posting" | "launching" | "chatting" | "commenting" | null }) => {
