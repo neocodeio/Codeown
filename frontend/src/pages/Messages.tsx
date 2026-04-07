@@ -110,6 +110,11 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Get computed colors to handle theme changes perfectly
+    const style = window.getComputedStyle(canvas);
+    const primaryColor = style.color || (isMine ? "rgba(255,255,255,1)" : "#000");
+    const secondaryColor = isMine ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.15)";
+    
     const progress = duration > 0 ? currentTime / duration : 0;
     const time = performance.now() / 150; // For pulse animation
     
@@ -133,9 +138,7 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
       const y = (canvas.height - h) / 2;
       const isPast = i / bars.length <= progress;
       
-      ctx.fillStyle = isPast 
-        ? (isMine ? "rgba(255,255,255,1)" : "var(--text-primary)") 
-        : (isMine ? "rgba(255,255,255,0.25)" : "var(--border-strong)");
+      ctx.fillStyle = isPast ? primaryColor : secondaryColor;
       
       ctx.beginPath();
       // Draw rounded line
