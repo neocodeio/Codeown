@@ -14,10 +14,30 @@ export default function FeedbackButton() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [rateLimited, setRateLimited] = useState(false);
   const { user } = useUser();
 
   const { width } = useWindowSize();
   const isMobile = width < 768;
+
+  const getSubmissionData = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const stored = localStorage.getItem("feedback_limit");
+    if (!stored) return { date: today, count: 0 };
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed.date !== today) return { date: today, count: 0 };
+      return parsed;
+    } catch {
+      return { date: today, count: 0 };
+    }
+  };
+
+  const incrementSubmissionCount = () => {
+    const data = getSubmissionData();
+    data.count += 1;
+    localStorage.setItem("feedback_limit", JSON.stringify(data));
+  };
 
   const reset = () => {
     setFullName(user?.fullName || "");
@@ -26,6 +46,7 @@ export default function FeedbackButton() {
     setMessage("");
     setSent(false);
     setError("");
+    setRateLimited(getSubmissionData().count >= 5);
   };
 
   const handleClose = () => {
@@ -35,6 +56,12 @@ export default function FeedbackButton() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (getSubmissionData().count >= 5) {
+      setError("Daily limit reached (5 feedbacks/day).");
+      setRateLimited(true);
+      return;
+    }
+
     setError("");
     const trimmedName = fullName.trim();
     const trimmedEmail = email.trim();
@@ -60,6 +87,7 @@ export default function FeedbackButton() {
         username: trimmedUsername || undefined,
         message: trimmedMessage,
       });
+      incrementSubmissionCount();
       setSent(true);
       setMessage("");
       setTimeout(() => handleClose(), 1500);
@@ -134,6 +162,14 @@ export default function FeedbackButton() {
             </div>
             <h3 style={{ margin: "0 0 8px", color: "var(--text-primary)", fontSize: "14px", fontWeight: 700 }}>Feedback received</h3>
             <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "13px" }}>Thank you for your feedback.</p>
+          </div>
+        ) : rateLimited ? (
+          <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <div style={{ width: "48px", height: "48px", background: "var(--bg-hover)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
+              <X size={24} weight="thin" />
+            </div>
+            <h3 style={{ margin: "0 0 8px", color: "var(--text-primary)", fontSize: "14px", fontWeight: 700 }}>Daily limit reached</h3>
+            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "13px" }}>You can only send 5 feedbacks per day. Please come back tomorrow!</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>

@@ -102,11 +102,21 @@ app.use(express.json({ limit: "50mb" }));
 // 5. Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10000, // Very high limit to ensure no blocking during development/testing
+  max: 10000, 
   standardHeaders: true,
   legacyHeaders: false,
 });
 app.use(limiter);
+
+// Specific stricter limit for feedback
+const feedbackLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 5, // 5 feedbacks per day
+  message: { error: "You have reached your daily feedback limit (5 per day). Please try again tomorrow." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/feedback", feedbackLimiter);
 
 // Routes
 app.use("/posts", postsRoutes);
