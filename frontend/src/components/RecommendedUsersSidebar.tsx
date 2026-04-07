@@ -4,7 +4,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Users, Trophy, CaretUp, CaretRight, TrendUp } from "phosphor-react";
+import { Users, CaretUp, CaretRight, TrendUp } from "phosphor-react";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
 import VerifiedBadge from "./VerifiedBadge";
@@ -125,17 +125,6 @@ export default function RecommendedUsersSidebar() {
         refetchOnWindowFocus: false,
     });
 
-    // 2. Spotlight fetch
-    const { data: spotlight = [], isLoading: spotlightLoading } = useQuery({
-        queryKey: ["communitySpotlight"],
-        queryFn: async () => {
-            const response = await api.get("/leaderboard/pulse");
-            return response.data.top_spotlight || [];
-        },
-        enabled: isDesktop,
-        staleTime: 5 * 60 * 1000,
-        refetchOnWindowFocus: false,
-    });
 
     // 3. Recent Launches fetch
     const { data: projects = [], isLoading: projectsLoading } = useQuery({
@@ -410,140 +399,6 @@ export default function RecommendedUsersSidebar() {
                 </div>
             )}
 
-            {/* Section 2: Leaderboard */}
-            <div className="sidebar-section" style={{ paddingBottom: 0 }}>
-                <div className="sidebar-title-row">
-                    <h3 className="sidebar-title" style={{ fontSize: "12px", fontWeight: "700", letterSpacing: "0.1em", color: "var(--text-primary)" }}>
-                        LEADERBOARD
-                    </h3>
-                    {!spotlightLoading && spotlight.length > 0 && (
-                        <Link
-                            to="/leaderboard"
-                            style={{
-                                fontSize: "11px",
-                                color: "var(--text-tertiary)",
-                                textDecoration: "none",
-                                fontWeight: 500,
-                            }}
-                        >
-                            This week
-                        </Link>
-                    )}
-                </div>
-                
-                <div style={{
-                    display: "flex",
-                    alignItems: "flex-end",
-                    justifyContent: "space-between",
-                    paddingTop: "24px",
-                    paddingBottom: 0,
-                    gap: "6px"
-                }}>
-                    {spotlightLoading ? (
-                        <div className="skeleton-pulse" style={{ flex: 1, height: "120px" }} />
-                    ) : (() => {
-                        const top3 = spotlight.slice(0, 3);
-                        if (top3.length === 0) return <div style={{ fontSize: "12px", color: "var(--text-tertiary)", textAlign: "center", width: "100%", padding: "20px 0" }}>No data yet</div>;
-                        const ordered = top3.length === 1 ? [top3[0]] : (top3.length === 2 ? [top3[1], top3[0]] : [top3[1], top3[0], top3[2]]);
-                        
-                        return ordered.map((user: any, idx: number) => {
-                            const actualRankIndex = top3.length === 1 ? 0 : (top3.length === 2 ? (idx === 0 ? 1 : 0) : (idx === 0 ? 1 : idx === 1 ? 0 : 2));
-                            const rank = actualRankIndex + 1;
-                            const isFirst = rank === 1;
-                            const height = isFirst ? "64px" : rank === 2 ? "44px" : "36px";
-                            const avatarSize = isFirst ? 52 : 40;
-
-                            const stepColor = isFirst ? "rgba(255, 176, 0, 0.3)" : rank === 2 ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.1)";
-                            const stepGradient = isFirst 
-                                ? `linear-gradient(to bottom, ${stepColor}, rgba(255, 176, 0, 0.02))` 
-                                : `linear-gradient(to bottom, ${stepColor}, transparent)`;
-                            const topBorder = isFirst 
-                                ? "rgba(255, 176, 0, 0.4)" 
-                                : rank === 2 ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.15)";
-
-
-                            return (
-                                <Link
-                                    key={user.id}
-                                    to={`/${user.username}`}
-                                    style={{
-                                        textDecoration: "none",
-                                        color: "inherit",
-                                        textAlign: "center",
-                                        flex: 1,
-                                        minWidth: 0,
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center"
-                                    }}
-                                    className="sidebar-item"
-                                >
-                                    <div style={{ position: "relative", marginBottom: "8px" }}>
-                                        {isFirst && (
-                                            <div style={{ position: "absolute", top: "-20px", left: "50%", transform: "translateX(-50%)", color: "#FFB000" }}>
-                                                <Trophy size={16} weight="fill" />
-                                            </div>
-                                        )}
-                                        
-                                        <div style={{ position: "relative", padding: 0 }}>
-                                            <AvailabilityBadge
-                                                avatarUrl={user.avatar_url}
-                                                name={user.name || "User"}
-                                                size={avatarSize}
-                                                isOpenToOpportunities={user.is_pro && user.is_hirable}
-                                                isOG={user.is_og}
-                                                username={user.username}
-                                            />
-                                        </div>
-
-                                        <div style={{
-                                            position: "absolute",
-                                            bottom: "-6px",
-                                            left: "50%",
-                                            transform: "translateX(-50%)",
-                                            width: "20px",
-                                            height: "20px",
-                                            backgroundColor: isFirst ? "#FFB000" : "var(--text-primary)",
-                                            border: "2.5px solid var(--bg-page)",
-                                            borderRadius: "50%",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontSize: "10px",
-                                            fontWeight: "900",
-                                            color: isFirst ? "#000" : "var(--bg-page)",
-                                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                                            zIndex: 10
-                                        }}>
-                                            {rank}
-                                        </div>
-                                    </div>
-
-                                    <div style={{ width: "100%", textAlign: "center", marginBottom: "2px" }}>
-                                        <div style={{ fontSize: isFirst ? "12px" : "11px", fontWeight: "700", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                            {(user.name || "User").split(" ")[0].toUpperCase()}
-                                        </div>
-                                        <div style={{ fontSize: "10px", fontWeight: "500", color: "var(--text-tertiary)", marginTop: "1px" }}>
-                                            {Number(user.pulse_score || 0).toLocaleString()}p
-                                        </div>
-                                    </div>
-
-                                    {/* Podium Block */}
-                                    <div style={{
-                                        width: "100%",
-                                        height: height,
-                                        background: stepGradient,
-                                        borderTop: `1.5px solid ${topBorder}`,
-                                        borderRadius: "6px 6px 1px 1px",
-                                        marginTop: "8px",
-                                        transition: "all 0.2s ease"
-                                    }} />
-                                </Link>
-                            );
-                        });
-                    })()}
-                </div>
-            </div>
 
             {/* Section 3: Recent Launches */}
             {!projectsLoading && projects.length > 0 && (
