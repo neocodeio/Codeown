@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { motion } from "framer-motion";
 import {
   PaperPlaneTilt,
   CaretLeft,
@@ -20,7 +21,11 @@ import {
   StopCircle,
   Gif,
   ChatTeardropDots,
-  Info
+  Info,
+  Check,
+  Checks,
+  Play,
+  Pause
 } from "phosphor-react";
 import NewMessageModal from "../components/NewMessageModal";
 import GifPicker from "../components/GifPicker";
@@ -85,6 +90,102 @@ interface Conversation {
   partner: Partner;
   last_message: Message | null;
   unread_count?: number;
+}
+
+function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const animationRef = useRef<number | null>(null);
+
+  const bars = useMemo(() => {
+    return Array.from({ length: 40 }).map(() => Math.random() * 0.8 + 0.2);
+  }, []);
+
+  const draw = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const progress = duration > 0 ? currentTime / duration : 0;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const barWidth = 3;
+    const gap = 2;
+    const totalWidth = bars.length * (barWidth + gap);
+    canvas.width = totalWidth;
+    canvas.height = 32;
+
+    bars.forEach((heightMultiplier, i) => {
+      const x = i * (barWidth + gap);
+      const h = heightMultiplier * canvas.height;
+      const y = (canvas.height - h) / 2;
+      
+      const isPast = i / bars.length <= progress;
+      ctx.fillStyle = isPast ? (isMine ? "rgba(255,255,255,1)" : "var(--text-primary)") : (isMine ? "rgba(255,255,255,0.3)" : "var(--border-strong)");
+      
+      // Draw rounded rect
+      ctx.beginPath();
+      ctx.roundRect(x, y, barWidth, h, 2);
+      ctx.fill();
+    });
+
+    if (isPlaying) {
+      animationRef.current = requestAnimationFrame(draw);
+    }
+  };
+
+  useEffect(() => {
+    draw();
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [currentTime, duration, isPlaying]);
+
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!audioRef.current) return;
+    if (isPlaying) audioRef.current.pause();
+    else audioRef.current.play();
+    setIsPlaying(!isPlaying);
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "4px 0" }}>
+      <button 
+        onClick={togglePlay}
+        style={{ 
+          width: "32px", 
+          height: "32px", 
+          borderRadius: "50%", 
+          backgroundColor: isMine ? "rgba(255,255,255,0.15)" : "var(--bg-hover)", 
+          border: "none", 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center",
+          cursor: "pointer",
+          color: "inherit"
+        }}
+      >
+        {isPlaying ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
+      </button>
+      <canvas ref={canvasRef} style={{ height: "32px", cursor: "pointer" }} />
+      <audio 
+        ref={audioRef} 
+        src={url} 
+        onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
+        onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
+        onEnded={() => setIsPlaying(false)}
+        style={{ display: "none" }}
+      />
+      <span style={{ fontSize: "10px", fontWeight: 700, opacity: 0.7, minWidth: "30px", textAlign: "right" }}>
+        {Math.floor(currentTime / 60)}:{(Math.floor(currentTime % 60)).toString().padStart(2, '0')}
+      </span>
+    </div>
+  );
 }
 
 export default function Messages() {
@@ -1349,7 +1450,6 @@ export default function Messages() {
                     return (
                       <div
                         key={msg.id || idx}
-                        id={`msg-${msg.id}`}
                         className="message-row"
                         style={{
                           display: "flex",
@@ -1534,8 +1634,13 @@ export default function Messages() {
                         </div>
                       )}
 
-                      <div
+                      <motion.div
                         id={`msg-${msg.id}`}
+                        drag={isMobile ? "x" : false}
+                        dragConstraints={{ left: 0, right: 100 }}
+                        onDragEnd={(_, info) => {
+                            if (info.offset.x > 80) setReplyingTo(msg);
+                        }}
                         onMouseDown={() => {
                           if (isMobile) return;
                           longPressTimeoutRef.current = setTimeout(() => setReactingTo(msg.id), 500);
@@ -1568,7 +1673,13 @@ export default function Messages() {
                           position: "relative",
                           cursor: "pointer",
                           userSelect: "none",
-                          WebkitUserSelect: "none"
+                          WebkitUserSelect: "none",
+                          touchAction: "pan-y",
+                          x: 0 // Ensure layout stability
+                        }}
+                        onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            handleReaction(msg.id, "❤️");
                         }}
                       >
                         {msg.image_url && (
@@ -1588,17 +1699,7 @@ export default function Messages() {
                         )}
                         {msg.audio_url && (
                           <div style={{ marginTop: msg.image_url ? "8px" : 0, marginBottom: msg.content ? "8px" : 0 }}>
-                            <audio
-                              src={msg.audio_url}
-                              controls
-                              style={{
-                                height: "36px",
-                                maxWidth: "220px",
-                                outline: "none",
-                                // make the audio player match the theme slightly better
-                                filter: isMine ? "invert(1) hue-rotate(180deg)" : "invert(0)"
-                              }}
-                            />
+                            <VoiceWaveform url={msg.audio_url} isMine={isMine} />
                           </div>
                         )}
                         {msg.content && (
@@ -1704,7 +1805,7 @@ export default function Messages() {
                             </div>
                           </div>
                         )}
-                      </div>
+                      </motion.div>
 
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
                         <span
@@ -1712,12 +1813,24 @@ export default function Messages() {
                             fontSize: "11px",
                             color: "var(--text-tertiary)",
                             fontWeight: 500,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px"
                           }}
                         >
                           {new Date(msg.created_at).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
+                          {isMine && (
+                            <span style={{ display: "flex", alignItems: "center" }}>
+                                {msg.is_read ? (
+                                    <Checks size={14} weight="bold" color="#3B82F6" style={{ filter: "drop-shadow(0 0 4px rgba(59, 130, 246, 0.4))" }} />
+                                ) : (
+                                    <Check size={14} weight="bold" style={{ opacity: 0.5 }} />
+                                )}
+                            </span>
+                          )}
                         </span>
 
                         <button
@@ -1740,18 +1853,6 @@ export default function Messages() {
 
 
 
-                        {isMine && msg.is_read && (() => {
-                          let lastMyMsgIdx = -1;
-                          for (let i = messages.length - 1; i >= 0; i--) {
-                            if (messages[i].sender_id === currentUser?.id) {
-                              lastMyMsgIdx = i;
-                              break;
-                            }
-                          }
-                          return idx === lastMyMsgIdx;
-                        })() && (
-                            <span style={{ fontSize: "11px", color: "var(--text-primary)", fontWeight: 700, marginLeft: "4px" }}>Seen</span>
-                          )}
                       </div>
 
                       {/* Reactions Display */}
