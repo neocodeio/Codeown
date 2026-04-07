@@ -12,6 +12,7 @@ import { formatRelativeDate } from "../utils/date";
 import { useProjectLikes } from "../hooks/useProjectLikes";
 
 import AvailabilityBadge from "./AvailabilityBadge";
+import donosLogo from "../assets/donos.logo.png";
 
 const getInitials = (title: string) => {
     const parts = title.trim().split(/\s+/);
@@ -339,7 +340,7 @@ export default function RecommendedUsersSidebar() {
                             padding: "4px"
                         }}>
                              <img 
-                                src="/src/assets/donos.logo.png" 
+                                src={donosLogo} 
                                 alt="Don Workspace" 
                                 style={{ width: "100%", height: "100%", objectFit: "contain" }}
                             />
