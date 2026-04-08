@@ -521,10 +521,10 @@ export default function Messages() {
     queryKey: ['conversations'],
     queryFn: async () => {
       const token = await getToken();
-      const res = await api.get("/messages/conversations", {
+      const res = await api.get("/messages", {
         headers: { Authorization: `Bearer ${token}` }
       });
-      return res.data;
+      return Array.isArray(res.data) ? res.data : [];
     },
     staleTime: 30000,
   });
@@ -535,10 +535,10 @@ export default function Messages() {
     queryFn: async () => {
       if (!activeConvo || activeConvo.id === 0) return [];
       const token = await getToken();
-      const res = await api.get(`/messages/${activeConvo.id}`, {
+      const res = await api.get(`/messages/${activeConvo.id}/messages`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      return res.data;
+      return Array.isArray(res.data) ? res.data : [];
     },
     enabled: !!activeConvo && activeConvo.id !== 0,
   });
@@ -620,10 +620,10 @@ export default function Messages() {
     };
 
     const handleMessagesRead = ({ conversationId, readerId }: { conversationId: number, readerId: string }) => {
-      setMessages((prev) => prev.map(m => (m.conversation_id === conversationId && !m.is_read && m.sender_id !== readerId) ? { ...m, is_read: true } : m));
+      setMessages((prev) => (Array.isArray(prev) ? prev : []).map(m => (m.conversation_id === conversationId && !m.is_read && m.sender_id !== readerId) ? { ...m, is_read: true } : m));
       
       // Also update conversations list to clear unread count for that convo
-      setConversations(prev => prev.map(c => 
+      setConversations(prev => (Array.isArray(prev) ? prev : []).map(c => 
         (c.id === conversationId && readerId === c.partner.id) 
         ? { ...c, unread_count: 0 } 
         : c
@@ -631,18 +631,19 @@ export default function Messages() {
     };
 
     const handleMessageDeleted = ({ messageId, conversationId: _conversationId }: { messageId: number, conversationId: number }) => {
-      setMessages((prev) => prev.filter(m => m.id !== Number(messageId)));
+      setMessages((prev) => (Array.isArray(prev) ? prev : []).filter(m => m.id !== Number(messageId)));
     };
 
     const handleMessageReaction = ({ messageId, reactions }: { messageId: string, reactions: any }) => {
-      setMessages(prev => prev.map(m => m.id === Number(messageId) ? { ...m, reactions } : m));
+      setMessages(prev => (Array.isArray(prev) ? prev : []).map(m => m.id === Number(messageId) ? { ...m, reactions } : m));
     };
 
     const handleNewMessage = (payload: any) => {
       setMessages((prev) => {
-        const exists = prev.some(m => m.id === payload.id);
+        const safePrev = Array.isArray(prev) ? prev : [];
+        const exists = safePrev.some(m => m.id === payload.id);
         if (exists) return prev;
-        return [...prev, payload];
+        return [...safePrev, payload];
       });
       scrollToBottom(true);
       
@@ -656,7 +657,8 @@ export default function Messages() {
 
       setConversations((prev) => {
         const convoId = payload.conversation_id;
-        const convoIndex = prev.findIndex(c => c.id === convoId || (c.id === 0 && c.partner.id === payload.sender_id));
+        const safePrev = Array.isArray(prev) ? prev : [];
+        const convoIndex = safePrev.findIndex(c => c.id === convoId || (c.id === 0 && c.partner.id === payload.sender_id));
         if (convoIndex === -1) {
           queryClient.invalidateQueries({ queryKey: ['conversations'] });
           return prev;
@@ -893,9 +895,10 @@ export default function Messages() {
         // Immediate local conversation list update
         setConversations((prev) => {
           const convoId = activeConvo?.id;
-          const convoIndex = prev.findIndex(c => c.id === convoId);
+          const safePrev = Array.isArray(prev) ? prev : [];
+          const convoIndex = safePrev.findIndex(c => c.id === convoId);
           if (convoIndex === -1) return prev;
-          const updated = [...prev];
+          const updated = [...safePrev];
           updated[convoIndex] = { ...updated[convoIndex], last_message: res.data, unread_count: 0 };
           const [moved] = updated.splice(convoIndex, 1);
           return [moved, ...updated];
@@ -919,7 +922,7 @@ export default function Messages() {
       });
 
       // Optimistic Update
-      setMessages(prev => prev.map(m => {
+      setMessages(prev => (Array.isArray(prev) ? prev : []).map(m => {
         if (m.id === messageId) {
           const currentReactions = m.reactions || {};
           const users = currentReactions[emoji] || [];
@@ -958,7 +961,7 @@ export default function Messages() {
       });
 
       // Optimistic update
-      setMessages(prev => prev.filter(m => m.id !== messageId));
+      setMessages(prev => (Array.isArray(prev) ? prev : []).filter(m => m.id !== messageId));
     } catch (error) {
       console.error("Error deleting message:", error);
       // Use console only — no alert
@@ -978,7 +981,7 @@ export default function Messages() {
       });
 
       // Optimistic update
-      setConversations(prev => prev.filter(c => c.id !== convoId));
+      setConversations(prev => (Array.isArray(prev) ? prev : []).filter(c => c.id !== convoId));
       if (activeConvo?.id === convoId) {
         setActiveConvo(null);
       }
@@ -1005,11 +1008,11 @@ export default function Messages() {
     }
   };
 
-  const filteredConversations = conversations.filter(
+  const filteredConversations = (Array.isArray(conversations) ? conversations : []).filter(
     (convo) =>
-      convo.partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (convo.partner.username &&
-        convo.partner.username.toLowerCase().includes(searchQuery.toLowerCase()))
+      convo?.partner?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (convo?.partner?.username &&
+        convo?.partner?.username?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   if (loadingConversations) {
@@ -1254,7 +1257,7 @@ export default function Messages() {
                   setActiveConvo(c);
                   if (c.unread_count && c.unread_count > 0) {
                     setConversations(prev =>
-                      prev.map(item => item.id === c.id ? { ...item, unread_count: 0 } : item)
+                      (Array.isArray(prev) ? prev : []).map(item => item.id === c.id ? { ...item, unread_count: 0 } : item)
                     );
                   }
                 }}

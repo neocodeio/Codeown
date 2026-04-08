@@ -32,7 +32,7 @@ export default function MessageNotificationToast() {
   const { user: currentUser } = useClerkUser();
 
   const dismissToast = useCallback((toastId: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== toastId));
+    setToasts((prev) => (Array.isArray(prev) ? prev : []).filter((t) => t.id !== toastId));
   }, []);
 
   useEffect(() => {
@@ -48,10 +48,11 @@ export default function MessageNotificationToast() {
       const toastId = `toast-${msg.id}-${Date.now()}`;
 
       setToasts((prev) => {
+        const safePrev = Array.isArray(prev) ? prev : [];
         // Prevent duplicates
-        if (prev.some((t) => t.message.id === msg.id)) return prev;
+        if (safePrev.some((t) => t.message.id === msg.id)) return prev;
         // Keep max 3 toasts
-        const updated = [...prev, { id: toastId, message: msg, timestamp: Date.now() }];
+        const updated = [...safePrev, { id: toastId, message: msg, timestamp: Date.now() }];
         return updated.slice(-3);
       });
 

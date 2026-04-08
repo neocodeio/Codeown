@@ -46,7 +46,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
       const res = await api.get("/messages", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setConversations(res.data || []);
+      setConversations(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Error fetching conversations:", error);
     } finally {
@@ -82,7 +82,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
 
   if (!isOpen) return null;
 
-  const filtered = conversations.filter(c => 
+  const filtered = (Array.isArray(conversations) ? conversations : []).filter(c => 
     c.partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.partner.username?.toLowerCase().includes(searchQuery.toLowerCase())
   );
