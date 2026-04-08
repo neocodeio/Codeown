@@ -172,50 +172,168 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
           </div>
 
           {showReply && (
-            <div style={{ marginTop: "16px", padding: "16px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}>
+            <div style={{ 
+              marginTop: "16px", 
+              padding: "16px", 
+              backgroundColor: "var(--bg-hover)", 
+              borderRadius: "16px", 
+              border: "0.5px solid var(--border-hairline)",
+              position: "relative",
+              animation: "replySlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              zIndex: 10
+            }}>
+              <style>{`
+                @keyframes replySlideIn {
+                  from { opacity: 0; transform: translateY(-8px); }
+                  to { opacity: 1; transform: translateY(0); }
+                }
+              `}</style>
+              
               {selectedGif && (
-                <div style={{ position: "relative", width: "fit-content", marginBottom: "12px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
-                  <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "120px", display: "block" }} />
+                <div style={{ position: "relative", width: "fit-content", marginBottom: "12px", borderRadius: "12px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+                  <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "160px", display: "block", borderRadius: "8px" }} />
                   <button 
                     onClick={() => setSelectedGif(null)} 
                     style={{ 
-                      position: "absolute", top: "6px", right: "6px", 
-                      backgroundColor: "rgba(0,0,0,0.75)", color: "#fff", border: "none", 
-                      width: "24px", height: "24px", borderRadius: "50%", 
+                      position: "absolute", top: "8px", right: "8px", 
+                      backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", border: "none", 
+                      width: "28px", height: "28px", borderRadius: "50%", 
                       display: "flex", alignItems: "center", justifyContent: "center", 
-                      cursor: "pointer", transition: "all 0.15s ease",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                      cursor: "pointer", transition: "all 0.2s ease",
                       backdropFilter: "blur(4px)",
-                      zIndex: 10
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#000";
-                      e.currentTarget.style.transform = "scale(1.1)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.75)";
-                      e.currentTarget.style.transform = "scale(1)";
-                      e.currentTarget.style.color = "#ffffff";
-                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#000"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.7)"}
                   >
                     <FontAwesomeIcon icon={faXmark} style={{ fontSize: "14px" }} />
                   </button>
                 </div>
               )}
-              <MentionInput value={replyContent} onChange={setReplyContent} placeholder="Write a reply..." style={{ minHeight: "80px", fontSize: "14px", borderRadius: "var(--radius-sm)" }} />
-              <div style={{ display: "flex", gap: "12px", marginTop: "16px", justifyContent: "flex-end" }}>
-                <button onClick={() => { setShowReply(false); setReplyContent(""); }} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "none", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}>Cancel</button>
-                <div style={{ position: "relative" }}>
-                   <button type="button" onClick={() => setIsGifPickerOpen(!isGifPickerOpen)} style={{ padding: "8px 16px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}>
-                     <Gif size={18} weight={isGifPickerOpen ? "fill" : "regular"} />
-                   </button>
-                   {isGifPickerOpen && (
-                     <div style={{ position: "absolute", bottom: "100%", right: 0, marginBottom: "12px", zIndex: 100 }}>
-                       <GifPicker onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
-                     </div>
-                   )}
+
+              <div style={{ 
+                backgroundColor: "var(--bg-page)", 
+                borderRadius: "12px", 
+                border: "0.5px solid var(--border-hairline)",
+                transition: "all 0.2s ease",
+                position: "relative",
+              }}>
+                <MentionInput 
+                  value={replyContent} 
+                  onChange={setReplyContent} 
+                  placeholder="Write a reply..." 
+                  minHeight="100px"
+                  style={{ 
+                    fontSize: "14px", 
+                    backgroundColor: "transparent",
+                    border: "none",
+                  }} 
+                />
+                
+                <div style={{ 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "space-between", 
+                  padding: "8px 12px",
+                  borderTop: "0.5px solid var(--border-hairline)",
+                  backgroundColor: "rgba(0,0,0,0.02)"
+                }}>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <div style={{ position: "relative" }}>
+                      <button 
+                        type="button" 
+                        onClick={() => setIsGifPickerOpen(!isGifPickerOpen)} 
+                        style={{ 
+                          height: "32px",
+                          padding: "0 10px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "4px",
+                          backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent", 
+                          color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)", 
+                          border: "0.5px solid var(--border-hairline)", 
+                          borderRadius: "100px", 
+                          cursor: "pointer", 
+                          transition: "all 0.2s ease",
+                          fontSize: "11px",
+                          fontWeight: 800,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.02em"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                          e.currentTarget.style.borderColor = "var(--text-primary)";
+                          e.currentTarget.style.color = "var(--text-primary)";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isGifPickerOpen) {
+                            e.currentTarget.style.backgroundColor = "transparent";
+                            e.currentTarget.style.borderColor = "var(--border-hairline)";
+                            e.currentTarget.style.color = "var(--text-tertiary)";
+                          }
+                        }}
+                      >
+                        <Gif size={20} weight={isGifPickerOpen ? "fill" : "bold"} />
+                      </button>
+                      {isGifPickerOpen && (
+                        <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 1000 }}>
+                          <GifPicker onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                    <button 
+                      onClick={() => { setShowReply(false); setReplyContent(""); setSelectedGif(null); }} 
+                      style={{ 
+                        padding: "8px 16px", 
+                        backgroundColor: "transparent", 
+                        color: "var(--text-tertiary)", 
+                        border: "none", 
+                        fontWeight: 600, 
+                        cursor: "pointer", 
+                        fontSize: "13px",
+                        borderRadius: "100px",
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                      onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={handleReplySubmit} 
+                      disabled={(!replyContent.trim() && !selectedGif) || submitting} 
+                      style={{ 
+                        padding: "8px 24px", 
+                        backgroundColor: "var(--text-primary)", 
+                        color: "var(--bg-page)", 
+                        border: "none", 
+                        borderRadius: "100px", 
+                        fontWeight: 700, 
+                        cursor: submitting || (!replyContent.trim() && !selectedGif) ? "not-allowed" : "pointer", 
+                        fontSize: "13px",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        opacity: (!replyContent.trim() && !selectedGif) ? 0.5 : 1,
+                        transform: submitting ? "scale(0.98)" : "scale(1)",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                      }}
+                      onMouseEnter={(e) => {
+                        if (replyContent.trim() || selectedGif) {
+                          e.currentTarget.style.filter = "brightness(0.9)";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.filter = "none";
+                        e.currentTarget.style.transform = "translateY(0)";
+                      }}
+                    >
+                      {submitting ? "Sending..." : "Reply"}
+                    </button>
+                  </div>
                 </div>
-                <button onClick={handleReplySubmit} disabled={(!replyContent.trim() && !selectedGif) || submitting} style={{ padding: "8px 24px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "var(--radius-sm)", fontWeight: 600, cursor: submitting ? "not-allowed" : "pointer", fontSize: "13px" }}>{submitting ? "Sending..." : "Send"}</button>
               </div>
             </div>
           )}
