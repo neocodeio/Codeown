@@ -6,7 +6,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { updateAvatarCache } from "../hooks/useAvatar";
 import { validateImageSize } from "../constants/upload";
-import { Camera } from "phosphor-react";
+import { Camera, InstagramLogo, GithubLogo, TwitterLogo, LinkedinLogo, Link } from "phosphor-react";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -30,6 +30,7 @@ interface EditProfileModalProps {
     github_url?: string | null;
     twitter_url?: string | null;
     linkedin_url?: string | null;
+    instagram_url?: string | null;
     website_url?: string | null;
     banner_url?: string | null;
   };
@@ -48,6 +49,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [githubUrl, setGithubUrl] = useState("");
   const [twitterUrl, setTwitterUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
@@ -75,6 +77,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setGithubUrl(currentUser.github_url || "");
       setTwitterUrl(currentUser.twitter_url || "");
       setLinkedinUrl(currentUser.linkedin_url || "");
+      setInstagramUrl(currentUser.instagram_url || "");
       setWebsiteUrl(currentUser.website_url || "");
       setSkills(currentUser.skills || []);
       setSkillInput("");
@@ -252,6 +255,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           github_url: githubUrl.trim() || null,
           twitter_url: twitterUrl.trim() || null,
           linkedin_url: linkedinUrl.trim() || null,
+          instagram_url: instagramUrl.trim() || null,
           website_url: websiteUrl.trim() || null,
           job_title: jobTitle.trim() || null,
           location: location.trim() || null,
@@ -506,19 +510,33 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
               <span style={{ display: "block", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "20px" }}>Social links</span>
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>GitHub URL</label>
+                  <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>
+                    <GithubLogo size={14} weight="bold" /> GitHub URL
+                  </label>
                   <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/..." />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>Instagram URL</label>
-                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://instagram.com/..." />
+                  <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>
+                    <TwitterLogo size={14} weight="bold" /> Twitter (X) URL
+                  </label>
+                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} placeholder="https://twitter.com/..." />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>LinkedIn URL</label>
+                  <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>
+                    <InstagramLogo size={14} weight="bold" /> Instagram URL
+                  </label>
+                  <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} placeholder="https://instagram.com/..." />
+                </div>
+                <div>
+                  <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>
+                    <LinkedinLogo size={14} weight="bold" /> LinkedIn URL
+                  </label>
                   <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/..." />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>Personal website</label>
+                  <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)", marginBottom: "8px" }}>
+                    <Link size={14} weight="bold" /> Personal website
+                  </label>
                   <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://..." />
                 </div>
               </div>

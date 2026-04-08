@@ -356,7 +356,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
     // Check if user exists - select only safe columns
     const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
         .eq("id", userId)
         .single();
 
@@ -481,7 +481,7 @@ export async function getUserProfile(req: Request, res: Response) {
         // Fetch user from Supabase - select only safe columns
         const { data: user, error: userError } = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
             .eq(field, userId)
             .single();
 
@@ -552,6 +552,7 @@ export async function getUserProfile(req: Request, res: Response) {
                         github_url: null,
                         twitter_url: null,
                         linkedin_url: null,
+                        instagram_url: null,
                         website_url: null,
                         created_at: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString()
                     } as any;
@@ -748,6 +749,7 @@ export async function getUserProfile(req: Request, res: Response) {
             github_url: userData.github_url || null,
             twitter_url: userData.twitter_url || null,
             linkedin_url: userData.linkedin_url || null,
+            instagram_url: userData.instagram_url || null,
             website_url: userData.website_url || null,
             streak_count: userData.streak_count || 0,
             contribution_count: totalContributions,
@@ -804,6 +806,7 @@ export async function updateUserProfile(req: Request, res: Response) {
             github_url,
             twitter_url,
             linkedin_url,
+            instagram_url,
             website_url
         } = req.body;
 
@@ -878,6 +881,7 @@ export async function updateUserProfile(req: Request, res: Response) {
         if (github_url !== undefined) updateData.github_url = github_url;
         if (twitter_url !== undefined) updateData.twitter_url = twitter_url;
         if (linkedin_url !== undefined) updateData.linkedin_url = linkedin_url;
+        if (instagram_url !== undefined) updateData.instagram_url = instagram_url;
         if (website_url !== undefined) updateData.website_url = website_url;
 
         if (username && username !== currentUser?.username) {

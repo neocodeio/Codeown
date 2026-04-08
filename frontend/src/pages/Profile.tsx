@@ -47,7 +47,8 @@ import {
   IdentificationCard,
   Plus,
   Handshake,
-  FileText
+  FileText,
+  InstagramLogo
 } from "phosphor-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -77,6 +78,7 @@ interface UserProfile {
   github_url: string | null;
   twitter_url: string | null;
   linkedin_url: string | null;
+  instagram_url: string | null;
   website_url: string | null;
   banner_url: string | null;
   created_at: string | null;
@@ -346,12 +348,10 @@ export default function Profile() {
                 {userProfile?.is_pro === true && <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, padding: "4px 8px", borderRadius: "var(--radius-xs)", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", }}>PRO</span>}
               </h1>
                 <button onClick={() => { const u = userProfile?.username || user?.username; if (u) navigate(`/portfolio/${u}`); }} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "none", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"} onMouseLeave={(e) => e.currentTarget.style.opacity = "1"} >
-                  <Rocket size={16} weight="fill" />
-                  Your Portfolio
+                  Portfolio
                 </button>
-                <button onClick={() => setIsEditModalOpen(true)} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} >
+                <button onClick={() => setIsEditModalOpen(true)} style={{ padding: "8px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} >
                 <PencilSimple size={16} weight="regular" />
-                Edit Profile
               </button>
               {userProfile?.is_pro && (
                 <button onClick={() => navigate("/analytics")} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)", backgroundColor: "transparent", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} >
@@ -397,7 +397,17 @@ export default function Profile() {
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", alignItems: "center", color: "var(--text-tertiary)", fontSize: "13px", marginBottom: "20px", fontWeight: 500 }}>
             {userProfile?.location && <span style={{ display: "flex", alignItems: "center", gap: "6px" }}> <MapPin size={14} weight="regular" /> {userProfile.location} </span>}
-            {userProfile?.website_url && <a href={userProfile.website_url.startsWith("http") ? userProfile.website_url : `https://${userProfile.website_url}`} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-primary)", textDecoration: "none", }} > <LinkIcon size={14} weight="regular" /> {userProfile.website_url.replace(/^https?:\/\//, "")} </a>}
+            {userProfile?.website_url && (
+              <a 
+                href={userProfile.website_url.startsWith("http") ? userProfile.website_url : `https://${userProfile.website_url}`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-primary)", textDecoration: "none" }} 
+              > 
+                <LinkIcon size={14} weight="regular" /> 
+                {userProfile.website_url.replace(/^https?:\/\//, "")} 
+              </a>
+            )}
             {userProfile?.created_at && <span style={{ display: "flex", alignItems: "center", gap: "6px" }}> <CalendarBlank size={14} weight="regular" /> Joined {formatProfileJoinDate(userProfile.created_at)} </span>}
           </div>
 
@@ -424,9 +434,10 @@ export default function Profile() {
               </div>
             </div>
             <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-              {userProfile?.twitter_url && <a href={userProfile.twitter_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)" }} aria-label="Twitter"> <TwitterLogo size={20} weight="thin" /> </a>}
-              {userProfile?.linkedin_url && <a href={userProfile.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)" }} aria-label="LinkedIn"> <LinkedinLogo size={20} weight="thin" /> </a>}
-              {userProfile?.github_url && <a href={userProfile.github_url} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)" }} aria-label="GitHub"> <GithubLogo size={20} weight="thin" /> </a>}
+              {userProfile?.github_url && <a href={userProfile.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="GitHub"> <GithubLogo size={20} weight="thin" /> </a>}
+              {userProfile?.linkedin_url && <a href={userProfile.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="LinkedIn"> <LinkedinLogo size={20} weight="thin" /> </a>}
+              {userProfile?.twitter_url && <a href={userProfile.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Twitter"> <TwitterLogo size={20} weight="thin" /> </a>}
+              {userProfile?.instagram_url && <a href={userProfile.instagram_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Instagram"> <InstagramLogo size={20} weight="thin" /> </a>}
             </div>
           </div>
         </div>

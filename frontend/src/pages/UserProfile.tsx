@@ -18,7 +18,11 @@ import {
   MapPin,
   Link,
   IdentificationCard,
-  FileText
+  FileText,
+  GithubLogo,
+  TwitterLogo,
+  LinkedinLogo,
+  InstagramLogo
 } from "phosphor-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -59,6 +63,7 @@ interface User {
   github_url: string | null;
   twitter_url: string | null;
   linkedin_url: string | null;
+  instagram_url: string | null;
   website_url: string | null;
   banner_url: string | null;
   created_at: string | null;
@@ -225,10 +230,27 @@ export default function UserProfile() {
               <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginBottom: "12px" }}>@{user.username}</p>
               {user.bio && <p style={{ fontSize: "15px", lineHeight: 1.5, marginBottom: "16px" }}>{user.bio}</p>}
               
-              <div style={{ display: "flex", gap: "16px", color: "var(--text-tertiary)", fontSize: "13px", flexWrap: "wrap", marginBottom: "20px" }}>
+              <div style={{ display: "flex", gap: "16px", color: "var(--text-tertiary)", fontSize: "13px", flexWrap: "wrap", marginBottom: "20px", alignItems: "center" }}>
                 {user.location && <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><MapPin size={16} /> {user.location}</span>}
-                {user.website_url && <a href={user.website_url} style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-primary)" }}><Link size={16} /> {user.website_url.replace(/https?:\/\//, "")}</a>}
+                {user.website_url && (
+                  <a 
+                    href={user.website_url.startsWith("http") ? user.website_url : `https://${user.website_url}`} 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-primary)", textDecoration: "none" }}
+                  >
+                    <Link size={16} /> 
+                    {user.website_url.replace(/https?:\/\//, "")}
+                  </a>
+                )}
                 <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><Calendar size={16} /> Joined {formatProfileJoinDate(user.created_at || "")}</span>
+              </div>
+
+              <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "24px" }}>
+                {user.github_url && <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="GitHub"> <GithubLogo size={20} weight="thin" /> </a>}
+                {user.linkedin_url && <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="LinkedIn"> <LinkedinLogo size={20} weight="thin" /> </a>}
+                {user.twitter_url && <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Twitter"> <TwitterLogo size={20} weight="thin" /> </a>}
+                {user.instagram_url && <a href={user.instagram_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Instagram"> <InstagramLogo size={20} weight="thin" /> </a>}
               </div>
 
               {user.skills && user.skills.length > 0 && (
