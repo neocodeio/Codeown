@@ -8,7 +8,7 @@ interface VerifiedBadgeProps {
     color?: string;
 }
 
-export default function VerifiedBadge({ username, isPro, size = "14px", color }: VerifiedBadgeProps) {
+export default function VerifiedBadge({ username, size = "14px", color }: VerifiedBadgeProps) {
     const [showTooltip, setShowTooltip] = useState(false);
 
     const isVerified = username?.toLowerCase() === "amin.ceo" || username?.toLowerCase() === "joethefounder";
@@ -28,9 +28,10 @@ export default function VerifiedBadge({ username, isPro, size = "14px", color }:
                 <CircleWavyCheck
                     size={size}
                     weight="fill"
+                    color={color || "#00A2FF"}
                     aria-label="Verified Official Account"
                     style={{
-                        color: color ? color : (isPro ? "var(--text-primary)" : "var(--text-tertiary)"),
+                        color: (color || "#00A2FF") + " !important",
                         marginLeft: "0px",
                         marginRight: "4.5px",
                         verticalAlign: "middle",
