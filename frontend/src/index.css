@@ -105,6 +105,20 @@ body {
   overflow-x: hidden;
 }
 
+@media (max-width: 767px) {
+  :root {
+    --post-padding: 20px 16px;
+    --post-interact-gap: 32px;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --post-padding: 24px;
+    --post-interact-gap: 96px;
+  }
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
   letter-spacing: -0.02em;

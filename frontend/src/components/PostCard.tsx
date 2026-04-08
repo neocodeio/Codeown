@@ -9,7 +9,6 @@ import ImageSlider from "./ImageSlider";
 import ContentRenderer from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
-import { useWindowSize } from "../hooks/useWindowSize";
 import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, Bug, Sparkle, Trophy, Question, Lightbulb, ArrowsClockwise, CheckCircle } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -45,8 +44,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
 
   // Use prop if provided, otherwise use local state
@@ -218,7 +215,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       className="fade-in"
       style={{
         cursor: "pointer",
-        padding: isMobile ? "20px 16px" : "24px",
+        padding: "var(--post-padding, 24px)",
         backgroundColor: "var(--bg-page)",
         borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
@@ -470,7 +467,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         <div style={{ 
           display: "flex", 
           marginTop: "44px",
-          gap: isMobile ? "32px" : "96px", 
+          gap: "var(--post-interact-gap, 96px)", 
           alignItems: "center",
           justifyContent: "flex-start"
         }}>

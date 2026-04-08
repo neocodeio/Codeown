@@ -7,7 +7,6 @@ import { useProjectSaved } from "../hooks/useProjectSaved";
 import api from "../api/axios";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
-import { useWindowSize } from "../hooks/useWindowSize";
 import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, Trash, DotsThree, PaperPlaneTilt, PushPin, Sparkle } from "phosphor-react";
 
 import { formatRelativeDate } from "../utils/date";
@@ -123,8 +122,6 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
 
   // Use prop if provided, otherwise use local state
@@ -279,7 +276,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
       className="fade-in"
       style={{
         cursor: "pointer",
-        padding: isMobile ? "20px 16px" : "24px",
+        padding: "var(--post-padding, 24px)",
         backgroundColor: "var(--bg-page)",
         borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
@@ -501,7 +498,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         <div style={{ 
           display: "flex", 
           marginTop: "44px",
-          gap: isMobile ? "32px" : "96px", 
+          gap: "var(--post-interact-gap, 96px)", 
           alignItems: "center",
           justifyContent: "flex-start"
         }}>
