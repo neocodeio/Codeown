@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import api from "../api/axios";
 import { 
-  Rocket, 
+  Rocket,
   CaretRight,
   Lightning,
   Sparkle,
