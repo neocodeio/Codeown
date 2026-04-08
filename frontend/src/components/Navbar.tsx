@@ -213,40 +213,13 @@ export default function Navbar() {
             <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "36px", width: "auto" }} />
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <h2 style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
-                <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
-                  Codeown
+                <span style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
+                  Codeown.space
                 </span>
               </h2>
               <StatusBadge />
             </div>
           </Link>
-          
-          <button
-            onClick={toggleTheme}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "var(--text-tertiary)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "8px",
-              borderRadius: "var(--radius-sm)",
-              transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "var(--text-primary)";
-              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "var(--text-tertiary)";
-              e.currentTarget.style.backgroundColor = "transparent";
-            }}
-            aria-label="Toggle theme"
-          >
-            {theme === 'light' ? <Moon size={20} weight="regular" /> : <Sun size={20} weight="regular" />}
-          </button>
         </div>
       </div>
 
@@ -385,9 +358,9 @@ export default function Navbar() {
       {/* Spacer */}
       <div style={{ flex: 1 }}></div>
 
-      {/* Footer Links & Profile */}
+      {/* Footer & Profile */}
       <div style={{ padding: "0 16px 20px 16px" }}>
-
+        
         {/* Profile Card */}
         {isSignedIn && user ? (
           <>
@@ -428,45 +401,74 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* 3 Dots Menu */}
-              <div ref={logoutRef} style={{ position: "relative" }}>
+              {/* 3 Dots Menu & Theme Toggle Area */}
+              <div ref={logoutRef} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                 <button
-                  onClick={(e) => { e.stopPropagation(); setIsLogoutOpen(!isLogoutOpen); }}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "4px" }}
-                  aria-label="More options"
+                  onClick={(e) => { e.stopPropagation(); toggleTheme(); }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--text-tertiary)",
+                    padding: "6px",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.15s ease"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "var(--text-primary)";
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "var(--text-tertiary)";
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                  aria-label="Toggle theme"
                 >
-                  <DotsThreeOutline size={20} weight="thin" />
+                  {theme === 'light' ? <Moon size={18} weight="regular" /> : <Sun size={18} weight="regular" />}
                 </button>
 
-                {isLogoutOpen && (
-                  <div style={{
-                    position: "absolute",
-                    bottom: "100%",
-                    right: 0,
-                    marginBottom: "12px",
-                    backgroundColor: "var(--bg-page)",
-                    border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "var(--radius-sm)",
-                    padding: "4px",
-                    minWidth: "160px",
-                    zIndex: 100
-                  }}>
-                    <button
-                      onClick={() => signOut()}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "10px",
-                        width: "100%", padding: "12px",
-                        background: "none", border: "none",
-                        color: "#ef4444", fontWeight: 600, fontSize: "13px",
-                        cursor: "pointer",
-                      }}
-                      aria-label="Logout"
-                    >
-                      <SignOut size={18} weight="regular" />
-                      Logout
-                    </button>
-                  </div>
-                )}
+                <div style={{ position: "relative" }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setIsLogoutOpen(!isLogoutOpen); }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "4px" }}
+                    aria-label="More options"
+                  >
+                    <DotsThreeOutline size={20} weight="thin" />
+                  </button>
+
+                  {isLogoutOpen && (
+                    <div style={{
+                      position: "absolute",
+                      bottom: "100%",
+                      right: 0,
+                      marginBottom: "12px",
+                      backgroundColor: "var(--bg-page)",
+                      border: "0.5px solid var(--border-hairline)",
+                      borderRadius: "var(--radius-sm)",
+                      padding: "4px",
+                      minWidth: "160px",
+                      zIndex: 100
+                    }}>
+                      <button
+                        onClick={() => signOut()}
+                        style={{
+                          display: "flex", alignItems: "center", gap: "10px",
+                          width: "100%", padding: "12px",
+                          background: "none", border: "none",
+                          color: "#ef4444", fontWeight: 600, fontSize: "13px",
+                          cursor: "pointer",
+                        }}
+                        aria-label="Logout"
+                      >
+                        <SignOut size={18} weight="regular" />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -612,6 +614,7 @@ export default function Navbar() {
             {theme === 'light' ? <Moon size={20} weight="thin" /> : <Sun size={20} weight="thin" />}
           </button>
 
+          {/* Profile/ID Card Access */}
           {isSignedIn && (
             <div
               onClick={() => setIsIDCardOpen(true)}
