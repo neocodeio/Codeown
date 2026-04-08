@@ -4,6 +4,7 @@ import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import VerifiedBadge from "./VerifiedBadge";
+import StreakBadge from "./StreakBadge";
 
 interface RecommendedUser {
     id: string;
@@ -184,19 +185,11 @@ export default function PopularUsersHorizontal() {
                                 {user.streak_count > 0 && (
                                     <div style={{
                                         position: "absolute",
-                                        bottom: "-2px",
-                                        right: "-2px",
-                                        backgroundColor: "#fff",
-                                        borderRadius: "50%",
-                                        width: "22px",
-                                        height: "22px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                                        fontSize: "12px"
+                                        bottom: "-4px",
+                                        right: "-4px",
+                                        zIndex: 10
                                     }}>
-                                        🔥
+                                        <StreakBadge count={user.streak_count} mini />
                                     </div>
                                 )}
                             </div>

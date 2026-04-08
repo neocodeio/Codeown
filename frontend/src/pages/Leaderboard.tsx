@@ -5,14 +5,13 @@ import {
   CaretRight,
   Lightning,
   Sparkle,
-  ArrowRight,
-  Flame
+  ArrowRight
 } from "phosphor-react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
+import StreakBadge from "../components/StreakBadge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import flameGif from "../assets/flame.gif";
 
 interface LeaderboardUser {
     id: string;
@@ -203,16 +202,7 @@ function PodiumMini({ user, rank }: { user: LeaderboardUser, rank: number }) {
             </div>
 
             {isFirst && <Lightning size={18} weight="fill" color="var(--text-primary)" />}
-            {!isFirst && (
-                <div style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", display: "flex", alignItems: "center", gap: "2px" }}>
-                    {user.streak_count}d 
-                    {user.streak_count > 0 ? (
-                        <img src={flameGif} style={{ width: "14px", height: "14px" }} alt="" />
-                    ) : (
-                        <Flame size={12} weight="fill" color="var(--border-strong)" style={{ opacity: 0.4 }} />
-                    )}
-                </div>
-            )}
+            {!isFirst && <StreakBadge count={user.streak_count} mini />}
         </motion.div>
     );
 }
@@ -247,14 +237,7 @@ function RankTile({ user, rank, isMobile }: { user: LeaderboardUser, rank: numbe
                                 {user.tier}
                             </span>
                             <span style={{ color: "var(--border-strong)", opacity: 0.1 }}>•</span>
-                            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px" }}>
-                            {user.streak_count}d STREAK 
-                            {user.streak_count > 0 ? (
-                                <img src={flameGif} style={{ width: "14px", height: "14px" }} alt="" />
-                            ) : (
-                                <Flame size={12} weight="fill" color="var(--border-strong)" style={{ opacity: 0.4 }} />
-                            )}
-                        </span>
+                            <StreakBadge count={user.streak_count} mini />
                         </div>
                     </div>
                 </div>

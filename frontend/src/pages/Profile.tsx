@@ -342,7 +342,7 @@ export default function Profile() {
             <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", width: isMobile ? "100%" : "auto", }}>
               <h1 style={{ fontSize: isMobile ? "22px" : "28px", fontWeight: 700, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.02em", display: "flex", alignItems: "center", gap: "6px", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.12, }}>
                 {userProfile?.name || user?.fullName || ""}
-                <VerifiedBadge username={userProfile?.username || user?.username} isPro={userProfile?.is_pro} size={isMobile ? "18px" : "22px"} />
+                <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "18px" : "22px"} />
                 {userProfile?.is_pro === true && <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, padding: "4px 8px", borderRadius: "var(--radius-xs)", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", }}>PRO</span>}
               </h1>
                 <button onClick={() => { const u = userProfile?.username || user?.username; if (u) navigate(`/portfolio/${u}`); }} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "none", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"} onMouseLeave={(e) => e.currentTarget.style.opacity = "1"} >

@@ -16,22 +16,24 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
                 display: "flex",
                 alignItems: "center",
                 gap: mini ? "2px" : "4px",
-                padding: mini ? "1px 6px" : "2px 8px",
-                backgroundColor: "transparent",
-                borderRadius: "var(--radius-xs)",
-                border: "0.5px solid var(--border-hairline)",
+                padding: mini ? "1px 6px" : "2px 10px",
+                backgroundColor: isActive ? "rgba(255, 153, 0, 0.08)" : "transparent",
+                borderRadius: "var(--radius-sm)",
+                border: "1px solid",
+                borderColor: isActive ? "rgba(255, 153, 0, 0.25)" : "var(--border-hairline)",
                 transition: "all 0.15s ease",
                 cursor: "pointer",
                 userSelect: "none",
-                minHeight: mini ? "18px" : "22px"
+                minHeight: mini ? "18px" : "24px",
+                backdropFilter: isActive ? "blur(4px)" : "none"
             }}
         >
             <div style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: mini ? "14px" : "20px",
-                height: mini ? "14px" : "20px",
+                width: mini ? "14px" : "18px",
+                height: mini ? "14px" : "18px",
                 position: "relative"
             }}>
                 {isActive ? (
@@ -39,9 +41,10 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
                         src={flameGif}
                         alt="Streak active"
                         style={{
-                            width: "14px",
-                            height: "14px",
-                            filter: "grayscale(1) contrast(1.2)"
+                            width: mini ? "13px" : "16px",
+                            height: mini ? "13px" : "16px",
+                            filter: "drop-shadow(0 0 4px rgba(255, 153, 0, 0.4))",
+                            transform: "translateY(-0.5px)"
                         }}
                     />
                 ) : (
@@ -55,17 +58,22 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
                 )}
             </div>
             <span style={{
-                fontSize: "11px",
-                fontWeight: 700,
-                color: isActive ? "var(--text-primary)" : "var(--text-tertiary)",
+                fontSize: "12px",
+                fontWeight: 800,
+                color: isActive ? "#FF9900" : "var(--text-tertiary)",
+                letterSpacing: "-0.01em"
             }}>
                 {count}
             </span>
 
             <style>{`
         .streak-badge:hover {
-          border-color: var(--text-primary);
-          background-color: var(--bg-hover);
+          border-color: ${isActive ? "#FF9900" : "var(--text-primary)"} !important;
+          background-color: ${isActive ? "rgba(255, 153, 0, 0.12)" : "var(--bg-hover)"} !important;
+          transform: translateY(-1px);
+        }
+        .streak-badge:active {
+          transform: translateY(0);
         }
       `}</style>
         </div>
