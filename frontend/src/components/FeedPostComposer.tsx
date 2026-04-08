@@ -189,20 +189,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            // Celebration for OGs (Founding 100)
-            if (isOG) {
-                const confettiInstance = (await import("canvas-confetti")).default;
-                confettiInstance({
-                    particleCount: 150,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    colors: ["#000000", "#ffffff", "#cccccc", "#555555"],
-                    shapes: ["square", "circle"],
-                    ticks: 200,
-                    gravity: 1.2
-                });
-            }
-
+            // Celebration removed as per user request
+            
             setContent("");
             setImages([]);
             setIsPoll(false);
