@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -25,8 +26,6 @@ export default function Onboarding() {
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
-  const [accessChecked, setAccessChecked] = useState(false);
-  const [accessAllowed, setAccessAllowed] = useState(false);
 
   const [step, setStep] = useState(0);
   const [bio, setBio] = useState("");
@@ -42,56 +41,34 @@ export default function Onboarding() {
   const containerRef = useRef<HTMLDivElement>(null);
 
 
-  // --- Access guard ---
+  const { data: onboardingProfile, isLoading: isCheckingAccess } = useQuery({
+    queryKey: ["onboardingAccess", user?.id],
+    queryFn: async () => {
+      const token = await getToken();
+      if (!token || !user?.id) throw new Error("Not authenticated");
+      
+      const res = await api.get(`/users/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data;
+    },
+    enabled: isLoaded && isSignedIn && !!user?.id,
+    staleTime: Infinity, // Onboarding status doesn't change unless we complete it
+  });
+
   useEffect(() => {
-    const checkAccess = async () => {
-      // Wait for Clerk to load
-      if (!isLoaded) return;
+    if (isLoaded && !isSignedIn) {
+      navigate("/sign-in", { replace: true });
+    }
+  }, [isLoaded, isSignedIn]);
 
-      // Not signed in → go to sign-in
-      if (!isSignedIn || !user?.id) {
-        navigate("/sign-in", { replace: true });
-        return;
-      }
+  useEffect(() => {
+    if (onboardingProfile?.onboarding_completed === true) {
+      navigate("/", { replace: true });
+    }
+  }, [onboardingProfile]);
 
-      // Already completed/skipped locally → send to home
-      const localFlag = localStorage.getItem(`onboarding_done_${user.id}`);
-      if (localFlag === "true") {
-        navigate("/", { replace: true });
-        return;
-      }
-
-      // Signed in → check if already completed onboarding
-      try {
-        const token = await getToken();
-        if (!token) {
-          navigate("/sign-in", { replace: true });
-          return;
-        }
-        const res = await api.get(`/users/${user.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.data && res.data.onboarding_completed === true) {
-          // Already completed → send to home
-          localStorage.setItem(`onboarding_done_${user.id}`, "true");
-          navigate("/", { replace: true });
-          return;
-        }
-        // Not completed → allow access
-        setAccessAllowed(true);
-      } catch {
-        // If the user doesn't exist yet in DB, that means they're brand new → allow access
-        setAccessAllowed(true);
-      } finally {
-        setAccessChecked(true);
-      }
-    };
-
-    checkAccess();
-  }, [isLoaded, isSignedIn, user?.id]);
-
-  // Show loading while checking access
-  if (!accessChecked || !accessAllowed) {
+  if (!isLoaded || isCheckingAccess) {
     return (
       <div style={{
         display: "flex",

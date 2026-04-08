@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import type { Post } from "./usePosts";
 
-export function useUserPosts(userId: string | null) {
+export function useUserPosts(userId: string | null, enabled: boolean = true) {
   const queryClient = useQueryClient();
 
   const { data: posts = [], isLoading: loading } = useQuery({
@@ -13,7 +13,7 @@ export function useUserPosts(userId: string | null) {
       const postsData = Array.isArray(res.data) ? res.data : (res.data?.posts || res.data?.data || []);
       return postsData as Post[];
     },
-    enabled: !!userId,
+    enabled: !!userId && enabled,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import api from "../api/axios";
 import { 
   Rocket,
@@ -25,26 +25,23 @@ interface LeaderboardUser {
     latest_project?: any;
 }
 
+import { useQuery } from "@tanstack/react-query";
+
 export default function Leaderboard() {
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<LeaderboardUser[]>([]);
     const { width } = useWindowSize();
     const isMobile = width < 768;
     const isTablet = width < 1200;
 
-    useEffect(() => {
-        const fetchLeaderboard = async () => {
-            try {
-                const res = await api.get("/leaderboard/pulse");
-                setData(res.data.leaderboard || []);
-            } catch (err) {
-                console.error("Failed to fetch leaderboard", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchLeaderboard();
-    }, []);
+    const { data: rawData = [], isLoading: loading } = useQuery({
+        queryKey: ["leaderboardPulse"],
+        queryFn: async () => {
+            const res = await api.get("/leaderboard/pulse");
+            return (res.data.leaderboard || []) as LeaderboardUser[];
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes fresh
+    });
+
+    const data = rawData;
 
     const top3 = useMemo(() => data.slice(0, 3), [data]);
     const theRest = useMemo(() => data.slice(3), [data]);

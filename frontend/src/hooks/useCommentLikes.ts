@@ -2,6 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
+import { socket } from "../lib/socket";
 
 export function useCommentLikes(commentId: number | string | null, resourceType?: "post" | "project", initialIsLiked?: boolean, initialLikeCount?: number) {
   const [isLiked, setIsLiked] = useState(initialIsLiked ?? false);
@@ -42,22 +43,55 @@ export function useCommentLikes(commentId: number | string | null, resourceType?
 
   const toggleLike = useCallback(async () => {
     if (!commentId) return;
-    setLoading(true);
+    
+    // Optimistic Update
+    const previousIsLiked = isLiked;
+    const previousLikeCount = likeCount;
+    
+    const newIsLiked = !isLiked;
+    const newLikeCount = newIsLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
+    
+    setIsLiked(newIsLiked);
+    setLikeCount(newLikeCount);
+    
     try {
       const token = await getToken();
       if (!token) {
-        setLoading(false);
+        // Rollback if no token
+        setIsLiked(previousIsLiked);
+        setLikeCount(previousLikeCount);
         return;
       }
       const res = await api.post(`/likes/comment/${commentId}?type=${resourceType || ''}`, {}, { headers: { Authorization: `Bearer ${token}` } });
-      setIsLiked(res.data.liked === true);
-      setLikeCount(res.data.likeCount ?? (res.data.liked ? likeCount + 1 : likeCount - 1));
-    } catch {
-      fetchStatus();
-    } finally {
-      setLoading(false);
+      
+      // Update with server truth
+      if (res.data) {
+        setIsLiked(res.data.liked === true);
+        setLikeCount(res.data.likeCount ?? (res.data.liked ? likeCount + 1 : likeCount - 1));
+      }
+    } catch (err) {
+      console.error("Error toggling comment like:", err);
+      // Rollback on error
+      setIsLiked(previousIsLiked);
+      setLikeCount(previousLikeCount);
     }
-  }, [commentId, getToken, likeCount, fetchStatus, resourceType]);
+  }, [commentId, getToken, isLiked, likeCount, resourceType]);
+
+  useEffect(() => {
+    if (!commentId) return;
+
+    const handleCommentLiked = (payload: { id: number, likeCount: number, type: string }) => {
+      // Check if it matches this comment and resource context (if applicable)
+      if (Number(payload.id) === Number(commentId)) {
+        setLikeCount(payload.likeCount);
+      }
+    };
+
+    socket.on("comment_liked", handleCommentLiked);
+    return () => {
+      socket.off("comment_liked", handleCommentLiked);
+    };
+  }, [commentId]);
 
   return { isLiked, likeCount, loading, toggleLike, fetchStatus };
 }

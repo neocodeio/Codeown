@@ -9,6 +9,17 @@ export default defineConfig({
     port: 5173,
   },
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-core': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-clerk': ['@clerk/clerk-react'],
+          'vendor-ui': ['phosphor-react', 'framer-motion', 'react-toastify'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-utils': ['axios', 'date-fns', 'socket.io-client'],
+        }
+      }
+    }
   },
 })

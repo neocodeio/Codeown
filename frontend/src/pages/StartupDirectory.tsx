@@ -1,51 +1,42 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StartupCard } from '../components/StartupCard.tsx';
-import type { Startup } from '../types/startup.ts';
 import { useWindowSize } from '../hooks/useWindowSize.ts';
 import { MagnifyingGlass, Plus, Rocket } from 'phosphor-react';
 import { Link } from 'react-router-dom';
-import { getStartups, getCooldownStatus, type CooldownStatus } from '../api/startups.ts';
-import { toast } from 'react-toastify';
+import { getStartups, getCooldownStatus } from '../api/startups.ts';
 import { LaunchCooldownTimer } from '../components/startup/LaunchCooldownTimer.tsx';
 import { useClerkUser } from '../hooks/useClerkUser.ts';
 
+import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from '../hooks/useDebounce';
+
 export const StartupDirectory: React.FC = () => {
-  const [startups, setStartups] = useState<Startup[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'All' | 'Active' | 'Built' | 'Paused' | 'Most Upvoted'>('All');
-  const [cooldown, setCooldown] = useState<CooldownStatus | null>(null);
   const { width } = useWindowSize();
   const isMobile = width < 768;
   const { isSignedIn } = useClerkUser();
 
-  useEffect(() => {
-    const fetchStartups = async () => {
-      setLoading(true);
-      try {
-        const data = await getStartups(searchQuery, filterStatus);
-        if (Array.isArray(data)) {
-          setStartups(data);
-        } else {
-          setStartups([]);
-        }
-      } catch (err) {
-        toast.error("Failed to load startups.");
-        setStartups([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
-    const timer = setTimeout(fetchStartups, 300); // Debounce search
-    return () => clearTimeout(timer);
-  }, [searchQuery, filterStatus]);
+  const { data: startups = [], isLoading: loading } = useQuery({
+    queryKey: ['startups', debouncedSearch, filterStatus],
+    queryFn: async () => {
+      const data = await getStartups(debouncedSearch, filterStatus);
+      return Array.isArray(data) ? data : [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    if (isSignedIn) {
-      getCooldownStatus().then(setCooldown).catch(() => { });
-    }
-  }, [isSignedIn]);
+  const { data: cooldown = null } = useQuery({
+    queryKey: ['startupCooldown', isSignedIn],
+    queryFn: async () => {
+      if (!isSignedIn) return null;
+      return await getCooldownStatus();
+    },
+    enabled: isSignedIn,
+    staleTime: 60 * 1000,
+  });
 
   const filteredStartups = useMemo(() => {
     if (!Array.isArray(startups)) return [];

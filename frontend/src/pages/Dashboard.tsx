@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -27,31 +27,26 @@ interface DashboardStats {
     streak_count: number;
 }
 
+
 export default function Dashboard() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
     const isDesktop = width >= 1100;
     const { getToken } = useClerkAuth();
     const { user } = useClerkUser();
-    const [stats, setStats] = useState<DashboardStats | null>(null);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const token = await getToken();
-                const res = await api.get("/users/dashboard/stats", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setStats(res.data);
-            } catch (err) {
-                console.error("Failed to fetch dashboard stats", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchStats();
-    }, [getToken]);
+    const { data: stats = null, isLoading: loading } = useQuery({
+        queryKey: ["dashboardStats", user?.id],
+        queryFn: async () => {
+            const token = await getToken();
+            const res = await api.get("/users/dashboard/stats", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return res.data as DashboardStats;
+        },
+        enabled: !!user?.id,
+        staleTime: 5 * 60 * 1000,
+    });
 
     const StatCard = ({ title, value, icon: Icon, color, spanFull }: any) => {
         return (

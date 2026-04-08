@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -23,6 +23,8 @@ import SubmitProjectModal from "../components/SubmitProjectModal";
 import GoldenShipBadge from "../components/GoldenShipBadge";
 import { useWindowSize } from "../hooks/useWindowSize";
 
+import { useQuery } from "@tanstack/react-query";
+
 export default function ShipWeek() {
   const { user, isSignedIn } = useClerkUser();
   const { getToken } = useClerkAuth();
@@ -31,14 +33,42 @@ export default function ShipWeek() {
   const isMobile = width < 1024;
   const isTablet = width < 1280;
 
-  const [competition, setCompetition] = useState<any>(null);
-  const [eligibility, setEligibility] = useState<any>(null);
   const [isLaunchModalOpen, setIsLaunchModalOpen] = useState(false);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
-  const [hallOfFame, setHallOfFame] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
+  const { data: competition = null, isLoading: competitionLoading, refetch: refetchComp } = useQuery({
+    queryKey: ["activeShipCompetition"],
+    queryFn: async () => {
+      const res = await api.get("/ship/active");
+      return res.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: hallOfFame = [], isLoading: hofLoading } = useQuery({
+    queryKey: ["shipHallOfFame"],
+    queryFn: async () => {
+      const res = await api.get("/ship/hall-of-fame");
+      return Array.isArray(res.data) ? res.data : [];
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+  const { data: eligibility = null, refetch: refetchElig } = useQuery({
+    queryKey: ["shipEligibility", competition?.id, user?.id],
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await api.get(`/ship/eligibility/${competition.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return res.data;
+    },
+    enabled: !!competition?.id && !!user?.id,
+    staleTime: 1 * 60 * 1000,
+  });
+
+  const loading = competitionLoading || hofLoading;
   const isAdmin = user?.username === "amin.ceo";
 
   const safeFormatDistance = (dateStr: string) => {
@@ -52,33 +82,9 @@ export default function ShipWeek() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [isSignedIn]);
-
   const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [compRes, hofRes] = await Promise.all([
-        api.get("/ship/active"),
-        api.get("/ship/hall-of-fame")
-      ]);
-      setCompetition(compRes.data);
-      const hof = Array.isArray(hofRes.data) ? hofRes.data : [];
-      setHallOfFame(hof);
-
-      if (compRes.data && isSignedIn) {
-        const token = await getToken();
-        const eligRes = await api.get(`/ship/eligibility/${compRes.data.id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setEligibility(eligRes.data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch ship week data", err);
-    } finally {
-      setLoading(false);
-    }
+    await refetchComp();
+    await refetchElig();
   };
 
   const handleJoin = async () => {

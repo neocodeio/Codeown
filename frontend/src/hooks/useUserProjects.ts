@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 
-export function useUserProjects(userId: string | null) {
+export function useUserProjects(userId: string | null, enabled: boolean = true) {
   const queryClient = useQueryClient();
 
   const { data: projects = [], isLoading: loading } = useQuery({
@@ -12,7 +12,7 @@ export function useUserProjects(userId: string | null) {
       const projectsData = Array.isArray(res.data) ? res.data : (res.data?.projects || res.data?.data || []);
       return projectsData;
     },
-    enabled: !!userId,
+    enabled: !!userId && enabled,
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
   });

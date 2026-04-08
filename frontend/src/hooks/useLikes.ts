@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
+import { socket } from "../lib/socket";
 
 export function useLikes(postId: number | null, initialIsLiked?: boolean, initialLikeCount?: number) {
   const [isLiked, setIsLiked] = useState(initialIsLiked ?? false);
@@ -127,6 +128,23 @@ export function useLikes(postId: number | null, initialIsLiked?: boolean, initia
       setLoading(false);
     }
   };
+
+
+
+  useEffect(() => {
+    if (!postId) return;
+
+    const handlePostLiked = (payload: { id: number, likeCount: number }) => {
+      if (payload.id === postId) {
+        setLikeCount(payload.likeCount);
+      }
+    };
+
+    socket.on("post_liked", handlePostLiked);
+    return () => {
+      socket.off("post_liked", handlePostLiked);
+    };
+  }, [postId]);
 
   return { isLiked, likeCount, loading, toggleLike, fetchLikeStatus };
 }

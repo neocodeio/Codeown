@@ -13,6 +13,8 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { StartupCard } from "../components/StartupCard";
 import type { Startup } from "../types/startup";
+import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "../hooks/useDebounce";
 
 interface SearchUser {
   id: string;
@@ -59,97 +61,62 @@ export default function Search() {
   const { getToken } = useClerkAuth();
   const { user: clerkUser, isLoaded } = useClerkUser();
 
-  const [users, setUsers] = useState<SearchUser[]>([]);
-  const [posts, setPosts] = useState<SearchPost[]>([]);
-  const [projects, setProjects] = useState<SearchProject[]>([]);
-  const [startups, setStartups] = useState<Startup[]>([]);
-  const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [currentUserFollowing, setCurrentUserFollowing] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>("best");
 
-  // Sync query state with URL
-  useEffect(() => {
-    setQuery(initialQuery);
-  }, [initialQuery]);
+  const debouncedQuery = useDebounce(query, 300);
 
-  // Fetch Logic
-  // 1. Fetch search results
-  useEffect(() => {
-    const fetchResults = async () => {
-      // Allow empty query only if showOnlyCofounder is true and we're looking at projects
-      if ((!query || query.trim().length < 1) && !showOnlyCofounder) {
-        setUsers([]);
-        setPosts([]);
-        setProjects([]);
-        setStartups([]);
-        return;
-      }
+  // 1. Optimized Tab-Aware Queries
+  const { data: usersData = [], isLoading: usersLoading } = useQuery({
+    queryKey: ["searchUsers", debouncedQuery],
+    queryFn: async () => {
+      const isMention = debouncedQuery.startsWith("@");
+      const cleanQ = isMention ? debouncedQuery.slice(1) : debouncedQuery;
+      const res = await api.get(`/search/users?q=${encodeURIComponent(cleanQ)}`);
+      return (Array.isArray(res.data) ? res.data : []) as SearchUser[];
+    },
+    enabled: debouncedQuery.length >= 2 && activeFilter === "people",
+    staleTime: 5 * 60 * 1000,
+  });
 
-      setLoading(true);
-      let cancelled = false;
+  const { data: postsData = [], isLoading: postsLoading } = useQuery({
+    queryKey: ["searchPosts", debouncedQuery],
+    queryFn: async () => {
+      const res = await api.get(`/search/posts?q=${encodeURIComponent(debouncedQuery)}&limit=20`);
+      return (res.data?.posts || []) as SearchPost[];
+    },
+    enabled: debouncedQuery.length >= 2 && activeFilter === "posts",
+    staleTime: 5 * 60 * 1000,
+  });
 
-      try {
-        // Save to history if query is significant
-        if (query.trim().length >= 2) {
-          const savedHistory = localStorage.getItem("codeown_search_history");
-          let currentHistory: string[] = [];
-          if (savedHistory) {
-            try {
-              currentHistory = JSON.parse(savedHistory);
-            } catch (e) {
-              console.error("Failed to parse search history");
-            }
-          }
-          const newHistory = [query.trim(), ...currentHistory.filter((item) => item !== query.trim())].slice(0, 6);
-          setHistory(newHistory);
-          localStorage.setItem("codeown_search_history", JSON.stringify(newHistory));
-        }
+  const { data: projectsData = [], isLoading: projectsLoading } = useQuery({
+    queryKey: ["searchProjects", debouncedQuery, showOnlyCofounder],
+    queryFn: async () => {
+      const isTag = debouncedQuery.startsWith("#");
+      const isMention = debouncedQuery.startsWith("@");
+      const cleanQ = (isTag || isMention) ? debouncedQuery.slice(1) : debouncedQuery;
+      const res = await api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20&cofounder=${showOnlyCofounder}`);
+      return (res.data?.projects || []) as SearchProject[];
+    },
+    enabled: (debouncedQuery.length >= 2 || (showOnlyCofounder && debouncedQuery.length === 0)) && activeFilter === "projects",
+    staleTime: 5 * 60 * 1000,
+  });
 
-        // Re-use logic for search type
-        const isTag = query.startsWith("#");
-        const isMention = query.startsWith("@");
-        const cleanQ = isTag || isMention ? query.slice(1) : query;
+  const { data: startupsData = [], isLoading: startupsLoading } = useQuery({
+    queryKey: ["searchStartups", debouncedQuery],
+    queryFn: async () => {
+      const isTag = debouncedQuery.startsWith("#");
+      const isMention = debouncedQuery.startsWith("@");
+      const cleanQ = (isTag || isMention) ? debouncedQuery.slice(1) : debouncedQuery;
+      const res = await api.get(`/search/startups?q=${encodeURIComponent(cleanQ)}&limit=20`);
+      return (res.data?.startups || []) as Startup[];
+    },
+    enabled: debouncedQuery.length >= 2 && activeFilter === "startups",
+    staleTime: 5 * 60 * 1000,
+  });
 
-        let userPromise, postPromise, projectPromise, startupPromise;
-
-        if (isMention) {
-          userPromise = api.get(`/search/users?q=${encodeURIComponent(cleanQ)}`);
-          postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
-          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20&cofounder=${showOnlyCofounder}`);
-          startupPromise = api.get(`/search/startups?q=${encodeURIComponent(cleanQ)}&limit=20`);
-        } else if (isTag) {
-          userPromise = Promise.resolve({ data: [] });
-          postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
-          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(cleanQ)}&limit=20&cofounder=${showOnlyCofounder}`);
-          startupPromise = api.get(`/search/startups?q=${encodeURIComponent(cleanQ)}&limit=20`);
-        } else {
-          userPromise = api.get(`/search/users?q=${encodeURIComponent(query)}`);
-          postPromise = api.get(`/search/posts?q=${encodeURIComponent(query)}&limit=20`);
-          projectPromise = api.get(`/search/projects?q=${encodeURIComponent(query)}&limit=20&cofounder=${showOnlyCofounder}`);
-          startupPromise = api.get(`/search/startups?q=${encodeURIComponent(query)}&limit=20`);
-        }
-
-        const [uRes, pRes, prRes, stRes] = await Promise.all([userPromise, postPromise, projectPromise, startupPromise]);
-
-        if (!cancelled) {
-          setUsers(Array.isArray(uRes.data) ? uRes.data : []);
-          setPosts(pRes.data?.posts || []);
-          setProjects(prRes.data?.projects || []);
-          setStartups(stRes.data?.startups || []);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-      return () => { cancelled = true; };
-    };
-
-    const timeoutId = setTimeout(fetchResults, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [query, getToken, showOnlyCofounder]);
+  const loading = usersLoading || postsLoading || projectsLoading || startupsLoading;
 
   // 2. Fetch following list for current user and initialize history
   useEffect(() => {
@@ -172,6 +139,20 @@ export default function Search() {
       }
     }
   }, [isLoaded, clerkUser?.id]);
+
+  // Update history logic
+  useEffect(() => {
+    if (debouncedQuery.trim().length >= 2) {
+      const savedHistory = localStorage.getItem("codeown_search_history");
+      let currentHistory: string[] = [];
+      if (savedHistory) {
+        try { currentHistory = JSON.parse(savedHistory); } catch (e) {}
+      }
+      const newHistory = [debouncedQuery.trim(), ...currentHistory.filter((item) => item !== debouncedQuery.trim())].slice(0, 6);
+      setHistory(newHistory);
+      localStorage.setItem("codeown_search_history", JSON.stringify(newHistory));
+    }
+  }, [debouncedQuery]);
 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,29 +199,29 @@ export default function Search() {
   };
 
   // Derived, display-ready collections
-  const peopleResults = [...users]
+  const peopleResults = [...usersData]
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const postsSorted =
     sortOption === "newest"
-      ? [...posts].sort(
+      ? [...postsData].sort(
           (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
-      : posts;
+      : postsData;
 
   const projectsSorted =
     sortOption === "newest"
-      ? [...projects].sort(
+      ? [...projectsData].sort(
           (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
-      : projects;
+      : projectsData;
 
   const startupsSorted =
     sortOption === "newest"
-      ? [...startups].sort(
+      ? [...startupsData].sort(
           (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
-      : startups;
+      : startupsData;
 
   return (
     <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", paddingBottom: "64px" }}>
@@ -379,7 +360,7 @@ export default function Search() {
               </div>
             )}
           </div>
-        ) : !loading && !users.length && !posts.length && !projects.length && !startups.length ? (
+        ) : !loading && !usersData.length && !postsData.length && !projectsData.length && !startupsData.length ? (
           <div style={{ textAlign: "center", padding: "80px 40px", color: "var(--text-tertiary)" }}>
             <div style={{ fontSize: "15px", fontWeight: 600 }}>No results found for "{query}"</div>
           </div>
@@ -405,7 +386,7 @@ export default function Search() {
                 <div style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 500 }}>
                   <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{query}</span>
                   <span style={{ marginLeft: "8px", opacity: 0.6 }}>
-                    · {peopleResults.length} people · {posts.length} posts · {projects.length} projects · {startups.length} startups
+                    · {peopleResults.length} people · {postsData.length} posts · {projectsData.length} projects · {startupsData.length} startups
                   </span>
                 </div>
 

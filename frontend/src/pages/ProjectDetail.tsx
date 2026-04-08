@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { socket } from "../lib/socket";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -18,6 +19,8 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import CoFounderRequestModal from "../components/CoFounderRequestModal";
 import { toast } from "react-toastify";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 export default function ProjectDetail() {
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -25,8 +28,8 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -42,23 +45,16 @@ export default function ProjectDetail() {
 
   const viewLogged = useRef(false);
 
-  useEffect(() => {
-    if (id) {
-      fetchProject();
-      fetchReactionStatus();
-    }
-  }, [id]);
-
-  const fetchProject = async () => {
-    try {
+  // 1. Fetch Project Data
+  const { data: project = null, isLoading: projectLoading, refetch: refetchProject } = useQuery({
+    queryKey: ["project", id],
+    queryFn: async () => {
       const token = await getToken();
       const response = await api.get(`/projects/${id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
-      setProject(response.data);
-      setLikeCount(response.data.like_count || 0);
-      setUserRating(response.data.user_rating || 0);
-
+      
+      // Track Analytics
       if (!viewLogged.current) {
         viewLogged.current = true;
         api.post(`/analytics/track`, {
@@ -67,57 +63,118 @@ export default function ProjectDetail() {
           project_id: response.data.id
         }, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
-        }).catch(err => console.error("Failed to record analytics", err));
+        }).catch(() => {});
       }
-    } catch (error) {
-      console.error("Error fetching project:", error);
-      navigate("/");
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchReactionStatus = async () => {
-    try {
+      return response.data as Project;
+    },
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // 2. Fetch Reaction Status
+  const { data: reactionData = { isLiked: false, isSaved: false } } = useQuery({
+    queryKey: ["projectReactions", id, currentUser?.id],
+    queryFn: async () => {
       const token = await getToken();
-      if (!token) return;
+      if (!token) return { isLiked: false, isSaved: false };
       const [likeRes, savedRes] = await Promise.all([
         api.get(`/projects/${id}/like`, { headers: { Authorization: `Bearer ${token}` } }),
         api.get(`/projects/${id}/save`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
-      setIsLiked(likeRes.data.isLiked);
-      setIsSaved(savedRes.data.isSaved);
-    } catch (error) {
-      console.log("Reaction status not available");
+      return { isLiked: likeRes.data.isLiked, isSaved: savedRes.data.isSaved };
+    },
+    enabled: !!id && !!currentUser?.id,
+    staleTime: 1 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (project) {
+      setLikeCount(project.like_count || 0);
+      setUserRating(project.user_rating || 0);
     }
-  };
+  }, [project]);
+
+  useEffect(() => {
+    setIsLiked(reactionData.isLiked);
+    setIsSaved(reactionData.isSaved);
+  }, [reactionData]);
+
+  // Real-time synchronization
+  useEffect(() => {
+    if (!id) return;
+
+    const handleProjectLiked = (payload: { id: number, likeCount: number }) => {
+      if (Number(payload.id) === Number(id)) {
+        setLikeCount(payload.likeCount);
+      }
+    };
+
+    socket.on("project_liked", handleProjectLiked);
+    return () => {
+      socket.off("project_liked", handleProjectLiked);
+    };
+  }, [id]);
+
+  const loading = projectLoading;
+  const fetchProject = async () => { await refetchProject(); };
 
   const handleLike = async () => {
     if (!currentUser) { navigate("/sign-in"); return; }
+    
+    // Save previous state for rollback
+    const previousIsLiked = isLiked;
+    const previousLikeCount = likeCount;
+
+    // Optimistically update UI
+    const newIsLiked = !isLiked;
+    const newLikeCount = newIsLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
+    
+    setIsLiked(newIsLiked);
+    setLikeCount(newLikeCount);
+
     try {
       const token = await getToken();
-      const response = await api.post(`/projects/${id}/like`, {}, { headers: { Authorization: `Bearer ${token}` } });
-      setIsLiked(response.data.isLiked);
-      setLikeCount(response.data.likeCount);
-    } catch (error) { console.error(error); }
+      if (!token) throw new Error("No token");
+      
+      const response = await api.post(`/projects/${id}/like`, {}, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+      
+      if (response.data) {
+        setIsLiked(response.data.isLiked);
+        setLikeCount(response.data.likeCount);
+      }
+    } catch (error) {
+      console.error("Error toggling project like:", error);
+      // Rollback on error
+      setIsLiked(previousIsLiked);
+      setLikeCount(previousLikeCount);
+    }
   };
 
   const handleSave = async () => {
     if (!currentUser) { navigate("/sign-in"); return; }
+    const previousIsSaved = isSaved;
+    setIsSaved(!isSaved);
+
     try {
       const token = await getToken();
       const response = await api.post(`/projects/${id}/save`, {}, { headers: { Authorization: `Bearer ${token}` } });
       setIsSaved(response.data.isSaved);
-    } catch (error) { console.error(error); }
+    } catch (error) { 
+      console.error(error); 
+      setIsSaved(previousIsSaved);
+    }
   };
 
   const handleRate = async (rating: number) => {
     if (!currentUser) { navigate("/sign-in"); return; }
     try {
       const token = await getToken();
-      const response = await api.post(`/projects/${id}/rate`, { rating }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post(`/projects/${id}/rate`, { rating }, { headers: { Authorization: `Bearer ${token}` } });
       setUserRating(rating);
-      setProject(prev => prev ? { ...prev, rating: response.data.average, rating_count: response.data.count } : null);
+      await queryClient.invalidateQueries({ queryKey: ["project", id] });
     } catch (error) { console.error(error); }
   };
 

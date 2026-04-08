@@ -119,10 +119,10 @@ export default function Profile() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { posts, fetchUserPosts, loading: postsLoading } = useUserPosts(userId);
-  const { projects, fetchUserProjects, loading: projectsLoading } = useUserProjects(userId);
-  const { savedPosts, fetchSavedPosts, loading: savedPostsLoading } = useSavedPosts();
-  const { projects: savedProjects, fetchUserSavedProjects, loading: savedProjectsLoading } = useUserSavedProjects(userId);
+  const { posts, fetchUserPosts, loading: postsLoading } = useUserPosts(userId, activeTab === "posts");
+  const { projects, fetchUserProjects, loading: projectsLoading } = useUserProjects(userId, activeTab === "projects");
+  const { savedPosts, fetchSavedPosts, loading: savedPostsLoading } = useSavedPosts(activeTab === "saved" && savedSubTab === "posts");
+  const { projects: savedProjects, fetchUserSavedProjects, loading: savedProjectsLoading } = useUserSavedProjects(userId, activeTab === "saved" && savedSubTab === "projects");
 
   // 2. Fetch applications on demand
   const { data: applications = [], isLoading: loadingApps } = useQuery({

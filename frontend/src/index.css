@@ -79,9 +79,9 @@ body {
 }
 
 /* Optimization for long lists - tells browser to optimize content that isn't currently on screen */
-.feed-item, .post-card, .project-card {
+.feed-item, .post-card, .project-card, .sidebar-item, .card, .modal-content-area {
   content-visibility: auto;
-  contain-intrinsic-size: 1px 200px;
+  contain-intrinsic-size: 1px 150px;
 }
 
 /* Override for images to prevent flickering */

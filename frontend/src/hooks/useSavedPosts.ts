@@ -3,7 +3,7 @@ import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 import type { Post } from "./usePosts";
 
-export function useSavedPosts() {
+export function useSavedPosts(enabled: boolean = true) {
   const { getToken } = useClerkAuth();
   const queryClient = useQueryClient();
 
@@ -18,6 +18,7 @@ export function useSavedPosts() {
       const postsData = Array.isArray(res.data) ? res.data : (res.data?.posts || res.data?.data || []);
       return postsData as Post[];
     },
+    enabled,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });

@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, memo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -212,6 +213,251 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
   );
 }
 
+const ConversationItem = memo(({ 
+  convo, 
+  isActive, 
+  typingUsers, 
+  currentUser, 
+  convoMenuId, 
+  setConvoMenuId, 
+  deletingConvoId, 
+  onSelect,
+  onProfile,
+  onDelete
+}: { 
+  convo: Conversation, 
+  isActive: boolean, 
+  typingUsers: Record<string, boolean>, 
+  currentUser: any,
+  convoMenuId: number | null,
+  setConvoMenuId: (id: number | null) => void,
+  deletingConvoId: number | null,
+  onSelect: (c: Conversation) => void,
+  onProfile: (c: Conversation) => void,
+  onDelete: (cId: number) => void
+}) => {
+  return (
+    <div
+      onClick={() => onSelect(convo)}
+      style={{
+        padding: "16px 20px",
+        cursor: "pointer",
+        backgroundColor: isActive ? "var(--bg-hover)" : "transparent",
+        transition: "all 0.2s cubic-bezier(0.19, 1, 0.22, 1)",
+        display: "flex",
+        alignItems: "center",
+        gap: "14px",
+        position: "relative",
+        borderRadius: "var(--radius-sm)",
+        margin: "2px 8px",
+        border: isActive ? "0.5px solid var(--border-hairline)" : "0.5px solid transparent",
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
+      }}
+    >
+      <AvailabilityBadge
+        avatarUrl={convo.partner.avatar_url}
+        name={convo.partner.name}
+        size={46}
+        isOG={convo.partner.is_og}
+        username={convo.partner.username}
+      />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", minWidth: 0 }}>
+            <span style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {convo.partner.name}
+              <VerifiedBadge username={convo.partner.username} size="14px" />
+            </span>
+          </div>
+          <div style={{ position: "relative" }}>
+             <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, opacity: convoMenuId === convo.id ? 0 : 1 }}>
+              {convo.last_message ? new Date(convo.last_message.created_at).toLocaleDateString([], { month: "short", day: "numeric" }) : ""}
+            </span>
+            <div
+              style={{
+                position: "absolute",
+                right: "-8px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                zIndex: 10
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="convo-dots-trigger"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setConvoMenuId(convoMenuId === convo.id ? null : convo.id);
+                }}
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  backgroundColor: "var(--bg-hover)",
+                  border: "none",
+                  padding: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "var(--text-primary)",
+                  opacity: convoMenuId === convo.id ? 1 : 0
+                }}
+              >
+                <DotsThree size={22} weight="bold" />
+              </button>
+              {convoMenuId === convo.id && (
+                <div style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  marginTop: "8px",
+                  backgroundColor: "var(--bg-elevated)",
+                  borderRadius: "14px",
+                  padding: "6px",
+                  minWidth: "160px",
+                  boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
+                  border: "0.5px solid var(--border-hairline)",
+                  zIndex: 100,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "4px"
+                }}>
+                  <button onClick={() => onProfile(convo)} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px", border: "none", backgroundColor: "transparent", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 500, color: "var(--text-primary)" }}><UserIcon size={18} /> Profile</button>
+                  <button onClick={() => onDelete(convo.id)} disabled={deletingConvoId === convo.id} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px", border: "none", backgroundColor: "transparent", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 500, color: "#ff4444" }}><Trash size={18} /> Delete chat</button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div style={{ fontSize: "13px", color: convo.unread_count && convo.unread_count > 0 ? "var(--text-primary)" : "var(--text-secondary)", fontWeight: convo.unread_count && convo.unread_count > 0 ? 700 : 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "4px" }}>
+          <div style={{ display: "flex", gap: "6px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", alignItems: "center" }}>
+            {typingUsers[convo.partner.id] ? <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>Typing...</span> : convo.last_message ? <span>{convo.last_message.sender_id === currentUser?.id && <span style={{ color: "var(--text-tertiary)", fontWeight: 600 }}>You: </span>}{convo.last_message.content || "Media"}</span> : "No messages"}
+          </div>
+          {(convo.unread_count ?? 0) > 0 && <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "var(--text-primary)", flexShrink: 0 }} />}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const MessageBubble = memo(({ 
+  msg, 
+  isMine, 
+  activeConvo, 
+  currentUser, 
+  messageMenuId, 
+  setMessageMenuId, 
+  deletingMessageId, 
+  setDeletingMessageId, 
+  onDelete, 
+  onReply, 
+  onReaction, 
+  onPreviewImage, 
+  reactingTo, 
+  setReactingTo,
+  onNavigatePost,
+  onNavigateProject
+}: {
+  msg: Message,
+  isMine: boolean,
+  activeConvo: Conversation,
+  currentUser: any,
+  messageMenuId: number | null,
+  setMessageMenuId: (id: number | null) => void,
+  deletingMessageId: number | null,
+  setDeletingMessageId: (id: number | null) => void,
+  onDelete: (id: number) => void,
+  onReply: (m: Message) => void,
+  onReaction: (id: number, e: string) => void,
+  onPreviewImage: (url: string) => void,
+  reactingTo: number | null,
+  setReactingTo: (id: number | null) => void,
+  onNavigatePost: (id: number) => void,
+  onNavigateProject: (id: number) => void
+}) => {
+  return (
+    <div className="message-row" style={{ display: "flex", flexDirection: "column", alignItems: isMine ? "flex-end" : "flex-start", gap: "4px", width: "100%", position: "relative" }}>
+      {!isMine && <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "4px", padding: "0 4px" }}>{activeConvo.partner.name}</span>}
+      {msg.reply_to && (
+        <div style={{ padding: "8px 12px", backgroundColor: "var(--bg-hover)", borderLeft: "2px solid var(--text-tertiary)", borderRadius: "var(--radius-sm)", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "2px", maxWidth: "100%", cursor: "pointer", opacity: 0.8 }} onClick={() => document.getElementById(`msg-${msg.reply_to?.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}>
+          <div style={{ fontWeight: 700, fontSize: "10px", marginBottom: "2px" }}>{msg.reply_to.sender_id === currentUser?.id ? "You" : activeConvo.partner.name}</div>
+          <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{msg.reply_to.content || "Media"}</div>
+        </div>
+      )}
+      {isMine && (
+        <div className="msg-dots-trigger" style={{ position: "relative", alignSelf: "flex-end", marginBottom: "-2px" }}>
+          <button onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }} style={{ background: "none", border: "none", padding: "2px", cursor: "pointer", color: "var(--text-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-sm)", transition: "all 0.15s ease" }}><DotsThree size={24} weight="bold" /></button>
+          {messageMenuId === msg.id && (
+            <div className="message-action-menu" style={{ position: "absolute", top: "100%", right: 0, marginTop: "4px", backgroundColor: "var(--bg-page)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", boxShadow: "0 8px 24px rgba(0,0,0,0.15)", zIndex: 1000, minWidth: "160px", overflow: "hidden" }}>
+              {deletingMessageId === msg.id ? (
+                <div style={{ padding: "12px 14px" }}><div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "10px" }}>Delete for everyone?</div><div style={{ display: "flex", gap: "8px" }}><button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(null); }} style={{ flex: 1, padding: "7px 12px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", background: "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>Cancel</button><button onClick={(e) => { e.stopPropagation(); onDelete(msg.id); }} style={{ flex: 1, padding: "7px 12px", border: "none", borderRadius: "var(--radius-sm)", backgroundColor: "#ef4444", color: "#fff", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>Delete</button></div></div>
+              ) : (
+                <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(msg.id); }} style={{ width: "100%", padding: "10px 14px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "#ef4444" }}><Trash size={15} weight="bold" /> Delete message</button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      <motion.div
+        id={`msg-${msg.id}`}
+        onContextMenu={(e) => { e.preventDefault(); setReactingTo(msg.id); }}
+        style={{ padding: "10px 14px", borderRadius: "var(--radius-sm)", backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-page)", color: isMine ? "var(--bg-page)" : "var(--text-primary)", fontSize: "14px", lineHeight: 1.5, border: "0.5px solid var(--border-hairline)", wordBreak: "break-word", position: "relative", cursor: "pointer", userSelect: "none" }}
+        onDoubleClick={(e) => { e.stopPropagation(); onReaction(msg.id, "❤️"); }}
+      >
+        {msg.image_url && <img src={msg.image_url} alt="" style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "var(--radius-sm)", marginBottom: msg.content ? "8px" : 0, display: "block", cursor: "pointer" }} onClick={() => onPreviewImage(msg.image_url!)} />}
+        {msg.audio_url && <div style={{ marginTop: msg.image_url ? "8px" : 0 }}><VoiceWaveform url={msg.audio_url} isMine={isMine} /></div>}
+        {msg.content && <div>{msg.content}</div>}
+        
+        {/* Shared Previews */}
+        {msg.shared_post && (
+          <div onClick={(e) => { e.stopPropagation(); onNavigatePost(msg.shared_post!.id); }} style={{ marginTop: msg.content ? "12px" : 4, backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", overflow: "hidden", cursor: "pointer" }}>
+            {msg.shared_post.images && msg.shared_post.images[0] && <img src={msg.shared_post.images[0]} style={{ width: "100%", height: "100px", objectFit: "cover" }} />}
+            <div style={{ padding: "8px" }}><div style={{ fontSize: "10px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-tertiary)" }}>Shared Post • {msg.shared_post.user?.name}</div><div style={{ fontSize: "12px", fontWeight: 700 }}>{msg.shared_post.title}</div></div>
+          </div>
+        )}
+        {msg.shared_project && (
+          <div onClick={(e) => { e.stopPropagation(); onNavigateProject(msg.shared_project!.id); }} style={{ marginTop: msg.content ? "12px" : 4, backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", overflow: "hidden", cursor: "pointer" }}>
+            {msg.shared_project.cover_image && <img src={msg.shared_project.cover_image} style={{ width: "100%", height: "100px", objectFit: "cover" }} />}
+            <div style={{ padding: "8px" }}><div style={{ fontSize: "10px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-tertiary)" }}>Shared Project • {msg.shared_project.user?.name}</div><div style={{ fontSize: "12px", fontWeight: 700 }}>{msg.shared_project.title}</div></div>
+          </div>
+        )}
+      </motion.div>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
+        <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, display: "flex", alignItems: "center", gap: "4px" }}>
+          {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          {isMine && (msg.is_read ? <Checks size={14} weight="bold" color="#3B82F6" /> : <Check size={14} weight="bold" style={{ opacity: 0.5 }} />)}
+        </span>
+        <button onClick={() => onReply(msg)} style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>Reply</button>
+      </div>
+      {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "2px", alignSelf: isMine ? "flex-end" : "flex-start" }}>
+          {Object.entries(msg.reactions).map(([emoji, userIds]) => {
+            const hasReacted = userIds.includes(currentUser!.id);
+            return (
+              <div key={emoji} onClick={() => onReaction(msg.id, emoji)} style={{ padding: "2px 6px", backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-hover)", color: hasReacted ? "var(--bg-page)" : "var(--text-primary)", borderRadius: "var(--radius-pill)", fontSize: "11px", display: "flex", alignItems: "center", gap: "4px", cursor: "pointer", border: "0.5px solid var(--border-hairline)" }}>
+                <span>{emoji}</span><span style={{ fontSize: "9px", fontWeight: 800 }}>{userIds.length}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {reactingTo === msg.id && (
+        <div style={{ position: "absolute", bottom: "100%", [isMine ? "right" : "left"]: 0, backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-pill)", padding: "6px 12px", boxShadow: "0 10px 30px rgba(0,0,0,0.15)", border: "0.5px solid var(--border-hairline)", display: "flex", gap: "10px", zIndex: 1000, marginBottom: "10px" }}>
+          {["👍", "❤️", "😂", "😮", "😢", "🔥"].map((emoji) => (
+            <button key={emoji} onClick={() => onReaction(msg.id, emoji)} style={{ background: "none", border: "none", fontSize: "20px", padding: "4px", cursor: "pointer" }}>{emoji}</button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+});
+
 export default function Messages() {
   const [searchParams] = useSearchParams();
   const targetUserId = searchParams.get("userId");
@@ -230,32 +476,98 @@ export default function Messages() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [reactingTo, setReactingTo] = useState<number | null>(null);
   const [sending, setSending] = useState(false);
   const { announce } = useActivityBroadcast();
+  
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isAtBottom, setIsAtBottom] = useState(true);
-  const [reactingTo, setReactingTo] = useState<number | null>(null);
-  const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Audio Recording states
+  
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
   const [isUploadingAudio, setIsUploadingAudio] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<BlobPart[]>([]);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const atBottom = scrollHeight - scrollTop - clientHeight < 150;
+      setIsAtBottom(atBottom);
+    }
+  };
+
+  const scrollToBottom = (force = false) => {
+    if (force || isAtBottom) {
+      messagesEndRef.current?.scrollIntoView({ behavior: force ? "auto" : "smooth" });
+    }
+  };
+
+  // Conversations Query
+  const { data: qConversations = [], isLoading: loadingConversations } = useQuery({
+    queryKey: ['conversations'],
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await api.get("/messages/conversations", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return res.data;
+    },
+    staleTime: 30000,
+  });
+
+  // Messages Query
+  const { data: qMessages = [], isLoading: qMessagesLoading } = useQuery({
+    queryKey: ['messages', activeConvo?.id],
+    queryFn: async () => {
+      if (!activeConvo || activeConvo.id === 0) return [];
+      const token = await getToken();
+      const res = await api.get(`/messages/${activeConvo.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return res.data;
+    },
+    enabled: !!activeConvo && activeConvo.id !== 0,
+  });
+
+  // Sync state with React Query data
+  useEffect(() => {
+    if (qConversations.length > 0) {
+      setConversations(qConversations);
+      
+      // Auto-select conversation from URL
+      if (targetUserId && !activeConvo) {
+        const existing = qConversations.find((c: Conversation) => c.partner.id === targetUserId);
+        if (existing) {
+          setActiveConvo(existing);
+        } else {
+          startPlaceholderConvo(targetUserId);
+        }
+      }
+    }
+  }, [qConversations, targetUserId, activeConvo]);
+
+  useEffect(() => {
+    if (qMessages.length > 0) {
+      setMessages(qMessages);
+      setTimeout(() => scrollToBottom(true), 100);
+    } else if (activeConvo?.id !== 0) {
+      setMessages([]);
+    }
+  }, [qMessages, activeConvo?.id]);
 
   useEffect(() => {
     if (initialMessage) {
@@ -270,36 +582,30 @@ export default function Messages() {
   const [deletingConvoId, setDeletingConvoId] = useState<number | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-      // If the user is within 150px of the bottom, consider them "at bottom"
-      const atBottom = scrollHeight - scrollTop - clientHeight < 150;
-      setIsAtBottom(atBottom);
+  const startPlaceholderConvo = async (userId: string) => {
+    try {
+      const token = await getToken();
+      const res = await api.get(`/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.data) {
+        const placeholder: Conversation = {
+          id: 0,
+          partner: {
+            id: res.data.id,
+            name: res.data.name,
+            username: res.data.username,
+            avatar_url: res.data.avatar_url,
+          },
+          last_message: null,
+        };
+        setActiveConvo(placeholder);
+        setIsNewMessageModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error starting placeholder convo:", error);
     }
   };
-
-  const scrollToBottom = (force = false) => {
-    if (force || isAtBottom) {
-      messagesEndRef.current?.scrollIntoView({ behavior: force ? "auto" : "smooth" });
-    }
-  };
-
-  useEffect(() => {
-    if (previewImage) {
-      document.body.style.overflow = "hidden";
-      const handleEsc = (e: KeyboardEvent) => {
-        if (e.key === "Escape") setPreviewImage(null);
-      };
-      window.addEventListener("keydown", handleEsc);
-      return () => {
-        document.body.style.overflow = "unset";
-        window.removeEventListener("keydown", handleEsc);
-      };
-    } else {
-      document.body.style.overflow = "unset";
-    }
-  }, [previewImage]);
 
   useEffect(() => {
     if (!currentUser?.id) return;
@@ -352,7 +658,7 @@ export default function Messages() {
         const convoId = payload.conversation_id;
         const convoIndex = prev.findIndex(c => c.id === convoId || (c.id === 0 && c.partner.id === payload.sender_id));
         if (convoIndex === -1) {
-          fetchConversations(false);
+          queryClient.invalidateQueries({ queryKey: ['conversations'] });
           return prev;
         }
         const updated = [...prev];
@@ -383,7 +689,7 @@ export default function Messages() {
       socket.off("message_reaction", handleMessageReaction);
       socket.off("new_message", handleNewMessage);
     };
-  }, [currentUser?.id, activeConvo?.id]);
+  }, [currentUser?.id, activeConvo?.id, queryClient]);
 
   useEffect(() => {
     if (reactingTo !== null || messageMenuId !== null || convoMenuId !== null) {
@@ -413,96 +719,20 @@ export default function Messages() {
   }, [reactingTo, messageMenuId, convoMenuId]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const fetchConversations = async (isInitial = false) => {
-    try {
-      if (isInitial) setLoading(true);
-      const token = await getToken();
-      const res = await api.get("/messages", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const convos = Array.isArray(res.data) ? res.data : [];
-      setConversations(convos);
-
-      if (targetUserId && !activeConvo) {
-        const existing = convos.find((c: Conversation) => c.partner.id === targetUserId);
-        if (existing) {
-          setActiveConvo(existing);
-        } else {
-          await startPlaceholderConvo(targetUserId);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching conversations:", error);
-      if (targetUserId && !activeConvo) {
-        await startPlaceholderConvo(targetUserId);
-      }
-    } finally {
-      if (isInitial) setLoading(false);
+    if (previewImage) {
+      document.body.style.overflow = "hidden";
+      const handleEsc = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setPreviewImage(null);
+      };
+      window.addEventListener("keydown", handleEsc);
+      return () => {
+        document.body.style.overflow = "unset";
+        window.removeEventListener("keydown", handleEsc);
+      };
+    } else {
+      document.body.style.overflow = "unset";
     }
-  };
-
-  const startPlaceholderConvo = async (userId: string) => {
-    try {
-      const token = await getToken();
-      const res = await api.get(`/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.data) {
-        const placeholder: Conversation = {
-          id: 0,
-          partner: {
-            id: res.data.id,
-            name: res.data.name,
-            username: res.data.username,
-            avatar_url: res.data.avatar_url,
-          },
-          last_message: null,
-        };
-        setActiveConvo(placeholder);
-        setIsNewMessageModalOpen(false);
-      }
-    } catch (error) {
-      console.error("Error starting placeholder convo:", error);
-    }
-  };
-
-  const fetchMessages = async (convoId: number, partnerId?: string, isInitial = false) => {
-    if (convoId === 0) {
-      setMessages([]);
-      return;
-    }
-    try {
-      if (isInitial) setMessagesLoading(true);
-      const token = await getToken();
-      const res = await api.get(`/messages/${convoId}/messages`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMessages(res.data);
-
-      if (currentUser?.id && partnerId) {
-        socket.emit("mark_read", { senderId: currentUser.id, receiverId: partnerId, conversationId: convoId });
-      }
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    } finally {
-      if (isInitial) setMessagesLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchConversations(true);
-  }, [targetUserId]);
-
-  useEffect(() => {
-    if (activeConvo && activeConvo.id !== 0) {
-      fetchMessages(activeConvo.id, activeConvo.partner.id, true);
-      setIsAtBottom(true);
-      setTimeout(() => scrollToBottom(true), 100);
-    }
-  }, [activeConvo?.id]);
+  }, [previewImage]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -656,7 +886,7 @@ export default function Messages() {
         setMessages([res.data]);
         
         // Refresh conversations to get the full list ordered correctly
-        await fetchConversations(false);
+        await queryClient.invalidateQueries({ queryKey: ['conversations'] });
       } else {
         setMessages((prev) => [...prev, res.data]);
 
@@ -782,7 +1012,7 @@ export default function Messages() {
         convo.partner.username.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  if (loading) {
+  if (loadingConversations) {
     return (
       <div
         style={{
@@ -936,7 +1166,7 @@ export default function Messages() {
               padding: "12px",
             }}
           >
-            {loading ? (
+            {loadingConversations ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "16px" }}>
                 {[...Array(6)].map((_, i) => (
                   <div key={i} style={{ display: "flex", gap: "16px", alignItems: "center" }}>
@@ -1010,267 +1240,27 @@ export default function Messages() {
                 </button>
               </div>
             ) : null}
-            {!loading && filteredConversations.map((convo) => (
-              <div
+            {!loadingConversations && filteredConversations.map((convo) => (
+              <ConversationItem
                 key={convo.id}
-                className="convo-container"
-                onClick={() => {
-                  setActiveConvo(convo);
-                  if (convo.unread_count && convo.unread_count > 0) {
+                convo={convo}
+                isActive={activeConvo?.id === convo.id}
+                typingUsers={typingUsers}
+                currentUser={currentUser}
+                convoMenuId={convoMenuId}
+                setConvoMenuId={setConvoMenuId}
+                deletingConvoId={deletingConvoId}
+                onSelect={(c) => {
+                  setActiveConvo(c);
+                  if (c.unread_count && c.unread_count > 0) {
                     setConversations(prev =>
-                      prev.map(c => c.id === convo.id ? { ...c, unread_count: 0 } : c)
+                      prev.map(item => item.id === c.id ? { ...item, unread_count: 0 } : item)
                     );
                   }
                 }}
-                style={{
-                  padding: "20px",
-                  cursor: "pointer",
-                  backgroundColor: activeConvo?.id === convo.id ? "var(--bg-hover)" : "transparent",
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                  borderBottom: "0.5px solid var(--border-hairline)",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseEnter={(e) => {
-                  if (activeConvo?.id !== convo.id)
-                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                }}
-                onMouseLeave={(e) => {
-                  if (activeConvo?.id !== convo.id)
-                    e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
-                <AvailabilityBadge
-                  avatarUrl={convo.partner.avatar_url}
-                  name={convo.partner.name}
-                  size={48}
-                  isOG={convo.partner.is_og}
-                  username={convo.partner.username}
-                />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        fontSize: "14px",
-                        color: "var(--text-primary)",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      {convo.partner.name}
-                      <VerifiedBadge username={convo.partner.username} size="13px" />
-                    </div>
-                    {convo.last_message && (
-                      <div className="time-action-wrapper" style={{ position: "relative", width: "40px", height: "16px", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-                        <span 
-                          className="convo-timestamp"
-                          style={{ 
-                            fontSize: "11px", 
-                            color: "var(--text-tertiary)", 
-                            flexShrink: 0,
-                            transition: "opacity 0.2s ease"
-                          }}
-                        >
-                          {new Date(convo.last_message.created_at).toLocaleDateString() ===
-                            new Date().toLocaleDateString()
-                            ? new Date(convo.last_message.created_at).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                            : new Date(convo.last_message.created_at).toLocaleDateString([], {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                        </span>
-
-                        <div 
-                          className={`convo-dots-container ${convoMenuId === convo.id ? "is-open" : ""}`}
-                          style={{ 
-                            position: "absolute", 
-                            right: "-8px", 
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            transition: "opacity 0.15s ease",
-                            zIndex: 10
-                          }} 
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <button
-                            className="convo-dots-trigger"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setConvoMenuId(convoMenuId === convo.id ? null : convo.id);
-                            }}
-                            style={{
-                              width: "32px",
-                              height: "32px",
-                              borderRadius: "50%",
-                              backgroundColor: "var(--bg-hover)",
-                              border: "none",
-                              padding: 0,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "var(--text-primary)",
-                              transition: "all 0.15s ease",
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--border-hairline)"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                          >
-                            <DotsThree size={22} weight="bold" style={{ width: "22px", height: "22px" }} />
-                          </button>
-
-                          {convoMenuId === convo.id && (
-                            <div
-                              className="convo-action-menu"
-                              style={{
-                                position: "absolute",
-                                top: "100%",
-                                right: 0,
-                                marginTop: "8px",
-                                backgroundColor: "var(--bg-elevated)",
-                                borderRadius: "14px",
-                                padding: "6px",
-                                minWidth: "160px",
-                                boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)",
-                                border: "0.5px solid var(--border-hairline)",
-                                zIndex: 100,
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "4px"
-                              }}
-                            >
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate(`/user/${convo.partner.id}`);
-                                  setConvoMenuId(null);
-                                }}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                  width: "100%",
-                                  padding: "10px",
-                                  border: "none",
-                                  backgroundColor: "transparent",
-                                  borderRadius: "8px",
-                                  cursor: "pointer",
-                                  fontFamily: "var(--font-main)",
-                                  fontSize: "13px",
-                                  fontWeight: 500,
-                                  color: "var(--text-primary)",
-                                  transition: "background-color 0.15s",
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                              >
-                                <UserIcon size={18} weight="regular" /> Profile
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteConversation(convo.id);
-                                }}
-                                disabled={deletingConvoId === convo.id}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                  width: "100%",
-                                  padding: "10px",
-                                  border: "none",
-                                  backgroundColor: "transparent",
-                                  borderRadius: "8px",
-                                  cursor: deletingConvoId === convo.id ? "not-allowed" : "pointer",
-                                  fontFamily: "var(--font-main)",
-                                  fontSize: "13px",
-                                  fontWeight: 500,
-                                  color: "#ff4444",
-                                  transition: "background-color 0.15s",
-                                  opacity: deletingConvoId === convo.id ? 0.7 : 1,
-                                }}
-                                onMouseEnter={(e) => {
-                                  if (deletingConvoId !== convo.id) e.currentTarget.style.backgroundColor = "rgba(255, 68, 68, 0.05)";
-                                }}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                              >
-                                {deletingConvoId === convo.id ? (
-                                  <ArrowClockwise size={18} weight="regular" className="spin-animation" />
-                                ) : (
-                                  <Trash size={18} weight="regular" />
-                                )} 
-                                Delete chat
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "13px",
-                      color: convo.unread_count && convo.unread_count > 0 ? "var(--text-primary)" : "var(--text-secondary)",
-                      fontWeight: convo.unread_count && convo.unread_count > 0 ? 700 : 400,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: "4px"
-                    }}
-                  >
-                    <div style={{ display: "flex", gap: "6px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", alignItems: "center" }}>
-                      {typingUsers[convo.partner.id] ? (
-                        <span style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: "12px", animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}>Typing...</span>
-                      ) : convo.last_message ? (
-                        <>
-                          {convo.last_message.sender_id === currentUser?.id && (
-                            <span style={{ color: "var(--text-tertiary)", fontWeight: 600, fontSize: "12px" }}>You:</span>
-                          )}
-                          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {convo.last_message.content || (
-                              convo.last_message.shared_post || convo.last_message.shared_post_id ? "Shared a post" :
-                                convo.last_message.shared_project || convo.last_message.shared_project_id ? "Shared a project" :
-                                  convo.last_message.audio_url ? "🎤 Voice Message" :
-                                    (convo.last_message.image_url?.includes("giphy.com") || convo.last_message.image_url?.includes("tenor.com") || convo.last_message.image_url?.toLowerCase().endsWith(".gif")) ? "🎬 GIF" : "📷 Image"
-                            )}
-                          </span>
-                        </>
-                      ) : (
-                        "No messages yet"
-                      )}
-                    </div>
-                    {(convo.unread_count ?? 0) > 0 && (
-                      <div style={{
-                        width: "6px",
-                        height: "6px",
-                        borderRadius: "50%",
-                        backgroundColor: "var(--text-primary)",
-                        flexShrink: 0,
-                        marginLeft: "8px"
-                      }} />
-                    )}
-                  </div>
-                </div>
-
-
-
-              </div>
+                onProfile={(c) => navigate(`/user/${c.partner.id}`)}
+                onDelete={handleDeleteConversation}
+              />
             ))}
           </div>
         </div>
@@ -1335,7 +1325,7 @@ export default function Messages() {
                     username={activeConvo.partner.username}
                   />
                 </div>
-                {messagesLoading && activeConvo.id === 0 ? (
+                {qMessagesLoading && activeConvo.id === 0 ? (
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
                     <div style={{ width: "120px", height: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
                     <div style={{ width: "80px", height: "10px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", animation: "shimmer 1.5s infinite linear" }} />
@@ -1378,7 +1368,7 @@ export default function Messages() {
                   gap: "16px",
                 }}
               >
-                {messagesLoading ? (
+                {qMessagesLoading ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     {[...Array(4)].map((_, i) => (
                       <div key={i} style={{
@@ -1476,498 +1466,28 @@ export default function Messages() {
                     </div>
                   </div>
                 ) : (
-                  messages.map((msg, idx) => {
-                    const isMine = msg.sender_id === currentUser?.id;
-                    return (
-                      <div
-                        key={msg.id || idx}
-                        className="message-row"
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: isMine ? "flex-end" : "flex-start",
-                          gap: "4px",
-                          width: "100%",
-                          position: "relative"
-                        }}
-                      >
-                        {/* Name Label - Only show for received messages */}
-                        {!isMine && (
-                          <span style={{
-                            fontSize: "11px",
-                            fontWeight: 600,
-                            color: "var(--text-secondary)",
-                            marginBottom: "4px",
-                            padding: "0 4px",
-                          }}>
-                            {activeConvo.partner.name}
-                          </span>
-                        )}
-
-                      {/* Reply Context */}
-                      {msg.reply_to && (
-                        <div
-                          style={{
-                            padding: "8px 12px",
-                            backgroundColor: "var(--bg-hover)",
-                            borderLeft: "2px solid var(--text-tertiary)",
-                            borderRadius: "var(--radius-sm)",
-                            fontSize: "11px",
-                            color: "var(--text-secondary)",
-                            marginBottom: "2px",
-                            maxWidth: "100%",
-                            cursor: "pointer",
-                            opacity: 0.8
-                          }}
-                          onClick={() => {
-                            const el = document.getElementById(`msg-${msg.reply_to?.id}`);
-                            el?.scrollIntoView({ behavior: "smooth", block: "center" });
-                          }}
-                        >
-                          <div style={{ fontWeight: 700, fontSize: "10px", marginBottom: "2px" }}>
-                            {msg.reply_to.sender_id === currentUser?.id ? "You" : activeConvo.partner.name}
-                          </div>
-                          <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {msg.reply_to.content || (
-                              (msg.reply_to.image_url?.includes("giphy.com") || msg.reply_to.image_url?.includes("tenor.com") || msg.reply_to.image_url?.toLowerCase().endsWith(".gif")) ? "🎬 GIF" :
-                                msg.reply_to.image_url ? "📷 Image" : ""
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Three-dots menu trigger - appears on hover */}
-                      {isMine && (
-                        <div
-                          className="msg-dots-trigger"
-                          style={{
-                            position: "relative",
-                            alignSelf: "flex-end",
-                            marginBottom: "-2px"
-                          }}
-                        >
-                          <button
-                            onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }}
-                            style={{
-                              background: "none",
-                              border: "none",
-                              padding: "2px",
-                              cursor: "pointer",
-                              color: "var(--text-tertiary)",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              borderRadius: "var(--radius-sm)",
-                              transition: "all 0.15s ease"
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-tertiary)"; e.currentTarget.style.backgroundColor = "transparent"; }}
-                          >
-                            <DotsThree size={24} weight="bold" style={{ width: "24px", height: "24px" }} />
-                          </button>
-
-                          {/* Small dropdown menu */}
-                          {messageMenuId === msg.id && (
-                            <div
-                              className="message-action-menu"
-                              style={{
-                                position: "absolute",
-                                top: "100%",
-                                right: 0,
-                                marginTop: "4px",
-                                backgroundColor: "var(--bg-page)",
-                                border: "0.5px solid var(--border-hairline)",
-                                borderRadius: "var(--radius-sm)",
-                                boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-                                zIndex: 1000,
-                                minWidth: "160px",
-                                overflow: "hidden",
-                                animation: "reactionFadeUp 0.15s ease-out"
-                              }}
-                            >
-                              {deletingMessageId === msg.id ? (
-                                <div style={{ padding: "12px 14px" }}>
-                                  <div style={{
-                                    fontSize: "13px",
-                                    fontWeight: 600,
-                                    color: "var(--text-primary)",
-                                    marginBottom: "10px",
-                                  }}>
-                                    Delete for everyone?
-                                  </div>
-                                  <div style={{ display: "flex", gap: "8px" }}>
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); setDeletingMessageId(null); }}
-                                      style={{
-                                        flex: 1,
-                                        padding: "7px 12px",
-                                        border: "0.5px solid var(--border-hairline)",
-                                        borderRadius: "var(--radius-sm)",
-                                        background: "transparent",
-                                        color: "var(--text-primary)",
-                                        fontSize: "12px",
-                                        fontWeight: 600,
-                                        cursor: "pointer",
-                                        transition: "background 0.15s"
-                                      }}
-                                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                    >
-                                      Cancel
-                                    </button>
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); handleDeleteMessage(msg.id); }}
-                                      style={{
-                                        flex: 1,
-                                        padding: "7px 12px",
-                                        border: "none",
-                                        borderRadius: "var(--radius-sm)",
-                                        backgroundColor: "#ef4444",
-                                        color: "#fff",
-                                        fontSize: "11px",
-                                        fontWeight: 600,
-                                        cursor: "pointer",
-                                        transition: "opacity 0.15s"
-                                      }}
-                                      onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
-                                      onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-                                    >
-                                      Delete
-                                    </button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); setDeletingMessageId(msg.id); }}
-                                  style={{
-                                    width: "100%",
-                                    padding: "10px 14px",
-                                    background: "none",
-                                    border: "none",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "10px",
-                                    cursor: "pointer",
-                                    fontSize: "13px",
-                                    fontWeight: 600,
-                                    color: "#ef4444",
-                                    transition: "background 0.15s ease"
-                                  }}
-                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                >
-                                  <Trash size={15} weight="bold" />
-                                  Delete message
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      <motion.div
-                        id={`msg-${msg.id}`}
-                        drag={isMobile ? "x" : false}
-                        dragConstraints={{ left: 0, right: 100 }}
-                        onDragEnd={(_, info) => {
-                            if (info.offset.x > 80) setReplyingTo(msg);
-                        }}
-                        onMouseDown={() => {
-                          if (isMobile) return;
-                          longPressTimeoutRef.current = setTimeout(() => setReactingTo(msg.id), 500);
-                        }}
-                        onMouseUp={() => {
-                          if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
-                        }}
-                        onMouseLeave={() => {
-                          if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
-                        }}
-                        onTouchStart={() => {
-                          longPressTimeoutRef.current = setTimeout(() => setReactingTo(msg.id), 500);
-                        }}
-                        onTouchEnd={() => {
-                          if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
-                        }}
-                        onContextMenu={(e) => {
-                          e.preventDefault();
-                          setReactingTo(msg.id);
-                        }}
-                        style={{
-                          padding: "10px 14px",
-                          borderRadius: "var(--radius-sm)",
-                          backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-page)",
-                          color: isMine ? "var(--bg-page)" : "var(--text-primary)",
-                          fontSize: "14px",
-                          lineHeight: 1.5,
-                          border: "0.5px solid var(--border-hairline)",
-                          wordBreak: "break-word",
-                          position: "relative",
-                          cursor: "pointer",
-                          userSelect: "none",
-                          WebkitUserSelect: "none",
-                          touchAction: "pan-y",
-                          x: 0 // Ensure layout stability
-                        }}
-                        onDoubleClick={(e) => {
-                            e.stopPropagation();
-                            handleReaction(msg.id, "❤️");
-                        }}
-                      >
-                        {msg.image_url && (
-                          <img
-                            src={msg.image_url}
-                            alt=""
-                            style={{
-                              maxWidth: "100%",
-                              maxHeight: "300px",
-                              borderRadius: "var(--radius-sm)",
-                              marginBottom: msg.content ? "8px" : 0,
-                              display: "block",
-                              cursor: "pointer"
-                            }}
-                            onClick={() => setPreviewImage(msg.image_url!)}
-                          />
-                        )}
-                        {msg.audio_url && (
-                          <div style={{ marginTop: msg.image_url ? "8px" : 0, marginBottom: msg.content ? "8px" : 0 }}>
-                            <VoiceWaveform url={msg.audio_url} isMine={isMine} />
-                          </div>
-                        )}
-                        {msg.content && (
-                          <div>
-                            {(() => {
-                              const urlRegex = /(https?:\/\/[^\s]+)/g;
-                              const parts = msg.content.split(urlRegex);
-                              return parts.map((part, i) => {
-                                if (part.match(urlRegex)) {
-                                  return (
-                                    <a
-                                      key={i}
-                                      href={part}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      style={{
-                                        color: isMine ? "inherit" : "var(--text-primary)",
-                                        textDecoration: "underline",
-                                        fontWeight: 700,
-                                        cursor: "pointer"
-                                      }}
-                                    >
-                                      {part}
-                                    </a>
-                                  );
-                                }
-                                return part;
-                              });
-                            })()}
-                          </div>
-                        )}
-
-                        {/* Shared Post Preview */}
-                        {msg.shared_post && (
-                          <div
-                            onClick={(e) => { e.stopPropagation(); navigate(`/post/${msg.shared_post?.id}`); }}
-                            style={{
-                              marginTop: msg.content ? "12px" : 0,
-                              backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)",
-                              borderRadius: "var(--radius-sm)",
-                              border: "0.5px solid var(--border-hairline)",
-                              overflow: "hidden",
-                              cursor: "pointer",
-                              transition: "all 0.2s ease"
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
-                            onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-                          >
-                            {msg.shared_post.images && msg.shared_post.images[0] && (
-                              <img
-                                src={msg.shared_post.images[0]}
-                                alt=""
-                                style={{ width: "100%", height: "120px", objectFit: "cover" }}
-                              />
-                            )}
-                            <div style={{ padding: "12px" }}>
-                              <div style={{ fontSize: "10px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-tertiary)", opacity: isMine ? 0.7 : 1, marginBottom: "4px" }}>
-                                Shared Post • {msg.shared_post.user?.name || "User"}
-                              </div>
-                              <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                                {msg.shared_post.title || "Untitled Post"}
-                              </div>
-                              <div style={{ fontSize: "11px", color: isMine ? "inherit" : "var(--text-secondary)", opacity: isMine ? 0.8 : 1, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                                {msg.shared_post.content}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Shared Project Preview */}
-                        {msg.shared_project && (
-                          <div
-                            onClick={(e) => { e.stopPropagation(); navigate(`/project/${msg.shared_project?.id}`); }}
-                            style={{
-                              marginTop: msg.content ? "12px" : 0,
-                              backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)",
-                              borderRadius: "var(--radius-sm)",
-                              border: "0.5px solid var(--border-hairline)",
-                              overflow: "hidden",
-                              cursor: "pointer",
-                              transition: "all 0.2s ease"
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
-                            onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-                          >
-                            {msg.shared_project.cover_image && (
-                              <img
-                                src={msg.shared_project.cover_image}
-                                alt=""
-                                style={{ width: "100%", height: "120px", objectFit: "cover" }}
-                              />
-                            )}
-                            <div style={{ padding: "12px" }}>
-                              <div style={{ fontSize: "10px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-tertiary)", opacity: isMine ? 0.7 : 1, marginBottom: "4px" }}>
-                                Shared Project • {msg.shared_project.user?.name || "User"}
-                              </div>
-                              <div style={{ fontSize: "12px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-primary)", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                                {msg.shared_project.title || "Untitled Project"}
-                              </div>
-                              <div style={{ fontSize: "11px", color: isMine ? "inherit" : "var(--text-secondary)", opacity: isMine ? 0.8 : 1, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                                {msg.shared_project.description}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </motion.div>
-
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
-                        <span
-                          style={{
-                            fontSize: "11px",
-                            color: "var(--text-tertiary)",
-                            fontWeight: 500,
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px"
-                          }}
-                        >
-                          {new Date(msg.created_at).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                          {isMine && (
-                            <span style={{ display: "flex", alignItems: "center" }}>
-                                {msg.is_read ? (
-                                    <Checks size={14} weight="bold" color="#3B82F6" style={{ filter: "drop-shadow(0 0 4px rgba(59, 130, 246, 0.4))" }} />
-                                ) : (
-                                    <Check size={14} weight="bold" style={{ opacity: 0.5 }} />
-                                )}
-                            </span>
-                          )}
-                        </span>
-
-                        <button
-                          onClick={() => setReplyingTo(msg)}
-                          className="reply-button"
-                          style={{
-                            background: "none",
-                            border: "none",
-                            padding: 0,
-                            color: "var(--text-tertiary)",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-                          onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
-                        >
-                          Reply
-                        </button>
-
-
-
-                      </div>
-
-                      {/* Reactions Display */}
-                      {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                        <div style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: "4px",
-                          marginTop: "2px",
-                          alignSelf: isMine ? "flex-end" : "flex-start",
-                          zIndex: 2
-                        }}>
-                          {Object.entries(msg.reactions).map(([emoji, userIds]) => {
-                            const hasReacted = userIds.includes(currentUser!.id);
-                            return (
-                              <div
-                                key={emoji}
-                                onClick={() => handleReaction(msg.id, emoji)}
-                                style={{
-                                  padding: "2px 6px",
-                                  backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-hover)",
-                                  color: hasReacted ? "var(--bg-page)" : "var(--text-primary)",
-                                  borderRadius: "var(--radius-pill)",
-                                  fontSize: "11px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "4px",
-                                  cursor: "pointer",
-                                  border: "0.5px solid var(--border-hairline)",
-                                  transition: "all 0.15s ease"
-                                }}
-                              >
-                                <span>{emoji}</span>
-                                <span style={{ fontSize: "9px", fontWeight: 800 }}>{userIds.length}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* Emoji Picker Overlay */}
-                      {reactingTo === msg.id && (
-                        <div
-                          className="emoji-picker-overlay"
-                          style={{
-                            position: "absolute",
-                            bottom: "100%",
-                            [isMine ? "right" : "left"]: 0,
-                            backgroundColor: "var(--bg-page)",
-                            borderRadius: "var(--radius-pill)",
-                            padding: "6px 12px",
-                            boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-                            border: "0.5px solid var(--border-hairline)",
-                            display: "flex",
-                            gap: "10px",
-                            zIndex: 1000,
-                            animation: "reactionFadeUp 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28)",
-                            marginBottom: "10px"
-                          }}
-                        >
-                          {["👍", "❤️", "😂", "😮", "😢", "🔥"].map((emoji) => (
-                            <button
-                              key={emoji}
-                              onClick={() => handleReaction(msg.id, emoji)}
-                              style={{
-                                background: "none",
-                                border: "none",
-                                fontSize: "20px",
-                                padding: "4px",
-                                cursor: "pointer",
-                                transition: "transform 0.15s ease",
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.3)"}
-                              onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                            >
-                              {emoji}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              )}
+                  messages.map((msg) => (
+                    <MessageBubble
+                      key={msg.id}
+                      msg={msg}
+                      isMine={msg.sender_id === currentUser?.id}
+                      activeConvo={activeConvo}
+                      currentUser={currentUser}
+                      messageMenuId={messageMenuId}
+                      setMessageMenuId={setMessageMenuId}
+                      deletingMessageId={deletingMessageId}
+                      setDeletingMessageId={setDeletingMessageId}
+                      onDelete={handleDeleteMessage}
+                      onReply={setReplyingTo}
+                      onReaction={handleReaction}
+                      onPreviewImage={setPreviewImage}
+                      reactingTo={reactingTo}
+                      setReactingTo={setReactingTo}
+                      onNavigatePost={(id) => navigate(`/post/${id}`)}
+                      onNavigateProject={(id) => navigate(`/project/${id}`)}
+                    />
+                  ))
+                )}
 
                 {activeConvo && typingUsers[activeConvo.partner.id] && (
                   <div

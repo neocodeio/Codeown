@@ -43,7 +43,6 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
                         style={{
                             width: mini ? "13px" : "16px",
                             height: mini ? "13px" : "16px",
-                            filter: "drop-shadow(0 0 4px rgba(255, 153, 0, 0.4))",
                             transform: "translateY(-0.5px)"
                         }}
                     />
@@ -65,17 +64,6 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
             }}>
                 {count}
             </span>
-
-            <style>{`
-        .streak-badge:hover {
-          border-color: ${isActive ? "#FF9900" : "var(--text-primary)"} !important;
-          background-color: ${isActive ? "rgba(255, 153, 0, 0.12)" : "var(--bg-hover)"} !important;
-          transform: translateY(-1px);
-        }
-        .streak-badge:active {
-          transform: translateY(0);
-        }
-      `}</style>
         </div>
     );
 }

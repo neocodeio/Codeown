@@ -55,15 +55,15 @@ interface Post {
   } | null;
 }
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getToken } = useClerkAuth();
   const { isSignedIn, user } = useClerkUser();
-  const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<CommentWithMeta[]>([]);
-  const [commentSort] = useState<"newest" | "top">("newest");
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
   const [commentContent, setCommentContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -72,12 +72,56 @@ export default function PostDetail() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
   const [isSendToChatModalOpen, setIsSendToChatModalOpen] = useState(false);
+  const [commentSort] = useState<"newest" | "top">("newest");
 
   const { avatarUrl: currentUserAvatarUrl } = useAvatar(
     user?.id,
     user?.imageUrl,
     user?.fullName || user?.username || "User"
   );
+
+  // 1. Fetch Post Data
+  const { data: post = null, isLoading: postLoading } = useQuery({
+    queryKey: ["post", id],
+    queryFn: async () => {
+      const token = await getToken();
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await api.get(`/posts/${id}`, { headers });
+      
+      // Secondary logic: track analytics (fire and forget)
+      api.post(`/analytics/track`, {
+        event_type: 'post_view',
+        target_user_id: res.data.user_id,
+        post_id: res.data.id
+      }, { headers }).catch(() => {});
+
+      return res.data as Post;
+    },
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // 2. Fetch Comments
+  const { data: comments = [], isLoading: commentsLoading } = useQuery({
+    queryKey: ["postComments", id, commentSort],
+    queryFn: async () => {
+      const token = await getToken();
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await api.get(`/comments/${id}?sort=${commentSort}`, { headers });
+      return (Array.isArray(res.data) ? res.data : []) as CommentWithMeta[];
+    },
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const loading = postLoading || (commentsLoading && comments.length === 0);
+
+  // Sync voted option when post loads
+  useEffect(() => {
+    if (post?.poll?.userVoted !== undefined) {
+      setVotedOption(post.poll.userVoted);
+    }
+  }, [post?.poll?.userVoted]);
 
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id), post?.isLiked, post?.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id), post?.isSaved);
@@ -89,45 +133,6 @@ export default function PostDetail() {
     }
   }, [id, fetchLikeStatus, fetchSavedStatus]);
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchData = async () => {
-      if (!id) return;
-      try {
-        setLoading(true);
-        const token = await getToken();
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-        const [postRes, commentsRes] = await Promise.all([
-          api.get(`/posts/${id}`, { headers }),
-          api.get(`/comments/${id}?sort=${commentSort}`, { headers })
-        ]);
-        if (isMounted) {
-          setPost(postRes.data);
-          setComments(Array.isArray(commentsRes.data) ? commentsRes.data : []);
-          if (postRes.data.poll?.userVoted !== undefined) {
-             setVotedOption(postRes.data.poll.userVoted);
-          }
-
-          // Track post view analytics
-          api.post(`/analytics/track`, {
-            event_type: 'post_view',
-            target_user_id: postRes.data.user_id,
-            post_id: postRes.data.id
-          }, {
-            headers: token ? { Authorization: `Bearer ${token}` } : {}
-          }).catch(err => console.error("Failed to record post analytics", err));
-        }
-      } catch (e) {
-        console.error("Error fetching post details:", e);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-    fetchData();
-    return () => { isMounted = false; };
-  }, [id, commentSort, getToken]);
-
   const handleSubmitComment = async () => {
     if (!isSignedIn || !commentContent.trim()) return;
     setIsSubmitting(true);
@@ -135,8 +140,8 @@ export default function PostDetail() {
       const token = await getToken();
       await api.post("/comments", { post_id: id, content: commentContent.trim() }, { headers: { Authorization: `Bearer ${token}` } });
       setCommentContent("");
-      const res = await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
-      setComments(Array.isArray(res.data) ? res.data : []);
+      await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
+      await queryClient.invalidateQueries({ queryKey: ["postComments", id] });
     } catch (error) {
       console.error(error);
     } finally {
@@ -147,8 +152,8 @@ export default function PostDetail() {
   const handleReply = async (parentId: number | string, content: string) => {
     const token = await getToken();
     await api.post("/comments", { post_id: id, content, parent_id: parentId }, { headers: { Authorization: `Bearer ${token}` } });
-    const res = await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
-    setComments(Array.isArray(res.data) ? res.data : []);
+    await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
+    await queryClient.invalidateQueries({ queryKey: ["postComments", id] });
   };
 
   const handleShare = () => {
@@ -178,8 +183,8 @@ export default function PostDetail() {
       setVotedOption(optionIndex);
       toast.success("Vote recorded!");
       // Refresh post to update counts
-      const postRes = await api.get(`/posts/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-      setPost(postRes.data);
+      await api.get(`/posts/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await queryClient.invalidateQueries({ queryKey: ["post", id] });
     } catch (error) {
       console.error("Error voting:", error);
       setVotedOption(optionIndex);
