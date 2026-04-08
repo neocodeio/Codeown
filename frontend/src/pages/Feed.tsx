@@ -124,32 +124,32 @@ export default function Feed() {
 
             <div style={{
                 display: "flex",
-                justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center",
-                width: isDesktop ? "1020px" : "100%",
-                maxWidth: "1020px",
-                margin: (isDesktop && !isMobile) ? "0" : "0 auto",
+                justifyContent: isDesktop ? "flex-start" : "center",
+                width: "100%",
+                maxWidth: isDesktop ? "1020px" : "100%",
+                margin: "0 auto",
                 padding: "0",
             }}>
                 {/* ── Main Feed Column ── */}
                 <div style={{
                     width: isDesktop ? "var(--feed-width)" : "100%",
-                    maxWidth: isDesktop ? "var(--feed-width)" : "700px",
+                    maxWidth: isDesktop ? "var(--feed-width)" : "680px",
                     margin: isDesktop ? "0" : "0 auto",
                     flexShrink: 0,
-                    border: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)",
-                    borderLeft: (isDesktop && !isMobile) ? "none" : "none",
-                    borderRight: (isDesktop && !isMobile) ? "0.5px solid var(--border-hairline)" : "none",
+                    border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+                    borderTop: "none",
+                    borderBottom: "none",
                     minHeight: "100vh",
                     position: "relative",
-                    backgroundColor: "var(--bg-page)"
+                    backgroundColor: "var(--bg-page)",
                 }}>
 
                     {/* ── Minimalist Clean Header ── */}
                     <div style={{
                         position: "sticky",
-                        top: isMobile ? "64px" : 0, // Account for mobile top header
+                        top: isMobile ? "64px" : "0", 
                         zIndex: 100,
-                        backgroundColor: "var(--bg-page)",
+                        backgroundColor: "var(--bg-header)",
                         backdropFilter: "blur(20px)",
                         WebkitBackdropFilter: "blur(20px)",
                         borderBottom: "0.5px solid var(--border-hairline)",
@@ -157,10 +157,11 @@ export default function Feed() {
                         <div style={{
                             display: "flex",
                             alignItems: "center",
-                            height: isMobile ? "48px" : "56px",
+                            height: isMobile ? "54px" : "56px",
                             width: "100%",
                             position: "relative",
                             justifyContent: "center",
+                            gap: isMobile ? "20px" : "40px",
                         }}>
                             {/* "For You" Tab with Dropdown */}
                             <div style={{ position: "relative" }} ref={dropdownRef}>

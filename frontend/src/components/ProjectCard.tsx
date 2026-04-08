@@ -11,6 +11,7 @@ import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, 
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 const TechIcon = ({ name, size = 12 }: { name: string, size?: number }) => {
   // Normalize: remove dots (next.js -> nextjs), handle spaces, etc.
@@ -123,6 +124,8 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   // Use prop if provided, otherwise use local state
   const isPinned = isPinnedProp !== undefined ? isPinnedProp : isPinnedLocal;
@@ -497,10 +500,11 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         {/* Interactions */}
         <div style={{ 
           display: "flex", 
-          marginTop: "44px",
-          gap: "var(--post-interact-gap, 96px)", 
+          marginTop: isMobile ? "24px" : "44px",
+          gap: isMobile ? "0" : "var(--post-interact-gap, 96px)", 
           alignItems: "center",
-          justifyContent: "flex-start"
+          justifyContent: isMobile ? "space-between" : "flex-start",
+          paddingRight: isMobile ? "8px" : "0"
         }}>
           { [
             { 

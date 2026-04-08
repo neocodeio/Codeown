@@ -107,7 +107,7 @@ body {
 
 @media (max-width: 767px) {
   :root {
-    --post-padding: 20px 16px;
+    --post-padding: 24px 20px;
     --post-interact-gap: 32px;
   }
 }

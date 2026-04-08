@@ -209,7 +209,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     return (
         <div 
             style={{
-                padding: isMobile ? "20px 16px" : "24px",
+                padding: "var(--post-padding, 24px)",
                 borderBottom: "0.5px solid var(--border-hairline)",
                 backgroundColor: "var(--bg-page)",
                 display: "flex",
@@ -223,7 +223,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 <div style={{
                     position: "absolute",
                     top: "12px",
-                    left: isMobile ? "8px" : "32px",
+                    left: isMobile ? "5px" : "32px",
                     // width: "56px",
                     // height: "calc(100% - 24px)",
                     borderRadius: "100px",
@@ -525,7 +525,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "6px",
-                                    padding: "5px 12px",
+                                    padding: isMobile ? "5px 10px" : "5px 12px",
                                     borderRadius: "100px",
                                     border: "0.5px solid var(--border-hairline)",
                                     backgroundColor: isTypeMenuOpen ? "var(--bg-hover)" : "transparent",
@@ -630,7 +630,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             onClick={handleSubmit}
                             disabled={(!content.trim() && images.length === 0 && !isPoll) || isSubmitting || content.length > charLimit}
                             style={{
-                                padding: "10px 24px",
+                                padding: isMobile ? "8px 18px" : "10px 24px",
                                 backgroundColor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "var(--bg-hover)",
                                 color: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",

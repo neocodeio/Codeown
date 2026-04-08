@@ -13,6 +13,7 @@ import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimpl
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
+import { useWindowSize } from "../hooks/useWindowSize";
 import ShareModal from "./ShareModal";
 import SendToChatModal from "./SendToChatModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
@@ -45,6 +46,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [lightboxImage, setLightboxImage] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   // Use prop if provided, otherwise use local state
   const isPinned = isPinnedProp !== undefined ? isPinnedProp : isPinnedLocal;
@@ -466,10 +469,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         {/* Interaction Tray */}
         <div style={{ 
           display: "flex", 
-          marginTop: "44px",
-          gap: "var(--post-interact-gap, 96px)", 
+          marginTop: isMobile ? "24px" : "44px",
+          gap: isMobile ? "0" : "var(--post-interact-gap, 96px)", 
           alignItems: "center",
-          justifyContent: "flex-start"
+          justifyContent: isMobile ? "space-between" : "flex-start",
+          paddingRight: isMobile ? "8px" : "0"
         }}>
           { [
             { 
