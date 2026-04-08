@@ -353,12 +353,23 @@ export async function ensureUserExists(userId: string, userData?: any) {
 
     console.log("User info extracted:", userInfo);
 
-    // Check if user exists - select only safe columns
-    const { data: existingUser, error: fetchError } = await supabase
-        .from("users")
-        .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
-        .eq("id", userId)
-        .single();
+    // Check if user exists - try full columns, fallback to safe set
+    let existingUser: any = null;
+    let fetchError: any = null;
+
+    const fullCols = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status";
+    const safeCols = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url";
+
+    const fullRes = await supabase.from("users").select(fullCols).eq("id", userId).single();
+    if (fullRes.error && fullRes.error.code !== "PGRST116" && fullRes.error.message?.includes("does not exist")) {
+        console.warn("ensureUserExists: full select failed, falling back:", fullRes.error.message);
+        const safeRes = await supabase.from("users").select(safeCols).eq("id", userId).single();
+        existingUser = safeRes.data;
+        fetchError = safeRes.error;
+    } else {
+        existingUser = fullRes.data;
+        fetchError = fullRes.error;
+    }
 
     if (fetchError && fetchError.code !== "PGRST116") {
         console.error("Error fetching user:", fetchError);
@@ -478,12 +489,33 @@ export async function getUserProfile(req: Request, res: Response) {
         const isId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId) || userId.startsWith("user_");
         const field = isId ? "id" : "username";
 
-        // Fetch user from Supabase - select only safe columns
-        const { data: user, error: userError } = await supabase
+        // Fetch user from Supabase - try full columns first, fallback to safe set
+        let user: any = null;
+        let userError: any = null;
+
+        const fullSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status";
+        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url";
+
+        const fullRes = await supabase
             .from("users")
-            .select("id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status")
+            .select(fullSelect)
             .eq(field, userId)
             .single();
+
+        if (fullRes.error && fullRes.error.code !== "PGRST116" && fullRes.error.message?.includes("does not exist")) {
+            // Column missing — retry with safe column set
+            console.warn("getUserProfile: full select failed, falling back to safe columns:", fullRes.error.message);
+            const safeRes = await supabase
+                .from("users")
+                .select(safeSelect)
+                .eq(field, userId)
+                .single();
+            user = safeRes.data;
+            userError = safeRes.error;
+        } else {
+            user = fullRes.data;
+            userError = fullRes.error;
+        }
 
         if (userError && userError.code !== "PGRST116") {
             console.error("Supabase error:", userError);
@@ -811,14 +843,25 @@ export async function updateUserProfile(req: Request, res: Response) {
         } = req.body;
 
         // Get current user data
-        const { data: currentUser, error: fetchError } = await supabase
+        let currentUser: any = null;
+        const { data: fullUser, error: fetchError } = await supabase
             .from("users")
             .select("username, username_changed_at, is_pro, lemon_subscription_status")
             .eq("id", userId)
             .single();
 
-        if (fetchError && fetchError.code !== "PGRST116") {
+        if (fetchError && fetchError.code !== "PGRST116" && fetchError.message?.includes("does not exist")) {
+            // Column missing, fallback
+            const { data: safeUser } = await supabase
+                .from("users")
+                .select("username, username_changed_at, is_pro")
+                .eq("id", userId)
+                .single();
+            currentUser = safeUser;
+        } else if (fetchError && fetchError.code !== "PGRST116") {
             console.error("Error fetching user:", fetchError);
+        } else {
+            currentUser = fullUser;
         }
 
         // Security: No one can self-verify. Strip verified fields from request.

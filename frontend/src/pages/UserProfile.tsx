@@ -92,7 +92,7 @@ export default function UserProfile() {
 
   // 1. Core Profile Query
   const param = userId || username;
-  const { data: user, isLoading: profileLoading } = useQuery({
+  const { data: user, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useQuery({
     queryKey: ["userProfile", param],
     queryFn: async () => {
       const token = await getToken();
@@ -103,6 +103,7 @@ export default function UserProfile() {
     },
     enabled: !!param,
     staleTime: 5 * 60 * 1000,
+    retry: 2,
   });
 
   const isOwnProfile = currentUser?.id === user?.id;
@@ -170,14 +171,23 @@ export default function UserProfile() {
     </main>
   );
 
-  if (!user) return (
-    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ textAlign: "center" }}>
-        <h2 style={{ fontSize: "24px", color: "var(--text-primary)" }}>User not found</h2>
-        <button onClick={() => navigate("/feed")} style={{ marginTop: "16px", padding: "8px 16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer" }}>Back to Feed</button>
-      </div>
-    </main>
-  );
+  if (!user) {
+    const isServerError = profileError && (profileError as any)?.response?.status >= 500;
+    return (
+      <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center" }}>
+          <h2 style={{ fontSize: "24px", color: "var(--text-primary)" }}>{isServerError ? "Something went wrong" : "User not found"}</h2>
+          {isServerError && <p style={{ fontSize: "14px", color: "var(--text-tertiary)", marginTop: "8px" }}>There was a server error loading this profile.</p>}
+          <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "16px" }}>
+            {isServerError && (
+              <button onClick={() => refetchProfile()} style={{ padding: "8px 16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer", fontWeight: 600, fontSize: "13px" }}>Retry</button>
+            )}
+            <button onClick={() => navigate("/")} style={{ padding: "8px 16px", backgroundColor: isServerError ? "transparent" : "var(--text-primary)", color: isServerError ? "var(--text-primary)" : "var(--bg-page)", border: isServerError ? "1px solid var(--border-hairline)" : "none", borderRadius: "var(--radius-sm)", cursor: "pointer", fontWeight: 600, fontSize: "13px" }}>Back to Feed</button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (isOwnProfile) {
     navigate("/profile", { replace: true });

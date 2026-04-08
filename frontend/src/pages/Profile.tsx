@@ -119,6 +119,7 @@ export default function Profile() {
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
+    retry: 2,
   });
 
   const { posts, fetchUserPosts, loading: postsLoading } = useUserPosts(userId, activeTab === "posts");
