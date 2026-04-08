@@ -14,12 +14,13 @@ export function useClerkAuth() {
     signOut: mockSignOut,
   }), [mockGetToken, mockSignOut]);
 
+  // Always call the hook - React requires this
+  const auth = useAuth();
+
   if (!isClerkEnabled) {
     return mockAuth;
   }
 
-  // Always call the hook - React requires this
-  const auth = useAuth();
   return auth;
 }
 
