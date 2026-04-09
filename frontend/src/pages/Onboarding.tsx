@@ -38,6 +38,7 @@ export default function Onboarding() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
 
@@ -131,8 +132,10 @@ export default function Onboarding() {
       if (user?.id) localStorage.setItem(`onboarding_done_${user.id}`, "true");
       window.dispatchEvent(new Event("profileUpdated"));
       setShowSuccessModal(true);
-    } catch (error) {
-      console.error("Error completing onboarding:", error);
+    } catch (err: any) {
+      console.error("Error completing onboarding:", err);
+      const msg = err?.response?.data?.error || err?.message || "Something went wrong. Please check your connection.";
+      setError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -154,8 +157,10 @@ export default function Onboarding() {
       if (user?.id) localStorage.setItem(`onboarding_done_${user.id}`, "true");
       window.dispatchEvent(new Event("profileUpdated"));
       setShowSuccessModal(true);
-    } catch (error) {
-      console.error("Error skipping onboarding:", error);
+    } catch (err: any) {
+      console.error("Error skipping onboarding:", err);
+      const msg = err?.response?.data?.error || err?.message || "Something went wrong. Please check your connection.";
+      setError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -170,8 +175,14 @@ export default function Onboarding() {
     }
   };
 
-  const next = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
-  const back = () => setStep((s) => Math.max(s - 1, 0));
+  const next = () => {
+    setError(null);
+    setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+  };
+  const back = () => {
+    setError(null);
+    setStep((s) => Math.max(s - 1, 0));
+  };
 
   // --- Progress Dots ---
   const ProgressDots = () => (
@@ -914,11 +925,26 @@ export default function Onboarding() {
           margin: "0 auto",
         }}
       >
-      {renderStep()}
-      <OnboardingSuccessModal 
-        isOpen={showSuccessModal} 
-        onClose={() => navigate("/", { replace: true })} 
-      />
+        {error && (
+          <div style={{
+            margin: "0 40px 24px",
+            padding: "16px",
+            backgroundColor: "rgba(239, 68, 68, 0.1)",
+            border: "0.5px solid rgba(239, 68, 68, 0.2)",
+            borderRadius: "var(--radius-sm)",
+            color: "#ef4444",
+            fontSize: "13px",
+            fontWeight: 500,
+            textAlign: "center"
+          }}>
+            {error}
+          </div>
+        )}
+        {renderStep()}
+        <OnboardingSuccessModal 
+          isOpen={showSuccessModal} 
+          onClose={() => navigate("/", { replace: true })} 
+        />
       </div>
     </div>
   );
