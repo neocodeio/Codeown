@@ -320,7 +320,7 @@ export default function App() {
         }}
       >
         <ErrorBoundary>
-          <Suspense fallback={<PageLoader />} key={location.pathname}>
+          <Suspense fallback={<PageLoader />}>
             <Routes>
                 <Route path="/" element={<Feed />} />
                 <Route path="/search" element={<Search />} />
