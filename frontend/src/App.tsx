@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
 import MessageNotificationToast from "./components/MessageNotificationToast";
+import { ScrollToTop } from "./components/ScrollToTop";
 import { useWindowSize } from "./hooks/useWindowSize";
 import { useClerkUser } from "./hooks/useClerkUser";
 import { useClerkAuth } from "./hooks/useClerkAuth";
@@ -294,13 +295,15 @@ export default function App() {
       backgroundColor: "var(--bg-page)",
       justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start"
     }}>
+      <ScrollToTop />
       {shouldShowNavbar && <Navbar />}
       <div 
         id="main-content"
+        key={location.pathname}
         style={{
           flex: (isStandardPage && isDesktop) ? "0 0 1020px" : 1,
           width: (isStandardPage && isDesktop) ? "1020px" : "100%",
-          maxWidth: "100%",
+          maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%",
           position: "relative",
           minWidth: 0,
           paddingTop: isMobile && shouldShowNavbar ? "64px" : "0px",
@@ -308,9 +311,8 @@ export default function App() {
         }}
       >
         <ErrorBoundary>
-          <div>
-            <Suspense fallback={<PageLoader />}>
-              <Routes location={location}>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
                 <Route path="/" element={<Feed />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostDetail />} />
@@ -340,10 +342,9 @@ export default function App() {
                 <Route path="/startup/:id/edit" element={<StartupForm isEditing={true} />} />
                 <Route path="/ship" element={<ShipWeek />} />
                 <Route path="/:username" element={<UserProfile />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </div>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </ErrorBoundary>
         {!isAuthRoute && 
          location.pathname !== "/messages" && 
