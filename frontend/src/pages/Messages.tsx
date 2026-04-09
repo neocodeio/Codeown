@@ -543,17 +543,20 @@ export default function Messages() {
     enabled: !!activeConvo && activeConvo.id !== 0,
   });
 
+  const hasAttemptedRef = useRef(false);
+
   // Sync state with React Query data
   useEffect(() => {
     if (qConversations.length > 0) {
       setConversations(qConversations);
       
       // Auto-select conversation from URL
-      if (targetUserId && !activeConvo) {
+      if (targetUserId && !activeConvo && !hasAttemptedRef.current) {
         const existing = qConversations.find((c: Conversation) => c.partner.id === targetUserId);
         if (existing) {
           setActiveConvo(existing);
         } else {
+          hasAttemptedRef.current = true;
           startPlaceholderConvo(targetUserId);
         }
       }
@@ -564,8 +567,10 @@ export default function Messages() {
     if (qMessages.length > 0) {
       setMessages(qMessages);
       setTimeout(() => scrollToBottom(true), 100);
-    } else if (activeConvo?.id !== 0) {
-      setMessages([]);
+    } else if (activeConvo && activeConvo.id !== 0) {
+      if (messages.length > 0) setMessages([]);
+    } else if (!activeConvo) {
+      if (messages.length > 0) setMessages([]);
     }
   }, [qMessages, activeConvo?.id]);
 
