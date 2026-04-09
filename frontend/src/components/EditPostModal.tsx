@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { faImage, faPaperclip } from "@fortawesome/free-solid-svg-icons";
 import { normalizeLanguage } from "../utils/language";
 import { validateImageSize } from "../constants/upload";
 
@@ -17,6 +17,7 @@ interface EditPostModalProps {
     content: string;
 
     images?: string[] | null;
+    attachments?: { name: string; url?: string; data?: string; size: number }[] | null;
     language?: "en" | "ar";
   };
 }
@@ -26,6 +27,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
   const [content, setContent] = useState("");
 
   const [images, setImages] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<{ name: string; url?: string; data?: string; size: number }[]>([]);
   const [language, setLanguage] = useState<"en" | "ar">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
@@ -37,6 +39,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
       setContent(post.content || "");
 
       setImages(post.images || []);
+      setAttachments(post.attachments || []);
       setLanguage(normalizeLanguage(post.language));
     }
   }, [isOpen, post]);
@@ -107,6 +110,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
         title: title.trim(),
         content: content.trim(),
         images: images.length > 0 ? images : null,
+        attachments: attachments.length > 0 ? attachments : null,
         language: normalizeLanguage(language),
       };
 
@@ -415,6 +419,60 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                         </button>
                       </div>
                     ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Attachments Upload Section */}
+              <div>
+                <label style={{
+                  display: "block",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#1a1a1a",
+                  marginBottom: "8px",
+                }}>
+                  Attachments
+                </label>
+                {attachments.length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    {attachments.map((file, index) => (
+                      <div 
+                        key={index} 
+                        style={{ 
+                          display: "flex", 
+                          alignItems: "center", 
+                          justifyContent: "space-between", 
+                          padding: "10px 14px", 
+                          backgroundColor: "#f8fafc", 
+                          borderRadius: "var(--radius-md)", 
+                          border: "1px solid #e4e7eb" 
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                          <FontAwesomeIcon icon={faPaperclip} style={{ color: "#64748b" }} />
+                          <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                            <span style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {file.name}
+                            </span>
+                            <span style={{ fontSize: "11px", color: "#64748b" }}>
+                              {(file.size / 1024).toFixed(1)} KB
+                            </span>
+                          </div>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => setAttachments([])} 
+                          style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "4px" }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: "13px", color: "#64748b", fontStyle: "italic" }}>
+                    No file attached. Use the Create Post modal to add a file.
                   </div>
                 )}
               </div>

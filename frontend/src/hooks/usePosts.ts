@@ -13,7 +13,7 @@ export interface Post {
   user_id: string;
   created_at: string;
   images?: string[] | null;
-  attachments?: { name: string; url: string; size: number }[] | null;
+  attachments?: { name: string; url?: string; data?: string; size: number }[] | null;
   tags?: string[] | null;
   like_count?: number;
   comment_count?: number;

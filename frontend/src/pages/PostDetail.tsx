@@ -24,7 +24,9 @@ import {
   BookmarkSimple,
   ChartBar,
   PaperPlaneTilt,
-  CheckCircle
+  CheckCircle,
+  DownloadSimple,
+  Paperclip
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
@@ -37,6 +39,7 @@ interface Post {
   user_id: string;
   created_at: string;
   images?: string[] | null;
+  attachments?: { name: string; url?: string; data?: string; size: number }[] | null;
   tags?: string[] | null;
   like_count?: number;
   isLiked?: boolean;
@@ -201,6 +204,17 @@ export default function PostDetail() {
     }
   };
 
+  const handleDownload = (e: React.MouseEvent, fileSource: string | undefined, fileName: string) => {
+    e.stopPropagation();
+    if (!fileSource) return;
+    const link = document.createElement("a");
+    link.href = fileSource;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   function buildTree(list: CommentWithMeta[]): CommentWithMeta[] {
     const map = new Map<number | string, CommentWithMeta & { children: CommentWithMeta[] }>();
     list.forEach(c => map.set(c.id, { ...c, children: [] }));
@@ -343,6 +357,82 @@ export default function PostDetail() {
             {post.images && post.images.length > 0 && (
               <div style={{ marginBottom: "24px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
                 <ImageSlider images={post.images} onImageClick={handleImageClick} />
+              </div>
+            )}
+
+            {/* Attachments Section */}
+            {post.attachments && post.attachments.length > 0 && (
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+                marginBottom: "32px"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                  <DownloadSimple size={18} weight="bold" color="var(--text-primary)" />
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>Downloads</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))", gap: "10px" }}>
+                  {post.attachments.map((file, idx) => (
+                    <div
+                      key={idx}
+                      onClick={(e) => handleDownload(e, file.url || file.data, file.name)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "12px 16px",
+                        backgroundColor: "var(--bg-hover)",
+                        borderRadius: "14px",
+                        border: "1px solid var(--border-hairline)",
+                        cursor: "pointer",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "var(--text-primary)";
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "var(--border-hairline)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
+                        <div style={{
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "10px",
+                          backgroundColor: "var(--bg-page)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "0.5px solid var(--border-hairline)",
+                          flexShrink: 0
+                        }}>
+                          <Paperclip size={18} color="var(--text-primary)" />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                          <span style={{ 
+                            fontSize: "13px", 
+                            fontWeight: 700, 
+                            color: "var(--text-primary)", 
+                            whiteSpace: "nowrap", 
+                            overflow: "hidden", 
+                            textOverflow: "ellipsis" 
+                          }}>
+                            {file.name}
+                          </span>
+                          <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                            {(file.size / 1024).toFixed(1)} KB
+                          </span>
+                        </div>
+                      </div>
+                      <DownloadSimple size={20} color="var(--text-tertiary)" weight="thin" />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

@@ -205,10 +205,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
     navigate(`/post/${post.id}`);
   };
 
-  const handleDownload = (e: React.MouseEvent, url: string, fileName: string) => {
+  const handleDownload = (e: React.MouseEvent, fileSource: string | undefined, fileName: string) => {
     e.stopPropagation();
+    if (!fileSource) return;
     const link = document.createElement("a");
-    link.href = url;
+    link.href = fileSource;
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
@@ -401,7 +402,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               {post.attachments.map((file, idx) => (
                 <div
                   key={idx}
-                  onClick={(e) => handleDownload(e, file.url, file.name)}
+                  onClick={(e) => handleDownload(e, file.url || file.data, file.name)}
                   style={{
                     display: "flex",
                     alignItems: "center",
