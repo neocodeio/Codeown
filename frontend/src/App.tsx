@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 // import { useTheme } from "./hooks/useTheme";
 import Navbar from "./components/Navbar";
@@ -72,6 +72,7 @@ const PageLoader = () => (
 );
 
 export default function App() {
+  const isCheckingRef = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
@@ -220,55 +221,55 @@ export default function App() {
   useEffect(() => {
     const checkOnboarding = async () => {
       // Don't check if we don't have user info yet
-      if (!userLoaded || !isSignedIn || !user?.id) {
-        return;
-      }
-
-      // Skip check if already marked as completed locally
-      // This is a fast path to avoid API calls on every session
-      const localFlag = localStorage.getItem(`onboarding_done_${user.id}`);
-      if (localFlag === "true") {
-        return;
-      }
-
-      // Don't redirect if we are already on onboarding or auth pages
-      // This prevents the infinite redirect loop
-      const path = location.pathname.split("?")[0].replace(/\/$/, "");
-      if (
-        path === "/onboarding" ||
-        path === "/sign-in" ||
-        path === "/sign-up" ||
-        path === "/forgot-password" ||
-        path === "/about-us"
-      ) {
+      if (!userLoaded || !isSignedIn || !user?.id || isCheckingRef.current) {
         return;
       }
 
       try {
+        isCheckingRef.current = true;
+        
+        // Clean up path for comparison
+        const path = location.pathname.split("?")[0].replace(/\/$/, "");
+        
+        // Don't check on pages that are part of the onboarding/auth flow
+        if (
+          path === "/onboarding" ||
+          path === "/sign-in" ||
+          path === "/sign-up" ||
+          path === "/forgot-password" ||
+          path === "/about-us" ||
+          path === "/privacy" ||
+          path === "/terms"
+        ) {
+          return;
+        }
+
+        // Check local storage first to avoid unnecessary API calls
+        const localStatus = localStorage.getItem(`onboarding_done_${user.id}`);
+        if (localStatus === "true") return;
+
         const token = await getToken();
-        // Use the same endpoint as OnboardingPage to ensure consistency
+        if (!token) return;
+
         const res = await api.get(`/users/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (res.data) {
-          if (res.data.onboarding_completed === true) {
+          const isCompleted = res.data.onboarding_completed;
+          if (isCompleted) {
             localStorage.setItem(`onboarding_done_${user.id}`, "true");
           } else {
             // Only navigate if we are NOT already there
-            if (location.pathname !== "/onboarding") {
+            if (path !== "/onboarding") {
               navigate("/onboarding", { replace: true });
             }
           }
         }
-      } catch (err: any) {
-        // If user not found (404) or other specific error, consider them not onboarded
-        if (err.response?.status === 404) {
-          if (location.pathname !== "/onboarding") {
-            navigate("/onboarding", { replace: true });
-          }
-        }
-        console.error("Onboarding check error:", err);
+      } catch (error) {
+        console.error("Onboarding check failed:", error);
+      } finally {
+        isCheckingRef.current = false;
       }
     };
 
@@ -320,7 +321,7 @@ export default function App() {
         }}
       >
         <ErrorBoundary>
-          <Suspense fallback={<PageLoader />}>
+          <Suspense fallback={<PageLoader />} key={location.pathname}>
             <Routes>
                 <Route path="/" element={<Feed />} />
                 <Route path="/search" element={<Search />} />
