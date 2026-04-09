@@ -216,60 +216,69 @@ export default function App() {
     };
   }, [getToken]);
 
-  // Check onboarding status for signed-in users
+  // Onboarding check - optimized to run only on auth state change or mount
   useEffect(() => {
     const checkOnboarding = async () => {
+      // Don't check if we don't have user info yet
       if (!userLoaded || !isSignedIn || !user?.id) {
         return;
       }
 
-      // Don't redirect if already on onboarding or auth pages
-      if (
-        location.pathname === "/onboarding" ||
-        location.pathname.startsWith("/sign-in") ||
-        location.pathname.startsWith("/sign-up") ||
-        location.pathname.startsWith("/forgot-password")
-      ) {
-        return;
-      }
-
       // Skip check if already marked as completed locally
+      // This is a fast path to avoid API calls on every session
       const localFlag = localStorage.getItem(`onboarding_done_${user.id}`);
       if (localFlag === "true") {
         return;
       }
 
+      // Don't redirect if we are already on onboarding or auth pages
+      // This prevents the infinite redirect loop
+      const path = location.pathname.split("?")[0].replace(/\/$/, "");
+      if (
+        path === "/onboarding" ||
+        path === "/sign-in" ||
+        path === "/sign-up" ||
+        path === "/forgot-password" ||
+        path === "/about-us"
+      ) {
+        return;
+      }
+
       try {
         const token = await getToken();
-        if (!token) return;
-
+        // Use the same endpoint as OnboardingPage to ensure consistency
         const res = await api.get(`/users/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        
+
         if (res.data) {
           if (res.data.onboarding_completed === true) {
             localStorage.setItem(`onboarding_done_${user.id}`, "true");
           } else {
-            navigate("/onboarding", { replace: true });
+            // Only navigate if we are NOT already there
+            if (location.pathname !== "/onboarding") {
+              navigate("/onboarding", { replace: true });
+            }
           }
         }
       } catch (err: any) {
-        // If user not found (404), they likely haven't started onboarding yet
+        // If user not found (404) or other specific error, consider them not onboarded
         if (err.response?.status === 404) {
-          navigate("/onboarding", { replace: true });
+          if (location.pathname !== "/onboarding") {
+            navigate("/onboarding", { replace: true });
+          }
         }
+        console.error("Onboarding check error:", err);
       }
     };
 
     checkOnboarding();
-  }, [userLoaded, isSignedIn, user?.id, location.pathname]);
+  }, [userLoaded, isSignedIn, user?.id, navigate]); // Removed location.pathname to prevent loop
 
   const isAuthRoute =
-    location.pathname.startsWith("/sign-in") ||
-    location.pathname.startsWith("/sign-up") ||
-    location.pathname.startsWith("/forgot-password") ||
-    location.pathname.startsWith("/portfolio") ||
+    location.pathname === "/sign-in" ||
+    location.pathname === "/sign-up" ||
+    location.pathname === "/forgot-password" ||
     location.pathname === "/onboarding";
 
   const isStandardPage = 
@@ -281,7 +290,7 @@ export default function App() {
     location.pathname.startsWith("/post/") ||
     location.pathname.startsWith("/project/") ||
     location.pathname.startsWith("/user/") || 
-    (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup"].includes(location.pathname.split("/")[1]));
+    (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup", "forgot-password", "sign-in", "sign-up"].includes(location.pathname.split("/")[1]));
 
   const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
 
@@ -311,7 +320,7 @@ export default function App() {
         }}
       >
         <ErrorBoundary>
-          <Suspense fallback={<PageLoader />} key={location.pathname}>
+          <Suspense fallback={<PageLoader />}>
             <Routes location={location}>
                 <Route path="/" element={<Feed />} />
                 <Route path="/search" element={<Search />} />

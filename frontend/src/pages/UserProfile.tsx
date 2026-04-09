@@ -158,6 +158,12 @@ export default function UserProfile() {
     } catch (e) { console.error(e); }
     finally { setFollowLoading(false); }
   };
+  // 4. Redirect if it's the current user's own profile
+  useEffect(() => {
+    if (user && currentUser && user.id === currentUser.id) {
+      navigate("/profile", { replace: true });
+    }
+  }, [user?.id, currentUser?.id, navigate]);
 
   if (profileLoading) return (
     <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
@@ -187,11 +193,6 @@ export default function UserProfile() {
         </div>
       </main>
     );
-  }
-
-  if (isOwnProfile) {
-    navigate("/profile", { replace: true });
-    return null;
   }
 
   const avatarUrl = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "U")}&background=212121&color=ffffff&bold=true`;
