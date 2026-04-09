@@ -320,8 +320,8 @@ export default function App() {
         }}
       >
         <ErrorBoundary>
-          <Suspense fallback={<PageLoader />}>
-            <Routes location={location}>
+          <Suspense fallback={<PageLoader />} key={location.pathname}>
+            <Routes>
                 <Route path="/" element={<Feed />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostDetail />} />
