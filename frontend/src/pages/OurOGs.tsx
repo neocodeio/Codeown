@@ -34,17 +34,16 @@ export default function OurOGs() {
         const fetchOGs = async () => {
             try {
                 const res = await api.get("/users/ogs");
-                const excludedUsernames = ["aminceo", "jj.99dev", "max1999.d"];
-                const filtered = res.data.filter((u: OGUser) => !excludedUsernames.includes(u.username));
+                const allUsers = res.data;
                 
                 // Reorder: Move amin.ceo to the front
-                const aminIndex = filtered.findIndex((u: OGUser) => u.username === "amin.ceo");
+                const aminIndex = allUsers.findIndex((u: OGUser) => u.username === "amin.ceo");
                 if (aminIndex !== -1) {
-                    const amin = filtered.splice(aminIndex, 1)[0];
-                    filtered.unshift(amin);
+                    const amin = allUsers.splice(aminIndex, 1)[0];
+                    allUsers.unshift(amin);
                 }
                 
-                setUsers(filtered);
+                setUsers(allUsers);
             } catch (err) {
                 console.error("Failed to fetch OGs:", err);
             } finally {
