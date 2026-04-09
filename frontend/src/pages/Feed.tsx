@@ -356,7 +356,7 @@ export default function Feed() {
                                         color: "var(--text-primary)",
                                         letterSpacing: "-0.01em"
                                     }}>
-                                        ONLY 2 OG SEATS LEFT!
+                                        ONLY 1 OG SEATS LEFT!
                                     </span>
                                 </div>
                                 <button style={{
