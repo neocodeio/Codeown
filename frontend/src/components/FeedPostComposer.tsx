@@ -4,10 +4,10 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Image as ImageIcon, ListPlus, PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Bug, Sparkle, Trophy, Question, Lightbulb } from "phosphor-react";
+import { Image as ImageIcon, ListPlus, PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Bug, Sparkle, Trophy, Question, Lightbulb, Paperclip, FilePlus, X } from "phosphor-react";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
-import { validateImageSize } from "../constants/upload";
+import { validateImageSize, validateFileSize } from "../constants/upload";
 import AvailabilityBadge from "./AvailabilityBadge";
 import { compressImage } from "../utils/image";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
@@ -21,12 +21,14 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const isMobile = width < 768;
     const [content, setContent] = useState("");
     const [images, setImages] = useState<string[]>([]);
+    const [attachments, setAttachments] = useState<{ name: string; type: string; size: number; data: string }[]>([]);
     const [isPoll, setIsPoll] = useState(false);
     const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
     const [postType, setPostType] = useState("Update");
     const [isTypeMenuOpen, setIsTypeMenuOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const attachmentInputRef = useRef<HTMLInputElement>(null);
     const typeMenuRef = useRef<HTMLDivElement>(null);
     const { getToken, isLoaded } = useClerkAuth();
     const { user, isSignedIn } = useClerkUser();
@@ -121,9 +123,41 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 reader.readAsDataURL(file);
             }
         });
-
-        // Reset input value
         e.target.value = "";
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+
+        if (attachments.length >= 1) {
+            alert("You can only upload one file per post");
+            return;
+        }
+
+        const file = files[0];
+        const sizeError = validateFileSize(file);
+        if (sizeError) {
+            alert(sizeError);
+            e.target.value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setAttachments([{
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                data: reader.result as string
+            }]);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = "";
+    };
+
+    const removeAttachment = (index: number) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
     const removeImage = (index: number) => {
@@ -182,6 +216,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             await api.post("/posts", {
                 content: content.trim(),
                 images: images.length > 0 ? images : null,
+                attachments: attachments.length > 0 ? attachments : null,
                 poll: isPoll ? { options: pollOptions.filter(o => o.trim() !== "") } : null,
                 language: "en",
                 post_type: postType
@@ -193,6 +228,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             
             setContent("");
             setImages([]);
+            setAttachments([]);
             setIsPoll(false);
             setPollOptions(["", ""]);
             onCreated();
@@ -349,7 +385,44 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.6)";
                                     }}
                                 >
-                                    ✕
+                                    <X size={14} weight="bold" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {attachments.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+                        {attachments.map((file, index) => (
+                            <div 
+                                key={index} 
+                                style={{ 
+                                    display: "flex", 
+                                    alignItems: "center", 
+                                    justifyContent: "space-between",
+                                    padding: "10px 14px", 
+                                    backgroundColor: "var(--bg-hover)", 
+                                    borderRadius: "var(--radius-sm)",
+                                    border: "0.5px solid var(--border-hairline)",
+                                }}
+                            >
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                                    <Paperclip size={18} style={{ color: "var(--text-tertiary)", flexShrink: 0 }} />
+                                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                                        <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                            {file.name}
+                                        </span>
+                                        <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
+                                            {(file.size / 1024).toFixed(1)} KB
+                                        </span>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => removeAttachment(index)}
+                                    style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}
+                                >
+                                    <X size={16} weight="bold" />
                                 </button>
                             </div>
                         ))}
@@ -515,6 +588,42 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             <ListPlus size={20} weight="regular" />
                         </button>
 
+                        <input
+                            type="file"
+                            multiple
+                            ref={attachmentInputRef}
+                            style={{ display: "none" }}
+                            onChange={handleFileUpload}
+                        />
+                        {attachments.length === 0 && (
+                            <button
+                                onClick={() => attachmentInputRef.current?.click()}
+                                style={{
+                                    background: "none",
+                                    border: "none",
+                                    color: "var(--text-tertiary)",
+                                    cursor: "pointer",
+                                    padding: "8px",
+                                    borderRadius: "100px",
+                                    transition: "all 0.2s",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.color = "var(--text-primary)";
+                                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.color = "var(--text-tertiary)";
+                                    e.currentTarget.style.backgroundColor = "transparent";
+                                }}
+                                title="Attach File"
+                            >
+                                <FilePlus size={20} weight="regular" />
+                            </button>
+                        )}
+
                         <div style={{ height: "16px", width: "1px", backgroundColor: "var(--border-hairline)", margin: "0 4px", opacity: 0.5 }} />
 
                         {/* Post Type Dropdown */}
@@ -628,20 +737,20 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         </span>
                         <button
                             onClick={handleSubmit}
-                            disabled={(!content.trim() && images.length === 0 && !isPoll) || isSubmitting || content.length > charLimit}
+                            disabled={(!content.trim() && images.length === 0 && attachments.length === 0 && !isPoll) || isSubmitting || content.length > charLimit}
                             style={{
                                 padding: isMobile ? "8px 18px" : "10px 24px",
-                                backgroundColor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "var(--bg-hover)",
-                                color: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
+                                backgroundColor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "var(--bg-hover)",
+                                color: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
                                 borderRadius: "100px",
                                 fontWeight: "700",
                                 fontSize: "14px",
-                                cursor: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
+                                cursor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
                                 transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                                 transform: isSubmitting ? "scale(0.98)" : "scale(1)",
                                 opacity: isSubmitting ? 0.8 : 1,
-                                boxShadow: (content.trim() || images.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "0 4px 12px rgba(0,0,0,0.1)" : "none"
+                                boxShadow: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "0 4px 12px rgba(0,0,0,0.1)" : "none"
                             }}
                             onMouseEnter={(e) => {
                                 if ((content.trim() || images.length > 0 || isPoll) && !isSubmitting) {

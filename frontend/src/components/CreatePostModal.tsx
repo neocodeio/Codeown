@@ -11,12 +11,13 @@ import {
   faHeading,
   faQuoteRight,
   faListUl,
-  faLink
+  faLink,
+  faPaperclip
 } from "@fortawesome/free-solid-svg-icons";
 import MentionInput from "./MentionInput";
 import ContentRenderer from "./ContentRenderer";
 import { normalizeLanguage } from "../utils/language";
-import { validateImageSize } from "../constants/upload";
+import { validateImageSize, validateFileSize } from "../constants/upload";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<{ name: string; type: string; size: number; data: string }[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [language, setLanguage] = useState<"en" | "ar">("en");
@@ -43,6 +45,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
       setTitle("");
       setContent("");
       setImages([]);
+      setAttachments([]);
       setLanguage("en");
       setIsSubmitting(false);
       setActiveTab("write");
@@ -161,6 +164,39 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
     });
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    if (attachments.length >= 1) {
+      alert("You can only upload one file per post");
+      return;
+    }
+
+    const file = files[0];
+    const sizeError = validateFileSize(file);
+    if (sizeError) {
+      alert(sizeError);
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAttachments([{
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        data: reader.result as string
+      }]);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
@@ -178,6 +214,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
         title: title.trim(),
         content: content.trim(),
         images: images.length > 0 ? images : null,
+        attachments: attachments.length > 0 ? attachments : null,
         tags: allTags.length > 0 ? allTags : null,
         language: normalizeLanguage(language),
       };
@@ -333,6 +370,13 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
                 <button className="toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><FontAwesomeIcon icon={faLink} /></button>
                 <button className="toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><FontAwesomeIcon icon={faCode} /></button>
                 <button className="toolbar-btn" title="Code Block" onClick={() => insertMarkdown("\n```javascript\n", "\n```\n")}><FontAwesomeIcon icon={faCode} style={{ fontSize: "12px" }} /></button>
+                <div className="divider" style={{ width: "1px", height: "18px", backgroundColor: "var(--border-hairline)", margin: "0 4px" }} />
+                {attachments.length === 0 && (
+                  <label className="toolbar-btn" title="Attach file" style={{ cursor: "pointer" }}>
+                    <FontAwesomeIcon icon={faPaperclip} />
+                    <input type="file" onChange={handleFileUpload} style={{ display: "none" }} />
+                  </label>
+                )}
               </div>
 
               {/* Textarea */}
@@ -367,6 +411,25 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
             </label>
           </div>
+
+          {/* Attachments */}
+          {attachments.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-tertiary)" }}>Attachments ({attachments.length})</label>
+              {attachments.map((file, idx) => (
+                <div key={idx} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                    <FontAwesomeIcon icon={faPaperclip} style={{ color: "var(--text-tertiary)" }} />
+                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                      <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{file.name}</span>
+                      <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>{(file.size / 1024).toFixed(1)} KB</span>
+                    </div>
+                  </div>
+                  <button onClick={() => removeAttachment(idx)} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}>&times;</button>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Tags Section */}
           <div className="tags-section" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -450,7 +513,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           <button onClick={onClose} style={{ padding: "10px 20px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", background: "transparent", color: "var(--text-secondary)", fontWeight: 600, fontSize: "13px", cursor: "pointer", transition: "all 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}>Cancel</button>
           <button
             onClick={submit}
-            disabled={!content.trim() || isSubmitting || content.length > charLimit}
+            disabled={(!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit}
             style={{
               padding: "10px 24px",
               borderRadius: "var(--radius-sm)",
@@ -459,8 +522,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               color: "var(--bg-page)",
               fontWeight: 700,
               fontSize: "13px",
-              cursor: (!content.trim() || isSubmitting || content.length > charLimit) ? "not-allowed" : "pointer",
-              opacity: (!content.trim() || isSubmitting || content.length > charLimit) ? 0.3 : 1,
+              cursor: (!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit ? "not-allowed" : "pointer",
+              opacity: (!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit ? 0.3 : 1,
               transition: "all 0.15s ease"
             }}
           >
