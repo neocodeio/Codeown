@@ -394,10 +394,10 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             gap: "8px",
             marginBottom: "24px"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+            {/* <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
               <DownloadSimple size={18} weight="bold" color="var(--text-primary)" />
               <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>Downloads</span>
-            </div>
+            </div> */}
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))", gap: "10px" }}>
               {post.attachments.map((file, idx) => (
                 <div
