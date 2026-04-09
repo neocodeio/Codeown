@@ -43,15 +43,15 @@ export async function isUserActive(userId: string): Promise<boolean> {
     return false;
 }
 
-export type NotificationType = 'like' | 'follow' | 'comment' | 'message' | 'mention' | 'reply' | 'cofounder_request' | 'save' | 'startup_upvote' | 'ship_week_launch';
+export type NotificationType = 'like' | 'follow' | 'comment' | 'message' | 'mention' | 'reply' | 'cofounder_request' | 'save' | 'startup_upvote' | 'ship_week_launch' | 'profile_view';
 
 interface SendNotificationParams {
     userId: string; // Recipient
     actorId: string; // Doer
     type: NotificationType;
-    postId?: number;
-    projectId?: number;
-    commentId?: number;
+    postId?: number | undefined;
+    projectId?: number | undefined;
+    commentId?: number | undefined;
     startupId?: string | undefined;
     data?: any; // Extra info for email
 }

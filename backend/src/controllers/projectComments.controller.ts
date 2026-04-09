@@ -46,7 +46,7 @@ export async function getProjectComments(req: Request, res: Response) {
     }));
 
     return res.json(commentsWithMeta);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in getProjectComments:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
@@ -98,10 +98,10 @@ export async function createProjectComment(req: Request, res: Response) {
           userId: parentCommentOwnerId,
           actorId: userId,
           type: "reply",
-          projectId: parseInt(id as string),
-          commentId: comment.id
+          projectId: parseInt(id as string) || undefined,
+          commentId: comment.id || undefined
         });
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error creating project reply notification:", err);
       }
     }
@@ -113,10 +113,10 @@ export async function createProjectComment(req: Request, res: Response) {
           userId: String(project.user_id),
           actorId: userId,
           type: "comment",
-          projectId: parseInt(id as string),
-          commentId: comment.id
+          projectId: parseInt(id as string) || undefined,
+          commentId: comment.id || undefined
         });
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error creating project comment notification:", err);
       }
     }
@@ -141,17 +141,17 @@ export async function createProjectComment(req: Request, res: Response) {
                   userId: u.id,
                   actorId: userId,
                   type: "mention",
-                  projectId: parseInt(id as string),
-                  commentId: comment.id
+                  projectId: parseInt(id as string) || undefined,
+                  commentId: comment.id || undefined
                 });
-              } catch (err) {
+              } catch (err: any) {
                 console.error("Error creating project mention notification:", err);
               }
             }
           }
         }
       }
-    } catch (mentionError) {
+    } catch (mentionError: any) {
       console.error("Error processing project comment mentions:", mentionError);
     }
 
@@ -164,7 +164,7 @@ export async function createProjectComment(req: Request, res: Response) {
     emitUpdate("project_commented", { projectId: parseInt(id as string), comment: fullComment, commentCount: count || 0 });
 
     return res.status(201).json(fullComment);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in createProjectComment:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
@@ -187,7 +187,7 @@ export async function updateProjectComment(req: Request, res: Response) {
     if (error) return res.status(404).json({ error: "Not found or unauthorized" });
     const { data: user } = await supabase.from("users").select("id, name, avatar_url, username").eq("id", userId).single();
     return res.json({ ...comment, user: user || { id: userId, name: "User" } });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -206,7 +206,7 @@ export async function deleteProjectComment(req: Request, res: Response) {
     await supabase.from("projects").update({ comment_count: count || 0 }).eq("id", comment.project_id);
 
     return res.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }

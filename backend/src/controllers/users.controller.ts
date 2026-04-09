@@ -15,11 +15,28 @@ import { getOrCreateConversation } from "./messages.controller.js";
 async function internalUpdateStreak(userId: string): Promise<number | null> {
     try {
         // Fetch current streak info
-        const { data: userData, error: fetchError } = await supabase
+        let userData: any = null;
+        let fetchError: any = null;
+
+        const initialRes = await supabase
             .from("users")
             .select("streak_count, last_active_at")
             .eq("id", userId)
             .single();
+
+        if (initialRes.error && initialRes.error.message?.includes("does not exist")) {
+            // Fallback if last_active_at is missing
+            const fallbackRes = await supabase
+                .from("users")
+                .select("streak_count")
+                .eq("id", userId)
+                .single();
+            userData = fallbackRes.data;
+            fetchError = fallbackRes.error;
+        } else {
+            userData = initialRes.data;
+            fetchError = initialRes.error;
+        }
 
         if (fetchError || !userData) return null;
 
@@ -468,7 +485,8 @@ export async function completeOnboarding(req: Request, res: Response) {
         if (error) return res.status(500).json({ error: "Failed to complete onboarding" });
 
         return res.json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
+        console.error("[completeOnboarding] Error:", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
@@ -932,13 +950,39 @@ export async function updateUserProfile(req: Request, res: Response) {
             updateData.username_changed_at = new Date().toISOString();
         }
 
-        // Update in Supabase
-        const { data: updatedUser, error: updateError } = await supabase
+        // Update in Supabase - try with all fields, fallback if columns missing
+        let updatedUser: any = null;
+        let updateError: any = null;
+
+        const supabaseRes = await supabase
             .from("users")
             .update(updateData)
             .eq("id", userId)
             .select()
             .single();
+
+        if (supabaseRes.error && supabaseRes.error.message?.includes("does not exist")) {
+            console.warn("updateUserProfile: update failed due to missing columns, retrying with safe set");
+            // Remove problematic columns and retry
+            const safeUpdateData = { ...updateData };
+            delete safeUpdateData.instagram_url;
+            delete safeUpdateData.lemon_customer_id;
+            delete safeUpdateData.lemon_subscription_id;
+            delete safeUpdateData.lemon_subscription_status;
+
+            const retryRes = await supabase
+                .from("users")
+                .update(safeUpdateData)
+                .eq("id", userId)
+                .select()
+                .single();
+            
+            updatedUser = retryRes.data;
+            updateError = retryRes.error;
+        } else {
+            updatedUser = supabaseRes.data;
+            updateError = supabaseRes.error;
+        }
 
         if (updateError) {
             console.error("Error updating user:", updateError);
@@ -965,7 +1009,7 @@ export async function updateUserProfile(req: Request, res: Response) {
                 if (hasUpdates && userId) {
                     await clerkClient.users.updateUser(userId as string, updateClerkData);
                 }
-            } catch (clerkError) {
+            } catch (clerkError: any) {
                 console.error("Error updating Clerk user:", clerkError);
                 // Continue even if Clerk update fails
             }
@@ -1232,7 +1276,7 @@ export function trackActiveSession(req: Request, res: Response) {
         }
 
         return res.status(200).json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
         console.error("[trackActiveSession] Error:", error);
         return res.status(500).json({ error: "Failed to track session" });
     }
@@ -1256,7 +1300,7 @@ export function getActiveCount(req: Request, res: Response) {
 
         // Return realistic count (ensure at least 1 if the current user is checking)
         return res.json({ count: Math.max(count, 1) });
-    } catch (error) {
+    } catch (error: any) {
         console.error("[getActiveCount] Error:", error);
         return res.status(200).json({ count: 1 }); // Fallback
     }
@@ -1278,7 +1322,7 @@ export async function getOGUsers(req: Request, res: Response) {
         }
 
         return res.json(users);
-    } catch (error) {
+    } catch (error: any) {
         console.error("[getOGUsers] Unexpected error:", error);
         return res.status(500).json({ error: "Internal server error" });
     }
@@ -1306,7 +1350,6 @@ export async function getDashboardStats(req: Request, res: Response) {
             postComments,
             projectComments,
             followers,
-            profileViews,
             userStreak
         ] = await Promise.all([
             // 1. Posts count
@@ -1323,11 +1366,22 @@ export async function getDashboardStats(req: Request, res: Response) {
             supabase.from("project_comments").select("*", { count: "exact", head: true }).eq("user_id", userId),
             // 7. Followers
             supabase.from("follows").select("*", { count: "exact", head: true }).eq("following_id", userId),
-            // 8. Profile Views (Analytics)
-            supabase.from("analytics_events").select("*", { count: "exact", head: true }).eq("target_user_id", userId).eq("event_type", "profile_view"),
-            // 9. Streak (direct from user)
+            // 8. Streak (direct from user)
             supabase.from("users").select("streak_count").eq("id", userId).single()
         ]);
+
+        // 9. Profile Views (Analytics) - Separated and defensive
+        let profileViewsCount = 0;
+        try {
+            const { count } = await supabase
+                .from("analytics_events")
+                .select("*", { count: "exact", head: true })
+                .eq("target_user_id", userId)
+                .eq("event_type", "profile_view");
+            profileViewsCount = count || 0;
+        } catch (err) {
+            console.error("[getDashboardStats] Analytics fetch failed:", err);
+        }
 
         // Aggregate sums
         const totalPostLikes = (postLikes.data || []).reduce((acc: number, curr: any) => acc + (curr.like_count || 0), 0);
@@ -1341,7 +1395,7 @@ export async function getDashboardStats(req: Request, res: Response) {
             total_project_upvotes: totalProjectLikes,
             total_comments: totalComments,
             follower_count: followers.count || 0,
-            profile_views: profileViews.count || 0,
+            profile_views: profileViewsCount,
             streak_count: userStreak.data?.streak_count || 0
         });
 

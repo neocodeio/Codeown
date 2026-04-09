@@ -10,17 +10,20 @@ export async function trackEvent(req: Request, res: Response) {
             return res.status(400).json({ error: "Event type is required" });
         }
 
-        const { error } = await supabase.from("analytics_events").insert({
-            event_type,
-            actor_id: actor_id || null,
-            target_user_id: target_user_id || null,
-            project_id: project_id || null,
-            post_id: post_id || null,
-        });
+        try {
+            const { error: insertError } = await supabase.from("analytics_events").insert({
+                event_type,
+                actor_id: actor_id || null,
+                target_user_id: target_user_id || null,
+                project_id: project_id || null,
+                post_id: post_id || null,
+            });
 
-        if (error) {
-            console.error("Error tracking event:", error);
-            // Non-blocking error for tracking
+            if (insertError) {
+                console.warn("Analytics trackEvent failed (likely missing table):", insertError.message);
+            }
+        } catch (infraErr) {
+            console.warn("Infrastructure error in trackEvent:", infraErr);
         }
 
         // Project view notification logic
@@ -37,19 +40,18 @@ export async function trackEvent(req: Request, res: Response) {
                 .maybeSingle();
 
             if (!existingNotif) {
-                await supabase.from("notifications").insert({
-                    user_id: target_user_id,
-                    type: "profile_view", // Using profile_view for compat; distinguish via project_id
-                    actor_id: actor_id,
-                    project_id: project_id,
-                    read: false,
-                    created_at: new Date().toISOString(),
+                const { notify } = await import("../services/notification.service.js");
+                await notify({
+                    userId: target_user_id,
+                    type: "profile_view", 
+                    actorId: actor_id,
+                    projectId: project_id || undefined,
                 });
             }
         }
 
         return res.status(204).send();
-    } catch (error) {
+    } catch (error: any) {
         console.error("Unexpected error in trackEvent:", error);
         return res.status(500).json({ error: "Internal server error" });
     }
@@ -69,20 +71,33 @@ export async function getAnalytics(req: Request, res: Response) {
             return res.status(403).json({ error: "Analytics is a Pro feature" });
         }
 
-        // Fetch analytics summary
+        // Fetch analytics summary with defensive fallbacks for schema drift
         const [viewsRes, postViewsRes, clicksRes, recentRes] = await Promise.all([
             // Project views count
-            supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "project_view"),
+            supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "project_view").then(res => {
+                if (res.error && res.error.message?.includes("does not exist")) return { count: 0, data: null, error: null };
+                return res;
+            }),
             // Post views count
-            supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "post_view"),
+            supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "post_view").then(res => {
+                if (res.error && res.error.message?.includes("does not exist")) return { count: 0, data: null, error: null };
+                return res;
+            }),
             // Opportunity clicks count
-            supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "opportunity_click"),
+            supabase.from("analytics_events").select("id", { count: "exact" }).eq("target_user_id", userId).eq("event_type", "opportunity_click").then(res => {
+                if (res.error && res.error.message?.includes("does not exist")) return { count: 0, data: null, error: null };
+                return res;
+            }),
             // Recent visitors (last 30 days)
             supabase.from("analytics_events")
                 .select("created_at, event_type, project:projects(title), actor:users!actor_id(name, username, avatar_url)")
                 .eq("target_user_id", userId)
                 .order("created_at", { ascending: false })
                 .limit(20)
+                .then(res => {
+                    if (res.error && res.error.message?.includes("does not exist")) return { count: 0, data: [], error: null };
+                    return res;
+                })
         ]);
 
         return res.json({
@@ -197,22 +212,29 @@ export async function getUserActivityHeatmap(req: Request, res: Response) {
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         const startIso = oneYearAgo.toISOString();
 
-        // Fetch multiple types of activity in parallel
+        // Fetch multiple types of activity in parallel with defensive fallbacks
         const [postsRes, projectsRes, eventsRes, startupsRes, commentsRes, projectCommentsRes] = await Promise.all([
             supabase.from("posts").select("created_at").eq("user_id", userId).gte("created_at", startIso),
             supabase.from("projects").select("created_at").eq("user_id", userId).gte("created_at", startIso),
-            supabase.from("analytics_events").select("created_at").eq("actor_id", userId).gte("created_at", startIso),
+            supabase.from("analytics_events").select("created_at").eq("actor_id", userId).gte("created_at", startIso).then(res => {
+                if (res.error && res.error.message?.includes("does not exist")) return { data: [], error: null };
+                return res;
+            }),
             supabase.from("startups").select("created_at").eq("owner_id", userId).gte("created_at", startIso),
             supabase.from("comments").select("created_at").eq("user_id", userId).gte("created_at", startIso),
             supabase.from("project_comments").select("created_at").eq("user_id", userId).gte("created_at", startIso),
         ]);
 
-        const activityMap: Record<string, number> = {};
+        const activityMap = new Map<string, number>();
 
         const addActivity = (dateStr: string) => {
             if (!dateStr) return;
-            const date = new Date(dateStr).toISOString().split('T')[0];
-            activityMap[date] = (activityMap[date] || 0) + 1;
+            try {
+                const date = new Date(dateStr).toISOString().split('T')[0];
+                activityMap.set(date, (activityMap.get(date) || 0) + 1);
+            } catch (e) {
+                // Ignore invalid dates
+            }
         };
 
         postsRes.data?.forEach(p => addActivity(p.created_at));
@@ -223,13 +245,13 @@ export async function getUserActivityHeatmap(req: Request, res: Response) {
         projectCommentsRes.data?.forEach(pc => addActivity(pc.created_at));
 
         // Format for frontend: [{ date: '2023-01-01', count: 5 }, ...]
-        const heatmapData = Object.entries(activityMap).map(([date, count]) => ({
+        const heatmapData = Array.from(activityMap.entries()).map(([date, count]) => ({
             date,
             count
         }));
 
         return res.json(heatmapData);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error in getUserActivityHeatmap:", error);
         return res.status(500).json({ error: "Internal server error" });
     }

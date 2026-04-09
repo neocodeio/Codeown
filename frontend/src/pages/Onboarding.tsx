@@ -134,7 +134,12 @@ export default function Onboarding() {
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error("Error completing onboarding:", err);
-      const msg = err?.response?.data?.error || err?.message || "Something went wrong. Please check your connection.";
+      let msg = "Something went wrong. Please check your connection.";
+      if (err?.message === "Network Error" || err?.code === "ERR_NETWORK") {
+          msg = "Backend server unreachable. The domain codeownbackend.up.railway.app could not be resolved. Please check your Railway status.";
+      } else {
+          msg = err?.response?.data?.error || err?.message || msg;
+      }
       setError(msg);
     } finally {
       setIsSubmitting(false);
@@ -159,7 +164,12 @@ export default function Onboarding() {
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error("Error skipping onboarding:", err);
-      const msg = err?.response?.data?.error || err?.message || "Something went wrong. Please check your connection.";
+      let msg = "Something went wrong. Please check your connection.";
+      if (err?.message === "Network Error" || err?.code === "ERR_NETWORK") {
+          msg = "Backend server unreachable. The domain codeownbackend.up.railway.app could not be resolved. Please check your Railway status.";
+      } else {
+          msg = err?.response?.data?.error || err?.message || msg;
+      }
       setError(msg);
     } finally {
       setIsSubmitting(false);
@@ -928,16 +938,32 @@ export default function Onboarding() {
         {error && (
           <div style={{
             margin: "0 40px 24px",
-            padding: "16px",
-            backgroundColor: "rgba(239, 68, 68, 0.1)",
+            padding: "20px",
+            backgroundColor: "rgba(239, 68, 68, 0.05)",
             border: "0.5px solid rgba(239, 68, 68, 0.2)",
-            borderRadius: "var(--radius-sm)",
+            borderRadius: "var(--radius-md)",
             color: "#ef4444",
             fontSize: "13px",
             fontWeight: 500,
             textAlign: "center"
           }}>
-            {error}
+            <div style={{ marginBottom: "12px", fontSize: "14px", fontWeight: 700 }}>⚠️ Connection Issue Detected</div>
+            <div style={{ lineHeight: 1.6, opacity: 0.8, marginBottom: "16px" }}>{error}</div>
+            <button 
+              onClick={() => { setError(null); if (step === 4) handleComplete(); else next(); }}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#ef4444",
+                color: "white",
+                border: "none",
+                borderRadius: "var(--radius-sm)",
+                fontSize: "12px",
+                fontWeight: 700,
+                cursor: "pointer"
+              }}
+            >
+              Retry Connection
+            </button>
           </div>
         )}
         {renderStep()}

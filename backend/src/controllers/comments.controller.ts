@@ -182,7 +182,7 @@ export async function createComment(req: Request, res: Response) {
     }
 
     // Get user ID
-    const userId = user?.sub || user?.id || user?.userId;
+    const userId = (user?.sub || user?.id || user?.userId) as string;
 
     if (!userId) {
       console.error("No user ID found in user object:", user);
@@ -284,10 +284,10 @@ export async function createComment(req: Request, res: Response) {
           userId: parentCommentOwnerId,
           actorId: userId,
           type: "reply",
-          postId: postIdInt,
-          commentId: commentId
+          postId: postIdInt || undefined,
+          commentId: commentId || undefined
         });
-      } catch (replyNotifErr) {
+      } catch (replyNotifErr: any) {
         console.error("Error creating reply notification:", replyNotifErr);
       }
     }
@@ -299,10 +299,10 @@ export async function createComment(req: Request, res: Response) {
           userId: post.user_id,
           actorId: userId,
           type: "comment",
-          postId: postIdInt,
-          commentId: commentId
+          postId: postIdInt || undefined,
+          commentId: commentId || undefined
         });
-      } catch (notifError) {
+      } catch (notifError: any) {
         console.error("Error creating comment notification or email:", notifError);
       }
     }
@@ -322,10 +322,10 @@ export async function createComment(req: Request, res: Response) {
                 userId: u.id,
                 actorId: userId,
                 type: "mention",
-                postId: postIdInt,
-                commentId: commentId
+                postId: postIdInt || undefined,
+                commentId: commentId || undefined
               });
-            } catch (err) {
+            } catch (err: any) {
               console.error("Error creating mention notification:", err);
             }
           }
