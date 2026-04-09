@@ -299,20 +299,20 @@ export default function App() {
       {shouldShowNavbar && <Navbar />}
       <div 
         id="main-content"
-        key={location.pathname}
         style={{
           flex: (isStandardPage && isDesktop) ? "0 0 1020px" : 1,
           width: (isStandardPage && isDesktop) ? "1020px" : "100%",
           maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%",
           position: "relative",
           minWidth: 0,
+          zIndex: 1,
           paddingTop: isMobile && shouldShowNavbar ? "64px" : "0px",
           paddingBottom: isMobile && shouldShowNavbar ? "80px" : "0px"
         }}
       >
         <ErrorBoundary>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
+          <Suspense fallback={<PageLoader />} key={location.pathname}>
+            <Routes location={location}>
                 <Route path="/" element={<Feed />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostDetail />} />
