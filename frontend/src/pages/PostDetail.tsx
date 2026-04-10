@@ -148,6 +148,26 @@ export default function PostDetail() {
     }
   }, [id, fetchLikeStatus, fetchSavedStatus]);
 
+  const updateCommentCountInCache = (delta: number) => {
+    if (!id) return;
+    queryClient.setQueriesData({ queryKey: ["posts"] }, (old: any) => {
+      if (!old || !old.pages) return old;
+      return {
+        ...old,
+        pages: old.pages.map((page: any) => ({
+          ...page,
+          posts: (page.posts || []).map((p: any) => 
+            String(p.id) === String(id) ? { ...p, comment_count: Math.max(0, (p.comment_count || 0) + delta) } : p
+          )
+        }))
+      };
+    });
+    queryClient.setQueryData(["post", id], (old: any) => {
+      if (!old) return old;
+      return { ...old, comment_count: Math.max(0, (old.comment_count || 0) + delta) };
+    });
+  };
+
   const handleSubmitComment = async () => {
     if (!isSignedIn) return;
     if (!commentContent.trim() && !selectedGif && !selectedImage) return;
@@ -163,7 +183,7 @@ export default function PostDetail() {
       setCommentContent("");
       setSelectedGif(null);
       setSelectedImage(null);
-      await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
+      updateCommentCountInCache(1);
       await queryClient.invalidateQueries({ queryKey: ["postComments", id] });
     } catch (error) {
       console.error(error);
@@ -188,7 +208,7 @@ export default function PostDetail() {
   const handleReply = async (parentId: number | string, content: string) => {
     const token = await getToken();
     await api.post("/comments", { post_id: id, content, parent_id: parentId }, { headers: { Authorization: `Bearer ${token}` } });
-    await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
+    updateCommentCountInCache(1);
     await queryClient.invalidateQueries({ queryKey: ["postComments", id] });
   };
 
@@ -198,6 +218,7 @@ export default function PostDetail() {
     try {
       const token = await getToken();
       await api.delete(`/comments/${commentToDelete}`, { headers: { Authorization: `Bearer ${token}` } });
+      updateCommentCountInCache(-1);
       await queryClient.invalidateQueries({ queryKey: ["postComments", id] });
       setCommentToDelete(null);
     } catch (error) {
