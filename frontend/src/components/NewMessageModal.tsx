@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { MagnifyingGlass, X } from "phosphor-react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "./VerifiedBadge";
+import AvailabilityBadge from "./AvailabilityBadge";
 
 interface User {
     id: string;
@@ -69,7 +71,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div 
             onClick={onClose}
             style={{
@@ -78,13 +80,14 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: "rgba(0, 0, 0, 0.4)",
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                zIndex: 3000,
+                zIndex: 99999,
                 padding: "20px",
-                backdropFilter: "blur(4px)"
+                backdropFilter: "blur(8px)",
+                animation: "modalFadeIn 0.2s ease"
             }}
         >
             <div
@@ -93,14 +96,15 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                 style={{
                     backgroundColor: "var(--bg-page)",
                     borderRadius: "var(--radius-lg)",
-                    border: "0.5px solid var(--border-hairline)",
+                    border: "1px solid var(--border-hairline)",
                     width: "100%",
                     maxWidth: "500px",
-                    maxHeight: "80vh",
+                    maxHeight: "85vh",
                     display: "flex",
                     flexDirection: "column",
-                    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
-                    overflow: "hidden"
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                    overflow: "hidden",
+                    animation: "modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
                 }}
             >
                 {/* Header */}
@@ -109,7 +113,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    borderBottom: "0.5px solid var(--border-hairline)"
+                    borderBottom: "1px solid var(--border-hairline)"
                 }}>
                     <h2 style={{
                         margin: 0,
@@ -130,27 +134,27 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                             borderRadius: "var(--radius-xs)",
                             transition: "all 0.1s"
                         }}
-                        className="btn-modal-close"
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                     >
-                        <X size={18} weight="thin" />
+                        <X size={20} weight="bold" />
                     </button>
                 </div>
 
                 {/* Search Bar */}
-                <div style={{ padding: isMobile ? "16px 20px" : "20px 32px" }}>
+                <div style={{ padding: isMobile ? "16px 20px" : "20px 32px", borderBottom: "1px solid var(--border-hairline)", backgroundColor: "var(--bg-input)" }}>
                     <div style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "10px",
-                        backgroundColor: "var(--bg-input)",
+                        gap: "12px",
+                        backgroundColor: "var(--bg-page)",
                         padding: "10px 14px",
                         borderRadius: "var(--radius-sm)",
-                        border: "0.5px solid var(--border-hairline)",
+                        border: "1px solid var(--border-hairline)",
                     }}>
-                        <MagnifyingGlass size={18} weight="thin" style={{ color: "var(--text-tertiary)" }} />
+                        <MagnifyingGlass size={18} weight="bold" style={{ color: "var(--text-tertiary)" }} />
                         <input
                             autoFocus
-                            type="text"
                             placeholder="Search people..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -160,6 +164,7 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                                 flex: 1,
                                 outline: "none",
                                 fontSize: "14px",
+                                fontWeight: 500,
                                 color: "var(--text-primary)",
                                 padding: 0,
                                 margin: 0,
@@ -173,39 +178,38 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
                 <div style={{
                     flex: 1,
                     overflowY: "auto",
-                    padding: "0 12px 24px 12px"
+                    padding: "8px"
                 }}>
                     {loading ? (
                         <div style={{ padding: "40px", display: "flex", justifyContent: "center" }}>
-                            <div style={{ width: "24px", height: "24px", border: "1px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+                            <div style={{ width: "24px", height: "24px", border: "1.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
                         </div>
                     ) : searchQuery.length > 0 && users.length === 0 ? (
-                        <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px" }}>
-                            No users found for "{searchQuery}"
+                        <div style={{ padding: "60px 40px", textAlign: "center" }}>
+                            <p style={{ margin: 0, fontSize: "14px", fontWeight: 600, color: "var(--text-primary)" }}>No users found</p>
+                            <p style={{ margin: "8px 0 0", fontSize: "13px", color: "var(--text-tertiary)" }}>Try searching for someone else</p>
                         </div>
                     ) : (
                         users.map(u => (
                             <div
                                 key={u.id}
-                                onClick={() => onSelectUser(u)}
+                                onClick={() => {
+                                    onSelectUser(u);
+                                    onClose();
+                                }}
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: "16px",
-                                    padding: "12px 20px",
-                                    borderRadius: "var(--radius-sm)",
+                                    gap: "14px",
+                                    padding: "12px 16px",
+                                    borderRadius: "12px",
                                     cursor: "pointer",
-                                    transition: "all 0.15s ease",
-                                    border: "0.5px solid transparent",
-                                    marginBottom: "4px"
+                                    transition: "all 0.2s ease",
                                 }}
-                                className="user-select-row"
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                             >
-                                <img
-                                    src={u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=212121&color=fff`}
-                                    alt=""
-                                    style={{ width: "40px", height: "40px", borderRadius: "var(--radius-xs)", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
-                                />
+                                <AvailabilityBadge avatarUrl={u.avatar_url} name={u.name} size={42} username={u.username} />
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontWeight: 700, fontSize: "14px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
                                         {u.name}
@@ -220,9 +224,16 @@ export default function NewMessageModal({ isOpen, onClose, onSelectUser }: NewMe
             </div>
             <style>{`
                 @keyframes spin { to { transform: rotate(360deg); } }
-                .btn-modal-close:hover { background-color: var(--bg-hover); }
-                .user-select-row:hover { background-color: var(--bg-hover); border-color: var(--border-hairline); }
+                @keyframes modalFadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes modalSlideUp {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
             `}</style>
-        </div>
+        </div>,
+        document.body
     );
 }
