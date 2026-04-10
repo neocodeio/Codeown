@@ -43,7 +43,7 @@
   --font-mono: 'JetBrains Mono', monospace;
 
   --ease-smooth: cubic-bezier(0.2, 0, 0, 1);
-  
+
   font-family: var(--font-main);
   -webkit-font-smoothing: antialiased;
 }
@@ -74,18 +74,30 @@ body {
   transition: background-color 0.3s var(--ease-smooth);
 }
 
-.nav-link, button, input, textarea, a, .card {
+.nav-link,
+button,
+input,
+textarea,
+a,
+.card {
   transition: background-color 0.2s var(--ease-smooth), border-color 0.2s var(--ease-smooth), color 0.15s linear, opacity 0.2s ease, transform 0.2s var(--ease-smooth);
 }
 
 /* Optimization for long lists - tells browser to optimize content that isn't currently on screen */
-.feed-item, .post-card, .project-card, .sidebar-item, .card, .modal-content-area {
+.feed-item,
+.post-card,
+.project-card,
+.sidebar-item,
+.card,
+.modal-content-area {
   content-visibility: auto;
   contain-intrinsic-size: 1px 150px;
 }
 
 /* Override for images to prevent flickering */
-img, video, .no-transition {
+img,
+video,
+.no-transition {
   transition: none !important;
 }
 
@@ -119,7 +131,12 @@ body {
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -423,14 +440,30 @@ textarea:focus {
 }
 
 @keyframes ogSparkle {
-    0% { transform: rotate(0deg) translate(22px) rotate(0deg) scale(0); opacity: 0; }
-    50% { transform: rotate(180deg) translate(28px) rotate(-180deg) scale(1); opacity: 1; }
-    100% { transform: rotate(360deg) translate(22px) rotate(-360deg) scale(0); opacity: 0; }
+  0% {
+    transform: rotate(0deg) translate(22px) rotate(0deg) scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: rotate(180deg) translate(28px) rotate(-180deg) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: rotate(360deg) translate(22px) rotate(-360deg) scale(0);
+    opacity: 0;
+  }
 }
 
 @keyframes ogRotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* For Firefox */

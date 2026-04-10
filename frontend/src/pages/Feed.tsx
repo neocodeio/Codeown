@@ -86,7 +86,7 @@ export default function Feed() {
     const lastElementRef = useCallback((node: HTMLDivElement | null) => {
         if (loading) return;
         if (observer.current) observer.current.disconnect();
-        
+
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasMore) {
                 if (feedType === "posts") fetchPosts(undefined, true);
@@ -96,7 +96,7 @@ export default function Feed() {
             // Trigger load when within 1000px of viewport bottom
             rootMargin: "0px 0px 1000px 0px"
         });
-        
+
         if (node) observer.current.observe(node);
     }, [loading, hasMore, fetchPosts, fetchProjects, feedType]);
 
@@ -146,7 +146,7 @@ export default function Feed() {
                     {/* ── Minimalist Clean Header ── */}
                     <div style={{
                         position: "sticky",
-                        top: isMobile ? "64px" : "0", 
+                        top: isMobile ? "64px" : "0",
                         zIndex: 100,
                         backgroundColor: "var(--bg-header)",
                         backdropFilter: "blur(20px)",
@@ -170,13 +170,13 @@ export default function Feed() {
                                         else handleFilterChange("all");
                                     }}
                                     style={{
-                                        background: "none", 
-                                        border: "none", 
+                                        background: "none",
+                                        border: "none",
                                         padding: "0 20px",
-                                        height: "56px", 
+                                        height: "56px",
                                         cursor: "pointer",
-                                        display: "flex", 
-                                        alignItems: "center", 
+                                        display: "flex",
+                                        alignItems: "center",
                                         gap: "6px",
                                         fontSize: "15px",
                                         fontWeight: feedFilter === "all" ? "700" : "500",
@@ -246,10 +246,10 @@ export default function Feed() {
                                 <button
                                     onClick={() => handleFilterChange("following")}
                                     style={{
-                                        background: "none", 
-                                        border: "none", 
+                                        background: "none",
+                                        border: "none",
                                         padding: "0 20px",
-                                        height: "56px", 
+                                        height: "56px",
                                         cursor: "pointer",
                                         fontSize: "15px",
                                         fontWeight: feedFilter === "following" ? "700" : "500",
@@ -283,37 +283,37 @@ export default function Feed() {
                                 backgroundColor: "var(--bg-page)"
                             }} className="no-scrollbar">
                                 {["All", "React", "TypeScript", "Next.js", "Node.js", "Python", "Tailwind"].map(tag => {
-                                     const isSelected = (tag === "All" && !selectedTag) || selectedTag === tag;
-                                     return (
-                                         <button
-                                             key={tag}
-                                             onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
-                                             aria-label={`Filter by ${tag}`}
-                                             style={{
-                                                 flexShrink: 0, padding: "8px 16px", borderRadius: "100px",
-                                                 border: isSelected ? "1px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
-                                                 backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
-                                                 color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
-                                                 fontSize: "13px", fontWeight: "500", cursor: "pointer",
-                                                 transition: "all 0.15s ease",
-                                             }}
-                                             onMouseEnter={(e) => {
-                                                 if (!isSelected) {
-                                                     e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                                     e.currentTarget.style.color = "var(--text-primary)";
-                                                 }
-                                             }}
-                                             onMouseLeave={(e) => {
-                                                 if (!isSelected) {
-                                                     e.currentTarget.style.backgroundColor = "transparent";
-                                                     e.currentTarget.style.color = "var(--text-secondary)";
-                                                 }
-                                             }}
-                                         >
-                                             {tag}
-                                         </button>
-                                     );
-                                 })}
+                                    const isSelected = (tag === "All" && !selectedTag) || selectedTag === tag;
+                                    return (
+                                        <button
+                                            key={tag}
+                                            onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
+                                            aria-label={`Filter by ${tag}`}
+                                            style={{
+                                                flexShrink: 0, padding: "8px 16px", borderRadius: "100px",
+                                                border: isSelected ? "1px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
+                                                backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
+                                                color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
+                                                fontSize: "13px", fontWeight: "500", cursor: "pointer",
+                                                transition: "all 0.15s ease",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (!isSelected) {
+                                                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                                    e.currentTarget.style.color = "var(--text-primary)";
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!isSelected) {
+                                                    e.currentTarget.style.backgroundColor = "transparent";
+                                                    e.currentTarget.style.color = "var(--text-secondary)";
+                                                }
+                                            }}
+                                        >
+                                            {tag}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
@@ -377,7 +377,7 @@ export default function Feed() {
                                         }} />
                                     </div>
                                 )}
-                                
+
                                 <style>{`
                                 @keyframes slideDownFadeIn {
                                     from { opacity: 0; transform: translateY(-5px); }

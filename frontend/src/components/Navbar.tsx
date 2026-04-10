@@ -188,32 +188,43 @@ export default function Navbar() {
   // Styles
   const linkStyle = (path: string) => {
     const isActive = location.pathname === path;
+    const isShort = !isMobile && window.innerHeight < 900;
+    const isUltraShort = !isMobile && window.innerHeight < 760;
+
     return {
       display: "flex",
       alignItems: "center",
-      gap: "14px",
-      padding: "10px 16px",
+      gap: isUltraShort ? "10px" : "14px",
+      padding: isUltraShort ? "6px 12px" : isShort ? "8px 14px" : "10px 16px",
       borderRadius: "12px",
       textDecoration: "none",
       color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
       backgroundColor: isActive ? "transparent" : "transparent",
       fontWeight: isActive ? "bold" : "500",
-      fontSize: "14px",
+      fontSize: isUltraShort ? "13px" : "14px",
       transition: "all 0.15s ease",
-      marginBottom: "2px",
+      marginBottom: isUltraShort ? "1px" : "2px",
       border: isActive ? "0.5px solid transparent" : "0.5px solid transparent",
     };
   };
   const SidebarContent = () => (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", padding: "0 12px" }}>
+    <div className="no-scrollbar" style={{ 
+      display: "flex", 
+      flexDirection: "column", 
+      height: "100%", 
+      width: "100%", 
+      padding: "0 12px", 
+      overflowY: window.innerHeight < 700 ? "auto" : "hidden",
+      overflowX: "hidden"
+    }}>
       {/* Logo */}
-      <div style={{ padding: "32px 20px 24px 24px" }}>
+      <div style={{ padding: window.innerHeight < 900 ? "16px 12px 12px 16px" : "32px 20px 24px 24px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }} aria-label="Codeown Home">
-            <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "36px", width: "auto" }} />
+            <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: window.innerHeight < 900 ? "28px" : "36px", width: "auto" }} />
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <h2 style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
-                <span style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
+                <span style={{ fontSize: window.innerHeight < 900 ? "15px" : "18px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
                   Codeown.space
                 </span>
               </h2>
@@ -224,7 +235,7 @@ export default function Navbar() {
       </div>
 
       {/* Nav Links */}
-      <nav style={{ flex: 1, marginTop: "16px" }} aria-label="Main Navigation">
+      <nav style={{ flexShrink: 0, marginTop: window.innerHeight < 900 ? "4px" : "16px" }} aria-label="Main Navigation">
         <Link to="/" style={linkStyle("/")} aria-label="Home Feed">
           <House size={20} weight={location.pathname === "/" ? "bold" : "regular"} />
           Feed
@@ -375,8 +386,8 @@ export default function Navbar() {
                 alignItems: "center",
                 border: "1px solid var(--border-hairline)",
                 borderRadius: "10px",
-                gap: "12px",
-                padding: "12px 12px",
+                gap: window.innerHeight < 900 ? "8px" : "12px",
+                padding: window.innerHeight < 900 ? "8px 10px" : "12px 12px",
                 marginTop: "8px",
                 backgroundColor: "transparent",
                 position: "relative",
@@ -387,16 +398,16 @@ export default function Navbar() {
               <AvailabilityBadge
                 avatarUrl={userAvatarUrl || user.imageUrl}
                 name={profile?.name || user.fullName || "User"}
-                size={36}
+                size={window.innerHeight < 900 ? 30 : 36}
                 isOpenToOpportunities={profile?.is_hirable === true && profile?.is_pro === true}
                 isOG={profile?.is_og}
                 username={profile?.username || user?.username}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "4px" }}>
+                <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: window.innerHeight < 900 ? "13px" : "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "4px" }}>
                   {profile?.name || user.fullName || "User"}
                 </div>
-                <div style={{ color: "var(--text-tertiary)", fontSize: "13px", fontWeight: 400 }}>
+                <div style={{ color: "var(--text-tertiary)", fontSize: window.innerHeight < 900 ? "11px" : "13px", fontWeight: 400 }}>
                   @{profile?.username || user.username || "user"}
                 </div>
               </div>
@@ -473,20 +484,20 @@ export default function Navbar() {
             </div>
 
             {/* Footer Links */}
-            <div style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "8px",
-              fontSize: "11px",
-              color: "#94a3b8",
-              marginBottom: "12px",
-              marginTop: "16px",
-              padding: "0 10px",
-              textAlign: "center",
-              lineHeight: "1.5"
-            }}>
+              <div style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "10px",
+                color: "#94a3b8",
+                marginBottom: window.innerHeight < 900 ? "4px" : "12px",
+                marginTop: window.innerHeight < 900 ? "8px" : "16px",
+                padding: "0 10px",
+                textAlign: "center",
+                lineHeight: "1.2"
+              }}>
               <Link to="/privacy" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "#64748b"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Privacy</Link>
               <span style={{ color: "#e2e8f0" }}>•</span>
               <Link to="/terms" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "#64748b"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Terms</Link>
@@ -532,6 +543,20 @@ export default function Navbar() {
   if (!isMobile) {
     return (
       <>
+        <style>{`
+          .no-scrollbar::-webkit-scrollbar { display: none; }
+          .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          
+          /* Show subtle scrollbar on hover if needed */
+          nav:hover.no-scrollbar::-webkit-scrollbar {
+             display: block;
+             width: 4px;
+          }
+          nav:hover.no-scrollbar::-webkit-scrollbar-thumb {
+             background: var(--border-light);
+             border-radius: 10px;
+          }
+        `}</style>
         <nav style={{
           width: width < 1024 ? "240px" : "300px",
           height: "100vh",
@@ -540,8 +565,6 @@ export default function Navbar() {
           borderRight: "0.5px solid var(--border-hairline)",
           backgroundColor: "var(--bg-page)",
           zIndex: 50,
-          display: "flex",
-          flexDirection: "column"
         }}>
           <SidebarContent />
         </nav>
@@ -742,6 +765,13 @@ export default function Navbar() {
               >
                 <Medal size={18} weight="regular" />
                 Our OGs
+              </div>
+              <div
+                onClick={() => { setIsCreateMenuOpen(false); navigate("/changelog"); }}
+                style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
+              >
+                <Scroll size={18} weight="regular" />
+                Changelog
               </div>
             </div>
           )}
