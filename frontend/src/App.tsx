@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useRef } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 // import { useTheme } from "./hooks/useTheme";
 import Navbar from "./components/Navbar";
@@ -72,7 +72,7 @@ const PageLoader = () => (
 );
 
 export default function App() {
-  const isCheckingRef = useRef(false);
+  const isCheckingRef = React.useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { width } = useWindowSize();

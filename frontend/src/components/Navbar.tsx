@@ -9,26 +9,26 @@ import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
 import { useFaviconNotification } from "../hooks/useFaviconNotification";
 import api from "../api/axios";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  House,
-  MagnifyingGlass,
-  ChatCircle,
-  Rocket,
-  User as UserIcon,
-  Bell,
-  Plus,
-  SignOut,
-  DotsThreeOutline,
-  SignIn,
-  UsersThree,
-  Sun,
-  Moon,
-  Scroll,
-  Buildings,
-  Medal,
-  ChartBar,
-  // Trophy
-} from "phosphor-react";
+  Home01Icon,
+  Search01Icon,
+  Chat01Icon,
+  Rocket01Icon,
+  UserIcon,
+  Notification01Icon,
+  PlusSignIcon,
+  Logout03Icon,
+  MoreHorizontalIcon,
+  Login03Icon,
+  UserGroupIcon,
+  Sun01Icon,
+  Moon02Icon,
+  DocumentCodeIcon,
+  Building02Icon,
+  MedalIcon,
+  Chart01Icon
+} from "@hugeicons/core-free-icons";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
 import logoWhite from "../assets/logo-white.png";
@@ -237,42 +237,42 @@ export default function Navbar() {
       {/* Nav Links */}
       <nav style={{ flexShrink: 0, marginTop: window.innerHeight < 900 ? "4px" : "16px" }} aria-label="Main Navigation">
         <Link to="/" style={linkStyle("/")} aria-label="Home Feed">
-          <House size={20} weight={location.pathname === "/" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={Home01Icon} size={20} />
           Home
         </Link>
         <Link to="/search" style={linkStyle("/search")} aria-label="Search and Discover">
-          <MagnifyingGlass size={20} weight={location.pathname === "/search" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={Search01Icon} size={20} />
           Search
         </Link>
         <Link to="/leaderboard" style={linkStyle("/leaderboard")} aria-label="Leaderboard">
-          <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={UserGroupIcon} size={20} />
           Leaderboard
         </Link>
         {/* <Link to="/ship" style={linkStyle("/ship")} aria-label="Ship Week Competition">
-          <Trophy size={20} weight={location.pathname === "/ship" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={TrophyIcon} size={20} variant={location.pathname === "/ship" ? "solid" : "stroke"} />
           Ship Week
         </Link> */}
         <Link to="/ogs" style={linkStyle("/ogs")} aria-label="Founding OGs">
-          <Medal size={20} weight={location.pathname === "/ogs" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={MedalIcon} size={20} />
           Our OGs
         </Link>
         <Link to="/dashboard" style={linkStyle("/dashboard")} aria-label="Creator Dashboard">
-          <ChartBar size={20} weight={location.pathname === "/dashboard" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={Chart01Icon} size={20} />
           Analytics
         </Link>
         <Link to="/startups" style={linkStyle("/startups")} aria-label="Startup Hub">
-          <Buildings size={20} weight={location.pathname === "/startups" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={Building02Icon} size={20} />
           Startups Hub
         </Link>
         <Link to="/changelog" style={linkStyle("/changelog")} aria-label="View Changelog">
-          <Scroll size={20} weight={location.pathname === "/changelog" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={DocumentCodeIcon} size={20} />
           Changelog
         </Link>
         {isSignedIn && (
           <>
             <Link to="/messages" style={linkStyle("/messages")} aria-label={`Messages, ${messageUnreadCount} unread`}>
               <div style={{ position: "relative", display: "flex", alignItems: "center", gap: "8px" }}>
-                <ChatCircle size={20} weight={location.pathname === "/messages" ? "bold" : "regular"} />
+                <HugeiconsIcon icon={Chat01Icon} size={20} />
                 {messageUnreadCount > 0 && (
                   <span
                     style={{
@@ -305,7 +305,7 @@ export default function Navbar() {
               aria-label={`Notifications, ${unreadCount} unread`}
             >
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <Bell size={20} weight={location.pathname === "/notifications" ? "bold" : "regular"} />
+                <HugeiconsIcon icon={Notification01Icon} size={20} />
                 {unreadCount > 0 && (
                   <span style={{
                     position: "absolute",
@@ -335,7 +335,7 @@ export default function Navbar() {
               aria-label="Create new post"
               role="button"
             >
-              <Plus size={20} weight="regular" />
+              <HugeiconsIcon icon={PlusSignIcon} size={20} />
               Post
             </div>
 
@@ -345,7 +345,7 @@ export default function Navbar() {
               aria-label="Launch new project"
               role="button"
             >
-              <Rocket size={20} weight="regular" />
+              <HugeiconsIcon icon={Rocket01Icon} size={20} />
               Launch
             </div>
 
@@ -359,7 +359,7 @@ export default function Navbar() {
               aria-label="View your profile"
               role="link"
             >
-              <UserIcon size={20} weight={location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "bold" : "regular"} />
+              <HugeiconsIcon icon={UserIcon} size={20} />
               Profile
             </div>
           </>
@@ -438,7 +438,7 @@ export default function Navbar() {
                   }}
                   aria-label="Toggle theme"
                 >
-                  {theme === 'light' ? <Moon size={18} weight="regular" /> : <Sun size={18} weight="regular" />}
+                  {theme === 'light' ? <HugeiconsIcon icon={Moon02Icon} size={18} /> : <HugeiconsIcon icon={Sun01Icon} size={18} />}
                 </button>
 
                 <div style={{ position: "relative" }}>
@@ -447,7 +447,7 @@ export default function Navbar() {
                     style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "4px" }}
                     aria-label="More options"
                   >
-                    <DotsThreeOutline size={20} weight="thin" />
+                    <HugeiconsIcon icon={MoreHorizontalIcon} size={20} />
                   </button>
 
                   {isLogoutOpen && (
@@ -474,7 +474,7 @@ export default function Navbar() {
                         }}
                         aria-label="Logout"
                       >
-                        <SignOut size={18} weight="regular" />
+                        <HugeiconsIcon icon={Logout03Icon} size={18} />
                         Logout
                       </button>
                     </div>
@@ -530,7 +530,7 @@ export default function Navbar() {
             }}
               aria-label="Sign In"
             >
-              <SignIn size={20} weight="regular" />
+              <HugeiconsIcon icon={Login03Icon} size={20} />
               Sign In
             </button>
           </Link>
@@ -634,7 +634,7 @@ export default function Navbar() {
             }}
             aria-label="Toggle theme"
           >
-            {theme === 'light' ? <Moon size={20} weight="thin" /> : <Sun size={20} weight="thin" />}
+            {theme === 'light' ? <HugeiconsIcon icon={Moon02Icon} size={20} /> : <HugeiconsIcon icon={Sun01Icon} size={20} />}
           </button>
 
           {/* Profile/ID Card Access */}
@@ -674,15 +674,15 @@ export default function Navbar() {
         boxSizing: "border-box"
       }}>
         <Link to="/" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <House size={22} weight={location.pathname === "/" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={Home01Icon} size={22} />
         </Link>
 
         <Link to="/search" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <MagnifyingGlass size={22} weight={location.pathname === "/search" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={Search01Icon} size={22} />
         </Link>
 
         <Link to="/leaderboard" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/leaderboard" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <UsersThree size={22} weight={location.pathname === "/leaderboard" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={UserGroupIcon} size={22} />
         </Link>
 
         <div
@@ -698,9 +698,9 @@ export default function Navbar() {
             color: isCreateMenuOpen ? "var(--text-primary)" : "var(--text-tertiary)"
           }}
         >
-          <Plus
+          <HugeiconsIcon
+            icon={PlusSignIcon}
             size={24}
-            weight="regular"
             style={{
               transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)",
               transition: "transform 0.15s"
@@ -728,49 +728,49 @@ export default function Navbar() {
                 onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
               >
-                <Plus size={18} weight="regular" />
+                <HugeiconsIcon icon={PlusSignIcon} size={18} />
                 Post
               </div>
               {/* <div
                 onClick={() => { setIsCreateMenuOpen(false); navigate("/ship"); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
               >
-                <Trophy size={18} weight="regular" />
+                <TrophyIcon size={18} variant="stroke" />
                 Ship Week
               </div> */}
               <div
                 onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
               >
-                <Rocket size={18} weight="regular" />
+                <HugeiconsIcon icon={Rocket01Icon} size={18} />
                 Launch
               </div>
               <div
                 onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
               >
-                <Buildings size={18} weight="regular" />
+                <HugeiconsIcon icon={Building02Icon} size={18} />
                 Startups Hub
               </div>
               <div
                 onClick={() => { setIsCreateMenuOpen(false); navigate("/dashboard"); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
               >
-                <ChartBar size={18} weight="regular" />
+                <HugeiconsIcon icon={Chart01Icon} size={18} />
                 Dashboard
               </div>
               <div
                 onClick={() => { setIsCreateMenuOpen(false); navigate("/ogs"); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
               >
-                <Medal size={18} weight="regular" />
+                <HugeiconsIcon icon={MedalIcon} size={18} />
                 Our OGs
               </div>
               <div
                 onClick={() => { setIsCreateMenuOpen(false); navigate("/changelog"); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", borderTop: "0.5px solid var(--border-hairline)" }}
               >
-                <Scroll size={18} weight="regular" />
+                <HugeiconsIcon icon={DocumentCodeIcon} size={18} />
                 Changelog
               </div>
             </div>
@@ -790,7 +790,7 @@ export default function Navbar() {
             position: "relative",
           }}
         >
-          <ChatCircle size={22} weight={location.pathname === "/messages" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={Chat01Icon} size={22} />
           {messageUnreadCount > 0 && (
             <span
               style={{
@@ -828,7 +828,7 @@ export default function Navbar() {
             position: "relative",
           }}
         >
-          <Bell size={22} weight={location.pathname === "/notifications" ? "bold" : "regular"} />
+          <HugeiconsIcon icon={Notification01Icon} size={22} />
           {unreadCount > 0 && (
             <span
               style={{
@@ -860,7 +860,7 @@ export default function Navbar() {
           {userAvatarUrl ? (
             <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "var(--radius-sm)", border: location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "1.5px solid var(--text-primary)" : "0.5px solid var(--border-hairline)", objectFit: "cover" }} />
           ) : (
-            <UserIcon size={20} weight="thin" />
+            <HugeiconsIcon icon={UserIcon} size={20} />
           )}
         </Link>
       </div>
