@@ -242,6 +242,7 @@ const ConversationItem = memo(({
 }) => {
   return (
     <div
+      className="convo-container"
       onClick={() => onSelect(convo)}
       style={{
         padding: "16px 20px",
@@ -279,21 +280,22 @@ const ConversationItem = memo(({
             </span>
           </div>
           <div style={{ position: "relative" }}>
-             <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, opacity: convoMenuId === convo.id ? 0 : 1 }}>
+            <span className="convo-timestamp-label" style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, opacity: convoMenuId === convo.id ? 0 : 1, transition: "opacity 0.2s ease" }}>
               {convo.last_message ? new Date(convo.last_message.created_at).toLocaleDateString([], { month: "short", day: "numeric" }) : ""}
             </span>
             <div
+              className={`convo-dots-container ${convoMenuId === convo.id ? 'is-open' : ''}`}
               style={{
                 position: "absolute",
                 right: "-8px",
                 top: "50%",
                 transform: "translateY(-50%)",
-                zIndex: 10
+                zIndex: 10,
+                transition: "opacity 0.2s ease"
               }}
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                className="convo-dots-trigger"
                 onClick={(e) => {
                   e.stopPropagation();
                   setConvoMenuId(convoMenuId === convo.id ? null : convo.id);
@@ -310,7 +312,6 @@ const ConversationItem = memo(({
                   justifyContent: "center",
                   cursor: "pointer",
                   color: "var(--text-primary)",
-                  opacity: convoMenuId === convo.id ? 1 : 0
                 }}
               >
                 <DotsThree size={22} weight="bold" />
@@ -553,7 +554,7 @@ const MessageBubble = memo(({
           display: "flex", 
           flexDirection: "column", 
           alignItems: isMine ? "flex-end" : "flex-start",
-          opacity: 0,
+          opacity: messageMenuId === msg.id ? 1 : 0,
           transition: "opacity 0.2s",
           paddingBottom: "4px"
         }}>
@@ -658,6 +659,7 @@ const MessageBubble = memo(({
 
       <style>{`
         .message-row:hover .msg-actions { opacity: 1 !important; }
+        .message-action-menu { pointer-events: auto !important; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
@@ -775,20 +777,28 @@ export default function Messages() {
   }, [qConversations, targetUserId, activeConvo]);
 
   useEffect(() => {
-    // Only update local messages when the query is NOT loading
-    // This prevents clearing messages while we wait for the next fetch
-    if (qMessages.length > 0) {
-      setMessages(qMessages);
-      setTimeout(() => scrollToBottom(true), 100);
-    } else if (!qMessagesLoading) {
-      // Only clear if we are NOT loading and we have no messages
-      if (activeConvo && activeConvo.id !== 0) {
-        if (messages.length > 0) setMessages([]);
-      } else if (!activeConvo) {
-        if (messages.length > 0) setMessages([]);
+    // When switching conversations, we should clear the current messages
+    // to avoid showing stale data from the previous chat.
+    if (activeConvo) {
+      const cached = localStorage.getItem(`codeown_msgs_${activeConvo.id}`);
+      if (cached) {
+        setMessages(JSON.parse(cached));
+      } else {
+        setMessages([]);
       }
+      setTimeout(() => scrollToBottom(true), 50);
+    } else {
+      setMessages([]);
     }
-  }, [qMessages, activeConvo?.id, qMessagesLoading]);
+  }, [activeConvo?.id]);
+
+  useEffect(() => {
+    // Update local messages when the background query finishes
+    if (!qMessagesLoading && qMessages) {
+      setMessages(qMessages);
+      setTimeout(() => scrollToBottom(false), 50);
+    }
+  }, [qMessages, qMessagesLoading]);
 
   useEffect(() => {
     if (initialMessage) {
@@ -818,15 +828,7 @@ export default function Messages() {
     }
   }, [messages, activeConvo?.id]);
 
-  // Load messages from cache when changing convo
-  useEffect(() => {
-    if (activeConvo && activeConvo.id !== 0) {
-      const cached = localStorage.getItem(`codeown_msgs_${activeConvo.id}`);
-      if (cached) {
-        setMessages(JSON.parse(cached));
-      }
-    }
-  }, [activeConvo?.id]);
+  // Load messages from cache is now handled in the main activeConvo effect
 
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
   const [messageMenuId, setMessageMenuId] = useState<number | null>(null);
@@ -1327,6 +1329,11 @@ export default function Messages() {
 
   return (
     <main
+      onClick={() => {
+        setMessageMenuId(null);
+        setConvoMenuId(null);
+        setReactingTo(null);
+      }}
       style={{
         display: "flex",
         flexDirection: "row",
@@ -1752,36 +1759,44 @@ export default function Messages() {
                     </div>
                   </div>
                 ) : (
-                  messages.map((msg, index) => {
-                    const prevMsg = messages[index - 1];
-                    const nextMsg = messages[index + 1];
-                    const showSender = !prevMsg || prevMsg.sender_id !== msg.sender_id;
-                    const isLastInGroup = !nextMsg || nextMsg.sender_id !== msg.sender_id;
+                  <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                    {messages.map((msg, index) => {
+                      const prevMsg = messages[index - 1];
+                      const nextMsg = messages[index + 1];
+                      const showSender = !prevMsg || prevMsg.sender_id !== msg.sender_id;
+                      const isLastInGroup = !nextMsg || nextMsg.sender_id !== msg.sender_id;
 
-                    return (
-                      <MessageBubble
-                        key={msg.id}
-                        msg={msg}
-                        isMine={msg.sender_id === currentUser?.id}
-                        showSender={showSender}
-                        isLastInGroup={isLastInGroup}
-                        activeConvo={activeConvo}
-                        currentUser={currentUser}
-                        messageMenuId={messageMenuId}
-                        setMessageMenuId={setMessageMenuId}
-                        deletingMessageId={deletingMessageId}
-                        setDeletingMessageId={setDeletingMessageId}
-                        onDelete={handleDeleteMessage}
-                        onReply={setReplyingTo}
-                        onReaction={handleReaction}
-                        onPreviewImage={setPreviewImage}
-                        reactingTo={reactingTo}
-                        setReactingTo={setReactingTo}
-                        onNavigatePost={(id) => navigate(`/post/${id}`)}
-                        onNavigateProject={(id) => navigate(`/project/${id}`)}
-                      />
-                    );
-                  })
+                      return (
+                        <motion.div
+                          key={msg.id || msg.tempId}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <MessageBubble
+                            msg={msg}
+                            isMine={msg.sender_id === currentUser?.id}
+                            showSender={showSender}
+                            isLastInGroup={isLastInGroup}
+                            activeConvo={activeConvo}
+                            currentUser={currentUser}
+                            messageMenuId={messageMenuId}
+                            setMessageMenuId={setMessageMenuId}
+                            deletingMessageId={deletingMessageId}
+                            setDeletingMessageId={setDeletingMessageId}
+                            onDelete={handleDeleteMessage}
+                            onReply={setReplyingTo}
+                            onReaction={handleReaction}
+                            onPreviewImage={setPreviewImage}
+                            reactingTo={reactingTo}
+                            setReactingTo={setReactingTo}
+                            onNavigatePost={(id) => navigate(`/post/${id}`)}
+                            onNavigateProject={(id) => navigate(`/project/${id}`)}
+                          />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 )}
 
                 {activeConvo && typingUsers[activeConvo.partner.id] && (
@@ -2337,6 +2352,21 @@ export default function Messages() {
             opacity: 1;
           }
         }
+        .message-container .reply-button,
+        .message-container .msg-dots-trigger {
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+        .message-container:hover .reply-button,
+        .message-container:hover .msg-dots-trigger {
+          opacity: 1;
+        }
+        @media (max-width: 768px) {
+          .message-container .reply-button,
+          .message-container .msg-dots-trigger {
+            opacity: 1;
+          }
+        }
         .convo-container .convo-dots-container {
           opacity: 0;
           pointer-events: none;
@@ -2347,17 +2377,13 @@ export default function Messages() {
           opacity: 1;
           pointer-events: auto;
         }
-        .convo-container:hover .convo-timestamp,
-        .convo-container .is-open + .convo-timestamp {
+        .convo-container:hover .convo-timestamp-label {
           opacity: 0;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .convo-container .convo-dots-container {
             opacity: 1;
             pointer-events: auto;
-          }
-          .convo-container .convo-timestamp {
-            opacity: 0;
           }
         }
       `}</style>
