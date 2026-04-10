@@ -1267,13 +1267,23 @@ export default function Messages() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Optimistic update
+      // Update React Query cache immediately
+      queryClient.setQueryData(['conversations'], (old: Conversation[] | undefined) => {
+        if (!old) return [];
+        return old.filter(c => c.id !== convoId);
+      });
+
+      // Also update local state
       setConversations(prev => (Array.isArray(prev) ? prev : []).filter(c => c.id !== convoId));
+      
       if (activeConvo?.id === convoId) {
         setActiveConvo(null);
       }
+      
+      toast.success("Conversation deleted");
     } catch (error) {
       console.error("Error deleting conversation:", error);
+      toast.error("Failed to delete conversation");
     } finally {
       setDeletingConvoId(null);
       setConvoMenuId(null);
