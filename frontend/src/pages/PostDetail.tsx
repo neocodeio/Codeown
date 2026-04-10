@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -26,12 +26,17 @@ import {
   PaperPlaneTilt,
   CheckCircle,
   DownloadSimple,
-  Paperclip
+  Paperclip,
+  DotsThree,
+  PushPin,
+  PencilSimple,
+  Trash
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
 import SendToChatModal from "../components/SendToChatModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import EditPostModal from "../components/EditPostModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Gif, Image as ImageIcon } from "phosphor-react";
@@ -62,6 +67,7 @@ interface Post {
     userVoted?: number;
   } | null;
   code_snippet?: string | null;
+  isPinned?: boolean;
 }
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -88,6 +94,11 @@ export default function PostDetail() {
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<number | string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isPinnedLocal, setIsPinnedLocal] = useState(false);
+  const menuRef = React.useRef<HTMLDivElement>(null);
 
   const { avatarUrl: currentUserAvatarUrl } = useAvatar(
     user?.id,
@@ -96,13 +107,18 @@ export default function PostDetail() {
   );
 
   // 1. Fetch Post Data
-  const { data: post = null, isLoading: postLoading } = useQuery({
+  const { data: post = null, isLoading: postLoading } = useQuery<Post>({
     queryKey: ["post", id],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const token = await getToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await api.get(`/posts/${id}`, { headers });
+      const res = await api.get(`/posts/${id}`, { headers, signal });
       
+      // Update local pinned state if available
+      if (res.data.isPinned !== undefined) {
+        setIsPinnedLocal(res.data.isPinned);
+      }
+
       // Secondary logic: track analytics (fire and forget)
       api.post(`/analytics/track`, {
         event_type: 'post_view',
@@ -119,10 +135,10 @@ export default function PostDetail() {
   // 2. Fetch Comments
   const { data: comments = [], isLoading: commentsLoading } = useQuery({
     queryKey: ["postComments", id, commentSort],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const token = await getToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await api.get(`/comments/${id}?sort=${commentSort}`, { headers });
+      const res = await api.get(`/comments/${id}?sort=${commentSort}`, { headers, signal });
       return (Array.isArray(res.data) ? res.data : []) as CommentWithMeta[];
     },
     enabled: !!id,
@@ -147,6 +163,45 @@ export default function PostDetail() {
       fetchSavedStatus();
     }
   }, [id, fetchLikeStatus, fetchSavedStatus]);
+
+  const isOwnPost = user?.id === post?.user_id;
+  const isPinned = isPinnedLocal;
+
+  const handlePin = async () => {
+    try {
+      const token = await getToken();
+      const endpoint = isPinned ? `/posts/${post?.id}/unpin` : `/posts/${post?.id}/pin`;
+      await api.post(endpoint, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setIsPinnedLocal(!isPinned);
+      toast.success(isPinned ? "Post unpinned" : "Post pinned to profile");
+      window.dispatchEvent(new Event("profileUpdated"));
+      setIsMenuOpen(false);
+    } catch (error) {
+      console.error("Error toggling pin:", error);
+      toast.error("Failed to update pin");
+    }
+  };
+
+  const handlePostDelete = async () => {
+    if (!post?.id) return;
+    setIsDeleting(true);
+    try {
+      const token = await getToken();
+      await api.delete(`/posts/${post.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Post deleted successfully");
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      toast.error("Failed to delete post");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+    }
+  };
 
   const updateCommentCountInCache = (delta: number) => {
     if (!id) return;
@@ -363,28 +418,148 @@ export default function PostDetail() {
             padding: "16px 24px",
             display: "flex",
             alignItems: "center",
-            gap: "24px",
+            justifyContent: "space-between",
             borderBottom: "0.5px solid var(--border-hairline)"
           }}>
-            <button
-              onClick={() => navigate(-1)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: "4px",
-                borderRadius: "var(--radius-sm)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
-            </button>
-            <h1 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
-              Post
-            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+              <button
+                onClick={() => navigate(-1)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "4px",
+                  borderRadius: "var(--radius-sm)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
+              </button>
+              <h1 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
+                Post
+              </h1>
+            </div>
+
+            {/* Three Dots Menu */}
+            {isOwnPost && (
+                <div style={{ position: "relative" }} ref={menuRef}>
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "var(--text-tertiary)",
+                      cursor: "pointer",
+                      padding: "8px",
+                      borderRadius: "var(--radius-md)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    <DotsThree size={24} weight="bold" />
+                  </button>
+
+                  {isMenuOpen && (
+                    <div style={{
+                      position: "absolute",
+                      top: "100%",
+                      right: 0,
+                      backgroundColor: "var(--bg-card)",
+                      borderRadius: "12px",
+                      border: "0.5px solid var(--border-hairline)",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                      padding: "6px",
+                      zIndex: 1000,
+                      minWidth: "160px",
+                      animation: "reactionFadeUp 0.15s ease-out"
+                    }}>
+                      <button
+                        onClick={handlePin}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 12px",
+                          borderRadius: "8px",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          color: "var(--text-primary)",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          transition: "all 0.15s",
+                          textAlign: "left"
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <PushPin size={18} weight={isPinned ? "fill" : "regular"} />
+                        {isPinned ? "Unpin Post" : "Pin Post"}
+                      </button>
+
+                      <button
+                        onClick={() => { setIsEditModalOpen(true); setIsMenuOpen(false); }}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 12px",
+                          borderRadius: "8px",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          color: "var(--text-primary)",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          transition: "all 0.15s",
+                          textAlign: "left"
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <PencilSimple size={18} />
+                        Edit Post
+                      </button>
+
+                      <div style={{ height: "0.5px", backgroundColor: "var(--border-hairline)", margin: "4px 8px" }} />
+
+                      <button
+                        onClick={() => { setIsDeleteModalOpen(true); setIsMenuOpen(false); }}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 12px",
+                          borderRadius: "8px",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          color: "#ef4444",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          transition: "all 0.15s",
+                          textAlign: "left"
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.08)"}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <Trash size={18} />
+                        Delete Post
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
           </header>
 
           {/* Post Content */}
@@ -814,6 +989,25 @@ export default function PostDetail() {
         onConfirm={handleCommentDelete}
         title="Delete Comment"
         message="Are you sure you want to delete this comment? This action cannot be undone."
+        isLoading={isDeleting}
+      />
+
+      {/* Post Action Modals */}
+      {post && (
+        <EditPostModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          post={post}
+          onUpdated={() => queryClient.invalidateQueries({ queryKey: ["post", id] })}
+        />
+      )}
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handlePostDelete}
+        title="Delete Post"
+        message="Are you sure you want to delete this post? This action cannot be undone."
         isLoading={isDeleting}
       />
       </main>
