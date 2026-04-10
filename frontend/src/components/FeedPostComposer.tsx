@@ -822,23 +822,23 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         </span>
                         <button
                             onClick={handleSubmit}
-                            disabled={(!content.trim() && images.length === 0 && attachments.length === 0 && !isPoll && !codeSnippet.trim()) || isSubmitting || content.length > charLimit}
+                            disabled={(!content.trim() && images.length === 0 && attachments.length === 0 && !isPoll && !codeSnippet.trim()) || isSubmitting || content.length > charLimit || codeSnippet.length > 2000}
                             style={{
                                 padding: isMobile ? "8px 18px" : "10px 24px",
-                                backgroundColor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "var(--bg-hover)",
-                                color: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--bg-page)" : "var(--text-tertiary)",
+                                backgroundColor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--text-primary)" : "var(--bg-hover)",
+                                color: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
                                 borderRadius: "100px",
                                 fontWeight: "700",
                                 fontSize: "14px",
-                                cursor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "pointer" : "not-allowed",
+                                cursor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "pointer" : "not-allowed",
                                 transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                                 transform: isSubmitting ? "scale(0.98)" : "scale(1)",
                                 opacity: isSubmitting ? 0.8 : 1,
-                                boxShadow: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "0 4px 12px rgba(0,0,0,0.1)" : "none"
+                                boxShadow: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "0 4px 12px rgba(0,0,0,0.1)" : "none"
                             }}
                             onMouseEnter={(e) => {
-                                if ((content.trim() || images.length > 0 || isPoll) && !isSubmitting) {
+                                if ((content.trim() || images.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && codeSnippet.length <= 2000 && content.length <= charLimit) {
                                     e.currentTarget.style.filter = "brightness(0.9)";
                                     e.currentTarget.style.transform = "translateY(-1px)";
                                 }
