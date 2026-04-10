@@ -353,6 +353,8 @@ const ConversationItem = memo(({
 const MessageBubble = memo(({ 
   msg, 
   isMine, 
+  showSender,
+  isLastInGroup,
   activeConvo, 
   currentUser, 
   messageMenuId, 
@@ -383,142 +385,281 @@ const MessageBubble = memo(({
   reactingTo: number | null,
   setReactingTo: (id: number | null) => void,
   onNavigatePost: (id: number) => void,
-  onNavigateProject: (id: number) => void
+  onNavigateProject: (id: number) => void,
+  showSender: boolean,
+  isLastInGroup: boolean
 }) => {
   return (
-    <div className="message-row" style={{ display: "flex", flexDirection: "column", alignItems: isMine ? "flex-end" : "flex-start", gap: "4px", width: "100%", position: "relative" }}>
-      {!isMine && <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "4px", padding: "0 4px" }}>{activeConvo.partner.name}</span>}
+    <div className="message-row" style={{ 
+      display: "flex", 
+      flexDirection: "column", 
+      alignItems: isMine ? "flex-end" : "flex-start", 
+      gap: "2px", 
+      width: "100%", 
+      position: "relative",
+      marginBottom: isLastInGroup ? "12px" : "2px"
+    }}>
+      {showSender && !isMine && (
+        <span style={{ 
+          fontSize: "12px", 
+          fontWeight: 700, 
+          color: "var(--text-primary)", 
+          marginBottom: "6px", 
+          padding: "0 12px",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px"
+        }}>
+          {activeConvo.partner.name}
+          <VerifiedBadge username={activeConvo.partner.username} size="12px" />
+        </span>
+      )}
+      
       {msg.reply_to && (
-        <div style={{ padding: "8px 12px", backgroundColor: "var(--bg-hover)", borderLeft: "2px solid var(--text-tertiary)", borderRadius: "var(--radius-sm)", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "2px", maxWidth: "100%", cursor: "pointer", opacity: 0.8 }} onClick={() => document.getElementById(`msg-${msg.reply_to?.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}>
-          <div style={{ fontWeight: 700, fontSize: "10px", marginBottom: "2px" }}>{msg.reply_to.sender_id === currentUser?.id ? "You" : activeConvo.partner.name}</div>
-          <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{msg.reply_to.content || "Media"}</div>
+        <div 
+          style={{ 
+            padding: "8px 14px", 
+            backgroundColor: "var(--bg-hover)", 
+            borderLeft: "3px solid var(--text-tertiary)", 
+            borderRadius: "12px", 
+            fontSize: "12px", 
+            color: "var(--text-secondary)", 
+            marginBottom: "4px", 
+            maxWidth: "85%", 
+            cursor: "pointer", 
+            opacity: 0.9,
+            margin: isMine ? "0 0 4px auto" : "0 auto 4px 0"
+          }} 
+          onClick={() => document.getElementById(`msg-${msg.reply_to?.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
+        >
+          <div style={{ fontWeight: 800, fontSize: "11px", marginBottom: "2px", color: "var(--text-primary)" }}>
+            {msg.reply_to.sender_id === currentUser?.id ? "You" : activeConvo.partner.name}
+          </div>
+          <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {msg.reply_to.content || "Media"}
+          </div>
         </div>
       )}
-      <div className="msg-dots-trigger" style={{ 
-        position: "relative", 
-        alignSelf: isMine ? "flex-end" : "flex-start", 
-        marginBottom: "-2px" 
+
+      <div style={{ 
+        display: "flex", 
+        flexDirection: isMine ? "row-reverse" : "row", 
+        alignItems: "flex-end", 
+        gap: "8px", 
+        maxWidth: "85%",
       }}>
-        <button 
-          onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }} 
-          style={{ background: "none", border: "none", padding: "2px", cursor: "pointer", color: "var(--text-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-sm)", transition: "all 0.15s ease" }}
-        >
-          <DotsThree size={24} weight="bold" />
-        </button>
-        {messageMenuId === msg.id && (
-          <div className="message-action-menu" style={{ 
-            position: "absolute", 
-            top: "100%", 
-            [isMine ? "right" : "left"]: 0, 
-            marginTop: "4px", 
-            backgroundColor: "var(--bg-page)", 
-            border: "0.5px solid var(--border-hairline)", 
-            borderRadius: "var(--radius-sm)", 
-            boxShadow: "0 8px 24px rgba(0,0,0,0.15)", 
-            zIndex: 1000, 
-            minWidth: "160px", 
-            overflow: "hidden" 
-          }}>
-            {msg.content && (
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigator.clipboard.writeText(msg.content);
-                  toast.success("Copied to clipboard", { 
-                    position: "bottom-center", 
-                    autoClose: 1500,
-                    hideProgressBar: true,
-                    style: { backgroundColor: "var(--bg-page)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "12px", fontSize: "13px", fontWeight: 600 }
-                  });
-                  setMessageMenuId(null);
+        <div style={{ position: "relative" }}>
+          <motion.div
+            id={`msg-${msg.id}`}
+            onContextMenu={(e) => { e.preventDefault(); setReactingTo(msg.id); }}
+            style={{ 
+              padding: "10px 16px", 
+              borderRadius: isMine 
+                ? "20px 20px 4px 20px" 
+                : "20px 20px 20px 4px", 
+              backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-hover)", 
+              color: isMine ? "var(--bg-page)" : "var(--text-primary)", 
+              fontSize: "14.5px", 
+              lineHeight: 1.55, 
+              border: isMine ? "none" : "1px solid var(--border-hairline)", 
+              wordBreak: "break-word", 
+              boxShadow: isMine ? "0 4px 15px rgba(0,0,0,0.1)" : "none",
+              cursor: "pointer", 
+              userSelect: "none",
+              position: "relative"
+            }}
+            onDoubleClick={(e) => { e.stopPropagation(); onReaction(msg.id, "❤️"); }}
+          >
+            {msg.image_url && (
+              <img 
+                src={msg.image_url} 
+                alt="" 
+                style={{ 
+                  maxWidth: "100%", 
+                  maxHeight: "350px", 
+                  borderRadius: "12px", 
+                  marginBottom: msg.content ? "10px" : 0, 
+                  display: "block", 
+                  cursor: "pointer",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
                 }} 
-                style={{ width: "100%", padding: "10px 14px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}
-              >
-                <Copy size={16} weight="bold" /> Copy text
-              </button>
+                onClick={() => onPreviewImage(msg.image_url!)} 
+              />
+            )}
+            {msg.audio_url && <div style={{ marginTop: msg.image_url ? "10px" : 0 }}><VoiceWaveform url={msg.audio_url} isMine={isMine} /></div>}
+            {msg.content && <div>{msg.content}</div>}
+
+            {/* Shared Previews */}
+            {msg.shared_post && (
+              <div onClick={(e) => { e.stopPropagation(); onNavigatePost(msg.shared_post!.id); }} style={{ marginTop: msg.content ? "12px" : 4, backgroundColor: isMine ? "rgba(255,255,255,0.1)" : "var(--bg-page)", borderRadius: "12px", border: "1px solid var(--border-hairline)", overflow: "hidden", cursor: "pointer", transition: "transform 0.2s" }}>
+                {msg.shared_post.images && msg.shared_post.images[0] && <img src={msg.shared_post.images[0]} style={{ width: "100%", height: "120px", objectFit: "cover" }} />}
+                <div style={{ padding: "10px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: 700, color: isMine ? "rgba(255,255,255,0.7)" : "var(--text-tertiary)", marginBottom: "4px" }}>Shared Post • {msg.shared_post.user?.name}</div>
+                  <div style={{ fontSize: "13px", fontWeight: 700 }}>{msg.shared_post.title}</div>
+                </div>
+              </div>
+            )}
+            {msg.shared_project && (
+              <div onClick={(e) => { e.stopPropagation(); onNavigateProject(msg.shared_project!.id); }} style={{ marginTop: msg.content ? "12px" : 4, backgroundColor: isMine ? "rgba(255,255,255,0.1)" : "var(--bg-page)", borderRadius: "12px", border: "1px solid var(--border-hairline)", overflow: "hidden", cursor: "pointer", transition: "transform 0.2s" }}>
+                {msg.shared_project.cover_image && <img src={msg.shared_project.cover_image} style={{ width: "100%", height: "120px", objectFit: "cover" }} />}
+                <div style={{ padding: "10px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: 700, color: isMine ? "rgba(255,255,255,0.7)" : "var(--text-tertiary)", marginBottom: "4px" }}>Shared Project • {msg.shared_project.user?.name}</div>
+                  <div style={{ fontSize: "13px", fontWeight: 700 }}>{msg.shared_project.title}</div>
+                </div>
+              </div>
             )}
             
-            {isMine && (
-              <>
-                {msg.content && <div style={{ height: "0.5px", backgroundColor: "var(--border-hairline)", margin: "0 10px" }} />}
-                {deletingMessageId === msg.id ? (
-                  <div style={{ padding: "12px 14px" }}>
-                    <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px" }}>Delete for everyone?</div>
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(null); }} style={{ flex: 1, padding: "6px", border: "0.5px solid var(--border-hairline)", borderRadius: "6px", background: "transparent", color: "var(--text-primary)", fontSize: "11px", fontWeight: 700, cursor: "pointer" }}>No</button>
-                      <button onClick={(e) => { e.stopPropagation(); onDelete(msg.id); }} style={{ flex: 1, padding: "6px", border: "none", borderRadius: "6px", backgroundColor: "#ef4444", color: "#fff", fontSize: "11px", fontWeight: 700, cursor: "pointer" }}>Yes</button>
+            {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+              <div style={{ 
+                position: "absolute",
+                bottom: "-14px",
+                [isMine ? "left" : "right"]: "8px",
+                display: "flex", 
+                flexWrap: "wrap", 
+                gap: "2px", 
+                zIndex: 2
+              }}>
+                {Object.entries(msg.reactions).map(([emoji, userIds]) => {
+                  const hasReacted = userIds.includes(currentUser!.id);
+                  return (
+                    <div 
+                      key={emoji} 
+                      onClick={() => onReaction(msg.id, emoji)} 
+                      style={{ 
+                        padding: "2px 6px", 
+                        backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-page)", 
+                        color: hasReacted ? "var(--bg-page)" : "var(--text-primary)", 
+                        borderRadius: "10px", 
+                        fontSize: "11px", 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "3px", 
+                        cursor: "pointer", 
+                        border: "1px solid var(--border-hairline)",
+                        boxShadow: "0 2px 5px rgba(0,0,0,0.05)"
+                      }}
+                    >
+                      <span>{emoji}</span>
+                      <span style={{ fontSize: "10px", fontWeight: 800 }}>{userIds.length}</span>
                     </div>
-                  </div>
-                ) : (
-                  <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(msg.id); }} style={{ width: "100%", padding: "10px 14px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "#ef4444" }}>
-                    <Trash size={16} weight="bold" /> Delete message
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
+        </div>
+
+        <div className="msg-actions" style={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          alignItems: isMine ? "flex-end" : "flex-start",
+          opacity: 0,
+          transition: "opacity 0.2s",
+          paddingBottom: "4px"
+        }}>
+          <div style={{ position: "relative" }}>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }} 
+              style={{ background: "none", border: "none", padding: "4px", cursor: "pointer", color: "var(--text-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%" }}
+            >
+              <DotsThree size={20} weight="bold" />
+            </button>
+            {messageMenuId === msg.id && (
+              <div style={{ 
+                position: "absolute", 
+                bottom: "100%", 
+                [isMine ? "right" : "left"]: 0, 
+                marginBottom: "8px", 
+                backgroundColor: "var(--bg-page)", 
+                border: "1px solid var(--border-hairline)", 
+                borderRadius: "12px", 
+                boxShadow: "0 8px 30px rgba(0,0,0,0.2)", 
+                zIndex: 1000, 
+                minWidth: "170px", 
+                overflow: "hidden" 
+              }}>
+                {msg.content && (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(msg.content);
+                      toast.success("Copied to clipboard", { 
+                        position: "bottom-center", 
+                        autoClose: 1500,
+                        hideProgressBar: true,
+                        style: { backgroundColor: "var(--bg-page)", color: "var(--text-primary)", border: "1px solid var(--border-hairline)", borderRadius: "12px", fontSize: "13px", fontWeight: 600 }
+                      });
+                      setMessageMenuId(null);
+                    }} 
+                    style={{ width: "100%", padding: "12px 16px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}
+                  >
+                    <Copy size={16} weight="bold" /> Copy text
                   </button>
                 )}
-              </>
+                <button onClick={() => { onReply(msg); setMessageMenuId(null); }} style={{ width: "100%", padding: "12px 16px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
+                  <PaperPlaneTilt size={16} weight="bold" /> Reply
+                </button>
+                {isMine && (
+                  <>
+                    <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", margin: "4px 0" }} />
+                    {deletingMessageId === msg.id ? (
+                      <div style={{ padding: "12px 16px" }}>
+                        <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px" }}>Delete for everyone?</div>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(null); }} style={{ flex: 1, padding: "8px", border: "1px solid var(--border-hairline)", borderRadius: "8px", background: "transparent", color: "var(--text-primary)", fontSize: "11px", fontWeight: 700, cursor: "pointer" }}>No</button>
+                          <button onClick={(e) => { e.stopPropagation(); onDelete(msg.id); }} style={{ flex: 1, padding: "8px", border: "none", borderRadius: "8px", backgroundColor: "#ef4444", color: "#fff", fontSize: "11px", fontWeight: 700, cursor: "pointer" }}>Yes</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(msg.id); }} style={{ width: "100%", padding: "12px 16px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "#ef4444" }}>
+                        <Trash size={16} weight="bold" /> Delete
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
-      <motion.div
-        id={`msg-${msg.id}`}
-        onContextMenu={(e) => { e.preventDefault(); setReactingTo(msg.id); }}
-        style={{ padding: "10px 14px", borderRadius: "var(--radius-sm)", backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-page)", color: isMine ? "var(--bg-page)" : "var(--text-primary)", fontSize: "14px", lineHeight: 1.5, border: "0.5px solid var(--border-hairline)", wordBreak: "break-word", position: "relative", cursor: "pointer", userSelect: "none" }}
-        onDoubleClick={(e) => { e.stopPropagation(); onReaction(msg.id, "❤️"); }}
-      >
-        {msg.image_url && <img src={msg.image_url} alt="" style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "var(--radius-sm)", marginBottom: msg.content ? "8px" : 0, display: "block", cursor: "pointer" }} onClick={() => onPreviewImage(msg.image_url!)} />}
-        {msg.audio_url && <div style={{ marginTop: msg.image_url ? "8px" : 0 }}><VoiceWaveform url={msg.audio_url} isMine={isMine} /></div>}
-        {msg.content && <div>{msg.content}</div>}
-        
-        {/* Shared Previews */}
-        {msg.shared_post && (
-          <div onClick={(e) => { e.stopPropagation(); onNavigatePost(msg.shared_post!.id); }} style={{ marginTop: msg.content ? "12px" : 4, backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", overflow: "hidden", cursor: "pointer" }}>
-            {msg.shared_post.images && msg.shared_post.images[0] && <img src={msg.shared_post.images[0]} style={{ width: "100%", height: "100px", objectFit: "cover" }} />}
-            <div style={{ padding: "8px" }}><div style={{ fontSize: "10px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-tertiary)" }}>Shared Post • {msg.shared_post.user?.name}</div><div style={{ fontSize: "12px", fontWeight: 700 }}>{msg.shared_post.title}</div></div>
-          </div>
-        )}
-        {msg.shared_project && (
-          <div onClick={(e) => { e.stopPropagation(); onNavigateProject(msg.shared_project!.id); }} style={{ marginTop: msg.content ? "12px" : 4, backgroundColor: isMine ? "rgba(128,128,128,0.15)" : "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", overflow: "hidden", cursor: "pointer" }}>
-            {msg.shared_project.cover_image && <img src={msg.shared_project.cover_image} style={{ width: "100%", height: "100px", objectFit: "cover" }} />}
-            <div style={{ padding: "8px" }}><div style={{ fontSize: "10px", fontWeight: 700, color: isMine ? "inherit" : "var(--text-tertiary)" }}>Shared Project • {msg.shared_project.user?.name}</div><div style={{ fontSize: "12px", fontWeight: 700 }}>{msg.shared_project.title}</div></div>
-          </div>
-        )}
-      </motion.div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
-        <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, display: "flex", alignItems: "center", gap: "4px" }}>
-          {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          {isMine && (
-            msg.status === 'sending' ? (
-              <span style={{ opacity: 0.5, fontSize: "10px" }}>Sending...</span>
-            ) : msg.status === 'error' ? (
-              <span style={{ color: "#ef4444", fontSize: "10px" }}>Failed</span>
-            ) : msg.is_read ? (
-              <Checks size={14} weight="bold" color="#3B82F6" />
-            ) : (
-              <Check size={14} weight="bold" style={{ opacity: 0.5 }} />
-            )
-          )}
-        </span>
-        <button onClick={() => onReply(msg)} style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>Reply</button>
-      </div>
-      {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "2px", alignSelf: isMine ? "flex-end" : "flex-start" }}>
-          {Object.entries(msg.reactions).map(([emoji, userIds]) => {
-            const hasReacted = userIds.includes(currentUser!.id);
-            return (
-              <div key={emoji} onClick={() => onReaction(msg.id, emoji)} style={{ padding: "2px 6px", backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-hover)", color: hasReacted ? "var(--bg-page)" : "var(--text-primary)", borderRadius: "var(--radius-pill)", fontSize: "11px", display: "flex", alignItems: "center", gap: "4px", cursor: "pointer", border: "0.5px solid var(--border-hairline)" }}>
-                <span>{emoji}</span><span style={{ fontSize: "9px", fontWeight: 800 }}>{userIds.length}</span>
-              </div>
-            );
-          })}
         </div>
-      )}
+      </div>
+
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        gap: "6px", 
+        padding: "2px 4px 0", 
+        alignSelf: isMine ? "flex-end" : "flex-start",
+        marginRight: isMine ? "8px" : 0,
+        marginLeft: isMine ? 0 : "8px"
+      }}>
+        <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600, opacity: isLastInGroup ? 1 : 0.6 }}>
+          {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+        </span>
+        {isMine && isLastInGroup && (
+          msg.status === 'sending' ? (
+            <div style={{ width: "8px", height: "8px", borderRadius: "50%", border: "1.5px solid var(--text-tertiary)", borderTopColor: "transparent", animation: "spin 1s linear infinite" }} />
+          ) : msg.status === 'error' ? (
+            <Info size={12} weight="bold" color="#ef4444" />
+          ) : msg.is_read ? (
+            <Checks size={14} weight="bold" color="#3B82F6" />
+          ) : (
+            <Check size={14} weight="bold" style={{ opacity: 0.6 }} />
+          )
+        )}
+      </div>
+
       {reactingTo === msg.id && (
-        <div style={{ position: "absolute", bottom: "100%", [isMine ? "right" : "left"]: 0, backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-pill)", padding: "6px 12px", boxShadow: "0 10px 30px rgba(0,0,0,0.15)", border: "0.5px solid var(--border-hairline)", display: "flex", gap: "10px", zIndex: 1000, marginBottom: "10px" }}>
+        <div style={{ position: "absolute", bottom: "100%", [isMine ? "right" : "left"]: 0, backgroundColor: "var(--bg-page)", borderRadius: "30px", padding: "8px 16px", boxShadow: "0 10px 40px rgba(0,0,0,0.2)", border: "1px solid var(--border-hairline)", display: "flex", gap: "12px", zIndex: 1000, marginBottom: "12px" }}>
           {["👍", "❤️", "😂", "😮", "😢", "🔥"].map((emoji) => (
-            <button key={emoji} onClick={() => onReaction(msg.id, emoji)} style={{ background: "none", border: "none", fontSize: "20px", padding: "4px", cursor: "pointer" }}>{emoji}</button>
+            <button key={emoji} onClick={() => onReaction(msg.id, emoji)} style={{ background: "none", border: "none", fontSize: "22px", padding: "4px", cursor: "pointer", transition: "transform 0.1s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>{emoji}</button>
           ))}
         </div>
       )}
+
+      <style>{`
+        .message-row:hover .msg-actions { opacity: 1 !important; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
     </div>
   );
 });
@@ -531,8 +672,8 @@ export default function Messages() {
   const { user: currentUser } = useClerkUser();
   const navigate = useNavigate();
   const { width } = useWindowSize();
-  const isMobile = width < 768;
-  const isTablet = width >= 768 && width < 1024;
+  const isMobile = width < 1024;
+  const isTablet = width >= 1024 && width < 1280;
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvo, setActiveConvo] = useState<Conversation | null>(null);
@@ -1188,11 +1329,12 @@ export default function Messages() {
     <main
       style={{
         display: "flex",
-        flexDirection: isMobile ? "column" : "row",
-        height: isMobile ? "calc(100vh - 64px)" : "100%",
+        flexDirection: "row",
+        height: isMobile ? "calc(100vh - 144px)" : "100vh",
         maxWidth: "100%",
         overflow: "hidden",
         backgroundColor: "var(--bg-page)",
+        position: "relative"
       }}
     >
       {/* Sidebar */}
@@ -1200,7 +1342,7 @@ export default function Messages() {
         <div
           style={{
             width: sidebarWidth,
-            minWidth: isMobile ? undefined : "280px",
+            minWidth: isMobile ? "100%" : "300px",
             flexShrink: 0,
             display: "flex",
             flexDirection: "column",
@@ -1610,27 +1752,36 @@ export default function Messages() {
                     </div>
                   </div>
                 ) : (
-                  messages.map((msg) => (
-                    <MessageBubble
-                      key={msg.id}
-                      msg={msg}
-                      isMine={msg.sender_id === currentUser?.id}
-                      activeConvo={activeConvo}
-                      currentUser={currentUser}
-                      messageMenuId={messageMenuId}
-                      setMessageMenuId={setMessageMenuId}
-                      deletingMessageId={deletingMessageId}
-                      setDeletingMessageId={setDeletingMessageId}
-                      onDelete={handleDeleteMessage}
-                      onReply={setReplyingTo}
-                      onReaction={handleReaction}
-                      onPreviewImage={setPreviewImage}
-                      reactingTo={reactingTo}
-                      setReactingTo={setReactingTo}
-                      onNavigatePost={(id) => navigate(`/post/${id}`)}
-                      onNavigateProject={(id) => navigate(`/project/${id}`)}
-                    />
-                  ))
+                  messages.map((msg, index) => {
+                    const prevMsg = messages[index - 1];
+                    const nextMsg = messages[index + 1];
+                    const showSender = !prevMsg || prevMsg.sender_id !== msg.sender_id;
+                    const isLastInGroup = !nextMsg || nextMsg.sender_id !== msg.sender_id;
+
+                    return (
+                      <MessageBubble
+                        key={msg.id}
+                        msg={msg}
+                        isMine={msg.sender_id === currentUser?.id}
+                        showSender={showSender}
+                        isLastInGroup={isLastInGroup}
+                        activeConvo={activeConvo}
+                        currentUser={currentUser}
+                        messageMenuId={messageMenuId}
+                        setMessageMenuId={setMessageMenuId}
+                        deletingMessageId={deletingMessageId}
+                        setDeletingMessageId={setDeletingMessageId}
+                        onDelete={handleDeleteMessage}
+                        onReply={setReplyingTo}
+                        onReaction={handleReaction}
+                        onPreviewImage={setPreviewImage}
+                        reactingTo={reactingTo}
+                        setReactingTo={setReactingTo}
+                        onNavigatePost={(id) => navigate(`/post/${id}`)}
+                        onNavigateProject={(id) => navigate(`/project/${id}`)}
+                      />
+                    );
+                  })
                 )}
 
                 {activeConvo && typingUsers[activeConvo.partner.id] && (
