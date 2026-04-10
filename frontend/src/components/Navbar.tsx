@@ -564,7 +564,7 @@ export default function Navbar() {
           top: 0,
           borderRight: "0.5px solid var(--border-hairline)",
           backgroundColor: "var(--bg-page)",
-          zIndex: 50,
+          zIndex: 1000,
         }}>
           <SidebarContent />
         </nav>
