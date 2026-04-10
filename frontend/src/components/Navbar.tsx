@@ -238,7 +238,7 @@ export default function Navbar() {
       <nav style={{ flexShrink: 0, marginTop: window.innerHeight < 900 ? "4px" : "16px" }} aria-label="Main Navigation">
         <Link to="/" style={linkStyle("/")} aria-label="Home Feed">
           <House size={20} weight={location.pathname === "/" ? "bold" : "regular"} />
-          Feed
+          Home
         </Link>
         <Link to="/search" style={linkStyle("/search")} aria-label="Search and Discover">
           <MagnifyingGlass size={20} weight={location.pathname === "/search" ? "bold" : "regular"} />
