@@ -32,45 +32,34 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
     setScrollLeft(scrollRef.current.scrollLeft);
   };
 
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !scrollRef.current) return;
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // scroll-fast
+    const walk = (x - startX) * 1.5;
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
   useEffect(() => {
     if (scrollRef.current && !loading) {
-        // Smooth scroll to the end (most recent activity)
         scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [loading, data]);
 
   useEffect(() => {
-    if (!githubUrl) return;
     const fetchActivity = async () => {
       try {
         setLoading(true);
-        // 1. Fetch Codeown Activity
         const codeownRes = await api.get(`/analytics/heatmap/${userId}`);
         const codeownData: { date: string; count: number }[] = codeownRes.data;
 
-        // 2. Fetch GitHub Activity if URL exists
         let githubData: Record<string, number> = {};
         if (githubUrl) {
           try {
-            // Robust parsing: extract "username" from "https://github.com/username/", "github.com/username", etc.
             let githubUsername = githubUrl.trim().replace(/\/$/, "").split("/").pop();
-            
             if (githubUsername && githubUsername !== "github.com" && !githubUsername.includes("http")) {
               const ghRes = await fetch(`https://api.github.com/users/${githubUsername}/events/public`);
               if (ghRes.ok) {
@@ -90,29 +79,17 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
           }
         }
 
-        // 3. Merge data
         const merged: Record<string, ActivityDay> = {};
-        
-        // Add Codeown activity
         codeownData.forEach(day => {
-          merged[day.date] = {
-            date: day.date,
-            count: day.count,
-            source: "codeown"
-          };
+          merged[day.date] = { date: day.date, count: day.count, source: "codeown" };
         });
 
-        // Merge GitHub activity
         Object.entries(githubData).forEach(([date, count]) => {
           if (merged[date]) {
             merged[date].count += count;
             merged[date].source = "both";
           } else {
-            merged[date] = {
-              date,
-              count,
-              source: "github"
-            };
+            merged[date] = { date, count, source: "github" };
           }
         });
 
@@ -124,45 +101,45 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
         setLoading(false);
       }
     };
-
     fetchActivity();
   }, [userId, githubUrl]);
 
-  // Generate last 365 days of empty squares
+  const totalContributions = data.reduce((acc, curr) => acc + curr.count, 0);
+
   const renderSquares = () => {
     const squares: React.ReactElement[] = [];
     const today = new Date();
-    
-    for (let i = 0; i < 365; i++) {
+    for (let i = 0; i < 364; i++) {
         const d = new Date();
-        d.setDate(today.getDate() - (364 - i));
+        d.setDate(today.getDate() - (363 - i));
         const dateStr = d.toISOString().split('T')[0];
         const dayData = data.find(day => day.date === dateStr);
-        
         const count = dayData?.count || 0;
         let color = "var(--bg-hover)";
-        let opacity = 0.2;
+        let opacity = 0.3;
         
         if (count > 0) {
-            if (dayData?.source === 'github') color = "#238636"; // GitHub Green
-            else if (dayData?.source === 'codeown') color = "var(--text-primary)"; // Codeown Theme Color
-            else color = "var(--text-primary)"; // Mixed
- 
+            if (dayData?.source === 'github') color = "#238636";
+            else if (dayData?.source === 'codeown') color = "var(--text-primary)";
+            else color = "var(--text-primary)";
+
             if (count > 10) opacity = 1;
             else if (count > 5) opacity = 0.7;
-            else opacity = 0.4;
+            else opacity = 0.45;
         }
 
         squares.push(
             <div
                 key={i}
                 title={`${dateStr}: ${count} activities`}
+                className="activity-square"
                 style={{
-                    width: "10px",
-                    height: "10px",
+                    width: "9px",
+                    height: "9px",
                     backgroundColor: color,
                     opacity: opacity,
                     borderRadius: "2px",
+                    transition: "all 0.2s ease"
                 }}
             />
         );
@@ -170,76 +147,93 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
     return squares;
   };
 
-  if (!githubUrl) return null;
+  if (!githubUrl && data.length === 0) return null;
 
   if (loading) {
-    return <div style={{ height: "100px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)", fontSize: "12px" }}>Loading contributions...</div>;
+    return (
+      <div style={{ padding: "0 24px" }}>
+        <div style={{ height: "140px", width: "100%", maxWidth: "680px", margin: "0 auto", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", animation: "skeleton-shimmer 1.5s infinite" }} />
+      </div>
+    );
   }
 
   return (
     <div style={{ 
-      padding: isMobile ? "20px" : "24px", 
-      borderRadius: "16px", 
-      border: "0.5px solid var(--border-hairline)", 
-      backgroundColor: "var(--bg-card)",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.02)"
+      width: "100%",
+      display: "flex",
+      justifyContent: "center",
+      padding: isMobile ? "0 10px" : "0"
     }}>
       <div style={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center", 
-        marginBottom: "24px",
-        flexWrap: "wrap",
-        gap: "12px"
+        width: "100%",
+        maxWidth: "680px", // Exact width for centered feel
+        padding: isMobile ? "20px" : "24px", 
+        borderRadius: "var(--radius-md)", 
+        border: "0.5px solid var(--border-hairline)", 
+        backgroundColor: "var(--bg-page)",
+        boxShadow: "var(--shadow-sm)"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <h4 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>
-            Contributions
-          </h4>
-          <span style={{ fontSize: "10px", fontWeight: 500, color: "var(--text-tertiary)", opacity: 0.6 }}>in the last year</span>
-        </div>
-        <div style={{ display: "flex", gap: "16px", fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
-           <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-             <div style={{ width: "10px", height: "10px", borderRadius: "2px", backgroundColor: "#238636" }} /> GitHub
-           </span>
-           <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-             <div style={{ width: "10px", height: "10px", borderRadius: "2px", backgroundColor: "var(--text-primary)" }} /> Codeown
-           </span>
-        </div>
-      </div>
-      <div 
-        ref={scrollRef}
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeave}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        style={{ 
-          overflowX: "auto",
-          width: "100%",
-          paddingBottom: "4px",
-          msOverflowStyle: "none",
-          scrollbarWidth: "none",
-          cursor: isDragging ? "grabbing" : "grab",
-          userSelect: "none"
-        }} 
-        className="hide-scrollbar"
-      >
         <div style={{ 
-            display: "grid", 
-            gridTemplateColumns: "repeat(52, 1fr)", 
-            gridTemplateRows: "repeat(7, 1fr)",
-            gridAutoFlow: "column",
-            gap: "3.5px",
-            minWidth: "720px",
-            width: "max-content"
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "flex-end", 
+          marginBottom: "20px",
+          flexWrap: "wrap",
+          gap: "12px"
         }}>
-          {renderSquares()}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <h4 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>
+                {totalContributions} Contributions
+              </h4>
+            </div>
+            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>in the last year</span>
+          </div>
+          
+          <div style={{ display: "flex", gap: "12px", fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, opacity: 0.8 }}>
+             <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+               <div style={{ width: "8px", height: "8px", borderRadius: "2px", backgroundColor: "#238636" }} /> GitHub
+             </span>
+             <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+               <div style={{ width: "8px", height: "8px", borderRadius: "2px", backgroundColor: "var(--text-primary)" }} /> Codeown
+             </span>
+          </div>
         </div>
+
+        <div 
+          ref={scrollRef}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          style={{ 
+            overflowX: "auto",
+            width: "100%",
+            paddingBottom: "4px",
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
+            cursor: isDragging ? "grabbing" : "grab",
+            userSelect: "none"
+          }} 
+          className="hide-scrollbar"
+        >
+          <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "repeat(52, 1fr)", 
+              gridTemplateRows: "repeat(7, 1fr)",
+              gridAutoFlow: "column",
+              gap: "3px",
+              minWidth: "640px",
+              width: "max-content"
+          }}>
+            {renderSquares()}
+          </div>
+        </div>
+        <style>{`
+          .hide-scrollbar::-webkit-scrollbar { display: none; }
+          .activity-square:hover { transform: scale(1.3); z-index: 10; opacity: 1 !important; border-radius: 3px !important; }
+        `}</style>
       </div>
-      <style>{`
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .activity-square:hover { transform: scale(1.15); z-index: 10; border-radius: 4px !important; }
-      `}</style>
     </div>
   );
 };
