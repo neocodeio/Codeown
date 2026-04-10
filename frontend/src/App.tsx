@@ -295,7 +295,6 @@ export default function App() {
     location.pathname === "/changelog" || 
     location.pathname.startsWith("/post/") ||
     location.pathname.startsWith("/project/") ||
-    location.pathname.startsWith("/messages") ||
     location.pathname.startsWith("/user/") || 
     (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup", "forgot-password", "sign-in", "sign-up"].includes(location.pathname.split("/")[1]));
 
@@ -318,12 +317,13 @@ export default function App() {
       <div 
         id="main-content"
         style={{
-          flex: (isStandardPage && isDesktop) ? (location.pathname === "/messages" ? "1" : "0 0 1020px") : "1",
-          width: (isStandardPage && isDesktop) ? (location.pathname === "/messages" ? "auto" : "1020px") : "auto",
-          maxWidth: (isStandardPage && isDesktop) ? (location.pathname === "/messages" ? "100%" : "1020px") : "100%",
+          flex: (isStandardPage && isDesktop) ? "0 0 1020px" : 1,
+          width: (isStandardPage && isDesktop) ? "1020px" : "100%",
+          maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%",
           position: "relative",
           minWidth: 0,
-          zIndex: 0,
+          zIndex: 1,
+          marginLeft: (!isAuthRoute && isDesktop) ? (width < 1024 ? "240px" : "300px") : "0px",
           paddingTop: isMobile && shouldShowNavbar ? "64px" : "0px",
           paddingBottom: isMobile && shouldShowNavbar ? "80px" : "0px"
         }}

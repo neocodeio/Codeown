@@ -560,11 +560,12 @@ export default function Navbar() {
         <nav style={{
           width: width < 1024 ? "240px" : "300px",
           height: "100vh",
-          position: "sticky",
+          position: "fixed",
+          left: 0,
           top: 0,
           borderRight: "0.5px solid var(--border-hairline)",
           backgroundColor: "var(--bg-page)",
-          zIndex: 1000,
+          zIndex: 2000,
         }}>
           <SidebarContent />
         </nav>
