@@ -239,18 +239,16 @@ export default function App() {
       flexDirection: isMobile ? "column" : "row",
       minHeight: "100vh",
       backgroundColor: "var(--bg-page)",
-      justifyContent: "flex-start" // Always align to start so navbar is next to feed
+      justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start" // Center the whole block (Navbar + Feed)
     }}>
       <ScrollToTop />
       {shouldShowNavbar && <Navbar />}
       <div 
         id="main-content"
         style={{
-          flex: 1,
-          width: "100%",
-          maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%", // Limit width but don't center container
-          margin: (isStandardPage && isDesktop) ? "0 auto 0 0" : "0", // Align left next to navbar, or use auto for standard centering if preferred
-          // Actually, if we want it "next to each other", margin: 0 is best.
+          flex: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "1" : "0 0 1020px") : 1,
+          width: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "auto" : "1020px") : "100%",
+          maxWidth: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "100%" : "1020px") : "100%",
           position: "relative",
           minWidth: 0,
           zIndex: 1,
@@ -259,9 +257,8 @@ export default function App() {
         }}
       >
         <div style={{
-          maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%",
+          maxWidth: "100%",
           width: "100%",
-          margin: (isStandardPage && isDesktop) ? "0 auto" : "0" // Center the INNER content if standard
         }}>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>

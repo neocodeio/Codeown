@@ -642,9 +642,9 @@ export default function Messages() {
     } else if (!qMessagesLoading) {
       // Only clear if we are NOT loading and we have no messages
       if (activeConvo && activeConvo.id !== 0) {
-        setMessages([]);
+        if (messages.length > 0) setMessages([]);
       } else if (!activeConvo) {
-        setMessages([]);
+        if (messages.length > 0) setMessages([]);
       }
     }
   }, [qMessages, activeConvo?.id, qMessagesLoading]);
