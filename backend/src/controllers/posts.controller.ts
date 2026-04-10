@@ -402,8 +402,8 @@ export async function createPost(req: Request, res: Response) {
       return res.status(400).json({ error: "Content is required" });
     }
 
-    if (content.trim().length > 280) {
-      return res.status(400).json({ error: "Content must be 280 characters or less" });
+    if (content.trim().length > 2000) {
+      return res.status(400).json({ error: "Content must be 2000 characters or less" });
     }
 
     // Validate images array if provided
@@ -595,8 +595,8 @@ export async function updatePost(req: Request, res: Response) {
       return res.status(400).json({ error: "Content cannot be empty" });
     }
 
-    if (content !== undefined && content.trim().length > 280) {
-      return res.status(400).json({ error: "Content must be 280 characters or less" });
+    if (content !== undefined && content.trim().length > 2000) {
+      return res.status(400).json({ error: "Content must be 2000 characters or less" });
     }
 
     // Check if post exists and belongs to user

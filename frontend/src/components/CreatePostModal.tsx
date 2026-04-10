@@ -37,7 +37,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const { getToken, isLoaded } = useClerkAuth();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const charLimit = 280;
+  const charLimit = 2000;
 
   // Reset form when modal closes
   useEffect(() => {

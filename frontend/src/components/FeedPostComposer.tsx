@@ -64,7 +64,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         user?.fullName || user?.username || "User"
     );
 
-    const charLimit = 280;
+    const charLimit = 2000;
 
     const placeholderText = useMemo(() => {
         const textOptions = [

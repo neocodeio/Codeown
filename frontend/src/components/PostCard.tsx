@@ -30,6 +30,7 @@ interface PostCardProps {
 
 const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProps) => {
   const navigate = useNavigate();
+  const [isExpanded, setIsExpanded] = useState(false);
   const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -375,9 +376,44 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
           lineHeight: "1.5",
           color: "var(--text-primary)",
           marginBottom: "16px",
+          position: "relative"
         }}>
           {post.title && <h2 style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: "0 0 10px", letterSpacing: "-0.015em" }}>{post.title}</h2>}
-          <ContentRenderer content={post.content} />
+          
+          <div style={{ position: "relative" }}>
+            <ContentRenderer 
+              content={!isExpanded && post.content.length > 300 
+                ? post.content.substring(0, 300) + "..." 
+                : post.content
+              } 
+            />
+            
+            {post.content.length > 300 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(!isExpanded);
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--text-primary)",
+                  fontSize: "13px",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  padding: "4px 0",
+                  marginTop: "8px",
+                  display: "block",
+                  opacity: 0.8,
+                  transition: "opacity 0.2s"
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+                onMouseLeave={e => e.currentTarget.style.opacity = "0.8"}
+              >
+                {isExpanded ? "Show less" : "Show more"}
+              </button>
+            )}
+          </div>
         </div>
 
         {post.images && post.images.length > 0 && (

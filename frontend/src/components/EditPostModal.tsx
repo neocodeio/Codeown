@@ -31,7 +31,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
   const [language, setLanguage] = useState<"en" | "ar">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
-  const charLimit = 280;
+  const charLimit = 2000;
 
   useEffect(() => {
     if (isOpen && post) {
