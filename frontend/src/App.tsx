@@ -298,7 +298,6 @@ export default function App() {
     location.pathname.startsWith("/user/") || 
     (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup", "forgot-password", "sign-in", "sign-up"].includes(location.pathname.split("/")[1]));
 
-  const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
 
   const shouldShowNavbar = !isAuthRoute || (isMobile && (location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up")));
 
@@ -306,20 +305,21 @@ export default function App() {
 
   return (
     <div style={{
-      display: "flex",
-      flexDirection: layoutDirection,
+      display: isMobile ? "flex" : "grid",
+      flexDirection: isMobile ? "column" : undefined,
+      gridTemplateColumns: (!isMobile && !isAuthRoute) ? (width < 1024 ? "240px 1fr" : "300px 1fr") : "1fr",
       minHeight: "100vh",
       backgroundColor: "var(--bg-page)",
-      justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start"
     }}>
       <ScrollToTop />
       {shouldShowNavbar && <Navbar />}
       <div 
         id="main-content"
         style={{
-          flex: (isStandardPage && isDesktop) ? "0 0 1020px" : 1,
-          width: (isStandardPage && isDesktop) ? "1020px" : "100%",
-          maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%",
+          width: "100%",
+          maxWidth: "100%",
+          display: "flex",
+          justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start",
           position: "relative",
           minWidth: 0,
           zIndex: 1,
