@@ -44,58 +44,105 @@ export const CodeBlock = ({ language, code }: { language: string; code: string }
   };
 
   const langClass = Prism.languages[language] ? `language-${language}` : "language-markdown";
-  const hasHeader = language && language !== "plaintext";
+  const displayLang = language === 'typescript' ? 'TS' : language === 'javascript' ? 'JS' : language.toUpperCase();
 
   return (
-    <div style={{ margin: "12px 0", position: "relative" }}>
-      <button
-        onClick={handleCopy}
+    <div style={{ 
+      margin: "20px 0", 
+      position: "relative",
+      borderRadius: "16px",
+      overflow: "hidden",
+      border: "1px solid rgba(255, 255, 255, 0.08)",
+      backgroundColor: "#0B0C10",
+      boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5), 0 0 1px 0 rgba(255,255,255,0.1) inset"
+    }}>
+      <div
         style={{
-          position: "absolute",
-          top: hasHeader ? "6px" : "10px",
-          right: "12px",
-          zIndex: 10,
-          background: "transparent",
-          border: "none",
-          color: copied ? "#4ade80" : "#a1a1aa",
-          cursor: "pointer",
-          fontSize: "14px",
-          transition: "color 0.2s"
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "10px 16px",
+          backgroundColor: "rgba(255, 255, 255, 0.03)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
         }}
-        title="Copy code"
       >
-        <FontAwesomeIcon icon={copied ? faCheck : faCopy} />
-      </button>
-
-      {hasHeader && (
-        <div
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "6px" }}>
+            <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#FF5F56" }} />
+            <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#FFBD2E" }} />
+            <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#27C93F" }} />
+          </div>
+          <span style={{ 
+            fontSize: "11px", 
+            fontWeight: 700, 
+            color: "rgba(255, 255, 255, 0.4)", 
+            letterSpacing: "0.08em",
+            fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
+            marginLeft: "8px"
+          }}>
+            {displayLang}
+          </span>
+        </div>
+        
+        <button
+          onClick={handleCopy}
           style={{
-            backgroundColor: "#000",
-            color: "#fff",
-            padding: "6px 12px",
-            borderTopLeftRadius: "15px",
-            borderTopRightRadius: "15px",
+            background: copied ? "rgba(39, 201, 63, 0.1)" : "rgba(255, 255, 255, 0.05)",
+            border: "1px solid",
+            borderColor: copied ? "rgba(39, 201, 63, 0.2)" : "rgba(255, 255, 255, 0.1)",
+            color: copied ? "#27C93F" : "rgba(255, 255, 255, 0.6)",
+            cursor: "pointer",
             fontSize: "12px",
-            fontFamily: "monospace",
-            borderBottom: "1px solid #3d3d3d",
+            padding: "5px 10px",
+            borderRadius: "8px",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontWeight: 600
+          }}
+          title="Copy code"
+        >
+          <FontAwesomeIcon icon={copied ? faCheck : faCopy} size="sm" />
+          <span>{copied ? "Copied" : "Copy"}</span>
+        </button>
+      </div>
+
+      <div style={{ position: "relative" }}>
+        <pre
+          style={{
+            margin: 0,
+            padding: "20px",
+            backgroundColor: "transparent",
+            overflow: "auto",
+            fontSize: "13.5px",
+            lineHeight: 1.6,
+            maxHeight: "450px",
+            background: "linear-gradient(to bottom right, transparent, rgba(255,255,255,0.01))"
           }}
         >
-          {language}
-        </div>
-      )}
-      <pre
-        style={{
-          margin: 0,
-          padding: "16px",
-          backgroundColor: "#2d2d2d",
-          borderRadius: hasHeader ? "0 0 15px 15px" : "15px",
-          overflow: "auto",
-          fontSize: "14px",
-          lineHeight: 1.5,
-        }}
-      >
-        <code className={langClass}>{code}</code>
-      </pre>
+          <code 
+            className={langClass} 
+            style={{ 
+              fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
+              textShadow: "0 0 20px rgba(0,0,0,0.5)"
+            }}
+          >
+            {code}
+          </code>
+        </pre>
+        
+        {/* Subtle bottom fade for long code blocks */}
+        <div style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "20px",
+          background: "linear-gradient(to top, rgba(11, 12, 16, 0.3), transparent)",
+          pointerEvents: "none"
+        }} />
+      </div>
     </div>
   );
 };
