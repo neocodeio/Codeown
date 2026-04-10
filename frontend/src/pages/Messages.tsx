@@ -26,8 +26,10 @@ import {
   Check,
   Checks,
   Play,
-  Pause
+  Pause,
+  Copy
 } from "phosphor-react";
+import { toast } from "react-toastify";
 import NewMessageModal from "../components/NewMessageModal";
 import GifPicker from "../components/GifPicker";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -392,20 +394,71 @@ const MessageBubble = memo(({
           <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{msg.reply_to.content || "Media"}</div>
         </div>
       )}
-      {isMine && (
-        <div className="msg-dots-trigger" style={{ position: "relative", alignSelf: "flex-end", marginBottom: "-2px" }}>
-          <button onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }} style={{ background: "none", border: "none", padding: "2px", cursor: "pointer", color: "var(--text-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-sm)", transition: "all 0.15s ease" }}><DotsThree size={24} weight="bold" /></button>
-          {messageMenuId === msg.id && (
-            <div className="message-action-menu" style={{ position: "absolute", top: "100%", right: 0, marginTop: "4px", backgroundColor: "var(--bg-page)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", boxShadow: "0 8px 24px rgba(0,0,0,0.15)", zIndex: 1000, minWidth: "160px", overflow: "hidden" }}>
-              {deletingMessageId === msg.id ? (
-                <div style={{ padding: "12px 14px" }}><div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "10px" }}>Delete for everyone?</div><div style={{ display: "flex", gap: "8px" }}><button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(null); }} style={{ flex: 1, padding: "7px 12px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", background: "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>Cancel</button><button onClick={(e) => { e.stopPropagation(); onDelete(msg.id); }} style={{ flex: 1, padding: "7px 12px", border: "none", borderRadius: "var(--radius-sm)", backgroundColor: "#ef4444", color: "#fff", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>Delete</button></div></div>
-              ) : (
-                <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(msg.id); }} style={{ width: "100%", padding: "10px 14px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "#ef4444" }}><Trash size={15} weight="bold" /> Delete message</button>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      <div className="msg-dots-trigger" style={{ 
+        position: "relative", 
+        alignSelf: isMine ? "flex-end" : "flex-start", 
+        marginBottom: "-2px" 
+      }}>
+        <button 
+          onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }} 
+          style={{ background: "none", border: "none", padding: "2px", cursor: "pointer", color: "var(--text-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-sm)", transition: "all 0.15s ease" }}
+        >
+          <DotsThree size={24} weight="bold" />
+        </button>
+        {messageMenuId === msg.id && (
+          <div className="message-action-menu" style={{ 
+            position: "absolute", 
+            top: "100%", 
+            [isMine ? "right" : "left"]: 0, 
+            marginTop: "4px", 
+            backgroundColor: "var(--bg-page)", 
+            border: "0.5px solid var(--border-hairline)", 
+            borderRadius: "var(--radius-sm)", 
+            boxShadow: "0 8px 24px rgba(0,0,0,0.15)", 
+            zIndex: 1000, 
+            minWidth: "160px", 
+            overflow: "hidden" 
+          }}>
+            {msg.content && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(msg.content);
+                  toast.success("Copied to clipboard", { 
+                    position: "bottom-center", 
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    style: { backgroundColor: "var(--bg-page)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "12px", fontSize: "13px", fontWeight: 600 }
+                  });
+                  setMessageMenuId(null);
+                }} 
+                style={{ width: "100%", padding: "10px 14px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}
+              >
+                <Copy size={16} weight="bold" /> Copy text
+              </button>
+            )}
+            
+            {isMine && (
+              <>
+                {msg.content && <div style={{ height: "0.5px", backgroundColor: "var(--border-hairline)", margin: "0 10px" }} />}
+                {deletingMessageId === msg.id ? (
+                  <div style={{ padding: "12px 14px" }}>
+                    <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px" }}>Delete for everyone?</div>
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(null); }} style={{ flex: 1, padding: "6px", border: "0.5px solid var(--border-hairline)", borderRadius: "6px", background: "transparent", color: "var(--text-primary)", fontSize: "11px", fontWeight: 700, cursor: "pointer" }}>No</button>
+                      <button onClick={(e) => { e.stopPropagation(); onDelete(msg.id); }} style={{ flex: 1, padding: "6px", border: "none", borderRadius: "6px", backgroundColor: "#ef4444", color: "#fff", fontSize: "11px", fontWeight: 700, cursor: "pointer" }}>Yes</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(msg.id); }} style={{ width: "100%", padding: "10px 14px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "#ef4444" }}>
+                    <Trash size={16} weight="bold" /> Delete message
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
       <motion.div
         id={`msg-${msg.id}`}
         onContextMenu={(e) => { e.preventDefault(); setReactingTo(msg.id); }}
