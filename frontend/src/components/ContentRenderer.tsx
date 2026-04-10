@@ -33,7 +33,7 @@ interface ContentRendererProps {
   fontSize?: string;
 }
 
-const CodeBlock = ({ language, code }: { language: string; code: string }) => {
+export const CodeBlock = ({ language, code }: { language: string; code: string }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (e: React.MouseEvent) => {

@@ -6,7 +6,7 @@ import api from "../api/axios";
 import type { Post } from "../hooks/usePosts";
 import EditPostModal from "./EditPostModal";
 import ImageSlider from "./ImageSlider";
-import ContentRenderer from "./ContentRenderer";
+import ContentRenderer, { CodeBlock } from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
 import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, Bug, Sparkle, Trophy, Question, Lightbulb, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip } from "phosphor-react";
@@ -387,6 +387,12 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 : post.content
               } 
             />
+            
+            {(post as any).code_snippet && (
+              <div style={{ marginTop: "16px" }}>
+                <CodeBlock language="typescript" code={(post as any).code_snippet} />
+              </div>
+            )}
             
             {post.content.length > 300 && (
               <button

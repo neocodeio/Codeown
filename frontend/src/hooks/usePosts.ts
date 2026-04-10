@@ -36,6 +36,7 @@ export interface Post {
     userVoted?: number;
   } | null;
   post_type?: string | null;
+  code_snippet?: string | null;
 }
 
 export type FeedFilter = "all" | "following" | "contributors";

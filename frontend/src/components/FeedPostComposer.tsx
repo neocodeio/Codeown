@@ -4,7 +4,15 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Image as ImageIcon, ListPlus, PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Bug, Sparkle, Trophy, Question, Lightbulb, Paperclip, FilePlus, X } from "phosphor-react";
+import { PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Bug, Sparkle, Trophy, Question, Lightbulb, Paperclip } from "phosphor-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+    ImageAdd01Icon, 
+    AppleReminderIcon, 
+    SourceCodeIcon, 
+    FileAddIcon,
+    Cancel01Icon
+} from "@hugeicons/core-free-icons";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
 import { validateImageSize, validateFileSize } from "../constants/upload";
@@ -22,6 +30,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const [content, setContent] = useState("");
     const [images, setImages] = useState<string[]>([]);
     const [attachments, setAttachments] = useState<{ name: string; type: string; size: number; data: string }[]>([]);
+    const [codeSnippet, setCodeSnippet] = useState("");
+    const [isCodeExpanded, setIsCodeExpanded] = useState(false);
     const [isPoll, setIsPoll] = useState(false);
     const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
     const [postType, setPostType] = useState("Update");
@@ -195,7 +205,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     }, [isTypeMenuOpen]);
 
     const handleSubmit = async () => {
-        if ((!content.trim() && images.length === 0 && !isPoll) || isSubmitting || !isLoaded) return;
+        if ((!content.trim() && images.length === 0 && !isPoll && !codeSnippet.trim()) || isSubmitting || !isLoaded) return;
 
         if (isPoll) {
             if (!content.trim()) {
@@ -218,6 +228,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 images: images.length > 0 ? images : null,
                 attachments: attachments.length > 0 ? attachments : null,
                 poll: isPoll ? { options: pollOptions.filter(o => o.trim() !== "") } : null,
+                code_snippet: codeSnippet.trim() || null,
                 language: "en",
                 post_type: postType
             }, {
@@ -231,6 +242,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             setAttachments([]);
             setIsPoll(false);
             setPollOptions(["", ""]);
+            setCodeSnippet("");
+            setIsCodeExpanded(false);
             onCreated();
         } catch (error) {
             console.error("Failed to post:", error);
@@ -295,6 +308,57 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         transparent={true}
                     />
                     
+                    {isCodeExpanded && (
+                        <div style={{
+                            marginTop: "12px",
+                            backgroundColor: "var(--bg-hover)",
+                            border: "0.5px solid var(--border-hairline)",
+                            borderRadius: "12px",
+                            overflow: "hidden",
+                            animation: "reactionFadeUp 0.15s ease-out"
+                        }}>
+                            <div style={{ 
+                                display: "flex", 
+                                justifyContent: "space-between", 
+                                alignItems: "center", 
+                                padding: "10px 16px",
+                                borderBottom: "0.5px solid var(--border-hairline)",
+                                backgroundColor: "rgba(0,0,0,0.03)"
+                            }}>
+                                <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Code snippet</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                    <span style={{ fontSize: "11px", fontWeight: 600, color: codeSnippet.length > 2000 ? "#ef4444" : "var(--text-tertiary)" }}>
+                                        {codeSnippet.length}/2000
+                                    </span>
+                                    <button 
+                                        onClick={() => { setIsCodeExpanded(false); setCodeSnippet(""); }}
+                                        style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center" }}
+                                    >
+                                        <HugeiconsIcon icon={Cancel01Icon} size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                            <textarea
+                                value={codeSnippet}
+                                onChange={(e) => setCodeSnippet(e.target.value)}
+                                placeholder="Paste your code here..."
+                                style={{
+                                    width: "100%",
+                                    minHeight: "150px",
+                                    padding: "16px",
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    outline: "none",
+                                    color: "var(--text-primary)",
+                                    fontSize: "13.5px",
+                                    fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+                                    lineHeight: "1.6",
+                                    resize: "vertical"
+                                }}
+                            />
+                        </div>
+                    )}
+
                     {/* Hashtags Preview */}
                     {(() => {
                         const hashtagRegex = /#(\w+)/g;
@@ -385,7 +449,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.6)";
                                     }}
                                 >
-                                    <X size={14} weight="bold" />
+                                    <HugeiconsIcon icon={Cancel01Icon} size={14} />
                                 </button>
                             </div>
                         ))}
@@ -422,7 +486,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     onClick={() => removeAttachment(index)}
                                     style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}
                                 >
-                                    <X size={16} weight="bold" />
+                                    <HugeiconsIcon icon={Cancel01Icon} size={16} />
                                 </button>
                             </div>
                         ))}
@@ -443,25 +507,17 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
                             <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)" }}>Poll options</span>
-                            <button 
+                                <button 
                                 onClick={() => setIsPoll(false)}
                                 style={{ 
                                     background: "none", 
-                                    border: "1px solid var(--text-primary)", 
-                                    color: "var(--text-primary)", 
+                                    border: "none", 
+                                    color: "var(--text-tertiary)", 
                                     cursor: "pointer", 
-                                    fontSize: "10px",
-                                    fontWeight: 700,
-                                    borderRadius: "50%",
-                                    width: "20px",
-                                    height: "20px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
                                     padding: 0
                                 }}
                             >
-                                X
+                                <HugeiconsIcon icon={Cancel01Icon} size={18} />
                             </button>
                         </div>
                         {pollOptions.map((option, index) => (
@@ -557,7 +613,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 e.currentTarget.style.backgroundColor = "transparent";
                             }}
                         >
-                            <ImageIcon size={20} weight="regular" />
+                            <HugeiconsIcon icon={ImageAdd01Icon} size={20} />
                         </button>
                         <button
                             onClick={() => setIsPoll(!isPoll)}
@@ -585,7 +641,36 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             }}
                             title="Add Poll"
                         >
-                            <ListPlus size={20} weight="regular" />
+                            <HugeiconsIcon icon={AppleReminderIcon} size={20} />
+                        </button>
+
+                        <button
+                            onClick={() => setIsCodeExpanded(!isCodeExpanded)}
+                            style={{
+                                background: isCodeExpanded ? "var(--bg-hover)" : "none",
+                                border: "none",
+                                color: isCodeExpanded ? "var(--text-primary)" : "inherit",
+                                cursor: "pointer",
+                                padding: "8px",
+                                borderRadius: "100px",
+                                transition: "all 0.2s",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center"
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.color = "var(--text-primary)";
+                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                            }}
+                            onMouseLeave={e => {
+                                if (!isCodeExpanded) {
+                                    e.currentTarget.style.color = "var(--text-tertiary)";
+                                    e.currentTarget.style.backgroundColor = "transparent";
+                                }
+                            }}
+                            title="Add Code Snippet"
+                        >
+                            <HugeiconsIcon icon={SourceCodeIcon} size={20} />
                         </button>
 
                         <input
@@ -620,7 +705,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 }}
                                 title="Attach File"
                             >
-                                <FilePlus size={20} weight="regular" />
+                                <HugeiconsIcon icon={FileAddIcon} size={20} />
                             </button>
                         )}
 
@@ -737,7 +822,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         </span>
                         <button
                             onClick={handleSubmit}
-                            disabled={(!content.trim() && images.length === 0 && attachments.length === 0 && !isPoll) || isSubmitting || content.length > charLimit}
+                            disabled={(!content.trim() && images.length === 0 && attachments.length === 0 && !isPoll && !codeSnippet.trim()) || isSubmitting || content.length > charLimit}
                             style={{
                                 padding: isMobile ? "8px 18px" : "10px 24px",
                                 backgroundColor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll) && !isSubmitting && content.length <= charLimit ? "var(--text-primary)" : "var(--bg-hover)",
