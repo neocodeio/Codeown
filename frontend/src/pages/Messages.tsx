@@ -758,14 +758,17 @@ export default function Messages() {
     hasAttemptedRef.current = false;
   }, [targetUserId]);
 
-  // Sync state with React Query data
   useEffect(() => {
-    if (qConversations.length > 0) {
-      setConversations(qConversations);
+    if (qConversations && qConversations.length > 0) {
+      // Only update if the length or first item changed to avoid loops
+      if (conversations.length !== qConversations.length || 
+          (conversations[0]?.id !== qConversations[0]?.id)) {
+        setConversations(qConversations);
+      }
       
       // Auto-select conversation from URL
       if (targetUserId && !activeConvo && !hasAttemptedRef.current) {
-        const existing = qConversations.find((c: Conversation) => c.partner.id === targetUserId);
+        const existing = qConversations.find((c: Conversation) => String(c.partner.id) === String(targetUserId));
         if (existing) {
           setActiveConvo(existing);
         } else {
@@ -774,7 +777,7 @@ export default function Messages() {
         }
       }
     }
-  }, [qConversations, targetUserId, activeConvo]);
+  }, [qConversations, targetUserId, activeConvo, conversations.length]);
 
   useEffect(() => {
     // When switching conversations, we should clear the current messages
@@ -794,11 +797,17 @@ export default function Messages() {
 
   useEffect(() => {
     // Update local messages when the background query finishes
+    // Added guards to prevent infinite loops
     if (!qMessagesLoading && qMessages) {
-      setMessages(qMessages);
-      setTimeout(() => scrollToBottom(false), 50);
+      const hasChanged = qMessages.length !== messages.filter(m => m.status !== 'sending').length || 
+                        (qMessages.length > 0 && messages.length > 0 && qMessages[0].id !== messages[0].id);
+      
+      if (hasChanged) {
+        setMessages(qMessages);
+        setTimeout(() => scrollToBottom(false), 50);
+      }
     }
-  }, [qMessages, qMessagesLoading]);
+  }, [qMessages, qMessagesLoading, messages.length]);
 
   useEffect(() => {
     if (initialMessage) {
