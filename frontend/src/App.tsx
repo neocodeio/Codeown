@@ -82,7 +82,7 @@ export default function App() {
   const { getToken } = useClerkAuth();
   const queryClient = useQueryClient();
 
-  if (!userLoaded) return <PageLoader />;
+
 
   // Global real-time updates
   useEffect(() => {
@@ -301,6 +301,8 @@ export default function App() {
   const layoutDirection = isAuthRoute ? "column" : (isMobile ? "column" : "row");
 
   const shouldShowNavbar = !isAuthRoute || (isMobile && (location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up")));
+
+  if (!userLoaded) return <PageLoader />;
 
   return (
     <div style={{
