@@ -170,15 +170,15 @@ export async function getComments(req: Request, res: Response) {
 export async function createComment(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { post_id, content, parent_id: parentIdRaw } = req.body;
+    const { post_id, content, parent_id: parentIdRaw, image_url } = req.body;
 
     // Validate input
     if (!post_id) {
       return res.status(400).json({ error: "Post ID is required" });
     }
 
-    if (!content || content.trim().length === 0) {
-      return res.status(400).json({ error: "Content is required" });
+    if ((!content || content.trim().length === 0) && !image_url) {
+      return res.status(400).json({ error: "Content or image is required" });
     }
 
     // Get user ID
@@ -235,10 +235,11 @@ export async function createComment(req: Request, res: Response) {
 
     const insertRow: Record<string, unknown> = {
       post_id: postIdInt,
-      content: content.trim(),
+      content: content?.trim() || "",
       user_id: userId,
     };
     if (parentIdInt != null) insertRow.parent_id = parentIdInt;
+    if (image_url) insertRow.image_url = image_url;
 
     const { data, error } = await supabase.from("comments").insert(insertRow);
 

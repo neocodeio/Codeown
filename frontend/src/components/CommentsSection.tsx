@@ -6,7 +6,7 @@ import api from "../api/axios";
 import CommentBlock, { type CommentWithMeta } from "./CommentBlock";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { Gif } from "phosphor-react";
+import { Gif, Image as ImageIcon } from "phosphor-react";
 import { useAvatar } from "../hooks/useAvatar";
 import GifPicker from "./GifPicker";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
@@ -24,6 +24,8 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   const { getToken } = useClerkAuth();
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { announce } = useActivityBroadcast();
   const [isFocused, setIsFocused] = useState(false);
@@ -97,7 +99,8 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   const comments = buildCommentTree(rawComments);
 
   const handleSubmitComment = async () => {
-    if ((!newComment.trim() && !selectedGif) || !currentUser) return;
+    if (!currentUser) return;
+    if (!newComment.trim() && !selectedGif && !selectedImage) return;
     setSubmitting(true);
     try {
       const token = await getToken();
@@ -106,12 +109,13 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
       const endpoint = resourceType === "project" ? `/projects/${resourceId}/comments` : `/posts/${resourceId}/comments`;
       await api.post(
         endpoint,
-        { content: finalContent },
+        { content: finalContent, image_url: selectedImage },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       queryClient.invalidateQueries({ queryKey });
       setNewComment("");
       setSelectedGif(null);
+      setSelectedImage(null);
       setIsFocused(false);
       onCommentAdded?.();
     } catch (error) {
@@ -122,7 +126,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     }
   };
 
-  const handleReply = async (parentId: number | string, content: string) => {
+  const handleReply = async (parentId: number | string, content: string, image_url?: string | null) => {
     if (!currentUser) return;
     try {
       const token = await getToken();
@@ -130,7 +134,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
       const endpoint = resourceType === "project" ? `/projects/${resourceId}/comments` : `/posts/${resourceId}/comments`;
       await api.post(
         endpoint,
-        { content, parent_id: parentId },
+        { content, parent_id: parentId, image_url },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       queryClient.invalidateQueries({ queryKey });
@@ -139,6 +143,19 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
       console.error("Error posting reply:", error);
       alert("Failed to post reply");
     }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { alert("Max 5MB"); return; }
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedImage(reader.result as string);
+      setIsUploading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleCommentDelete = async () => {
@@ -269,59 +286,95 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               }}
             />
 
-            {isFocused && (
-              <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-                <button
-                  onClick={() => { setIsFocused(false); setNewComment(""); }}
-                  style={{ padding: "6px 12px", backgroundColor: "transparent", color: "#666", border: "none", fontWeight: 500, cursor: "pointer", fontSize: "13px" }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmitComment}
-                  disabled={!newComment.trim() || submitting}
-                  style={{
-                    padding: "8px 20px",
-                    backgroundColor: newComment.trim() && !submitting ? "var(--text-primary)" : "transparent",
-                    color: newComment.trim() && !submitting ? "var(--bg-page)" : "var(--text-tertiary)",
-                    border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)",
-                    cursor: newComment.trim() && !submitting ? "pointer" : "not-allowed",
-                    fontWeight: 600, fontSize: "12px"
-                  }}
-                >
-                  {submitting ? "..." : "Post"}
-                </button>
-              </div>
-            )}
+              <div style={{ position: "relative", marginTop: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px",
+                      backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent", 
+                      color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
+                      border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
+                      cursor: "pointer", fontSize: "11px", fontWeight: 700,
+                      textTransform: "uppercase", transition: "all 0.2s ease"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                      e.currentTarget.style.color = "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isGifPickerOpen) {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-tertiary)";
+                      }
+                    }}
+                  >
+                    <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
+                    GIF
+                  </button>
 
-            {isFocused && (
-              <div style={{ position: "relative", marginTop: "12px", display: "flex", gap: "10px" }}>
-                <button
-                  type="button"
-                  onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: "6px", padding: "6px 10px",
+                  {isGifPickerOpen && (
+                    <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
+                      <GifPicker 
+                        onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }}
+                        onClose={() => setIsGifPickerOpen(false)}
+                      />
+                    </div>
+                  )}
+
+                  <label style={{
+                    display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px",
                     backgroundColor: "transparent", color: "var(--text-tertiary)",
-                    border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)",
-                    cursor: "pointer", fontSize: "11px", fontWeight: 700
+                    border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
+                    cursor: "pointer", fontSize: "11px", fontWeight: 700,
+                    textTransform: "uppercase", transition: "all 0.2s ease"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
-                >
-                  <Gif size={18} weight={isGifPickerOpen ? "fill" : "regular"} />
-                  GIF
-                </button>
-
-                {isGifPickerOpen && (
-                  <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
-                    <GifPicker 
-                      onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }}
-                      onClose={() => setIsGifPickerOpen(false)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.color = "var(--text-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--text-tertiary)";
+                  }}
+                  >
+                    <ImageIcon size={18} weight={selectedImage ? "fill" : "bold"} />
+                    IMAGE
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleImageUpload} 
+                      style={{ display: "none" }} 
+                      disabled={isUploading}
                     />
-                  </div>
-                )}
+                  </label>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    onClick={() => { setIsFocused(false); setNewComment(""); setSelectedImage(null); setSelectedGif(null); }}
+                    style={{ padding: "6px 12px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "none", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmitComment}
+                    disabled={(!newComment.trim() && !selectedImage && !selectedGif) || submitting || isUploading}
+                    style={{
+                      padding: "8px 24px",
+                      backgroundColor: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "var(--text-primary)" : "transparent",
+                      color: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "var(--bg-page)" : "var(--text-tertiary)",
+                      border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
+                      cursor: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "pointer" : "not-allowed",
+                      fontWeight: 700, fontSize: "13px",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    {submitting ? "..." : isUploading ? "Wait" : "Post"}
+                  </button>
+                </div>
               </div>
-            )}
           </div>
         </div>
       )}

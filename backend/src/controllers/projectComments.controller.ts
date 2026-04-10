@@ -58,8 +58,8 @@ export async function createProjectComment(req: Request, res: Response) {
     const { id } = req.params;
 
     if (!userId) return res.status(401).json({ error: "Authentication required" });
-    const { content, parent_id } = req.body;
-    if (!content?.trim()) return res.status(400).json({ error: "Content required" });
+    const { content, parent_id, image_url } = req.body;
+    if (!content?.trim() && !image_url) return res.status(400).json({ error: "Content or image required" });
 
     // Verify project
     const { data: project } = await supabase.from("projects").select("user_id").eq("id", id).single();
@@ -72,8 +72,9 @@ export async function createProjectComment(req: Request, res: Response) {
       .insert({
         project_id: parseInt(id as string),
         user_id: userId,
-        content: content.trim(),
-        parent_id: parent_id ? parseInt(String(parent_id)) : null
+        content: content?.trim() || "",
+        parent_id: parent_id ? parseInt(String(parent_id)) : null,
+        image_url: image_url || null
       })
       .select()
       .single();

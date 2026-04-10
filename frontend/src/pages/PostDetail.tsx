@@ -31,6 +31,10 @@ import {
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
 import SendToChatModal from "../components/SendToChatModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { Gif, Image as ImageIcon } from "phosphor-react";
+import GifPicker from "../components/GifPicker";
 
 interface Post {
   id: number;
@@ -76,6 +80,10 @@ export default function PostDetail() {
   const [lightboxImage, setLightboxImage] = useState("");
   const [isSendToChatModalOpen, setIsSendToChatModalOpen] = useState(false);
   const [commentSort] = useState<"newest" | "top">("newest");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedGif, setSelectedGif] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
 
   const { avatarUrl: currentUserAvatarUrl } = useAvatar(
     user?.id,
@@ -137,12 +145,20 @@ export default function PostDetail() {
   }, [id, fetchLikeStatus, fetchSavedStatus]);
 
   const handleSubmitComment = async () => {
-    if (!isSignedIn || !commentContent.trim()) return;
+    if (!isSignedIn) return;
+    if (!commentContent.trim() && !selectedGif && !selectedImage) return;
     setIsSubmitting(true);
     try {
       const token = await getToken();
-      await api.post("/comments", { post_id: id, content: commentContent.trim() }, { headers: { Authorization: `Bearer ${token}` } });
+      const finalContent = selectedGif ? `${commentContent.trim()}\n${selectedGif}`.trim() : commentContent.trim();
+      await api.post("/comments", { 
+        post_id: id, 
+        content: finalContent,
+        image_url: selectedImage
+      }, { headers: { Authorization: `Bearer ${token}` } });
       setCommentContent("");
+      setSelectedGif(null);
+      setSelectedImage(null);
       await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
       await queryClient.invalidateQueries({ queryKey: ["postComments", id] });
     } catch (error) {
@@ -150,6 +166,19 @@ export default function PostDetail() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { alert("Max 5MB"); return; }
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedImage(reader.result as string);
+      setIsUploading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleReply = async (parentId: number | string, content: string) => {
@@ -584,6 +613,42 @@ export default function PostDetail() {
                 style={{ width: "40px", height: "40px", borderRadius: "10px", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0 }}
               />
               <div style={{ flex: 1 }}>
+                {selectedGif && (
+                  <div style={{ 
+                    position: "relative", width: "fit-content", marginBottom: "12px",
+                    borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)",
+                  }}>
+                    <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "150px", display: "block" }} />
+                    <button 
+                      onClick={() => setSelectedGif(null)}
+                      style={{
+                        position: "absolute", top: "6px", right: "6px",
+                        backgroundColor: "rgba(0,0,0,0.75)", color: "#fff", border: "none", width: "24px", height: "24px", borderRadius: "50%",
+                        display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer"
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faXmark} />
+                    </button>
+                  </div>
+                )}
+                {selectedImage && (
+                  <div style={{ 
+                    position: "relative", width: "fit-content", marginBottom: "12px",
+                    borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)",
+                  }}>
+                    <img src={selectedImage} alt="Selected" style={{ maxHeight: "150px", display: "block" }} />
+                    <button 
+                      onClick={() => setSelectedImage(null)}
+                      style={{
+                        position: "absolute", top: "6px", right: "6px",
+                        backgroundColor: "rgba(0,0,0,0.75)", color: "#fff", border: "none", width: "24px", height: "24px", borderRadius: "50%",
+                        display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer"
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faXmark} />
+                    </button>
+                  </div>
+                )}
                 <MentionInput
                   value={commentContent}
                   onChange={setCommentContent}
@@ -591,23 +656,49 @@ export default function PostDetail() {
                   transparent={true}
                   minHeight="40px"
                 />
-                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "12px" }}>
+                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px" }}>
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <div style={{ position: "relative" }}>
+                      <button
+                        type="button"
+                        onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                        style={{
+                          display: "flex", alignItems: "center", gap: "6px", padding: "8px",
+                          backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent", color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
+                          border: "0.5px solid var(--border-hairline)", borderRadius: "100px", cursor: "pointer", fontSize: "11px", fontWeight: 700, textTransform: "uppercase"
+                        }}
+                      >
+                        <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
+                      </button>
+                      {isGifPickerOpen && (
+                        <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
+                          <GifPicker onSelect={(gif) => { setSelectedGif(gif); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
+                        </div>
+                      )}
+                    </div>
+
+                    <label style={{
+                      display: "flex", alignItems: "center", gap: "6px", padding: "8px",
+                      backgroundColor: "transparent", color: "var(--text-tertiary)",
+                      border: "0.5px solid var(--border-hairline)", borderRadius: "100px", cursor: "pointer", fontSize: "11px", fontWeight: 700, textTransform: "uppercase"
+                    }}>
+                      <ImageIcon size={18} weight={selectedImage ? "fill" : "bold"} />
+                      <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} disabled={isUploading} />
+                    </label>
+                  </div>
+
                   <button
                     onClick={handleSubmitComment}
-                    disabled={!commentContent.trim() || isSubmitting}
+                    disabled={(!commentContent.trim() && !selectedGif && !selectedImage) || isSubmitting || isUploading}
                     style={{
-                      padding: "8px 20px",
-                      backgroundColor: commentContent.trim() && !isSubmitting ? "var(--text-primary)" : "rgba(var(--text-primary-rgb), 0.5)",
-                      color: "var(--bg-page)",
-                      border: "none",
-                      borderRadius: "var(--radius-xl)",
-                      fontWeight: 700,
-                      fontSize: "13px",
-                      cursor: commentContent.trim() && !isSubmitting ? "pointer" : "not-allowed",
-                      transition: "opacity 0.2s",
+                      padding: "8px 24px",
+                      backgroundColor: (commentContent.trim() || selectedGif || selectedImage) && !isSubmitting && !isUploading ? "var(--text-primary)" : "transparent",
+                      color: (commentContent.trim() || selectedGif || selectedImage) && !isSubmitting && !isUploading ? "var(--bg-page)" : "var(--text-tertiary)",
+                      border: "0.5px solid var(--border-hairline)", borderRadius: "100px", fontWeight: 700, fontSize: "13px",
+                      cursor: (commentContent.trim() || selectedGif || selectedImage) && !isSubmitting && !isUploading ? "pointer" : "not-allowed",
                     }}
                   >
-                    {isSubmitting ? "..." : "Reply"}
+                    {isSubmitting ? "..." : isUploading ? "Wait" : "Reply"}
                   </button>
                 </div>
               </div>

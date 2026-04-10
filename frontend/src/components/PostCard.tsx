@@ -438,7 +438,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               {post.attachments.map((file, idx) => (
                 <div
                   key={idx}
-                  onClick={(e) => handleDownload(e, file.url || file.data, file.name)}
+                  onClick={(e) => handleDownload(e, file.url || (file as any).data, file.name)}
                   style={{
                     display: "flex",
                     alignItems: "center",

@@ -239,7 +239,7 @@ export default function UserProfile() {
               <button 
                 onClick={handleMessage}
                 style={{ 
-                  padding: "8px 16px", 
+                  padding: "10px", 
                   borderRadius: "var(--radius-sm)", 
                   fontSize: "13px", 
                   fontWeight: 600, 
@@ -256,7 +256,6 @@ export default function UserProfile() {
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} 
               >
                 <ChatCircle size={18} weight="regular" />
-                Message
               </button>
               <button onClick={() => setIsIDCardModalOpen(true)} style={{ padding: "8px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer" }} >
                 <IdentificationCard size={20} />

@@ -5,7 +5,7 @@ import MentionInput from "./MentionInput";
 import { useCommentLikes } from "../hooks/useCommentLikes";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart as faHeartSolid, faHeart as faHeartRegular, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartSolid, faHeart as faHeartRegular, faXmark, faImage } from "@fortawesome/free-solid-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 import { formatRelativeDate } from "../utils/date";
@@ -24,6 +24,7 @@ export interface CommentWithMeta {
   parent_id?: number | string | null;
   parent_author_name?: string | null;
   like_count?: number;
+  image_url?: string | null;
   user?: { name: string; username?: string | null; email: string | null; avatar_url?: string | null; is_pro?: boolean };
   children?: CommentWithMeta[];
 }
@@ -31,7 +32,7 @@ export interface CommentWithMeta {
 interface CommentBlockProps {
   comment: CommentWithMeta;
   depth: number;
-  onReply: (parentId: number | string, content: string) => Promise<void>;
+  onReply: (parentId: number | string, content: string, image_url?: string | null) => Promise<void>;
   onDelete?: (commentId: number | string) => void | Promise<void>;
   resourceType: "post" | "project";
 }
@@ -42,6 +43,8 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
   const [submitting, setSubmitting] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const { isLiked, likeCount, loading: likeLoading, toggleLike } = useCommentLikes(comment.id, resourceType, undefined, comment.like_count);
   const { isSignedIn, user } = useClerkUser();
   const navigate = useNavigate();
@@ -57,17 +60,27 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
   const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=212121&color=ffffff&bold=true`;
 
   const handleReplySubmit = async () => {
-    if (!replyContent.trim() && !selectedGif) return;
+    if (!replyContent.trim() && !selectedGif && !selectedImage) return;
     setSubmitting(true);
     try {
       const finalContent = selectedGif ? `${replyContent.trim()} ${selectedGif}`.trim() : replyContent.trim();
-      await onReply(comment.id, finalContent);
+      await onReply(comment.id, finalContent, selectedImage);
       setReplyContent("");
       setSelectedGif(null);
+      setSelectedImage(null);
       setShowReply(false);
     } finally {
       setSubmitting(false);
     }
+  };
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { alert("Max 5MB"); return; }
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = () => { setSelectedImage(reader.result as string); setIsUploading(false); };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -134,6 +147,11 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
 
           <div style={{ fontSize: "15px", lineHeight: "1.5", color: "var(--text-primary)", wordBreak: "break-word", marginBottom: "10px", fontWeight: 400 }}>
             <ContentRenderer content={comment.content} />
+            {comment.image_url && (
+              <div style={{ marginTop: "10px", borderRadius: "12px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", width: "fit-content", maxWidth: "100%" }}>
+                <img src={comment.image_url} alt="" style={{ maxWidth: "100%", maxHeight: "400px", display: "block", cursor: "zoom-in" }} onClick={() => window.open(comment.image_url!, '_blank')} />
+              </div>
+            )}
           </div>
 
           {/* Actions */}
@@ -210,6 +228,15 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
                 </div>
               )}
 
+              {selectedImage && (
+                <div style={{ position: "relative", width: "fit-content", marginBottom: "12px", borderRadius: "12px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+                  <img src={selectedImage} alt="Selected" style={{ maxHeight: "160px", display: "block", borderRadius: "8px" }} />
+                  <button onClick={() => setSelectedImage(null)} style={{ position: "absolute", top: "8px", right: "8px", backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", border: "none", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                    <FontAwesomeIcon icon={faXmark} />
+                  </button>
+                </div>
+              )}
+
               <div style={{ 
                 backgroundColor: "var(--bg-page)", 
                 borderRadius: "12px", 
@@ -281,6 +308,27 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
                         </div>
                       )}
                     </div>
+
+                    <label style={{ 
+                      height: "32px",
+                      padding: "0 10px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "4px",
+                      backgroundColor: "transparent", 
+                      color: "var(--text-tertiary)", 
+                      border: "0.5px solid var(--border-hairline)", 
+                      borderRadius: "100px", 
+                      cursor: "pointer", 
+                      transition: "all 0.2s ease",
+                      fontSize: "10px",
+                      fontWeight: 800,
+                      textTransform: "uppercase"
+                    }}>
+                      <FontAwesomeIcon icon={faImage} />
+                      <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} disabled={isUploading} />
+                    </label>
                   </div>
 
                   <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
@@ -304,23 +352,23 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
                     </button>
                     <button 
                       onClick={handleReplySubmit} 
-                      disabled={(!replyContent.trim() && !selectedGif) || submitting} 
+                      disabled={(!replyContent.trim() && !selectedGif && !selectedImage) || submitting || isUploading} 
                       style={{ 
                         padding: "8px 24px", 
-                        backgroundColor: "var(--text-primary)", 
-                        color: "var(--bg-page)", 
+                        backgroundColor: (replyContent.trim() || selectedGif || selectedImage) && !submitting && !isUploading ? "var(--text-primary)" : "transparent",
+                        color: (replyContent.trim() || selectedGif || selectedImage) && !submitting && !isUploading ? "var(--bg-page)" : "var(--text-tertiary)",
                         border: "none", 
                         borderRadius: "100px", 
                         fontWeight: 700, 
-                        cursor: submitting || (!replyContent.trim() && !selectedGif) ? "not-allowed" : "pointer", 
+                        cursor: (replyContent.trim() || selectedGif || selectedImage) && !submitting && !isUploading ? "pointer" : "not-allowed", 
                         fontSize: "13px",
                         transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                        opacity: (!replyContent.trim() && !selectedGif) ? 0.5 : 1,
+                        opacity: (replyContent.trim() || selectedGif || selectedImage) ? 1 : 0.5,
                         transform: submitting ? "scale(0.98)" : "scale(1)",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                        boxShadow: (replyContent.trim() || selectedGif || selectedImage) && !submitting && !isUploading ? "0 4px 12px rgba(0,0,0,0.1)" : "none"
                       }}
                       onMouseEnter={(e) => {
-                        if (replyContent.trim() || selectedGif) {
+                        if (replyContent.trim() || selectedGif || selectedImage) {
                           e.currentTarget.style.filter = "brightness(0.9)";
                           e.currentTarget.style.transform = "translateY(-1px)";
                         }
@@ -330,7 +378,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
                         e.currentTarget.style.transform = "translateY(0)";
                       }}
                     >
-                      {submitting ? "Sending..." : "Reply"}
+                      {submitting ? "Sending..." : isUploading ? "Wait..." : "Reply"}
                     </button>
                   </div>
                 </div>
