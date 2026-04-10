@@ -34,10 +34,11 @@ interface CommentBlockProps {
   depth: number;
   onReply: (parentId: number | string, content: string, image_url?: string | null) => Promise<void>;
   onDelete?: (commentId: number | string) => void | Promise<void>;
+  onImageClick?: (url: string) => void;
   resourceType: "post" | "project";
 }
 
-export default function CommentBlock({ comment, depth, onReply, onDelete, resourceType }: CommentBlockProps) {
+export default function CommentBlock({ comment, depth, onReply, onDelete, onImageClick, resourceType }: CommentBlockProps) {
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -149,7 +150,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
             <ContentRenderer content={comment.content} />
             {comment.image_url && (
               <div style={{ marginTop: "10px", borderRadius: "12px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", width: "fit-content", maxWidth: "100%" }}>
-                <img src={comment.image_url} alt="" style={{ maxWidth: "100%", maxHeight: "400px", display: "block", cursor: "zoom-in" }} onClick={() => window.open(comment.image_url!, '_blank')} />
+                <img src={comment.image_url} alt="" style={{ maxWidth: "100%", maxHeight: "400px", display: "block", cursor: "zoom-in" }} onClick={() => onImageClick ? onImageClick(comment.image_url!) : window.open(comment.image_url!, '_blank')} />
               </div>
             )}
           </div>
@@ -411,6 +412,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, resour
               depth={depth + 1} 
               onReply={onReply} 
               onDelete={onDelete}
+              onImageClick={onImageClick}
               resourceType={resourceType} 
             />
           </div>

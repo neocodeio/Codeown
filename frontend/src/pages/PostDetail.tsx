@@ -31,6 +31,7 @@ import {
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
 import SendToChatModal from "../components/SendToChatModal";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Gif, Image as ImageIcon } from "phosphor-react";
@@ -84,6 +85,8 @@ export default function PostDetail() {
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<number | string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { avatarUrl: currentUserAvatarUrl } = useAvatar(
     user?.id,
@@ -186,6 +189,21 @@ export default function PostDetail() {
     await api.post("/comments", { post_id: id, content, parent_id: parentId }, { headers: { Authorization: `Bearer ${token}` } });
     await api.get(`/comments/${id}?sort=${commentSort}`, { headers: { Authorization: `Bearer ${token}` } });
     await queryClient.invalidateQueries({ queryKey: ["postComments", id] });
+  };
+
+  const handleCommentDelete = async () => {
+    if (!isSignedIn || !commentToDelete) return;
+    setIsDeleting(true);
+    try {
+      const token = await getToken();
+      await api.delete(`/comments/${commentToDelete}`, { headers: { Authorization: `Bearer ${token}` } });
+      await queryClient.invalidateQueries({ queryKey: ["postComments", id] });
+      setCommentToDelete(null);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleShare = () => {
@@ -714,7 +732,14 @@ export default function PostDetail() {
             ) : (
               buildTree(comments).map(c => (
                 <div key={c.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
-                  <CommentBlock comment={c} depth={0} onReply={handleReply} resourceType="post" />
+                  <CommentBlock 
+                    comment={c} 
+                    depth={0} 
+                    onReply={handleReply} 
+                    onDelete={(id) => setCommentToDelete(id)} 
+                    onImageClick={(url) => { setLightboxImage(url); setIsLightboxOpen(true); }}
+                    resourceType="post" 
+                  />
                 </div>
               ))
             )}
@@ -755,6 +780,14 @@ export default function PostDetail() {
           initialMessage={`Check out this post on Codeown: ${post.title || post.content.substring(0, 50)}...`}
         />
       )}
+      <ConfirmDeleteModal
+        isOpen={commentToDelete !== null}
+        onClose={() => setCommentToDelete(null)}
+        onConfirm={handleCommentDelete}
+        title="Delete Comment"
+        message="Are you sure you want to delete this comment? This action cannot be undone."
+        isLoading={isDeleting}
+      />
       </main>
     </div>
   );

@@ -12,6 +12,7 @@ import GifPicker from "./GifPicker";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 import { useEffect } from "react";
+import Lightbox from "./Lightbox";
 
 interface CommentsSectionProps {
   resourceId: number;
@@ -38,6 +39,8 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   
   const [commentToDelete, setCommentToDelete] = useState<number | string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
 
   const { avatarUrl } = useAvatar(
     currentUser?.id,
@@ -191,6 +194,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
       depth={depth}
       onReply={handleReply}
       onDelete={(id) => setCommentToDelete(id)}
+      onImageClick={(url) => { setLightboxImage(url); setIsLightboxOpen(true); }}
       resourceType={resourceType}
     />
   );
@@ -417,6 +421,12 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         title="Delete Comment"
         message="Are you sure you want to delete this comment? This action cannot be undone."
         isLoading={isDeleting}
+      />
+
+      <Lightbox 
+        isOpen={isLightboxOpen} 
+        onClose={() => setIsLightboxOpen(false)} 
+        imageSrc={lightboxImage} 
       />
 
       <style>{`
