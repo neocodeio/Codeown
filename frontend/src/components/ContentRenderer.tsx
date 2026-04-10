@@ -2,7 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
+
+// Ensure Prism is global for language components to register themselves
+if (typeof window !== "undefined") {
+  (window as any).Prism = Prism;
+}
 // Import common languages
+// Import prerequisites for most languages
+import "prismjs/components/prism-markup";
+import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-jsx";

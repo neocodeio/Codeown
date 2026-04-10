@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { socket } from "../lib/socket";
 import { ChatTeardropText, X } from "phosphor-react";
+import alertSound from "../assets/notification-alert.mp3";
 
 interface IncomingMessage {
   id: number;
@@ -44,6 +45,14 @@ export default function MessageNotificationToast() {
 
       // Don't show toast for own messages
       if (msg.sender_id === currentUser.id) return;
+
+      // Sound effect
+      try {
+        const audio = new Audio(alertSound);
+        audio.play().catch(e => console.log("[Audio] Interaction required to play sound:", e));
+      } catch (e) {
+        console.error("Audio playback error:", e);
+      }
 
       const toastId = `toast-${msg.id}-${Date.now()}`;
 
