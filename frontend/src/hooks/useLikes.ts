@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
 import { socket } from "../lib/socket";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function useLikes(postId: number | null, initialIsLiked?: boolean, initialLikeCount?: number) {
   const [isLiked, setIsLiked] = useState(initialIsLiked ?? false);
   const [likeCount, setLikeCount] = useState(initialLikeCount ?? 0);
   const [loading, setLoading] = useState(false);
   const { getToken, isLoaded, userId } = useClerkAuth();
+  const queryClient = useQueryClient();
 
   // Sync with initial values if they change (e.g. from parent props after refresh)
   useEffect(() => {
@@ -80,6 +82,34 @@ export function useLikes(postId: number | null, initialIsLiked?: boolean, initia
     }
   };
 
+  const updateReactQueryCache = (newIsLiked: boolean, newCount: number) => {
+    if (!postId) return;
+
+    // Update infinite feed queries
+    queryClient.setQueriesData({ queryKey: ["posts"] }, (old: any) => {
+      if (!old || !old.pages) return old;
+      return {
+        ...old,
+        pages: old.pages.map((page: any) => ({
+          ...page,
+          posts: (page.posts || []).map((p: any) => 
+            p.id === postId ? { ...p, isLiked: newIsLiked, like_count: newCount } : p
+          )
+        }))
+      };
+    });
+
+    // Update detail post queries (using both string and number IDs to be safe)
+    queryClient.setQueryData(["post", String(postId)], (old: any) => {
+      if (!old) return old;
+      return { ...old, isLiked: newIsLiked, like_count: newCount };
+    });
+    queryClient.setQueryData(["post", Number(postId)], (old: any) => {
+      if (!old) return old;
+      return { ...old, isLiked: newIsLiked, like_count: newCount };
+    });
+  };
+
   const toggleLike = async () => {
     if (!postId) return;
 
@@ -98,6 +128,7 @@ export function useLikes(postId: number | null, initialIsLiked?: boolean, initia
 
     setIsLiked(newIsLiked);
     setLikeCount(newCount);
+    updateReactQueryCache(newIsLiked, newCount);
 
     setLoading(true);
     try {
@@ -116,14 +147,18 @@ export function useLikes(postId: number | null, initialIsLiked?: boolean, initia
       if (res.data) {
         const serverIsLiked = res.data.liked === true || res.data.isLiked === true;
         const serverCount = typeof res.data.likeCount === 'number' ? res.data.likeCount : res.data.count;
-        if (serverIsLiked !== undefined) setIsLiked(serverIsLiked);
-        if (serverCount !== undefined) setLikeCount(serverCount);
+        if (serverIsLiked !== undefined) {
+          setIsLiked(serverIsLiked);
+          setLikeCount(serverCount);
+          updateReactQueryCache(serverIsLiked, serverCount);
+        }
       }
     } catch (error) {
       console.error("Error toggling like:", error);
       // Rollback on error
       setIsLiked(previousIsLiked);
       setLikeCount(previousLikeCount);
+      updateReactQueryCache(previousIsLiked, previousLikeCount);
     } finally {
       setLoading(false);
     }
