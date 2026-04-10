@@ -50,6 +50,8 @@ interface Message {
   content: string;
   created_at: string;
   is_read?: boolean;
+  status?: 'sent' | 'sending' | 'error';
+  tempId?: string;
   image_url?: string;
   audio_url?: string;
   reply_to?: {
@@ -431,7 +433,17 @@ const MessageBubble = memo(({
       <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "2px 6px 0", alignSelf: isMine ? "flex-end" : "flex-start" }}>
         <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, display: "flex", alignItems: "center", gap: "4px" }}>
           {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          {isMine && (msg.is_read ? <Checks size={14} weight="bold" color="#3B82F6" /> : <Check size={14} weight="bold" style={{ opacity: 0.5 }} />)}
+          {isMine && (
+            msg.status === 'sending' ? (
+              <span style={{ opacity: 0.5, fontSize: "10px" }}>Sending...</span>
+            ) : msg.status === 'error' ? (
+              <span style={{ color: "#ef4444", fontSize: "10px" }}>Failed</span>
+            ) : msg.is_read ? (
+              <Checks size={14} weight="bold" color="#3B82F6" />
+            ) : (
+              <Check size={14} weight="bold" style={{ opacity: 0.5 }} />
+            )
+          )}
         </span>
         <button onClick={() => onReply(msg)} style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>Reply</button>
       </div>
@@ -579,6 +591,38 @@ export default function Messages() {
       setNewMessage(initialMessage);
     }
   }, [initialMessage]);
+
+  // LOCAL PERSISTENCE: Load from cache on mount
+  useEffect(() => {
+    const cachedConvos = localStorage.getItem('codeown_cached_convos');
+    if (cachedConvos && conversations.length === 0) {
+      setConversations(JSON.parse(cachedConvos));
+    }
+  }, []);
+
+  // Save convos to cache when they change
+  useEffect(() => {
+    if (conversations.length > 0) {
+      localStorage.setItem('codeown_cached_convos', JSON.stringify(conversations.slice(0, 50)));
+    }
+  }, [conversations]);
+
+  // Save messages to cache for active convo
+  useEffect(() => {
+    if (activeConvo && messages.length > 0) {
+      localStorage.setItem(`codeown_msgs_${activeConvo.id}`, JSON.stringify(messages.slice(-50)));
+    }
+  }, [messages, activeConvo?.id]);
+
+  // Load messages from cache when changing convo
+  useEffect(() => {
+    if (activeConvo && activeConvo.id !== 0) {
+      const cached = localStorage.getItem(`codeown_msgs_${activeConvo.id}`);
+      if (cached) {
+        setMessages(JSON.parse(cached));
+      }
+    }
+  }, [activeConvo?.id]);
 
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
   const [messageMenuId, setMessageMenuId] = useState<number | null>(null);
@@ -830,15 +874,45 @@ export default function Messages() {
       socket.emit("stop_typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
     }
 
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMessage: Message = {
+      id: 0,
+      tempId,
+      conversation_id: activeConvo?.id || 0,
+      sender_id: currentUser!.id,
+      content: newMessage.trim(),
+      created_at: new Date().toISOString(),
+      status: 'sending',
+      image_url: imagePreview || undefined,
+      audio_url: audioPreviewUrl || undefined,
+      reply_to: replyingTo ? {
+        id: replyingTo.id,
+        content: replyingTo.content,
+        sender_id: replyingTo.sender_id,
+        image_url: replyingTo.image_url,
+        audio_url: replyingTo.audio_url
+      } : undefined
+    };
+
+    // ADD OPTIMISTICALLY
+    setMessages(prev => [...prev, optimisticMessage]);
+    setNewMessage("");
+    setReplyingTo(null);
+    const prevSelectedImage = selectedImage;
+    const prevAudioBlob = audioBlob;
+    clearImage();
+    clearAudio();
+    setTimeout(() => scrollToBottom(true), 50);
+
     setSending(true);
     try {
       const token = await getToken();
       let imageUrl = directImageUrl;
 
-      if (selectedImage) {
+      if (prevSelectedImage) {
         setUploadingImage(true);
         const formData = new FormData();
-        formData.append("image", selectedImage);
+        formData.append("image", prevSelectedImage);
         const uploadRes = await api.post("/upload/image", formData, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -850,10 +924,10 @@ export default function Messages() {
       }
 
       let audioUrl = undefined;
-      if (audioBlob) {
+      if (prevAudioBlob) {
         setIsUploadingAudio(true);
         const formData = new FormData();
-        formData.append("audio", audioBlob, "voice_message.webm");
+        formData.append("audio", prevAudioBlob, "voice_message.webm");
         const uploadRes = await api.post("/upload/audio", formData, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -869,7 +943,7 @@ export default function Messages() {
         {
           conversationId: activeConvo?.id === 0 ? undefined : activeConvo?.id,
           recipientId: activeConvo?.id === 0 ? activeConvo?.partner.id : undefined,
-          content: newMessage.trim(),
+          content: optimisticMessage.content,
           replyToMessageId: replyingTo?.id,
           imageUrl: imageUrl,
           audioUrl: audioUrl,
@@ -879,24 +953,15 @@ export default function Messages() {
         }
       );
 
-      setNewMessage("");
-      setReplyingTo(null);
-      clearImage();
-      clearAudio();
+      // REPLACE OPTIMISTIC WITH REAL
+      const finalMessage = { ...res.data, status: 'sent' as const };
+      setMessages(prev => prev.map(m => m.tempId === tempId ? finalMessage : m));
 
       if (activeConvo?.id === 0) {
-        // If it was a new convo, the response has the true conversation_id
         const newConvoId = res.data.conversation_id;
-        
-        // Update the active convo with the real ID and add the message
-        setActiveConvo(prev => prev ? { ...prev, id: newConvoId, last_message: res.data } : null);
-        setMessages([res.data]);
-        
-        // Refresh conversations to get the full list ordered correctly
+        setActiveConvo(prev => prev ? { ...prev, id: newConvoId, last_message: finalMessage } : null);
         await queryClient.invalidateQueries({ queryKey: ['conversations'] });
       } else {
-        setMessages((prev) => [...prev, res.data]);
-
         // Immediate local conversation list update
         setConversations((prev) => {
           const convoId = activeConvo?.id;
@@ -904,7 +969,7 @@ export default function Messages() {
           const convoIndex = safePrev.findIndex(c => c.id === convoId);
           if (convoIndex === -1) return prev;
           const updated = [...safePrev];
-          updated[convoIndex] = { ...updated[convoIndex], last_message: res.data, unread_count: 0 };
+          updated[convoIndex] = { ...updated[convoIndex], last_message: finalMessage, unread_count: 0 };
           const [moved] = updated.splice(convoIndex, 1);
           return [moved, ...updated];
         });
@@ -912,6 +977,8 @@ export default function Messages() {
       setTimeout(() => scrollToBottom(true), 100);
     } catch (error) {
       console.error("Error sending message:", error);
+      // Mark as error
+      setMessages(prev => prev.map(m => m.tempId === tempId ? { ...m, status: 'error' } : m));
     } finally {
       setSending(false);
       setUploadingImage(false);
