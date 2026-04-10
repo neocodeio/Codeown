@@ -22,7 +22,8 @@ import {
   GithubLogo,
   TwitterLogo,
   LinkedinLogo,
-  InstagramLogo
+  InstagramLogo,
+  ChatCircle
 } from "phosphor-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -158,6 +159,13 @@ export default function UserProfile() {
     } catch (e) { console.error(e); }
     finally { setFollowLoading(false); }
   };
+ 
+  const handleMessage = () => {
+    if (!isSignedIn) { navigate("/sign-in"); return; }
+    if (user?.id) {
+      navigate(`/messages?userId=${user.id}`);
+    }
+  };
   // 4. Redirect if it's the current user's own profile
   useEffect(() => {
     if (user && currentUser && user.id === currentUser.id) {
@@ -228,6 +236,28 @@ export default function UserProfile() {
                   {isFollowing ? "Following" : "Follow"}
                 </button>
               )}
+              <button 
+                onClick={handleMessage}
+                style={{ 
+                  padding: "8px 16px", 
+                  borderRadius: "var(--radius-sm)", 
+                  fontSize: "13px", 
+                  fontWeight: 600, 
+                  border: "1px solid var(--border-hairline)", 
+                  backgroundColor: "var(--bg-page)", 
+                  color: "var(--text-primary)", 
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  transition: "all 0.15s ease" 
+                }} 
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} 
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} 
+              >
+                <ChatCircle size={18} weight="regular" />
+                Message
+              </button>
               <button onClick={() => setIsIDCardModalOpen(true)} style={{ padding: "8px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer" }} >
                 <IdentificationCard size={20} />
               </button>
