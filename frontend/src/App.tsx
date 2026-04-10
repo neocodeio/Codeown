@@ -82,6 +82,8 @@ export default function App() {
   const { getToken } = useClerkAuth();
   const queryClient = useQueryClient();
 
+  if (!userLoaded) return <PageLoader />;
+
   // Global real-time updates
   useEffect(() => {
     const onConnect = () => {
@@ -205,6 +207,9 @@ export default function App() {
         const token = await getToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
+        }
+        if (user?.id) {
+          config.headers["X-Clerk-User-Id"] = user.id;
         }
       } catch (err) {
         console.error("Error setting auth header:", err);

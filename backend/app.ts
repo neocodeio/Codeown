@@ -100,23 +100,41 @@ app.post("/webhooks/clerk", express.raw({ type: "*/*" }), handleClerkWebhook);
 app.use(express.json({ limit: "50mb" }));
 
 // 5. Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10000, 
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500, // Limit each IP/User to 500 requests per window
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    // Try to limit by User ID first, then fallback to IP
+    return (req.headers["x-clerk-user-id"] as string) || req.ip || "unknown";
+  },
+  message: { error: "Too many requests, please try again later." },
 });
-app.use(limiter);
+app.use(globalLimiter);
 
 // Specific stricter limit for feedback
 const feedbackLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 5, // 5 feedbacks per day
-  message: { error: "You have reached your daily feedback limit (5 per day). Please try again tomorrow." },
+  max: 10,
+  message: { error: "You have reached your daily feedback limit. Please try again tomorrow." },
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => (req.headers["x-clerk-user-id"] as string) || req.ip || "unknown",
 });
+
+// Stricter limit for message sending to prevent spam
+const chatLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 30, // 30 messages per minute
+  message: { error: "You are sending messages too fast. Please slow down." },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => (req.headers["x-clerk-user-id"] as string) || req.ip || "unknown",
+});
+
 app.use("/feedback", feedbackLimiter);
+app.use("/messages", chatLimiter);
 
 // Routes
 app.use("/posts", postsRoutes);

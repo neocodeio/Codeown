@@ -557,6 +557,11 @@ export default function Messages() {
 
   const hasAttemptedRef = useRef(false);
 
+  // Reset attempt flag when target user changes
+  useEffect(() => {
+    hasAttemptedRef.current = false;
+  }, [targetUserId]);
+
   // Sync state with React Query data
   useEffect(() => {
     if (qConversations.length > 0) {
@@ -576,15 +581,20 @@ export default function Messages() {
   }, [qConversations, targetUserId, activeConvo]);
 
   useEffect(() => {
+    // Only update local messages when the query is NOT loading
+    // This prevents clearing messages while we wait for the next fetch
     if (qMessages.length > 0) {
       setMessages(qMessages);
       setTimeout(() => scrollToBottom(true), 100);
-    } else if (activeConvo && activeConvo.id !== 0) {
-      if (messages.length > 0) setMessages([]);
-    } else if (!activeConvo) {
-      if (messages.length > 0) setMessages([]);
+    } else if (!qMessagesLoading) {
+      // Only clear if we are NOT loading and we have no messages
+      if (activeConvo && activeConvo.id !== 0) {
+        setMessages([]);
+      } else if (!activeConvo) {
+        setMessages([]);
+      }
     }
-  }, [qMessages, activeConvo?.id]);
+  }, [qMessages, activeConvo?.id, qMessagesLoading]);
 
   useEffect(() => {
     if (initialMessage) {
@@ -1065,18 +1075,25 @@ export default function Messages() {
     }
   };
 
+  const lastTypingTimeRef = useRef<number>(0);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
     announce("chatting");
 
     if (activeConvo && activeConvo.partner.id && currentUser?.id) {
-      socket.emit("typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
+      const now = Date.now();
+      // Only emit typing event every 1.5 seconds to save bandwidth/overhead
+      if (now - lastTypingTimeRef.current > 1500) {
+        socket.emit("typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
+        lastTypingTimeRef.current = now;
+      }
 
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
       typingTimeoutRef.current = setTimeout(() => {
         socket.emit("stop_typing", { senderId: currentUser.id, receiverId: activeConvo.partner.id });
-      }, 2000);
+      }, 3000);
     }
   };
 
