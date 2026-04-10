@@ -122,10 +122,10 @@ export default function Profile() {
     retry: 2,
   });
 
-  const { posts, fetchUserPosts, loading: postsLoading } = useUserPosts(userId, activeTab === "posts");
-  const { projects, fetchUserProjects, loading: projectsLoading } = useUserProjects(userId, activeTab === "projects");
-  const { savedPosts, fetchSavedPosts, loading: savedPostsLoading } = useSavedPosts(activeTab === "saved" && savedSubTab === "posts");
-  const { projects: savedProjects, fetchUserSavedProjects, loading: savedProjectsLoading } = useUserSavedProjects(userId, activeTab === "saved" && savedSubTab === "projects");
+  const { posts, fetchUserPosts, loading: postsLoading } = useUserPosts(userId, true);
+  const { projects, fetchUserProjects, loading: projectsLoading } = useUserProjects(userId, true);
+  const { savedPosts, fetchSavedPosts, loading: savedPostsLoading } = useSavedPosts(activeTab === "saved");
+  const { projects: savedProjects, fetchUserSavedProjects, loading: savedProjectsLoading } = useUserSavedProjects(userId, activeTab === "saved");
 
   // 2. Fetch applications on demand
   const { data: applications = [], isLoading: loadingApps } = useQuery({
@@ -212,47 +212,47 @@ export default function Profile() {
   if (!isLoaded || profileLoading) return (
     <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
       <div style={{
-        maxWidth: "1000px",
+        maxWidth: "1020px",
         margin: "0 auto",
-        padding: isMobile ? "0" : "40px 20px"
+        display: "flex",
+        flexDirection: "row"
       }}>
-        <div className="skeleton-pulse" style={{
-          width: "100%",
-          height: isMobile ? "200px" : "320px",
-          borderRadius: "0",
-          backgroundColor: "var(--bg-hover)",
-          position: "relative",
-          marginBottom: isMobile ? "60px" : "80px",
+        <div style={{
+          width: isDesktop ? "var(--feed-width)" : "100%",
+          maxWidth: isDesktop ? "var(--feed-width)" : "700px",
+          borderLeft: "0.5px solid var(--border-hairline)",
+          borderRight: "0.5px solid var(--border-hairline)",
+          minHeight: "100vh"
         }}>
-          <div className="skeleton-pulse" style={{
-            position: "absolute",
-            bottom: isMobile ? "-40px" : "-60px",
-            left: isMobile ? "50%" : "40px",
-            transform: isMobile ? "translateX(-50%)" : "none",
-            width: isMobile ? "100px" : "150px",
-            height: isMobile ? "100px" : "150px",
-            borderRadius: "var(--radius-sm)",
-            border: "4px solid var(--bg-page)",
-            backgroundColor: "var(--bg-page)",
-            zIndex: 10
-          }} />
-        </div>
-        <div style={{ padding: "0 24px", display: "flex", flexDirection: "column", gap: "32px" }}>
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexDirection: isMobile ? "column" : "row", gap: "24px" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
-              <div className="skeleton-pulse" style={{ width: "40%", height: "32px" }} />
-              <div className="skeleton-pulse" style={{ width: "20%", height: "20px" }} />
-            </div>
-            <div style={{ display: "flex", gap: "12px" }}>
-              <div className="skeleton-pulse" style={{ width: "44px", height: "44px" }} />
-              <div className="skeleton-pulse" style={{ width: "120px", height: "44px" }} />
-            </div>
+          <div className="skeleton-pulse" style={{ width: "100%", height: isMobile ? "120px" : "240px", backgroundColor: "var(--bg-hover)" }} />
+          <div style={{ padding: "0 24px", position: "relative", marginTop: "-50px" }}>
+             <div className="skeleton-pulse" style={{ width: "120px", height: "120px", borderRadius: "var(--radius-sm)", border: "4px solid var(--bg-page)" }} />
+             <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+               <div className="skeleton-pulse" style={{ width: "240px", height: "32px", borderRadius: "16px" }} />
+               <div className="skeleton-pulse" style={{ width: "120px", height: "18px", borderRadius: "9px" }} />
+               <div className="skeleton-pulse" style={{ width: "100%", height: "60px", borderRadius: "12px", marginTop: "12px" }} />
+               <div style={{ display: "flex", gap: "16px", marginTop: "12px" }}>
+                 <div className="skeleton-pulse" style={{ width: "80px", height: "20px", borderRadius: "10px" }} />
+                 <div className="skeleton-pulse" style={{ width: "80px", height: "20px", borderRadius: "10px" }} />
+                 <div className="skeleton-pulse" style={{ width: "80px", height: "20px", borderRadius: "10px" }} />
+               </div>
+             </div>
+          </div>
+          <div style={{ padding: "0 24px", marginTop: "40px" }}>
+            <div className="skeleton-pulse" style={{ width: "100%", height: "400px", borderRadius: "var(--radius-md)" }} />
           </div>
         </div>
       </div>
       <style>{`
-        .skeleton-pulse { background-color: var(--bg-hover); border-radius: 2px; animation: skeleton-pulse-anim 2s infinite ease-in-out; }
-        @keyframes skeleton-pulse-anim { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .skeleton-pulse { 
+          background: linear-gradient(-90deg, var(--bg-hover) 0%, var(--border-light) 50%, var(--bg-hover) 100%);
+          background-size: 400% 400%;
+          animation: skeleton-shimmer 1.5s ease-in-out infinite;
+        }
+        @keyframes skeleton-shimmer {
+          0% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
       `}</style>
     </main>
   );

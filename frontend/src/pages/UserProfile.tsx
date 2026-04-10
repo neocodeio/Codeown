@@ -175,13 +175,48 @@ export default function UserProfile() {
 
   if (profileLoading) return (
     <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
-      <div style={{ maxWidth: "600px", margin: "0 auto", padding: "40px 20px" }}>
-        <div className="skeleton-pulse" style={{ width: "100%", height: "200px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)" }} />
-        <style>{`
-          .skeleton-pulse { background-color: var(--bg-hover); opacity: 0.6; animation: skeleton-pulse-anim 2s infinite ease-in-out; }
-          @keyframes skeleton-pulse-anim { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
-        `}</style>
+      <div style={{
+        maxWidth: "1020px",
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "row"
+      }}>
+        <div style={{
+          width: isDesktop ? "var(--feed-width)" : "100%",
+          maxWidth: isDesktop ? "var(--feed-width)" : "700px",
+          borderLeft: "0.5px solid var(--border-hairline)",
+          borderRight: "0.5px solid var(--border-hairline)",
+          minHeight: "100vh"
+        }}>
+          <div className="skeleton-pulse" style={{ width: "100%", height: isMobile ? "120px" : "240px" }} />
+          <div style={{ padding: "0 24px", position: "relative", marginTop: "-50px" }}>
+             <div className="skeleton-pulse" style={{ width: "100px", height: "100px", borderRadius: "16px", border: "4px solid var(--bg-page)" }} />
+             <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+               <div className="skeleton-pulse" style={{ width: "220px", height: "28px", borderRadius: "14px" }} />
+               <div className="skeleton-pulse" style={{ width: "100px", height: "16px", borderRadius: "8px" }} />
+               <div className="skeleton-pulse" style={{ width: "100%", height: "48px", borderRadius: "12px", marginTop: "10px" }} />
+               <div style={{ display: "flex", gap: "16px", marginTop: "12px" }}>
+                 <div className="skeleton-pulse" style={{ width: "70px", height: "18px", borderRadius: "9px" }} />
+                 <div className="skeleton-pulse" style={{ width: "70px", height: "18px", borderRadius: "9px" }} />
+               </div>
+             </div>
+          </div>
+          <div style={{ padding: "0 24px", marginTop: "40px" }}>
+            <div className="skeleton-pulse" style={{ width: "100%", height: "350px", borderRadius: "20px" }} />
+          </div>
+        </div>
       </div>
+      <style>{`
+        .skeleton-pulse { 
+          background: linear-gradient(-90deg, var(--bg-hover) 0%, var(--border-light) 50%, var(--bg-hover) 100%);
+          background-size: 400% 400%;
+          animation: skeleton-shimmer 1.5s ease-in-out infinite;
+        }
+        @keyframes skeleton-shimmer {
+          0% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
     </main>
   );
 
