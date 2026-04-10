@@ -318,7 +318,7 @@ export default function App() {
         id="main-content"
         style={{
           flex: (isStandardPage && isDesktop) ? "0 0 1020px" : 1,
-          width: (isStandardPage && isDesktop) ? "1020px" : "100%",
+          width: (isStandardPage && isDesktop) ? "1020px" : "auto",
           maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%",
           position: "relative",
           minWidth: 0,

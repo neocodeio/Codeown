@@ -1189,9 +1189,8 @@ export default function Messages() {
       style={{
         display: "flex",
         flexDirection: isMobile ? "column" : "row",
-        height: isMobile ? "calc(100vh - 64px)" : "calc(100vh - 0px)",
+        height: isMobile ? "calc(100vh - 64px)" : "100vh",
         maxWidth: "100%",
-        margin: "0 auto",
         overflow: "hidden",
         backgroundColor: "var(--bg-page)",
       }}
