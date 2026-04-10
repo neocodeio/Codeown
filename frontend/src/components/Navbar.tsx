@@ -36,6 +36,62 @@ import DeveloperIDCardModal from "./DeveloperIDCardModal";
 import StreakBadge from "./StreakBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 
+const StatusBadge = () => {
+  const [activeCount, setActiveCount] = useState(1);
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true 
+  }));
+
+  useEffect(() => {
+    const fetchActiveCount = async () => {
+      try {
+        const { data } = await api.get("/users/active/count");
+        setActiveCount(data?.count || 1);
+      } catch (e) {
+        setActiveCount(1);
+      }
+    };
+
+    fetchActiveCount();
+    const countInterval = setInterval(fetchActiveCount, 30000); // 30s
+    
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString([], { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true 
+      }));
+    }, 1000);
+
+    return () => {
+      clearInterval(countInterval);
+      clearInterval(timeInterval);
+    };
+  }, []);
+
+  return (
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "1px",
+      marginTop: "2px",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#00BA7C", boxShadow: "0 0 8px rgba(0, 186, 124, 0.4)" }} />
+        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", letterSpacing: "0.02em", textTransform: "uppercase" }}>
+          {activeCount} active now
+        </span>
+      </div>
+      <span style={{ fontSize: "9px", fontWeight: 600, color: "var(--text-tertiary)", opacity: 0.6, letterSpacing: "0.04em", fontFamily: "monospace", marginLeft: "12px" }}>
+        {currentTime}
+      </span>
+    </div>
+  );
+};
 
 
 export default function Navbar() {
@@ -104,83 +160,6 @@ export default function Navbar() {
 
   // Streak update logic (no longer rendered here, but kept for potential future use)
 
-  const StatusBadge = () => {
-    const [activeCount, setActiveCount] = useState(1);
-    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true 
-    }));
-
-    useEffect(() => {
-      const fetchActiveCount = async () => {
-        try {
-          const { data } = await api.get("/users/active/count");
-          setActiveCount(data?.count || 1);
-        } catch (e) {
-          setActiveCount(1);
-        }
-      };
-
-      fetchActiveCount();
-      const countInterval = setInterval(fetchActiveCount, 30000); // 30s
-      
-      const timeInterval = setInterval(() => {
-        setCurrentTime(new Date().toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true 
-        }));
-      }, 1000);
-
-      return () => {
-        clearInterval(countInterval);
-        clearInterval(timeInterval);
-      };
-    }, []);
-
-    return (
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "1px",
-        marginTop: "2px",
-      }}>
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-        }}>
-          <div style={{
-            width: "4px",
-            height: "4px",
-            borderRadius: "50%",
-            backgroundColor: "#22c55e",
-            flexShrink: 0
-          }} />
-          <span style={{
-            fontSize: "11px",
-            color: "var(--text-secondary)",
-            fontWeight: 600,
-            whiteSpace: "nowrap"
-          }}>
-            {activeCount} builders online
-          </span>
-        </div>
-        <span style={{
-            fontSize: "10px",
-            color: "var(--text-tertiary)",
-            fontWeight: 500,
-            paddingLeft: "8px",
-            letterSpacing: "0.02em"
-        }}>
-            {currentTime}
-        </span>
-      </div>
-    );
-  };
 
   // Remove periodic ping - React Query handles active count efficiently
   // Only ping when user actively interacts, not on a timer

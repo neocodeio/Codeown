@@ -76,13 +76,11 @@ export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
-  const isMobile = width < 768;
+  const isMobile = width < 1024; // Standardize mobile breakpoint
   const isDesktop = width >= 1200;
   const { user, isLoaded: userLoaded, isSignedIn } = useClerkUser();
   const { getToken } = useClerkAuth();
   const queryClient = useQueryClient();
-
-
 
   // Global real-time updates
   useEffect(() => {
@@ -102,10 +100,8 @@ export default function App() {
     }
 
     const handleUpdate = ({ type, data }: { type: string, data: any }) => {
-      // Post related updates
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
         if (type === "post_created") {
-          // Prepend to all active post feeds
           queryClient.setQueriesData({ queryKey: ["posts"] }, (oldData: any) => {
             if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
             const firstPage = oldData.pages[0];
@@ -120,7 +116,6 @@ export default function App() {
             };
           });
         } else {
-          // Invalidate for updates/likes/comments
           queryClient.invalidateQueries({ queryKey: ["posts"] });
           if (data.id || data.postId) {
             queryClient.invalidateQueries({ queryKey: ["post", String(data.id || data.postId)] });
@@ -128,16 +123,12 @@ export default function App() {
           }
         }
       } 
-      
-      // Project related updates
       else if (type.startsWith("project_") || (type === "comment_liked" && data.type === "project")) {
         queryClient.invalidateQueries({ queryKey: ["projects"] });
         if (data.id || data.projectId) {
           queryClient.invalidateQueries({ queryKey: ["project", String(data.id || data.projectId)] });
         }
       }
-      
-      // Startup related updates
       else if (type === "startup_upvote") {
         queryClient.invalidateQueries({ queryKey: ["startups"] });
         if (data.id) {
@@ -152,7 +143,6 @@ export default function App() {
       queryClient.invalidateQueries({ queryKey: ["unread_count"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       
-      // Show toast
       if (notif.type === 'startup_upvote') {
         toast(`🚀 Someone upvoted your startup!`, {
           position: "bottom-left",
@@ -177,127 +167,67 @@ export default function App() {
   // Global presence heartbeat
   useEffect(() => {
     let interval: any;
-
     const pingActivity = async () => {
       if (isSignedIn && user?.id) {
         try {
           await api.post("/users/active/ping");
-        } catch (err) {
-          // Fail silently for pings
-        }
+        } catch (err) {}
       }
     };
 
     if (isSignedIn && user?.id) {
-      // Initial ping
       pingActivity();
-      // Periodic pings every 45s
       interval = setInterval(pingActivity, 45000);
     }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    return () => { if (interval) clearInterval(interval); };
   }, [isSignedIn, user?.id]);
 
-  // Globalaxios interceptor for auth
+  // Global axios interceptor for auth
   useEffect(() => {
     const interceptor = api.interceptors.request.use(async (config) => {
       try {
         const token = await getToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        if (user?.id) {
-          config.headers["X-Clerk-User-Id"] = user.id;
-        }
-      } catch (err) {
-        console.error("Error setting auth header:", err);
-      }
+        if (token) config.headers.Authorization = `Bearer ${token}`;
+        if (user?.id) config.headers["X-Clerk-User-Id"] = user.id;
+      } catch (err) {}
       return config;
     });
+    return () => { api.interceptors.request.eject(interceptor); };
+  }, [getToken, user?.id]);
 
-    return () => {
-      api.interceptors.request.eject(interceptor);
-    };
-  }, [getToken]);
-
-  // Onboarding check - optimized to run only on auth state change or mount
+  // Onboarding check
   useEffect(() => {
     const checkOnboarding = async () => {
-      // Don't check if we don't have user info yet
-      if (!userLoaded || !isSignedIn || !user?.id || isCheckingRef.current) {
-        return;
-      }
-
+      if (!userLoaded || !isSignedIn || !user?.id || isCheckingRef.current) return;
       try {
         isCheckingRef.current = true;
-        
-        // Clean up path for comparison
         const path = location.pathname.split("?")[0].replace(/\/$/, "");
-        
-        // Don't check on pages that are part of the onboarding/auth flow
-        if (
-          path === "/onboarding" ||
-          path === "/sign-in" ||
-          path === "/sign-up" ||
-          path === "/forgot-password" ||
-          path === "/about-us" ||
-          path === "/privacy" ||
-          path === "/terms"
-        ) {
-          return;
-        }
-
-        // Check local storage first to avoid unnecessary API calls
+        if (["/onboarding", "/sign-in", "/sign-up", "/forgot-password", "/about-us", "/privacy", "/terms"].includes(path)) return;
         const localStatus = localStorage.getItem(`onboarding_done_${user.id}`);
         if (localStatus === "true") return;
-
         const token = await getToken();
         if (!token) return;
-
-        const res = await api.get(`/users/${user.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
+        const res = await api.get(`/users/${user.id}`, { headers: { Authorization: `Bearer ${token}` } });
         if (res.data) {
-          const isCompleted = res.data.onboarding_completed;
-          if (isCompleted) {
+          if (res.data.onboarding_completed) {
             localStorage.setItem(`onboarding_done_${user.id}`, "true");
-          } else {
-            // Only navigate if we are NOT already there
-            if (path !== "/onboarding") {
-              navigate("/onboarding", { replace: true });
-            }
+          } else if (path !== "/onboarding") {
+            navigate("/onboarding", { replace: true });
           }
         }
-      } catch (error) {
-        console.error("Onboarding check failed:", error);
-      } finally {
-        isCheckingRef.current = false;
-      }
+      } catch (error) {} finally { isCheckingRef.current = false; }
     };
-
     checkOnboarding();
-  }, [userLoaded, isSignedIn, user?.id, navigate]); // Removed location.pathname to prevent loop
+  }, [userLoaded, isSignedIn, user?.id, navigate]);
 
-  const isAuthRoute =
-    location.pathname === "/sign-in" ||
-    location.pathname === "/sign-up" ||
-    location.pathname === "/forgot-password" ||
-    location.pathname === "/onboarding";
-
+  const isAuthRoute = ["/sign-in", "/sign-up", "/forgot-password", "/onboarding"].includes(location.pathname);
+  
   const isStandardPage = 
-    location.pathname === "/" || 
-    location.pathname === "/profile" || 
-    location.pathname === "/dashboard" ||
-    location.pathname === "/notifications" || 
-    location.pathname === "/changelog" || 
+    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups"].includes(location.pathname) || 
     location.pathname.startsWith("/post/") ||
     location.pathname.startsWith("/project/") ||
-    location.pathname.startsWith("/user/") || 
+    location.pathname.startsWith("/user/") ||
     (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup", "forgot-password", "sign-in", "sign-up"].includes(location.pathname.split("/")[1]));
-
 
   const shouldShowNavbar = !isAuthRoute || (isMobile && (location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up")));
 
@@ -305,21 +235,22 @@ export default function App() {
 
   return (
     <div style={{
-      display: isMobile ? "flex" : "grid",
-      flexDirection: isMobile ? "column" : undefined,
-      gridTemplateColumns: (!isMobile && !isAuthRoute) ? (width < 1024 ? "240px 1fr" : "300px 1fr") : "1fr",
+      display: "flex",
+      flexDirection: isMobile ? "column" : "row",
       minHeight: "100vh",
       backgroundColor: "var(--bg-page)",
+      justifyContent: "flex-start" // Always align to start so navbar is next to feed
     }}>
       <ScrollToTop />
       {shouldShowNavbar && <Navbar />}
       <div 
         id="main-content"
         style={{
+          flex: 1,
           width: "100%",
-          maxWidth: "100%",
-          display: "flex",
-          justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start",
+          maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%", // Limit width but don't center container
+          margin: (isStandardPage && isDesktop) ? "0 auto 0 0" : "0", // Align left next to navbar, or use auto for standard centering if preferred
+          // Actually, if we want it "next to each other", margin: 0 is best.
           position: "relative",
           minWidth: 0,
           zIndex: 1,
@@ -327,9 +258,14 @@ export default function App() {
           paddingBottom: isMobile && shouldShowNavbar ? "80px" : "0px"
         }}
       >
-        <ErrorBoundary>
-          <Suspense fallback={<PageLoader />} key={location.pathname}>
-            <Routes>
+        <div style={{
+          maxWidth: (isStandardPage && isDesktop) ? "1020px" : "100%",
+          width: "100%",
+          margin: (isStandardPage && isDesktop) ? "0 auto" : "0" // Center the INNER content if standard
+        }}>
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
                 <Route path="/" element={<Feed />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostDetail />} />
@@ -359,10 +295,11 @@ export default function App() {
                 <Route path="/startup/:id/edit" element={<StartupForm isEditing={true} />} />
                 <Route path="/ship" element={<Navigate to="/" replace />} />
                 <Route path="/:username" element={<UserProfile />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
+        </div>
         {!isAuthRoute && 
          location.pathname !== "/messages" && 
          !location.pathname.startsWith("/post/") && 
