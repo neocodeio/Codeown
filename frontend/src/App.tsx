@@ -42,7 +42,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const StartupDirectory = lazy(() => import("./pages/StartupDirectory").then(m => ({ default: m.StartupDirectory })));
 const StartupProfile = lazy(() => import("./pages/StartupProfile").then(m => ({ default: m.StartupProfile })));
 const StartupForm = lazy(() => import("./components/StartupForm").then(m => ({ default: m.StartupForm })));
-const ShipWeek = lazy(() => import("./pages/ShipWeek"));
+// const ShipWeek = lazy(() => import("./pages/ShipWeek"));
 
 // Basic loading fallback
 const PageLoader = () => (
@@ -350,7 +350,7 @@ export default function App() {
                 <Route path="/startup/new" element={<StartupForm />} />
                 <Route path="/startup/:id" element={<StartupProfile />} />
                 <Route path="/startup/:id/edit" element={<StartupForm isEditing={true} />} />
-                <Route path="/ship" element={<ShipWeek />} />
+                <Route path="/ship" element={<Navigate to="/" replace />} />
                 <Route path="/:username" element={<UserProfile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

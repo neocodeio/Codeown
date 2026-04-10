@@ -27,7 +27,7 @@ import {
   Buildings,
   Medal,
   ChartBar,
-  Trophy
+  // Trophy
 } from "phosphor-react";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -248,10 +248,10 @@ export default function Navbar() {
           <UsersThree size={20} weight={location.pathname === "/leaderboard" ? "bold" : "regular"} />
           Leaderboard
         </Link>
-        <Link to="/ship" style={linkStyle("/ship")} aria-label="Ship Week Competition">
+        {/* <Link to="/ship" style={linkStyle("/ship")} aria-label="Ship Week Competition">
           <Trophy size={20} weight={location.pathname === "/ship" ? "bold" : "regular"} />
           Ship Week
-        </Link>
+        </Link> */}
         <Link to="/ogs" style={linkStyle("/ogs")} aria-label="Founding OGs">
           <Medal size={20} weight={location.pathname === "/ogs" ? "bold" : "regular"} />
           Our OGs
@@ -731,13 +731,13 @@ export default function Navbar() {
                 <Plus size={18} weight="regular" />
                 Post
               </div>
-              <div
+              {/* <div
                 onClick={() => { setIsCreateMenuOpen(false); navigate("/ship"); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
               >
                 <Trophy size={18} weight="regular" />
                 Ship Week
-              </div>
+              </div> */}
               <div
                 onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}
                 style={{ padding: "12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px" }}
