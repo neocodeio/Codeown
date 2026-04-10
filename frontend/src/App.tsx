@@ -323,7 +323,6 @@ export default function App() {
           position: "relative",
           minWidth: 0,
           zIndex: 1,
-          marginLeft: (!isAuthRoute && isDesktop) ? (width < 1024 ? "240px" : "300px") : "0px",
           paddingTop: isMobile && shouldShowNavbar ? "64px" : "0px",
           paddingBottom: isMobile && shouldShowNavbar ? "80px" : "0px"
         }}
