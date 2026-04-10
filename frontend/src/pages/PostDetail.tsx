@@ -5,7 +5,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import ImageSlider from "../components/ImageSlider";
-import ContentRenderer from "../components/ContentRenderer";
+import ContentRenderer, { CodeBlock } from "../components/ContentRenderer";
 import MentionInput from "../components/MentionInput";
 import CommentBlock, { type CommentWithMeta } from "../components/CommentBlock";
 import { useLikes } from "../hooks/useLikes";
@@ -61,6 +61,7 @@ interface Post {
     votes?: Record<number, number>;
     userVoted?: number;
   } | null;
+  code_snippet?: string | null;
 }
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -399,6 +400,12 @@ export default function PostDetail() {
             }}>
               <ContentRenderer content={post.content} />
             </div>
+
+            {post.code_snippet && (
+              <div style={{ marginBottom: "24px" }}>
+                <CodeBlock language="typescript" code={post.code_snippet} />
+              </div>
+            )}
 
             {/* Media/Images */}
             {post.images && post.images.length > 0 && (

@@ -44,7 +44,7 @@ export async function searchPosts(req: Request, res: Response) {
     // Search posts by title, content, or tags - select only safe columns
     let postsQuery = supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" })
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, code_snippet, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" })
       .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
       .order("created_at", { ascending: false })
       .range(offset, offset + limitNum - 1);
@@ -54,7 +54,7 @@ export async function searchPosts(req: Request, res: Response) {
       const tag = query.substring(1).toLowerCase();
       postsQuery = supabase
         .from("posts")
-        .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" })
+        .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, code_snippet, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" })
         .contains("tags", [tag])
         .order("created_at", { ascending: false })
         .range(offset, offset + limitNum - 1);
@@ -262,7 +262,7 @@ export async function searchAll(req: Request, res: Response) {
         .limit(5),
       supabase
         .from("posts")
-        .select("id, title, content, user_id, created_at, tags")
+        .select("id, title, content, user_id, created_at, tags, code_snippet")
         .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
         .order("created_at", { ascending: false })
         .limit(5),
