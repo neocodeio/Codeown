@@ -13,15 +13,16 @@ import api from "./api/axios";
 import { socket } from "./lib/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { X } from "phosphor-react";
 import "react-toastify/dist/ReactToastify.css";
 
-const XPCloseButton = ({ closeToast }: { closeToast: () => void }) => (
+// Using a simple, reliable dismiss mechanism
+const XPCloseButton = ({ closeToast, toastId }: any) => (
   <button 
     type="button" 
     onClick={(e) => {
       e.stopPropagation();
-      closeToast();
+      if (toastId) toast.dismiss(toastId);
+      else closeToast();
     }}
     style={{ 
       padding: '8px',
@@ -33,21 +34,18 @@ const XPCloseButton = ({ closeToast }: { closeToast: () => void }) => (
       background: 'transparent',
       border: 'none',
       color: 'inherit',
-      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+      transition: 'all 0.2s',
       marginLeft: '8px',
       borderRadius: '50%',
-      outline: 'none'
+      fontSize: '20px',
+      lineHeight: 1,
+      width: '32px',
+      height: '32px'
     }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.opacity = '1';
-      e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.opacity = '0.8';
-      e.currentTarget.style.backgroundColor = 'transparent';
-    }}
+    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
+    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
   >
-    <X size={16} weight="bold" />
+    ×
   </button>
 );
 
@@ -204,15 +202,17 @@ export default function App() {
         'follow': 'for growing your community'
       };
 
+      const toastId = `xp-${Date.now()}`;
+
       toast(`✨ +${data.amount} XP ${reasonMap[data.reason] || 'gained'}`, {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: true,
-        closeOnClick: false, // Prevents event conflict with the X button
+        closeOnClick: false,
         pauseOnHover: false,
         className: 'xp-toast-premium',
-        closeButton: XPCloseButton,
-        toastId: `xp-${Date.now()}` // Unique toast for each gain
+        closeButton: (props) => <XPCloseButton {...props} toastId={toastId} />,
+        toastId: toastId
       });
       // Exponentially faster: Aggressively update all related profile caches for instant visual feedback
       // We target anything that looks like a profile (using partial matching)
@@ -250,6 +250,8 @@ export default function App() {
         });
       });
 
+      const toastId = `lv-${data.newLevel}`;
+
       toast(`🚀 LEVEL UP! You are now Lvl ${data.newLevel}`, {
         position: "top-center",
         autoClose: 5000,
@@ -257,8 +259,8 @@ export default function App() {
         closeOnClick: false,
         pauseOnHover: false,
         className: 'xp-toast-premium',
-        closeButton: XPCloseButton,
-        toastId: `lv-${data.newLevel}`
+        closeButton: (props) => <XPCloseButton {...props} toastId={toastId} />,
+        toastId: toastId
       });
     };
 
