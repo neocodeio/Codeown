@@ -10,6 +10,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster as SonnerToaster } from 'sonner';
 import './index.css';
 import * as Sentry from "@sentry/react";
 
@@ -97,6 +98,7 @@ const AppWrapper = () => {
           textTransform: 'uppercase'
         }}
       />
+      <SonnerToaster position="bottom-right" theme={theme === 'dark' ? 'dark' : 'light'} />
       <SpeedInsights />
       <Analytics />
     </>

@@ -13,30 +13,11 @@ import api from "./api/axios";
 import { socket } from "./lib/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { toast as sonnerToast } from "sonner";
+import { X } from "phosphor-react";
 import "react-toastify/dist/ReactToastify.css";
 
-// Keep custom close button extremely simple to avoid interfering with react-toastify internals
-const XPCloseButton = ({ closeToast }: any) => (
-  <div 
-    onClick={closeToast}
-    style={{ 
-      padding: '4px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      cursor: 'pointer',
-      opacity: 0.8,
-      transition: 'all 0.2s',
-      marginLeft: '8px',
-      fontSize: '22px',
-      lineHeight: 1,
-      userSelect: 'none',
-      color: 'inherit'
-    }}
-  >
-    ×
-  </div>
-);
+
 
 // Lazy load pages
 const Feed = lazy(() => import("./pages/Feed"));
@@ -191,18 +172,55 @@ export default function App() {
         'follow': 'for growing your community'
       };
 
-      const toastId = `xp-${Date.now()}`;
-
-      toast(`✨ +${data.amount} XP ${reasonMap[data.reason] || 'gained'}`, {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: false,
-        pauseOnHover: false,
-        className: 'xp-toast-premium',
-        closeButton: XPCloseButton,
-        toastId: toastId
-      });
+      sonnerToast.custom((t) => (
+        <div style={{
+          width: '356px',
+          background: 'var(--bg-card)',
+          color: 'var(--text-primary)',
+          border: '1px solid var(--border-hairline)',
+          borderRadius: 'var(--radius-sm)',
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+          fontFamily: 'var(--font-main)',
+          fontWeight: 700,
+          fontSize: '13px',
+          backdropFilter: 'blur(12px)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>✨</span>
+            <span>+{data.amount} XP {reasonMap[data.reason] || 'gained'}</span>
+          </div>
+          <button 
+            onClick={() => sonnerToast.dismiss(t)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              padding: '4px',
+              opacity: 0.7,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '1';
+              e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '0.7';
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            <X size={16} weight="bold" />
+          </button>
+        </div>
+      ), { duration: 5000 });
       // Exponentially faster: Aggressively update all related profile caches for instant visual feedback
       // We target anything that looks like a profile (using partial matching)
       const updateData = (old: any) => {
@@ -239,18 +257,55 @@ export default function App() {
         });
       });
 
-      const toastId = `lv-${data.newLevel}`;
-
-      toast(`🚀 LEVEL UP! You are now Lvl ${data.newLevel}`, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: false,
-        className: 'xp-toast-premium',
-        closeButton: XPCloseButton,
-        toastId: toastId
-      });
+      sonnerToast.custom((t) => (
+        <div style={{
+          width: '356px',
+          background: 'var(--bg-card)',
+          color: 'var(--text-primary)',
+          border: '1px solid var(--border-hairline)',
+          borderRadius: 'var(--radius-sm)',
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+          fontFamily: 'var(--font-main)',
+          fontWeight: 700,
+          fontSize: '13px',
+          backdropFilter: 'blur(12px)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>🚀</span>
+            <span>LEVEL UP! You are now Lvl {data.newLevel}</span>
+          </div>
+          <button 
+            onClick={() => sonnerToast.dismiss(t)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              padding: '4px',
+              opacity: 0.7,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '1';
+              e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '0.7';
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            <X size={16} weight="bold" />
+          </button>
+        </div>
+      ), { duration: 5000, position: 'top-center' });
     };
 
     socket.on("xp_gain", handleXPGain);
