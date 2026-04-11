@@ -13,7 +13,7 @@ import {
     FileAddIcon,
     Cancel01Icon,
     WorkIcon,
-    Notification01Icon,
+    HourglassIcon,
     ConfusedIcon
 } from "@hugeicons/core-free-icons";
 import MentionInput from "./MentionInput";
@@ -739,7 +739,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 <span style={{ display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}>
                                     {postType === "Update" && <ArrowsClockwise size={14} weight="bold" />}
                                     {postType === "WIP" && <HugeiconsIcon icon={WorkIcon} size={14} />}
-                                    {postType === "Stuck" && <HugeiconsIcon icon={Notification01Icon} size={14} />}
+                                    {postType === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={14} />}
                                     {postType === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={14} />}
                                 </span>
                                 <span style={{ textTransform: "uppercase", letterSpacing: "0.02em", fontSize: "10px", lineHeight: 1 }}>{postType}</span>
@@ -765,7 +765,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     {[
                                         { label: "Update", icon: <ArrowsClockwise size={16} /> },
                                         { label: "WIP", icon: <HugeiconsIcon icon={WorkIcon} size={16} /> },
-                                        { label: "Stuck", icon: <HugeiconsIcon icon={Notification01Icon} size={16} /> },
+                                        { label: "Stuck", icon: <HugeiconsIcon icon={HourglassIcon} size={16} /> },
                                         { label: "Advice", icon: <HugeiconsIcon icon={ConfusedIcon} size={16} /> }
                                     ].map((type) => (
                                         <button
