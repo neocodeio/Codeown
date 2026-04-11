@@ -16,28 +16,39 @@ import { toast } from "react-toastify";
 import { X } from "phosphor-react";
 import "react-toastify/dist/ReactToastify.css";
 
-// Custom close button component moved outside App to be static and reliable
 const XPCloseButton = ({ closeToast }: { closeToast: () => void }) => (
-  <div 
+  <button 
+    type="button" 
     onClick={(e) => {
       e.stopPropagation();
       closeToast();
     }}
     style={{ 
-      padding: '4px',
+      padding: '8px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       cursor: 'pointer',
-      opacity: 0.7,
-      transition: 'opacity 0.2s',
-      marginLeft: '8px'
+      opacity: 0.8,
+      background: 'transparent',
+      border: 'none',
+      color: 'inherit',
+      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+      marginLeft: '8px',
+      borderRadius: '50%',
+      outline: 'none'
     }}
-    onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-    onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.opacity = '1';
+      e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.opacity = '0.8';
+      e.currentTarget.style.backgroundColor = 'transparent';
+    }}
   >
-    <X size={14} weight="bold" />
-  </div>
+    <X size={16} weight="bold" />
+  </button>
 );
 
 // Lazy load pages
@@ -197,7 +208,7 @@ export default function App() {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: true,
-        closeOnClick: true,
+        closeOnClick: false, // Prevents event conflict with the X button
         pauseOnHover: false,
         className: 'xp-toast-premium',
         closeButton: XPCloseButton,
@@ -243,7 +254,7 @@ export default function App() {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
-        closeOnClick: true,
+        closeOnClick: false,
         pauseOnHover: false,
         className: 'xp-toast-premium',
         closeButton: XPCloseButton,
