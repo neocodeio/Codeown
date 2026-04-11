@@ -803,6 +803,9 @@ export async function getUserProfile(req: Request, res: Response) {
             website_url: userData.website_url || null,
             streak_count: userData.streak_count || 0,
             contribution_count: totalContributions,
+            // Gamification
+            xp: userData.xp || 0,
+            level: userData.level || 1,
             // Metadata
             created_at: userData.created_at || null,
             updated_at: userData.updated_at || null,
