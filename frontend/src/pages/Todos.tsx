@@ -62,8 +62,10 @@ export default function Todos() {
             setTodos([res.data, ...todos]);
             setNewTodo("");
             toast.success("Focus item registered");
-        } catch (err) {
-            toast.error("Network sync failed");
+        } catch (err: any) {
+            console.error("Add Todo Error:", err);
+            const msg = err.response?.data?.error || "Network sync failed";
+            toast.error(msg === "Unauthorized" ? "Please sign in again" : msg);
         } finally {
             setIsSubmitting(false);
         }
