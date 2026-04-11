@@ -4,14 +4,17 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Bug, Sparkle, Trophy, Question, Lightbulb, Paperclip } from "phosphor-react";
+import { PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Paperclip } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { 
     ImageAdd01Icon, 
     AppleReminderIcon, 
     SourceCodeIcon, 
     FileAddIcon,
-    Cancel01Icon
+    Cancel01Icon,
+    WorkIcon,
+    Notification01Icon,
+    ConfusedIcon
 } from "@hugeicons/core-free-icons";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
@@ -735,11 +738,9 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             >
                                 <span style={{ display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}>
                                     {postType === "Update" && <ArrowsClockwise size={14} weight="bold" />}
-                                    {postType === "Bug" && <Bug size={14} weight="bold" />}
-                                    {postType === "Vibe" && <Sparkle size={14} weight="bold" />}
-                                    {postType === "Milestone" && <Trophy size={14} weight="bold" />}
-                                    {postType === "Question" && <Question size={14} weight="bold" />}
-                                    {postType === "Idea" && <Lightbulb size={14} weight="bold" />}
+                                    {postType === "WIP" && <HugeiconsIcon icon={WorkIcon} size={14} />}
+                                    {postType === "Stuck" && <HugeiconsIcon icon={Notification01Icon} size={14} />}
+                                    {postType === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={14} />}
                                 </span>
                                 <span style={{ textTransform: "uppercase", letterSpacing: "0.02em", fontSize: "10px", lineHeight: 1 }}>{postType}</span>
                                 <CaretDown size={10} weight="bold" style={{ opacity: 0.6 }} />
@@ -763,11 +764,9 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 }}>
                                     {[
                                         { label: "Update", icon: <ArrowsClockwise size={16} /> },
-                                        { label: "Bug", icon: <Bug size={16} /> },
-                                        { label: "Vibe", icon: <Sparkle size={16} /> },
-                                        { label: "Milestone", icon: <Trophy size={16} /> },
-                                        { label: "Question", icon: <Question size={16} /> },
-                                        { label: "Idea", icon: <Lightbulb size={16} /> }
+                                        { label: "WIP", icon: <HugeiconsIcon icon={WorkIcon} size={16} /> },
+                                        { label: "Stuck", icon: <HugeiconsIcon icon={Notification01Icon} size={16} /> },
+                                        { label: "Advice", icon: <HugeiconsIcon icon={ConfusedIcon} size={16} /> }
                                     ].map((type) => (
                                         <button
                                             key={type.label}
