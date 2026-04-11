@@ -78,18 +78,18 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
     const placeholderText = useMemo(() => {
         const textOptions = [
-            "What did you build today?",
-            "Shipped any bugs to production today?",
-            "What's the latest side project you're working on?",
-            "Learned a new tech stack? Share it!",
-            "What are you currently stuck on? Ask the community!",
-            "Squashed any bugs today? ",
-            "What's your current dev obsession?",
-            "Drop a link to your latest repository",
-            "Did you remember to center that div?",
-            "Share a snippet you're proud of today",
-            "What's on your coding playlist today?",
-            "Refactored any messy code recently?"
+    "Share a messy screenshot of your current project...",
+    "What's one thing that broke today?",
+    "Messy progress > perfect silence. What are you building?",
+    "How many cups of coffee did it take to fix that bug?",
+    "Be honest: did you actually write tests for that?",
+    "Explain your project to us like we're 5 years old.",
+    "Which documentation are you currently crying over?",
+    "Working on something raw? Show us the 'before' pic.",
+    "What's the lie of the day: 'It works on my machine'?",
+    "Found a library that changed your life? Drop the name.",
+    "Still fighting with CSS? We've all been there.",
+    "Don't be shy, show us that 'spaghetti code' you're refactoring."
         ];
         return textOptions[Math.floor(Math.random() * textOptions.length)];
     }, []);
