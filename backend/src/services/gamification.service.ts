@@ -79,19 +79,29 @@ export class GamificationService {
 
             console.log(`[XP] Awarded ${amount} XP to ${userId} for ${reason}. New Total: ${newXP}, Level: ${newLevel}`);
 
-            if (levelUp) {
-                console.log(`[XP] User ${userId} leveled up to ${newLevel}!`);
-                // Future: Create a notification for level up
-                await supabase.from("notifications").insert({
-                    user_id: userId,
-                    type: "system",
-                    actor_id: userId, // self-actor for system notifications
-                    data: {
-                        title: "Level Up!",
-                        message: `Congratulations! You've reached Level ${newLevel}.`,
-                        new_level: newLevel
-                    }
-                });
+            // 6. Real-time feedback via Sockets
+            try {
+                const { getIO } = await import("../lib/socket.js");
+                const io = getIO();
+                io.to(userId).emit("xp_gain", { amount, reason, newXP, newLevel });
+                
+                if (levelUp) {
+                    io.to(userId).emit("level_up", { newLevel });
+                    
+                    // Also create a persistent notification for level up
+                    await supabase.from("notifications").insert({
+                        user_id: userId,
+                        type: "system",
+                        actor_id: userId,
+                        data: {
+                            title: "Level Up!",
+                            message: `Congratulations! You've reached Level ${newLevel}.`,
+                            new_level: newLevel
+                        }
+                    });
+                }
+            } catch (socketErr) {
+                console.error("[GamificationService] Socket broadcast error:", socketErr);
             }
 
         } catch (err) {

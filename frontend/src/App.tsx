@@ -156,11 +156,57 @@ export default function App() {
     };
 
     socket.on("new_notification", handleNewNotification);
+
+    const handleXPGain = (data: { amount: number, reason: string, newLevel: number }) => {
+      // Premium minimalist XP toast
+      toast(`✨ +${data.amount} XP gained`, {
+        position: "bottom-left",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        theme: "dark",
+        style: {
+          backgroundColor: "var(--bg-page)",
+          color: "var(--text-primary)",
+          border: "0.5px solid var(--border-hairline)",
+          fontSize: "12px",
+          fontWeight: 700,
+          borderRadius: "var(--radius-sm)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+        }
+      });
+      // Invalidate user data to update profile bars
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    };
+
+    const handleLevelUp = (data: { newLevel: number }) => {
+      import("canvas-confetti").then((confetti) => {
+        confetti.default({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ffffff', '#000000', '#3b82f6']
+        });
+      });
+
+      toast.success(`🎉 LEVEL UP! You are now Lvl ${data.newLevel}`, {
+        position: "top-center",
+        autoClose: 10000,
+        theme: "dark"
+      });
+    };
+
+    socket.on("xp_gain", handleXPGain);
+    socket.on("level_up", handleLevelUp);
     
     return () => {
       socket.off("connect", onConnect);
       socket.off("content_update", handleUpdate);
       socket.off("new_notification", handleNewNotification);
+      socket.off("xp_gain", handleXPGain);
+      socket.off("level_up", handleLevelUp);
     };
   }, [queryClient, isSignedIn, user?.id]);
 
