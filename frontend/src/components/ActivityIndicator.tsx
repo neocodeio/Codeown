@@ -50,7 +50,7 @@ export default function ActivityIndicator() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
 
-    if (activities.length === 0) return null;
+    if (activities.length === 0 || isMobile) return null;
 
     // Show the most recent activity
     const latest = activities[activities.length - 1];
