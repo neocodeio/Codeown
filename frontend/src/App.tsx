@@ -402,9 +402,9 @@ export default function App() {
       <div 
         id="main-content"
         style={{
-          flex: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "1" : "0 0 1020px") : 1,
-          width: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "auto" : "1020px") : "100%",
-          maxWidth: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "100%" : "1020px") : "100%",
+          flex: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "1" : "0 0 920px") : 1,
+          width: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "auto" : "920px") : "100%",
+          maxWidth: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "100%" : "920px") : "100%",
           position: "relative",
           minWidth: 0,
           zIndex: 1,

@@ -123,9 +123,9 @@ export default function Feed() {
 
             <div style={{
                 display: "flex",
-                justifyContent: isDesktop ? "flex-start" : "center",
+                justifyContent: "space-between",
                 width: "100%",
-                maxWidth: isDesktop ? "1020px" : "100%",
+                maxWidth: isDesktop ? "920px" : "100%",
                 margin: "0 auto",
                 padding: "0",
             }}>
@@ -321,7 +321,6 @@ export default function Feed() {
                     {/* ── Content ── */}
 
                     <div style={{ minHeight: "100vh" }}>
-
                         {feedType === "posts" && (
                             <div style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                                 <FeedPostComposer onCreated={handlePostCreated} />
@@ -392,7 +391,7 @@ export default function Feed() {
                 {/* ── Right Sidebar ── */}
                 {isDesktop && (
                     <aside style={{
-                        width: "340px",
+                        width: "300px",
                         paddingLeft: 0,
                         paddingTop: 0,
                         position: "sticky",

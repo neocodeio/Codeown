@@ -231,20 +231,20 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       style={{
         cursor: "pointer",
         padding: "var(--post-padding, 24px)",
-        backgroundColor: "var(--bg-page)",
-        borderBottom: "0.5px solid var(--border-hairline)",
+        backgroundColor: "transparent",
         display: "flex",
         gap: "20px",
-        transition: "all 0.15s ease",
+        transition: "background-color 0.15s linear",
         width: "100%",
         boxSizing: "border-box"
       }}
       onClick={handleCardClick}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+        // Absolute minimal interaction - relies entirely on the pointer cursor
+        e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.015)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--bg-page)";
+        e.currentTarget.style.backgroundColor = "transparent";
       }}
     >
       {/* Avatar Col */}
@@ -372,13 +372,15 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
         {/* Post Text */}
         <div style={{
-          fontSize: "15.5px",
-          lineHeight: "1.5",
+          fontSize: "15px",
+          lineHeight: "1.6",
           color: "var(--text-primary)",
-          marginBottom: "16px",
-          position: "relative"
+          marginBottom: "20px",
+          position: "relative",
+          fontWeight: 400,
+          letterSpacing: "-0.01em"
         }}>
-          {post.title && <h2 style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: "0 0 10px", letterSpacing: "-0.015em" }}>{post.title}</h2>}
+          {post.title && <h2 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: "0 0 8px", letterSpacing: "-0.02em" }}>{post.title}</h2>}
           
           <div style={{ position: "relative" }}>
             <ContentRenderer 

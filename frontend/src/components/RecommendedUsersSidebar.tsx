@@ -195,9 +195,7 @@ export default function RecommendedUsersSidebar() {
                 width: "100%",
                 height: "100vh",
                 backgroundColor: "var(--bg-page)",
-                border: "0.5px solid var(--border-hairline)",
-                borderLeft: "none",
-                borderTop: "none",
+                borderLeft: "0.5px solid var(--border-hairline)",
                 overflowY: "auto",
                 position: "relative",
             }}

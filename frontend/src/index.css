@@ -36,7 +36,7 @@
   --radius-sharp: 0px;
 
   --max-width: 1260px;
-  --feed-width: 700px;
+  --feed-width: 620px;
 
   /* Typography */
   --font-main: 'Inter', -apple-system, system-ui, sans-serif;
@@ -126,15 +126,15 @@ body {
 
 @media (max-width: 767px) {
   :root {
-    --post-padding: 24px 20px;
+    --post-padding: 24px 16px;
     --post-interact-gap: 32px;
   }
 }
 
 @media (min-width: 768px) {
   :root {
-    --post-padding: 24px;
-    --post-interact-gap: 96px;
+    --post-padding: 32px 24px;
+    --post-interact-gap: 64px;
   }
 }
 

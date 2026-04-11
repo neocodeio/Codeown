@@ -259,12 +259,11 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         <div 
             style={{
                 padding: "var(--post-padding, 24px)",
-                borderBottom: "0.5px solid var(--border-hairline)",
-                backgroundColor: "var(--bg-page)",
+                backgroundColor: "transparent",
                 display: "flex",
                 gap: "16px",
                 position: "relative",
-                zIndex: isTypeMenuOpen ? 2000 : 1 // Ensure it sits above feed posts when menu is open
+                zIndex: isTypeMenuOpen ? 2000 : 1
             }}
         >
             {/* OG Presence Guard - Vertical Pill anchor */}

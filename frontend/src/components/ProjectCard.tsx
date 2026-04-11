@@ -280,19 +280,19 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
       style={{
         cursor: "pointer",
         padding: "var(--post-padding, 24px)",
-        backgroundColor: "var(--bg-page)",
-        borderBottom: "0.5px solid var(--border-hairline)",
+        backgroundColor: "transparent",
         display: "flex",
         gap: "20px",
-        transition: "all 0.15s ease",
+        transition: "background-color 0.15s linear",
         width: "100%",
         boxSizing: "border-box"
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+        // Absolute minimal interaction - relies entirely on the pointer cursor
+        e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.015)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--bg-page)";
+        e.currentTarget.style.backgroundColor = "transparent";
       }}
     >
       {/* Avatar Col */}
@@ -440,8 +440,8 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         </div>
 
         <div style={{ marginBottom: "20px" }}>
-          <h3 style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px", letterSpacing: "-0.015em" }}>{project.title}</h3>
-          <p style={{ fontSize: "15.5px", lineHeight: "1.5", color: "var(--text-primary)", marginBottom: "16px" }}>{project.description}</p>
+          <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px", letterSpacing: "-0.02em" }}>{project.title}</h3>
+          <p style={{ fontSize: "15px", lineHeight: "1.6", color: "var(--text-primary)", marginBottom: "20px", fontWeight: 400, letterSpacing: "-0.01em" }}>{project.description}</p>
           
           {/* Tech Stack Chips */}
           {project.technologies_used && project.technologies_used.length > 0 && (
