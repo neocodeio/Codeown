@@ -13,7 +13,6 @@ import api from "./api/axios";
 import { socket } from "./lib/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { X } from "phosphor-react";
 import "react-toastify/dist/ReactToastify.css";
 
 // Lazy load pages
@@ -178,7 +177,6 @@ export default function App() {
         onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
         onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
       >
-        <X size={14} weight="bold" />
       </div>
     );
 
