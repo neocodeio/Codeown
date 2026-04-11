@@ -195,6 +195,14 @@ export async function createStartup(req: Request, res: Response) {
       role: "Owner"
     });
 
+    // Award XP to owner (non-blocking)
+    try {
+      const { GamificationService } = await import("../services/gamification.service.js");
+      GamificationService.awardXP(userId as string, 'project', String(data.id));
+    } catch (xpErr) {
+      console.error("Error awarding startup creation XP:", xpErr);
+    }
+
     res.status(201).json(data);
   } catch (err: any) {
     console.error("[createStartup] CATCH ERROR:", err);
@@ -612,6 +620,14 @@ export async function upvoteStartup(req: Request, res: Response) {
               });
           } catch (notifErr) {
               console.error("[upvoteStartup] Notification failure:", notifErr);
+          }
+
+          // Award XP to startup owner (non-blocking)
+          try {
+            const { GamificationService } = await import("../services/gamification.service.js");
+            GamificationService.awardXP(startup.owner_id, 'like', String(id));
+          } catch (xpErr) {
+            console.error("Error awarding startup upvote XP:", xpErr);
           }
       }
     }

@@ -158,22 +158,31 @@ export default function App() {
     socket.on("new_notification", handleNewNotification);
 
     const handleXPGain = (data: { amount: number, reason: string, newXP: number, newLevel: number }) => {
-      // Premium minimalist XP toast
-      toast(`✨ +${data.amount} XP gained`, {
+      // Descriptive minimalist XP toast
+      const reasonMap: Record<string, string> = {
+        'post': 'for sharing a post',
+        'project': 'for launching a project',
+        'comment': 'for joining the conversation',
+        'like': 'from a social validation (like)',
+        'follow': 'for growing your community'
+      };
+
+      toast(`✨ +${data.amount} XP ${reasonMap[data.reason] || 'gained'}`, {
         position: "bottom-left",
-        autoClose: 3000,
+        autoClose: 4000,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: false,
         theme: "dark",
         style: {
-          backgroundColor: "var(--bg-page)",
+          backgroundColor: "rgba(0,0,0,0.8)",
+          backdropFilter: "blur(8px)",
           color: "var(--text-primary)",
           border: "0.5px solid var(--border-hairline)",
           fontSize: "12px",
           fontWeight: 700,
           borderRadius: "var(--radius-sm)",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+          boxShadow: "0 8px 16px rgba(0,0,0,0.4)"
         }
       });
       // Invalidate user data to update profile bars

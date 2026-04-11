@@ -462,59 +462,65 @@ export default function Profile() {
               <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "32px", borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "32px" }}>
                 {/* Level HUD (60%) */}
                 <div style={{ flex: isMobile ? "none" : 1.6 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                        <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)" }}>
-                          Experience Level
-                        </span>
-                        <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)" }} />
-                        <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-primary)" }}>
-                          Rank: {userProfile?.level && userProfile.level > 10 ? "Senior" : "Associate"}
-                        </span>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-                        <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
-                          {userProfile?.level || 1}
-                        </span>
-                        <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)" }}>
-                          / 100
-                        </span>
-                      </div>
-                    </div>
+                  {profileLoading ? (
+                    <div className="skeleton-pulse" style={{ height: "60px", width: "100%", borderRadius: "var(--radius-sm)" }} />
+                  ) : (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px" }}>
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                            <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)" }}>
+                              Experience Level
+                            </span>
+                            <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)" }} />
+                            <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-primary)" }}>
+                              Rank: {userProfile?.level && userProfile.level > 10 ? "Senior" : "Associate"}
+                            </span>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                            <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
+                              {userProfile?.level || 1}
+                            </span>
+                            <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)" }}>
+                              / 100
+                            </span>
+                          </div>
+                        </div>
 
-                    <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
-                        {userProfile?.xp?.toLocaleString() || 0} XP
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
+                            {userProfile?.xp?.toLocaleString() || 0} XP
+                          </div>
+                          <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                            {Math.pow((userProfile?.level || 1), 2) * 50 - (userProfile?.xp || 0)} XP next
+                          </div>
+                        </div>
                       </div>
-                      <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
-                        {Math.pow((userProfile?.level || 1), 2) * 50 - (userProfile?.xp || 0)} XP next
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Minimalist Multi-segment Bar */}
-                  <div style={{ position: "relative", height: "6px", width: "100%", backgroundColor: "var(--border-hairline)", borderRadius: "100px", overflow: "hidden" }}>
-                    <div style={{ 
-                      width: `${Math.min(100, Math.max(0, ((userProfile?.xp || 0) - Math.pow((userProfile?.level || 1) - 1, 2) * 50) / (Math.pow(userProfile?.level || 1, 2) * 50 - Math.pow((userProfile?.level || 1) - 1, 2) * 50) * 100))}%`, 
-                      height: "100%", 
-                      background: "var(--text-primary)",
-                      borderRadius: "100px",
-                      transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                      boxShadow: "0 0 12px rgba(255, 255, 255, 0.1)"
-                    }} />
-                  </div>
-                  
-                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
-                    <div style={{ display: "flex", gap: "4px" }}>
-                       {[1, 2, 3, 4, 5].map((i) => (
-                         <div key={i} style={{ width: "12px", height: "2px", borderRadius: "1px", backgroundColor: i <= ((userProfile?.level || 1) % 5) ? "var(--text-primary)" : "var(--border-hairline)" }} />
-                       ))}
-                    </div>
-                    <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                      System Efficiency: {Math.min(100, Math.round(((userProfile?.xp || 0) / (Math.pow(userProfile?.level || 1, 2) * 50)) * 100))}%
-                    </span>
-                  </div>
+                      {/* Minimalist Multi-segment Bar */}
+                      <div style={{ position: "relative", height: "6px", width: "100%", backgroundColor: "var(--border-hairline)", borderRadius: "100px", overflow: "hidden" }}>
+                        <div style={{ 
+                          width: `${Math.min(100, Math.max(0, ((userProfile?.xp || 0) - Math.pow((userProfile?.level || 1) - 1, 2) * 50) / (Math.pow(userProfile?.level || 1, 2) * 50 - Math.pow((userProfile?.level || 1) - 1, 2) * 50) * 100))}%`, 
+                          height: "100%", 
+                          background: "var(--text-primary)",
+                          borderRadius: "100px",
+                          transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                          boxShadow: "0 0 12px rgba(255, 255, 255, 0.1)"
+                        }} />
+                      </div>
+                      
+                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+                        <div style={{ display: "flex", gap: "4px" }}>
+                           {[1, 2, 3, 4, 5].map((i) => (
+                             <div key={i} style={{ width: "12px", height: "2px", borderRadius: "1px", backgroundColor: i <= ((userProfile?.level || 1) % 5) ? "var(--text-primary)" : "var(--border-hairline)" }} />
+                           ))}
+                        </div>
+                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          System Efficiency: {Math.min(100, Math.round(((userProfile?.xp || 0) / (Math.pow(userProfile?.level || 1, 2) * 50)) * 100))}%
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Profile Strength (40%) */}

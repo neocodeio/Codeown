@@ -201,10 +201,11 @@ export async function likeComment(req: Request, res: Response) {
     } else {
       await supabase.from(likesTable).insert({ user_id: userId, comment_id: commentId });
       
-      // Notification
+      // Notification & XP
       try {
         const { data: c } = await supabase.from(commentsTable).select("user_id, " + (actualType === 'project' ? 'project_id' : 'post_id')).eq("id", commentId).single();
         if (c && (c as any).user_id !== userId) {
+          // 1. Notify
           await notify({
             userId: (c as any).user_id,
             actorId: userId,
@@ -213,9 +214,12 @@ export async function likeComment(req: Request, res: Response) {
             projectId: actualType === 'project' ? (c as any).project_id : undefined,
             postId: actualType === 'post' ? (c as any).post_id : undefined
           });
+
+          // 2. Award XP
+          GamificationService.awardXP((c as any).user_id, 'like', String(commentId));
         }
       } catch (e) {
-        console.error("Error creating comment like notification:", e);
+        console.error("Error in likeComment notification/xp logic:", e);
       }
 
       const { count } = await supabase.from(likesTable).select("*", { count: "exact", head: true }).eq("comment_id", commentId);
