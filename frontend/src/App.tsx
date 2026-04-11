@@ -169,7 +169,7 @@ export default function App() {
 
       toast(`✨ +${data.amount} XP ${reasonMap[data.reason] || 'gained'}`, {
         position: "bottom-right",
-        autoClose: 4000,
+        autoClose: 5000,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: false,
@@ -214,7 +214,7 @@ export default function App() {
 
       toast(`🚀 LEVEL UP! You are now Lvl ${data.newLevel}`, {
         position: "top-center",
-        autoClose: 8000,
+        autoClose: 5000,
         className: 'xp-toast-premium',
         toastId: `lv-${data.newLevel}`
       });
