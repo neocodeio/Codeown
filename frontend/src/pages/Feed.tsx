@@ -162,6 +162,7 @@ export default function Feed() {
                             justifyContent: "center",
                             gap: isMobile ? "20px" : "40px",
                         }}>
+                            <ActivityIndicator />
                             {/* "For You" Tab with Dropdown */}
                             <div style={{ position: "relative" }} ref={dropdownRef}>
                                 <button
@@ -268,8 +269,6 @@ export default function Feed() {
                                     )}
                                 </button>
                             </div>
-
-                            <ActivityIndicator />
                         </div>
 
                         {feedType === "projects" && (
