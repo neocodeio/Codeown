@@ -82,11 +82,11 @@ const StatusBadge = () => {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
         <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#00BA7C", boxShadow: "0 0 8px rgba(0, 186, 124, 0.4)" }} />
-        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", letterSpacing: "0.02em", textTransform: "uppercase" }}>
-          {activeCount} active now
+        <span style={{ fontSize: "10px", fontWeight: 'bold', color: "var(--text-tertiary)", letterSpacing: "0.02em"}}>
+          {activeCount} builders now
         </span>
       </div>
-      <span style={{ fontSize: "9px", fontWeight: 600, color: "var(--text-tertiary)", opacity: 0.6, letterSpacing: "0.04em", fontFamily: "monospace", marginLeft: "12px" }}>
+      <span style={{ fontSize: "9px", fontWeight: 'bold', color: "var(--text-tertiary)", opacity: 0.6, marginLeft: "12px" }}>
         {currentTime}
       </span>
     </div>
