@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { notify } from "../services/notification.service.js";
+import { GamificationService } from "../services/gamification.service.js";
 
 export async function followUser(req: Request, res: Response) {
   try {
@@ -80,6 +81,9 @@ export async function followUser(req: Request, res: Response) {
       } catch (notifError) {
         console.error("Error creating follow notification or email:", notifError);
       }
+
+      // Award XP to target user (non-blocking)
+      GamificationService.awardXP(targetUserId, 'follow', userId);
 
       // Get updated counts
       const { count: followerCount } = await supabase

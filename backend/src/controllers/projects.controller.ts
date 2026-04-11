@@ -4,6 +4,7 @@ import { notify } from "../services/notification.service.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { emitUpdate } from "../lib/socket.js";
+import { GamificationService } from "../services/gamification.service.js";
 
 // createProjectNotification is now handled by NotificationService.notify
 
@@ -519,6 +520,9 @@ export async function createProject(req: Request, res: Response) {
       user: user || { id: userId, name: "Unknown User", email: null, avatar_url: null, username: null, is_og: false }
     });
 
+    // Award XP (non-blocking)
+    GamificationService.awardXP(userId as string, 'project', String(project.id));
+
     return res.status(201).json({
       ...project,
       is_first: isFirstProject,
@@ -763,6 +767,9 @@ export async function toggleProjectLike(req: Request, res: Response) {
         } catch (e) {
           console.error("Error creating project like notification:", e);
         }
+
+        // Award XP to project author (non-blocking)
+        GamificationService.awardXP(String(project.user_id), 'like', String(id));
       }
 
     }

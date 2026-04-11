@@ -5,6 +5,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 interface HeatMapProps {
   userId: string;
   githubUrl?: string | null;
+  standalone?: boolean;
 }
 
 interface ActivityDay {
@@ -13,7 +14,7 @@ interface ActivityDay {
   source: "codeown" | "github" | "both";
 }
 
-export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
+export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl, standalone }) => {
   const [data, setData] = useState<ActivityDay[]>([]);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowSize();
@@ -157,6 +158,73 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
     );
   }
 
+  const content = (
+    <>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "flex-end", 
+        marginBottom: "20px",
+        flexWrap: "wrap",
+        gap: "12px"
+      }}>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <h4 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>
+              {totalContributions} Contributions
+            </h4>
+          </div>
+          <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>in the last year</span>
+        </div>
+        
+        <div style={{ display: "flex", gap: "12px", fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, opacity: 0.8 }}>
+           <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+             <div style={{ width: "8px", height: "8px", borderRadius: "2px", backgroundColor: "#238636" }} /> GitHub
+           </span>
+           <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+             <div style={{ width: "8px", height: "8px", borderRadius: "2px", backgroundColor: "var(--text-primary)" }} /> Codeown
+           </span>
+        </div>
+      </div>
+
+      <div 
+        ref={scrollRef}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        style={{ 
+          overflowX: "auto",
+          width: "100%",
+          paddingBottom: "4px",
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
+          cursor: isDragging ? "grabbing" : "grab",
+          userSelect: "none"
+        }} 
+        className="hide-scrollbar"
+      >
+        <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: "repeat(52, 1fr)", 
+            gridTemplateRows: "repeat(7, 1fr)",
+            gridAutoFlow: "column",
+            gap: "3px",
+            minWidth: "640px",
+            width: "max-content"
+        }}>
+          {renderSquares()}
+        </div>
+      </div>
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .activity-square:hover { transform: scale(1.3); z-index: 10; opacity: 1 !important; border-radius: 3px !important; }
+      `}</style>
+    </>
+  );
+
+  if (standalone) return content;
+
   return (
     <div style={{ 
       width: "100%",
@@ -173,67 +241,8 @@ export const HeatMap: React.FC<HeatMapProps> = ({ userId, githubUrl }) => {
         backgroundColor: "var(--bg-page)",
         boxShadow: "var(--shadow-sm)"
       }}>
-        <div style={{ 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "flex-end", 
-          marginBottom: "20px",
-          flexWrap: "wrap",
-          gap: "12px"
-        }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <h4 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>
-                {totalContributions} Contributions
-              </h4>
-            </div>
-            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>in the last year</span>
-          </div>
-          
-          <div style={{ display: "flex", gap: "12px", fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, opacity: 0.8 }}>
-             <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-               <div style={{ width: "8px", height: "8px", borderRadius: "2px", backgroundColor: "#238636" }} /> GitHub
-             </span>
-             <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-               <div style={{ width: "8px", height: "8px", borderRadius: "2px", backgroundColor: "var(--text-primary)" }} /> Codeown
-             </span>
-          </div>
-        </div>
-
-        <div 
-          ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          style={{ 
-            overflowX: "auto",
-            width: "100%",
-            paddingBottom: "4px",
-            msOverflowStyle: "none",
-            scrollbarWidth: "none",
-            cursor: isDragging ? "grabbing" : "grab",
-            userSelect: "none"
-          }} 
-          className="hide-scrollbar"
-        >
-          <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(52, 1fr)", 
-              gridTemplateRows: "repeat(7, 1fr)",
-              gridAutoFlow: "column",
-              gap: "3px",
-              minWidth: "640px",
-              width: "max-content"
-          }}>
-            {renderSquares()}
-          </div>
-        </div>
-        <style>{`
-          .hide-scrollbar::-webkit-scrollbar { display: none; }
-          .activity-square:hover { transform: scale(1.3); z-index: 10; opacity: 1 !important; border-radius: 3px !important; }
-        `}</style>
+        {content}
       </div>
     </div>
   );
-};
+}

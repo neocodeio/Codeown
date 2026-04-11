@@ -2,6 +2,7 @@
 import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { notify } from "../services/notification.service.js";
+import { GamificationService } from "../services/gamification.service.js";
 
 export async function likePost(req: Request, res: Response) {
   try {
@@ -86,6 +87,9 @@ export async function likePost(req: Request, res: Response) {
         } catch (notifErr) {
           console.error("Error creating like notification:", notifErr);
         }
+
+        // Award XP to post author (non-blocking)
+        GamificationService.awardXP(post.user_id, 'like', postId);
       }
 
       const { count } = await supabase

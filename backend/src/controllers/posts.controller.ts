@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { emitUpdate } from "../lib/socket.js";
+import { GamificationService } from "../services/gamification.service.js";
 
 export async function getPosts(req: Request, res: Response) {
   try {
@@ -521,6 +522,9 @@ export async function createPost(req: Request, res: Response) {
     
     // Emit real-time update
     emitUpdate("post_created", formattedPost);
+
+    // Award XP (non-blocking)
+    GamificationService.awardXP(userId as string, 'post', String(createdPost.id));
 
     // Track post creation analytics (non-blocking)
     supabase.from("analytics_events").insert({

@@ -85,6 +85,8 @@ interface UserProfile {
   onboarding_completed: boolean;
   streak_count: number;
   contribution_count: number;
+  xp: number;
+  level: number;
 }
 
 export default function Profile() {
@@ -422,7 +424,7 @@ export default function Profile() {
             </div>
           )}
 
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "20px", }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "20px", marginBottom: "32px" }}>
             <div style={{ display: "flex", gap: "24px" }}>
               <button onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ border: "none", background: "none", cursor: "pointer", padding: 0, fontSize: "14px", color: "var(--text-primary)", fontWeight: 600 }} >
                 {userProfile?.follower_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Followers</span>
@@ -441,14 +443,92 @@ export default function Profile() {
               {userProfile?.instagram_url && <a href={userProfile.instagram_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Instagram"> <InstagramLogo size={20} weight="thin" /> </a>}
             </div>
           </div>
-        </div>
 
-        <div style={{ padding: isMobile ? "0 16px" : "0 24px" }}>
-          <ProfileStrength user={userProfile} projectsCount={projects?.length || 0} />
-        </div>
+          {/* Unified Performance Dashboard */}
+          <div style={{ 
+            marginBottom: "40px",
+            padding: "24px",
+            background: "linear-gradient(135deg, var(--bg-hover) 0%, var(--bg-page) 100%)",
+            borderRadius: "var(--radius-md)",
+            border: "1px solid var(--border-hairline)",
+            position: "relative",
+            overflow: "hidden"
+          }}>
+            {/* Subtle background glow */}
+            <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "150px", height: "150px", background: "radial-gradient(circle, var(--text-primary) 0%, transparent 70%)", opacity: 0.03, pointerEvents: "none" }} />
 
-        <div style={{ padding: isMobile ? "0 16px" : "0 24px", marginBottom: "40px" }}>
-          <HeatMap userId={userProfile?.id || ""} githubUrl={userProfile?.github_url} />
+            <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
+              {/* Top Row: Level HUD & Identity Strength */}
+              <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "32px", borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "32px" }}>
+                {/* Level HUD (60%) */}
+                <div style={{ flex: isMobile ? "none" : 1.6 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                        <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)" }}>
+                          Experience Level
+                        </span>
+                        <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)" }} />
+                        <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-primary)" }}>
+                          Rank: {userProfile?.level && userProfile.level > 10 ? "Senior" : "Associate"}
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                        <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
+                          {userProfile?.level || 1}
+                        </span>
+                        <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)" }}>
+                          / 100
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
+                        {userProfile?.xp?.toLocaleString() || 0} XP
+                      </div>
+                      <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                        {Math.pow((userProfile?.level || 1), 2) * 50 - (userProfile?.xp || 0)} XP next
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Minimalist Multi-segment Bar */}
+                  <div style={{ position: "relative", height: "6px", width: "100%", backgroundColor: "var(--border-hairline)", borderRadius: "100px", overflow: "hidden" }}>
+                    <div style={{ 
+                      width: `${Math.min(100, Math.max(0, ((userProfile?.xp || 0) - Math.pow((userProfile?.level || 1) - 1, 2) * 50) / (Math.pow(userProfile?.level || 1, 2) * 50 - Math.pow((userProfile?.level || 1) - 1, 2) * 50) * 100))}%`, 
+                      height: "100%", 
+                      background: "var(--text-primary)",
+                      borderRadius: "100px",
+                      transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                      boxShadow: "0 0 12px rgba(255, 255, 255, 0.1)"
+                    }} />
+                  </div>
+                  
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+                    <div style={{ display: "flex", gap: "4px" }}>
+                       {[1, 2, 3, 4, 5].map((i) => (
+                         <div key={i} style={{ width: "12px", height: "2px", borderRadius: "1px", backgroundColor: i <= ((userProfile?.level || 1) % 5) ? "var(--text-primary)" : "var(--border-hairline)" }} />
+                       ))}
+                    </div>
+                    <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      System Efficiency: {Math.min(100, Math.round(((userProfile?.xp || 0) / (Math.pow(userProfile?.level || 1, 2) * 50)) * 100))}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Profile Strength (40%) */}
+                <div style={{ flex: isMobile ? "none" : 1, display: "flex", borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)", paddingLeft: isMobile ? 0 : "32px", paddingTop: isMobile ? "32px" : 0, borderTop: isMobile ? "0.5px solid var(--border-hairline)" : "none" }}>
+                  <ProfileStrength user={userProfile} projectsCount={projects?.length || 0} standalone />
+                </div>
+              </div>
+
+              {/* Bottom Row: Contributions Heatmap */}
+              <div>
+                <HeatMap userId={userId!} githubUrl={userProfile?.github_url} standalone />
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style={{ padding: isMobile ? "0 16px" : "0 24px", }}>

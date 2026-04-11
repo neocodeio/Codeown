@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { notify } from "../services/notification.service.js";
+import { GamificationService } from "../services/gamification.service.js";
 
 export async function getComments(req: Request, res: Response) {
   try {
@@ -346,6 +347,9 @@ export async function createComment(req: Request, res: Response) {
     // Emit real-time update
     const { emitUpdate } = await import("../lib/socket.js");
     emitUpdate("post_commented", { postId: postIdInt, comment: fullComment, commentCount: count || 0 });
+
+    // Award XP (non-blocking)
+    GamificationService.awardXP(userId, 'comment', String(commentId));
 
     return res.status(201).json({ success: true, data, commentId });
   } catch (error: any) {

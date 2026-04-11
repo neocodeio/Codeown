@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { notify } from "../services/notification.service.js";
+import { GamificationService } from "../services/gamification.service.js";
 
 // createProjectCommentNotification is now handled by NotificationService.notify
 
@@ -163,6 +164,9 @@ export async function createProjectComment(req: Request, res: Response) {
     // Emit real-time update
     const { emitUpdate } = await import("../lib/socket.js");
     emitUpdate("project_commented", { projectId: parseInt(id as string), comment: fullComment, commentCount: count || 0 });
+
+    // Award XP (non-blocking)
+    GamificationService.awardXP(userId, 'comment', String(comment.id));
 
     return res.status(201).json(fullComment);
   } catch (error: any) {

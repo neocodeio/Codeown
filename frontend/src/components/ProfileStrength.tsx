@@ -5,9 +5,10 @@ import { Target, Info } from "phosphor-react";
 interface ProfileStrengthProps {
   user: any;
   projectsCount: number;
+  standalone?: boolean;
 }
 
-export default function ProfileStrength({ user, projectsCount }: ProfileStrengthProps) {
+export default function ProfileStrength({ user, projectsCount, standalone }: ProfileStrengthProps) {
   const calculateStrength = () => {
     const items = [
       { id: "name", weight: 10, check: () => !!user?.name },
@@ -48,16 +49,8 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
     }
   };
 
-  return (
-    <div style={{
-      backgroundColor: "var(--bg-page)",
-      border: "0.5px solid var(--border-hairline)",
-      padding: "24px",
-      marginBottom: "32px",
-      borderRadius: "var(--radius-sm)",
-      position: "relative",
-      overflow: "hidden"
-    }}>
+  const content = (
+    <>
       <style>{`
         .strength-tag {
           transition: all 0.2s ease;
@@ -96,7 +89,7 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
               <Info size={12} weight="thin" color="var(--text-tertiary)" />
               <p style={{ 
-                fontSize: "12px", 
+                fontSize: "11px", 
                 color: "var(--text-tertiary)", 
                 margin: 0,
                 fontWeight: 500
@@ -147,8 +140,8 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
             key={id} 
             className="strength-tag"
             style={{
-              fontSize: "11px",
-              fontWeight: 600,
+              fontSize: "10px",
+              fontWeight: 700,
               color: "var(--text-secondary)",
               padding: "4px 10px",
               backgroundColor: "transparent",
@@ -156,20 +149,31 @@ export default function ProfileStrength({ user, projectsCount }: ProfileStrength
               border: "0.5px solid var(--border-hairline)",
             }}
           >
-            {getMissingLabel(id)}
+            {getMissingLabel(id).toUpperCase()}
           </div>
         ))}
         {missing.length > 3 && (
-          <div style={{ 
-            fontSize: "11px", 
-            fontWeight: 600, 
-            color: "var(--text-tertiary)", 
-            marginLeft: "2px" 
-          }}>
-            +{missing.length - 3} more
-          </div>
+          <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", letterSpacing: "0.05em" }}>
+            +{missing.length - 3} MORE
+          </span>
         )}
       </div>
+    </>
+  );
+
+  if (standalone) return <div style={{ width: "100%" }}>{content}</div>;
+
+  return (
+    <div style={{
+      backgroundColor: "var(--bg-page)",
+      border: "0.5px solid var(--border-hairline)",
+      padding: "24px",
+      marginBottom: "32px",
+      borderRadius: "var(--radius-sm)",
+      position: "relative",
+      overflow: "hidden"
+    }}>
+      {content}
     </div>
   );
 }

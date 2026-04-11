@@ -374,8 +374,8 @@ export async function ensureUserExists(userId: string, userData?: any) {
     let existingUser: any = null;
     let fetchError: any = null;
 
-    const fullCols = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status";
-    const safeCols = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url";
+    const fullCols = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status, xp, level";
+    const safeCols = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, pinned_post_id, streak_count, created_at, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, xp, level";
 
     const fullRes = await supabase.from("users").select(fullCols).eq("id", userId).single();
     if (fullRes.error && fullRes.error.code !== "PGRST116" && fullRes.error.message?.includes("does not exist")) {
@@ -511,8 +511,8 @@ export async function getUserProfile(req: Request, res: Response) {
         let user: any = null;
         let userError: any = null;
 
-        const fullSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status";
-        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url";
+        const fullSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status, xp, level";
+        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, xp, level";
 
         const fullRes = await supabase
             .from("users")

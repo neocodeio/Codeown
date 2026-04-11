@@ -70,6 +70,8 @@ interface User {
   created_at: string | null;
   streak_count: number;
   contribution_count: number;
+  xp: number;
+  level: number;
 }
 
 export default function UserProfile() {
@@ -343,12 +345,87 @@ export default function UserProfile() {
                 <button onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.following_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Following</span> </button>
                 <div style={{ fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.contribution_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Contributions</span> </div>
               </div>
+
+              {/* Unified Performance Dashboard */}
+              <div style={{ 
+                marginTop: "32px",
+                padding: "24px",
+                background: "linear-gradient(135deg, var(--bg-hover) 0%, var(--bg-page) 100%)",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--border-hairline)",
+                position: "relative",
+                overflow: "hidden"
+              }}>
+                {/* Subtle background glow */}
+                <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "150px", height: "150px", background: "radial-gradient(circle, var(--text-primary) 0%, transparent 70%)", opacity: 0.03, pointerEvents: "none" }} />
+
+                <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
+                  {/* Top Section: XP HUD */}
+                  <div style={{ borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "32px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px" }}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                          <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)" }}>
+                            Experience Level
+                          </span>
+                          <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)" }} />
+                          <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-primary)" }}>
+                            Rank: {user.level && user.level > 10 ? "Senior" : "Associate"}
+                          </span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+                          <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
+                            {user.level || 1}
+                          </span>
+                          <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)" }}>
+                            / 100
+                          </span>
+                        </div>
+                      </div>
+
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
+                          {user.xp?.toLocaleString() || 0} XP
+                        </div>
+                        <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                          {Math.pow((user.level || 1), 2) * 50 - (user.xp || 0)} XP next
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Minimalist Multi-segment Bar */}
+                    <div style={{ position: "relative", height: "6px", width: "100%", backgroundColor: "var(--border-hairline)", borderRadius: "100px", overflow: "hidden" }}>
+                      <div style={{ 
+                        width: `${Math.min(100, Math.max(0, ((user.xp || 0) - Math.pow((user.level || 1) - 1, 2) * 50) / (Math.pow(user.level || 1, 2) * 50 - Math.pow((user.level || 1) - 1, 2) * 50) * 100))}%`, 
+                        height: "100%", 
+                        background: "var(--text-primary)",
+                        borderRadius: "100px",
+                        transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                        boxShadow: "0 0 12px rgba(255, 255, 255, 0.1)"
+                      }} />
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+                      <div style={{ display: "flex", gap: "4px" }}>
+                         {[1, 2, 3, 4, 5].map((i) => (
+                           <div key={i} style={{ width: "12px", height: "2px", borderRadius: "1px", backgroundColor: i <= ((user.level || 1) % 5) ? "var(--text-primary)" : "var(--border-hairline)" }} />
+                         ))}
+                      </div>
+                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        System Efficiency: {Math.min(100, Math.round(((user.xp || 0) / (Math.pow(user.level || 1, 2) * 50)) * 100))}%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Bottom Section: HeatMap */}
+                  <div style={{ width: "100%" }}>
+                    <HeatMap userId={user.id} githubUrl={user.github_url} standalone />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div style={{ marginTop: "32px", marginBottom: "40px" }}>
-            <HeatMap userId={user.id} githubUrl={user.github_url} />
-          </div>
 
           <div className="tabs-row" style={{ display: "flex", overflowX: "auto", borderBottom: "0.5px solid var(--border-hairline)", marginBottom: "32px", gap: "24px", padding: isMobile ? "0 16px" : "0 24px", msOverflowStyle: "none", scrollbarWidth: "none" }}>
             {[ { id: "posts", icon: FileText, label: "Posts" }, { id: "projects", icon: SquaresFour, label: "Projects" }, { id: "startups", icon: Buildings, label: "Startups" } ].map(tab => (
