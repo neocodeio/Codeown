@@ -12,9 +12,9 @@ import { useSaved } from "../hooks/useSaved";
 import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { 
-    Rocket01Icon, 
-    Notification01Icon, 
-    Chat01Icon 
+    WorkIcon, 
+    HourglassIcon, 
+    ConfusedIcon 
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -318,9 +318,9 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 }}>
                   <span style={{ display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}>
                     {post.post_type === "Update" && <ArrowsClockwise size={12} weight="bold" />}
-                    {post.post_type === "WIP" && <HugeiconsIcon icon={Rocket01Icon} size={12} />}
-                    {post.post_type === "Stuck" && <HugeiconsIcon icon={Notification01Icon} size={12} />}
-                    {post.post_type === "Advice" && <HugeiconsIcon icon={Chat01Icon} size={12} />}
+                    {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
+                    {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={12} />}
+                    {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
                   </span>
                   {post.post_type}
                 </span>

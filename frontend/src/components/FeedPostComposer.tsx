@@ -139,6 +139,41 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         e.target.value = "";
     };
 
+    const handlePaste = async (e: React.ClipboardEvent) => {
+        const items = e.clipboardData.items;
+        const maxImages = 4;
+        
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") !== -1) {
+                const file = items[i].getAsFile();
+                if (!file) continue;
+
+                if (images.length >= maxImages) {
+                    alert(`You can upload a maximum of ${maxImages} images`);
+                    return;
+                }
+
+                const sizeError = validateImageSize(file);
+                if (sizeError) {
+                    alert(sizeError);
+                    continue;
+                }
+
+                try {
+                    const compressedBase64 = await compressImage(file, 1000, 1000, 0.6);
+                    setImages((prev) => [...prev, compressedBase64]);
+                } catch (error) {
+                    console.error("Paste compression error:", error);
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        setImages((prev) => [...prev, reader.result as string]);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+    };
+
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files) return;
@@ -302,13 +337,15 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             Question
                         </div>
                     )}
-                    <MentionInput
-                        value={content}
-                        onChange={setContent}
-                        placeholder={isPoll ? "Ask a question..." : placeholderText}
-                        minHeight="60px"
-                        transparent={true}
-                    />
+                    <div onPaste={handlePaste}>
+                        <MentionInput
+                            value={content}
+                            onChange={setContent}
+                            placeholder={isPoll ? "Ask a question..." : placeholderText}
+                            minHeight="60px"
+                            transparent={true}
+                        />
+                    </div>
                     
                     {isCodeExpanded && (
                         <div style={{
