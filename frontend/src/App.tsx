@@ -157,7 +157,7 @@ export default function App() {
 
     socket.on("new_notification", handleNewNotification);
 
-    const handleXPGain = (data: { amount: number, reason: string, newLevel: number }) => {
+    const handleXPGain = (data: { amount: number, reason: string, newXP: number, newLevel: number }) => {
       // Premium minimalist XP toast
       toast(`✨ +${data.amount} XP gained`, {
         position: "bottom-left",
@@ -179,6 +179,23 @@ export default function App() {
       // Invalidate user data to update profile bars
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+
+      // Exponentially faster: Manually update the cache for instant visual feedback
+      if (user?.id) {
+        queryClient.setQueriesData({ queryKey: ["profile", user.id] }, (old: any) => {
+          if (!old) return old;
+          return { ...old, xp: data.newXP, level: data.newLevel };
+        });
+        queryClient.setQueriesData({ queryKey: ["userProfile", user.id] }, (old: any) => {
+          if (!old) return old;
+          return { ...old, xp: data.newXP, level: data.newLevel };
+        });
+        // Also update by username if applicable
+        queryClient.setQueriesData({ queryKey: ["userProfile"] }, (old: any) => {
+          if (!old) return old;
+          return { ...old, xp: data.newXP, level: data.newLevel };
+        });
+      }
     };
 
     const handleLevelUp = (data: { newLevel: number }) => {
