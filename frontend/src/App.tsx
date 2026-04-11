@@ -13,6 +13,7 @@ import api from "./api/axios";
 import { socket } from "./lib/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { X } from "phosphor-react";
 import "react-toastify/dist/ReactToastify.css";
 
 // Lazy load pages
@@ -157,7 +158,32 @@ export default function App() {
 
     socket.on("new_notification", handleNewNotification);
 
+    // Custom close button for maximum reliability
+    const CloseButton = ({ closeToast }: any) => (
+      <div 
+        onClick={(e) => {
+          e.stopPropagation();
+          closeToast();
+        }}
+        style={{ 
+          padding: '4px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          opacity: 0.7,
+          transition: 'opacity 0.2s',
+          marginLeft: '8px'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+      >
+        <X size={14} weight="bold" />
+      </div>
+    );
+
     const handleXPGain = (data: { amount: number, reason: string, newXP: number, newLevel: number }) => {
+
       // Descriptive minimalist XP toast
       const reasonMap: Record<string, string> = {
         'post': 'for sharing a post',
@@ -174,6 +200,7 @@ export default function App() {
         closeOnClick: true,
         pauseOnHover: false,
         className: 'xp-toast-premium',
+        closeButton: CloseButton,
         toastId: `xp-${Date.now()}` // Unique toast for each gain
       });
       // Exponentially faster: Aggressively update all related profile caches for instant visual feedback
@@ -216,6 +243,7 @@ export default function App() {
         position: "top-center",
         autoClose: 5000,
         className: 'xp-toast-premium',
+        closeButton: CloseButton,
         toastId: `lv-${data.newLevel}`
       });
     };
