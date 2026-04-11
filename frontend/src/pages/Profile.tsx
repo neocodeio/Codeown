@@ -111,13 +111,11 @@ export default function Profile() {
     if (!userId || !userProfile) return;
 
     const handleXPUpdate = (data: { newXP: number, newLevel: number }) => {
-      // Targeted update for THIS profile
+      // Targeted update for THIS profile (instant, no refetch needed)
       queryClient.setQueryData(["profile", userId], (old: any) => {
         if (!old) return old;
         return { ...old, xp: data.newXP, level: data.newLevel };
       });
-      // Also refresh profile strength/stats
-      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
     };
 
     socket.on("xp_gain", handleXPUpdate);

@@ -117,8 +117,6 @@ export default function UserProfile() {
         if (!old) return old;
         return { ...old, xp: data.newXP, level: data.newLevel };
       });
-      // Force refetch to sync all derived stats (Rank, Efficiency, etc.)
-      queryClient.invalidateQueries({ queryKey: ["userProfile", param] });
     };
 
     socket.on("xp_gain", handleXPUpdate);

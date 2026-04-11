@@ -176,10 +176,6 @@ export default function App() {
         className: 'xp-toast-premium',
         toastId: `xp-${Date.now()}` // Unique toast for each gain
       });
-      // Invalidate user data to update profile bars
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
-
       // Exponentially faster: Aggressively update all related profile caches for instant visual feedback
       // We target anything that looks like a profile (using partial matching)
       const updateData = (old: any) => {

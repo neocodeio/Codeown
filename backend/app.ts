@@ -109,6 +109,7 @@ const globalLimiter = rateLimit({
     // Try to limit by User ID first, then fallback to IP
     return (req.headers["x-clerk-user-id"] as string) || req.ip || "unknown";
   },
+  validate: { xForwardedForHeader: false, ip: false },
   message: { error: "Too many requests, please try again later." },
 });
 app.use(globalLimiter);
@@ -121,6 +122,7 @@ const feedbackLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => (req.headers["x-clerk-user-id"] as string) || req.ip || "unknown",
+  validate: { xForwardedForHeader: false, ip: false },
 });
 
 // Stricter limit for message sending to prevent spam
@@ -131,6 +133,7 @@ const chatLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => (req.headers["x-clerk-user-id"] as string) || req.ip || "unknown",
+  validate: { xForwardedForHeader: false, ip: false },
 });
 
 app.use("/feedback", feedbackLimiter);
