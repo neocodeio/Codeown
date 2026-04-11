@@ -15,38 +15,27 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Using a simple, reliable dismiss mechanism
-const XPCloseButton = ({ closeToast, toastId }: any) => (
-  <button 
-    type="button" 
-    onClick={(e) => {
-      e.stopPropagation();
-      if (toastId) toast.dismiss(toastId);
-      else closeToast();
-    }}
+// Keep custom close button extremely simple to avoid interfering with react-toastify internals
+const XPCloseButton = ({ closeToast }: any) => (
+  <div 
+    onClick={closeToast}
     style={{ 
-      padding: '8px',
+      padding: '4px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       cursor: 'pointer',
       opacity: 0.8,
-      background: 'transparent',
-      border: 'none',
-      color: 'inherit',
       transition: 'all 0.2s',
       marginLeft: '8px',
-      borderRadius: '50%',
-      fontSize: '20px',
+      fontSize: '22px',
       lineHeight: 1,
-      width: '32px',
-      height: '32px'
+      userSelect: 'none',
+      color: 'inherit'
     }}
-    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
-    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
   >
     ×
-  </button>
+  </div>
 );
 
 // Lazy load pages
@@ -211,7 +200,7 @@ export default function App() {
         closeOnClick: false,
         pauseOnHover: false,
         className: 'xp-toast-premium',
-        closeButton: (props) => <XPCloseButton {...props} toastId={toastId} />,
+        closeButton: XPCloseButton,
         toastId: toastId
       });
       // Exponentially faster: Aggressively update all related profile caches for instant visual feedback
@@ -259,7 +248,7 @@ export default function App() {
         closeOnClick: false,
         pauseOnHover: false,
         className: 'xp-toast-premium',
-        closeButton: (props) => <XPCloseButton {...props} toastId={toastId} />,
+        closeButton: XPCloseButton,
         toastId: toastId
       });
     };
