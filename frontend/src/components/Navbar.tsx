@@ -27,7 +27,8 @@ import {
   DocumentCodeIcon,
   Building02Icon,
   MedalIcon,
-  Chart01Icon
+  Chart01Icon,
+  CheckListIcon
 } from "@hugeicons/core-free-icons";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -306,6 +307,11 @@ export default function Navbar() {
                 )}
               </div>
               Notifications
+            </Link>
+            
+            <Link to="/todos" style={linkStyle("/todos")}>
+              <HugeiconsIcon icon={CheckListIcon} size={20} />
+              Focus
             </Link>
 
             <div
@@ -658,6 +664,22 @@ export default function Navbar() {
 
         <Link to="/search" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={Search01Icon} size={22} />
+        </Link>
+        
+        <Link
+          to="/todos"
+          style={{
+            flex: 1,
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textDecoration: "none",
+            color: location.pathname === "/todos" ? "var(--text-primary)" : "var(--text-tertiary)",
+            position: "relative",
+          }}
+        >
+          <HugeiconsIcon icon={CheckListIcon} size={22} />
         </Link>
 
         <Link to="/leaderboard" style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: location.pathname === "/leaderboard" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
