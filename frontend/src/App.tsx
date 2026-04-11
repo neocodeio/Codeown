@@ -173,17 +173,8 @@ export default function App() {
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: false,
-        theme: "dark",
-        style: {
-          backgroundColor: "rgba(0,0,0,0.8)",
-          backdropFilter: "blur(8px)",
-          color: "var(--text-primary)",
-          border: "0.5px solid var(--border-hairline)",
-          fontSize: "12px",
-          fontWeight: 700,
-          borderRadius: "var(--radius-sm)",
-          boxShadow: "0 8px 16px rgba(0,0,0,0.4)"
-        }
+        className: 'xp-toast-premium',
+        toastId: `xp-${Date.now()}` // Unique toast for each gain
       });
       // Invalidate user data to update profile bars
       queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -217,10 +208,11 @@ export default function App() {
         });
       });
 
-      toast.success(`🎉 LEVEL UP! You are now Lvl ${data.newLevel}`, {
+      toast(`🚀 LEVEL UP! You are now Lvl ${data.newLevel}`, {
         position: "top-center",
-        autoClose: 10000,
-        theme: "dark"
+        autoClose: 8000,
+        className: 'xp-toast-premium',
+        toastId: `lv-${data.newLevel}`
       });
     };
 
