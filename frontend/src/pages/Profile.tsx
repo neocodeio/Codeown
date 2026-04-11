@@ -26,30 +26,12 @@ import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  PencilSimple,
-  SignOut,
-  Key,
-  ShareNetwork,
-  CalendarBlank,
-  SquaresFour,
-  Rocket,
-  Buildings,
-  BookmarkSimple,
-  DotsThreeVertical,
-  PushPin,
-  Camera,
-  MapPin,
-  Link as LinkIcon,
-  TwitterLogo,
-  LinkedinLogo,
-  GithubLogo,
-  ChartBar,
-  IdentificationCard,
-  Plus,
-  Handshake,
-  FileText,
-  InstagramLogo
+  PencilSimple, SignOut, Key, ShareNetwork, CalendarBlank, SquaresFour,
+  Rocket, Buildings, BookmarkSimple, DotsThreeVertical, PushPin, Camera,
+  MapPin, Link as LinkIcon, TwitterLogo, LinkedinLogo, GithubLogo, 
+  ChartBar, IdentificationCard, Plus, Handshake, FileText, InstagramLogo
 } from "phosphor-react";
+import { socket } from "../lib/socket";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -123,6 +105,27 @@ export default function Profile() {
     staleTime: 5 * 60 * 1000,
     retry: 2,
   });
+
+  // 1a. Listen for real-time XP gains specifically for this profile
+  useEffect(() => {
+    if (!userId || !userProfile) return;
+
+    const handleXPUpdate = (data: { newXP: number, newLevel: number }) => {
+      // Targeted update for THIS profile
+      queryClient.setQueryData(["profile", userId], (old: any) => {
+        if (!old) return old;
+        return { ...old, xp: data.newXP, level: data.newLevel };
+      });
+      // Also refresh profile strength/stats
+      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+    };
+
+    socket.on("xp_gain", handleXPUpdate);
+
+    return () => {
+      socket.off("xp_gain", handleXPUpdate);
+    };
+  }, [userId, userProfile, queryClient]);
 
   const { posts, fetchUserPosts, loading: postsLoading } = useUserPosts(userId, true);
   const { projects, fetchUserProjects, loading: projectsLoading } = useUserProjects(userId, true);

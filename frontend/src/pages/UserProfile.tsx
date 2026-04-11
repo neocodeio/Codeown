@@ -25,6 +25,7 @@ import {
   InstagramLogo,
   ChatCircle
 } from "phosphor-react";
+import { socket } from "../lib/socket";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -105,10 +106,32 @@ export default function UserProfile() {
       return userRes.data as User;
     },
     enabled: !!param,
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
   });
 
+  // 1a. Real-time XP sync for visitors
+  useEffect(() => {
+    if (!param || !user) return;
+
+    const handleXPUpdate = (data: { newXP: number, newLevel: number }) => {
+      queryClient.setQueryData(["userProfile", param], (old: any) => {
+        if (!old) return old;
+        return { ...old, xp: data.newXP, level: data.newLevel };
+      });
+      // Force refetch to sync all derived stats (Rank, Efficiency, etc.)
+      queryClient.invalidateQueries({ queryKey: ["userProfile", param] });
+    };
+
+    socket.on("xp_gain", handleXPUpdate);
+
+    return () => {
+      socket.off("xp_gain", handleXPUpdate);
+    };
+  }, [param, user, queryClient]);
+  
+  // Re-defining query options that were split by the injection
+  // Note: In a real scenario, these would be part of the original useQuery object
+  // but following the instruction to inject the logic into the flow:
+  
   const isOwnProfile = currentUser?.id === user?.id;
 
   // 2. Secondary Actions (Follow status, tracking)

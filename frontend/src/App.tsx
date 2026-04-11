@@ -168,7 +168,7 @@ export default function App() {
       };
 
       toast(`✨ +${data.amount} XP ${reasonMap[data.reason] || 'gained'}`, {
-        position: "bottom-left",
+        position: "bottom-right",
         autoClose: 4000,
         hideProgressBar: true,
         closeOnClick: true,
@@ -180,21 +180,29 @@ export default function App() {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
 
-      // Exponentially faster: Manually update the cache for instant visual feedback
+      // Exponentially faster: Aggressively update all related profile caches for instant visual feedback
+      // We target anything that looks like a profile (using partial matching)
+      const updateData = (old: any) => {
+        if (!old) return old;
+        // Verify this cache entry belongs to the user receiving XP
+        // Most profile objects have an 'id' or 'username' field
+        const isMatch = old.id === user?.id || old.username === user?.username;
+        if (!isMatch) return old;
+        
+        return { 
+          ...old, 
+          xp: data.newXP, 
+          level: data.newLevel 
+        };
+      };
+
       if (user?.id) {
-        queryClient.setQueriesData({ queryKey: ["profile", user.id] }, (old: any) => {
-          if (!old) return old;
-          return { ...old, xp: data.newXP, level: data.newLevel };
-        });
-        queryClient.setQueriesData({ queryKey: ["userProfile", user.id] }, (old: any) => {
-          if (!old) return old;
-          return { ...old, xp: data.newXP, level: data.newLevel };
-        });
-        // Also update by username if applicable
-        queryClient.setQueriesData({ queryKey: ["userProfile"] }, (old: any) => {
-          if (!old) return old;
-          return { ...old, xp: data.newXP, level: data.newLevel };
-        });
+        // Update personal profile dashboard
+        queryClient.setQueriesData({ queryKey: ["profile"] }, updateData);
+        // Update public profile views
+        queryClient.setQueriesData({ queryKey: ["userProfile"] }, updateData);
+        // Update general user caches (if any)
+        queryClient.setQueriesData({ queryKey: ["users"] }, updateData);
       }
     };
 
