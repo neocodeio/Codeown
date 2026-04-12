@@ -113,3 +113,22 @@ export async function getLeaderboard(req: Request, res: Response) {
         return res.status(500).json({ error: "Failed to fetch leaderboard" });
     }
 }
+
+export async function getXPLeaderboard(req: Request, res: Response) {
+    try {
+        const { data: users, error: usersError } = await supabase
+            .from("users")
+            .select("id, name, username, avatar_url, streak_count, is_pro, is_og, xp, level")
+            .order("xp", { ascending: false })
+            .limit(100);
+
+        if (usersError) throw usersError;
+
+        return res.json({
+            leaderboard: users
+        });
+    } catch (error: any) {
+        console.error("XP Leaderboard Error:", error);
+        return res.status(500).json({ error: "Failed to fetch XP leaderboard" });
+    }
+}

@@ -1,17 +1,17 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import api from "../api/axios";
 import { 
-  Rocket,
-  CaretRight,
-  Lightning,
-  Sparkle,
-  ArrowRight
+  Crown,
+  Medal,
+  Info
 } from "phosphor-react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
 import StreakBadge from "../components/StreakBadge";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import XPInfo from "../components/XPInfo";
 
 interface LeaderboardUser {
     id: string;
@@ -19,43 +19,38 @@ interface LeaderboardUser {
     username: string;
     avatar_url: string;
     streak_count: number;
-    pulse_score: number;
-    tier: string;
+    xp: number;
+    level: number;
     is_pro: boolean;
-    latest_project?: any;
+    is_og?: boolean;
 }
-
-import { useQuery } from "@tanstack/react-query";
 
 export default function Leaderboard() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
-    const isTablet = width < 1200;
 
     const { data: rawData = [], isLoading: loading } = useQuery({
-        queryKey: ["leaderboardPulse"],
+        queryKey: ["leaderboardXP"],
         queryFn: async () => {
-            const res = await api.get("/leaderboard/pulse");
+            const res = await api.get("/leaderboard/xp");
             return (res.data.leaderboard || []) as LeaderboardUser[];
         },
-        staleTime: 5 * 60 * 1000, // 5 minutes fresh
+        staleTime: 5 * 60 * 1000,
     });
 
-    const data = rawData;
-
-    const top3 = useMemo(() => data.slice(0, 3), [data]);
-    const theRest = useMemo(() => data.slice(3), [data]);
+    const top3 = useMemo(() => rawData.slice(0, 3), [rawData]);
+    const theRest = useMemo(() => rawData.slice(3), [rawData]);
 
     if (loading) {
         return (
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
                 <div style={{ 
-                  width: "20px", 
-                  height: "20px", 
-                  border: "1.5px solid var(--border-hairline)", 
+                  width: "24px", 
+                  height: "24px", 
+                  border: "2px solid var(--border-hairline)", 
                   borderTopColor: "var(--text-primary)", 
                   borderRadius: "50%", 
-                  animation: "spin 0.6s cubic-bezier(0.4, 0, 0.2, 1) infinite" 
+                  animation: "spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite" 
                 }} />
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
@@ -64,218 +59,204 @@ export default function Leaderboard() {
 
     return (
         <div style={{
-            maxWidth: "1400px",
+            maxWidth: "1100px",
             margin: "0 auto",
-            padding: isMobile ? "20px 16px" : "60px 40px",
+            padding: isMobile ? "40px 16px" : "80px 40px",
             minHeight: "100vh",
             backgroundColor: "var(--bg-page)",
         }}>
             <style>{`
-                .glass-card { background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-                .glass-card:hover { border-color: var(--text-tertiary); }
-                .rank-tile { background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: 16px; margin-bottom: 12px; transition: all 0.2s ease; cursor: pointer; }
-                .rank-tile:hover { border-color: var(--text-primary); transform: translateX(8px); }
-                .tier-dot { width: 6px; height: 6px; border-radius: 50%; }
-                .pulse-glow { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; position: relative; }
-                .pulse-glow::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: inherit; animation: pulse-ring 2s infinite; }
-                @keyframes pulse-ring { 0% { transform: scale(0.5); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
-                .counter-anim { font-variant-numeric: tabular-nums; }
+                .leaderboard-container { animation: tabContentEnter 0.4s ease-out; }
+                .top-podium-card { background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: 28px; position: relative; transition: all 0.3s var(--ease-smooth); }
+                .top-podium-card:hover { border-color: var(--text-primary); transform: translateY(-4px); box-shadow: var(--shadow-xl); }
+                .list-item { border-bottom: 0.5px solid var(--border-hairline); transition: all 0.2s ease; cursor: pointer; }
+                .list-item:hover { background-color: var(--bg-hover); }
+                .rank-badge { width: 24px; height: 24px; border-radius: 6px; display: flex; alignItems: center; justifyContent: center; font-size: 11px; fontWeight: 900; }
+                ::-webkit-scrollbar { display: none; }
             `}</style>
 
-            <div style={{ display: "grid", gridTemplateColumns: isTablet ? "1fr" : "400px 1fr", gap: "60px", alignItems: "start" }}>
-                
-                {/* Left Sidebar: Hero & Podium */}
-                <aside style={{ position: isTablet ? "relative" : "sticky", top: "40px" }}>
-                    <div style={{ marginBottom: "48px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                           <div className="pulse-glow" />
-                           <span style={{ fontSize: "11px", fontWeight: 850, letterSpacing: "0.1em", color: "var(--text-secondary)", textTransform: "uppercase" }}>Pulse Protocol v2</span>
-                        </div>
-                        <h1 style={{ fontSize: "44px", fontWeight: 950, letterSpacing: "-0.05em", color: "var(--text-primary)", lineHeight: 1, margin: "0 0 16px 0" }}>Leaderboard</h1>
-                        <p style={{ color: "var(--text-tertiary)", fontSize: "15px", lineHeight: 1.6, fontWeight: 500, maxWidth: "340px" }}>
-                            The global developer hierarchy. Persistence, contribution, and speed visualized.
-                        </p>
+            <div className="leaderboard-container">
+                {/* Header Section */}
+                <header style={{ textAlign: "center", marginBottom: "64px" }}>
+                    <h1 style={{ fontSize: isMobile ? "40px" : "64px", fontWeight: 950, letterSpacing: "-0.05em", color: "var(--text-primary)", margin: "0 0 16px 0", lineHeight: 0.9 }}>
+                        Global Leaderboard
+                    </h1>
+                    <p style={{ color: "var(--text-tertiary)", fontSize: "16px", fontWeight: 500, maxWidth: "500px", margin: "0 auto", lineHeight: 1.6 }}>
+                        The most active builders on the platform. Ranked by total Experience Points (XP).
+                    </p>
+                    <div style={{ marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center", gap: "12px" }}>
+                         <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)" }}>
+                            <Info size={16} weight="regular" />
+                            How to earn XP?
+                         </div>
+                         <XPInfo />
                     </div>
+                </header>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                        {top3.map((user, idx) => (
-                            <PodiumMini key={user.id} user={user} rank={idx + 1} />
-                        ))}
+                {/* Top 3 Podium */}
+                {top3.length > 0 && (
+                    <div style={{ 
+                        display: "grid", 
+                        gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", 
+                        gap: "24px", 
+                        marginBottom: "64px",
+                        alignItems: "end"
+                    }}>
+                        {/* 2nd Place */}
+                        {!isMobile && top3[1] && <PodiumCard user={top3[1]} rank={2} color="#94A3B8" icon={Medal} />}
+                        
+                        {/* 1st Place */}
+                        {top3[0] && <PodiumCard user={top3[0]} rank={1} color="#FFD700" icon={Crown} isBig />}
+                        
+                        {/* 3rd Place */}
+                        {!isMobile && top3[2] && <PodiumCard user={top3[2]} rank={3} color="#B45309" icon={Medal} />}
+
+                        {/* Mobile view for 2nd and 3rd */}
+                        {isMobile && top3[1] && <PodiumCard user={top3[1]} rank={2} color="#94A3B8" icon={Medal} />}
+                        {isMobile && top3[2] && <PodiumCard user={top3[2]} rank={3} color="#B45309" icon={Medal} />}
                     </div>
+                )}
 
-                    <div style={{ marginTop: "48px", padding: "24px", background: "var(--bg-hover)", borderRadius: "20px", border: "1px solid var(--border-hairline)" }}>
-                        <div style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                            <Sparkle size={18} weight="fill" color="#FFD700" /> Season 1 Live
-                        </div>
-                        <p style={{ fontSize: "12px", color: "var(--text-tertiary)", lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
-                            Build and ship consistently to claim your spot in the Hall of Fame. The top 3 win permanent badges.
-                        </p>
-                    </div>
-                </aside>
-
-                {/* Right Content: The Feed */}
-                <main>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", padding: "0 8px" }}>
-                        <h2 style={{ fontSize: "14px", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "0.05em" }}>GLOBAL FEED ({theRest.length})</h2>
-                        <div style={{ display: "flex", gap: "24px", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)" }}>
-                            <span>CONTRIBUTOR</span>
-                            <span style={{ minWidth: "100px", textAlign: "right" }}>PULSE INDEX</span>
-                        </div>
+                {/* The Rest of the Herd */}
+                <div style={{ 
+                    backgroundColor: "var(--bg-card)", 
+                    borderRadius: "28px", 
+                    border: "1px solid var(--border-hairline)",
+                    overflow: "hidden"
+                }}>
+                    <div style={{ 
+                        display: "grid", 
+                        gridTemplateColumns: "60px 1fr 120px 120px", 
+                        padding: "20px 24px",
+                        backgroundColor: "var(--bg-hover)",
+                        borderBottom: "1.5px solid var(--border-hairline)"
+                    }}>
+                        <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase" }}>Rank</span>
+                        <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase" }}>Member</span>
+                        <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", textAlign: "right" }}>Level</span>
+                        <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", textAlign: "right" }}>XP</span>
                     </div>
 
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                        <AnimatePresence mode="popLayout">
-                            {theRest.length === 0 ? (
-                                <motion.div 
-                                    initial={{ opacity: 0 }} 
-                                    animate={{ opacity: 1 }} 
-                                    style={{ padding: "100px 0", textAlign: "center", border: "1.5px dashed var(--border-hairline)", borderRadius: "24px" }}
-                                >
-                                    <Rocket size={40} weight="thin" style={{ opacity: 0.1, marginBottom: "16px" }} />
-                                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-tertiary)" }}>Scanning for the next wave of builders...</p>
-                                </motion.div>
-                            ) : (
-                                theRest.map((user, idx) => (
-                                    <RankTile key={user.id} user={user} rank={idx + 4} isMobile={isMobile} />
-                                ))
-                            )}
-                        </AnimatePresence>
+                        {theRest.map((user, idx) => (
+                            <Link 
+                                to={`/user/${user.id}`} 
+                                key={user.id} 
+                                style={{ display: "grid", gridTemplateColumns: "60px 1fr 120px 120px", padding: "20px 24px", alignItems: "center", textDecoration: "none" }}
+                                className="list-item"
+                            >
+                                <span style={{ fontSize: "14px", fontWeight: 950, color: "var(--text-tertiary)" }}>{idx + 4}</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
+                                    <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} style={{ width: "36px", height: "36px", borderRadius: "10px", border: "1px solid var(--border-hairline)" }} alt="" />
+                                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                            <span style={{ fontWeight: 800, fontSize: "14px", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user.name}</span>
+                                            <VerifiedBadge username={user.username} size="14px" />
+                                        </div>
+                                        <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>@{user.username}</span>
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: "right" }}>
+                                    <span style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-primary)" }}>Lvl {user.level || 1}</span>
+                                </div>
+                                <div style={{ textAlign: "right" }}>
+                                    <span style={{ fontSize: "15px", fontWeight: 950, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>{user.xp.toLocaleString()}</span>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
-                </main>
+                </div>
             </div>
         </div>
     );
 }
 
-function PodiumMini({ user, rank }: { user: LeaderboardUser, rank: number }) {
-    const isFirst = rank === 1;
+function PodiumCard({ user, rank, color, icon: Icon, isBig }: { user: LeaderboardUser, rank: number, color: string, icon: any, isBig?: boolean }) {
     return (
         <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: rank * 0.1 }}
-            className="glass-card"
+            className="top-podium-card"
             style={{ 
-                padding: "20px", 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "16px",
-                borderColor: isFirst ? "var(--text-primary)" : "var(--border-hairline)",
-                background: isFirst ? "var(--bg-card)" : "transparent"
+                padding: isBig ? "48px 24px" : "32px 24px",
+                textAlign: "center"
             }}
         >
-            <div style={{ position: "relative" }}>
-                <img 
-                    src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} 
-                    style={{ width: "48px", height: "48px", borderRadius: "14px", border: "1px solid var(--border-hairline)" }} 
-                    alt="" 
-                />
-                <div style={{ 
-                    position: "absolute", 
-                    top: "-8px", 
-                    left: "-8px", 
-                    width: "22px", 
-                    height: "22px", 
-                    background: isFirst ? "var(--text-primary)" : "var(--bg-hover)", 
-                    color: isFirst ? "var(--bg-page)" : "var(--text-primary)", 
-                    borderRadius: "6px", 
-                    fontSize: "10px", 
-                    fontWeight: 900, 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center",
-                    border: "1px solid var(--border-hairline)"
-                }}>
-                    #{rank}
-                </div>
-            </div>
-            
-            <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span style={{ fontSize: "15px", fontWeight: 800, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user.name}</span>
-                    <VerifiedBadge username={user.username} size="14px" />
-                </div>
-                <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}>{user.pulse_score.toLocaleString()}p</div>
+            <div style={{ 
+                position: "absolute", 
+                top: "-12px", 
+                left: "50%", 
+                transform: "translateX(-50%)",
+                width: "32px",
+                height: "32px",
+                borderRadius: "10px",
+                backgroundColor: color,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#000",
+                boxShadow: `0 8px 16px ${color}40`,
+                zIndex: 2
+            }}>
+                <Icon size={18} weight="bold" />
             </div>
 
-            {isFirst && <Lightning size={18} weight="fill" color="var(--text-primary)" />}
-            {!isFirst && <StreakBadge count={user.streak_count} mini />}
-        </motion.div>
-    );
-}
-
-function RankTile({ user, rank, isMobile }: { user: LeaderboardUser, rank: number, isMobile: boolean }) {
-    const [expanded, setExpanded] = useState(false);
-
-    return (
-        <motion.div 
-            layout
-            className="rank-tile"
-            onClick={() => setExpanded(!expanded)}
-            style={{ padding: isMobile ? "16px" : "16px 24px" }}
-        >
-            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-                <div style={{ width: "32px", fontSize: "13px", fontWeight: 900, color: "var(--text-tertiary)", textAlign: "center" }}>{rank}</div>
-                
-                <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1, minWidth: 0 }}>
+            <Link to={`/user/${user.id}`} style={{ textDecoration: "none" }}>
+                <div style={{ position: "relative", display: "inline-block", marginBottom: "20px" }}>
                     <img 
                         src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} 
-                        style={{ width: "40px", height: "40px", borderRadius: "10px", border: "1px solid var(--border-hairline)" }} 
+                        style={{ 
+                            width: isBig ? "100px" : "70px", 
+                            height: isBig ? "100px" : "70px", 
+                            borderRadius: "24px", 
+                            border: `3px solid ${color}`,
+                            padding: "4px",
+                            backgroundColor: "var(--bg-page)"
+                        }} 
                         alt="" 
                     />
-                    <div style={{ minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                            <span style={{ fontWeight: 800, fontSize: "14px", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.name}</span>
-                            <VerifiedBadge username={user.username} size="14px" />
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "2px" }}>
-                            <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)" }}>
-                                <div className="tier-dot" style={{ background: user.pulse_score > 5000 ? "#A855F7" : user.pulse_score > 2000 ? "#3B82F6" : "#94A3B8" }} />
-                                {user.tier}
-                            </span>
-                            <span style={{ color: "var(--border-strong)", opacity: 0.1 }}>•</span>
-                            <StreakBadge count={user.streak_count} mini />
-                        </div>
+                    <div style={{ 
+                        position: "absolute", 
+                        bottom: "-8px", 
+                        right: "-8px", 
+                        backgroundColor: "var(--text-primary)", 
+                        color: "var(--bg-page)", 
+                        width: "28px", 
+                        height: "28px", 
+                        borderRadius: "50%", 
+                        display: "flex", 
+                        alignItems: "center", 
+                        justifyContent: "center",
+                        fontSize: "12px",
+                        fontWeight: 900,
+                        border: "2px solid var(--bg-page)"
+                    }}>
+                        #{rank}
                     </div>
                 </div>
 
-                <div style={{ textAlign: "right", minWidth: isMobile ? "70px" : "100px" }}>
-                    <div style={{ fontSize: "18px", fontWeight: 950, color: "var(--text-primary)", letterSpacing: "-0.02em" }} className="counter-anim">{user.pulse_score.toLocaleString()}</div>
-                    <div style={{ fontSize: "9px", fontWeight: 850, color: "var(--text-tertiary)", textTransform: "uppercase" }}>Index</div>
+                <div style={{ marginBottom: "16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginBottom: "4px" }}>
+                        <span style={{ fontSize: isBig ? "20px" : "16px", fontWeight: 800, color: "var(--text-primary)" }}>{user.name}</span>
+                        <VerifiedBadge username={user.username} size="16px" />
+                    </div>
+                    <span style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 500 }}>@{user.username}</span>
                 </div>
 
-                {!isMobile && (
-                    <motion.div animate={{ rotate: expanded ? 90 : 0 }}>
-                        <CaretRight size={16} weight="bold" color="var(--border-strong)" />
-                    </motion.div>
-                )}
-            </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <div style={{ fontSize: "28px", fontWeight: 950, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
+                        {user.xp.toLocaleString()} <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-tertiary)" }}>XP</span>
+                    </div>
+                    <div style={{ display: "inline-flex", margin: "0 auto", alignItems: "center", gap: "8px", padding: "4px 12px", backgroundColor: "var(--bg-hover)", borderRadius: "100px", border: "1px solid var(--border-hairline)" }}>
+                        <span style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-primary)" }}>LEVEL {user.level || 1}</span>
+                    </div>
+                </div>
+            </Link>
 
-            <AnimatePresence>
-                {expanded && user.latest_project && (
-                    <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={{ overflow: "hidden" }}
-                    >
-                        <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "1px solid var(--border-hairline)", display: "flex", gap: "20px", alignItems: "center" }}>
-                            <img src={user.latest_project.cover_image || "/placeholder.png"} style={{ width: "120px", height: "70px", borderRadius: "12px", objectFit: "cover", border: "1px solid var(--border-hairline)" }} alt="" />
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: "10px", fontWeight: 850, color: "var(--text-tertiary)", textTransform: "uppercase", marginBottom: "4px" }}>Active Masterpiece</div>
-                                <h4 style={{ fontSize: "16px", fontWeight: 800, margin: "0 0 8px 0" }}>{user.latest_project.title}</h4>
-                                <Link 
-                                    to={`/project/${user.latest_project.id}`} 
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", textDecoration: "none" }}
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    Explore project <ArrowRight size={14} weight="bold" />
-                                </Link>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <div style={{ marginTop: "20px" }}>
+                <StreakBadge count={user.streak_count} />
+            </div>
         </motion.div>
     );
 }

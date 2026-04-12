@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getLeaderboard } from "../controllers/leaderboard.controller.js";
+import { getLeaderboard, getXPLeaderboard } from "../controllers/leaderboard.controller.js";
 
 const router = Router();
 
 router.get("/pulse", getLeaderboard);
+router.get("/xp", getXPLeaderboard);
 
 export default router;
