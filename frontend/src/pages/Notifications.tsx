@@ -161,7 +161,6 @@ export default function NotificationsPage() {
     return (
         <main style={{
             display: "flex",
-            justifyContent: isDesktop ? "center" : "flex-start",
             backgroundColor: "var(--bg-page)",
             minHeight: "100vh",
             width: "100%",
@@ -173,21 +172,21 @@ export default function NotificationsPage() {
 
             <div style={{
                 display: "flex",
-                width: isDesktop ? "1020px" : "100%",
-                maxWidth: "1020px",
+                width: isDesktop ? "920px" : "100%",
+                maxWidth: "920px",
                 position: "relative",
             }}>
                 {/* Main Notifications Column */}
                 <div style={{
-                    flex: 1,
-                    width: isDesktop ? "var(--feed-width)" : "100%",
-                    maxWidth: isDesktop ? "var(--feed-width)" : "700px",
+                    width: isDesktop ? "620px" : "100%",
+                    maxWidth: isDesktop ? "620px" : "700px",
                     backgroundColor: "var(--bg-page)",
                     borderLeft: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
                     borderRight: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
                     minHeight: "100vh",
                     margin: isDesktop ? "0" : "0 auto",
                     position: "relative",
+                    flexShrink: 0
                 }}>
                     {/* Header */}
                     <header style={{
@@ -430,8 +429,8 @@ export default function NotificationsPage() {
                 {/* Right Sidebar - Desktop Only */}
                 {isDesktop && !isMobile && (
                     <aside style={{
-                        width: "340px",
-                        padding: "0 0 24px 12px",
+                        width: "300px",
+                        padding: "0",
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
