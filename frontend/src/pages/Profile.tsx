@@ -24,6 +24,7 @@ import ProfileStrength from "../components/ProfileStrength";
 import { HeatMap } from "../components/HeatMap";
 import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
+import XPInfo from "../components/XPInfo";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   PencilSimple, SignOut, Key, ShareNetwork, CalendarBlank, SquaresFour,
@@ -462,7 +463,10 @@ export default function Profile() {
               {/* Top Row: Level HUD & Identity Strength */}
               <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "32px", borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "32px" }}>
                 {/* Level HUD (60%) */}
-                <div style={{ flex: isMobile ? "none" : 1.6 }}>
+                <div style={{ flex: isMobile ? "none" : 1.6, position: "relative" }}>
+                  <div style={{ position: "absolute", top: "0", right: "0" }}>
+                    <XPInfo />
+                  </div>
                   {profileLoading ? (
                     <div className="skeleton-pulse" style={{ height: "60px", width: "100%", borderRadius: "var(--radius-sm)" }} />
                   ) : (

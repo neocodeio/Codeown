@@ -38,6 +38,7 @@ import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { HeatMap } from "../components/HeatMap";
 import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
+import XPInfo from "../components/XPInfo";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface User {
@@ -382,7 +383,10 @@ export default function UserProfile() {
 
                 <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
                   {/* Top Section: XP HUD */}
-                  <div style={{ borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "32px" }}>
+                  <div style={{ borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "32px", position: "relative" }}>
+                    <div style={{ position: "absolute", top: "0", right: "0" }}>
+                      <XPInfo />
+                    </div>
                     {profileLoading ? (
                       <div className="skeleton-pulse" style={{ height: "60px", width: "100%", borderRadius: "var(--radius-sm)" }} />
                     ) : (
