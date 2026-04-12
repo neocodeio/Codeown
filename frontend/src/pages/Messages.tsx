@@ -909,6 +909,7 @@ export default function Messages() {
         if (exists) return prev;
         return [...safePrev, payload];
       });
+      queryClient.invalidateQueries({ queryKey: ['messages', payload.conversation_id] });
       scrollToBottom(true);
       
       if (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) {
@@ -1171,6 +1172,7 @@ export default function Messages() {
       // REPLACE OPTIMISTIC WITH REAL
       const finalMessage = { ...res.data, status: 'sent' as const };
       setMessages(prev => prev.map(m => m.tempId === tempId ? finalMessage : m));
+      queryClient.invalidateQueries({ queryKey: ['messages', activeConvo?.id] });
 
       if (activeConvo?.id === 0) {
         const newConvoId = res.data.conversation_id;
