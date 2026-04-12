@@ -12,7 +12,7 @@ import {
 interface Activity {
     userId: string;
     userName: string;
-    type: "posting" | "launching" | "chatting" | "commenting";
+    type: "posting" | "launching" | "chatting" | "commenting" | "joined";
     timestamp: number;
 }
 
@@ -61,6 +61,7 @@ export default function ActivityIndicator() {
             case "launching": return <HugeiconsIcon icon={Rocket01Icon} size={14} />;
             case "chatting": return <HugeiconsIcon icon={Message01Icon} size={14} />;
             case "commenting": return <HugeiconsIcon icon={BubbleChatIcon} size={14} />;
+            case "joined": return <span style={{ fontSize: "14px" }}>🎉</span>;
             default: return null;
         }
     };
@@ -71,6 +72,7 @@ export default function ActivityIndicator() {
             case "launching": return "is launching...";
             case "chatting": return "is chatting...";
             case "commenting": return "is commenting...";
+            case "joined": return "just joined the workshop!";
             default: return "";
         }
     };
@@ -101,6 +103,11 @@ export default function ActivityIndicator() {
             <div style={{ display: "flex", alignItems: "center", gap: "5px", whiteSpace: "nowrap" }}>
                 <span style={{ fontSize: "10px", fontWeight: "700", color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
                     {latest.userName.split(" ")[0]}
+                    {activities.length > 1 && (
+                        <span style={{ color: "var(--text-tertiary)", fontWeight: 500, marginLeft: "4px" }}>
+                            + {activities.length - 1} {activities.length - 1 === 1 ? 'other' : 'others'}
+                        </span>
+                    )}
                 </span>
                 <span style={{ fontSize: "10px", fontWeight: "400", color: "var(--text-tertiary)", opacity: 0.8 }}>
                     {getActionText()}

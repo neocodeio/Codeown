@@ -11,7 +11,7 @@ export function useActivityBroadcast() {
     const lastEmitRef = useRef<number>(0);
     const timeoutRef = useRef<any>(null);
 
-    const announce = useCallback((type: "posting" | "launching" | "chatting" | "commenting" | null) => {
+    const announce = useCallback((type: "posting" | "launching" | "chatting" | "commenting" | "joined" | null) => {
         if (!isSignedIn || !user?.id) return;
 
         const now = Date.now();
