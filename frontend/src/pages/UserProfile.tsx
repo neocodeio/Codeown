@@ -298,7 +298,7 @@ export default function UserProfile() {
                 onClick={handleMessage}
                 style={{ 
                   padding: "10px", 
-                  borderRadius: "var(--radius-sm)", 
+                  borderRadius: "100px", 
                   fontSize: "13px", 
                   fontWeight: 600, 
                   border: "1px solid var(--border-hairline)", 
@@ -315,7 +315,7 @@ export default function UserProfile() {
               >
                 <ChatCircle size={18} weight="regular" />
               </button>
-              <button onClick={() => setIsIDCardModalOpen(true)} style={{ padding: "8px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer" }} >
+              <button onClick={() => setIsIDCardModalOpen(true)} style={{ padding: "8px", borderRadius: "100px", border: "1px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer" }} >
                 <IdentificationCard size={20} />
               </button>
             </div>
