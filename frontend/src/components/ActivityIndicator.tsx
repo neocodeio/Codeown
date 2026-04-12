@@ -80,7 +80,7 @@ export default function ActivityIndicator() {
     return (
         <div style={{
             position: "absolute",
-            left: isMobile ? "12px" : "20px",
+            right: isMobile ? "12px" : "20px",
             top: "50%",
             transform: "translateY(-50%)",
             display: "flex",
@@ -101,7 +101,16 @@ export default function ActivityIndicator() {
             </div>
             
             <div style={{ display: "flex", alignItems: "center", gap: "5px", whiteSpace: "nowrap" }}>
-                <span style={{ fontSize: "10px", fontWeight: "700", color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+                <span style={{ 
+                    fontSize: "10px", 
+                    fontWeight: "700", 
+                    color: "var(--text-primary)", 
+                    letterSpacing: "-0.01em",
+                    maxWidth: "120px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "inline-block"
+                }}>
                     {latest.userName.split(" ")[0]}
                     {activities.length > 1 && (
                         <span style={{ color: "var(--text-tertiary)", fontWeight: 500, marginLeft: "4px" }}>
