@@ -24,7 +24,7 @@ export default function Changelog() {
     const navigate = useNavigate();
     const { user, isLoaded } = useClerkUser();
     const { getToken } = useClerkAuth();
-    
+
     const [changelogs, setChangelogs] = useState<ChangelogEntry[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [newVersion, setNewVersion] = useState("");
@@ -79,8 +79,6 @@ export default function Changelog() {
 
     return (
         <main style={{
-            display: "flex",
-            justifyContent: isDesktop ? "center" : "flex-start",
             backgroundColor: "var(--bg-page)",
             minHeight: "100vh",
             width: "100%",
@@ -88,7 +86,14 @@ export default function Changelog() {
             <SEO title="Development Logs" description="Iterative progress of the Codeown platform." />
             <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
 
-            <div style={{ display: "flex", width: isDesktop ? "1020px" : "100%", maxWidth: "1020px", position: "relative" }}>
+            <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: isDesktop ? "920px" : "100%",
+                maxWidth: "920px",
+                margin: "0 auto",
+                position: "relative"
+            }}>
                 <div style={{
                     flex: 1,
                     width: isDesktop ? "var(--feed-width)" : "100%",
@@ -196,7 +201,7 @@ export default function Changelog() {
                 </div>
 
                 {isDesktop && !isMobile && (
-                    <aside style={{ width: "340px", padding: "0 0 24px 12px", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}>
+                    <aside style={{ width: "300px", padding: "0 0 24px 0", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}>
                         <RecommendedUsersSidebar />
                     </aside>
                 )}
