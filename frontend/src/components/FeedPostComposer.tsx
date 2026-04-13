@@ -911,7 +911,11 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     if (!isProjectMenuOpen) e.currentTarget.style.backgroundColor = "var(--bg-card)";
                                 }}
                             >
-                                <Rocket size={14} weight={selectedProjectId ? "fill" : "regular"} color={selectedProjectId ? "var(--text-primary)" : "var(--text-tertiary)"} />
+                                {selectedProject?.cover_image ? (
+                                    <img src={selectedProject.cover_image} style={{ width: "18px", height: "18px", borderRadius: "4px", objectFit: "cover" }} alt="" />
+                                ) : (
+                                    <Rocket size={14} weight={selectedProjectId ? "fill" : "regular"} color={selectedProjectId ? "var(--text-primary)" : "var(--text-tertiary)"} />
+                                )}
                                 <span style={{ 
                                     whiteSpace: "nowrap", 
                                     overflow: "hidden", 
@@ -999,17 +1003,18 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                             }}
                                         >
                                             <div style={{ 
-                                                width: "20px", 
-                                                height: "20px", 
-                                                borderRadius: "4px", 
+                                                width: "24px", 
+                                                height: "24px", 
+                                                borderRadius: "6px", 
                                                 backgroundColor: "var(--bg-hover)",
                                                 display: "flex",
                                                 alignItems: "center",
                                                 justifyContent: "center",
                                                 fontSize: "10px",
-                                                overflow: "hidden"
+                                                overflow: "hidden",
+                                                flexShrink: 0
                                             }}>
-                                                {project.logo_url ? <img src={project.logo_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Rocket size={12} />}
+                                                {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <Rocket size={12} />}
                                             </div>
                                             <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontWeight: selectedProjectId === project.id ? 600 : 500 }}>{project.name}</span>
                                         </button>
@@ -1031,7 +1036,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 backgroundColor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--text-primary)" : "var(--bg-hover)",
                                 color: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
-                                borderRadius: "8px",
+                                borderRadius: "100px",
                                 fontWeight: "600",
                                 fontSize: "13px",
                                 cursor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "pointer" : "not-allowed",
