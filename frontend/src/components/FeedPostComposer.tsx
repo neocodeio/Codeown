@@ -820,7 +820,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             {isTypeMenuOpen && (
                                 <div style={{
                                     position: "absolute",
-                                    bottom: "calc(100% + 8px)",
+                                    top: "calc(100% + 8px)",
                                     right: 0,
                                     width: "160px",
                                     backgroundColor: "var(--bg-card)",
@@ -930,7 +930,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             {isProjectMenuOpen && (
                                 <div style={{
                                     position: "absolute",
-                                    bottom: "calc(100% + 8px)",
+                                    top: "calc(100% + 8px)",
                                     right: 0,
                                     width: "220px",
                                     backgroundColor: "var(--bg-card)",
