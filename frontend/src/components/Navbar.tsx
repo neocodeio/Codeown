@@ -136,7 +136,7 @@ export default function Navbar() {
 
 
 
-  useFaviconNotification(unreadCount + messageUnreadCount, theme === "dark" ? logoWhite : logo);
+  useFaviconNotification(unreadCount + messageUnreadCount, logoWhite);
 
   // Use the centralized avatar hook
   const { avatarUrl: userAvatarUrl } = useAvatar(
