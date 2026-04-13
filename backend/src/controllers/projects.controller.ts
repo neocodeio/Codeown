@@ -69,7 +69,7 @@ export async function getProjects(req: Request, res: Response) {
       .from("projects")
       .select(`
         id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id,
-        user:user_id(id, name, avatar_url, username, is_hirable, is_pro, is_og),
+        user:users!projects_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         ratings:project_ratings(rating)
       `, { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
@@ -197,7 +197,7 @@ export async function getProject(req: Request, res: Response) {
       .from("projects")
       .select(`
         *,
-        user:user_id(id, name, avatar_url, username, is_hirable, is_pro, is_og)
+        user:users!projects_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)
       `)
       .eq("id", resolvedId)
       .maybeSingle();
@@ -347,7 +347,7 @@ export async function getUserProjects(req: Request, res: Response) {
     // Fetch user data
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, name, avatar_url, username, is_hirable, is_pro")
+      .select("id, name, avatar_url, username, is_hirable, is_pro, is_og")
       .eq("id", userId)
       .single();
 
@@ -471,7 +471,7 @@ export async function createProject(req: Request, res: Response) {
     // Fetch user data for response
     const { data: user } = await supabase
       .from("users")
-      .select("id, name, email, avatar_url, username, is_og")
+      .select("id, name, email, avatar_url, username, is_og, is_pro")
       .eq("id", userId)
       .single();
 
@@ -601,7 +601,7 @@ export async function updateProject(req: Request, res: Response) {
       .eq("user_id", userId)
       .select(`
         *,
-        user:user_id(id, name, avatar_url, username, is_hirable, is_pro, is_og)
+        user:users!projects_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)
       `)
       .single();
 
