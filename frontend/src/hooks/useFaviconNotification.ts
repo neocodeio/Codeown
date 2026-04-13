@@ -6,7 +6,7 @@ export const useFaviconNotification = (unreadCount: number) => {
         const appleIcon = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement;
 
         // Original path - this should match the one in index.html
-        const originalFavicon = '/favicon.png';
+        const originalFavicon = '/frontend/src/assets/icon-removebg.png';
 
         // If no notifications, reset to original and stop
         if (unreadCount <= 0) {
