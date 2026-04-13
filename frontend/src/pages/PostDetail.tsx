@@ -68,6 +68,11 @@ interface Post {
   } | null;
   code_snippet?: string | null;
   isPinned?: boolean;
+  project?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
 }
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -580,8 +585,36 @@ export default function PostDetail() {
                   </span>
                   <VerifiedBadge username={post.user?.username} size="14px" />
                 </div>
-                <div style={{ fontSize: "12.5px", color: "var(--text-tertiary)", marginTop: "1px", fontWeight: 500 }}>
+                <div style={{ fontSize: "12.5px", color: "var(--text-tertiary)", marginTop: "1px", fontWeight: 500, display: "flex", alignItems: "center", gap: "6px" }}>
                   @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}
+                  {post.project && (
+                    <>
+                      <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
+                      <div 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/project/${post.project?.id}`);
+                        }}
+                        style={{ 
+                          display: "flex", 
+                          alignItems: "center", 
+                          gap: "4px", 
+                          fontSize: "12.5px", 
+                          color: "#0096ff", 
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          padding: "1px 6px",
+                          borderRadius: "6px",
+                          transition: "all 0.15s ease",
+                          backgroundColor: "rgba(0, 150, 255, 0.05)"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 150, 255, 0.1)"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 150, 255, 0.05)"}
+                      >
+                        <span>{post.project.name}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

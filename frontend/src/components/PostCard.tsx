@@ -316,7 +316,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   <div 
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/project/${post.project?.slug}`);
+                      navigate(`/project/${post.project?.id}`);
                     }}
                     style={{ 
                       display: "flex", 
