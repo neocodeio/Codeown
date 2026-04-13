@@ -43,7 +43,7 @@ export async function trackEvent(req: Request, res: Response) {
                 const { notify } = await import("../services/notification.service.js");
                 await notify({
                     userId: target_user_id,
-                    type: "profile_view", 
+                    type: "profile_view",
                     actorId: actor_id,
                     projectId: project_id || undefined,
                 });
@@ -230,7 +230,7 @@ export async function getUserActivityHeatmap(req: Request, res: Response) {
         const addActivity = (dateStr: string) => {
             if (!dateStr) return;
             try {
-                const date = new Date(dateStr).toISOString().split('T')[0];
+                const date = new Date(dateStr).toISOString().split('T')[0] as string;
                 activityMap.set(date, (activityMap.get(date) || 0) + 1);
             } catch (e) {
                 // Ignore invalid dates

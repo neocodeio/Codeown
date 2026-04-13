@@ -142,7 +142,7 @@ export async function markNotificationRead(req: Request, res: Response) {
       const { error } = await supabase
         .from("notifications")
         .update({ read: true })
-        .eq("id", parseInt(notificationId, 10))
+        .eq("id", parseInt(notificationId as string, 10))
         .eq("user_id", userId);
 
       if (error) {
