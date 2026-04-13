@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import api from "../api/axios";
-import { 
-  Crown,
-  Medal,
-  Info
+import {
+    Crown,
+    Medal,
+    Info
 } from "phosphor-react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -12,6 +12,10 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import XPInfo from "../components/XPInfo";
+import InviteModal from "../components/InviteModal";
+import { useClerkUser } from "../hooks/useClerkUser";
+import { useState } from "react";
+import { Gift } from "phosphor-react";
 
 interface LeaderboardUser {
     id: string;
@@ -28,6 +32,8 @@ interface LeaderboardUser {
 export default function Leaderboard() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
+    const { user } = useClerkUser();
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
     const { data: rawData = [], isLoading: loading } = useQuery({
         queryKey: ["leaderboardXP"],
@@ -44,13 +50,13 @@ export default function Leaderboard() {
     if (loading) {
         return (
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
-                <div style={{ 
-                  width: "24px", 
-                  height: "24px", 
-                  border: "2px solid var(--border-hairline)", 
-                  borderTopColor: "var(--text-primary)", 
-                  borderRadius: "50%", 
-                  animation: "spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite" 
+                <div style={{
+                    width: "24px",
+                    height: "24px",
+                    border: "2px solid var(--border-hairline)",
+                    borderTopColor: "var(--text-primary)",
+                    borderRadius: "50%",
+                    animation: "spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite"
                 }} />
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
@@ -84,30 +90,45 @@ export default function Leaderboard() {
                     <p style={{ color: "var(--text-tertiary)", fontSize: "16px", fontWeight: 500, maxWidth: "500px", margin: "0 auto", lineHeight: 1.6 }}>
                         The most active builders on the platform. Ranked by total Experience Points (XP).
                     </p>
-                    <div style={{ marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center", gap: "12px" }}>
-                         <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)" }}>
+                    <div style={{ marginTop: "24px", display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "center", alignItems: "center", gap: "16px" }}>
+                        <button
+                            onClick={() => setIsInviteModalOpen(true)}
+                            style={{
+                                display: "flex", alignItems: "center", gap: "10px",
+                                padding: "10px 24px", borderRadius: "100px",
+                                backgroundColor: "var(--text-primary)", color: "var(--bg-page)",
+                                border: "none", fontSize: "14px", fontWeight: 700,
+                                cursor: "pointer", transition: "all 0.2s ease"
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
+                            onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                        >
+                            <Gift size={18} weight="bold" />
+                            Invite Friends
+                        </button>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)" }}>
                             <Info size={16} weight="regular" />
                             How to earn XP?
-                         </div>
-                         <XPInfo />
+                        </div>
+                        <XPInfo />
                     </div>
                 </header>
 
                 {/* Top 3 Podium */}
                 {top3.length > 0 && (
-                    <div style={{ 
-                        display: "grid", 
-                        gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", 
-                        gap: "24px", 
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                        gap: "24px",
                         marginBottom: "64px",
                         alignItems: "end"
                     }}>
                         {/* 2nd Place */}
                         {!isMobile && top3[1] && <PodiumCard user={top3[1]} rank={2} color="#94A3B8" icon={Medal} />}
-                        
+
                         {/* 1st Place */}
                         {top3[0] && <PodiumCard user={top3[0]} rank={1} color="#FFD700" icon={Crown} isBig />}
-                        
+
                         {/* 3rd Place */}
                         {!isMobile && top3[2] && <PodiumCard user={top3[2]} rank={3} color="#B45309" icon={Medal} />}
 
@@ -118,15 +139,15 @@ export default function Leaderboard() {
                 )}
 
                 {/* The Rest of the Herd */}
-                <div style={{ 
-                    backgroundColor: "var(--bg-card)", 
-                    borderRadius: "28px", 
+                <div style={{
+                    backgroundColor: "var(--bg-card)",
+                    borderRadius: "28px",
                     border: "1px solid var(--border-hairline)",
                     overflow: "hidden"
                 }}>
-                    <div style={{ 
-                        display: "grid", 
-                        gridTemplateColumns: "60px 1fr 120px 120px", 
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "60px 1fr 120px 120px",
                         padding: "20px 24px",
                         backgroundColor: "var(--bg-hover)",
                         borderBottom: "1.5px solid var(--border-hairline)"
@@ -139,9 +160,9 @@ export default function Leaderboard() {
 
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         {theRest.map((user, idx) => (
-                            <Link 
-                                to={`/user/${user.id}`} 
-                                key={user.id} 
+                            <Link
+                                to={`/user/${user.id}`}
+                                key={user.id}
                                 style={{ display: "grid", gridTemplateColumns: "60px 1fr 120px 120px", padding: "20px 24px", alignItems: "center", textDecoration: "none" }}
                                 className="list-item"
                             >
@@ -167,26 +188,31 @@ export default function Leaderboard() {
                     </div>
                 </div>
             </div>
+            <InviteModal
+                isOpen={isInviteModalOpen}
+                onClose={() => setIsInviteModalOpen(false)}
+                username={user?.username || null}
+            />
         </div>
     );
 }
 
 function PodiumCard({ user, rank, color, icon: Icon, isBig }: { user: LeaderboardUser, rank: number, color: string, icon: any, isBig?: boolean }) {
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: rank * 0.1 }}
             className="top-podium-card"
-            style={{ 
+            style={{
                 padding: isBig ? "48px 24px" : "32px 24px",
                 textAlign: "center"
             }}
         >
-            <div style={{ 
-                position: "absolute", 
-                top: "-12px", 
-                left: "50%", 
+            <div style={{
+                position: "absolute",
+                top: "-12px",
+                left: "50%",
                 transform: "translateX(-50%)",
                 width: "32px",
                 height: "32px",
@@ -204,29 +230,29 @@ function PodiumCard({ user, rank, color, icon: Icon, isBig }: { user: Leaderboar
 
             <Link to={`/user/${user.id}`} style={{ textDecoration: "none" }}>
                 <div style={{ position: "relative", display: "inline-block", marginBottom: "20px" }}>
-                    <img 
-                        src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`} 
-                        style={{ 
-                            width: isBig ? "100px" : "70px", 
-                            height: isBig ? "100px" : "70px", 
-                            borderRadius: "24px", 
+                    <img
+                        src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`}
+                        style={{
+                            width: isBig ? "100px" : "70px",
+                            height: isBig ? "100px" : "70px",
+                            borderRadius: "24px",
                             border: `3px solid ${color}`,
                             padding: "4px",
                             backgroundColor: "var(--bg-page)"
-                        }} 
-                        alt="" 
+                        }}
+                        alt=""
                     />
-                    <div style={{ 
-                        position: "absolute", 
-                        bottom: "-8px", 
-                        right: "-8px", 
-                        backgroundColor: "var(--text-primary)", 
-                        color: "var(--bg-page)", 
-                        width: "28px", 
-                        height: "28px", 
-                        borderRadius: "50%", 
-                        display: "flex", 
-                        alignItems: "center", 
+                    <div style={{
+                        position: "absolute",
+                        bottom: "-8px",
+                        right: "-8px",
+                        backgroundColor: "var(--text-primary)",
+                        color: "var(--bg-page)",
+                        width: "28px",
+                        height: "28px",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
                         justifyContent: "center",
                         fontSize: "12px",
                         fontWeight: 900,
