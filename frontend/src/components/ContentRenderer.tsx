@@ -55,8 +55,8 @@ export const CodeBlock = ({ language, code }: { language: string; code: string }
   const displayLang = language === 'typescript' ? 'TS' : language === 'javascript' ? 'JS' : language.toUpperCase();
 
   return (
-    <div style={{ 
-      margin: "20px 0", 
+    <div style={{
+      margin: "20px 0",
       position: "relative",
       borderRadius: "16px",
       overflow: "hidden",
@@ -80,10 +80,10 @@ export const CodeBlock = ({ language, code }: { language: string; code: string }
             <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#FFBD2E" }} />
             <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#27C93F" }} />
           </div>
-          <span style={{ 
-            fontSize: "11px", 
-            fontWeight: 700, 
-            color: "rgba(255, 255, 255, 0.4)", 
+          <span style={{
+            fontSize: "11px",
+            fontWeight: 700,
+            color: "rgba(255, 255, 255, 0.4)",
             letterSpacing: "0.08em",
             fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
             marginLeft: "8px"
@@ -91,7 +91,7 @@ export const CodeBlock = ({ language, code }: { language: string; code: string }
             {displayLang}
           </span>
         </div>
-        
+
         <button
           onClick={handleCopy}
           style={{
@@ -129,9 +129,9 @@ export const CodeBlock = ({ language, code }: { language: string; code: string }
             background: "linear-gradient(to bottom right, transparent, rgba(255,255,255,0.01))"
           }}
         >
-          <code 
-            className={langClass} 
-            style={{ 
+          <code
+            className={langClass}
+            style={{
               fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
               textShadow: "0 0 20px rgba(0,0,0,0.5)"
             }}
@@ -139,7 +139,7 @@ export const CodeBlock = ({ language, code }: { language: string; code: string }
             {code}
           </code>
         </pre>
-        
+
         {/* Subtle bottom fade for long code blocks */}
         <div style={{
           position: "absolute",
@@ -301,76 +301,6 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
         return res;
       });
 
-      // Mentions (@username)
-      parts = parts.flatMap(p => {
-        if (typeof p !== 'string') return p;
-        const regex = /@(\w+(?:\.\w+)*)/g;
-        const res: (string | React.JSX.Element)[] = [];
-        let lastIdx = 0;
-        let match;
-        while ((match = regex.exec(p)) !== null) {
-          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
-          const username = match[1];
-          res.push(
-            <span key={`m-${key++}`} onClick={(e) => handleMentionClick(username, e)} style={{ color: "var(--text-primary)", cursor: "pointer", fontWeight: 700, textDecoration: "underline", textDecorationColor: "var(--border-hairline)" }} onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'var(--border-hairline)'}>
-              @{username}
-            </span>
-          );
-          lastIdx = match.index + match[0].length;
-        }
-        if (lastIdx < p.length) res.push(p.slice(lastIdx));
-        return res;
-      });
-
-      // Hashtags (#hashtag)
-      parts = parts.flatMap(p => {
-        if (typeof p !== 'string') return p;
-        const regex = /#(\w+)/g;
-        const res: (string | React.JSX.Element)[] = [];
-        let lastIdx = 0;
-        let match;
-        while ((match = regex.exec(p)) !== null) {
-          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
-          const tag = match[1];
-          res.push(
-            <span 
-              key={`h-${key++}`} 
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/?tag=${tag.toLowerCase()}`);
-              }} 
-              style={{ 
-                color: "var(--text-primary)", 
-                cursor: "pointer", 
-                fontWeight: 750, 
-                backgroundColor: "var(--bg-hover)",
-                padding: "1px 8px",
-                borderRadius: "100px",
-                fontSize: "13px",
-                border: "0.5px solid var(--border-hairline)",
-                transition: "all 0.15s ease",
-                display: "inline-block",
-                verticalAlign: "middle",
-                margin: "0 2px"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--text-primary)';
-                e.currentTarget.style.color = 'var(--bg-page)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
-                e.currentTarget.style.color = 'var(--text-primary)';
-              }}
-            >
-              #{tag}
-            </span>
-          );
-          lastIdx = match.index + match[0].length;
-        }
-        if (lastIdx < p.length) res.push(p.slice(lastIdx));
-        return res;
-      });
-
       // Links ([text](url))
       parts = parts.flatMap(p => {
         if (typeof p !== 'string') return p;
@@ -406,23 +336,23 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
           const url = match[1];
           // Check if it's an image/GIF
           const isImage = /\.(gif|jpe?g|png|webp|bmp)$/i.test(url) || url.includes("tenor.com") || url.includes("giphy.com");
-          
+
           if (!firstUrl && !isImage) firstUrl = url;
-          
+
           if (isImage) {
             res.push(
               <div key={`img-${key++}`} style={{ margin: "12px 0" }}>
-                <img 
-                  src={url} 
-                  alt="" 
-                  style={{ 
-                    maxWidth: "100%", 
-                    maxHeight: "360px", 
-                    borderRadius: "var(--radius-sm)", 
+                <img
+                  src={url}
+                  alt=""
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "360px",
+                    borderRadius: "var(--radius-sm)",
                     border: "0.5px solid var(--border-hairline)",
                     display: "block",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                  }} 
+                  }}
                   onError={(e) => {
                     // fallback to link if image fails to load
                     e.currentTarget.style.display = 'none';
@@ -437,6 +367,82 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
               </a>
             );
           }
+          lastIdx = match.index + match[0].length;
+        }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
+
+      // Mentions (@username)
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        // Require mention to be preceded by START or WHITESPACE
+        const regex = /(^|\s)@(\w+(?:\.\w+)*)/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          const prefix = match[1];
+          const username = match[2];
+          if (prefix) res.push(prefix);
+          res.push(
+            <span key={`m-${key++}`} onClick={(e) => handleMentionClick(username, e)} style={{ color: "var(--text-primary)", cursor: "pointer", fontWeight: 700, textDecoration: "underline", textDecorationColor: "var(--border-hairline)" }} onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'var(--border-hairline)'}>
+              @{username}
+            </span>
+          );
+          lastIdx = match.index + match[0].length;
+        }
+        if (lastIdx < p.length) res.push(p.slice(lastIdx));
+        return res;
+      });
+
+      // Hashtags (#hashtag)
+      parts = parts.flatMap(p => {
+        if (typeof p !== 'string') return p;
+        // Require hashtag to be preceded by START or WHITESPACE
+        const regex = /(^|\s)#(\w+)/g;
+        const res: (string | React.JSX.Element)[] = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(p)) !== null) {
+          if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
+          const prefix = match[1];
+          const tag = match[2];
+          if (prefix) res.push(prefix);
+          res.push(
+            <span
+              key={`h-${key++}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/?tag=${tag.toLowerCase()}`);
+              }}
+              style={{
+                color: "var(--text-primary)",
+                cursor: "pointer",
+                fontWeight: 750,
+                backgroundColor: "var(--bg-hover)",
+                padding: "1px 8px",
+                borderRadius: "100px",
+                fontSize: "13px",
+                border: "0.5px solid var(--border-hairline)",
+                transition: "all 0.15s ease",
+                display: "inline-block",
+                verticalAlign: "middle",
+                margin: "0 2px"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--text-primary)';
+                e.currentTarget.style.color = 'var(--bg-page)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+                e.currentTarget.style.color = 'var(--text-primary)';
+              }}
+            >
+              #{tag}
+            </span>
+          );
           lastIdx = match.index + match[0].length;
         }
         if (lastIdx < p.length) res.push(p.slice(lastIdx));

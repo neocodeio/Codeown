@@ -213,9 +213,13 @@ export async function createComment(req: Request, res: Response) {
     console.log("Creating comment with:", { post_id, content, userId });
 
     // Extract mentions from content (@username)
-    const mentionRegex = /@(\w+(?:\.\w+)*)/g;
-    const mentions = content.match(mentionRegex) || [];
-    const mentionedUsernames = mentions.map((m: string) => m.substring(1).toLowerCase());
+    const mentionRegex = /(?:^|\s)@(\w+(?:\.\w+)*)/g;
+    const contentForMentions = content || "";
+    let match;
+    const mentionedUsernames: string[] = [];
+    while ((match = mentionRegex.exec(contentForMentions)) !== null) {
+      mentionedUsernames.push((match[1] as string).toLowerCase());
+    }
 
     // Ensure post_id is an integer (posts table uses INTEGER/SERIAL, not UUID)
     const postIdInt = typeof post_id === 'string' ? parseInt(post_id, 10) : post_id;
@@ -339,7 +343,7 @@ export async function createComment(req: Request, res: Response) {
 
     // Get the full comments count for real-time update
     const { count } = await supabase.from("comments").select("*", { count: "exact", head: true }).eq("post_id", postIdInt);
-    
+
     // Refresh user data for the returned comment
     const { data: userRecord } = await supabase.from("users").select("id, name, avatar_url, username, is_pro, is_og").eq("id", userId).single();
     const fullComment = { ...(data as any), user: userRecord || { id: userId, name: "User" } };

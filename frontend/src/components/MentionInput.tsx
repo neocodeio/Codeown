@@ -101,8 +101,8 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
 
     // Auto-resize logic
     if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
 
     // Check for triggers: @ (mention) or # (hashtag)
@@ -113,11 +113,14 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
     const lastTriggerIndex = Math.max(lastAtIndex, lastHashIndex);
 
     if (lastTriggerIndex !== -1) {
+      const charBeforeTrigger = lastTriggerIndex > 0 ? textBeforeCursor[lastTriggerIndex - 1] : "";
+      const isStartOrWhitespace = lastTriggerIndex === 0 || /\s/.test(charBeforeTrigger);
+
       const currentTrigger = textBeforeCursor[lastTriggerIndex] as "@" | "#";
       const textAfterTrigger = textBeforeCursor.slice(lastTriggerIndex + 1);
 
-      // Trigger if there's no space/newline between trigger and cursor
-      if (!textAfterTrigger.includes(" ") && !textAfterTrigger.includes("\n")) {
+      // Trigger if there's no space/newline between trigger and cursor AND it's at start/after whitespace
+      if (isStartOrWhitespace && !textAfterTrigger.includes(" ") && !textAfterTrigger.includes("\n")) {
         setTriggerStart(lastTriggerIndex);
         setTrigger(currentTrigger);
         setSearchQuery(textAfterTrigger);
@@ -168,7 +171,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
       const val = e.currentTarget.value;
       const newVal = val.substring(0, start) + "\n" + val.substring(end);
       onChange(newVal);
-      
+
       // Manually set cursor position after the new line
       setTimeout(() => {
         if (textareaRef.current) {
@@ -324,7 +327,7 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                     fontSize: "18px",
+                    fontSize: "18px",
                     fontWeight: 800,
                     color: "var(--text-tertiary)",
                   }}>
@@ -356,19 +359,19 @@ const MentionInput = forwardRef<HTMLTextAreaElement, MentionInputProps>(function
                   >
                     {trigger === "#" ? user.username : user.name}
                   </div>
-                   {user.username && trigger === "@" && (
-                      <div
-                        style={{
-                          fontSize: "12px",
-                          color: "var(--text-tertiary)",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          fontWeight: 500
-                        }}
-                      >
-                        @{user.username}
-                      </div>
+                  {user.username && trigger === "@" && (
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "var(--text-tertiary)",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        fontWeight: 500
+                      }}
+                    >
+                      @{user.username}
+                    </div>
                   )}
                 </div>
               </div>

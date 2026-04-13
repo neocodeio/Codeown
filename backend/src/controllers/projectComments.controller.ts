@@ -21,7 +21,7 @@ export async function getProjectComments(req: Request, res: Response) {
     if (!allComments || allComments.length === 0) return res.json([]);
 
     const userIds = [...new Set(allComments.map((c: any) => c.user_id))];
-    
+
     // Get user data
     const { data: users } = await supabase
       .from("users")
@@ -35,7 +35,7 @@ export async function getProjectComments(req: Request, res: Response) {
       .from("project_comment_likes")
       .select("comment_id")
       .in("comment_id", allIds);
-    
+
     const likeMap = new Map<number, number>();
     likes?.forEach((l: any) => likeMap.set(l.comment_id, (likeMap.get(l.comment_id) || 0) + 1));
 
@@ -125,9 +125,13 @@ export async function createProjectComment(req: Request, res: Response) {
 
     // 3. Notify mentioned users (if they aren't the actor, project owner, or parent owner)
     try {
-      const mentionRegex = /@(\w+(?:\.\w+)*)/g;
-      const mentions = content.match(mentionRegex) || [];
-      const mentionedUsernames = mentions.map((m: string) => m.substring(1).toLowerCase());
+      const mentionRegex = /(?:^|\s)@(\w+(?:\.\w+)*)/g;
+      const contentForMentions = content || "";
+      let match;
+      const mentionedUsernames: string[] = [];
+      while ((match = mentionRegex.exec(contentForMentions)) !== null) {
+        mentionedUsernames.push((match[1] as string).toLowerCase());
+      }
 
       if (mentionedUsernames.length > 0) {
         const { data: mentionedUsers } = await supabase

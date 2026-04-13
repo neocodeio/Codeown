@@ -520,7 +520,7 @@ export async function createPost(req: Request, res: Response) {
       ...createdPost,
       user: Array.isArray(createdPost.user) ? createdPost.user[0] : createdPost.user,
     };
-    
+
     // Emit real-time update
     emitUpdate("post_created", formattedPost);
 
@@ -539,9 +539,13 @@ export async function createPost(req: Request, res: Response) {
 
     // Create notifications for mentioned users (@username)
     try {
-      const mentionRegex = /@(\w+(?:\.\w+)*)/g;
-      const mentions = content.match(mentionRegex) || [];
-      const mentionedUsernames = mentions.map((m: string) => m.substring(1).toLowerCase());
+      const mentionRegex = /(?:^|\s)@(\w+(?:\.\w+)*)/g;
+      const contentForMentions = content || "";
+      let match;
+      const mentionedUsernames: string[] = [];
+      while ((match = mentionRegex.exec(contentForMentions)) !== null) {
+        mentionedUsernames.push((match[1] as string).toLowerCase());
+      }
 
       if (mentionedUsernames.length > 0) {
         const { data: mentionedUsers } = await supabase
@@ -573,7 +577,7 @@ export async function createPost(req: Request, res: Response) {
     } catch (mentionError) {
       console.error("Error processing post mentions:", mentionError);
     }
-    
+
     return res.status(201).json({ success: true, data: formattedPost });
   } catch (error: any) {
     console.error("Unexpected error in createPost:", error);
@@ -663,10 +667,10 @@ export async function updatePost(req: Request, res: Response) {
       });
     }
 
-    
+
     // Emit real-time update
     emitUpdate("post_updated", updatedPost);
-    
+
     return res.json({ success: true, data: updatedPost });
   } catch (error: any) {
     console.error("Unexpected error in updatePost:", error);
@@ -726,10 +730,10 @@ export async function deletePost(req: Request, res: Response) {
       });
     }
 
-    
+
     // Emit real-time update
     emitUpdate("post_deleted", { id });
-    
+
     return res.json({ success: true });
   } catch (error: any) {
     console.error("Unexpected error in deletePost:", error);

@@ -17,7 +17,8 @@ export default function BioRenderer({ bio }: BioRendererProps) {
         let localKey = 0;
 
         // Combined regex for mentions and URLs
-        const combinedRegex = /(@\w+(?:\.\w+)*)|(https?:\/\/[^\s]+)/g;
+        // Mentions now require a whitespace or start of string to avoid matching inside URLs
+        const combinedRegex = /((?:^|\s)@\w+(?:\.\w+)*)|(https?:\/\/[^\s]+)/g;
         let lastIndex = 0;
         let match;
 
@@ -28,8 +29,15 @@ export default function BioRenderer({ bio }: BioRendererProps) {
             }
 
             if (match[1]) {
-                // Mention
-                const username = match[1].slice(1);
+                // Mention - match[1] might start with a space
+                const fullMatch = match[1];
+                const spacePrefix = fullMatch.startsWith(' ') ? ' ' : '';
+                const username = fullMatch.trim().slice(1); // Remove space and @
+
+                if (spacePrefix) {
+                    elements.push(spacePrefix);
+                }
+
                 elements.push(
                     <span
                         key={`mention-${localKey++}`}
