@@ -334,7 +334,7 @@ export async function getUserProjects(req: Request, res: Response) {
     // Fetch projects for the user with specific columns only
     const { data: projects, error: projectsError, count } = await supabase
       .from("projects")
-      .select("id, title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id", { count: "exact" })
+      .select("id, name:title, description, technologies_used, status, cover_image, like_count, comment_count, created_at, user_id", { count: "exact" })
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .range(offset, offset + limitNum - 1);
