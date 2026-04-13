@@ -279,10 +279,10 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
       className="fade-in"
       style={{
         cursor: "pointer",
-        padding: "var(--post-padding, 24px)",
+        padding: "var(--post-padding, 20px 16px)",
         backgroundColor: "transparent",
         display: "flex",
-        gap: "20px",
+        gap: isMobile ? "12px" : "16px",
         transition: "background-color 0.15s linear",
         width: "100%",
         boxSizing: "border-box"
@@ -439,9 +439,9 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
           )}
         </div>
 
-        <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "12px" }}>
           <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px", letterSpacing: "-0.02em" }}>{project.title}</h3>
-          <p style={{ fontSize: "15px", lineHeight: "1.6", color: "var(--text-primary)", marginBottom: "20px", fontWeight: 400, letterSpacing: "-0.01em" }}>{project.description}</p>
+          <p style={{ fontSize: isMobile ? "14.5px" : "15px", lineHeight: "1.6", color: "var(--text-primary)", marginBottom: "12px", fontWeight: 400, letterSpacing: "-0.01em", wordBreak: "break-word", overflowWrap: "break-word" }}>{project.description}</p>
           
           {/* Tech Stack Chips */}
           {project.technologies_used && project.technologies_used.length > 0 && (
@@ -492,7 +492,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
 
         {/* Media */}
         {project.cover_image && (
-          <div style={{ borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px", aspectRatio: "16/9" }}>
+          <div style={{ borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "16px", aspectRatio: "16/9" }}>
             <img src={getOptimizedImageUrl(project.cover_image)} alt={project.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
           </div>
         )}
@@ -500,11 +500,11 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         {/* Interactions */}
         <div style={{ 
           display: "flex", 
-          marginTop: isMobile ? "24px" : "44px",
-          gap: isMobile ? "0" : "var(--post-interact-gap, 96px)", 
+          marginTop: isMobile ? "8px" : "12px",
+          gap: isMobile ? "0" : "var(--post-interact-gap, 48px)", 
           alignItems: "center",
           justifyContent: isMobile ? "space-between" : "flex-start",
-          paddingRight: isMobile ? "8px" : "0"
+          paddingRight: isMobile ? "0" : "0"
         }}>
           { [
             { 

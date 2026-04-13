@@ -126,15 +126,15 @@ body {
 
 @media (max-width: 767px) {
   :root {
-    --post-padding: 24px 16px;
-    --post-interact-gap: 32px;
+    --post-padding: 16px 12px;
+    --post-interact-gap: 0px;
   }
 }
 
 @media (min-width: 768px) {
   :root {
-    --post-padding: 32px 24px;
-    --post-interact-gap: 64px;
+    --post-padding: 20px 24px;
+    --post-interact-gap: 48px;
   }
 }
 

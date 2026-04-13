@@ -329,7 +329,7 @@ export default function Feed() {
                         {isInitialLoading ? (
                             <div style={{ display: "flex", flexDirection: "column" }}>
                                 {[...Array(3)].map((_, i) => (
-                                    <div key={i} style={{ padding: isMobile ? "24px 16px" : "40px", borderBottom: "0.5px solid var(--border-hairline)" }}>
+                                    <div key={i} style={{ padding: isMobile ? "16px 12px" : "20px 24px", borderBottom: "0.5px solid var(--border-hairline)" }}>
                                         <PostCardSkeleton />
                                     </div>
                                 ))}

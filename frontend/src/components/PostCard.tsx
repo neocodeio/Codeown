@@ -236,10 +236,10 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       className="fade-in"
       style={{
         cursor: "pointer",
-        padding: "var(--post-padding, 24px)",
+        padding: "var(--post-padding, 20px 16px)",
         backgroundColor: "transparent",
         display: "flex",
-        gap: "20px",
+        gap: isMobile ? "12px" : "16px",
         transition: "background-color 0.15s linear",
         width: "100%",
         boxSizing: "border-box"
@@ -457,13 +457,15 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
         {/* Post Text */}
         <div style={{
-          fontSize: "15px",
+          fontSize: isMobile ? "14.5px" : "15px",
           lineHeight: "1.6",
           color: "var(--text-primary)",
-          marginBottom: "20px",
+          marginBottom: "12px",
           position: "relative",
           fontWeight: 400,
-          letterSpacing: "-0.01em"
+          letterSpacing: "-0.01em",
+          wordBreak: "break-word",
+          overflowWrap: "break-word"
         }}>
           {post.title && <h2 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: "0 0 8px", letterSpacing: "-0.02em" }}>{post.title}</h2>}
           
@@ -510,7 +512,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         </div>
 
         {post.images && post.images.length > 0 && (
-          <div style={{ borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "24px" }}>
+          <div style={{ borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "16px" }}>
             <ImageSlider images={post.images} onImageClick={handleImageClick} />
           </div>
         )}
@@ -521,7 +523,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             display: "flex",
             flexDirection: "column",
             gap: "8px",
-            marginBottom: "24px"
+            marginBottom: "16px"
           }}>
             {/* <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
               <DownloadSimple size={18} weight="bold" color="var(--text-primary)" />
@@ -685,11 +687,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         {/* Interaction Tray */}
         <div style={{ 
           display: "flex", 
-          marginTop: isMobile ? "24px" : "44px",
-          gap: isMobile ? "0" : "var(--post-interact-gap, 96px)", 
+          marginTop: isMobile ? "8px" : "12px",
+          gap: isMobile ? "0" : "var(--post-interact-gap, 48px)", 
           alignItems: "center",
           justifyContent: isMobile ? "space-between" : "flex-start",
-          paddingRight: isMobile ? "8px" : "0"
+          paddingRight: isMobile ? "0" : "0"
         }}>
           { [
             { 

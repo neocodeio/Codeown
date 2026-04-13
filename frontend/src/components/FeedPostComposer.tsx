@@ -305,7 +305,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     return (
         <div 
             style={{
-                padding: "var(--post-padding, 24px)",
+                padding: "var(--post-padding, 20px 16px)",
                 backgroundColor: "transparent",
                 display: "flex",
                 gap: "16px",
