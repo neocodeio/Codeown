@@ -485,7 +485,10 @@ export async function completeOnboarding(req: Request, res: Response) {
             .update({ onboarding_completed: true })
             .eq("id", userId);
 
-        if (error) return res.status(500).json({ error: "Failed to complete onboarding" });
+        if (error) {
+            console.warn("[completeOnboarding] Failed to set onboarding_completed, might be missing column:", error.message);
+            // We continue anyway, as this isn't critical for the success response
+        }
 
         // Handle referral logic
         if (referrer) {
@@ -563,7 +566,7 @@ export async function getUserProfile(req: Request, res: Response) {
         let userError: any = null;
 
         const fullSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status, xp, level";
-        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, website_url, xp, level";
+        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, github_url, twitter_url, linkedin_url, website_url, xp, level";
 
         const fullRes = await supabase
             .from("users")
@@ -913,7 +916,9 @@ export async function updateUserProfile(req: Request, res: Response) {
 
         // Validate that the userId in the URL matches the authenticated user
         const { userId: urlUserId } = req.params;
-        if (urlUserId && urlUserId !== authenticatedUserId) {
+        const isSelf = urlUserId === "me" || urlUserId === "profile";
+
+        if (urlUserId && !isSelf && urlUserId !== authenticatedUserId) {
             return res.status(403).json({ error: "You can only update your own profile" });
         }
 
@@ -1044,6 +1049,7 @@ export async function updateUserProfile(req: Request, res: Response) {
             // Remove problematic columns and retry
             const safeUpdateData = { ...updateData };
             delete safeUpdateData.instagram_url;
+            delete safeUpdateData.is_organization;
             delete safeUpdateData.lemon_customer_id;
             delete safeUpdateData.lemon_subscription_id;
             delete safeUpdateData.lemon_subscription_status;
