@@ -1,22 +1,23 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { 
-  CaretLeft,
-  Bell,
-  Eye,
-  Heart,
-  ChatTeardropText,
-  UserPlus,
-  ArrowUp,
-  At,
-  BookmarkSimple,
-  EnvelopeSimple,
-  Handshake,
-  Flame,
-  Star,
-  Trophy,
+import {
+    CaretLeft,
+    Bell,
+    Eye,
+    Heart,
+    ChatTeardropText,
+    UserPlus,
+    ArrowUp,
+    At,
+    BookmarkSimple,
+    EnvelopeSimple,
+    Handshake,
+    Flame,
+    Star,
+    Trophy,
 } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -29,6 +30,12 @@ export default function NotificationsPage() {
     const navigate = useNavigate();
     const { width } = useWindowSize();
 
+    // Automatically mark all as read when entering the page
+    useEffect(() => {
+        if (!loading && unreadCount > 0) {
+            markAsRead("all");
+        }
+    }, [loading, unreadCount, markAsRead]);
 
     const handleNotificationClick = (notification: Notification) => {
         if (!notification.read) {
@@ -353,9 +360,9 @@ export default function NotificationsPage() {
                                             overflow: "hidden"
                                         }}>
                                             <div style={{ position: "absolute", top: "-10px", right: "-10px", opacity: 0.1, pointerEvents: "none" }}>
-                                                 <Star size={80} weight="fill" color="var(--text-primary)" />
+                                                <Star size={80} weight="fill" color="var(--text-primary)" />
                                             </div>
-                                            
+
                                             <div style={{ display: "flex", alignItems: "center", gap: "12px", zIndex: 1 }}>
                                                 <div style={{ fontSize: "32px" }}>{notification.metadata?.emoji || "✨"}</div>
                                                 <div style={{ borderLeft: "0.5px solid var(--border-hairline)", paddingLeft: "12px" }}>
@@ -383,40 +390,40 @@ export default function NotificationsPage() {
                                     ) : (
                                         <>
                                             {/* Left-Middle: Avatar */}
-                                    <div style={{ flexShrink: 0 }}>
-                                        <img
-                                            src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
-                                            alt=""
-                                            style={{
-                                                width: "40px",
-                                                height: "40px",
-                                                borderRadius: "10px",
-                                                objectFit: "cover",
-                                                border: "0.5px solid var(--border-hairline)",
-                                                backgroundColor: "var(--bg-hover)"
-                                            }}
-                                        />
-                                    </div>
+                                            <div style={{ flexShrink: 0 }}>
+                                                <img
+                                                    src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
+                                                    alt=""
+                                                    style={{
+                                                        width: "40px",
+                                                        height: "40px",
+                                                        borderRadius: "10px",
+                                                        objectFit: "cover",
+                                                        border: "0.5px solid var(--border-hairline)",
+                                                        backgroundColor: "var(--bg-hover)"
+                                                    }}
+                                                />
+                                            </div>
 
-                                    {/* Middle: Text Content */}
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <p style={{
-                                            margin: 0,
-                                            fontSize: "14.5px",
-                                            color: "var(--text-primary)",
-                                            lineHeight: 1.5,
-                                            fontWeight: notification.read ? 400 : 600,
-                                        }}>
-                                            {getNotificationMessage(notification)}
-                                        </p>
-                                        <p style={{
-                                            margin: "6px 0 0",
-                                            fontSize: "12px",
-                                            color: "var(--text-tertiary)",
-                                            fontWeight: 500
-                                        }}>
-                                            {formatRelativeDate(notification.created_at)}
-                                        </p>
+                                            {/* Middle: Text Content */}
+                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                <p style={{
+                                                    margin: 0,
+                                                    fontSize: "14.5px",
+                                                    color: "var(--text-primary)",
+                                                    lineHeight: 1.5,
+                                                    fontWeight: notification.read ? 400 : 600,
+                                                }}>
+                                                    {getNotificationMessage(notification)}
+                                                </p>
+                                                <p style={{
+                                                    margin: "6px 0 0",
+                                                    fontSize: "12px",
+                                                    color: "var(--text-tertiary)",
+                                                    fontWeight: 500
+                                                }}>
+                                                    {formatRelativeDate(notification.created_at)}
+                                                </p>
                                             </div>
                                         </>
                                     )}
