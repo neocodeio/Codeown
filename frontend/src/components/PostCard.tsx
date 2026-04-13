@@ -9,7 +9,7 @@ import ImageSlider from "./ImageSlider";
 import ContentRenderer, { CodeBlock } from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip } from "phosphor-react";
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip, Rocket } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { 
     WorkIcon, 
@@ -278,101 +278,183 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
           alignItems: "flex-start",
           marginBottom: "6px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-            <UserHoverCard userId={post.user_id} user={post.user as any}>
-              <span
-                onClick={handleUserClick}
-                style={{
-                  fontSize: "15px",
-                  fontWeight: 600,
-                  color: "var(--text-primary)",
-                  letterSpacing: "-0.012em",
-                  cursor: "pointer"
-                }}
-              >
-                {userName}
+          <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+            {/* Name + Badges Row */}
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <UserHoverCard userId={post.user_id} user={post.user as any}>
+                  <span
+                    onClick={handleUserClick}
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 700,
+                      color: "var(--text-primary)",
+                      letterSpacing: "-0.015em",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {userName}
+                  </span>
+                </UserHoverCard>
+                <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
+              </div>
+            </div>
+
+            {/* Handle + Metadata Row */}
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", marginTop: "1px" }}>
+              <span style={{ fontSize: "12.5px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                @{post.user?.username || 'user'}
               </span>
-            </UserHoverCard>
-            <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
-            <span style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 400 }}>
-              @{post.user?.username || 'user'}
-            </span>
-            <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
-            <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
-              {formatRelativeDate(post.created_at)}
-            </span>
+              <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
+              <span style={{ fontSize: "12.5px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                {formatRelativeDate(post.created_at)}
+              </span>
+
+              {post.project && (
+                <>
+                  <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
+                  <div 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/project/${post.project?.slug}`);
+                    }}
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "4px", 
+                      fontSize: "12.5px", 
+                      color: "#0096ff", 
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      padding: "1px 6px",
+                      borderRadius: "6px",
+                      transition: "all 0.15s ease",
+                      backgroundColor: "rgba(0, 150, 255, 0.05)"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 150, 255, 0.1)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 150, 255, 0.05)"}
+                  >
+                    <Rocket size={13} weight="fill" />
+                    <span>{post.project.name}</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             {post.post_type && (
-              <>
-                <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
                 <span style={{ 
-                  fontSize: "11px", 
-                  fontWeight: 700, 
+                  fontSize: "9.5px", 
+                  fontWeight: 900, 
                   color: "var(--text-primary)",
                   backgroundColor: "var(--bg-hover)",
-                  padding: "2px 8px",
+                  padding: "2px 10px",
                   borderRadius: "100px",
-                  display: "flex",
+                  display: isMobile ? "none" : "flex",
                   alignItems: "center",
                   gap: "4px",
-                  border: "0.5px solid var(--border-hairline)"
+                  border: `0.5px solid ${
+                    post.post_type === "Update" ? "var(--border-hairline)" :
+                    post.post_type === "WIP" ? "rgba(255, 170, 0, 0.4)" :
+                    post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.4)" :
+                    "rgba(168, 85, 247, 0.4)"
+                  }`,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  transition: "all 0.2s ease"
                 }}>
-                  <span style={{ display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}>
-                    {post.post_type === "Update" && <ArrowsClockwise size={12} weight="bold" />}
-                    {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
-                    {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={12} />}
-                    {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
+                  <span style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    color: post.post_type === "Update" ? "var(--text-tertiary)" :
+                           post.post_type === "WIP" ? "#ffaa00" :
+                           post.post_type === "Stuck" ? "#ff4d4f" :
+                           "#a855f7"
+                  }}>
+                    {post.post_type === "Update" && <ArrowsClockwise size={11} weight="bold" />}
+                    {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={11} />}
+                    {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={11} />}
+                    {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={11} />}
                   </span>
                   {post.post_type}
                 </span>
-              </>
-            )}
-          </div>
+              )}
 
-          {isOwnPost && (
-            <div style={{ position: "relative" }} ref={menuRef}>
-                <button
-                  onClick={toggleMenu}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "var(--text-tertiary)",
-                    cursor: "pointer",
-                    padding: "4px",
-                    borderRadius: "var(--radius-md)",
-                    transition: "all 0.15s ease"
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
-                >
-                  <DotsThree size={22} weight="thin" />
-                </button>
+            {isOwnPost && (
+              <div style={{ position: "relative" }} ref={menuRef}>
+                  <button
+                    onClick={toggleMenu}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "var(--text-tertiary)",
+                      cursor: "pointer",
+                      padding: "4px",
+                      borderRadius: "var(--radius-md)",
+                      transition: "all 0.15s ease",
+                      display: "flex",
+                      alignItems: "center"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                    onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                  >
+                    <DotsThree size={22} weight="thin" />
+                  </button>
 
               {isMenuOpen && (
-                  <div style={{
-                    position: "absolute", top: "100%", right: 0,
-                    backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)",
-                    boxShadow: "none", zIndex: 10, padding: "4px", minWidth: "160px"
-                  }}>
-                    {[
-                      { icon: PushPin, label: isPinned ? "Unpin" : "Pin to Profile", onClick: handlePinPost, color: "var(--text-primary)" },
-                      { icon: PencilSimple, label: "Edit", onClick: handleEdit, color: "var(--text-primary)" },
-                      { icon: Trash, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
-                    ].map((item, i) => (
-                      <button key={i} onClick={item.onClick} style={{
-                        width: "100%", padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px",
-                        border: "none", background: "none", cursor: "pointer", borderRadius: "var(--radius-sm)",
-                        fontSize: "12px", fontWeight: 600, color: item.color,
-                      }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
-                        <item.icon size={16} weight="thin" />
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
+                <div style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: "0",
+                  marginTop: "4px",
+                  backgroundColor: "var(--bg-card)",
+                  border: "0.5px solid var(--border-hairline)",
+                  borderRadius: "var(--radius-md)",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+                  zIndex: 100,
+                  minWidth: "160px",
+                  padding: "6px",
+                  animation: "dropdownFadeIn 0.15s ease-out"
+                }}>
+                  {[
+                      { icon: PencilSimple, label: "Edit post", onClick: handleEdit, color: "var(--text-primary)" },
+                      { icon: PushPin, label: isPinned ? "Unpin from profile" : "Pin to profile", onClick: handlePinPost, color: "var(--text-primary)", weight: isPinned ? "fill" : "regular" },
+                      { icon: Trash, label: "Delete post", onClick: handleDeleteClick, color: "#ff4d4f" }
+                  ].map((item, i) => (
+                    <button
+                      key={i}
+                      onClick={item.onClick}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        width: "100%",
+                        padding: "10px 12px",
+                        background: "none",
+                        border: "none",
+                        color: item.color,
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        borderRadius: "var(--radius-sm)",
+                        transition: "background-color 0.15s linear"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = item.color === "#ff4d4f" ? "rgba(255, 77, 79, 0.1)" : "var(--bg-hover)"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <item.icon size={16} weight={(item as any).weight || "regular"} />
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
           )}
         </div>
+      </div>
 
         {/* Post Text */}
         <div style={{

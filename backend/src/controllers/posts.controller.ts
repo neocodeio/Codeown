@@ -17,7 +17,7 @@ export async function getPosts(req: Request, res: Response) {
     // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, language, poll, post_type, code_snippet, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)", { count: "exact" })
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, language, poll, post_type, code_snippet, project_id, project:projects(id, name, slug), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)", { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
       .order("created_at", { ascending: false });
 
@@ -151,7 +151,7 @@ export async function getPostById(req: Request, res: Response) {
     // Fetch the post and user data in one join query
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
+      .select("*, project:projects(id, name, slug), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
       .eq("id", id)
       .single();
 
@@ -224,7 +224,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Fetch posts for the user with specific columns only
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, language, poll, post_type, code_snippet")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, language, poll, post_type, code_snippet, project_id, project:projects(id, name, slug)")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -394,7 +394,7 @@ export async function getPostsByUser(req: Request, res: Response) {
 export async function createPost(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { title, content, images, attachments, tags, language, poll, post_type, code_snippet } = req.body;
+    const { title, content, images, attachments, tags, language, poll, post_type, code_snippet, project_id } = req.body;
 
     // Validate input - Title is now optional
     const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
@@ -499,8 +499,9 @@ export async function createPost(req: Request, res: Response) {
         poll: poll || null,
         post_type: post_type || "Update",
         code_snippet: code_snippet || null,
+        project_id: project_id || null,
       })
-      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)")
+      .select("*, project:projects(id, name, slug), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)")
       .single();
 
     if (error) {
@@ -585,9 +586,9 @@ export async function createPost(req: Request, res: Response) {
 
 export async function updatePost(req: Request, res: Response) {
   try {
-    const user = req.user;
+    const { user } = req;
     const { id } = req.params;
-    const { title, content, images, attachments, language, code_snippet } = req.body;
+    const { title, content, images, attachments, language, code_snippet, project_id } = req.body;
 
     const userId = user?.sub || user?.id || user?.userId;
 
@@ -631,6 +632,9 @@ export async function updatePost(req: Request, res: Response) {
     }
     if (code_snippet !== undefined) {
       updateData.code_snippet = code_snippet || null;
+    }
+    if (project_id !== undefined) {
+      updateData.project_id = project_id || null;
     }
     if (images !== undefined) {
       if (Array.isArray(images)) {

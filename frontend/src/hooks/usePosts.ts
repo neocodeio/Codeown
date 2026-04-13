@@ -37,6 +37,12 @@ export interface Post {
   } | null;
   post_type?: string | null;
   code_snippet?: string | null;
+  project_id?: string | null;
+  project?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
 }
 
 export type FeedFilter = "all" | "following" | "contributors";
