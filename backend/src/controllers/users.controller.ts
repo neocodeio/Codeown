@@ -526,10 +526,11 @@ export async function completeOnboarding(req: Request, res: Response) {
                                 invitee_id: userId
                             });
 
-                            // 5. Award XP to the NEW user (as requested)
+                            // 5. Award XP to BOTH users
                             await GamificationService.awardXP(userId, 'referral');
+                            await GamificationService.awardXP(inviter.id, 'referral');
 
-                            console.log(`[Referral] User ${userId} joined via ${referrer}. XP awarded.`);
+                            console.log(`[Referral] User ${userId} joined via ${referrer}. 200XP awarded to both.`);
                         }
                     }
                 }
