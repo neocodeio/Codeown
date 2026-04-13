@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
 
-export const useFaviconNotification = (unreadCount: number) => {
+export const useFaviconNotification = (unreadCount: number, baseIconUrl?: string) => {
     useEffect(() => {
         const faviconLink = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
         const appleIcon = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement;
 
         // Try to get the original icon from the document if we haven't already replaced it with a data URL
         const currentFavicon = faviconLink?.href || '';
-        const originalFavicon = (!currentFavicon.startsWith('data:') && currentFavicon)
+        const originalFavicon = baseIconUrl || ((!currentFavicon.startsWith('data:') && currentFavicon)
             ? currentFavicon
-            : '/favicon.png';
+            : '/favicon.png');
 
         // If no notifications, reset to original and stop
         if (unreadCount <= 0) {

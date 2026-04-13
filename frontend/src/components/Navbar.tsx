@@ -38,11 +38,11 @@ import AvailabilityBadge from "./AvailabilityBadge";
 
 const StatusBadge = () => {
   const [activeCount, setActiveCount] = useState(1);
-  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true 
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
   }));
 
   useEffect(() => {
@@ -57,13 +57,13 @@ const StatusBadge = () => {
 
     fetchActiveCount();
     const countInterval = setInterval(fetchActiveCount, 30000); // 30s
-    
+
     const timeInterval = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString([], { 
-          hour: '2-digit', 
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true 
+      setCurrentTime(new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
       }));
     }, 1000);
 
@@ -82,7 +82,7 @@ const StatusBadge = () => {
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
         <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#00BA7C", boxShadow: "0 0 8px rgba(0, 186, 124, 0.4)" }} />
-        <span style={{ fontSize: "10px", fontWeight: 'bold', color: "var(--text-tertiary)", letterSpacing: "0.02em"}}>
+        <span style={{ fontSize: "10px", fontWeight: 'bold', color: "var(--text-tertiary)", letterSpacing: "0.02em" }}>
           {activeCount} builders now
         </span>
       </div>
@@ -136,7 +136,7 @@ export default function Navbar() {
 
 
 
-  useFaviconNotification(unreadCount + messageUnreadCount);
+  useFaviconNotification(unreadCount + messageUnreadCount, theme === "dark" ? logoWhite : logo);
 
   // Use the centralized avatar hook
   const { avatarUrl: userAvatarUrl } = useAvatar(
@@ -187,12 +187,12 @@ export default function Navbar() {
     };
   };
   const SidebarContent = () => (
-    <div className="no-scrollbar" style={{ 
-      display: "flex", 
-      flexDirection: "column", 
-      height: "100%", 
-      width: "100%", 
-      padding: "0 12px", 
+    <div className="no-scrollbar" style={{
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      width: "100%",
+      padding: "0 12px",
       overflowY: window.innerHeight < 700 ? "auto" : "hidden",
       overflowX: "hidden"
     }}>
@@ -350,7 +350,7 @@ export default function Navbar() {
 
       {/* Footer & Profile */}
       <div style={{ padding: "0 16px 20px 16px" }}>
-        
+
         {/* Profile Card */}
         {isSignedIn && user ? (
           <>
@@ -463,20 +463,20 @@ export default function Navbar() {
             </div>
 
             {/* Footer Links */}
-              <div style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "10px",
-                color: "#94a3b8",
-                marginBottom: window.innerHeight < 900 ? "4px" : "12px",
-                marginTop: window.innerHeight < 900 ? "8px" : "16px",
-                padding: "0 10px",
-                textAlign: "center",
-                lineHeight: "1.2"
-              }}>
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "10px",
+              color: "#94a3b8",
+              marginBottom: window.innerHeight < 900 ? "4px" : "12px",
+              marginTop: window.innerHeight < 900 ? "8px" : "16px",
+              padding: "0 10px",
+              textAlign: "center",
+              lineHeight: "1.2"
+            }}>
               <Link to="/privacy" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "#64748b"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Privacy</Link>
               <span style={{ color: "#e2e8f0" }}>•</span>
               <Link to="/terms" style={{ color: "inherit", textDecoration: "none" }} onMouseEnter={e => e.currentTarget.style.color = "#64748b"} onMouseLeave={e => e.currentTarget.style.color = "inherit"}>Terms</Link>
