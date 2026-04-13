@@ -481,8 +481,15 @@ textarea:focus {
 
 /* XP Toast Premium Styles */
 @keyframes xp-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 .xp-toast-premium {
@@ -498,7 +505,8 @@ textarea:focus {
   backdrop-filter: blur(12px) !important;
   animation: xp-bounce 0.4s var(--ease-spring) !important;
   z-index: 100001 !important;
-  cursor: pointer !important; /* Make whole toast feel clickable */
+  cursor: pointer !important;
+  /* Make whole toast feel clickable */
 }
 
 .xp-toast-premium .Toastify__toast-body {
@@ -523,7 +531,7 @@ textarea:focus {
   color: var(--text-primary) !important;
 }
 
-.xp-toast-premium .Toastify__close-button > svg {
+.xp-toast-premium .Toastify__close-button>svg {
   width: 16px !important;
   height: 16px !important;
 }

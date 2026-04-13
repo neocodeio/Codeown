@@ -1,13 +1,14 @@
 import { supabase } from "../lib/supabase.js";
 
-export type XPReason = 'post' | 'project' | 'comment' | 'like' | 'follow';
+export type XPReason = 'post' | 'project' | 'comment' | 'like' | 'follow' | 'referral';
 
 const XP_VALUES: Record<XPReason, number> = {
     post: 50,
     project: 100,
     comment: 10,
     like: 5,
-    follow: 20
+    follow: 20,
+    referral: 200
 };
 
 const POST_DAILY_LIMIT = 3;
@@ -49,7 +50,7 @@ export class GamificationService {
             if (userError || !user) throw userError || new Error("User not found");
 
             const newXP = (Number(user.xp) || 0) + amount;
-            
+
             // 3. Simple Level Calculation: Level = floor(sqrt(total_xp / 50)) + 1
             // Level 1: 0 XP
             // Level 2: 50 XP
@@ -84,10 +85,10 @@ export class GamificationService {
                 const { getIO } = await import("../lib/socket.js");
                 const io = getIO();
                 io.to(userId).emit("xp_gain", { amount, reason, newXP, newLevel });
-                
+
                 if (levelUp) {
                     io.to(userId).emit("level_up", { newLevel });
-                    
+
                     // Also create a persistent notification for level up
                     await supabase.from("notifications").insert({
                         user_id: userId,

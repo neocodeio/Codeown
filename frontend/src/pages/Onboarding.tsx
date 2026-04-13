@@ -47,7 +47,7 @@ export default function Onboarding() {
     queryFn: async () => {
       const token = await getToken();
       if (!token || !user?.id) throw new Error("Not authenticated");
-      
+
       const res = await api.get(`/users/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -122,11 +122,15 @@ export default function Onboarding() {
       );
 
       // Also mark onboarding as complete via the dedicated endpoint
+      const referrer = localStorage.getItem("referral_source") || undefined;
       await api.post(
         "/users/onboarding/complete",
-        {},
+        { referrer },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      // Clear referral source after use
+      if (referrer) localStorage.removeItem("referral_source");
 
       // Mark as done locally to prevent redirect loop
       if (user?.id) localStorage.setItem(`onboarding_done_${user.id}`, "true");
@@ -136,9 +140,9 @@ export default function Onboarding() {
       console.error("Error completing onboarding:", err);
       let msg = "Something went wrong. Please check your connection.";
       if (err?.message === "Network Error" || err?.code === "ERR_NETWORK") {
-          msg = "Backend server unreachable. The domain codeownbackend.up.railway.app could not be resolved. Please check your Railway status.";
+        msg = "Backend server unreachable. The domain codeownbackend.up.railway.app could not be resolved. Please check your Railway status.";
       } else {
-          msg = err?.response?.data?.error || err?.message || msg;
+        msg = err?.response?.data?.error || err?.message || msg;
       }
       setError(msg);
     } finally {
@@ -152,11 +156,15 @@ export default function Onboarding() {
       const token = await getToken();
       if (!token) return;
 
+      const referrer = localStorage.getItem("referral_source") || undefined;
       await api.post(
         "/users/onboarding/complete",
-        {},
+        { referrer },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      // Clear referral source after use
+      if (referrer) localStorage.removeItem("referral_source");
 
       // Mark as done locally to prevent redirect loop
       if (user?.id) localStorage.setItem(`onboarding_done_${user.id}`, "true");
@@ -166,9 +174,9 @@ export default function Onboarding() {
       console.error("Error skipping onboarding:", err);
       let msg = "Something went wrong. Please check your connection.";
       if (err?.message === "Network Error" || err?.code === "ERR_NETWORK") {
-          msg = "Backend server unreachable. The domain codeownbackend.up.railway.app could not be resolved. Please check your Railway status.";
+        msg = "Backend server unreachable. The domain codeownbackend.up.railway.app could not be resolved. Please check your Railway status.";
       } else {
-          msg = err?.response?.data?.error || err?.message || msg;
+        msg = err?.response?.data?.error || err?.message || msg;
       }
       setError(msg);
     } finally {
@@ -520,19 +528,19 @@ export default function Onboarding() {
                     {bio.length}/160
                   </span>
                 </div>
-                  <textarea
-                    placeholder="Tell the world your story..."
-                    value={bio}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val.length <= 160) {
-                        setBio(val);
-                      } else {
-                        // Truncate to 160 so pasting long text still works (pulls the first 160)
-                        setBio(val.substring(0, 160));
-                      }
-                    }}
-                    rows={3}
+                <textarea
+                  placeholder="Tell the world your story..."
+                  value={bio}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val.length <= 160) {
+                      setBio(val);
+                    } else {
+                      // Truncate to 160 so pasting long text still works (pulls the first 160)
+                      setBio(val.substring(0, 160));
+                    }
+                  }}
+                  rows={3}
                   style={{
                     ...inputStyle,
                     resize: "none",
@@ -949,7 +957,7 @@ export default function Onboarding() {
           }}>
             <div style={{ marginBottom: "12px", fontSize: "14px", fontWeight: 700 }}>⚠️ Connection Issue Detected</div>
             <div style={{ lineHeight: 1.6, opacity: 0.8, marginBottom: "16px" }}>{error}</div>
-            <button 
+            <button
               onClick={() => { setError(null); if (step === 4) handleComplete(); else next(); }}
               style={{
                 padding: "8px 16px",
@@ -967,9 +975,9 @@ export default function Onboarding() {
           </div>
         )}
         {renderStep()}
-        <OnboardingSuccessModal 
-          isOpen={showSuccessModal} 
-          onClose={() => navigate("/", { replace: true })} 
+        <OnboardingSuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => navigate("/", { replace: true })}
         />
       </div>
     </div>

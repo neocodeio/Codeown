@@ -19,6 +19,7 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
+import InviteModal from "../components/InviteModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import ProfileStrength from "../components/ProfileStrength";
 import { HeatMap } from "../components/HeatMap";
@@ -30,7 +31,8 @@ import {
   PencilSimple, SignOut, Key, ShareNetwork, CalendarBlank, SquaresFour,
   Rocket, Buildings, BookmarkSimple, DotsThreeVertical, PushPin, Camera,
   MapPin, Link as LinkIcon, TwitterLogo, LinkedinLogo, GithubLogo,
-  ChartBar, IdentificationCard, Plus, Handshake, FileText, InstagramLogo
+  ChartBar, IdentificationCard, Plus, Handshake, FileText, InstagramLogo,
+  Gift
 } from "phosphor-react";
 import { socket } from "../lib/socket";
 import { toast, ToastContainer } from "react-toastify";
@@ -91,6 +93,7 @@ export default function Profile() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   // 1. Optimized Combined Hook Data (React Query handles caching)
   const { data: userProfile, isLoading: profileLoading } = useQuery({
@@ -514,13 +517,43 @@ export default function Profile() {
                             }} />
                           </div>
 
-                          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+                          {/* New: Integrated Invite CTA inside the HUD */}
+                          <div
+                            onClick={() => setIsInviteModalOpen(true)}
+                            onMouseEnter={e => e.currentTarget.style.borderColor = "var(--text-primary)"}
+                            onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border-hairline)"}
+                            style={{
+                              marginTop: "24px",
+                              padding: "14px 18px",
+                              borderRadius: "var(--radius-sm)",
+                              background: "rgba(255, 255, 255, 0.02)",
+                              border: "1px dashed var(--border-hairline)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              cursor: "pointer",
+                              transition: "all 0.2s ease"
+                            }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                              <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <Gift size={18} weight="duotone" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>Grow the community</div>
+                                <div style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>Refer builders & give 200XP</div>
+                              </div>
+                            </div>
+                            <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>→</span>
+                          </div>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px" }}>
                             <div style={{ display: "flex", gap: "4px" }}>
                               {[1, 2, 3, 4, 5].map((i) => (
                                 <div key={i} style={{ width: "12px", height: "2px", borderRadius: "1px", backgroundColor: i <= ((userProfile?.level || 1) % 5) ? "var(--text-primary)" : "var(--border-hairline)" }} />
                               ))}
                             </div>
-                            <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                            <span style={{ fontSize: "9px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                               System Efficiency: {Math.min(100, Math.round(((userProfile?.xp || 0) / (Math.pow(userProfile?.level || 1, 2) * 50)) * 100))}%
                             </span>
                           </div>
@@ -683,6 +716,7 @@ export default function Profile() {
           {userProfile && (
             <DeveloperIDCardModal isOpen={isIDCardModalOpen} onClose={() => setIsIDCardModalOpen(false)} user={{ name: userProfile.name, username: userProfile.username, avatar_url: userProfile.avatar_url, created_at: userProfile.created_at, skills: userProfile.skills || [], is_pro: userProfile.is_pro || false, bio: userProfile.bio || "" }} projectsCount={projects.length} />
           )}
+          <InviteModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} username={userProfile?.username || user?.username || null} />
           {isDesktop && !isMobile && (<aside style={{ width: "300px", padding: "0 0 24px 0", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}> <RecommendedUsersSidebar /> </aside>)}
         </div>
         <style>{`

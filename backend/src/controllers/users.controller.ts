@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { sendWelcomeEmail } from "../lib/email.js";
 import { getOrCreateConversation } from "./messages.controller.js";
+import { GamificationService } from "../services/gamification.service.js";
 
 /**
  * Internal helper to update user streak.
@@ -48,7 +49,7 @@ async function internalUpdateStreak(userId: string): Promise<number | null> {
             newStreak = 1;
         } else {
             // Check if it's the same calendar day
-            const isSameDay = 
+            const isSameDay =
                 now.getDate() === lastActive.getDate() &&
                 now.getMonth() === lastActive.getMonth() &&
                 now.getFullYear() === lastActive.getFullYear();
@@ -99,7 +100,7 @@ export async function updateStreak(req: Request, res: Response) {
         }
 
         const newStreak = await internalUpdateStreak(String(userId));
-        
+
         if (newStreak === null) {
             return res.status(500).json({ error: "Failed to update streak" });
         }
@@ -428,7 +429,7 @@ export async function ensureUserExists(userId: string, userData?: any) {
 
     // Create new user
     console.log("Creating new user in Supabase:", { userId, userInfo });
-    
+
     // Check if new user should be OG (Founding 100)
     const { count: userCount } = await supabase.from("users").select("id", { count: "exact", head: true });
     const isNewUserOG = (userCount || 0) < 100;
@@ -477,12 +478,62 @@ export async function completeOnboarding(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
+        const { referrer } = req.body;
+
         const { error } = await supabase
             .from("users")
             .update({ onboarding_completed: true })
             .eq("id", userId);
 
         if (error) return res.status(500).json({ error: "Failed to complete onboarding" });
+
+        // Handle referral logic
+        if (referrer) {
+            try {
+                // 1. Find the inviter by username
+                const { data: inviter, error: inviterError } = await supabase
+                    .from("users")
+                    .select("id")
+                    .eq("username", referrer)
+                    .single();
+
+                if (inviter && !inviterError) {
+                    // 2. Check if this referral already exists
+                    const { count: exists } = await supabase
+                        .from("referrals")
+                        .select("*", { count: 'exact', head: true })
+                        .eq("invitee_id", userId);
+
+                    if (!exists) {
+                        // 3. Check weekly limit (max 5)
+                        const startOfWeek = new Date();
+                        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+                        startOfWeek.setHours(0, 0, 0, 0);
+
+                        const { count: weeklyCount } = await supabase
+                            .from("referrals")
+                            .select("*", { count: "exact", head: true })
+                            .eq("inviter_id", inviter.id)
+                            .gte("created_at", startOfWeek.toISOString());
+
+                        if (weeklyCount !== null && weeklyCount < 5) {
+                            // 4. Record the referral
+                            await supabase.from("referrals").insert({
+                                inviter_id: inviter.id,
+                                invitee_id: userId
+                            });
+
+                            // 5. Award XP to the NEW user (as requested)
+                            await GamificationService.awardXP(userId, 'referral');
+
+                            console.log(`[Referral] User ${userId} joined via ${referrer}. XP awarded.`);
+                        }
+                    }
+                }
+            } catch (refErr) {
+                console.error("[Referral] Logic failed:", refErr);
+            }
+        }
 
         return res.json({ success: true });
     } catch (error: any) {
@@ -636,16 +687,16 @@ export async function getUserProfile(req: Request, res: Response) {
                 .from("users")
                 .select("id", { count: 'exact', head: true })
                 .lt("created_at", userData.created_at);
-            
+
             if (ogCount !== null && ogCount < 100) {
                 userIsOG = true;
                 // Auto-sync flag to DB for future speed (non-blocking)
-                supabase.from("users").update({ is_og: true }).eq("id", userData.id).then(({error}) => {
+                supabase.from("users").update({ is_og: true }).eq("id", userData.id).then(({ error }) => {
                     if (error) console.error("Error auto-syncing OG flag:", error);
                 });
             }
         }
-        
+
         // Calculate Founder Rank (join order)
         let founderNumber = 1;
         if (userData.created_at) {
@@ -691,11 +742,11 @@ export async function getUserProfile(req: Request, res: Response) {
                 .eq("user_id", targetUserId),
         ]);
 
-        const totalContributions = 
-            (projectCount.count || 0) + 
-            (startupCount.count || 0) + 
-            (postCount.count || 0) + 
-            (commentCount.count || 0) + 
+        const totalContributions =
+            (projectCount.count || 0) +
+            (startupCount.count || 0) +
+            (postCount.count || 0) +
+            (commentCount.count || 0) +
             (pCommentCount.count || 0);
 
         // Get total likes on user's posts
@@ -818,11 +869,35 @@ export async function getUserProfile(req: Request, res: Response) {
 
         return res.json(responseData);
     } catch (error: any) {
-        console.error("Unexpected error in getUserProfile:", error);
-        return res.status(500).json({
-            error: "Internal server error",
-            details: error?.message
+        console.error("Error in getUserProfile:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function getInviteStats(req: Request, res: Response) {
+    try {
+        const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+        const startOfWeek = new Date();
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const { count, error } = await supabase
+            .from("referrals")
+            .select("*", { count: "exact", head: true })
+            .eq("inviter_id", userId)
+            .gte("created_at", startOfWeek.toISOString());
+
+        if (error) throw error;
+
+        return res.json({
+            count: count || 0,
+            limit: 5
         });
+    } catch (error: any) {
+        console.error("[getInviteStats] Error:", error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 }
 
@@ -979,7 +1054,7 @@ export async function updateUserProfile(req: Request, res: Response) {
                 .eq("id", userId)
                 .select()
                 .single();
-            
+
             updatedUser = retryRes.data;
             updateError = retryRes.error;
         } else {

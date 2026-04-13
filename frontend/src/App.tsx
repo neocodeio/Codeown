@@ -98,6 +98,18 @@ export default function App() {
     socket.on("connect", onConnect);
     socket.connect();
 
+    // ── Referral Detection ──
+    const params = new URLSearchParams(location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      localStorage.setItem("referral_source", ref);
+      // Clean up URL for a better experience
+      const newParams = new URLSearchParams(location.search);
+      newParams.delete("ref");
+      const cleanUrl = location.pathname + (newParams.toString() ? "?" + newParams.toString() : "");
+      window.history.replaceState({}, "", cleanUrl);
+    }
+
     // In case already connected when hook runs
     if (socket.connected && isSignedIn && user?.id) {
       socket.emit("join", user.id);
@@ -126,7 +138,7 @@ export default function App() {
             queryClient.invalidateQueries({ queryKey: ["comments", String(data.id || data.postId)] });
           }
         }
-      } 
+      }
       else if (type.startsWith("project_") || (type === "comment_liked" && data.type === "project")) {
         queryClient.invalidateQueries({ queryKey: ["projects"] });
         if (data.id || data.projectId) {
@@ -142,11 +154,11 @@ export default function App() {
     };
 
     socket.on("content_update", handleUpdate);
-    
+
     const handleNewNotification = (notif: { type: string, actorId: string, data?: any }) => {
       queryClient.invalidateQueries({ queryKey: ["unread_count"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      
+
       if (notif.type === 'startup_upvote') {
         toast(`🚀 Someone upvoted your startup!`, {
           position: "bottom-left",
@@ -193,7 +205,7 @@ export default function App() {
             <span>✨</span>
             <span>+{data.amount} XP {reasonMap[data.reason] || 'gained'}</span>
           </div>
-          <button 
+          <button
             onClick={() => sonnerToast.dismiss(t)}
             style={{
               background: 'transparent',
@@ -229,11 +241,11 @@ export default function App() {
         // Most profile objects have an 'id' or 'username' field
         const isMatch = old.id === user?.id || old.username === user?.username;
         if (!isMatch) return old;
-        
-        return { 
-          ...old, 
-          xp: data.newXP, 
-          level: data.newLevel 
+
+        return {
+          ...old,
+          xp: data.newXP,
+          level: data.newLevel
         };
       };
 
@@ -278,7 +290,7 @@ export default function App() {
             <span>🚀</span>
             <span>LEVEL UP! You are now Lvl {data.newLevel}</span>
           </div>
-          <button 
+          <button
             onClick={() => sonnerToast.dismiss(t)}
             style={{
               background: 'transparent',
@@ -310,7 +322,7 @@ export default function App() {
 
     socket.on("xp_gain", handleXPGain);
     socket.on("level_up", handleLevelUp);
-    
+
     return () => {
       socket.off("connect", onConnect);
       socket.off("content_update", handleUpdate);
@@ -327,7 +339,7 @@ export default function App() {
       if (isSignedIn && user?.id) {
         try {
           await api.post("/users/active/ping");
-        } catch (err) {}
+        } catch (err) { }
       }
     };
 
@@ -345,7 +357,7 @@ export default function App() {
         const token = await getToken();
         if (token) config.headers.Authorization = `Bearer ${token}`;
         if (user?.id) config.headers["X-Clerk-User-Id"] = user.id;
-      } catch (err) {}
+      } catch (err) { }
       return config;
     });
     return () => { api.interceptors.request.eject(interceptor); };
@@ -371,15 +383,15 @@ export default function App() {
             navigate("/onboarding", { replace: true });
           }
         }
-      } catch (error) {} finally { isCheckingRef.current = false; }
+      } catch (error) { } finally { isCheckingRef.current = false; }
     };
     checkOnboarding();
   }, [userLoaded, isSignedIn, user?.id, navigate]);
 
   const isAuthRoute = ["/sign-in", "/sign-up", "/forgot-password", "/onboarding"].includes(location.pathname);
-  
-  const isStandardPage = 
-    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups"].includes(location.pathname) || 
+
+  const isStandardPage =
+    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups"].includes(location.pathname) ||
     location.pathname.startsWith("/post/") ||
     location.pathname.startsWith("/project/") ||
     location.pathname.startsWith("/user/") ||
@@ -399,7 +411,7 @@ export default function App() {
     }}>
       <ScrollToTop />
       {shouldShowNavbar && <Navbar />}
-      <div 
+      <div
         id="main-content"
         style={{
           flex: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "1" : "0 0 920px") : 1,
@@ -407,7 +419,6 @@ export default function App() {
           maxWidth: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "100%" : "920px") : "100%",
           position: "relative",
           minWidth: 0,
-          zIndex: 1,
           paddingTop: isMobile && shouldShowNavbar ? "64px" : "0px",
           paddingBottom: isMobile && shouldShowNavbar ? "80px" : "0px"
         }}
@@ -453,11 +464,11 @@ export default function App() {
             </Suspense>
           </ErrorBoundary>
         </div>
-        {!isAuthRoute && 
-         location.pathname !== "/messages" && 
-         !location.pathname.startsWith("/post/") && 
-         !location.pathname.startsWith("/project/") && 
-         <FeedbackButton />}
+        {!isAuthRoute &&
+          location.pathname !== "/messages" &&
+          !location.pathname.startsWith("/post/") &&
+          !location.pathname.startsWith("/project/") &&
+          <FeedbackButton />}
         {!isAuthRoute && <MessageNotificationToast />}
       </div>
     </div>

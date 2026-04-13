@@ -11,7 +11,8 @@ import {
     trackActiveSession,
     getActiveCount,
     getOGUsers,
-    getDashboardStats
+    getDashboardStats,
+    getInviteStats
 } from "../controllers/users.controller.js";
 import { recordProfileView } from "../controllers/profileViews.controller.js";
 import { getUserProjects } from "../controllers/projects.controller.js";
@@ -30,6 +31,7 @@ router.post("/pin-project/:projectId", requireAuth, pinProject);
 router.post("/onboarding/complete", requireAuth, completeOnboarding);
 router.post("/streak/update", requireAuth, updateStreak);
 router.get("/dashboard/stats", requireAuth, getDashboardStats);
+router.get("/referrals/stats", requireAuth, getInviteStats);
 
 // Wildcard routes last
 router.get("/:userId", optionalAuth, getUserProfile);
