@@ -943,26 +943,34 @@ export async function updateUserProfile(req: Request, res: Response) {
             website_url
         } = req.body;
 
-        // Get current user data
+        // Get current user data - select only core columns first to avoid schema issues
         let currentUser: any = null;
-        const { data: fullUser, error: fetchError } = await supabase
+        const { data: fetchedUser } = await supabase
             .from("users")
-            .select("username, username_changed_at, is_pro, lemon_subscription_status")
+            .select("id, username, username_changed_at, is_pro")
             .eq("id", userId)
-            .single();
+            .maybeSingle();
+        currentUser = fetchedUser;
 
-        if (fetchError && fetchError.code !== "PGRST116" && fetchError.message?.includes("does not exist")) {
-            // Column missing, fallback
-            const { data: safeUser } = await supabase
-                .from("users")
-                .select("username, username_changed_at, is_pro")
-                .eq("id", userId)
-                .single();
-            currentUser = safeUser;
-        } else if (fetchError && fetchError.code !== "PGRST116") {
-            console.error("Error fetching user:", fetchError);
-        } else {
-            currentUser = fullUser;
+        if (!currentUser) {
+            console.log(`User ${userId} not found in Supabase during update, ensuring they exist...`);
+            try {
+                // Fetch from Clerk to get initial data
+                const clerkUser = await clerkClient.users.getUser(userId as string);
+                currentUser = await ensureUserExists(userId as string, clerkUser as any);
+            } catch (err) {
+                console.warn("Failed to ensure user exists from Clerk:", err);
+                // Fallback: create a bare minimum record if Clerk fetch fails
+                const { data: bareUser, error: createError } = await supabase
+                    .from("users")
+                    .insert({ id: userId, updated_at: new Date().toISOString() })
+                    .select()
+                    .single();
+                if (createError) {
+                    console.error("Critical: Could not even create bare user record:", createError);
+                }
+                currentUser = bareUser;
+            }
         }
 
         // Security: No one can self-verify. Strip verified fields from request.
