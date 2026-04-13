@@ -9,7 +9,7 @@ import ImageSlider from "./ImageSlider";
 import ContentRenderer, { CodeBlock } from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip, Rocket } from "phosphor-react";
+import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { 
     WorkIcon, 
@@ -334,7 +334,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 150, 255, 0.1)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 150, 255, 0.05)"}
                   >
-                    <Rocket size={13} weight="fill" />
                     <span>{post.project.name}</span>
                   </div>
                 </>
