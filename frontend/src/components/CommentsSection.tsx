@@ -283,8 +283,9 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               style={{
                 width: "100%", minHeight: isFocused ? "80px" : "40px", padding: "8px 0",
                 border: "none", outline: "none", fontSize: "15px", fontWeight: 500,
-                borderRadius: "var(--radius-sm)", resize: "none", fontFamily: "inherit",
+                resize: "none", fontFamily: "inherit",
                 color: "var(--text-primary)", backgroundColor: "transparent",
+                borderRadius: "0px",
                 borderBottom: isFocused ? "1px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
                 transition: "border-color 0.2s"
               }}
@@ -296,7 +297,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     type="button"
                     onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
                     style={{
-                      display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px",
+                      display: "flex", alignItems: "center", gap: "6px", padding: "8px",
                       backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent", 
                       color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
                       border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
@@ -315,7 +316,6 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     }}
                   >
                     <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
-                    GIF
                   </button>
 
                   {isGifPickerOpen && (
@@ -328,7 +328,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                   )}
 
                   <label style={{
-                    display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px",
+                    display: "flex", alignItems: "center", gap: "6px", padding: "8px",
                     backgroundColor: "transparent", color: "var(--text-tertiary)",
                     border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
                     cursor: "pointer", fontSize: "11px", fontWeight: 700,
@@ -344,7 +344,6 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                   }}
                   >
                     <ImageIcon size={18} weight={selectedImage ? "fill" : "bold"} />
-                    IMAGE
                     <input 
                       type="file" 
                       accept="image/*" 
