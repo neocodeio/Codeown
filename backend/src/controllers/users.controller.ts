@@ -4,6 +4,10 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import { sendWelcomeEmail } from "../lib/email.js";
 import { getOrCreateConversation } from "./messages.controller.js";
 import { GamificationService } from "../services/gamification.service.js";
+import { isUserOnline } from "../lib/socket.js";
+
+// --- ACTIVE SESSION TRACKER (REAL-TIME) ---
+const activeSessions = new Map<string, number>();
 
 /**
  * Internal helper to update user streak.
@@ -864,6 +868,7 @@ export async function getUserProfile(req: Request, res: Response) {
             // Metadata
             created_at: userData.created_at || null,
             updated_at: userData.updated_at || null,
+            is_online: isUserOnline(targetUserId) || activeSessions.has(`u:${targetUserId}`),
         };
 
         if (currentUserId === targetUserId) {
@@ -1333,7 +1338,7 @@ export async function getRecommendedUsers(req: Request, res: Response) {
 }
 
 // --- ACTIVE SESSION TRACKER (REAL-TIME) ---
-const activeSessions = new Map<string, number>();
+
 
 /**
  * Registers a heartbeat from a client.

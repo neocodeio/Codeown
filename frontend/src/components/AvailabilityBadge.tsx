@@ -10,6 +10,7 @@ interface AvailabilityBadgeProps {
     tooltipText?: string;
     isOG?: boolean;
     username?: string | null;
+    isOnline?: boolean;
 }
 
 const AvailabilityBadge = memo(({
@@ -19,11 +20,15 @@ const AvailabilityBadge = memo(({
     isOpenToOpportunities = false,
     tooltipText = "Open to opportunities",
     isOG = false,
+    isOnline = false,
 }: AvailabilityBadgeProps) => {
     const showBadge = isOpenToOpportunities === true;
     // scale icon bg size: 35% of avatar size
     const briefcaseBgSize = Math.max(14, Math.round(size * 0.25));
     const briefcaseIconSize = Math.max(8, Math.round(briefcaseBgSize * 0.45));
+
+    // Online dot size: 20% of avatar size
+    const onlineDotSize = Math.max(10, Math.round(size * 0.20));
 
     return (
         <OGAvatarDecorator is_og={isOG} size={size}>
@@ -67,6 +72,25 @@ const AvailabilityBadge = memo(({
                         }}
                     />
                 </div>
+
+                {/* Online Indicator */}
+                {isOnline && (
+                    <div
+                        style={{
+                            position: "absolute",
+                            bottom: showBadge ? "4px" : "2px", // Shift slightly if briefcase is also present
+                            right: showBadge ? "12px" : "2px",
+                            width: onlineDotSize,
+                            height: onlineDotSize,
+                            backgroundColor: "#22c55e", // Green-500
+                            borderRadius: "50%",
+                            border: "2px solid var(--bg-page)",
+                            boxShadow: "0 0 10px rgba(34, 197, 94, 0.4)",
+                            zIndex: 11,
+                        }}
+                        title="Online"
+                    />
+                )}
 
                 {showBadge && (
                     <div
