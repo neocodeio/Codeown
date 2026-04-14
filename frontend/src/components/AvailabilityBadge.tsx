@@ -31,94 +31,96 @@ const AvailabilityBadge = memo(({
     const onlineDotSize = Math.max(10, Math.round(size * 0.20));
 
     return (
-        <OGAvatarDecorator is_og={isOG} size={size}>
-            <div
-                className="availability-badge-container"
-                title={showBadge ? tooltipText : undefined}
-                style={{
-                    position: "relative",
-                    width: size,
-                    height: size,
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    display: "inline-flex",
-                    flexShrink: 0,
-                }}
-            >
+        <div style={{ position: "relative", display: "inline-flex" }}>
+            <OGAvatarDecorator is_og={isOG} size={size}>
                 <div
+                    className="availability-badge-container"
+                    title={showBadge ? tooltipText : undefined}
                     style={{
-                        width: "100%",
-                        height: "100%",
-                        borderRadius: "100%",
                         position: "relative",
-                        overflow: "hidden",
-                        backgroundColor: "var(--bg-hover)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: showBadge ? `1px solid var(--text-primary)` : "0.5px solid var(--border-hairline)",
-                        boxSizing: "border-box",
-                        zIndex: 1
+                        width: size,
+                        height: size,
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        display: "inline-flex",
+                        flexShrink: 0,
                     }}
                 >
-                    <img
-                        src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "U")}&background=000&color=fff&bold=true`}
-                        alt={name}
+                    <div
                         style={{
                             width: "100%",
                             height: "100%",
-                            objectFit: "cover",
-                            display: "block",
-                        }}
-                    />
-                </div>
-
-                {/* Online Indicator */}
-                {isOnline && (
-                    <div
-                        style={{
-                            position: "absolute",
-                            bottom: showBadge ? "12px" : "-2px",
-                            right: showBadge ? "16px" : "-2px",
-                            width: onlineDotSize,
-                            height: onlineDotSize,
-                            backgroundColor: "#22c55e",
-                            borderRadius: "50%",
-                            border: "2.5px solid var(--bg-page)",
-                            boxShadow: "0 0 12px rgba(34, 197, 94, 0.5)",
-                            zIndex: 12,
-                        }}
-                        title="Online"
-                    />
-                )}
-
-                {showBadge && (
-                    <div
-                        style={{
-                            position: "absolute",
-                            bottom: "-2px",
-                            right: "-2px",
-                            width: briefcaseBgSize,
-                            height: briefcaseBgSize,
-                            backgroundColor: "var(--text-primary)",
-                            color: "var(--bg-page)",
-                            borderRadius: "50%",
+                            borderRadius: "100%",
+                            position: "relative",
+                            overflow: "hidden",
+                            backgroundColor: "var(--bg-hover)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            border: "2px solid var(--bg-page)",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                            zIndex: 10,
+                            border: showBadge ? `1px solid var(--text-primary)` : "0.5px solid var(--border-hairline)",
+                            boxSizing: "border-box",
+                            zIndex: 1
                         }}
                     >
-                        <Briefcase
-                            size={briefcaseIconSize}
-                            weight="fill"
+                        <img
+                            src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "U")}&background=000&color=fff&bold=true`}
+                            alt={name}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                display: "block",
+                            }}
                         />
                     </div>
-                )}
-            </div>
-        </OGAvatarDecorator>
+
+                    {showBadge && (
+                        <div
+                            style={{
+                                position: "absolute",
+                                bottom: "-2px",
+                                right: "-2px",
+                                width: briefcaseBgSize,
+                                height: briefcaseBgSize,
+                                backgroundColor: "var(--text-primary)",
+                                color: "var(--bg-page)",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                border: "2px solid var(--bg-page)",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                                zIndex: 10,
+                            }}
+                        >
+                            <Briefcase
+                                size={briefcaseIconSize}
+                                weight="fill"
+                            />
+                        </div>
+                    )}
+                </div>
+            </OGAvatarDecorator>
+
+            {/* Online Indicator - Outside OG Decorator to prevent clipping */}
+            {isOnline && (
+                <div
+                    style={{
+                        position: "absolute",
+                        bottom: showBadge ? "10px" : "2px",
+                        right: showBadge ? "14px" : "2px",
+                        width: onlineDotSize,
+                        height: onlineDotSize,
+                        backgroundColor: "#22c55e",
+                        borderRadius: "50%",
+                        border: "2px solid var(--bg-page)",
+                        boxShadow: "0 0 10px rgba(34, 197, 94, 0.4)",
+                        zIndex: 100, // Very high to be over everything
+                    }}
+                    title="Online"
+                />
+            )}
+        </div>
     );
 });
 
