@@ -78,15 +78,15 @@ const AvailabilityBadge = memo(({
                     <div
                         style={{
                             position: "absolute",
-                            bottom: showBadge ? "4px" : "2px", // Shift slightly if briefcase is also present
-                            right: showBadge ? "12px" : "2px",
+                            bottom: showBadge ? "12px" : "-2px",
+                            right: showBadge ? "16px" : "-2px",
                             width: onlineDotSize,
                             height: onlineDotSize,
-                            backgroundColor: "#22c55e", // Green-500
+                            backgroundColor: "#22c55e",
                             borderRadius: "50%",
-                            border: "2px solid var(--bg-page)",
-                            boxShadow: "0 0 10px rgba(34, 197, 94, 0.4)",
-                            zIndex: 11,
+                            border: "2.5px solid var(--bg-page)",
+                            boxShadow: "0 0 12px rgba(34, 197, 94, 0.5)",
+                            zIndex: 12,
                         }}
                         title="Online"
                     />
