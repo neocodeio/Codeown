@@ -113,8 +113,6 @@ const AvailabilityBadge = memo(({
                         height: onlineDotSize,
                         backgroundColor: "#22c55e",
                         borderRadius: "50%",
-                        border: "2px solid var(--bg-page)",
-                        boxShadow: "0 0 10px rgba(34, 197, 94, 0.4)",
                         zIndex: 100, // Very high to be over everything
                     }}
                     title="Online"
