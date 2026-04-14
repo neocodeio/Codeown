@@ -107,8 +107,8 @@ const AvailabilityBadge = memo(({
                 <div
                     style={{
                         position: "absolute",
-                        bottom: showBadge ? "10px" : "2px",
-                        right: showBadge ? "14px" : "2px",
+                        bottom: showBadge ? "22px" : "14px",
+                        right: showBadge ? "22px" : "2px",
                         width: onlineDotSize,
                         height: onlineDotSize,
                         backgroundColor: "#22c55e",
