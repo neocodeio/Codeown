@@ -80,17 +80,21 @@ export default function QuickCommentModal({
         setIsSubmitting(true);
         try {
             const token = await getToken();
-            const endpoint = resourceType === "project"
-                ? `/projects/${resourceId}/comments`
-                : `/posts/${resourceId}/comments`;
-
             const finalContent = selectedGif ? `${content.trim()}\n${selectedGif}`.trim() : content.trim();
 
-            await api.post(
-                endpoint,
-                { content: finalContent, image_url: selectedImage },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            if (resourceType === "post") {
+                await api.post(
+                    "/comments",
+                    { post_id: resourceId, content: finalContent, image_url: selectedImage },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+            } else {
+                await api.post(
+                    `/projects/${resourceId}/comments`,
+                    { content: finalContent, image_url: selectedImage },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+            }
 
             toast.success("Comment posted!");
             onSuccess?.();
