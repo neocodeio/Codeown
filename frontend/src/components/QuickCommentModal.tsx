@@ -303,7 +303,7 @@ export default function QuickCommentModal({
                             disabled={(!content.trim() && !selectedGif && !selectedImage) || isSubmitting || isUploading}
                             style={{
                                 padding: "12px 28px",
-                                borderRadius: "100%",
+                                borderRadius: "100px",
                                 backgroundColor: (content.trim() || selectedGif || selectedImage) ? "var(--text-primary)" : "var(--bg-hover)",
                                 color: (content.trim() || selectedGif || selectedImage) ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
@@ -335,7 +335,7 @@ export default function QuickCommentModal({
           height: 14px;
           border: 2px solid rgba(var(--bg-page-rgb), 0.3);
           border-top-color: var(--bg-page);
-          borderRadius: 50%;
+          border-radius: 50%;
           animation: spin 0.6s linear infinite;
         }
       `}</style>
