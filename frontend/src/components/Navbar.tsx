@@ -100,6 +100,7 @@ export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
+  const [isPostSelectorOpen, setIsPostSelectorOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const { unreadCount, messageUnreadCount } = useNotifications();
   const [profile, setProfile] = useState<any>(null);
@@ -135,11 +136,15 @@ export default function Navbar() {
   );
 
   const logoutRef = useRef<HTMLDivElement>(null);
+  const postSelectorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (logoutRef.current && !logoutRef.current.contains(event.target as Node)) {
         setIsLogoutOpen(false);
+      }
+      if (postSelectorRef.current && !postSelectorRef.current.contains(event.target as Node)) {
+        setIsPostSelectorOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -157,13 +162,13 @@ export default function Navbar() {
       padding: isUltraShort ? "8px 14px" : "11px 18px",
       borderRadius: "14px",
       textDecoration: "none",
-      color: isActive ? "var(--text-primary)" : "var(--text-tertiary)",
+      color: "var(--text-primary)",
       backgroundColor: isActive ? "rgba(var(--text-primary-rgb), 0.05)" : "transparent",
-      fontWeight: isActive ? "800" : "600",
+      fontWeight: "800",
       fontSize: isUltraShort ? "14px" : "15px",
       transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
       marginBottom: isUltraShort ? "2px" : "4px",
-      opacity: isActive ? 1 : 0.85,
+      opacity: isActive ? 1 : 0.65,
     };
   };
 
@@ -212,8 +217,49 @@ export default function Navbar() {
               </div>
               <span>Notifications</span>
             </Link>
-            <div onClick={() => setIsModalOpen(true)} style={{ ...linkStyle(""), cursor: "pointer" }}><HugeiconsIcon icon={PlusSignIcon} size={20} /><span>Post Update</span></div>
-            <div onClick={() => setIsProjectModalOpen(true)} style={{ ...linkStyle(""), cursor: "pointer" }}><HugeiconsIcon icon={Rocket01Icon} size={20} /><span>Launch Project</span></div>
+            <div
+              onClick={() => setIsPostSelectorOpen(!isPostSelectorOpen)}
+              style={{ ...linkStyle(""), cursor: "pointer", position: "relative", marginBottom: "4px" }}
+              ref={postSelectorRef}
+            >
+              <HugeiconsIcon icon={PlusSignIcon} size={20} />
+              <span>Post</span>
+
+              {isPostSelectorOpen && (
+                <div style={{
+                  position: "absolute",
+                  bottom: "100%",
+                  left: 0,
+                  right: 0,
+                  marginBottom: "8px",
+                  backgroundColor: "rgba(var(--bg-card-rgb), 0.9)",
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid var(--border-hairline)",
+                  borderRadius: "18px",
+                  padding: "6px",
+                  zIndex: 2000,
+                  boxShadow: "var(--shadow-lg)",
+                  animation: "reactionFadeUp 0.15s ease-out"
+                }}>
+                  <div
+                    onClick={(e) => { e.stopPropagation(); setIsModalOpen(true); setIsPostSelectorOpen(false); }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", transition: "all 0.15s ease" }}
+                  >
+                    <HugeiconsIcon icon={PlusSignIcon} size={16} /> Add post
+                  </div>
+                  <div
+                    onClick={(e) => { e.stopPropagation(); setIsProjectModalOpen(true); setIsPostSelectorOpen(false); }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", transition: "all 0.15s ease" }}
+                  >
+                    <HugeiconsIcon icon={Rocket01Icon} size={16} /> Launch project
+                  </div>
+                </div>
+              )}
+            </div>
             <div onClick={() => { const username = profile?.username || user?.username; if (username) navigate(`/${username}`); }} style={{ ...linkStyle("/profile"), cursor: "pointer" }}><HugeiconsIcon icon={UserIcon} size={20} /><span>Your Profile</span></div>
           </div>
         )}
@@ -309,8 +355,8 @@ export default function Navbar() {
           {isCreateMenuOpen && (
             <div style={{ position: "absolute", bottom: "80px", left: "50%", transform: "translateX(-50%)", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "24px", padding: "10px", minWidth: "220px", zIndex: 2001, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}>
               <style>{`.mobile-menu-item { padding: 12px 16px; display: flex; alignItems: center; gap: 12px; cursor: pointer; color: var(--text-primary); font-weight: 700; font-size: 15px; border-radius: 16px; transition: all 0.2s; } .mobile-menu-item:active { background: var(--bg-hover); transform: scale(0.98); }`}</style>
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}><HugeiconsIcon icon={PlusSignIcon} size={18} /> Post Update</div>
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}><HugeiconsIcon icon={Rocket01Icon} size={18} /> Launch Project</div>
+              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}><HugeiconsIcon icon={PlusSignIcon} size={18} /> Add post</div>
+              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}><HugeiconsIcon icon={Rocket01Icon} size={18} /> Launch project</div>
               <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", margin: "8px 0" }} />
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Building02Icon} size={18} /> Startups Hub</div>
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/dashboard"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Chart01Icon} size={18} /> Analytics</div>
