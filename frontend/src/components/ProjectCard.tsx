@@ -111,6 +111,7 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { toast } from "react-toastify";
 import UserHoverCard from "./UserHoverCard";
 import RollingNumber from "./RollingNumber";
+import QuickCommentModal from "./QuickCommentModal";
 
 interface ProjectCardProps {
   project: Project;
@@ -130,6 +131,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
   const { width } = useWindowSize();
@@ -517,7 +519,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             {
               icon: Comment01Icon,
               count: project.comment_count,
-              onClick: (e: any) => { e.stopPropagation(); navigate(`/project/${project.id}`); },
+              onClick: (e: any) => { e.stopPropagation(); setIsQuickCommentOpen(true); },
               hoverColor: "var(--text-primary)",
             },
             {
@@ -612,6 +614,14 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         message="Delete this project? This action cannot be undone."
         confirmLabel="Delete"
         isLoading={isDeleting}
+      />
+      <QuickCommentModal
+        isOpen={isQuickCommentOpen}
+        onClose={() => setIsQuickCommentOpen(false)}
+        resourceId={project.id}
+        resourceType="project"
+        authorName={(project.user?.name || project.user?.username) ?? undefined}
+        onSuccess={() => onUpdated?.()}
       />
     </article>
   );

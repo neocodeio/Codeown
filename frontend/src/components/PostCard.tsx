@@ -32,6 +32,7 @@ import { toast } from "react-toastify";
 import UserHoverCard from "./UserHoverCard";
 import Lightbox from "./Lightbox";
 import RollingNumber from "./RollingNumber";
+import QuickCommentModal from "./QuickCommentModal";
 
 interface PostCardProps {
   post: Post;
@@ -56,6 +57,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
+  const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
   const { width } = useWindowSize();
@@ -138,7 +140,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
   const handleComment = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/post/${post.id}#comments`);
+    setIsQuickCommentOpen(true);
   };
 
   const handleShare = (e: React.MouseEvent) => {
@@ -801,6 +803,14 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
         imageSrc={lightboxImage}
+      />
+      <QuickCommentModal
+        isOpen={isQuickCommentOpen}
+        onClose={() => setIsQuickCommentOpen(false)}
+        resourceId={post.id}
+        resourceType="post"
+        authorName={(post.user?.name || post.user?.username) ?? undefined}
+        onSuccess={() => onUpdated?.()}
       />
       {postCardContent}
     </>
