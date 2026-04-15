@@ -38,7 +38,7 @@ import rateLimit from "express-rate-limit";
 const app = express();
 
 // Trust proxy for Railway/deployment load balancers
-app.set("trust proxy", 1);
+app.set("trust proxy", true);
 
 // 1. CORS Configuration
 const allowedOrigins = [
@@ -102,7 +102,7 @@ app.use(express.json({ limit: "50mb" }));
 // 5. Rate limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // Limit each IP/User to 500 requests per window
+  max: 10000, // Increased from 500 to 10000 to prevent 429s during development and for polling
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => {
@@ -117,7 +117,7 @@ app.use(globalLimiter);
 // Specific stricter limit for feedback
 const feedbackLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 10,
+  max: 50, // Increased from 10 to 50
   message: { error: "You have reached your daily feedback limit. Please try again tomorrow." },
   standardHeaders: true,
   legacyHeaders: false,
@@ -128,7 +128,7 @@ const feedbackLimiter = rateLimit({
 // Stricter limit for message sending to prevent spam
 const chatLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 30, // 30 messages per minute
+  max: 100, // Increased from 30 to 100
   message: { error: "You are sending messages too fast. Please slow down." },
   standardHeaders: true,
   legacyHeaders: false,
