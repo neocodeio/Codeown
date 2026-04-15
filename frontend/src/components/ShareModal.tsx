@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { NewTwitterIcon, Copy01Icon, CheckmarkCircle01Icon } from "@hugeicons/core-free-icons";
 
 interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   url: string;
   title?: string;
+  shareText?: string;
 }
 
-export default function ShareModal({ isOpen, onClose, url, title = "Share link" }: ShareModalProps) {
+export default function ShareModal({ isOpen, onClose, url, title = "Share link", shareText = "Check out this content on Codeown!" }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -40,6 +43,11 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
     } catch (error) {
       console.error("Failed to copy link:", error);
     }
+  };
+
+  const handleShareToX = () => {
+    const xUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+    window.open(xUrl, "_blank", "noopener,noreferrer");
   };
 
   const content = (
@@ -103,9 +111,9 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
           </button>
         </div>
 
-        <p style={{ 
-          fontSize: "14px", 
-          color: "var(--text-secondary)", 
+        <p style={{
+          fontSize: "14px",
+          color: "var(--text-secondary)",
           margin: "0 0 16px 0",
           lineHeight: "1.5"
         }}>
@@ -116,37 +124,62 @@ export default function ShareModal({ isOpen, onClose, url, title = "Share link" 
           style={{
             borderRadius: "var(--radius-sm)",
             border: "0.5px solid var(--border-hairline)",
-            padding: "12px",
+            padding: "8px 12px",
             fontSize: "13px",
             color: "var(--text-primary)",
             backgroundColor: "var(--bg-input)",
             marginBottom: "20px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            justifyContent: "space-between"
           }}
-          title={url}
         >
-          {url}
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }} title={url}>
+            {url}
+          </div>
           <button
             onClick={handleCopy}
             style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "6px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: copied ? "rgba(5, 150, 69, 0.1)" : "transparent",
+              color: copied ? "#059669" : "var(--text-tertiary)",
+              cursor: "pointer",
+              transition: "all 0.2s ease"
+            }}
+            title="Copy to clipboard"
+          >
+            <HugeiconsIcon icon={copied ? CheckmarkCircle01Icon : Copy01Icon} size={18} />
+          </button>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <button
+            onClick={handleShareToX}
+            style={{
               width: "100%",
-              padding: "12px",
+              padding: "14px",
               borderRadius: "var(--radius-sm)",
-              border: "0.5px solid var(--border-hairline)",
+              border: "none",
               backgroundColor: "var(--text-primary)",
               color: "var(--bg-page)",
               fontSize: "13px",
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: "pointer",
               transition: "all 0.15s ease",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "10px"
             }}
           >
-            {copied ? "Copied!" : "Copy link"}
+            <HugeiconsIcon icon={NewTwitterIcon} size={18} />
+            Share to X
           </button>
 
           <button
