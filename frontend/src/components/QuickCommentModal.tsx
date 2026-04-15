@@ -7,7 +7,7 @@ import { useAvatar } from "../hooks/useAvatar";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
     Cancel01Icon,
-    MessageQuestion01Icon,
+    MessageQuestionIcon,
     SentIcon
 } from "@hugeicons/core-free-icons";
 import { toast } from "react-toastify";
@@ -46,7 +46,7 @@ export default function QuickCommentModal({
             setContent("");
             setTimeout(() => textareaRef.current?.focus(), 150);
         }
-    }, [isOpen]);
+    }, [isOpen, resourceId]);
 
     if (!isOpen) return null;
 
@@ -97,7 +97,7 @@ export default function QuickCommentModal({
                 alignItems: "center",
                 justifyContent: "center",
                 padding: "16px",
-                zIndex: 4000,
+                zIndex: 12000,
                 animation: "fadeIn 0.2s ease-out"
             }}
             onClick={onClose}
@@ -118,8 +118,8 @@ export default function QuickCommentModal({
             >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <div style={{ padding: "8px", backgroundColor: "var(--bg-hover)", borderRadius: "10px" }}>
-                            <HugeiconsIcon icon={MessageQuestion01Icon} size={20} color="var(--text-primary)" />
+                        <div style={{ padding: "8px", backgroundColor: "var(--bg-hover)", borderRadius: "100px" }}>
+                            <HugeiconsIcon icon={MessageQuestionIcon} size={20} color="var(--text-primary)" />
                         </div>
                         <span style={{ fontWeight: 800, fontSize: "17px", color: "var(--text-primary)" }}>
                             Reply {authorName ? `to ${authorName}` : ""}
