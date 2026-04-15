@@ -251,8 +251,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       }}
       onClick={handleCardClick}
       onMouseEnter={(e) => {
-        // Absolute minimal interaction - relies entirely on the pointer cursor
-        e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.015)";
+        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = "transparent";

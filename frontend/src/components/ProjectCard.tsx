@@ -10,7 +10,7 @@ import ProjectModal from "./ProjectModal";
 import { DotsThree, PencilSimple, Trash, PushPin, Sparkle } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowUp02Icon,
+  TriangleIcon,
   Comment01Icon,
   Bookmark02Icon,
   Share01Icon,
@@ -296,8 +296,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         boxSizing: "border-box"
       }}
       onMouseEnter={(e) => {
-        // Absolute minimal interaction - relies entirely on the pointer cursor
-        e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.015)";
+        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = "transparent";
@@ -522,7 +521,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
               hoverColor: "var(--text-primary)",
             },
             {
-              icon: ArrowUp02Icon,
+              icon: TriangleIcon,
               count: likeCount,
               onClick: handleLike,
               active: isLiked,
@@ -559,7 +558,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   fontWeight: 600
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === ArrowUp02Icon ? "#3b82f6" : "var(--text-primary)");
+                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === TriangleIcon ? "#3b82f6" : "var(--text-primary)");
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
@@ -568,9 +567,9 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 <HugeiconsIcon
                   icon={Icon}
                   size={20}
-                  className={action.active && (Icon === Bookmark02Icon || Icon === ArrowUp02Icon) ? "hugeicon-filled" : ""}
+                  className={action.active && (Icon === Bookmark02Icon || Icon === TriangleIcon) ? "hugeicon-filled" : ""}
                 />
-                {Icon === ArrowUp02Icon ? (
+                {Icon === TriangleIcon ? (
                   <RollingNumber value={action.count || 0} fontWeight={600} fontSize="13px" color="inherit" />
                 ) : (
                   action.count !== undefined && action.count > 0 && (

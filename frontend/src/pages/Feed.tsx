@@ -151,7 +151,7 @@ export default function Feed() {
                         position: "sticky",
                         top: isMobile ? "64px" : "0",
                         zIndex: 100,
-                        backgroundColor: "rgba(var(--bg-header-rgb, 255, 255, 255), 0.85)",
+                        backgroundColor: "var(--bg-header)",
                         backdropFilter: "blur(25px)",
                         WebkitBackdropFilter: "blur(25px)",
                         borderBottom: "0.5px solid var(--border-hairline)",
@@ -214,7 +214,7 @@ export default function Feed() {
                                     <div style={{
                                         position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)",
                                         marginTop: "12px",
-                                        backgroundColor: "var(--bg-card)",
+                                        backgroundColor: "rgba(var(--bg-card-rgb), 0.8)",
                                         backdropFilter: "blur(20px)",
                                         border: "1px solid var(--border-hairline)",
                                         borderRadius: "20px",

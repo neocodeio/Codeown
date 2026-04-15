@@ -21,6 +21,10 @@
   --border-hairline: rgba(0, 0, 0, 0.05);
   --border-strong: #212529;
   --bg-header: rgba(255, 255, 255, 0.85);
+  --bg-page-rgb: 255, 255, 255;
+  --bg-card-rgb: 255, 255, 255;
+  --bg-header-rgb: 255, 255, 255;
+  --text-primary-rgb: 26, 26, 26;
 
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.03);
@@ -69,6 +73,10 @@
   --border-hairline: rgba(255, 255, 255, 0.06);
   --border-strong: #ffffff;
   --bg-header: rgba(23, 23, 23, 0.85);
+  --bg-page-rgb: 23, 23, 23;
+  --bg-card-rgb: 28, 28, 28;
+  --bg-header-rgb: 23, 23, 23;
+  --text-primary-rgb: 255, 255, 255;
 
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
