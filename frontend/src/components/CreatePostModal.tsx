@@ -9,8 +9,6 @@ import {
   faBold,
   faItalic,
   faHeading,
-  faQuoteRight,
-  faListUl,
   faLink,
   faPaperclip
 } from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +16,9 @@ import MentionInput from "./MentionInput";
 import ContentRenderer from "./ContentRenderer";
 import { normalizeLanguage } from "../utils/language";
 import { validateImageSize, validateFileSize } from "../constants/upload";
+import { Rocket, CaretDown, MinusCircle } from "phosphor-react";
+import { useUserProjects } from "../hooks/useUserProjects";
+import { useClerkUser } from "../hooks/useClerkUser";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -37,8 +38,17 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const { getToken, isLoaded } = useClerkAuth();
+  const { user } = useClerkUser();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const projectMenuRef = useRef<HTMLDivElement>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<number | string | null>(initialProjectId || null);
+  const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
   const charLimit = 2000;
+
+  // 1. Fetch User's Projects for Selection using the shared hook
+  const { projects: userProjects = [] } = useUserProjects(user?.id || null, isOpen);
+
+  const selectedProject = userProjects.find((p: any) => p.id == selectedProjectId);
 
   // Reset form when modal closes
   useEffect(() => {
@@ -50,8 +60,21 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
       setLanguage("en");
       setIsSubmitting(false);
       setActiveTab("write");
+      setSelectedProjectId(initialProjectId || null);
+      setIsProjectMenuOpen(false);
     }
-  }, [isOpen]);
+  }, [isOpen, initialProjectId]);
+
+  // Click outside to close project menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (projectMenuRef.current && !projectMenuRef.current.contains(event.target as Node)) {
+        setIsProjectMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -218,7 +241,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
         attachments: attachments.length > 0 ? attachments : null,
         tags: allTags.length > 0 ? allTags : null,
         language: normalizeLanguage(language),
-        project_id: initialProjectId || null,
+        project_id: selectedProjectId || null,
       };
       await api.post("/posts", payload, {
         headers: { Authorization: `Bearer ${token}` },
@@ -242,6 +265,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
         position: "fixed",
         inset: 0,
         backgroundColor: "rgba(0, 0, 0, 0.4)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
         zIndex: 10000,
         display: "flex",
         justifyContent: "center",
@@ -254,57 +279,57 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
         className="modal-content-wrapper"
         style={{
           backgroundColor: "var(--bg-page)",
-          borderRadius: "var(--radius-lg)",
+          borderRadius: "24px",
           width: "100%",
-          maxWidth: "700px",
-          maxHeight: "90vh",
+          maxWidth: "580px",
+          maxHeight: "85vh",
           display: "flex",
           flexDirection: "column",
-          boxShadow: "none",
-          border: "0.5px solid var(--border-hairline)",
+          boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
+          border: "1px solid var(--border-hairline)",
           overflow: "hidden",
-          animation: "modalSlideIn 0.2s ease-out",
+          animation: "modalEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <style>{`
-          @keyframes modalSlideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+          @keyframes modalEnter {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
           }
-          .toolbar-btn {
-            width: 36px;
-            height: 36px;
+          .editor-toolbar-btn {
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
-            justifyContent: center;
-            border-radius: var(--radius-sm);
-            border: 0.5px solid transparent;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.15s;
-          }
-          .toolbar-btn:hover {
-            background-color: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hairline);
-          }
-          .tab-btn {
-            padding: 10px 20px;
-            font-size: 13px;
-            font-weight: 600;
-            font-family: var(--font-main);
+            justify-content: center;
+            border-radius: 8px;
             border: none;
             background: transparent;
             color: var(--text-tertiary);
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.15s;
+            transition: all 0.2s;
+            font-size: 14px;
           }
-          .tab-btn.active {
+          .editor-toolbar-btn:hover {
+            background-color: var(--bg-hover);
             color: var(--text-primary);
-            border-bottom-color: var(--text-primary);
+            transform: translateY(-1px);
+          }
+          .tab-trigger {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 100px;
+            border: none;
+            background: transparent;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all 0.2s;
+          }
+          .tab-trigger.active {
+            background-color: var(--text-primary);
+            color: var(--bg-page);
           }
           
           @media (max-width: 640px) {
@@ -313,224 +338,277 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
               max-width: 100vw !important;
               height: 100% !important;
               width: 100% !important;
-              border-radius: var(--radius-lg) !important;
+              border-radius: 0 !important;
               border: none !important;
               margin: 0 !important;
             }
           }
+
+          .mention-input-custom textarea {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+            color: var(--text-primary) !important;
+          }
+          
+          .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
         `}</style>
 
-        {/* Header */}
-        <div className="modal-header" style={{ padding: "24px 32px", borderBottom: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>Create post</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "24px", color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "4px" }}>&times;</button>
+        {/* Header - Integrated with Tabs */}
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border-hairline)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "6px", backgroundColor: "var(--bg-hover)", padding: "4px", borderRadius: "100px" }}>
+            <button className={`tab-trigger ${activeTab === "write" ? "active" : ""}`} onClick={() => setActiveTab("write")}>Write</button>
+            <button className={`tab-trigger ${activeTab === "preview" ? "active" : ""}`} onClick={() => setActiveTab("preview")}>Preview</button>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              width: "32px",
+              height: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              fontSize: "28px",
+              fontWeight: 300,
+              lineHeight: 1,
+              padding: "0 0 3px 0",
+              color: "var(--text-tertiary)",
+              background: "none",
+              border: "none",
+              outline: "none"
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = "var(--text-primary)"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--text-tertiary)"; }}
+          >
+            &times;
+          </button>
         </div>
 
-        {/* Body */}
-        <div className="modal-body" style={{ padding: "32px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "28px" }}>
-          {/* Title Input */}
-          <input
-            type="text"
-            className="title-input"
-            placeholder="Post title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{
-              width: "100%",
-              fontSize: "24px",
-              fontWeight: 700,
-              border: "none",
-              outline: "none",
-              padding: "0",
-              color: "var(--text-primary)",
-              backgroundColor: "transparent",
-              letterSpacing: "-0.02em",
-            }}
-          />
-
-          {/* Tabs */}
-          <div style={{ display: "flex", gap: "8px", borderBottom: "0.5px solid var(--border-hairline)" }}>
-            <button style={{ borderRadius: "0px" }} className={`tab-btn ${activeTab === "write" ? "active" : ""}`} onClick={() => setActiveTab("write")}>
-              Write
-            </button>
-            <button style={{ borderRadius: "0px" }} className={`tab-btn ${activeTab === "preview" ? "active" : ""}`} onClick={() => setActiveTab("preview")}>
-              Preview
-            </button>
-          </div>
-
+        {/* Scrollable Body */}
+        <div style={{ padding: "24px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "24px" }} className="hide-scrollbar">
           {activeTab === "write" ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {/* Toolbar */}
-              <div className="toolbar-container" style={{ display: "flex", gap: "4px", padding: "6px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", flexWrap: "wrap", alignItems: "center" }}>
-                <button className="toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><FontAwesomeIcon icon={faBold} /></button>
-                <button className="toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><FontAwesomeIcon icon={faItalic} /></button>
-                <button className="toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><FontAwesomeIcon icon={faHeading} /></button>
-                <div className="divider" style={{ width: "1px", height: "18px", backgroundColor: "var(--border-hairline)", margin: "0 4px" }} />
-                <button className="toolbar-btn" title="Quote" onClick={() => insertBlockMarkdown("> ")}><FontAwesomeIcon icon={faQuoteRight} /></button>
-                <button className="toolbar-btn" title="Bullet List" onClick={() => insertBlockMarkdown("- ")}><FontAwesomeIcon icon={faListUl} /></button>
-                <div className="divider" style={{ width: "1px", height: "18px", backgroundColor: "var(--border-hairline)", margin: "0 4px" }} />
-                <button className="toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><FontAwesomeIcon icon={faLink} /></button>
-                <button className="toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><FontAwesomeIcon icon={faCode} /></button>
-                <button className="toolbar-btn" title="Code Block" onClick={() => insertMarkdown("\n```javascript\n", "\n```\n")}><FontAwesomeIcon icon={faCode} style={{ fontSize: "12px" }} /></button>
-                <div className="divider" style={{ width: "1px", height: "18px", backgroundColor: "var(--border-hairline)", margin: "0 4px" }} />
-                {attachments.length === 0 && (
-                  <label className="toolbar-btn" title="Attach file" style={{ cursor: "pointer" }}>
-                    <FontAwesomeIcon icon={faPaperclip} />
-                    <input type="file" onChange={handleFileUpload} style={{ display: "none" }} />
-                  </label>
-                )}
-              </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              {/* Title Section - Minimalist */}
+              <input
+                type="text"
+                placeholder="Title (Optional)"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                style={{
+                  width: "100%",
+                  fontSize: "20px",
+                  fontWeight: 800,
+                  border: "none",
+                  outline: "none",
+                  padding: "0",
+                  color: "var(--text-primary)",
+                  backgroundColor: "transparent",
+                  letterSpacing: "-0.01em",
+                }}
+              />
 
               {/* Textarea */}
-              <MentionInput
-                ref={textareaRef}
-                value={content}
-                onChange={setContent}
-                placeholder="Share your thoughts, code, or ideas... (Markdown supported)"
-                minHeight="240px"
-              />
+              <div className="mention-input-custom">
+                <MentionInput
+                  ref={textareaRef}
+                  value={content}
+                  onChange={setContent}
+                  placeholder="Share your raw progress, ship notes, or ideas..."
+                  minHeight="200px"
+                />
+              </div>
             </div>
           ) : (
-            <div style={{ minHeight: "240px", padding: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", overflowY: "auto" }}>
+            <div style={{ minHeight: "260px", padding: "0", borderRadius: "0", overflowY: "auto" }}>
               {content ? (
                 <ContentRenderer content={content} />
               ) : (
-                <div style={{ color: "var(--text-tertiary)", textAlign: "center", marginTop: "80px", fontSize: "13px", fontWeight: 500 }}>No preview available</div>
+                <div style={{ color: "var(--text-tertiary)", textAlign: "center", marginTop: "80px", fontSize: "14px", fontWeight: 500 }}>No preview available</div>
               )}
             </div>
           )}
 
-          {/* Images */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-            {images.map((img, idx) => (
-              <div key={idx} style={{ position: "relative", width: "100px", height: "100px" }}>
-                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} />
-                <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "4px", right: "4px", width: "24px", height: "24px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-page)", color: "#ef4444", border: "0.5px solid var(--border-hairline)", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
-              </div>
-            ))}
-            <label style={{ width: "100px", height: "100px", borderRadius: "var(--radius-sm)", border: "0.5px dashed var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", transition: "all 0.15s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}>
-              <FontAwesomeIcon icon={faImage} />
-              <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
-            </label>
-          </div>
-
-          {/* Attachments */}
-          {attachments.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-tertiary)" }}>Attachments ({attachments.length})</label>
+          {/* Media & Attachments Section - Horizontal Scrollable Row */}
+          {(images.length > 0 || attachments.length > 0) && (
+            <div style={{ display: "flex", gap: "12px", overflowX: "auto", paddingBottom: "8px" }} className="hide-scrollbar">
+              {images.map((img, idx) => (
+                <div key={idx} style={{ position: "relative", minWidth: "120px", width: "120px", height: "120px", flexShrink: 0 }}>
+                  <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "16px", border: "1px solid var(--border-hairline)" }} />
+                  <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "6px", right: "6px", width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "rgba(0,0,0,0.6)", color: "white", border: "none", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>&times;</button>
+                </div>
+              ))}
               {attachments.map((file, idx) => (
-                <div key={idx} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-                    <FontAwesomeIcon icon={faPaperclip} style={{ color: "var(--text-tertiary)" }} />
-                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                      <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{file.name}</span>
-                      <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>{(file.size / 1024).toFixed(1)} KB</span>
-                    </div>
+                <div key={idx} style={{ position: "relative", minWidth: "160px", padding: "12px", backgroundColor: "var(--bg-hover)", borderRadius: "16px", border: "1px solid var(--border-hairline)", display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+                  <FontAwesomeIcon icon={faPaperclip} style={{ color: "var(--text-tertiary)" }} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{file.name}</div>
+                    <div style={{ fontSize: "10px", color: "var(--text-tertiary)" }}>{(file.size / 1024).toFixed(0)} KB</div>
                   </div>
-                  <button onClick={() => removeAttachment(idx)} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}>&times;</button>
+                  <button onClick={() => removeAttachment(idx)} style={{ marginLeft: "auto", background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer" }}>&times;</button>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Tags Section */}
-          <div className="tags-section" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <label className="tags-label" style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-tertiary)" }}>Tags / Hashtags (Optional)</label>
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          {/* Tags - Compact Row */}
+          {tags.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
               {tags.map((tag, idx) => (
-                <span
-                  key={idx}
-                  style={{
-                    backgroundColor: "var(--bg-hover)",
-                    color: "var(--text-primary)",
-                    padding: "6px 12px",
-                    borderRadius: "20px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    border: "0.5px solid var(--border-hairline)",
-                  }}
-                >
+                <span key={idx} style={{ padding: "4px 12px", borderRadius: "100px", background: "rgba(var(--text-primary-rgb), 0.05)", border: "1px solid var(--border-hairline)", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
                   #{tag}
-                  <button
-                    onClick={() => setTags(tags.filter((_, i) => i !== idx))}
-                    style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", fontSize: "16px", padding: 0, lineHeight: 1, display: "flex", alignItems: "center" }}
-                  >
-                    &times;
-                  </button>
+                  <button onClick={() => setTags(tags.filter((_, i) => i !== idx))} style={{ border: "none", background: "none", padding: 0, color: "var(--text-tertiary)", cursor: "pointer", fontSize: "14px" }}>&times;</button>
                 </span>
               ))}
             </div>
+          )}
 
-            <input
-              type="text"
-              className="tag-input"
-              placeholder="Add tags... (Enter or comma)"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === ",") {
-                  e.preventDefault();
-                  const tag = tagInput.trim().toLowerCase().replace(/^#/, "");
-                  if (tag && !tags.includes(tag) && tags.length < 10) {
-                    setTags([...tags, tag]);
-                    setTagInput("");
-                  }
-                }
-              }}
-              style={{
-                width: "100%",
-                padding: "12px 14px",
-                borderRadius: "var(--radius-sm)",
-                border: "0.5px solid var(--border-hairline)",
-                fontSize: "14px",
-                outline: "none",
-                backgroundColor: "var(--bg-hover)",
-                color: "var(--text-primary)",
-                transition: "all 0.15s ease",
-              }}
-              onFocus={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
-              onBlur={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-            />
-            <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
-              {tags.length}/10 tags. Use #hashtag in content to auto-add.
-            </div>
-          </div>
-        </div>
+          {/* Integrated Tool Bar - Modern & Sticky-bottom feel inside body */}
+          {activeTab === "write" && (
+            <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: "4px", borderTop: "1px solid var(--border-hairline)", paddingTop: "16px", flexWrap: "wrap" }}>
+              <label className="editor-toolbar-btn" title="Add Image">
+                <FontAwesomeIcon icon={faImage} />
+                <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
+              </label>
+              <label className="editor-toolbar-btn" title="Attach File">
+                <FontAwesomeIcon icon={faPaperclip} />
+                <input type="file" onChange={handleFileUpload} style={{ display: "none" }} />
+              </label>
+              <div style={{ width: "1px", height: "16px", backgroundColor: "var(--border-hairline)", margin: "0 6px" }} />
+              <button className="editor-toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><FontAwesomeIcon icon={faBold} /></button>
+              <button className="editor-toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><FontAwesomeIcon icon={faItalic} /></button>
+              <button className="editor-toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><FontAwesomeIcon icon={faHeading} /></button>
+              <button className="editor-toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><FontAwesomeIcon icon={faCode} /></button>
+              <button className="editor-toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><FontAwesomeIcon icon={faLink} /></button>
 
-        {/* Footer */}
-        <div className="modal-footer" style={{ padding: "24px 32px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "16px" }}>
-          {content.length > 0 && (
-            <div style={{
-              fontSize: "11px",
-              fontWeight: 600,
-              color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
-            }}>
-              {content.length}/{charLimit}
+              <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
+                <input
+                  type="text"
+                  placeholder="#tag"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") {
+                      e.preventDefault();
+                      const tag = tagInput.trim().toLowerCase().replace(/^#/, "");
+                      if (tag && !tags.includes(tag) && tags.length < 10) {
+                        setTags([...tags, tag]);
+                        setTagInput("");
+                      }
+                    }
+                  }}
+                  style={{ width: "80px", fontSize: "12px", border: "none", background: "transparent", outline: "none", color: "var(--text-primary)", fontWeight: 600 }}
+                />
+              </div>
             </div>
           )}
-          <button onClick={onClose} style={{ padding: "10px 20px", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", background: "transparent", color: "var(--text-secondary)", fontWeight: 600, fontSize: "13px", cursor: "pointer", transition: "all 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}>Cancel</button>
-          <button
-            onClick={submit}
-            disabled={(!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit}
-            style={{
-              padding: "10px 24px",
-              borderRadius: "var(--radius-sm)",
-              border: "none",
-              background: "var(--text-primary)",
-              color: "var(--bg-page)",
-              fontWeight: 700,
-              fontSize: "13px",
-              cursor: (!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit ? "not-allowed" : "pointer",
-              opacity: (!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit ? 0.3 : 1,
-              transition: "all 0.15s ease"
-            }}
-          >
-            {isSubmitting ? "Posting..." : "Post"}
-          </button>
+        </div>
+
+        {/* Footer - Project Selection & Post Button */}
+        <div style={{ padding: "16px 24px", borderTop: "1px solid var(--border-hairline)", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "var(--bg-hover-light)" }}>
+          <div ref={projectMenuRef} style={{ position: "relative" }}>
+            <button
+              onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 14px",
+                borderRadius: "100px",
+                border: selectedProjectId ? "1.5px solid var(--text-primary)" : "1px solid var(--border-hairline)",
+                backgroundColor: "var(--bg-card)",
+                color: selectedProjectId ? "var(--text-primary)" : "var(--text-secondary)",
+                fontSize: "12px",
+                fontWeight: 700,
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              {selectedProject?.cover_image ? (
+                <img src={selectedProject.cover_image} style={{ width: "16px", height: "16px", borderRadius: "4px", objectFit: "cover" }} alt="" />
+              ) : (
+                <Rocket size={14} weight={selectedProjectId ? "fill" : "regular"} />
+              )}
+              <span style={{ maxWidth: "100px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {selectedProject?.name || "Target Project"}
+              </span>
+              <CaretDown size={12} weight="bold" />
+            </button>
+
+            {isProjectMenuOpen && (
+              <div style={{
+                position: "absolute",
+                bottom: "calc(100% + 10px)",
+                left: 0,
+                width: "220px",
+                backgroundColor: "var(--bg-page)",
+                border: "1px solid var(--border-hairline)",
+                borderRadius: "16px",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                padding: "6px",
+                zIndex: 1000,
+                display: "flex",
+                flexDirection: "column",
+                gap: "2px",
+                maxHeight: "200px",
+                overflowY: "auto"
+              }}>
+                <button
+                  onClick={() => { setSelectedProjectId(null); setIsProjectMenuOpen(false); }}
+                  style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "10px", border: "none", backgroundColor: !selectedProjectId ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", textAlign: "left" }}
+                >
+                  <MinusCircle size={16} /> None
+                </button>
+                {userProjects.map((project: any) => (
+                  <button
+                    key={project.id}
+                    onClick={() => { setSelectedProjectId(project.id); setIsProjectMenuOpen(false); }}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "10px", border: "none", backgroundColor: selectedProjectId === project.id ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", textAlign: "left" }}
+                  >
+                    <div style={{ width: "20px", height: "20px", borderRadius: "4px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                      {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <Rocket size={12} />}
+                    </div>
+                    {project.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)" }}>
+              {content.length}/{charLimit}
+            </div>
+            <button
+              onClick={submit}
+              disabled={(!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit}
+              style={{
+                padding: "10px 24px",
+                borderRadius: "100px",
+                border: "none",
+                background: "var(--text-primary)",
+                color: "var(--bg-page)",
+                fontWeight: 800,
+                fontSize: "14px",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                opacity: ((!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit) ? 0.3 : 1,
+              }}
+              onMouseEnter={e => { if (!((!content.trim() && images.length === 0) || isSubmitting)) e.currentTarget.style.transform = "scale(1.03)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
+            >
+              {isSubmitting ? "Posting..." : "Post"}
+            </button>
+          </div>
         </div>
       </div>
     </div>,

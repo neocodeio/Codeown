@@ -5,7 +5,6 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
 import type { Project, ProjectFormData } from "../types/project";
 import { X, Check, GithubLogo } from "phosphor-react";
-import VerifiedBadge from "./VerifiedBadge";
 import { validateImageSize } from "../constants/upload";
 import { toast } from "react-toastify";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
@@ -39,7 +38,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         founder_vision: "",
         contributors: [],
     });
-    const [contributorInput, setContributorInput] = useState("");
+
 
     useEffect(() => {
         if (project) {
@@ -70,7 +69,6 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
             });
         }
         setTechInput("");
-        setContributorInput("");
         setError("");
     }, [project, isOpen]);
 
@@ -97,22 +95,6 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
         }));
     };
 
-    const handleAddContributor = () => {
-        if (contributorInput.trim() && !formData.contributors?.includes(contributorInput.trim())) {
-            setFormData(prev => ({
-                ...prev,
-                contributors: [...(prev.contributors || []), contributorInput.trim()]
-            }));
-            setContributorInput("");
-        }
-    };
-
-    const handleRemoveContributor = (contributorToRemove: string) => {
-        setFormData(prev => ({
-            ...prev,
-            contributors: prev.contributors?.filter(c => c !== contributorToRemove)
-        }));
-    };
 
     const handleGitHubImport = async () => {
         const repoUrl = (formData.github_repo || "").trim();
@@ -331,9 +313,10 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                zIndex: 3000,
+                zIndex: 10000,
                 padding: isMobile ? "0" : "24px 20px",
                 backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
             }}
             onClick={onClose}
         >
@@ -341,507 +324,210 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                 className="modal-content"
                 style={{
                     backgroundColor: "var(--bg-page)",
-                    borderRadius: isMobile ? "0" : "var(--radius-lg)",
+                    borderRadius: isMobile ? "0" : "24px",
                     width: "100%",
-                    maxWidth: isMobile ? "100%" : "680px",
+                    maxWidth: isMobile ? "100%" : "580px",
                     height: isMobile ? "100dvh" : "auto",
-                    maxHeight: isMobile ? "100dvh" : "90vh",
+                    maxHeight: isMobile ? "100dvh" : "85vh",
                     display: "flex",
                     flexDirection: "column",
                     position: "relative",
-                    border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-                    boxShadow: isMobile ? "none" : "0 24px 48px rgba(0,0,0,0.2)",
+                    border: isMobile ? "none" : "1px solid var(--border-hairline)",
+                    boxShadow: isMobile ? "none" : "0 24px 60px rgba(0,0,0,0.3)",
                     overflow: "hidden",
                     margin: "0",
-                    animation: "modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+                    animation: "modalEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)"
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <style>{`
                     @keyframes modalEnter {
-                        from { opacity: 0; transform: scale(0.98) translateY(10px); }
+                        from { opacity: 0; transform: scale(0.95) translateY(30px); }
                         to { opacity: 1; transform: scale(1) translateY(0); }
                     }
-                    .form-input, .form-textarea, .form-select {
+                    .project-form-input, .project-form-textarea, .project-form-select {
                         width: 100%;
-                        padding: 12px 14px;
-                        border: 0.5px solid var(--border-hairline);
-                        border-radius: var(--radius-sm);
-                        font-size: 14px;
-                        transition: all 0.15s ease;
+                        padding: 14px 16px;
+                        border: 1px solid var(--border-hairline);
+                        border-radius: 12px;
+                        font-size: 15px;
+                        transition: all 0.2s ease;
                         background-color: var(--bg-hover);
                         box-sizing: border-box;
                         outline: none;
                         font-family: var(--font-main);
                         color: var(--text-primary);
                     }
-                    .form-input:focus, .form-textarea:focus, .form-select:focus {
+                    .project-form-input:focus, .project-form-textarea:focus, .project-form-select:focus {
                         border-color: var(--text-primary);
                         background-color: var(--bg-page);
+                        box-shadow: 0 0 0 4px rgba(var(--text-primary-rgb), 0.05);
                     }
-                    .form-item-label {
+                    .project-label {
                         display: block;
-                        margin-bottom: 10px;
-                        font-family: var(--font-main);
+                        margin-bottom: 8px;
                         font-size: 13px;
-                        font-weight: 600;
+                        font-weight: 700;
                         color: var(--text-tertiary);
                     }
-                    .responsive-grid {
-                        display: grid;
-                        grid-template-columns: ${isMobile ? "1fr" : "1fr 1fr"};
-                        gap: 24px;
-                        margin-bottom: 32px;
-                    }
+                    .hide-scrollbar::-webkit-scrollbar { display: none; }
+                    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
                 `}</style>
-                {/* Fixed Header */}
-                <div style={{ 
-                    padding: isMobile ? "20px" : "24px 32px", 
-                    borderBottom: "0.5px solid var(--border-hairline)", 
-                    position: "relative",
-                    flexShrink: 0 // Prevent header from shrinking
+
+                {/* Header */}
+                <div style={{
+                    padding: "20px 24px",
+                    borderBottom: "1px solid var(--border-hairline)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexShrink: 0
                 }}>
+                    <h2 style={{ margin: 0, fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+                        {project ? "Update project" : "Launch new project"}
+                    </h2>
                     <button
                         onClick={onClose}
                         style={{
-                            position: "absolute",
-                            top: isMobile ? "18px" : "22px",
-                            right: isMobile ? "20px" : "32px",
-                            background: "transparent",
-                            border: "none",
                             width: "32px",
                             height: "32px",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             cursor: "pointer",
+                            transition: "all 0.2s",
+                            fontSize: "28px",
+                            fontWeight: 300,
+                            lineHeight: 1,
+                            padding: "0 0 3px 0",
                             color: "var(--text-tertiary)",
-                            transition: "all 0.15s ease",
-                            zIndex: 10,
+                            background: "none",
+                            border: "none",
+                            outline: "none"
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-tertiary)")}
+                        onMouseEnter={e => { e.currentTarget.style.color = "var(--text-primary)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = "var(--text-tertiary)"; }}
                     >
-                        <X size={20} weight="regular" />
+                        &times;
                     </button>
-                    <h2 className="modal-header-title" style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>
-                        {project ? "Edit project" : "New project"}
-                    </h2>
                 </div>
 
-                {/* Scrolling Content */}
-                <div style={{ 
-                    padding: isMobile ? "24px 20px" : "32px", 
-                    overflowY: "auto", 
-                    flex: 1, 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    gap: "28px",
-                    minHeight: 0 // Crucial for flexbox scroll behavior
-                }}>
+                {/* Content */}
+                <div style={{
+                    padding: "24px 32px",
+                    overflowY: "auto",
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "24px"
+                }} className="hide-scrollbar">
                     {error && (
-                        <div style={{
-                            backgroundColor: "rgba(239, 68, 68, 0.05)",
-                            color: "#ef4444",
-                            padding: "12px 16px",
-                            borderRadius: "var(--radius-sm)",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                            border: "0.5px solid #ef4444",
-                        }}>
+                        <div style={{ backgroundColor: "rgba(239, 68, 68, 0.05)", color: "#ef4444", padding: "14px", borderRadius: "12px", fontSize: "13px", fontWeight: 700, border: "1px solid rgba(239, 68, 68, 0.2)" }}>
                             {error}
                         </div>
                     )}
 
                     <div>
-                        <label className="form-item-label">
-                            Project name *
-                        </label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleInputChange}
-                            className="form-input"
-                            placeholder="My awesome project"
-                        />
+                        <label className="project-label">Project name *</label>
+                        <input type="text" name="title" value={formData.title} onChange={handleInputChange} className="project-form-input" placeholder="e.g. Lumina AI" />
                     </div>
 
                     <div>
-                        <label className="form-item-label">
-                            Project description *
-                        </label>
-                        <textarea
-                            name="description"
-                            value={formData.description}
-                            onChange={handleInputChange}
-                            rows={3}
-                            className="form-textarea"
-                            placeholder="A brief overview of your project"
-                        />
+                        <label className="project-label">Short description *</label>
+                        <textarea name="description" value={formData.description} onChange={handleInputChange} rows={2} className="project-form-textarea" placeholder="What are you building in one sentence?" />
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr 0.8fr", gap: "20px" }}>
+                        <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                                <label className="project-label" style={{ marginBottom: 0 }}>GitHub repo</label>
+                                <button type="button" onClick={handleGitHubImport} disabled={fetchingGitHub || !formData.github_repo} style={{ background: "none", border: "none", color: "var(--text-primary)", fontSize: "11px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", opacity: !formData.github_repo ? 0.4 : 1 }}>
+                                    <GithubLogo size={14} />
+                                    {fetchingGitHub ? "Importing..." : "Auto-fill from GitHub"}
+                                </button>
+                            </div>
+                            <input type="url" name="github_repo" value={formData.github_repo} onChange={handleInputChange} className="project-form-input" placeholder="https://github.com/..." />
+                        </div>
+                        <div>
+                            <label className="project-label">Status *</label>
+                            <select name="status" value={formData.status} onChange={handleInputChange} className="project-form-select">
+                                <option value="in_progress">🏗️ In progress</option>
+                                <option value="completed">🚀 Completed</option>
+                                <option value="paused">⏸️ Paused</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div>
-                        <label className="form-item-label">
-                            Founder's Vision (What's next?) (Optional)
-                        </label>
-                        <input
-                            type="text"
-                            name="founder_vision"
-                            value={formData.founder_vision}
-                            onChange={handleInputChange}
-                            maxLength={140}
-                            className="form-input"
-                            placeholder="Working on Auth... or Finalizing UI... (max 140 chars)"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="form-item-label">
-                            Technologies used *
-                        </label>
-                        <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
-                            <input
-                                type="text"
-                                value={techInput}
-                                onChange={(e) => setTechInput(e.target.value)}
-                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
-                                placeholder="e.g. React, Node.js"
-                                className="form-input"
-                                style={{ flex: 1 }}
-                            />
-                            <button
-                                type="button"
-                                onClick={handleAddTech}
-                                style={{
-                                    padding: "0 20px",
-                                    borderRadius: "var(--radius-sm)",
-                                    fontSize: "13px",
-                                    fontWeight: 600,
-                                    cursor: "pointer",
-                                    background: "transparent",
-                                    color: "var(--text-primary)",
-                                    border: "0.5px solid var(--border-hairline)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    transition: "all 0.15s ease"
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                            >
-                                Add
-                            </button>
+                        <label className="project-label">Tech stack *</label>
+                        <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+                            <input type="text" value={techInput} onChange={(e) => setTechInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())} placeholder="React, Node.js..." className="project-form-input" style={{ flex: 1 }} />
+                            <button type="button" onClick={handleAddTech} style={{ padding: "0 18px", borderRadius: "12px", fontSize: "13px", fontWeight: 800, cursor: "pointer", background: "var(--text-primary)", color: "var(--bg-page)", border: "none" }}>Add</button>
                         </div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                            {formData.technologies_used.map((tech, index) => (
-                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "6px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)" }}>
-                                    {tech}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveTech(tech)}
-                                        style={{
-                                            background: "none",
-                                            border: "none",
-                                            cursor: "pointer",
-                                            color: "var(--text-tertiary)",
-                                            fontSize: "14px",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            padding: 0
-                                        }}
-                                    >
-                                        <X size={12} weight="regular" />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-
-                    <div>
-                        <label className="form-item-label">
-                            Contributors (usernames)
-                        </label>
-                        <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
-                            <input
-                                type="text"
-                                value={contributorInput}
-                                onChange={(e) => setContributorInput(e.target.value)}
-                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddContributor())}
-                                placeholder="Enter username"
-                                className="form-input"
-                                style={{ flex: 1 }}
-                            />
-                            <button
-                                type="button"
-                                onClick={handleAddContributor}
-                                style={{
-                                    padding: "0 20px",
-                                    borderRadius: "var(--radius-sm)",
-                                    fontSize: "13px",
-                                    fontWeight: 600,
-                                    cursor: "pointer",
-                                    background: "transparent",
-                                    color: "var(--text-primary)",
-                                    border: "0.5px solid var(--border-hairline)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    transition: "all 0.15s ease"
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                            >
-                                Add
-                            </button>
-                        </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                            {(formData.contributors || []).map((contributor, index) => (
-                                <div key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--bg-hover)", color: "var(--text-primary)", padding: "6px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)" }}>
-                                    @{contributor}
-                                    <VerifiedBadge username={contributor} size="12px" />
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveContributor(contributor)}
-                                        style={{
-                                            background: "none",
-                                            border: "none",
-                                            cursor: "pointer",
-                                            color: "var(--text-tertiary)",
-                                            fontSize: "14px",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            padding: 0,
-                                            marginLeft: "4px"
-                                        }}
-                                    >
-                                        <X size={12} weight="regular" />
-                                    </button>
-                                </div>
+                            {formData.technologies_used.map((tech, i) => (
+                                <span key={i} style={{ padding: "6px 14px", borderRadius: "100px", background: "var(--bg-hover)", border: "1px solid var(--border-hairline)", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
+                                    {tech} <button onClick={() => handleRemoveTech(tech)} style={{ border: "none", background: "none", color: "var(--text-tertiary)", cursor: "pointer" }}><X size={12} /></button>
+                                </span>
                             ))}
                         </div>
                     </div>
 
                     <div>
-                        <label className="form-item-label">
-                            Project status *
-                        </label>
-                        <select
-                            name="status"
-                            value={formData.status}
-                            onChange={handleInputChange}
-                            className="form-select"
-                        >
-                            <option value="in_progress">In progress</option>
-                            <option value="completed">Completed</option>
-                            <option value="paused">Paused</option>
-                        </select>
+                        <label className="project-label">Project details (Markdown supported) *</label>
+                        <textarea name="project_details" value={formData.project_details} onChange={handleInputChange} rows={6} className="project-form-textarea" placeholder="Explain the technical details, challenges, and core features..." />
                     </div>
 
-                        <div style={{ marginBottom: "12px" }}>
-                            <label style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}>
-                                <div style={{ position: "relative", width: "18px", height: "18px" }}>
-                                    <input
-                                        type="checkbox"
-                                        name="looking_for_contributors"
-                                        checked={formData.looking_for_contributors || false}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, looking_for_contributors: e.target.checked }))}
-                                        style={{ position: "absolute", opacity: 0, width: "100%", height: "100%", cursor: "pointer" }}
-                                    />
-                                    <div style={{
-                                        width: "100%", height: "100%",
-                                        border: "0.5px solid var(--border-hairline)",
-                                        borderRadius: "var(--radius-xs)",
-                                        backgroundColor: formData.looking_for_contributors ? "var(--text-primary)" : "transparent",
-                                        display: "flex", alignItems: "center", justifyContent: "center"
-                                    }}>
-                                        {formData.looking_for_contributors && <Check size={12} weight="bold" color="var(--bg-page)" />}
-                                    </div>
-                                </div>
-                                <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--text-primary)" }}>Looking for co-founder</span>
-                            </label>
-                            <p style={{ fontSize: "13px", color: "var(--text-tertiary)", marginTop: "8px", marginLeft: "30px", lineHeight: 1.5 }}>
-                                Enable this to let other developers know you're open for a co-founder to join your mission.
-                            </p>
-                        </div>
-
-                        <div className="responsive-grid">
-                            <div>
-                                <div style={{ 
-                                    display: "flex", 
-                                    alignItems: isMobile ? "flex-start" : "center", 
-                                    flexDirection: isMobile ? "column" : "row",
-                                    justifyContent: "space-between", 
-                                    gap: isMobile ? "8px" : "10px",
-                                    marginBottom: "10px" 
-                                }}>
-                                    <label className="form-item-label" style={{ marginBottom: 0 }}>
-                                        GitHub repository
-                                    </label>
-                                    <button
-                                        type="button"
-                                        onClick={handleGitHubImport}
-                                        disabled={fetchingGitHub || !formData.github_repo}
-                                        style={{
-                                            backgroundColor: "transparent",
-                                            border: "0.5px solid var(--border-hairline)",
-                                            color: fetchingGitHub || !formData.github_repo ? "var(--text-tertiary)" : "var(--text-primary)",
-                                            padding: "6px 12px",
-                                            borderRadius: "var(--radius-sm)",
-                                            fontSize: "11px",
-                                            fontWeight: 600,
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "6px",
-                                            cursor: fetchingGitHub || !formData.github_repo ? "not-allowed" : "pointer",
-                                            transition: "all 0.15s ease"
-                                        }}
-                                        onMouseEnter={e => {
-                                            if (!fetchingGitHub && formData.github_repo) {
-                                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                                e.currentTarget.style.borderColor = "var(--text-primary)";
-                                            }
-                                        }}
-                                        onMouseLeave={e => {
-                                            e.currentTarget.style.backgroundColor = "transparent";
-                                            e.currentTarget.style.borderColor = "var(--border-hairline)";
-                                        }}
-                                    >
-                                        <GithubLogo size={14} weight="regular" />
-                                        {fetchingGitHub ? "Importing..." : "Import data"}
-                                    </button>
-                                </div>
-                                <input
-                                    type="url"
-                                    name="github_repo"
-                                    value={formData.github_repo}
-                                    onChange={handleInputChange}
-                                    placeholder="https://github.com/..."
-                                    className="form-input"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="form-item-label">
-                                    Live demo
-                                </label>
-                                <input
-                                    type="url"
-                                    name="live_demo"
-                                    value={formData.live_demo}
-                                    onChange={handleInputChange}
-                                    placeholder="https://..."
-                                    className="form-input"
-                                />
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "rgba(var(--text-primary-rgb), 0.03)", borderRadius: "16px", border: "1px solid var(--border-hairline)" }}>
+                        <div style={{ position: "relative", width: "20px", height: "20px" }}>
+                            <input type="checkbox" checked={formData.looking_for_contributors || false} onChange={(e) => setFormData(p => ({ ...p, looking_for_contributors: e.target.checked }))} style={{ position: "absolute", opacity: 0, width: "100%", height: "100%", cursor: "pointer" }} />
+                            <div style={{ width: "100%", height: "100%", border: "1px solid var(--border-hairline)", borderRadius: "6px", backgroundColor: formData.looking_for_contributors ? "var(--text-primary)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                {formData.looking_for_contributors && <Check size={14} weight="bold" color="var(--bg-page)" />}
                             </div>
                         </div>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)" }}>Open for co-founders</span>
+                            <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>Let others pitch themselves to join your mission.</span>
+                        </div>
+                    </div>
 
-                        <div style={{ marginBottom: "12px" }}>
-                            <label className="form-item-label">
-                                Cover image
-                            </label>
-                            {formData.cover_image && (
-                                <div style={{ marginBottom: "16px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
-                                    <img
-                                        src={formData.cover_image}
-                                        alt="Cover"
-                                        style={{
-                                            width: "100%",
-                                            maxHeight: "200px",
-                                            objectFit: "cover",
-                                        }}
-                                    />
+                    <div>
+                        <label className="project-label">Cover image</label>
+                        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                            {formData.cover_image ? (
+                                <div style={{ width: "80px", height: "80px", borderRadius: "12px", overflow: "hidden", border: "1px solid var(--border-hairline)", flexShrink: 0 }}>
+                                    <img src={formData.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
+                                </div>
+                            ) : (
+                                <div style={{ width: "80px", height: "80px", borderRadius: "12px", backgroundColor: "var(--bg-hover)", border: "1px dashed var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)", flexShrink: 0 }}>
+                                    <X size={24} weight="thin" />
                                 </div>
                             )}
-                            <div style={{ position: "relative" }}>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageUpload}
-                                    className="form-input"
-                                    style={{ padding: "10px" }}
-                                />
+                            <div style={{ flex: 1 }}>
+                                <input type="file" accept="image/*" onChange={handleImageUpload} className="project-form-input" style={{ fontSize: "12px" }} />
+                                <p style={{ fontSize: "11px", color: "var(--text-tertiary)", marginTop: "6px" }}>Recommended: 1280x720px. Max 5MB.</p>
                             </div>
                         </div>
-
-                    <div>
-                        <label className="form-item-label">
-                            Project details *
-                        </label>
-                        <textarea
-                            name="project_details"
-                            value={formData.project_details}
-                            onChange={handleInputChange}
-                            rows={8}
-                            className="form-textarea"
-                            placeholder="A deep dive into the technical details of your project..."
-                        />
                     </div>
                 </div>
 
-                {/* Fixed Footer */}
-                <div style={{ 
-                    padding: isMobile ? "16px 20px calc(16px + env(safe-area-inset-bottom))" : "20px 32px", 
-                    backgroundColor: "transparent", 
-                    borderTop: "0.5px solid var(--border-hairline)",
+                {/* Footer */}
+                <div style={{
+                    padding: "16px 24px",
+                    borderTop: "1px solid var(--border-hairline)",
                     display: "flex",
                     justifyContent: "flex-end",
                     gap: "12px",
-                    flexShrink: 0
+                    backgroundColor: "var(--bg-hover-light)"
                 }}>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        style={{
-                            padding: "12px 24px",
-                            backgroundColor: "transparent",
-                            color: "var(--text-secondary)",
-                            border: "0.5px solid var(--border-hairline)",
-                            borderRadius: "var(--radius-sm)",
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                            transition: "all 0.15s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                            e.currentTarget.style.color = "var(--text-primary)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = "transparent";
-                            e.currentTarget.style.color = "var(--text-secondary)";
-                        }}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        onClick={() => handleSubmit()}
-                        style={{
-                            padding: "12px 32px",
-                            backgroundColor: "var(--text-primary)",
-                            color: "var(--bg-page)",
-                            border: "none",
-                            borderRadius: "var(--radius-sm)",
-                            fontSize: "14px",
-                            fontWeight: 700,
-                            cursor: loading ? "not-allowed" : "pointer",
-                            opacity: loading ? 0.7 : 1,
-                            transition: "all 0.15s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            if (!loading) e.currentTarget.style.opacity = "0.9";
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!loading) e.currentTarget.style.opacity = "1";
-                        }}
-                    >
-                        {loading ? "Processing..." : project ? "Update project" : "Launch project"}
+                    <button type="button" onClick={onClose} style={{ padding: "12px 24px", borderRadius: "100px", border: "1px solid var(--border-hairline)", background: "transparent", color: "var(--text-secondary)", fontWeight: 700, fontSize: "14px", cursor: "pointer" }}>Cancel</button>
+                    <button onClick={() => handleSubmit()} disabled={loading} style={{ padding: "12px 32px", borderRadius: "100px", border: "none", background: "var(--text-primary)", color: "var(--bg-page)", fontWeight: 800, fontSize: "14px", cursor: "pointer", transition: "all 0.2s", opacity: loading ? 0.5 : 1 }}>
+                        {loading ? "Processing..." : (project ? "Save changes" : "Launch mission")}
                     </button>
                 </div>
             </div>
         </div>
     );
 
-    return createPortal(modalContent, document.body);
+    return mounted ? createPortal(modalContent, document.body) : null;
 }
