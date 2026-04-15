@@ -4,7 +4,13 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { Users, CaretUp, CaretRight, TrendUp } from "phosphor-react";
+import { CaretUp, CaretRight } from "phosphor-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    Rocket01Icon,
+    UserGroupIcon,
+    ArrowUp01Icon
+} from "@hugeicons/core-free-icons";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
 import VerifiedBadge from "./VerifiedBadge";
@@ -27,17 +33,17 @@ function RecentLaunchItem({ project }: { project: any }) {
 
     return (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }} className="sidebar-item">
-            <Link 
-                to={`/project/${project.id}`} 
+            <Link
+                to={`/project/${project.id}`}
                 style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", flex: 1, minWidth: 0 }}
             >
-                <div style={{ 
-                    width: "42px", 
-                    height: "42px", 
-                    borderRadius: "50%", 
-                    backgroundColor: "var(--bg-hover)", 
-                    display: "flex", 
-                    alignItems: "center", 
+                <div style={{
+                    width: "42px",
+                    height: "42px",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--bg-hover)",
+                    display: "flex",
+                    alignItems: "center",
                     justifyContent: "center",
                     flexShrink: 0,
                     border: "0.5px solid var(--border-hairline)",
@@ -53,13 +59,13 @@ function RecentLaunchItem({ project }: { project: any }) {
                     )}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
-                    <span style={{ 
-                        fontSize: "14px", 
-                        fontWeight: 700, 
-                        color: "var(--text-primary)", 
-                        whiteSpace: "nowrap", 
-                        overflow: "hidden", 
-                        textOverflow: "ellipsis" 
+                    <span style={{
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
                     }}>
                         {project.title}
                     </span>
@@ -70,8 +76,8 @@ function RecentLaunchItem({ project }: { project: any }) {
                     </div>
                 </div>
             </Link>
-            
-            <button 
+
+            <button
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLike(); }}
                 style={{
                     display: "flex",
@@ -91,10 +97,10 @@ function RecentLaunchItem({ project }: { project: any }) {
                 onMouseLeave={(e) => { if (!isLiked) e.currentTarget.style.backgroundColor = "transparent"; }}
             >
                 <CaretUp size={14} weight={isLiked ? "bold" : "regular"} style={{ color: isLiked ? "var(--text-primary)" : "var(--text-tertiary)", marginBottom: "-2px" }} />
-                <span style={{ 
-                    fontSize: "12px", 
-                    fontWeight: 800, 
-                    color: isLiked ? "var(--text-primary)" : "var(--text-secondary)" 
+                <span style={{
+                    fontSize: "12px",
+                    fontWeight: 800,
+                    color: isLiked ? "var(--text-primary)" : "var(--text-secondary)"
                 }}>
                     {likeCount}
                 </span>
@@ -195,7 +201,6 @@ export default function RecommendedUsersSidebar() {
                 width: "100%",
                 height: "100vh",
                 backgroundColor: "var(--bg-page)",
-                borderLeft: "0.5px solid var(--border-hairline)",
                 overflowY: "auto",
                 position: "relative",
             }}
@@ -205,10 +210,10 @@ export default function RecommendedUsersSidebar() {
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
                 .sidebar-section { padding: 24px 20px; border-bottom: 0.5px solid var(--border-hairline); }
                 .sidebar-section:last-child { border-bottom: none; }
-                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-                .sidebar-title { font-size: 14px; font-weight: 600; color: var(--text-tertiary); margin: 0; display: flex; align-items: center; gap: 8px; }
-                .sidebar-item { transition: opacity 0.15s ease; }
-                .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: var(--radius-sm); animation: skeleton-pulse 2s infinite ease-in-out; }
+                .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+                .sidebar-title { font-size: 13px; font-weight: 800; color: var(--text-tertiary); margin: 0; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+                .sidebar-item { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 12px; }
+                .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: 12px; animation: skeleton-pulse 2s infinite ease-in-out; }
                 @keyframes skeleton-pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
             `}</style>
 
@@ -216,12 +221,12 @@ export default function RecommendedUsersSidebar() {
             <div className="sidebar-section">
                 <div className="sidebar-title-row">
                     <h3 className="sidebar-title">
-                        <Users size={16} weight="regular" />
+                        <HugeiconsIcon icon={UserGroupIcon} size={16} />
                         Who to Follow
                     </h3>
                     {streakCount > 0 && <StreakBadge count={streakCount} />}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                     {followersLoading ? (
                         <div className="skeleton-pulse" />
                     ) : (
@@ -251,30 +256,30 @@ export default function RecommendedUsersSidebar() {
                                         <AvailabilityBadge
                                             avatarUrl={user.avatar_url}
                                             name={user.name || "User"}
-                                            size={44}
+                                            size={42}
                                             isOpenToOpportunities={user.is_pro && user.is_hirable}
                                             isOG={user.is_og}
                                             username={user.username}
                                         />
                                         <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
-                                                <span style={{ 
-                                                    fontSize: "14.5px", 
-                                                    fontWeight: 600, 
-                                                    color: "var(--text-primary)", 
+                                                <span style={{
+                                                    fontSize: "14px",
+                                                    fontWeight: 800,
+                                                    color: "var(--text-primary)",
                                                     overflow: "hidden",
                                                     textOverflow: "ellipsis",
                                                     whiteSpace: "nowrap"
                                                 }}>
                                                     {(user.name || "User").split(" ")[0]}
                                                 </span>
-                                                <VerifiedBadge 
-                                                    username={user.username} 
-                                                    isPro={user.is_pro || user.is_premium} 
+                                                <VerifiedBadge
+                                                    username={user.username}
+                                                    isPro={user.is_pro || user.is_premium}
                                                     size="14px"
                                                 />
                                             </div>
-                                            <span style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 400 }}>
+                                            <span style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 600, opacity: 0.7 }}>
                                                 @{user.username}
                                             </span>
                                         </div>
@@ -284,16 +289,16 @@ export default function RecommendedUsersSidebar() {
                                     onClick={() => handleFollow(user.id, user.isFollowing)}
                                     style={{
                                         padding: "0 14px",
-                                        height: "28px",
-                                        borderRadius: "var(--radius-sm)",
-                                        backgroundColor: user.isFollowing ? "transparent" : "var(--text-primary)",
+                                        height: "32px",
+                                        borderRadius: "100px",
+                                        backgroundColor: user.isFollowing ? "rgba(var(--text-primary-rgb), 0.05)" : "var(--text-primary)",
                                         color: user.isFollowing ? "var(--text-primary)" : "var(--bg-page)",
-                                        border: user.isFollowing ? "0.5px solid var(--border-hairline)" : "none",
+                                        border: user.isFollowing ? "1px solid var(--border-hairline)" : "none",
                                         fontSize: "12px",
-                                        fontWeight: 600,
+                                        fontWeight: 800,
                                         cursor: "pointer",
                                         flexShrink: 0,
-                                        transition: "all 0.15s ease"
+                                        transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)"
                                     }}
                                 >
                                     {user.isFollowing ? "Unfollow" : "Follow"}
@@ -305,58 +310,60 @@ export default function RecommendedUsersSidebar() {
             </div>
 
             {/* Sponsor Section: Don Workspace */}
-            <div className="sidebar-section" style={{ backgroundColor: "var(--bg-hover2)", borderBottom: "0.5px solid var(--border-hairline)" }}>
-                <a 
-                    href="https://www.donos.pro/" 
-                    target="_blank" 
+            <div className="sidebar-section" style={{ backgroundColor: "rgba(var(--text-primary-rgb), 0.02)" }}>
+                <a
+                    href="https://www.donos.pro/"
+                    target="_blank"
                     rel="noopener noreferrer"
                     style={{ textDecoration: "none", color: "inherit", display: "block" }}
                 >
                     <div style={{ display: "flex", alignItems: "flex-start", gap: "14px" }}>
-                        <div style={{ 
-                            width: "48px", 
-                            height: "48px", 
-                            borderRadius: "12px", 
+                        <div style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "14px",
                             overflow: "hidden",
                             backgroundColor: "#fff",
-                            border: "0.5px solid var(--border-hairline)",
+                            border: "1px solid var(--border-hairline)",
                             flexShrink: 0,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            padding: "4px"
+                            padding: "4px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
                         }}>
-                             <img 
-                                src={donosLogo} 
-                                alt="Don Workspace" 
+                            <img
+                                src={donosLogo}
+                                alt="Don Workspace"
                                 style={{ width: "100%", height: "100%", objectFit: "contain" }}
                             />
                         </div>
                         <div style={{ minWidth: 0, flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
-                                <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Don Workspace</span>
-                                <span style={{ 
-                                    fontSize: "9px", 
-                                    fontWeight: 800, 
-                                    color: "var(--text-tertiary)", 
+                                <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)" }}>Don Workspace</span>
+                                <span style={{
+                                    fontSize: "9px",
+                                    fontWeight: 900,
+                                    color: "var(--text-primary)",
                                     letterSpacing: "0.05em",
-                                    padding: "2px 6px",
-                                    borderRadius: "4px",
-                                    backgroundColor: "var(--bg-hover)",
-                                    border: "0.5px solid var(--border-hairline)"
+                                    padding: "2px 8px",
+                                    borderRadius: "100px",
+                                    backgroundColor: "rgba(var(--text-primary-rgb), 0.1)",
+                                    border: "1px solid var(--border-hairline)"
                                 }}>SPONSOR</span>
                             </div>
-                            <p style={{ 
-                                fontSize: "12.5px", 
-                                color: "var(--text-secondary)", 
-                                lineHeight: "1.5", 
+                            <p style={{
+                                fontSize: "12px",
+                                color: "var(--text-tertiary)",
+                                lineHeight: "1.5",
                                 margin: 0,
+                                fontWeight: 500,
                                 display: "-webkit-box",
                                 WebkitLineClamp: 3,
                                 WebkitBoxOrient: "vertical",
                                 overflow: "hidden"
                             }}>
-                                The AI-powered workspace for modern builders. Organize your projects, tasks, and team in one sleek dashboard.
+                                The AI-powered workspace for modern builders. Organize your projects and team in one dashboard.
                             </p>
                         </div>
                     </div>
@@ -367,29 +374,38 @@ export default function RecommendedUsersSidebar() {
             {!trendingLoading && Array.isArray(trendingTags) && (
                 <div className="sidebar-section">
                     <div className="sidebar-title-row">
-                        <h3 className="sidebar-title" style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: "14px" }}>
-                            <TrendUp size={18} weight="bold" />
-                            Trending
+                        <h3 className="sidebar-title">
+                            <HugeiconsIcon icon={ArrowUp01Icon} size={16} />
+                            Trending Now
                         </h3>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-                        {trendingTags.map((tag: any, idx: number) => (
-                            <Link 
-                                key={tag.name} 
+                    <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                        {trendingTags.slice(0, 5).map((tag: any, idx: number) => (
+                            <Link
+                                key={tag.name}
                                 to={`/?tag=${tag.name}`}
-                                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none" }}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    textDecoration: "none",
+                                    padding: "10px 12px",
+                                    margin: "0 -12px"
+                                }}
                                 className="sidebar-item"
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(var(--text-primary-rgb), 0.03)"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                             >
                                 <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
-                                    <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)", width: "12px" }}>
+                                    <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-tertiary)", width: "16px", opacity: 0.5 }}>
                                         {idx + 1}
                                     </span>
-                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                    <span style={{ fontSize: "14.5px", fontWeight: 800, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                         #{tag.name}
                                     </span>
                                 </div>
-                                <span style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 400 }}>
-                                    {tag.count} posts
+                                <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}>
+                                    {tag.count}
                                 </span>
                             </Link>
                         ))}
@@ -402,22 +418,24 @@ export default function RecommendedUsersSidebar() {
             {!projectsLoading && projects.length > 0 && (
                 <div className="sidebar-section">
                     <div className="sidebar-title-row">
-                        <h3 className="sidebar-title" style={{ fontSize: "12px", fontWeight: "700", letterSpacing: "0.05em", color: "var(--text-primary)" }}>
-                            RECENT LAUNCHES
+                        <h3 className="sidebar-title">
+                            <HugeiconsIcon icon={Rocket01Icon} size={16} />
+                            Recent Launches
                         </h3>
                         <Link
                             to="/?type=projects"
                             style={{
-                                fontSize: "11px",
+                                fontSize: "12px",
                                 color: "var(--text-tertiary)",
                                 textDecoration: "none",
-                                fontWeight: 500,
+                                fontWeight: 700,
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "2px"
+                                gap: "4px",
+                                opacity: 0.7
                             }}
                         >
-                            All <CaretRight size={10} />
+                            View all <CaretRight size={12} weight="bold" />
                         </Link>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -427,8 +445,6 @@ export default function RecommendedUsersSidebar() {
                     </div>
                 </div>
             )}
-
-            {/* Section 4 was here */}
         </div>
     );
 }
