@@ -8,9 +8,13 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
     Cancel01Icon,
     MessageQuestionIcon,
-    SentIcon
+    SentIcon,
+    Gif01Icon,
+    Image01Icon,
+    Cancel02Icon
 } from "@hugeicons/core-free-icons";
 import { toast } from "react-toastify";
+import GifPicker from "./GifPicker";
 
 interface QuickCommentModalProps {
     isOpen: boolean;
@@ -30,6 +34,10 @@ export default function QuickCommentModal({
     authorName
 }: QuickCommentModalProps) {
     const [content, setContent] = useState("");
+    const [selectedGif, setSelectedGif] = useState<string | null>(null);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { getToken } = useClerkAuth();
     const { user } = useClerkUser();
@@ -44,14 +52,30 @@ export default function QuickCommentModal({
     useEffect(() => {
         if (isOpen) {
             setContent("");
+            setSelectedGif(null);
+            setSelectedImage(null);
+            setIsGifPickerOpen(false);
             setTimeout(() => textareaRef.current?.focus(), 150);
         }
     }, [isOpen, resourceId]);
 
     if (!isOpen) return null;
 
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) { toast.error("Max 5MB"); return; }
+        setIsUploading(true);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setSelectedImage(reader.result as string);
+            setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handleSubmit = async () => {
-        if (!content.trim() || isSubmitting) return;
+        if ((!content.trim() && !selectedGif && !selectedImage) || isSubmitting) return;
 
         setIsSubmitting(true);
         try {
@@ -60,9 +84,11 @@ export default function QuickCommentModal({
                 ? `/projects/${resourceId}/comments`
                 : `/posts/${resourceId}/comments`;
 
+            const finalContent = selectedGif ? `${content.trim()}\n${selectedGif}`.trim() : content.trim();
+
             await api.post(
                 endpoint,
-                { content: content.trim() },
+                { content: finalContent, image_url: selectedImage },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -118,7 +144,7 @@ export default function QuickCommentModal({
             >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <div style={{ padding: "8px", backgroundColor: "var(--bg-hover)", borderRadius: "100px" }}>
+                        <div style={{ padding: "8px", backgroundColor: "var(--bg-hover)", borderRadius: "100px", display: "flex" }}>
                             <HugeiconsIcon icon={MessageQuestionIcon} size={20} color="var(--text-primary)" />
                         </div>
                         <span style={{ fontWeight: 800, fontSize: "17px", color: "var(--text-primary)" }}>
@@ -160,6 +186,32 @@ export default function QuickCommentModal({
                         }}
                     />
                     <div style={{ flex: 1 }}>
+                        {(selectedGif || selectedImage) && (
+                            <div style={{ marginBottom: "16px", display: "flex", gap: "12px", flexWrap: "wrap", animation: "reactionFadeUpSimple 0.2s ease-out" }}>
+                                {selectedGif && (
+                                    <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden", border: "1.5px solid var(--border-hairline)", width: "fit-content" }}>
+                                        <img src={selectedGif} alt="GIF" style={{ maxHeight: "150px", opacity: 1, display: "block" }} />
+                                        <button
+                                            onClick={() => setSelectedGif(null)}
+                                            style={{ position: "absolute", top: "6px", right: "6px", backgroundColor: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", width: "22px", height: "22px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                        >
+                                            <HugeiconsIcon icon={Cancel02Icon} size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                                {selectedImage && (
+                                    <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden", border: "1.5px solid var(--border-hairline)", width: "fit-content" }}>
+                                        <img src={selectedImage} alt="Image" style={{ maxHeight: "150px", opacity: 1, display: "block" }} />
+                                        <button
+                                            onClick={() => setSelectedImage(null)}
+                                            style={{ position: "absolute", top: "6px", right: "6px", backgroundColor: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", width: "22px", height: "22px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                        >
+                                            <HugeiconsIcon icon={Cancel02Icon} size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <textarea
                             ref={textareaRef}
                             value={content}
@@ -168,7 +220,7 @@ export default function QuickCommentModal({
                             placeholder="What's your reply?"
                             style={{
                                 width: "100%",
-                                minHeight: "140px",
+                                minHeight: "100px",
                                 backgroundColor: "transparent",
                                 border: "none",
                                 outline: "none",
@@ -186,27 +238,74 @@ export default function QuickCommentModal({
 
                 <div style={{
                     display: "flex",
-                    justifyContent: "flex-end",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     marginTop: "24px",
                     paddingTop: "20px",
                     borderTop: "0.5px solid var(--border-hairline)"
                 }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center", position: "relative" }}>
+                        <button
+                            type="button"
+                            onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                            style={{
+                                display: "flex", alignItems: "center", gap: "6px", padding: "10px",
+                                backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
+                                color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
+                                border: "0.5px solid var(--border-hairline)", borderRadius: "14px",
+                                cursor: "pointer", transition: "all 0.2s ease"
+                            }}
+                            onMouseEnter={(e) => !isGifPickerOpen && (e.currentTarget.style.backgroundColor = "var(--bg-hover)")}
+                            onMouseLeave={(e) => !isGifPickerOpen && (e.currentTarget.style.backgroundColor = "transparent")}
+                        >
+                            <HugeiconsIcon icon={Gif01Icon} size={20} />
+                        </button>
+
+                        <label style={{
+                            display: "flex", alignItems: "center", gap: "6px", padding: "10px",
+                            backgroundColor: "transparent", color: "var(--text-tertiary)",
+                            border: "0.5px solid var(--border-hairline)", borderRadius: "14px",
+                            cursor: "pointer", transition: "all 0.2s ease"
+                        }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                        >
+                            <HugeiconsIcon icon={Image01Icon} size={20} />
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                style={{ display: "none" }}
+                                disabled={isUploading}
+                            />
+                        </label>
+
+                        {isGifPickerOpen && (
+                            <div style={{ position: "absolute", bottom: "calc(100% + 15px)", left: 0, zIndex: 13000, animation: "reactionFadeUpSimple 0.2s ease-out" }}>
+                                <GifPicker
+                                    onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }}
+                                    onClose={() => setIsGifPickerOpen(false)}
+                                />
+                            </div>
+                        )}
+                    </div>
+
                     <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                        <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}>
-                            Ctrl + Enter to post
+                        <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }} className="hide-mobile">
+                            Ctrl + Enter
                         </span>
                         <button
                             onClick={handleSubmit}
-                            disabled={!content.trim() || isSubmitting}
+                            disabled={(!content.trim() && !selectedGif && !selectedImage) || isSubmitting || isUploading}
                             style={{
                                 padding: "12px 28px",
                                 borderRadius: "100px",
-                                backgroundColor: content.trim() ? "var(--text-primary)" : "var(--bg-hover)",
-                                color: content.trim() ? "var(--bg-page)" : "var(--text-tertiary)",
+                                backgroundColor: (content.trim() || selectedGif || selectedImage) ? "var(--text-primary)" : "var(--bg-hover)",
+                                color: (content.trim() || selectedGif || selectedImage) ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
                                 fontSize: "14px",
                                 fontWeight: 800,
-                                cursor: content.trim() ? "pointer" : "default",
+                                cursor: (content.trim() || selectedGif || selectedImage) ? "pointer" : "default",
                                 transition: "all 0.2s ease",
                                 display: "flex",
                                 alignItems: "center",
@@ -217,7 +316,7 @@ export default function QuickCommentModal({
                                 <div className="loading-spinner-tiny" />
                             ) : (
                                 <>
-                                    Post reply
+                                    {isUploading ? "Wait" : "Post reply"}
                                     <HugeiconsIcon icon={SentIcon} size={18} />
                                 </>
                             )}
