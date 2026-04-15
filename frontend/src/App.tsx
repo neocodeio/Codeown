@@ -350,9 +350,10 @@ export default function App() {
     return () => { if (interval) clearInterval(interval); };
   }, [isSignedIn, user?.id]);
 
-  // Global axios interceptor for auth
+  // Global axios interceptors
   useEffect(() => {
-    const interceptor = api.interceptors.request.use(async (config) => {
+    // Auth Interceptor
+    const requestInterceptor = api.interceptors.request.use(async (config) => {
       try {
         const token = await getToken();
         if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -360,7 +361,78 @@ export default function App() {
       } catch (err) { }
       return config;
     });
-    return () => { api.interceptors.request.eject(interceptor); };
+
+    // Rate Limit/Error Interceptor
+    const responseInterceptor = api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 429) {
+          sonnerToast.custom((t) => (
+            <div style={{
+              width: "356px",
+              background: "var(--bg-card)",
+              color: "var(--text-primary)",
+              border: "1px solid #ef4444", // Red border for rate limit
+              borderRadius: "var(--radius-sm)",
+              padding: "12px 16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+              fontFamily: "var(--font-main)",
+              fontWeight: 700,
+              fontSize: "13px",
+              backdropFilter: "blur(12px)",
+              animation: "shake 0.5s cubic-bezier(.36,.07,.19,.97) both",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontSize: "18px" }}>🛑</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <span style={{ color: "#ef4444" }}>Slow down, builder!</span>
+                  <span style={{ opacity: 0.7, fontSize: "11px", fontWeight: 500 }}>
+                    {error.response.data?.error || "You're sending requests too fast. Please wait a bit."}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => sonnerToast.dismiss(t)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "inherit",
+                  cursor: "pointer",
+                  padding: "4px",
+                  opacity: 0.5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <X size={16} weight="bold" />
+              </button>
+              <style>{`
+                @keyframes shake {
+                  10%, 90% { transform: translate3d(-1px, 0, 0); }
+                  20%, 80% { transform: translate3d(2px, 0, 0); }
+                  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+                  40%, 60% { transform: translate3d(4px, 0, 0); }
+                }
+              `}</style>
+            </div>
+          ), {
+            id: "rate-limit-toast", // Prevent duplicates
+            duration: 4000,
+            position: "bottom-right"
+          });
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      api.interceptors.request.eject(requestInterceptor);
+      api.interceptors.response.eject(responseInterceptor);
+    };
   }, [getToken, user?.id]);
 
   // Onboarding check
