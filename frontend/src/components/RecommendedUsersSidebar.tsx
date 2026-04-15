@@ -19,7 +19,7 @@ import { formatRelativeDate } from "../utils/date";
 import { useProjectLikes } from "../hooks/useProjectLikes";
 
 import AvailabilityBadge from "./AvailabilityBadge";
-import donosLogo from "../assets/donos.logo.png";
+// import donosLogo from "../assets/donos.logo.png";
 
 const getInitials = (title: string) => {
     const parts = title.trim().split(/\s+/);
@@ -311,7 +311,7 @@ export default function RecommendedUsersSidebar() {
             </div>
 
             {/* Sponsor Section: Don Workspace */}
-            <div className="sidebar-section" style={{ backgroundColor: "rgba(var(--text-primary-rgb), 0.02)" }}>
+            {/* <div className="sidebar-section" style={{ backgroundColor: "rgba(var(--text-primary-rgb), 0.02)" }}>
                 <a
                     href="https://www.donos.pro/"
                     target="_blank"
@@ -369,7 +369,7 @@ export default function RecommendedUsersSidebar() {
                         </div>
                     </div>
                 </a>
-            </div>
+            </div> */}
 
             {/* Section 4: Trending */}
             {!trendingLoading && Array.isArray(trendingTags) && (
