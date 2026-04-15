@@ -218,12 +218,16 @@ export default function Navbar() {
               <span>Notifications</span>
             </Link>
             <div
-              onClick={() => setIsPostSelectorOpen(!isPostSelectorOpen)}
-              style={{ ...linkStyle(""), cursor: "pointer", position: "relative", marginBottom: "4px" }}
+              style={{ position: "relative", marginBottom: "4px" }}
               ref={postSelectorRef}
             >
-              <HugeiconsIcon icon={PlusSignIcon} size={20} />
-              <span>Post</span>
+              <div
+                onClick={() => setIsPostSelectorOpen(!isPostSelectorOpen)}
+                style={{ ...linkStyle(""), cursor: "pointer", marginBottom: 0 }}
+              >
+                <HugeiconsIcon icon={PlusSignIcon} size={20} />
+                <span>Post</span>
+              </div>
 
               {isPostSelectorOpen && (
                 <div style={{
@@ -232,14 +236,12 @@ export default function Navbar() {
                   left: 0,
                   right: 0,
                   marginBottom: "8px",
-                  backgroundColor: "rgba(var(--bg-card-rgb), 0.9)",
-                  backdropFilter: "blur(20px)",
+                  backgroundColor: "var(--bg-page)",
                   border: "1px solid var(--border-hairline)",
                   borderRadius: "18px",
                   padding: "6px",
-                  zIndex: 2000,
-                  boxShadow: "var(--shadow-lg)",
-                  animation: "reactionFadeUp 0.15s ease-out"
+                  zIndex: 2200,
+                  animation: "reactionFadeUpSimple 0.15s ease-out"
                 }}>
                   <div
                     onClick={(e) => { e.stopPropagation(); setIsModalOpen(true); setIsPostSelectorOpen(false); }}
@@ -247,7 +249,7 @@ export default function Navbar() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                     style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", transition: "all 0.15s ease" }}
                   >
-                    <HugeiconsIcon icon={PlusSignIcon} size={16} /> Add post
+                    <HugeiconsIcon icon={PlusSignIcon} size={16} /> <span style={{ color: "var(--text-primary)" }}>Add post</span>
                   </div>
                   <div
                     onClick={(e) => { e.stopPropagation(); setIsProjectModalOpen(true); setIsPostSelectorOpen(false); }}
@@ -255,7 +257,7 @@ export default function Navbar() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                     style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", transition: "all 0.15s ease" }}
                   >
-                    <HugeiconsIcon icon={Rocket01Icon} size={16} /> Launch project
+                    <HugeiconsIcon icon={Rocket01Icon} size={16} /> <span style={{ color: "var(--text-primary)" }}>Launch project</span>
                   </div>
                 </div>
               )}
@@ -346,7 +348,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(var(--bg-page-rgb), 0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "space-around", alignItems: "center", padding: "0 8px env(safe-area-inset-bottom, 16px) 8px", height: "calc(64px + env(safe-area-inset-bottom, 0px))", zIndex: 2000 }}>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, backgroundColor: "var(--bg-page)", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "space-around", alignItems: "center", padding: "0 8px env(safe-area-inset-bottom, 16px) 8px", height: "calc(64px + env(safe-area-inset-bottom, 0px))", zIndex: 2000 }}>
         <Link to="/" style={{ flex: 1, display: "flex", justifyContent: "center", color: location.pathname === "/" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Home01Icon} size={22} /></Link>
         <Link to="/search" style={{ flex: 1, display: "flex", justifyContent: "center", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Search01Icon} size={22} /></Link>
 

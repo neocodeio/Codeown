@@ -352,6 +352,31 @@ textarea:focus {
   }
 }
 
+@keyframes reactionFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) translateX(-50%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}
+
+/* Base version for static centering */
+@keyframes reactionFadeUpSimple {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Navbar specific */
 .nav-link {
   font-weight: 700;
