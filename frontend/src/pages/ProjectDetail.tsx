@@ -14,7 +14,7 @@ import { CaretLeft, Globe, GithubLogo, Star, BookmarkSimple, ShareNetwork, Hands
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
-import ProjectChangelog from "../components/ProjectChangelog";
+import PostCard from "../components/PostCard";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import CoFounderRequestModal from "../components/CoFounderRequestModal";
 import { toast } from "react-toastify";
@@ -42,7 +42,7 @@ export default function ProjectDetail() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isCofounderModalOpen, setIsCofounderModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"details" | "changelog">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "posts">("details");
 
   const viewLogged = useRef(false);
 
@@ -86,6 +86,20 @@ export default function ProjectDetail() {
       return { isLiked: likeRes.data.isLiked, isSaved: savedRes.data.isSaved };
     },
     enabled: !!id && !!currentUser?.id,
+    staleTime: 1 * 60 * 1000,
+  });
+
+  // 3. Fetch Project Posts
+  const { data: postsData = { posts: [] }, isLoading: postsLoading, refetch: refetchPosts } = useQuery({
+    queryKey: ["projectPosts", id],
+    queryFn: async () => {
+      const token = await getToken();
+      const response = await api.get(`/posts?projectId=${id}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      return response.data;
+    },
+    enabled: !!id && activeTab === "posts",
     staleTime: 1 * 60 * 1000,
   });
 
@@ -472,13 +486,13 @@ export default function ProjectDetail() {
                   Project Details
                 </button>
                 <button
-                  onClick={() => setActiveTab("changelog")}
+                  onClick={() => setActiveTab("posts")}
                   style={{
                     padding: "12px 24px",
                     background: "none",
                     border: "none",
-                    borderBottom: activeTab === "changelog" ? "3px solid var(--text-primary)" : "3px solid transparent",
-                    color: activeTab === "changelog" ? "var(--text-primary)" : "var(--text-tertiary)",
+                    borderBottom: activeTab === "posts" ? "3px solid var(--text-primary)" : "3px solid transparent",
+                    color: activeTab === "posts" ? "var(--text-primary)" : "var(--text-tertiary)",
                     fontWeight: 800,
                     fontSize: "14px",
                     cursor: "pointer",
@@ -486,7 +500,7 @@ export default function ProjectDetail() {
                     transition: "all 0.2s ease"
                   }}
                 >
-                  Changelog
+                  Posts
                 </button>
               </div>
 
@@ -545,7 +559,25 @@ export default function ProjectDetail() {
                     </div>
                   </div>
                 ) : (
-                  <ProjectChangelog projectId={Number(id)} isOwner={isOwnProject} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1px", backgroundColor: "var(--border-hairline)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", overflow: "hidden" }}>
+                    {postsLoading ? (
+                      <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", backgroundColor: "var(--bg-page)" }}>
+                        Loading posts...
+                      </div>
+                    ) : postsData.posts.length === 0 ? (
+                      <div style={{ padding: "80px 40px", textAlign: "center", color: "var(--text-tertiary)", backgroundColor: "var(--bg-page)" }}>
+                        <Rocket size={40} weight="thin" style={{ marginBottom: "16px", opacity: 0.5 }} />
+                        <p style={{ fontWeight: 700, color: "var(--text-primary)", margin: "0 0 8px" }}>No ships yet</p>
+                        <p style={{ fontSize: "13px" }}>Every post tagged with this project will appear here.</p>
+                      </div>
+                    ) : (
+                      postsData.posts.map((post: any) => (
+                        <div key={post.id} style={{ backgroundColor: "var(--bg-page)" }}>
+                          <PostCard post={post} onUpdated={refetchPosts} />
+                        </div>
+                      ))
+                    )}
+                  </div>
                 )}
               </div>
             </div>

@@ -7,8 +7,8 @@ import { GamificationService } from "../services/gamification.service.js";
 
 export async function getPosts(req: Request, res: Response) {
   try {
-    const { page = "1", limit = "10", filter = "all", tag, lang } = req.query;
-    console.log("getPosts query params:", { page, limit, filter, tag, lang });
+    const { page = "1", limit = "10", filter = "all", tag, lang, projectId } = req.query;
+    console.log("getPosts query params:", { page, limit, filter, tag, lang, projectId });
 
     const pageNum = parseInt(page as string, 10) || 1;
     const limitNum = parseInt(limit as string, 10) || 10;
@@ -28,6 +28,10 @@ export async function getPosts(req: Request, res: Response) {
 
     if (tag) {
       postsQuery = postsQuery.contains("tags", [tag]);
+    }
+
+    if (projectId) {
+      postsQuery = postsQuery.eq("project_id", projectId);
     }
 
     if (String(filter).toLowerCase() === "following") {
