@@ -303,7 +303,7 @@ export default function QuickCommentModal({
                             disabled={(!content.trim() && !selectedGif && !selectedImage) || isSubmitting || isUploading}
                             style={{
                                 padding: "12px 28px",
-                                borderRadius: "100px",
+                                borderRadius: "100%",
                                 backgroundColor: (content.trim() || selectedGif || selectedImage) ? "var(--text-primary)" : "var(--bg-hover)",
                                 color: (content.trim() || selectedGif || selectedImage) ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
