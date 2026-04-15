@@ -9,12 +9,17 @@ import ImageSlider from "./ImageSlider";
 import ContentRenderer, { CodeBlock } from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
-import { ChatCircle, Heart, BookmarkSimple, ShareNetwork, DotsThree, PencilSimple, Trash, ChartBar, PaperPlaneTilt, PushPin, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip } from "phosphor-react";
+import { DotsThree, PencilSimple, Trash, ChartBar, PushPin, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { 
-    WorkIcon, 
-    HourglassIcon, 
-    ConfusedIcon 
+import {
+  WorkIcon,
+  HourglassIcon,
+  ConfusedIcon,
+  Comment01Icon,
+  FavouriteIcon,
+  Bookmark02Icon,
+  Share01Icon,
+  SentIcon
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -180,9 +185,9 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
     try {
       const token = await getToken();
       await api.post(`/posts/${post.id}/vote`, {
-          optionIndex
+        optionIndex
       }, {
-          headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setVotedOption(optionIndex);
       toast.success("Vote recorded!");
@@ -313,17 +318,17 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               {post.project && (
                 <>
                   <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
-                  <div 
+                  <div
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/project/${post.project?.id}`);
                     }}
-                    style={{ 
-                      display: "flex", 
-                      alignItems: "center", 
-                      gap: "4px", 
-                      fontSize: "12.5px", 
-                      color: "#0096ff", 
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      fontSize: "12.5px",
+                      color: "#0096ff",
                       fontWeight: 600,
                       cursor: "pointer",
                       padding: "1px 6px",
@@ -345,115 +350,114 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             {post.post_type && (
-                <span style={{ 
-                  fontSize: "9.5px", 
-                  fontWeight: 900, 
-                  color: "var(--text-primary)",
-                  backgroundColor: "var(--bg-hover)",
-                  padding: "2px 10px",
-                  borderRadius: "100px",
-                  display: isMobile ? "none" : "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  border: `0.5px solid ${
-                    post.post_type === "Update" ? "var(--border-hairline)" :
-                    post.post_type === "WIP" ? "rgba(255, 170, 0, 0.4)" :
+              <span style={{
+                fontSize: "9.5px",
+                fontWeight: 900,
+                color: "var(--text-primary)",
+                backgroundColor: "var(--bg-hover)",
+                padding: "2px 10px",
+                borderRadius: "100px",
+                display: isMobile ? "none" : "flex",
+                alignItems: "center",
+                gap: "4px",
+                border: `0.5px solid ${post.post_type === "Update" ? "var(--border-hairline)" :
+                  post.post_type === "WIP" ? "rgba(255, 170, 0, 0.4)" :
                     post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.4)" :
-                    "rgba(168, 85, 247, 0.4)"
+                      "rgba(168, 85, 247, 0.4)"
                   }`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  transition: "all 0.2s ease"
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                transition: "all 0.2s ease"
+              }}>
+                <span style={{
+                  display: "flex",
+                  alignItems: "center",
+                  color: post.post_type === "Update" ? "var(--text-tertiary)" :
+                    post.post_type === "WIP" ? "#ffaa00" :
+                      post.post_type === "Stuck" ? "#ff4d4f" :
+                        "#a855f7"
                 }}>
-                  <span style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    color: post.post_type === "Update" ? "var(--text-tertiary)" :
-                           post.post_type === "WIP" ? "#ffaa00" :
-                           post.post_type === "Stuck" ? "#ff4d4f" :
-                           "#a855f7"
-                  }}>
-                    {post.post_type === "Update" && <ArrowsClockwise size={11} weight="bold" />}
-                    {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={11} />}
-                    {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={11} />}
-                    {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={11} />}
-                  </span>
-                  {post.post_type}
+                  {post.post_type === "Update" && <ArrowsClockwise size={11} weight="bold" />}
+                  {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={11} />}
+                  {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={11} />}
+                  {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={11} />}
                 </span>
-              )}
+                {post.post_type}
+              </span>
+            )}
 
             {isOwnPost && (
               <div style={{ position: "relative" }} ref={menuRef}>
-                  <button
-                    onClick={toggleMenu}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      color: "var(--text-tertiary)",
-                      cursor: "pointer",
-                      padding: "4px",
-                      borderRadius: "var(--radius-md)",
-                      transition: "all 0.15s ease",
-                      display: "flex",
-                      alignItems: "center"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-                    onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
-                  >
-                    <DotsThree size={22} weight="thin" />
-                  </button>
+                <button
+                  onClick={toggleMenu}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--text-tertiary)",
+                    cursor: "pointer",
+                    padding: "4px",
+                    borderRadius: "var(--radius-md)",
+                    transition: "all 0.15s ease",
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                >
+                  <DotsThree size={22} weight="thin" />
+                </button>
 
-              {isMenuOpen && (
-                <div style={{
-                  position: "absolute",
-                  top: "100%",
-                  right: "0",
-                  marginTop: "4px",
-                  backgroundColor: "var(--bg-card)",
-                  border: "0.5px solid var(--border-hairline)",
-                  borderRadius: "var(--radius-md)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-                  zIndex: 100,
-                  minWidth: "160px",
-                  padding: "6px",
-                  animation: "dropdownFadeIn 0.15s ease-out"
-                }}>
-                  {[
+                {isMenuOpen && (
+                  <div style={{
+                    position: "absolute",
+                    top: "100%",
+                    right: "0",
+                    marginTop: "4px",
+                    backgroundColor: "var(--bg-card)",
+                    border: "0.5px solid var(--border-hairline)",
+                    borderRadius: "var(--radius-md)",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+                    zIndex: 100,
+                    minWidth: "160px",
+                    padding: "6px",
+                    animation: "dropdownFadeIn 0.15s ease-out"
+                  }}>
+                    {[
                       { icon: PencilSimple, label: "Edit post", onClick: handleEdit, color: "var(--text-primary)" },
                       { icon: PushPin, label: isPinned ? "Unpin from profile" : "Pin to profile", onClick: handlePinPost, color: "var(--text-primary)", weight: isPinned ? "fill" : "regular" },
                       { icon: Trash, label: "Delete post", onClick: handleDeleteClick, color: "#ff4d4f" }
-                  ].map((item, i) => (
-                    <button
-                      key={i}
-                      onClick={item.onClick}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        width: "100%",
-                        padding: "10px 12px",
-                        background: "none",
-                        border: "none",
-                        color: item.color,
-                        fontSize: "13px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        borderRadius: "var(--radius-sm)",
-                        transition: "background-color 0.15s linear"
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = item.color === "#ff4d4f" ? "rgba(255, 77, 79, 0.1)" : "var(--bg-hover)"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    >
-                      <item.icon size={16} weight={(item as any).weight || "regular"} />
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                    ].map((item, i) => (
+                      <button
+                        key={i}
+                        onClick={item.onClick}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          width: "100%",
+                          padding: "10px 12px",
+                          background: "none",
+                          border: "none",
+                          color: item.color,
+                          fontSize: "13px",
+                          fontWeight: 500,
+                          cursor: "pointer",
+                          borderRadius: "var(--radius-sm)",
+                          transition: "background-color 0.15s linear"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = item.color === "#ff4d4f" ? "rgba(255, 77, 79, 0.1)" : "var(--bg-hover)"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <item.icon size={16} weight={(item as any).weight || "regular"} />
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
         {/* Post Text */}
         <div style={{
@@ -468,21 +472,21 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
           overflowWrap: "break-word"
         }}>
           {post.title && <h2 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: "0 0 8px", letterSpacing: "-0.02em" }}>{post.title}</h2>}
-          
+
           <div style={{ position: "relative" }}>
-            <ContentRenderer 
-              content={!isExpanded && post.content.length > 300 
-                ? post.content.substring(0, 300) + "..." 
+            <ContentRenderer
+              content={!isExpanded && post.content.length > 300
+                ? post.content.substring(0, 300) + "..."
                 : post.content
-              } 
+              }
             />
-            
+
             {(post as any).code_snippet && (
               <div style={{ marginTop: "16px" }}>
                 <CodeBlock language="typescript" code={(post as any).code_snippet} />
               </div>
             )}
-            
+
             {post.content.length > 300 && (
               <button
                 onClick={(e) => {
@@ -571,13 +575,13 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       <Paperclip size={18} color="var(--text-primary)" />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                      <span style={{ 
-                        fontSize: "13px", 
-                        fontWeight: 700, 
-                        color: "var(--text-primary)", 
-                        whiteSpace: "nowrap", 
-                        overflow: "hidden", 
-                        textOverflow: "ellipsis" 
+                      <span style={{
+                        fontSize: "13px",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
                       }}>
                         {file.name}
                       </span>
@@ -609,7 +613,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               <ChartBar size={18} weight="bold" color="var(--text-primary)" />
               <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>Poll</span>
             </div>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {post.poll.options.map((option, idx) => {
                 const votes = post.poll?.votes || {};
@@ -677,51 +681,51 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               })}
             </div>
             <div style={{ marginTop: "4px" }}>
-               <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
-                  {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} votes • {votedOption !== null ? "Final results" : "Select an option to vote"}
-               </span>
+              <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
+                {Object.values(post.poll?.votes || {}).reduce((a: number, b: any) => a + Number(b), 0) + (votedOption !== null && post.poll && !post.poll.votes?.[votedOption] ? 1 : 0)} votes • {votedOption !== null ? "Final results" : "Select an option to vote"}
+              </span>
             </div>
           </div>
         )}
 
         {/* Interaction Tray */}
-        <div style={{ 
-          display: "flex", 
-          marginTop: isMobile ? "8px" : "12px",
-          gap: isMobile ? "0" : "var(--post-interact-gap, 48px)", 
+        <div style={{
+          display: "flex",
+          marginTop: isMobile ? "24px" : "32px",
+          gap: isMobile ? "32px" : "64px",
           alignItems: "center",
-          justifyContent: isMobile ? "space-between" : "flex-start",
+          justifyContent: "flex-start",
           paddingRight: isMobile ? "0" : "0"
         }}>
-          { [
-            { 
-              icon: ChatCircle, 
-              count: post.comment_count, 
-              onClick: handleComment, 
-              hoverColor: "var(--text-primary)",
-            },
-            { 
-              icon: Heart, 
-              count: likeCount, 
-              onClick: handleLike, 
-              active: isLiked, 
-              activeColor: "#ef4444",
-              weight: isLiked ? "fill" as const : "thin" as const
-            },
-            { 
-              icon: BookmarkSimple, 
-              onClick: handleSave, 
-              active: isSaved, 
-              activeColor: "var(--text-primary)",
-              weight: isSaved ? "fill" as const : "thin" as const
-            },
-            { 
-              icon: ShareNetwork, 
-              onClick: handleShare, 
+          {[
+            {
+              icon: Comment01Icon,
+              count: post.comment_count,
+              onClick: handleComment,
               hoverColor: "var(--text-primary)",
             },
             {
-              icon: PaperPlaneTilt,
+              icon: FavouriteIcon,
+              count: likeCount,
+              onClick: handleLike,
+              active: isLiked,
+              activeColor: "#ef4444",
+              filled: isLiked
+            },
+            {
+              icon: Bookmark02Icon,
+              onClick: handleSave,
+              active: isSaved,
+              activeColor: "var(--text-primary)",
+              filled: isSaved
+            },
+            {
+              icon: Share01Icon,
+              onClick: handleShare,
+              hoverColor: "var(--text-primary)",
+            },
+            {
+              icon: SentIcon,
               onClick: handleSendToChat,
               hoverColor: "var(--text-primary)",
             }
@@ -737,18 +741,22 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
                   transition: "all 0.2s ease",
                   fontSize: "13px",
-                  fontWeight: 500
+                  fontWeight: 600
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === Heart ? "#ef4444" : "var(--text-primary)");
+                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === FavouriteIcon ? "#ef4444" : "var(--text-primary)");
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
                 }}
               >
-                <Icon size={20} weight={action.weight || "regular"} />
-                {Icon === Heart ? (
-                  <RollingNumber value={action.count || 0} fontWeight={500} fontSize="13px" color="inherit" />
+                <HugeiconsIcon
+                  icon={Icon}
+                  size={20}
+                  className={action.active && (Icon === FavouriteIcon || Icon === Bookmark02Icon) ? "hugeicon-filled" : ""}
+                />
+                {Icon === FavouriteIcon ? (
+                  <RollingNumber value={action.count || 0} fontWeight={600} fontSize="13px" color="inherit" />
                 ) : (
                   action.count !== undefined && action.count > 0 && (
                     <span>{action.count}</span>
@@ -790,10 +798,10 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         confirmLabel="Delete"
         isLoading={isDeleting}
       />
-      <Lightbox 
-        isOpen={isLightboxOpen} 
-        onClose={() => setIsLightboxOpen(false)} 
-        imageSrc={lightboxImage} 
+      <Lightbox
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        imageSrc={lightboxImage}
       />
       {postCardContent}
     </>

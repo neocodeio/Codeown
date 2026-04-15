@@ -7,7 +7,15 @@ import { useProjectSaved } from "../hooks/useProjectSaved";
 import api from "../api/axios";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
-import { ShareNetwork, ArrowCircleUp, ChatCircle, BookmarkSimple, PencilSimple, Trash, DotsThree, PaperPlaneTilt, PushPin, Sparkle } from "phosphor-react";
+import { DotsThree, PencilSimple, Trash, PushPin, Sparkle } from "phosphor-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowUp02Icon,
+  Comment01Icon,
+  Bookmark02Icon,
+  Share01Icon,
+  SentIcon
+} from "@hugeicons/core-free-icons";
 
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -17,7 +25,7 @@ const TechIcon = ({ name, size = 12 }: { name: string, size?: number }) => {
   // Normalize: remove dots (next.js -> nextjs), handle spaces, etc.
   const input = name.toLowerCase().trim();
   const normalized = input.replace(/\.js$/, "").replace(/\.js\s/, "").replace(/\./g, "dot");
-  
+
   const iconMap: Record<string, string> = {
     react: "react",
     reactjs: "react",
@@ -73,22 +81,22 @@ const TechIcon = ({ name, size = 12 }: { name: string, size?: number }) => {
     openai: "openai",
     anthropic: "anthropic",
   };
-  
+
   const slug = iconMap[normalized] || iconMap[input] || null;
-  
+
   if (slug) {
     // Using official brand colors (removed /fff) so they are visible on light & dark mode
     const url = `https://cdn.simpleicons.org/${slug}`;
-    return <img 
-      src={url} 
-      alt={name} 
-      style={{ 
-        width: size, 
-        height: size, 
-        opacity: 0.9, 
+    return <img
+      src={url}
+      alt={name}
+      style={{
+        width: size,
+        height: size,
+        opacity: 0.9,
         display: "block",
-        transition: "transform 0.15s ease" 
-      }} 
+        transition: "transform 0.15s ease"
+      }}
       onLoad={(e) => (e.currentTarget.style.display = "block")}
       onError={(e) => (e.currentTarget.style.display = "none")}
     />;
@@ -326,9 +334,9 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 onClick={handleUserClick}
                 style={{
                   fontSize: "15px",
-                  fontWeight: 600,
+                  fontWeight: 800,
                   color: "var(--text-primary)",
-                  letterSpacing: "-0.012em",
+                  letterSpacing: "-0.015em",
                   cursor: "pointer"
                 }}
               >
@@ -343,7 +351,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
               {formatRelativeDate(project.created_at)}
             </span>
-            
+
             {project.looking_for_contributors && (
               <>
                 <span style={{ color: "var(--border-hairline)" }}>•</span>
@@ -380,7 +388,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 </div>
               </>
             )}
-            
+
             {/* Status pill */}
             <div style={{
               marginLeft: "8px",
@@ -399,7 +407,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
 
           {isOwnProject && (
             <div style={{ position: "relative" }} ref={menuRef}>
-                <button
+              <button
                 onClick={toggleMenu}
                 style={{
                   background: "none", border: "none", color: "var(--text-tertiary)",
@@ -412,7 +420,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 <DotsThree size={22} weight="thin" />
               </button>
 
-                {isMenuOpen && (
+              {isMenuOpen && (
                 <div style={{
                   position: "absolute", top: "100%", right: 0,
                   backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)",
@@ -428,7 +436,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                       border: "none", background: "none", cursor: "pointer", borderRadius: "var(--radius-sm)",
                       fontSize: "13px", fontWeight: 500, color: item.color
                     }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
                       <item.icon size={16} weight="regular" />
                       {item.label}
                     </button>
@@ -442,7 +450,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         <div style={{ marginBottom: "12px" }}>
           <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px", letterSpacing: "-0.02em" }}>{project.title}</h3>
           <p style={{ fontSize: isMobile ? "14.5px" : "15px", lineHeight: "1.6", color: "var(--text-primary)", marginBottom: "12px", fontWeight: 400, letterSpacing: "-0.01em", wordBreak: "break-word", overflowWrap: "break-word" }}>{project.description}</p>
-          
+
           {/* Tech Stack Chips */}
           {project.technologies_used && project.technologies_used.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
@@ -498,43 +506,41 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         )}
 
         {/* Interactions */}
-        <div style={{ 
-          display: "flex", 
-          marginTop: isMobile ? "8px" : "12px",
-          gap: isMobile ? "0" : "var(--post-interact-gap, 48px)", 
+        <div style={{
+          display: "flex",
+          marginTop: isMobile ? "24px" : "32px",
+          gap: isMobile ? "32px" : "64px",
           alignItems: "center",
-          justifyContent: isMobile ? "space-between" : "flex-start",
+          justifyContent: "flex-start",
           paddingRight: isMobile ? "0" : "0"
         }}>
-          { [
-            { 
-              icon: ChatCircle, 
-              count: project.comment_count, 
-              onClick: (e: any) => { e.stopPropagation(); navigate(`/project/${project.id}`); }, 
-              hoverColor: "var(--text-primary)",
-            },
-            { 
-              icon: ArrowCircleUp, 
-              count: likeCount, 
-              onClick: handleLike, 
-              active: isLiked, 
-              activeColor: "#3b82f6",
-              weight: isLiked ? "fill" as const : "regular" as const
-            },
-            { 
-              icon: BookmarkSimple, 
-              onClick: handleSave, 
-              active: isSaved, 
-              activeColor: "var(--text-primary)",
-              weight: isSaved ? "fill" as const : "regular" as const
-            },
-            { 
-              icon: ShareNetwork, 
-              onClick: handleShare, 
+          {[
+            {
+              icon: Comment01Icon,
+              count: project.comment_count,
+              onClick: (e: any) => { e.stopPropagation(); navigate(`/project/${project.id}`); },
               hoverColor: "var(--text-primary)",
             },
             {
-              icon: PaperPlaneTilt,
+              icon: ArrowUp02Icon,
+              count: likeCount,
+              onClick: handleLike,
+              active: isLiked,
+              activeColor: "#3b82f6",
+            },
+            {
+              icon: Bookmark02Icon,
+              onClick: handleSave,
+              active: isSaved,
+              activeColor: "var(--text-primary)",
+            },
+            {
+              icon: Share01Icon,
+              onClick: handleShare,
+              hoverColor: "var(--text-primary)",
+            },
+            {
+              icon: SentIcon,
               onClick: handleSendToChat,
               hoverColor: "var(--text-primary)",
             }
@@ -550,18 +556,22 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
                   transition: "all 0.2s ease",
                   fontSize: "13px",
-                  fontWeight: 500
+                  fontWeight: 600
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === ArrowCircleUp ? "#3b82f6" : "var(--text-primary)");
+                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === ArrowUp02Icon ? "#3b82f6" : "var(--text-primary)");
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
                 }}
               >
-                <Icon size={20} weight={action.weight || "regular"} />
-                {Icon === ArrowCircleUp ? (
-                  <RollingNumber value={action.count || 0} fontWeight={500} fontSize="13px" color="inherit" />
+                <HugeiconsIcon
+                  icon={Icon}
+                  size={20}
+                  className={action.active && (Icon === Bookmark02Icon || Icon === ArrowUp02Icon) ? "hugeicon-filled" : ""}
+                />
+                {Icon === ArrowUp02Icon ? (
+                  <RollingNumber value={action.count || 0} fontWeight={600} fontSize="13px" color="inherit" />
                 ) : (
                   action.count !== undefined && action.count > 0 && (
                     <span>{action.count}</span>

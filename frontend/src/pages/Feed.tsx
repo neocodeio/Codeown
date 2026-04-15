@@ -5,7 +5,12 @@ import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import BackToTop from "../components/BackToTop";
-import { CaretDown } from "phosphor-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    ArrowDown01Icon,
+    Rocket01Icon,
+    LicenseIcon
+} from "@hugeicons/core-free-icons";
 
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
@@ -93,7 +98,6 @@ export default function Feed() {
                 else fetchProjects(undefined, true);
             }
         }, {
-            // Trigger load when within 1000px of viewport bottom
             rootMargin: "0px 0px 1000px 0px"
         });
 
@@ -119,7 +123,7 @@ export default function Feed() {
 
     return (
         <main style={{ padding: 0, backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
-            <SEO title="Discover" description="Connect with builders worldwide." />
+            <SEO title="Feed" description="Connect with builders worldwide." />
 
             <div style={{
                 display: "flex",
@@ -132,39 +136,38 @@ export default function Feed() {
                 {/* ── Main Feed Column ── */}
                 <div style={{
                     width: isDesktop ? "var(--feed-width)" : "100%",
-                    maxWidth: isDesktop ? "var(--feed-width)" : "680px",
+                    maxWidth: isDesktop ? "var(--feed-width)" : "600px",
                     margin: isDesktop ? "0" : "0 auto",
                     flexShrink: 0,
-                    border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-                    borderTop: "none",
-                    borderBottom: "none",
+                    borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+                    borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
                     minHeight: "100vh",
                     position: "relative",
                     backgroundColor: "var(--bg-page)",
                 }}>
 
-                    {/* ── Minimalist Clean Header ── */}
+                    {/* ── Precision Glassmorphism Header ── */}
                     <div style={{
                         position: "sticky",
                         top: isMobile ? "64px" : "0",
                         zIndex: 100,
-                        backgroundColor: "var(--bg-header)",
-                        backdropFilter: "blur(20px)",
-                        WebkitBackdropFilter: "blur(20px)",
+                        backgroundColor: "rgba(var(--bg-header-rgb, 255, 255, 255), 0.85)",
+                        backdropFilter: "blur(25px)",
+                        WebkitBackdropFilter: "blur(25px)",
                         borderBottom: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
                             display: "flex",
                             alignItems: "center",
-                            height: isMobile ? "54px" : "56px",
+                            height: isMobile ? "54px" : "58px",
                             width: "100%",
                             position: "relative",
                             justifyContent: "center",
-                            gap: isMobile ? "20px" : "40px",
                         }}>
                             <ActivityIndicator />
+
                             {/* "For You" Tab with Dropdown */}
-                            <div style={{ position: "relative" }} ref={dropdownRef}>
+                            <div style={{ position: "relative", height: "100%" }} ref={dropdownRef}>
                                 <button
                                     onClick={() => {
                                         if (feedFilter === "all") setIsDropdownOpen(!isDropdownOpen);
@@ -173,69 +176,87 @@ export default function Feed() {
                                     style={{
                                         background: "none",
                                         border: "none",
-                                        padding: "0 20px",
-                                        height: "56px",
+                                        padding: "0 28px",
+                                        height: "100%",
                                         cursor: "pointer",
                                         display: "flex",
                                         alignItems: "center",
-                                        gap: "6px",
-                                        fontSize: "15px",
-                                        fontWeight: feedFilter === "all" ? "700" : "500",
+                                        gap: "8px",
+                                        fontSize: "14.5px",
+                                        fontWeight: feedFilter === "all" ? 800 : 500,
                                         color: feedFilter === "all" ? "var(--text-primary)" : "var(--text-tertiary)",
-                                        transition: "all 0.2s ease",
-                                        position: "relative"
+                                        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                                        textTransform: "capitalize",
+                                        letterSpacing: "-0.01em",
+                                        position: "relative",
+                                        opacity: feedFilter === "all" ? 1 : 0.6
                                     }}
+                                    onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+                                    onMouseLeave={e => { if (feedFilter !== "all") e.currentTarget.style.opacity = "0.6"; }}
                                 >
                                     {feedType === "posts" ? "Posts" : "Projects"}
-                                    <CaretDown size={14} weight="bold" style={{
-                                        transition: "transform 0.2s ease",
+                                    <HugeiconsIcon icon={ArrowDown01Icon} size={14} style={{
+                                        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                                         transform: isDropdownOpen ? "rotate(-180deg)" : "none",
-                                        opacity: 0.5
+                                        opacity: 0.7
                                     }} />
                                     {feedFilter === "all" && (
                                         <div style={{
-                                            position: "absolute", bottom: "0px", left: "0", right: "0",
+                                            position: "absolute", bottom: "-0.5px", left: "20%", right: "20%",
                                             height: "3px", backgroundColor: "var(--text-primary)",
-                                            borderRadius: "100px 100px 0 0"
+                                            borderRadius: "100px 100px 0 0",
+                                            boxShadow: "0 -2px 10px rgba(var(--text-primary-rgb), 0.2)"
                                         }} />
                                     )}
                                 </button>
 
-                                {/* Simple Minimal Dropdown */}
                                 {isDropdownOpen && (
                                     <div style={{
                                         position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)",
-                                        marginTop: "8px", backgroundColor: "var(--bg-card)",
-                                        border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-md)",
-                                        boxShadow: "0 10px 30px rgba(0,0,0,0.1)", zIndex: 100,
-                                        width: "140px", padding: "6px", display: "flex", flexDirection: "column", gap: "2px"
+                                        marginTop: "12px",
+                                        backgroundColor: "var(--bg-card)",
+                                        backdropFilter: "blur(20px)",
+                                        border: "1px solid var(--border-hairline)",
+                                        borderRadius: "20px",
+                                        boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+                                        zIndex: 100,
+                                        width: "160px",
+                                        padding: "8px",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: "4px",
+                                        animation: "reactionFadeUp 0.15s ease-out"
                                     }}>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); updateParams({ type: "posts" }); setIsDropdownOpen(false); }}
                                             style={{
-                                                textAlign: "left", padding: "10px 12px", borderRadius: "var(--radius-sm)",
+                                                textAlign: "left", padding: "12px 16px", borderRadius: "14px",
                                                 background: "none", border: "none", cursor: "pointer",
                                                 color: "var(--text-primary)",
-                                                fontSize: "14px", fontWeight: feedType === "posts" ? "600" : "400",
-                                                transition: "background-color 0.2s ease"
+                                                fontSize: "14px", fontWeight: feedType === "posts" ? 800 : 500,
+                                                transition: "all 0.2s ease",
+                                                display: "flex", alignItems: "center", gap: "10px"
                                             }}
                                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                                         >
+                                            <HugeiconsIcon icon={LicenseIcon} size={16} />
                                             Posts
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); updateParams({ type: "projects" }); setIsDropdownOpen(false); }}
                                             style={{
-                                                textAlign: "left", padding: "10px 12px", borderRadius: "var(--radius-sm)",
+                                                textAlign: "left", padding: "12px 16px", borderRadius: "14px",
                                                 background: "none", border: "none", cursor: "pointer",
                                                 color: "var(--text-primary)",
-                                                fontSize: "14px", fontWeight: feedType === "projects" ? "600" : "400",
-                                                transition: "background-color 0.2s ease"
+                                                fontSize: "14px", fontWeight: feedType === "projects" ? 800 : 500,
+                                                transition: "all 0.2s ease",
+                                                display: "flex", alignItems: "center", gap: "10px"
                                             }}
                                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                                         >
+                                            <HugeiconsIcon icon={Rocket01Icon} size={16} />
                                             Projects
                                         </button>
                                     </div>
@@ -243,28 +264,35 @@ export default function Feed() {
                             </div>
 
                             {/* "Following" Tab */}
-                            <div style={{ position: "relative" }}>
+                            <div style={{ position: "relative", height: "100%" }}>
                                 <button
                                     onClick={() => handleFilterChange("following")}
                                     style={{
                                         background: "none",
                                         border: "none",
-                                        padding: "0 20px",
-                                        height: "56px",
+                                        padding: "0 28px",
+                                        height: "100%",
                                         cursor: "pointer",
-                                        fontSize: "15px",
-                                        fontWeight: feedFilter === "following" ? "700" : "500",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        fontSize: "14.5px",
+                                        fontWeight: feedFilter === "following" ? 800 : 500,
                                         color: feedFilter === "following" ? "var(--text-primary)" : "var(--text-tertiary)",
-                                        transition: "all 0.2s ease",
-                                        position: "relative"
+                                        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                                        letterSpacing: "-0.01em",
+                                        position: "relative",
+                                        opacity: feedFilter === "following" ? 1 : 0.6
                                     }}
+                                    onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+                                    onMouseLeave={e => { if (feedFilter !== "following") e.currentTarget.style.opacity = "0.6"; }}
                                 >
                                     Following
                                     {feedFilter === "following" && (
                                         <div style={{
-                                            position: "absolute", bottom: "0px", left: "0", right: "0",
+                                            position: "absolute", bottom: "-0.5px", left: "20%", right: "20%",
                                             height: "3px", backgroundColor: "var(--text-primary)",
-                                            borderRadius: "100px 100px 0 0"
+                                            borderRadius: "100px 100px 0 0",
+                                            boxShadow: "0 -2px 10px rgba(var(--text-primary-rgb), 0.2)"
                                         }} />
                                     )}
                                 </button>
@@ -275,11 +303,10 @@ export default function Feed() {
                             <div style={{
                                 display: "flex",
                                 gap: "10px",
-                                borderRadius: "0px",
                                 padding: "12px 24px",
                                 overflowX: "auto",
                                 borderTop: "0.5px solid var(--border-hairline)",
-                                backgroundColor: "var(--bg-page)"
+                                backgroundColor: "transparent"
                             }} className="no-scrollbar">
                                 {["All", "React", "TypeScript", "Next.js", "Node.js", "Python", "Tailwind"].map(tag => {
                                     const isSelected = (tag === "All" && !selectedTag) || selectedTag === tag;
@@ -287,13 +314,12 @@ export default function Feed() {
                                         <button
                                             key={tag}
                                             onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
-                                            aria-label={`Filter by ${tag}`}
                                             style={{
                                                 flexShrink: 0, padding: "8px 16px", borderRadius: "100px",
-                                                border: isSelected ? "1px solid var(--text-primary)" : "0.5px solid var(--border-hairline)",
+                                                border: "0.5px solid var(--border-hairline)",
                                                 backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
                                                 color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",
-                                                fontSize: "13px", fontWeight: "500", cursor: "pointer",
+                                                fontSize: "13px", fontWeight: "700", cursor: "pointer",
                                                 transition: "all 0.15s ease",
                                             }}
                                             onMouseEnter={(e) => {
@@ -317,8 +343,7 @@ export default function Feed() {
                         )}
                     </div>
 
-                    {/* ── Content ── */}
-
+                    {/* ── Content Area ── */}
                     <div style={{ minHeight: "100vh" }}>
                         {feedType === "posts" && (
                             <div style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
@@ -338,7 +363,7 @@ export default function Feed() {
                             <div style={{ padding: "120px 24px", textAlign: "center" }}>
                                 <div style={{ marginBottom: "20px", fontSize: "32px", opacity: 0.2 }}>🧊</div>
                                 <h3 style={{ fontSize: "16px", fontWeight: "600", color: "var(--text-primary)", marginBottom: "8px" }}>Quiet in here</h3>
-                                <p style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>Be the first to share something amazing with the community.</p>
+                                <p style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>Be the first to share something amazing.</p>
                             </div>
                         ) : (
                             <>
@@ -360,14 +385,12 @@ export default function Feed() {
                                         </div>
                                     ))
                                 }
-                                {/* PRE-TRIGGER SENTINEL (Above Loader) */}
                                 <div ref={lastElementRef} style={{ height: "100px", width: "100%", visibility: "hidden" }} />
 
                                 {loading && (
                                     <div style={{ padding: "60px", textAlign: "center", display: "flex", justifyContent: "center" }}>
                                         <div style={{
-                                            width: "20px",
-                                            height: "20px",
+                                            width: "20px", height: "20px",
                                             border: "2px solid var(--border-hairline)",
                                             borderTopColor: "var(--text-primary)",
                                             borderRadius: "50%",
@@ -375,13 +398,6 @@ export default function Feed() {
                                         }} />
                                     </div>
                                 )}
-
-                                <style>{`
-                                @keyframes slideDownFadeIn {
-                                    from { opacity: 0; transform: translateY(-5px); }
-                                    to { opacity: 1; transform: translateY(0); }
-                                }
-                            `}</style>
                             </>
                         )}
                     </div>
@@ -391,8 +407,6 @@ export default function Feed() {
                 {isDesktop && (
                     <aside style={{
                         width: "300px",
-                        paddingLeft: 0,
-                        paddingTop: 0,
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
@@ -403,9 +417,14 @@ export default function Feed() {
                     </aside>
                 )}
             </div>
+
             <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                @keyframes slideDownFadeIn {
+                    from { opacity: 0; transform: translateY(-5px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
                 @media (max-width: 768px) {
                     main { padding-bottom: 80px !important; }
                 }

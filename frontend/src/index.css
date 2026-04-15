@@ -539,3 +539,9 @@ textarea:focus {
 .Toastify__toast-container {
   z-index: 100001 !important;
 }
+
+/* Hugeicons Solid Utility */
+.hugeicon-filled path {
+  fill: currentColor !important;
+  stroke: none !important;
+}

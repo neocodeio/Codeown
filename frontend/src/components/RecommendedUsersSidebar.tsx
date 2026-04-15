@@ -4,12 +4,13 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { CaretUp, CaretRight } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
     Rocket01Icon,
     UserGroupIcon,
-    ArrowUp01Icon
+    ArrowUp01Icon,
+    ArrowUp02Icon,
+    ArrowRight01Icon
 } from "@hugeicons/core-free-icons";
 import StreakBadge from "./StreakBadge";
 import UserHoverCard from "./UserHoverCard";
@@ -88,7 +89,7 @@ function RecentLaunchItem({ project }: { project: any }) {
                     height: "48px",
                     borderRadius: "14px",
                     border: isLiked ? "none" : "0.5px solid var(--border-hairline)",
-                    backgroundColor: isLiked ? "var(--bg-hover)" : "transparent",
+                    backgroundColor: isLiked ? "rgba(59, 130, 246, 0.1)" : "transparent",
                     cursor: "pointer",
                     transition: "all 0.15s ease",
                     flexShrink: 0
@@ -96,11 +97,11 @@ function RecentLaunchItem({ project }: { project: any }) {
                 onMouseEnter={(e) => { if (!isLiked) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
                 onMouseLeave={(e) => { if (!isLiked) e.currentTarget.style.backgroundColor = "transparent"; }}
             >
-                <CaretUp size={14} weight={isLiked ? "bold" : "regular"} style={{ color: isLiked ? "var(--text-primary)" : "var(--text-tertiary)", marginBottom: "-2px" }} />
+                <HugeiconsIcon icon={ArrowUp02Icon} size={14} style={{ color: isLiked ? "#3b82f6" : "var(--text-tertiary)", marginBottom: "-2px" }} />
                 <span style={{
                     fontSize: "12px",
                     fontWeight: 800,
-                    color: isLiked ? "var(--text-primary)" : "var(--text-secondary)"
+                    color: isLiked ? "#3b82f6" : "var(--text-secondary)"
                 }}>
                     {likeCount}
                 </span>
@@ -435,7 +436,7 @@ export default function RecommendedUsersSidebar() {
                                 opacity: 0.7
                             }}
                         >
-                            View all <CaretRight size={12} weight="bold" />
+                            View all <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
                         </Link>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
