@@ -23,9 +23,10 @@ interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreated: () => void;
+  initialProjectId?: number | string | null;
 }
 
-export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePostModalProps) {
+export default function CreatePostModal({ isOpen, onClose, onCreated, initialProjectId }: CreatePostModalProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [images, setImages] = useState<string[]>([]);
@@ -217,6 +218,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
         attachments: attachments.length > 0 ? attachments : null,
         tags: allTags.length > 0 ? allTags : null,
         language: normalizeLanguage(language),
+        project_id: initialProjectId || null,
       };
       await api.post("/posts", payload, {
         headers: { Authorization: `Bearer ${token}` },
@@ -359,7 +361,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           {activeTab === "write" ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {/* Toolbar */}
-               <div className="toolbar-container" style={{ display: "flex", gap: "4px", padding: "6px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="toolbar-container" style={{ display: "flex", gap: "4px", padding: "6px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", flexWrap: "wrap", alignItems: "center" }}>
                 <button className="toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><FontAwesomeIcon icon={faBold} /></button>
                 <button className="toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><FontAwesomeIcon icon={faItalic} /></button>
                 <button className="toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><FontAwesomeIcon icon={faHeading} /></button>
@@ -389,7 +391,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               />
             </div>
           ) : (
-             <div style={{ minHeight: "240px", padding: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", overflowY: "auto" }}>
+            <div style={{ minHeight: "240px", padding: "24px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-md)", border: "0.5px solid var(--border-hairline)", overflowY: "auto" }}>
               {content ? (
                 <ContentRenderer content={content} />
               ) : (
@@ -399,7 +401,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           )}
 
           {/* Images */}
-           <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
             {images.map((img, idx) => (
               <div key={idx} style={{ position: "relative", width: "100px", height: "100px" }}>
                 <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} />
@@ -435,7 +437,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
           <div className="tags-section" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <label className="tags-label" style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-tertiary)" }}>Tags / Hashtags (Optional)</label>
 
-             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {tags.map((tag, idx) => (
                 <span
                   key={idx}
@@ -463,7 +465,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               ))}
             </div>
 
-             <input
+            <input
               type="text"
               className="tag-input"
               placeholder="Add tags... (Enter or comma)"
@@ -493,14 +495,14 @@ export default function CreatePostModal({ isOpen, onClose, onCreated }: CreatePo
               onFocus={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
               onBlur={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
             />
-             <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+            <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
               {tags.length}/10 tags. Use #hashtag in content to auto-add.
             </div>
           </div>
         </div>
 
         {/* Footer */}
-         <div className="modal-footer" style={{ padding: "24px 32px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "16px" }}>
+        <div className="modal-footer" style={{ padding: "24px 32px", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "16px" }}>
           {content.length > 0 && (
             <div style={{
               fontSize: "11px",

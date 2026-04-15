@@ -10,7 +10,8 @@ import { formatRelativeDate } from "../utils/date";
 import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
-import { CaretLeft, Globe, GithubLogo, Star, BookmarkSimple, ShareNetwork, Handshake, Rocket } from "phosphor-react";
+import { CaretLeft, Globe, GithubLogo, Star, BookmarkSimple, ShareNetwork, Handshake, Rocket, Plus } from "phosphor-react";
+import CreatePostModal from "../components/CreatePostModal";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
@@ -42,6 +43,7 @@ export default function ProjectDetail() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isCofounderModalOpen, setIsCofounderModalOpen] = useState(false);
+  const [isShipModalOpen, setIsShipModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "posts">("details");
 
   const viewLogged = useRef(false);
@@ -91,15 +93,16 @@ export default function ProjectDetail() {
 
   // 3. Fetch Project Posts
   const { data: postsData = { posts: [] }, isLoading: postsLoading, refetch: refetchPosts } = useQuery({
-    queryKey: ["projectPosts", id],
+    queryKey: ["projectPosts", project?.id],
     queryFn: async () => {
       const token = await getToken();
-      const response = await api.get(`/posts?projectId=${id}`, {
+      // Filter specifically by numerical projectId to ensure ONLY posts tagged with this project show up
+      const response = await api.get(`/posts?projectId=${project?.id}&limit=50`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       return response.data;
     },
-    enabled: !!id && activeTab === "posts",
+    enabled: !!project?.id && activeTab === "posts",
     staleTime: 1 * 60 * 1000,
   });
 
@@ -449,6 +452,40 @@ export default function ProjectDetail() {
                 </div>
               </div>
 
+              {activeTab === "posts" && isOwnProject && (
+                <button
+                  onClick={() => setIsShipModalOpen(true)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "10px 16px",
+                    backgroundColor: "var(--bg-card)",
+                    border: "1px solid var(--border-hairline)",
+                    borderRadius: "12px",
+                    color: "var(--text-primary)",
+                    fontWeight: 700,
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                    boxShadow: "var(--shadow-sm)"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.borderColor = "var(--text-primary)";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--bg-card)";
+                    e.currentTarget.style.borderColor = "var(--border-hairline)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <Plus size={16} weight="bold" />
+                  Ship Update
+                </button>
+              )}
+
               {/* Vision Callout */}
               {project.founder_vision && (
                 <div style={{ marginBottom: "40px", padding: "24px", backgroundColor: "var(--bg-hover)", borderLeft: "4px solid var(--text-primary)", borderRadius: "0 var(--radius-sm) var(--radius-sm) 0" }}>
@@ -603,7 +640,26 @@ export default function ProjectDetail() {
       </main>
 
       <ShareModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} url={shareUrl} title={project.title} />
-      <ConfirmDeleteModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteConfirm} isLoading={isDeleting} title="Delete Project?" message="This action cannot be undone." />
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete project"
+        message="Are you sure you want to delete this project? This action cannot be undone."
+        confirmLabel="Delete"
+        isLoading={isDeleting}
+      />
+      <CreatePostModal
+        isOpen={isShipModalOpen}
+        onClose={() => setIsShipModalOpen(false)}
+        onCreated={() => {
+          setIsShipModalOpen(false);
+          refetchPosts();
+        }}
+        initialProjectId={project?.id}
+      />
+
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0" : "0 24px" }}></div>
       <ProjectModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} project={project} onUpdated={fetchProject} />
       {project && <CoFounderRequestModal isOpen={isCofounderModalOpen} onClose={() => setIsCofounderModalOpen(false)} projectId={project.id} projectTitle={project.title} onSuccess={fetchProject} />}
     </div>

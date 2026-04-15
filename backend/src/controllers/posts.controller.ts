@@ -31,7 +31,14 @@ export async function getPosts(req: Request, res: Response) {
     }
 
     if (projectId) {
-      postsQuery = postsQuery.eq("project_id", projectId);
+      const numProjectId = parseInt(projectId as string, 10);
+      if (!isNaN(numProjectId)) {
+        postsQuery = postsQuery.eq("project_id", numProjectId);
+      } else {
+        // If projectId is provided but is not a number (e.g. a slug passed by mistake),
+        // we return 0 results to avoid showing a generic feed on a specific project page.
+        return res.json({ posts: [], total: 0, page: pageNum, limit: limitNum, totalPages: 0 });
+      }
     }
 
     if (String(filter).toLowerCase() === "following") {
