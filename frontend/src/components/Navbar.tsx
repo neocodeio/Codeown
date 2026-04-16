@@ -74,14 +74,15 @@ const StatusBadge = () => {
   }, []);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1px", marginTop: "2px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px", justifyContent: "center", flexWrap: "nowrap" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
         <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#00BA7C", boxShadow: "0 0 8px rgba(0, 186, 124, 0.4)" }} />
-        <span style={{ fontSize: "10px", fontWeight: 'bold', color: "var(--text-tertiary)", letterSpacing: "0.02em" }}>
+        <span style={{ fontSize: "10px", fontWeight: 'bold', color: "var(--text-tertiary)", letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
           {activeCount} builders now
         </span>
       </div>
-      <span style={{ fontSize: "9px", fontWeight: 'bold', color: "var(--text-tertiary)", opacity: 0.6, marginLeft: "12px" }}>
+      <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
+      <span style={{ fontSize: "10px", fontWeight: 'bold', color: "var(--text-tertiary)", opacity: 0.6, whiteSpace: "nowrap" }}>
         {currentTime}
       </span>
     </div>
@@ -164,7 +165,7 @@ export default function Navbar() {
       textDecoration: "none",
       color: "var(--text-primary)",
       backgroundColor: "transparent",
-      fontWeight: "800",
+      fontWeight: "700",
       fontSize: isUltraShort ? "14px" : "15px",
       transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
       marginBottom: isUltraShort ? "2px" : "4px",
@@ -187,7 +188,6 @@ export default function Navbar() {
           <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "32px", width: "auto" }} />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <span style={{ fontSize: "19px", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>Codeown.space</span>
-            <StatusBadge />
           </div>
         </Link>
       </div>
@@ -274,7 +274,7 @@ export default function Navbar() {
           <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", borderRadius: "20px", backgroundColor: "var(--bg-hover)", border: "1px solid var(--border-hairline)", cursor: "pointer" }} onClick={() => navigate(`/${profile?.username || user.username}`)}>
             <AvailabilityBadge avatarUrl={userAvatarUrl || user.imageUrl} name={profile?.name || user.fullName || "User"} size={38} isOpenToOpportunities={profile?.is_hirable === true} isOG={profile?.is_og} username={profile?.username || user?.username} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 800, color: "var(--text-primary)", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{profile?.name || user.fullName || "User"}</div>
+              <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{profile?.name || user.fullName || "User"}</div>
               <div style={{ color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 600 }}>@{profile?.username || user.username}</div>
             </div>
             <div ref={logoutRef} style={{ display: "flex", alignItems: "center", gap: "2px" }}>
@@ -295,13 +295,17 @@ export default function Navbar() {
           </Link>
         )}
 
+        {/* System Status */}
+        <div style={{ padding: "0 10px", display: "flex", justifyContent: "center" }}>
+          <StatusBadge />
+        </div>
+
         {/* Footer Links */}
         <div style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           gap: "8px",
-          marginTop: "24px",
           padding: "0 10px",
           textAlign: "center"
         }}>
@@ -328,6 +332,7 @@ export default function Navbar() {
             fontWeight: 700,
             color: "var(--text-tertiary)",
             opacity: 0.4,
+            marginTop: "-9px",
             letterSpacing: "0.02em"
           }}>
             © {new Date().getFullYear()} Codeown
