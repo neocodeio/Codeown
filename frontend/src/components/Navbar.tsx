@@ -298,24 +298,40 @@ export default function Navbar() {
         {/* Footer Links */}
         <div style={{
           display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
+          flexDirection: "column",
           alignItems: "center",
           gap: "8px",
-          fontSize: "11px",
-          color: "var(--text-tertiary)",
-          marginTop: "16px",
+          marginTop: "24px",
           padding: "0 10px",
-          textAlign: "center",
-          opacity: 0.6
+          textAlign: "center"
         }}>
-          <Link to="/privacy" style={{ color: "inherit", textDecoration: "none" }}>Privacy</Link>
-          <span>•</span>
-          <Link to="/terms" style={{ color: "inherit", textDecoration: "none" }}>Terms</Link>
-          <span>•</span>
-          <Link to="/about" style={{ color: "inherit", textDecoration: "none" }}>About</Link>
-          <span>•</span>
-          <Link to="/founder-story" style={{ color: "inherit", textDecoration: "none" }}>Founder</Link>
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "11px",
+            color: "var(--text-tertiary)",
+            opacity: 0.6
+          }}>
+            <Link to="/privacy" style={{ color: "inherit", textDecoration: "none" }}>Privacy</Link>
+            <span>•</span>
+            <Link to="/terms" style={{ color: "inherit", textDecoration: "none" }}>Terms</Link>
+            <span>•</span>
+            <Link to="/about" style={{ color: "inherit", textDecoration: "none" }}>About</Link>
+            <span>•</span>
+            <Link to="/founder-story" style={{ color: "inherit", textDecoration: "none" }}>Founder</Link>
+          </div>
+          <div style={{
+            fontSize: "12px",
+            fontWeight: 700,
+            color: "var(--text-tertiary)",
+            opacity: 0.4,
+            letterSpacing: "0.02em"
+          }}>
+            © {new Date().getFullYear()} Codeown
+          </div>
         </div>
 
       </div>
