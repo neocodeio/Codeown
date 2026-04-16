@@ -192,7 +192,7 @@ export default function Navbar() {
         </Link>
       </div>
 
-      <nav style={{ flexShrink: 0, marginTop: window.innerHeight < 850 ? "4px" : "12px" }}>
+      <nav style={{ flexShrink: 0, marginTop: window.innerHeight < 850 ? "4px" : "0px" }}>
         <Link to="/" style={linkStyle("/")}><HugeiconsIcon icon={Home01Icon} size={20} /><span>Home</span></Link>
         <Link to="/search" style={linkStyle("/search")}><HugeiconsIcon icon={Search01Icon} size={20} /><span>Search</span></Link>
         <Link to="/leaderboard" style={linkStyle("/leaderboard")}><HugeiconsIcon icon={UserGroupIcon} size={20} /><span>Builders</span></Link>

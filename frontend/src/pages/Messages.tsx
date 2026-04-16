@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, memo } from "react";
+import { useState, useEffect, useRef, memo, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/axios";
@@ -98,6 +98,8 @@ interface Conversation {
   unread_count?: number;
 }
 
+const CHAT_WAVE_BARS = Array.from({ length: 45 }).map(() => Math.random() * 0.7 + 0.3);
+
 function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -105,64 +107,60 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const animationRef = useRef<number | null>(null);
+  const drawRef = useRef<() => void>(() => { });
 
-  const bars = useMemo(() => {
-    return Array.from({ length: 45 }).map(() => Math.random() * 0.7 + 0.3);
-  }, []);
-
-  const draw = () => {
+  const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Get computed colors to handle theme changes perfectly
     const style = window.getComputedStyle(canvas);
     const primaryColor = style.color || (isMine ? "rgba(255,255,255,1)" : "#000");
     const secondaryColor = isMine ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.15)";
 
     const progress = duration > 0 ? currentTime / duration : 0;
-    const time = performance.now() / 150; // For pulse animation
+    const time = (audioRef.current?.currentTime || 0) * 5;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const barWidth = 2.5;
     const gap = 1.5;
-    const totalWidth = bars.length * (barWidth + gap);
+    const totalWidth = CHAT_WAVE_BARS.length * (barWidth + gap);
     canvas.width = totalWidth;
     canvas.height = 36;
 
-    bars.forEach((heightMultiplier, i) => {
+    CHAT_WAVE_BARS.forEach((heightMultiplier, i) => {
       const x = i * (barWidth + gap);
-
-      // Add pulse effect if playing
       let h = heightMultiplier * canvas.height * 0.8;
       if (isPlaying) {
-        h += Math.sin(time + i * 0.5) * 4; // Rhythmic pulse
+        h += Math.sin(time + i * 0.5) * 4;
       }
 
       const y = (canvas.height - h) / 2;
-      const isPast = i / bars.length <= progress;
+      const isPast = i / CHAT_WAVE_BARS.length <= progress;
 
       ctx.fillStyle = isPast ? primaryColor : secondaryColor;
-
       ctx.beginPath();
-      // Draw rounded line
       ctx.roundRect(x, y, barWidth, h, 2);
       ctx.fill();
     });
 
     if (isPlaying) {
-      animationRef.current = requestAnimationFrame(draw);
+      animationRef.current = requestAnimationFrame(drawRef.current);
     }
-  };
+  }, [duration, currentTime, isMine, isPlaying]);
+
+  useEffect(() => {
+    drawRef.current = draw;
+  }, [draw]);
 
   useEffect(() => {
     draw();
     return () => {
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [currentTime, duration, isPlaying]);
+  }, [draw]);
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -522,7 +520,7 @@ const MessageBubble = memo(({
                 zIndex: 2
               }}>
                 {Object.entries(msg.reactions).map(([emoji, userIds]) => {
-                  const hasReacted = userIds.includes(currentUser!.id);
+                  const hasReacted = currentUser?.id && userIds.includes(currentUser.id);
                   return (
                     <div
                       key={emoji}
@@ -711,6 +709,31 @@ export default function Messages() {
 
   const queryClient = useQueryClient();
 
+  const startPlaceholderConvo = useCallback(async (userId: string) => {
+    try {
+      const token = await getToken();
+      const res = await api.get(`/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.data) {
+        const placeholder: Conversation = {
+          id: 0,
+          partner: {
+            id: res.data.id,
+            name: res.data.name,
+            username: res.data.username,
+            avatar_url: res.data.avatar_url,
+          },
+          last_message: null,
+        };
+        setActiveConvo(placeholder);
+        setIsNewMessageModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error starting placeholder convo:", error);
+    }
+  }, [getToken]);
+
   const handleScroll = () => {
     if (scrollRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
@@ -719,11 +742,11 @@ export default function Messages() {
     }
   };
 
-  const scrollToBottom = (force = false) => {
+  const scrollToBottom = useCallback((force = false) => {
     if (force || isAtBottom) {
       messagesEndRef.current?.scrollIntoView({ behavior: force ? "auto" : "smooth" });
     }
-  };
+  }, [isAtBottom]);
 
   // Conversations Query
   const { data: qConversations = [], isLoading: loadingConversations } = useQuery({
@@ -778,7 +801,7 @@ export default function Messages() {
         }
       }
     }
-  }, [qConversations, targetUserId, activeConvo, conversations.length]);
+  }, [qConversations, targetUserId, activeConvo, startPlaceholderConvo]);
 
   useEffect(() => {
     // When switching conversations, we should clear the current messages
@@ -808,7 +831,7 @@ export default function Messages() {
         setTimeout(() => scrollToBottom(false), 50);
       }
     }
-  }, [qMessages, qMessagesLoading, messages.length]);
+  }, [qMessages, qMessagesLoading]);
 
   useEffect(() => {
     if (initialMessage) {
@@ -818,25 +841,26 @@ export default function Messages() {
 
   // LOCAL PERSISTENCE: Load from cache on mount
   useEffect(() => {
-    const cachedConvos = localStorage.getItem('codeown_cached_convos');
+    if (!currentUser?.id) return;
+    const cachedConvos = localStorage.getItem(`codeown_cached_convos_${currentUser.id}`);
     if (cachedConvos && conversations.length === 0) {
       setConversations(JSON.parse(cachedConvos));
     }
-  }, []);
+  }, [currentUser?.id]);
 
   // Save convos to cache when they change
   useEffect(() => {
-    if (conversations.length > 0) {
-      localStorage.setItem('codeown_cached_convos', JSON.stringify(conversations.slice(0, 50)));
+    if (currentUser?.id && conversations.length > 0) {
+      localStorage.setItem(`codeown_cached_convos_${currentUser.id}`, JSON.stringify(conversations.slice(0, 50)));
     }
-  }, [conversations]);
+  }, [conversations, currentUser?.id]);
 
   // Save messages to cache for active convo
   useEffect(() => {
     if (activeConvo && messages.length > 0) {
       localStorage.setItem(`codeown_msgs_${activeConvo.id}`, JSON.stringify(messages.slice(-50)));
     }
-  }, [messages, activeConvo?.id]);
+  }, [messages, activeConvo]);
 
   // Load messages from cache is now handled in the main activeConvo effect
 
@@ -847,30 +871,7 @@ export default function Messages() {
   const [deletingConvoId, setDeletingConvoId] = useState<number | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const startPlaceholderConvo = async (userId: string) => {
-    try {
-      const token = await getToken();
-      const res = await api.get(`/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.data) {
-        const placeholder: Conversation = {
-          id: 0,
-          partner: {
-            id: res.data.id,
-            name: res.data.name,
-            username: res.data.username,
-            avatar_url: res.data.avatar_url,
-          },
-          last_message: null,
-        };
-        setActiveConvo(placeholder);
-        setIsNewMessageModalOpen(false);
-      }
-    } catch (error) {
-      console.error("Error starting placeholder convo:", error);
-    }
-  };
+
 
   useEffect(() => {
     if (!currentUser?.id) return;
@@ -895,7 +896,7 @@ export default function Messages() {
       ));
     };
 
-    const handleMessageDeleted = ({ messageId, conversationId: _conversationId }: { messageId: number, conversationId: number }) => {
+    const handleMessageDeleted = ({ messageId }: { messageId: number, conversationId: number }) => {
       setMessages((prev) => (Array.isArray(prev) ? prev : []).filter(m => m.id !== Number(messageId)));
     };
 
@@ -957,7 +958,7 @@ export default function Messages() {
       socket.off("message_reaction", handleMessageReaction);
       socket.off("new_message", handleNewMessage);
     };
-  }, [currentUser?.id, activeConvo?.id, queryClient]);
+  }, [currentUser?.id, activeConvo, queryClient]);
 
   useEffect(() => {
     if (reactingTo !== null || messageMenuId !== null || convoMenuId !== null) {
@@ -1944,7 +1945,7 @@ export default function Messages() {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>{selectedImage?.name}</div>
                       <div style={{ fontSize: "10px", color: "var(--text-tertiary)" }}>
-                        {(selectedImage?.size! / 1024).toFixed(0)} KB
+                        {((selectedImage?.size || 0) / 1024).toFixed(0)} KB
                       </div>
                     </div>
                   </div>
@@ -2359,21 +2360,6 @@ export default function Messages() {
         @keyframes reactionFadeUp {
           from { transform: translateY(10px) scale(0.8); opacity: 0; }
           to { transform: translateY(0) scale(1); opacity: 1; }
-        }
-        .message-container .reply-button,
-        .message-container .msg-dots-trigger {
-          opacity: 0;
-          transition: opacity 0.2s ease;
-        }
-        .message-container:hover .reply-button,
-        .message-container:hover .msg-dots-trigger {
-          opacity: 1;
-        }
-        @media (max-width: 768px) {
-          .message-container .reply-button,
-          .message-container .msg-dots-trigger {
-            opacity: 1;
-          }
         }
         .message-container .reply-button,
         .message-container .msg-dots-trigger {
