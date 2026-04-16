@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
-import { ChatTeardropDots, X, CheckCircle } from "phosphor-react";
+import { X, CheckCircle } from "phosphor-react";
 import { useUser } from "@clerk/clerk-react";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ChatFeedbackIcon, Cancel01Icon, SentIcon } from "@hugeicons/core-free-icons";
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
@@ -101,41 +103,44 @@ export default function FeedbackButton() {
     }
   };
 
-  const modal = open && createPortal(
+  const modal = open && (
     <div
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 9999,
+        zIndex: 10000,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "rgba(0, 0, 0, 0.4)",
+        padding: "16px",
+        animation: "fadeIn 0.2s ease-out"
       }}
       onClick={(e) => e.target === e.currentTarget && handleClose()}
     >
       <div
         style={{
-          width: "90%",
-          maxWidth: "400px",
-          maxHeight: "90vh",
-          overflowY: "auto",
+          width: "100%",
+          maxWidth: "480px",
           backgroundColor: "var(--bg-page)",
           borderRadius: "var(--radius-lg)",
-          border: "0.5px solid var(--border-hairline)",
-          boxShadow: "0 25px 50px rgba(0, 0, 0, 0.2)",
+          border: "1px solid var(--border-hairline)",
+          boxShadow: "var(--shadow-xl)",
           padding: "32px",
-          position: "relative"
+          position: "relative",
+          animation: "reactionFadeUpSimple 0.2s ease-out"
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
-          <h2 style={{ 
-            margin: 0, 
-            fontSize: "16px", 
-            fontWeight: 700, 
-            color: "var(--text-primary)", 
-          }}>Submit feedback</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ padding: "8px", backgroundColor: "var(--bg-hover)", borderRadius: "100px", display: "flex" }}>
+              <HugeiconsIcon icon={ChatFeedbackIcon} size={20} color="var(--text-primary)" />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: "17px", color: "var(--text-primary)" }}>
+              Submit feedback
+            </span>
+          </div>
           <button
             type="button"
             onClick={handleClose}
@@ -144,100 +149,117 @@ export default function FeedbackButton() {
               border: "none",
               color: "var(--text-tertiary)",
               cursor: "pointer",
+              padding: "8px",
+              borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              transition: "all 0.1s"
+              transition: "all 0.2s ease"
             }}
-            className="btn-modal-close"
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
           >
-            <X size={18} weight="thin" />
+            <HugeiconsIcon icon={Cancel01Icon} size={20} />
           </button>
         </div>
 
         {sent ? (
-          <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <div style={{ width: "48px", height: "48px", background: "var(--bg-hover)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-              <CheckCircle size={24} weight="thin" />
+          <div style={{ textAlign: "center", padding: "40px 0", animation: "reactionFadeUpSimple 0.2s ease-out" }}>
+            <div style={{ width: "56px", height: "56px", background: "var(--bg-hover)", color: "var(--text-primary)", border: "1px solid var(--border-hairline)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
+              <CheckCircle size={28} weight="fill" />
             </div>
-            <h3 style={{ margin: "0 0 8px", color: "var(--text-primary)", fontSize: "14px", fontWeight: 700 }}>Feedback received</h3>
-            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "13px" }}>Thank you for your feedback.</p>
+            <h3 style={{ margin: "0 0 12px", color: "var(--text-primary)", fontSize: "16px", fontWeight: 800 }}>Feedback received!</h3>
+            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 500 }}>Thank you for helping us improve {new URL(window.location.origin).hostname}.</p>
           </div>
         ) : rateLimited ? (
-          <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <div style={{ width: "48px", height: "48px", background: "var(--bg-hover)", color: "var(--text-primary)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-              <X size={24} weight="thin" />
+          <div style={{ textAlign: "center", padding: "40px 0", animation: "reactionFadeUpSimple 0.2s ease-out" }}>
+            <div style={{ width: "56px", height: "56px", background: "rgba(239, 68, 68, 0.05)", color: "#ef4444", border: "1px solid rgba(239, 68, 68, 0.1)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
+              <X size={28} weight="bold" />
             </div>
-            <h3 style={{ margin: "0 0 8px", color: "var(--text-primary)", fontSize: "14px", fontWeight: 700 }}>Daily limit reached</h3>
-            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "13px" }}>You can only send 5 feedbacks per day. Please come back tomorrow!</p>
+            <h3 style={{ margin: "0 0 12px", color: "var(--text-primary)", fontSize: "16px", fontWeight: 800 }}>Daily limit reached</h3>
+            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: "14px", fontWeight: 500 }}>You've shared 5 insights today. Please come back tomorrow with more!</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Full name</label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Name"
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "var(--radius-sm)",
-                  border: "0.5px solid var(--border-hairline)",
-                  backgroundColor: "var(--bg-input)",
-                  color: "var(--text-primary)",
-                  fontSize: "13px",
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "8px", fontSize: "12px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Full name</label>
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Your name"
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    borderRadius: "14px",
+                    border: "1px solid var(--border-hairline)",
+                    backgroundColor: "var(--bg-hover)",
+                    color: "var(--text-primary)",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    transition: "all 0.2s"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "var(--text-primary)"}
+                  onBlur={(e) => e.target.style.borderColor = "var(--border-hairline)"}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: "8px", fontSize: "12px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Username (optional)</label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="@username"
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    borderRadius: "14px",
+                    border: "1px solid var(--border-hairline)",
+                    backgroundColor: "var(--bg-hover)",
+                    color: "var(--text-primary)",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    transition: "all 0.2s"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "var(--text-primary)"}
+                  onBlur={(e) => e.target.style.borderColor = "var(--border-hairline)"}
+                />
+              </div>
             </div>
 
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Email address</label>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "12px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Email address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address"
+                placeholder="email@example.com"
                 style={{
                   width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "var(--radius-sm)",
-                  border: "0.5px solid var(--border-hairline)",
-                  backgroundColor: "var(--bg-input)",
+                  padding: "14px 16px",
+                  borderRadius: "14px",
+                  border: "1px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-hover)",
                   color: "var(--text-primary)",
-                  fontSize: "13px",
+                  fontSize: "14px",
+                  fontWeight: 500,
                   outline: "none",
                   boxSizing: "border-box",
+                  transition: "all 0.2s"
                 }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Username (optional)</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="@username"
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "var(--radius-sm)",
-                  border: "0.5px solid var(--border-hairline)",
-                  backgroundColor: "var(--bg-input)",
-                  color: "var(--text-primary)",
-                  fontSize: "13px",
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--text-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--border-hairline)"}
               />
             </div>
 
             <div style={{ marginBottom: "32px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontSize: "11px", fontWeight: 600, color: "var(--text-tertiary)" }}>Message</label>
+              <label style={{ display: "block", marginBottom: "8px", fontSize: "12px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Your Message</label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -245,30 +267,37 @@ export default function FeedbackButton() {
                 rows={4}
                 style={{
                   width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "var(--radius-lg)",
-                  border: "0.5px solid var(--border-hairline)",
-                  backgroundColor: "var(--bg-input)",
+                  padding: "14px 16px",
+                  borderRadius: "14px",
+                  border: "1px solid var(--border-hairline)",
+                  backgroundColor: "var(--bg-hover)",
                   color: "var(--text-primary)",
-                  fontSize: "13px",
+                  fontSize: "14px",
+                  fontWeight: 500,
                   outline: "none",
                   resize: "vertical",
-                  minHeight: "100px",
+                  minHeight: "120px",
                   boxSizing: "border-box",
+                  transition: "all 0.2s",
+                  fontFamily: "inherit"
                 }}
+                onFocus={(e) => e.target.style.borderColor = "var(--text-primary)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--border-hairline)"}
               />
             </div>
 
             {error && (
               <div style={{
-                padding: "12px",
-                border: "0.5px solid var(--border-hairline)",
-                backgroundColor: "rgba(239, 68, 68, 0.1)",
+                padding: "12px 16px",
+                border: "1px solid rgba(239, 68, 68, 0.2)",
+                backgroundColor: "rgba(239, 68, 68, 0.05)",
                 color: "#ef4444",
-                borderRadius: "var(--radius-sm)",
-                fontSize: "12px",
-                marginBottom: "20px",
+                borderRadius: "12px",
+                fontSize: "13px",
+                fontWeight: 700,
+                marginBottom: "24px",
                 textAlign: "center",
+                animation: "reactionFadeUpSimple 0.2s ease-out"
               }}>
                 {error}
               </div>
@@ -279,29 +308,38 @@ export default function FeedbackButton() {
               disabled={sending}
               style={{
                 width: "100%",
-                padding: "14px",
+                padding: "16px",
                 backgroundColor: "var(--text-primary)",
                 color: "var(--bg-page)",
                 border: "none",
-                borderRadius: "var(--radius-sm)",
-                fontWeight: 600,
-                fontSize: "13px",
+                borderRadius: "100px",
+                fontWeight: 800,
+                fontSize: "14px",
                 cursor: sending ? "not-allowed" : "pointer",
-                transition: "all 0.2s",
+                transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                 opacity: sending ? 0.7 : 1,
-                boxSizing: "border-box"
+                boxSizing: "border-box",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "10px"
               }}
+              onMouseEnter={(e) => !sending && (e.currentTarget.style.transform = "scale(1.02)")}
+              onMouseLeave={(e) => !sending && (e.currentTarget.style.transform = "scale(1)")}
             >
-              {sending ? "Sending..." : "Submit feedback"}
+              {sending ? (
+                <div style={{ width: "16px", height: "16px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+              ) : (
+                <>
+                  Submit feedback
+                  <HugeiconsIcon icon={SentIcon} size={18} />
+                </>
+              )}
             </button>
           </form>
         )}
       </div>
-      <style>{`
-        .btn-modal-close:hover { background-color: var(--bg-hover); }
-      `}</style>
-    </div>,
-    document.body
+    </div>
   );
 
   return (
@@ -319,28 +357,30 @@ export default function FeedbackButton() {
           width: isMobile ? "48px" : "56px",
           height: isMobile ? "48px" : "56px",
           borderRadius: "100%",
-          backgroundColor: isMobile ? "var(--text-primary)" : "var(--bg-page)",
-          color: isMobile ? "var(--bg-page)" : "var(--text-primary)",
-          border: "0.5px solid var(--border-hairline)",
+          backgroundColor: "var(--bg-page)",
+          color: "var(--text-primary)",
+          border: "1px solid var(--border-hairline)",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.2)",
+          boxShadow: "var(--shadow-lg)",
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
         className="btn-feedback-trigger"
         aria-label="Feedback"
       >
-        <ChatTeardropDots size={isMobile ? 22 : 24} weight="thin" />
+        <HugeiconsIcon icon={ChatFeedbackIcon} size={isMobile ? 22 : 24} />
       </button>
-      {modal && createPortal(modal, document.body)}
+      {open && createPortal(modal, document.body)}
       <style>{`
         .btn-feedback-trigger:hover {
           background-color: var(--text-primary);
           color: var(--bg-page);
-          transform: translateY(-2px);
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: var(--shadow-xl);
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </>
   );
