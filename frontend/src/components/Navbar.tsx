@@ -163,7 +163,7 @@ export default function Navbar() {
       borderRadius: "14px",
       textDecoration: "none",
       color: "var(--text-primary)",
-      backgroundColor: isActive ? "rgba(var(--text-primary-rgb), 0.05)" : "transparent",
+      backgroundColor: "transparent",
       fontWeight: "800",
       fontSize: isUltraShort ? "14px" : "15px",
       transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -186,7 +186,7 @@ export default function Navbar() {
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
           <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "32px", width: "auto" }} />
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontSize: "19px", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>Codeown</span>
+            <span style={{ fontSize: "19px", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>Codeown.space</span>
             <StatusBadge />
           </div>
         </Link>

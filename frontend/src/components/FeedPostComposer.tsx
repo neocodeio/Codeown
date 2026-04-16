@@ -6,10 +6,10 @@ import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Paperclip, Rocket } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { 
-    ImageAdd01Icon, 
-    AppleReminderIcon, 
-    SourceCodeIcon, 
+import {
+    ImageAdd01Icon,
+    AppleReminderIcon,
+    SourceCodeIcon,
     FileAddIcon,
     Cancel01Icon,
     WorkIcon,
@@ -101,18 +101,18 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
     const placeholderText = useMemo(() => {
         const textOptions = [
-    "Share a messy screenshot of your current project...",
-    "What's one thing that broke today?",
-    "Messy progress > perfect silence. What are you building?",
-    "How many cups of coffee did it take to fix that bug?",
-    "Be honest: did you actually write tests for that?",
-    "Explain your project to us like we're 5 years old.",
-    "Which documentation are you currently crying over?",
-    "Working on something raw? Show us the 'before' pic.",
-    "What's the lie of the day: 'It works on my machine'?",
-    "Found a library that changed your life? Drop the name.",
-    "Still fighting with CSS? We've all been there.",
-    "Don't be shy, show us that 'spaghetti code' you're refactoring."
+            "Share a messy screenshot of your current project...",
+            "What's one thing that broke today?",
+            "Messy progress > perfect silence. What are you building?",
+            "How many cups of coffee did it take to fix that bug?",
+            "Be honest: did you actually write tests for that?",
+            "Explain your project to us like we're 5 years old.",
+            "Which documentation are you currently crying over?",
+            "Working on something raw? Show us the 'before' pic.",
+            "What's the lie of the day: 'It works on my machine'?",
+            "Found a library that changed your life? Drop the name.",
+            "Still fighting with CSS? We've all been there.",
+            "Don't be shy, show us that 'spaghetti code' you're refactoring."
         ];
         return textOptions[Math.floor(Math.random() * textOptions.length)];
     }, []);
@@ -162,7 +162,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const handlePaste = async (e: React.ClipboardEvent) => {
         const items = e.clipboardData.items;
         const maxImages = 4;
-        
+
         for (let i = 0; i < items.length; i++) {
             if (items[i].type.indexOf("image") !== -1) {
                 const file = items[i].getAsFile();
@@ -303,7 +303,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     if (!isSignedIn || isMobile) return null;
 
     return (
-        <div 
+        <div
             style={{
                 padding: "var(--post-padding, 20px 16px)",
                 backgroundColor: "transparent",
@@ -355,7 +355,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             transparent={true}
                         />
                     </div>
-                    
+
                     {isCodeExpanded && (
                         <div style={{
                             marginTop: "12px",
@@ -365,10 +365,10 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             overflow: "hidden",
                             animation: "reactionFadeUp 0.15s ease-out"
                         }}>
-                            <div style={{ 
-                                display: "flex", 
-                                justifyContent: "space-between", 
-                                alignItems: "center", 
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
                                 padding: "10px 16px",
                                 borderBottom: "0.5px solid var(--border-hairline)",
                                 backgroundColor: "rgba(0,0,0,0.03)"
@@ -378,7 +378,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     <span style={{ fontSize: "11px", fontWeight: 600, color: codeSnippet.length > 2000 ? "#ef4444" : "var(--text-tertiary)" }}>
                                         {codeSnippet.length}/2000
                                     </span>
-                                    <button 
+                                    <button
                                         onClick={() => { setIsCodeExpanded(false); setCodeSnippet(""); }}
                                         style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center" }}
                                     >
@@ -413,19 +413,19 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         const hashtags = content.match(hashtagRegex);
                         if (hashtags && hashtags.length > 0) {
                             return (
-                                <div style={{ 
-                                    display: "flex", 
-                                    flexWrap: "wrap", 
-                                    gap: "6px", 
+                                <div style={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: "6px",
                                     marginTop: "12px",
                                 }}>
                                     {[...new Set(hashtags)].map((tag, i) => (
-                                        <span 
-                                            key={i} 
-                                            style={{ 
-                                                fontSize: "12px", 
-                                                fontWeight: 500, 
-                                                color: "var(--text-primary)", 
+                                        <span
+                                            key={i}
+                                            style={{
+                                                fontSize: "12px",
+                                                fontWeight: 500,
+                                                color: "var(--text-primary)",
                                                 backgroundColor: "var(--bg-hover)",
                                                 padding: "4px 10px",
                                                 borderRadius: "100px",
@@ -507,14 +507,14 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 {attachments.length > 0 && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
                         {attachments.map((file, index) => (
-                            <div 
-                                key={index} 
-                                style={{ 
-                                    display: "flex", 
-                                    alignItems: "center", 
+                            <div
+                                key={index}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
                                     justifyContent: "space-between",
-                                    padding: "10px 14px", 
-                                    backgroundColor: "var(--bg-hover)", 
+                                    padding: "10px 14px",
+                                    backgroundColor: "var(--bg-hover)",
                                     borderRadius: "var(--radius-sm)",
                                     border: "0.5px solid var(--border-hairline)",
                                 }}
@@ -530,7 +530,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         </span>
                                     </div>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => removeAttachment(index)}
                                     style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}
                                 >
@@ -555,13 +555,13 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
                             <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)" }}>Poll options</span>
-                                <button 
+                            <button
                                 onClick={() => setIsPoll(false)}
-                                style={{ 
-                                    background: "none", 
-                                    border: "none", 
-                                    color: "var(--text-tertiary)", 
-                                    cursor: "pointer", 
+                                style={{
+                                    background: "none",
+                                    border: "none",
+                                    color: "var(--text-tertiary)",
+                                    cursor: "pointer",
                                     padding: 0
                                 }}
                             >
@@ -587,7 +587,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     }}
                                 />
                                 {pollOptions.length > 2 && (
-                                    <button 
+                                    <button
                                         onClick={() => removePollOption(index)}
                                         style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}
                                     >
@@ -629,7 +629,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     borderTop: (content.length > 0 || images.length > 0 || isPoll) ? "0.5px solid var(--border-hairline)" : "none",
                     gap: "12px",
                 }}>
-                    <div style={{ display: "flex", gap: "8px", color: "var(--text-tertiary)", alignItems: "center" }}>
+                    <div style={{ display: "flex", gap: "4px", color: "var(--text-tertiary)", alignItems: "center", flexWrap: "wrap", flex: 1 }}>
                         <input
                             type="file"
                             multiple
@@ -756,94 +756,190 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 <HugeiconsIcon icon={FileAddIcon} size={20} />
                             </button>
                         )}
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <span style={{
-                            fontSize: "12px",
-                            color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
-                            opacity: content.length > (charLimit * 0.8) ? 1 : 0,
-                            transition: "opacity 0.2s",
-                            fontWeight: 500,
-                        }}>
-                            {charLimit - content.length}
-                        </span>
 
-                        {/* Post Type Selector - Bottom Row */}
-                        <div style={{ position: "relative" }} ref={typeMenuRef}>
-                            <button
-                                onClick={() => setIsTypeMenuOpen(!isTypeMenuOpen)}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "6px",
-                                    padding: "6px 10px",
-                                    borderRadius: "12px",
-                                    border: `1px solid ${
-                                        postType !== "Update" ? "var(--border-strong)" : "var(--border-light)"
-                                    }`,
-                                    backgroundColor: isTypeMenuOpen ? "var(--bg-hover)" : "var(--bg-card)",
-                                    color: "var(--text-primary)",
-                                    fontSize: "12px",
-                                    fontWeight: 500,
-                                    cursor: "pointer",
-                                    transition: "all 0.15s var(--ease-smooth)",
-                                    boxShadow: postType !== "Update" ? "var(--shadow-sm)" : "none"
-                                }}
-                                onMouseEnter={e => {
-                                    if (!isTypeMenuOpen) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                }}
-                                onMouseLeave={e => {
-                                    if (!isTypeMenuOpen) e.currentTarget.style.backgroundColor = "var(--bg-card)";
-                                }}
-                            >
-                                <span style={{ 
-                                    display: "flex", 
-                                    alignItems: "center", 
-                                    color: postType === "Update" ? "var(--text-secondary)" :
-                                           postType === "WIP" ? "#d97706" :
-                                           postType === "Stuck" ? "#dc2626" :
-                                           "#7c3aed"
-                                }}>
-                                    {postType === "Update" && <ArrowsClockwise size={13} weight="bold" />}
-                                    {postType === "WIP" && <HugeiconsIcon icon={WorkIcon} size={13} />}
-                                    {postType === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={13} />}
-                                    {postType === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={13} />}
-                                </span>
-                                <span style={{ fontWeight: postType !== "Update" ? 600 : 500 }}>{postType}</span>
-                                <CaretDown size={12} weight="bold" style={{ 
-                                    opacity: 0.5,
-                                    transform: isTypeMenuOpen ? "rotate(-180deg)" : "none",
-                                    transition: "transform 0.2s ease"
-                                }} />
-                            </button>
 
-                            {isTypeMenuOpen && (
-                                <div style={{
-                                    position: "absolute",
-                                    top: "calc(100% + 8px)",
-                                    right: 0,
-                                    width: "160px",
-                                    backgroundColor: "var(--bg-card)",
-                                    border: "1px solid var(--border-light)",
-                                    borderRadius: "12px",
-                                    boxShadow: "var(--shadow-md)",
-                                    padding: "6px",
-                                    zIndex: 1000,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: "2px"
-                                }}>
-                                    {[
-                                        { label: "Update", icon: <ArrowsClockwise size={16} />, color: "var(--text-tertiary)" },
-                                        { label: "WIP", icon: <HugeiconsIcon icon={WorkIcon} size={16} />, color: "#ffaa00" },
-                                        { label: "Stuck", icon: <HugeiconsIcon icon={HourglassIcon} size={16} />, color: "#ff4d4f" },
-                                        { label: "Advice", icon: <HugeiconsIcon icon={ConfusedIcon} size={16} />, color: "#a855f7" }
-                                    ].map((type) => (
+
+                        {/* Action Group: Selectors */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "nowrap" }}>
+                            {/* Post Type Selector */}
+                            <div style={{ position: "relative" }} ref={typeMenuRef}>
+                                <button
+                                    onClick={() => setIsTypeMenuOpen(!isTypeMenuOpen)}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px",
+                                        padding: "4px 12px",
+                                        borderRadius: "100px",
+                                        border: postType !== "Update" ? `1px solid ${postType === "WIP" ? "#d97706" : postType === "Stuck" ? "#dc2626" : "#7c3aed"}40` : "1px solid var(--border-light)",
+                                        backgroundColor: isTypeMenuOpen ? "var(--bg-hover)" : postType !== "Update" ? "var(--bg-page)" : "transparent",
+                                        color: "var(--text-primary)",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                        transition: "all 0.15s cubic-bezier(0.16, 1, 0.3, 1)",
+                                        height: "30px",
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                        e.currentTarget.style.transform = "translateY(-1px)";
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.backgroundColor = isTypeMenuOpen ? "var(--bg-hover)" : postType !== "Update" ? "var(--bg-page)" : "transparent";
+                                        e.currentTarget.style.transform = "none";
+                                    }}
+                                >
+                                    <span style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        color: postType === "Update" ? "var(--text-secondary)" :
+                                            postType === "WIP" ? "#d97706" :
+                                                postType === "Stuck" ? "#dc2626" :
+                                                    "#7c3aed"
+                                    }}>
+                                        {postType === "Update" && <ArrowsClockwise size={13} weight="bold" />}
+                                        {postType === "WIP" && <HugeiconsIcon icon={WorkIcon} size={13} />}
+                                        {postType === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={13} />}
+                                        {postType === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={13} />}
+                                    </span>
+                                    <span style={{ opacity: 0.9 }}>{postType}</span>
+                                    <CaretDown size={11} weight="bold" style={{
+                                        opacity: 0.4,
+                                        transform: isTypeMenuOpen ? "rotate(-180deg)" : "none",
+                                        transition: "transform 0.2s ease"
+                                    }} />
+                                </button>
+
+                                {isTypeMenuOpen && (
+                                    <div style={{
+                                        position: "absolute",
+                                        bottom: "calc(100% + 8px)",
+                                        left: 0,
+                                        width: "160px",
+                                        backgroundColor: "var(--bg-card)",
+                                        border: "1px solid var(--border-light)",
+                                        borderRadius: "14px",
+                                        boxShadow: "var(--shadow-lg)",
+                                        padding: "6px",
+                                        zIndex: 1000,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: "2px",
+                                        animation: "fadeIn 0.15s ease-out"
+                                    }}>
+                                        {[
+                                            { label: "Update", icon: <ArrowsClockwise size={16} />, color: "var(--text-tertiary)" },
+                                            { label: "WIP", icon: <HugeiconsIcon icon={WorkIcon} size={16} />, color: "#ffaa00" },
+                                            { label: "Stuck", icon: <HugeiconsIcon icon={HourglassIcon} size={16} />, color: "#ff4d4f" },
+                                            { label: "Advice", icon: <HugeiconsIcon icon={ConfusedIcon} size={16} />, color: "#a855f7" }
+                                        ].map((type) => (
+                                            <button
+                                                key={type.label}
+                                                onClick={() => {
+                                                    setPostType(type.label);
+                                                    setIsTypeMenuOpen(false);
+                                                }}
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "10px",
+                                                    padding: "8px 12px",
+                                                    borderRadius: "10px",
+                                                    border: "none",
+                                                    backgroundColor: postType === type.label ? "var(--bg-hover)" : "transparent",
+                                                    color: postType === type.label ? "var(--text-primary)" : "var(--text-secondary)",
+                                                    fontSize: "13px",
+                                                    fontWeight: 500,
+                                                    cursor: "pointer",
+                                                    textAlign: "left",
+                                                    transition: "all 0.1s ease",
+                                                }}
+                                                onMouseEnter={e => {
+                                                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                                    e.currentTarget.style.color = "var(--text-primary)";
+                                                }}
+                                                onMouseLeave={e => {
+                                                    if (postType !== type.label) {
+                                                        e.currentTarget.style.backgroundColor = "transparent";
+                                                        e.currentTarget.style.color = "var(--text-secondary)";
+                                                    }
+                                                }}
+                                            >
+                                                <span style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    color: type.color,
+                                                    opacity: postType === type.label ? 1 : 0.7
+                                                }}>{type.icon}</span>
+                                                {type.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Project Selector */}
+                            <div style={{ position: "relative" }} ref={projectMenuRef}>
+                                <button
+                                    onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px",
+                                        padding: "4px 12px",
+                                        borderRadius: "100px",
+                                        border: selectedProjectId ? "1px solid var(--border-light)" : "1px solid var(--border-light)",
+                                        backgroundColor: isProjectMenuOpen ? "var(--bg-hover)" : selectedProjectId ? "var(--bg-page)" : "transparent",
+                                        color: selectedProjectId ? "var(--text-primary)" : "var(--text-secondary)",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                        transition: "all 0.15s cubic-bezier(0.16, 1, 0.3, 1)",
+                                        maxWidth: "180px",
+                                        height: "30px",
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                        e.currentTarget.style.transform = "translateY(-1px)";
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.backgroundColor = isProjectMenuOpen ? "var(--bg-hover)" : selectedProjectId ? "var(--bg-page)" : "transparent";
+                                        e.currentTarget.style.transform = "none";
+                                    }}
+                                >
+
+                                    <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: 0.9 }}>
+                                        {selectedProject ? selectedProject.name.split(' ')[0] : "Project"}
+                                    </span>
+                                    <CaretDown size={11} weight="bold" style={{
+                                        opacity: 0.4,
+                                        transform: isProjectMenuOpen ? "rotate(-180deg)" : "none",
+                                        transition: "transform 0.2s ease"
+                                    }} />
+                                </button>
+
+                                {isProjectMenuOpen && (
+                                    <div style={{
+                                        position: "absolute",
+                                        bottom: "calc(100% + 8px)",
+                                        left: 0,
+                                        width: "220px",
+                                        backgroundColor: "var(--bg-card)",
+                                        border: "1px solid var(--border-light)",
+                                        borderRadius: "12px",
+                                        boxShadow: "var(--shadow-md)",
+                                        padding: "6px",
+                                        zIndex: 1000,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: "2px",
+                                        maxHeight: "300px",
+                                        overflowY: "auto"
+                                    }} className="hide-scrollbar">
                                         <button
-                                            key={type.label}
                                             onClick={() => {
-                                                setPostType(type.label);
-                                                setIsTypeMenuOpen(false);
+                                                setSelectedProjectId(null);
+                                                setIsProjectMenuOpen(false);
                                             }}
                                             style={{
                                                 display: "flex",
@@ -852,181 +948,85 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                                 padding: "8px 12px",
                                                 borderRadius: "12px",
                                                 border: "none",
-                                                backgroundColor: postType === type.label ? "var(--bg-hover)" : "transparent",
-                                                color: postType === type.label ? "var(--text-primary)" : "var(--text-secondary)",
+                                                backgroundColor: !selectedProjectId ? "var(--bg-hover)" : "transparent",
+                                                color: !selectedProjectId ? "var(--text-primary)" : "var(--text-secondary)",
                                                 fontSize: "13px",
                                                 fontWeight: 500,
                                                 cursor: "pointer",
                                                 textAlign: "left",
-                                                transition: "all 0.15s ease",
-                                            }}
-                                            onMouseEnter={e => {
-                                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                                e.currentTarget.style.color = "var(--text-primary)";
-                                            }}
-                                            onMouseLeave={e => {
-                                                if (postType !== type.label) {
-                                                    e.currentTarget.style.backgroundColor = "transparent";
-                                                    e.currentTarget.style.color = "var(--text-secondary)";
-                                                }
                                             }}
                                         >
-                                            <span style={{ 
-                                                display: "flex", 
-                                                alignItems: "center", 
-                                                color: type.color,
-                                                opacity: postType === type.label ? 1 : 0.7
-                                            }}>{type.icon}</span>
-                                            {type.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Project Selector - Bottom Row */}
-                        <div style={{ position: "relative" }} ref={projectMenuRef}>
-                            <button
-                                onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "6px",
-                                    padding: "6px 10px",
-                                    borderRadius: "12px",
-                                    border: selectedProjectId ? "1px solid var(--border-strong)" : "1px solid var(--border-light)",
-                                    backgroundColor: isProjectMenuOpen ? "var(--bg-hover)" : "var(--bg-card)",
-                                    color: selectedProjectId ? "var(--text-primary)" : "var(--text-secondary)",
-                                    fontSize: "13px",
-                                    fontWeight: 500,
-                                    cursor: "pointer",
-                                    transition: "all 0.15s var(--ease-smooth)",
-                                    maxWidth: "160px",
-                                    boxShadow: selectedProjectId ? "var(--shadow-sm)" : "none"
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (!isProjectMenuOpen) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (!isProjectMenuOpen) e.currentTarget.style.backgroundColor = "var(--bg-card)";
-                                }}
-                            >
-                                {selectedProject?.cover_image ? (
-                                    <img src={selectedProject.cover_image} style={{ width: "18px", height: "18px", borderRadius: "4px", objectFit: "cover" }} alt="" />
-                                ) : (
-                                    <Rocket size={14} weight={selectedProjectId ? "fill" : "regular"} color={selectedProjectId ? "var(--text-primary)" : "var(--text-tertiary)"} />
-                                )}
-                                <span style={{ 
-                                    whiteSpace: "nowrap", 
-                                    overflow: "hidden", 
-                                    textOverflow: "ellipsis",
-                                    fontWeight: selectedProjectId ? 600 : 500
-                                }}>
-                                    {selectedProject?.name || "Project"}
-                                </span>
-                                <CaretDown size={12} weight="bold" style={{ 
-                                    opacity: 0.5,
-                                    transform: isProjectMenuOpen ? "rotate(-180deg)" : "none",
-                                    transition: "transform 0.2s ease"
-                                }} />
-                            </button>
-
-                            {isProjectMenuOpen && (
-                                <div style={{
-                                    position: "absolute",
-                                    top: "calc(100% + 8px)",
-                                    right: 0,
-                                    width: "220px",
-                                    backgroundColor: "var(--bg-card)",
-                                    border: "1px solid var(--border-light)",
-                                    borderRadius: "12px",
-                                    boxShadow: "var(--shadow-md)",
-                                    padding: "6px",
-                                    zIndex: 1000,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: "2px",
-                                    maxHeight: "260px",
-                                    overflowY: "auto"
-                                }}>
-                                    <button
-                                        onClick={() => {
-                                            setSelectedProjectId(null);
-                                            setIsProjectMenuOpen(false);
-                                        }}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "10px",
-                                            padding: "8px 12px",
-                                            borderRadius: "12px",
-                                            border: "none",
-                                            backgroundColor: !selectedProjectId ? "var(--bg-hover)" : "transparent",
-                                            color: !selectedProjectId ? "var(--text-primary)" : "var(--text-secondary)",
-                                            fontSize: "13px",
-                                            fontWeight: 500,
-                                            cursor: "pointer",
-                                            textAlign: "left",
-                                        }}
-                                    >
-                                        <div style={{ width: "20px", display: "flex", justifyContent: "center" }}>
-                                            <MinusCircle size={14} />
-                                        </div>
-                                        None
-                                    </button>
-                                    <div style={{ height: "1px", backgroundColor: "var(--border-light)", margin: "4px 8px" }} />
-                                    {userProjects.map((project: any) => (
-                                        <button
-                                            key={project.id}
-                                            onClick={() => {
-                                                setSelectedProjectId(project.id);
-                                                setIsProjectMenuOpen(false);
-                                            }}
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: "10px",
-                                                padding: "8px 12px",
-                                                borderRadius: "8px",
-                                                border: "none",
-                                                backgroundColor: selectedProjectId === project.id ? "var(--bg-hover)" : "transparent",
-                                                color: selectedProjectId === project.id ? "var(--text-primary)" : "var(--text-secondary)",
-                                                fontSize: "13px",
-                                                fontWeight: 500,
-                                                cursor: "pointer",
-                                                textAlign: "left",
-                                                transition: "all 0.15s ease",
-                                            }}
-                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                            onMouseLeave={e => {
-                                                if (selectedProjectId !== project.id) e.currentTarget.style.backgroundColor = "transparent";
-                                            }}
-                                        >
-                                            <div style={{ 
-                                                width: "24px", 
-                                                height: "24px", 
-                                                borderRadius: "6px", 
-                                                backgroundColor: "var(--bg-hover)",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                fontSize: "10px",
-                                                overflow: "hidden",
-                                                flexShrink: 0
-                                            }}>
-                                                {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <Rocket size={12} />}
+                                            <div style={{ width: "20px", display: "flex", justifyContent: "center" }}>
+                                                <MinusCircle size={14} />
                                             </div>
-                                            <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontWeight: selectedProjectId === project.id ? 600 : 500 }}>{project.name}</span>
+                                            None
                                         </button>
-                                    ))}
-                                    {userProjects.length === 0 && (
-                                        <div style={{ padding: "16px 12px", fontSize: "13px", color: "var(--text-tertiary)", textAlign: "center" }}>
-                                            No active projects found.
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                        <div style={{ height: "1px", backgroundColor: "var(--border-light)", margin: "4px 8px" }} />
+                                        {userProjects.map((project: any) => (
+                                            <button
+                                                key={project.id}
+                                                onClick={() => {
+                                                    setSelectedProjectId(project.id);
+                                                    setIsProjectMenuOpen(false);
+                                                }}
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "10px",
+                                                    padding: "8px 12px",
+                                                    borderRadius: "8px",
+                                                    border: "none",
+                                                    backgroundColor: selectedProjectId === project.id ? "var(--bg-hover)" : "transparent",
+                                                    color: selectedProjectId === project.id ? "var(--text-primary)" : "var(--text-secondary)",
+                                                    fontSize: "13px",
+                                                    fontWeight: 500,
+                                                    cursor: "pointer",
+                                                    textAlign: "left",
+                                                    transition: "all 0.15s ease",
+                                                }}
+                                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                                onMouseLeave={e => {
+                                                    if (selectedProjectId !== project.id) e.currentTarget.style.backgroundColor = "transparent";
+                                                }}
+                                            >
+                                                <div style={{
+                                                    width: "24px",
+                                                    height: "24px",
+                                                    borderRadius: "6px",
+                                                    backgroundColor: "var(--bg-hover)",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    fontSize: "10px",
+                                                    overflow: "hidden",
+                                                    flexShrink: 0
+                                                }}>
+                                                    {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <Rocket size={12} />}
+                                                </div>
+                                                <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontWeight: selectedProjectId === project.id ? 600 : 500 }}>{project.name}</span>
+                                            </button>
+                                        ))}
+                                        {userProjects.length === 0 && (
+                                            <div style={{ padding: "16px 12px", fontSize: "13px", color: "var(--text-tertiary)", textAlign: "center" }}>
+                                                No active projects found.
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <span style={{
+                            fontSize: "12px",
+                            color: content.length > charLimit ? "#ef4444" : "var(--text-tertiary)",
+                            opacity: content.length > (charLimit * 0.8) ? 1 : 0,
+                            transition: "opacity 0.2s",
+                            fontWeight: 600,
+                        }}>
+                            {charLimit - content.length}
+                        </span>
 
                         <button
                             onClick={handleSubmit}
@@ -1037,8 +1037,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 color: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
                                 borderRadius: "100px",
-                                fontWeight: "600",
-                                fontSize: "13px",
+                                fontWeight: "800",
+                                fontSize: "14px",
                                 cursor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "pointer" : "not-allowed",
                                 transition: "all 0.15s cubic-bezier(0.16, 1, 0.3, 1)",
                                 transform: isSubmitting ? "scale(0.98)" : "scale(1)",
