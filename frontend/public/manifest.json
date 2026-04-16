@@ -1,11 +1,11 @@
 {
-    "name": "Codeown - The Home of Passionate Developers",
+    "name": "Codeown - Where Builders Ship Together",
     "short_name": "Codeown",
-    "description": "The premiere platform for developers to share projects and collaborate.",
+    "description": "A dedicated space for developers to document their build-in-public journey. Join 112+ developers sharing the messy code behind the perfect launch.",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#f8fafc",
-    "theme_color": "#f8fafc",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
     "icons": [
         {
             "src": "/favicon.png",
