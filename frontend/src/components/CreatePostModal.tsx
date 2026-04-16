@@ -541,7 +541,14 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
               <span style={{ maxWidth: "100px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {selectedProject?.name || "Target Project"}
               </span>
-              <CaretDown size={12} weight="bold" />
+              <CaretDown
+                size={12}
+                weight="bold"
+                style={{
+                  transform: isProjectMenuOpen ? "rotate(-180deg)" : "none",
+                  transition: "transform 0.2s ease"
+                }}
+              />
             </button>
 
             {isProjectMenuOpen && (
