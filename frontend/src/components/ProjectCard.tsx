@@ -112,6 +112,7 @@ import { toast } from "react-toastify";
 import UserHoverCard from "./UserHoverCard";
 import RollingNumber from "./RollingNumber";
 import QuickCommentModal from "./QuickCommentModal";
+import Lightbox from "./Lightbox";
 
 interface ProjectCardProps {
   project: Project;
@@ -132,6 +133,8 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
   const { width } = useWindowSize();
@@ -253,6 +256,12 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleImageClick = (e: React.MouseEvent, src: string) => {
+    e.stopPropagation();
+    setLightboxImage(src);
+    setIsLightboxOpen(true);
   };
 
   const handleLike = async (e: React.MouseEvent) => {
@@ -501,7 +510,10 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
 
         {/* Media */}
         {project.cover_image && (
-          <div style={{ borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "16px", aspectRatio: "16/9" }}>
+          <div
+            onClick={(e) => handleImageClick(e, project.cover_image!)}
+            style={{ borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "16px", aspectRatio: "16/9", cursor: "zoom-in" }}
+          >
             <img src={getOptimizedImageUrl(project.cover_image)} alt={project.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
           </div>
         )}
@@ -622,6 +634,12 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         resourceType="project"
         authorName={(project.user?.name || project.user?.username) ?? undefined}
         onSuccess={() => onUpdated?.()}
+      />
+
+      <Lightbox
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        imageSrc={lightboxImage}
       />
     </article>
   );

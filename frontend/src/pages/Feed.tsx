@@ -298,8 +298,9 @@ export default function Feed() {
                         {feedType === "projects" && (
                             <div style={{
                                 display: "flex",
-                                gap: "10px",
-                                padding: "12px 24px",
+                                gap: "15px",
+                                padding: "12px 16px",
+                                alignItems: "center",
                                 overflowX: "auto",
                                 borderTop: "0.5px solid var(--border-hairline)",
                                 backgroundColor: "transparent"
@@ -311,7 +312,7 @@ export default function Feed() {
                                             key={tag}
                                             onClick={() => updateParams({ tag: tag === "All" ? null : tag })}
                                             style={{
-                                                flexShrink: 0, padding: "8px 16px", borderRadius: "100px",
+                                                flexShrink: 0, padding: "8px 12px", borderRadius: "100px",
                                                 border: "0.5px solid var(--border-hairline)",
                                                 backgroundColor: isSelected ? "var(--text-primary)" : "transparent",
                                                 color: isSelected ? "var(--bg-page)" : "var(--text-secondary)",

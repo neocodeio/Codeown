@@ -12,6 +12,7 @@ import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
 import { CaretLeft, Globe, GithubLogo, Star, BookmarkSimple, ShareNetwork, Handshake, Rocket, Plus } from "phosphor-react";
 import CreatePostModal from "../components/CreatePostModal";
+import Lightbox from "../components/Lightbox";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import ShareModal from "../components/ShareModal";
@@ -44,6 +45,8 @@ export default function ProjectDetail() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isCofounderModalOpen, setIsCofounderModalOpen] = useState(false);
   const [isShipModalOpen, setIsShipModalOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
   const [activeTab, setActiveTab] = useState<"details" | "posts">("details");
 
   const viewLogged = useRef(false);
@@ -203,6 +206,12 @@ export default function ProjectDetail() {
       await api.delete(`/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       navigate("/");
     } catch (error) { toast.error("Failed to delete project"); } finally { setIsDeleting(false); }
+  };
+
+  const handleImageClick = (e: React.MouseEvent, src: string) => {
+    e.stopPropagation();
+    setLightboxImage(src);
+    setIsLightboxOpen(true);
   };
 
   const isDesktop = width >= 1024;
@@ -401,7 +410,10 @@ export default function ProjectDetail() {
             {/* Banner Section */}
             {project.cover_image && (
               <div style={{ width: "100%", height: isMobile ? "240px" : "320px", padding: "16px 24px 0" }}>
-                <div style={{ width: "100%", height: "100%", borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
+                <div
+                  onClick={(e) => handleImageClick(e, project.cover_image!)}
+                  style={{ width: "100%", height: "100%", borderRadius: "var(--radius-md)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", cursor: "zoom-in" }}
+                >
                   <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Project banner" />
                 </div>
               </div>
@@ -662,6 +674,11 @@ export default function ProjectDetail() {
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0" : "0 24px" }}></div>
       <ProjectModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} project={project} onUpdated={fetchProject} />
       {project && <CoFounderRequestModal isOpen={isCofounderModalOpen} onClose={() => setIsCofounderModalOpen(false)} projectId={project.id} projectTitle={project.title} onSuccess={fetchProject} />}
+      <Lightbox
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        imageSrc={lightboxImage}
+      />
     </div>
   );
 }
