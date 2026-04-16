@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
-import { MagnifyingGlass, Users, Layout, Rocket, Clock, Buildings, CheckCircle } from "phosphor-react";
+import { MagnifyingGlass, Users, Layout, Rocket, Clock, Buildings, CheckCircle, Hash } from "phosphor-react";
 import type { Post } from "../hooks/usePosts";
 import type { Project } from "../types/project";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -54,7 +54,7 @@ interface SearchProject {
   user?: { name: string; email: string | null; avatar_url: string | null; username?: string | null };
 }
 
-type FilterType = "people" | "posts" | "projects" | "startups";
+type FilterType = "people" | "posts" | "projects" | "startups" | "hashtags";
 type SortOption = "best" | "newest";
 
 export default function Search() {
@@ -92,7 +92,7 @@ export default function Search() {
       const res = await api.get(`/search/posts?q=${encodeURIComponent(debouncedQuery)}&limit=20`);
       return (res.data?.posts || []) as SearchPost[];
     },
-    enabled: debouncedQuery.length >= 2 && activeFilter === "posts",
+    enabled: debouncedQuery.length >= 2 && (activeFilter === "posts" || activeFilter === "hashtags"),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -228,6 +228,22 @@ export default function Search() {
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       )
       : startupsData;
+
+  const hashtagsSorted = useMemo(() => {
+    if (!postsData) return [];
+    const tagsMap = new Map<string, number>();
+    postsData.forEach((p: any) => {
+      p.tags?.forEach((t: string) => {
+        const tag = t.toLowerCase().replace(/^#/, "");
+        if (!query || tag.includes(query.toLowerCase().replace(/^#/, ""))) {
+          tagsMap.set(tag, (tagsMap.get(tag) || 0) + 1);
+        }
+      });
+    });
+    return Array.from(tagsMap.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [postsData, query]);
 
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -473,6 +489,7 @@ export default function Search() {
                       { id: "posts", label: "Posts", icon: Layout },
                       { id: "projects", label: "Projects", icon: Rocket },
                       { id: "startups", label: "Startups", icon: Buildings },
+                      { id: "hashtags", label: "Hashtags", icon: Hash },
                     ].map((opt) => (
                       <button
                         key={opt.id}
@@ -628,6 +645,53 @@ export default function Search() {
                       <StartupCard key={startup.id} startup={startup} />
                     ))}
                     {startupsSorted.length === 0 && <EmptyState type="Startups" />}
+                  </div>
+                )}
+
+                {activeFilter === "hashtags" && (
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 200px), 1fr))",
+                    gap: "12px"
+                  }}>
+                    {hashtagsSorted.map((tag) => (
+                      <div
+                        key={tag.name}
+                        onClick={() => {
+                          const newQ = `#${tag.name}`;
+                          setQuery(newQ);
+                          setSearchParams({ q: newQ });
+                          setActiveFilter("posts");
+                        }}
+                        style={{
+                          border: "0.5px solid var(--border-hairline)",
+                          borderRadius: "16px",
+                          padding: "16px 20px",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "4px",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          backgroundColor: "var(--bg-page)"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                          e.currentTarget.style.borderColor = "var(--text-tertiary)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                          e.currentTarget.style.borderColor = "var(--border-hairline)";
+                        }}
+                      >
+                        <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>
+                          #{tag.name}
+                        </span>
+                        <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                          {tag.count} post{tag.count !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+                    ))}
+                    {hashtagsSorted.length === 0 && <EmptyState type="Hashtags" />}
                   </div>
                 )}
               </div>
