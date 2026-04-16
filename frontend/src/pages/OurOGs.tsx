@@ -26,7 +26,7 @@ export default function OurOGs() {
     const isMobile = width < 768;
     const isDesktop = width >= 1200;
     const navigate = useNavigate();
-    
+
     const [users, setUsers] = useState<OGUser[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -35,14 +35,14 @@ export default function OurOGs() {
             try {
                 const res = await api.get("/users/ogs");
                 const allUsers = res.data;
-                
+
                 // Reorder: Move amin.ceo to the front
                 const aminIndex = allUsers.findIndex((u: OGUser) => u.username === "amin.ceo");
                 if (aminIndex !== -1) {
                     const amin = allUsers.splice(aminIndex, 1)[0];
                     allUsers.unshift(amin);
                 }
-                
+
                 setUsers(allUsers);
             } catch (err) {
                 console.error("Failed to fetch OGs:", err);
@@ -62,14 +62,14 @@ export default function OurOGs() {
     };
 
     return (
-        <main style={{ 
-            backgroundColor: "var(--bg-page)", 
-            minHeight: "100vh", 
+        <main style={{
+            backgroundColor: "var(--bg-page)",
+            minHeight: "100vh",
             padding: 0,
             position: "relative",
         }}>
-            <SEO title="The Founding OGs | Codeown" description="Celebrating the first 100 pioneers who laid the foundation of Codeown." />
-            
+            <SEO title="The Founding OGs" description="Celebrating the first 100 pioneers who laid the foundation of Codeown." />
+
             {/* ── High-End Noise/Grain Overlay (Subtle) ── */}
             <div style={{
                 position: "fixed",
@@ -103,10 +103,10 @@ export default function OurOGs() {
                     flexDirection: "column",
                 }}>
                     {/* ── Bespoke Hero Section ── */}
-                    <header style={{ 
-                        textAlign: "left", 
-                        marginBottom: isMobile ? "40px" : "80px", 
-                        animation: "pageEnter 0.6s var(--ease-smooth) forwards" 
+                    <header style={{
+                        textAlign: "left",
+                        marginBottom: isMobile ? "40px" : "80px",
+                        animation: "pageEnter 0.6s var(--ease-smooth) forwards"
                     }}>
                         <h1 style={{
                             fontSize: isMobile ? "32px" : "52px",
@@ -116,8 +116,8 @@ export default function OurOGs() {
                             color: "var(--text-primary)",
                             marginBottom: "20px"
                         }}>
-                            The Founding<br/>
-                            <span style={{ 
+                            The Founding<br />
+                            <span style={{
                                 color: "var(--text-secondary)",
                                 background: "linear-gradient(90deg, var(--text-primary) 0%, var(--text-tertiary) 100%)",
                                 WebkitBackgroundClip: "text",
@@ -156,7 +156,7 @@ export default function OurOGs() {
                                 marginBottom: "20px"
                             }}>
                                 {users.slice(0, 3).map((user, i) => (
-                                    <div 
+                                    <div
                                         key={user.id}
                                         onClick={() => navigate(`/${user.username}`)}
                                         style={{
@@ -219,7 +219,7 @@ export default function OurOGs() {
                                 gap: "12px"
                             }}>
                                 {users.slice(3).map((user, i) => (
-                                    <div 
+                                    <div
                                         key={user.id}
                                         onClick={() => navigate(`/${user.username}`)}
                                         style={{
@@ -247,7 +247,7 @@ export default function OurOGs() {
                                         <OGAvatarDecorator is_og={true} size={50}>
                                             <img src={user.avatar_url || "/default-avatar.png"} alt="" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
                                         </OGAvatarDecorator>
-                                        
+
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2px" }}>
                                                 <h4 style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -258,9 +258,9 @@ export default function OurOGs() {
                                             <div style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: "500", marginBottom: "4px" }}>
                                                 @{user.username} • {formatDate(user.created_at)}
                                             </div>
-                                            <div style={{ 
-                                                fontSize: "12px", 
-                                                color: "var(--text-secondary)", 
+                                            <div style={{
+                                                fontSize: "12px",
+                                                color: "var(--text-secondary)",
                                                 lineHeight: "1.4",
                                                 display: "-webkit-box",
                                                 WebkitBoxOrient: "vertical",
@@ -302,7 +302,7 @@ export default function OurOGs() {
                     </aside>
                 )}
             </div>
-            
+
             <BackToTop />
             <style>{`
                 .spin { animation: spin 1s linear infinite; }

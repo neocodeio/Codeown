@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api/axios";
-import { 
-  GithubLogo, 
-  TwitterLogo, 
-  LinkedinLogo, 
-  Globe, 
-  MapPin, 
+import {
+  GithubLogo,
+  TwitterLogo,
+  LinkedinLogo,
+  Globe,
+  MapPin,
   ArrowLeft,
   Rocket,
   IdentificationCard,
@@ -87,14 +87,14 @@ export default function Portfolio() {
   const handleDownload = async () => {
     const element = document.getElementById("portfolio-content");
     if (!element) return;
-    
+
     const originalStyle = element.style.padding;
     // Add extra padding for the image export to look better
     element.style.padding = "40px";
-    
+
     try {
-      const dataUrl = await toPng(element, { 
-        quality: 1, 
+      const dataUrl = await toPng(element, {
+        quality: 1,
         backgroundColor: "#000",
         style: {
           borderRadius: '0'
@@ -114,11 +114,11 @@ export default function Portfolio() {
 
   if (loading) {
     return (
-      <div style={{ 
-        minHeight: "100vh", 
-        backgroundColor: "#000", 
-        display: "flex", 
-        alignItems: "center", 
+      <div style={{
+        minHeight: "100vh",
+        backgroundColor: "#000",
+        display: "flex",
+        alignItems: "center",
         justifyContent: "center",
         color: "#fff",
       }}>
@@ -129,12 +129,12 @@ export default function Portfolio() {
 
   if (!user) {
     return (
-      <div style={{ 
-        minHeight: "100vh", 
-        backgroundColor: "#000", 
-        display: "flex", 
+      <div style={{
+        minHeight: "100vh",
+        backgroundColor: "#000",
+        display: "flex",
         flexDirection: "column",
-        alignItems: "center", 
+        alignItems: "center",
         justifyContent: "center",
         color: "#fff",
         gap: "24px"
@@ -146,15 +146,15 @@ export default function Portfolio() {
   }
 
   return (
-    <div style={{ 
-      minHeight: "100vh", 
-      backgroundColor: "#000", 
-      color: "#fff", 
+    <div style={{
+      minHeight: "100vh",
+      backgroundColor: "#000",
+      color: "#fff",
       fontFamily: "Inter, system-ui, sans-serif",
       paddingBottom: isMobile ? "60px" : "100px"
     }}>
-      <SEO title={`${user.name} | Portfolio`} description={`${user.job_title || 'Developer'} Portfolio on Codeown`} />
-      
+      <SEO title={`${user.name}'s Portfolio`} description={`${user.job_title || 'Developer'} Portfolio on Codeown`} />
+
       {/* Dynamic Background */}
       <div style={{
         position: "fixed",
@@ -180,11 +180,11 @@ export default function Portfolio() {
         borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
         backgroundColor: "rgba(0, 0, 0, 0.5)"
       }}>
-        <Link to={`/${user.username}`} style={{ 
-          display: "flex", 
-          alignItems: "center", 
-          gap: "8px", 
-          color: "rgba(255, 255, 255, 0.6)", 
+        <Link to={`/${user.username}`} style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          color: "rgba(255, 255, 255, 0.6)",
           textDecoration: "none",
           fontSize: isMobile ? "11px" : "13px",
           fontWeight: 600,
@@ -192,7 +192,7 @@ export default function Portfolio() {
           <ArrowLeft size={isMobile ? 14 : 16} /> {isMobile ? "Back" : "Back to profile"}
         </Link>
         <div style={{ display: "flex", gap: isMobile ? "8px" : "12px" }}>
-          <button 
+          <button
             onClick={handleShare}
             style={{
               padding: isMobile ? "8px 12px" : "10px 20px",
@@ -211,7 +211,7 @@ export default function Portfolio() {
           >
             <ShareNetwork size={isMobile ? 14 : 16} /> Share
           </button>
-          <button 
+          <button
             onClick={handleDownload}
             style={{
               padding: isMobile ? "8px 12px" : "10px 24px",
@@ -235,18 +235,18 @@ export default function Portfolio() {
 
       <main id="portfolio-content" style={{ position: "relative", zIndex: 1, padding: isMobile ? "0 16px" : "0 20px" }}>
         {/* Hero Section */}
-        <section style={{ 
-          maxWidth: "1100px", 
-          margin: "0 auto", 
+        <section style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
           padding: isMobile ? "60px 0 40px" : "120px 0 80px",
           textAlign: "center"
         }}>
-          <div style={{ 
+          <div style={{
             position: "relative",
             display: "inline-block",
             marginBottom: isMobile ? "24px" : "40px"
           }}>
-            <img 
+            <img
               src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=212121&color=fff&bold=true`}
               style={{
                 width: isMobile ? "100px" : "140px",
@@ -271,30 +271,30 @@ export default function Portfolio() {
               }}>Pro</span>
             )}
           </div>
-          
-          <h1 style={{ 
-            fontSize: isMobile ? "40px" : "calc(2.5rem + 3vw)", 
-            fontWeight: 800, 
-            lineHeight: 1, 
+
+          <h1 style={{
+            fontSize: isMobile ? "40px" : "calc(2.5rem + 3vw)",
+            fontWeight: 800,
+            lineHeight: 1,
             letterSpacing: "-0.04em",
             marginBottom: "16px",
           }}>
             {user.name}
           </h1>
-          <p style={{ 
-            fontSize: isMobile ? "16px" : "20px", 
-            color: "rgba(255, 255, 255, 0.6)", 
-            maxWidth: "600px", 
+          <p style={{
+            fontSize: isMobile ? "16px" : "20px",
+            color: "rgba(255, 255, 255, 0.6)",
+            maxWidth: "600px",
             margin: "0 auto 32px",
             lineHeight: 1.6
           }}>
             {user.job_title || "Full-Stack Developer"}
           </p>
 
-          <div style={{ 
-            display: "flex", 
+          <div style={{
+            display: "flex",
             flexWrap: "wrap",
-            justifyContent: "center", 
+            justifyContent: "center",
             gap: isMobile ? "16px" : "24px",
             color: "rgba(255, 255, 255, 0.4)",
             fontSize: isMobile ? "13px" : "15px",
@@ -314,24 +314,24 @@ export default function Portfolio() {
 
         {/* Bio Section */}
         <section style={{ maxWidth: "800px", margin: isMobile ? "0 auto 60px" : "0 auto 120px" }}>
-          <div style={{ 
-            padding: isMobile ? "32px 24px" : "60px", 
-            backgroundColor: "rgba(255, 255, 255, 0.02)", 
+          <div style={{
+            padding: isMobile ? "32px 24px" : "60px",
+            backgroundColor: "rgba(255, 255, 255, 0.02)",
             border: "1px solid rgba(255, 255, 255, 0.05)",
             borderRadius: "var(--radius-md)",
             position: "relative",
             overflow: "hidden" // Fix for floating elements
           }}>
-            <IdentificationCard size={32} style={{ 
-              position: "absolute", 
-              top: isMobile ? "16px" : "30px", 
+            <IdentificationCard size={32} style={{
+              position: "absolute",
+              top: isMobile ? "16px" : "30px",
               right: isMobile ? "16px" : "30px", // Moved to inside the box
               color: "rgba(255, 255, 255, 0.1)",
               zIndex: 0
             }} />
-            <p style={{ 
-              fontSize: isMobile ? "18px" : "24px", 
-              lineHeight: 1.6, 
+            <p style={{
+              fontSize: isMobile ? "18px" : "24px",
+              lineHeight: 1.6,
               color: "rgba(255, 255, 255, 0.8)",
               margin: 0,
               position: "relative",
@@ -344,17 +344,17 @@ export default function Portfolio() {
 
         {/* Projects Section */}
         <section style={{ maxWidth: "1100px", margin: isMobile ? "0 auto 80px" : "0 auto 120px" }}>
-          <div style={{ 
-            display: "flex", 
+          <div style={{
+            display: "flex",
             flexDirection: isMobile ? "column" : "row",
-            justifyContent: "space-between", 
-            alignItems: isMobile ? "flex-start" : "flex-end", 
+            justifyContent: "space-between",
+            alignItems: isMobile ? "flex-start" : "flex-end",
             marginBottom: isMobile ? "40px" : "60px",
             gap: "16px"
           }}>
             <div>
-              <label style={{ 
-                fontSize: "12px", 
+              <label style={{
+                fontSize: "12px",
                 color: "rgba(255, 255, 255, 0.4)",
                 display: "block",
                 marginBottom: "12px",
@@ -367,10 +367,10 @@ export default function Portfolio() {
             </div>
           </div>
 
-          <div style={{ 
-            display: "grid", 
-            gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(400px, 1fr))", 
-            gap: isMobile ? "48px" : "40px" 
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(400px, 1fr))",
+            gap: isMobile ? "48px" : "40px"
           }}>
             {projects.map((project, idx) => (
               <article key={project.id} style={{
@@ -388,8 +388,8 @@ export default function Portfolio() {
                   border: "1px solid rgba(255, 255, 255, 0.05)"
                 }}>
                   {project.cover_image ? (
-                    <img 
-                      src={project.cover_image} 
+                    <img
+                      src={project.cover_image}
                       style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
                       className="project-img"
                     />
@@ -400,15 +400,15 @@ export default function Portfolio() {
                   )}
                 </div>
                 <div>
-                  <div style={{ 
-                    display: "flex", 
-                    justifyContent: "space-between", 
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
                     alignItems: "center",
                     marginBottom: "12px"
                   }}>
                     <h3 style={{ fontSize: isMobile ? "20px" : "24px", fontWeight: 800 }}>{project.title}</h3>
-                    <span style={{ 
-                      fontSize: "11px", 
+                    <span style={{
+                      fontSize: "11px",
                       color: "rgba(255, 255, 255, 0.4)",
                       padding: "4px 8px",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -440,18 +440,18 @@ export default function Portfolio() {
 
         {/* Skills Section */}
         <section style={{ maxWidth: "1100px", margin: isMobile ? "0 auto 80px" : "0 auto 120px" }}>
-          <div style={{ 
-            padding: isMobile ? "40px 20px" : "80px", 
+          <div style={{
+            padding: isMobile ? "40px 20px" : "80px",
             backgroundColor: "rgba(255, 255, 255, 0.02)",
             border: "1px solid rgba(255, 255, 255, 0.05)",
             borderRadius: "var(--radius-sm)"
           }}>
             <h2 style={{ fontSize: "12px", fontWeight: 600, color: "rgba(255, 255, 255, 0.4)", marginBottom: isMobile ? "32px" : "40px", textAlign: "center" }}>Technical stack</h2>
-            <div style={{ 
-              display: "flex", 
-              flexWrap: "wrap", 
-              justifyContent: "center", 
-              gap: isMobile ? "12px" : "16px" 
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: isMobile ? "12px" : "16px"
             }}>
               {user.skills?.map(skill => (
                 <span key={skill} style={{
@@ -460,8 +460,8 @@ export default function Portfolio() {
                   color: isMobile ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.2)",
                   transition: "all 0.3s ease"
                 }}
-                onMouseEnter={(e) => { if(!isMobile) e.currentTarget.style.color = "#fff"} }
-                onMouseLeave={(e) => { if(!isMobile) e.currentTarget.style.color = "rgba(255, 255, 255, 0.2)"} }
+                  onMouseEnter={(e) => { if (!isMobile) e.currentTarget.style.color = "#fff" }}
+                  onMouseLeave={(e) => { if (!isMobile) e.currentTarget.style.color = "rgba(255, 255, 255, 0.2)" }}
                 >
                   {skill}
                 </span>
@@ -472,7 +472,7 @@ export default function Portfolio() {
 
         {/* Contact Footer */}
         <section style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center", paddingBottom: "60px" }}>
-          <h2 style={{ fontSize: isMobile ? "32px" : "calc(1.5rem + 2vw)", fontWeight: 800, marginBottom: "40px" }}>Let's build something.<br/>Together.</h2>
+          <h2 style={{ fontSize: isMobile ? "32px" : "calc(1.5rem + 2vw)", fontWeight: 800, marginBottom: "40px" }}>Let's build something.<br />Together.</h2>
           <div style={{ display: "flex", justifyContent: "center", gap: "40px" }}>
             {user.github_url && <a href={user.github_url} target="_blank" style={{ color: "#fff", opacity: 0.6 }}><GithubLogo size={isMobile ? 28 : 32} /></a>}
             {user.twitter_url && <a href={user.twitter_url} target="_blank" style={{ color: "#fff", opacity: 0.6 }}><TwitterLogo size={isMobile ? 28 : 32} /></a>}
@@ -481,9 +481,9 @@ export default function Portfolio() {
         </section>
       </main>
 
-      <footer style={{ 
-        textAlign: "center", 
-        padding: "40px", 
+      <footer style={{
+        textAlign: "center",
+        padding: "40px",
         borderTop: "1px solid rgba(255, 255, 255, 0.05)",
         color: "rgba(255, 255, 255, 0.3)",
         fontSize: "12px",
@@ -493,11 +493,11 @@ export default function Portfolio() {
       </footer>
 
       {/* Share Modal Integration */}
-      <ShareModal 
-        isOpen={isShareModalOpen} 
-        onClose={() => setIsShareModalOpen(false)} 
-        url={window.location.href} 
-        title={`Share ${user.name}'s Portfolio`} 
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        url={window.location.href}
+        title={`Share ${user.name}'s Portfolio`}
       />
 
       <style>{`

@@ -36,6 +36,7 @@ import VerifiedBadge from "../components/VerifiedBadge";
 import AvailabilityBadge from "../components/AvailabilityBadge";
 import { socket } from "../lib/socket";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
+import { SEO } from "../components/SEO";
 
 interface Partner {
   id: string;
@@ -119,12 +120,12 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
     const style = window.getComputedStyle(canvas);
     const primaryColor = style.color || (isMine ? "rgba(255,255,255,1)" : "#000");
     const secondaryColor = isMine ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.15)";
-    
+
     const progress = duration > 0 ? currentTime / duration : 0;
     const time = performance.now() / 150; // For pulse animation
-    
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     const barWidth = 2.5;
     const gap = 1.5;
     const totalWidth = bars.length * (barWidth + gap);
@@ -133,18 +134,18 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
 
     bars.forEach((heightMultiplier, i) => {
       const x = i * (barWidth + gap);
-      
+
       // Add pulse effect if playing
       let h = heightMultiplier * canvas.height * 0.8;
       if (isPlaying) {
         h += Math.sin(time + i * 0.5) * 4; // Rhythmic pulse
       }
-      
+
       const y = (canvas.height - h) / 2;
       const isPast = i / bars.length <= progress;
-      
+
       ctx.fillStyle = isPast ? primaryColor : secondaryColor;
-      
+
       ctx.beginPath();
       // Draw rounded line
       ctx.roundRect(x, y, barWidth, h, 2);
@@ -173,19 +174,19 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "4px 0" }}>
-      <button 
+      <button
         onClick={togglePlay}
-        style={{ 
-          width: "44px", 
-          height: "44px", 
-          borderRadius: "50%", 
-          backgroundColor: isMine ? "rgba(255,255,255,0.98)" : "var(--bg-hover)", 
-          border: "none", 
-          display: "flex", 
-          alignItems: "center", 
+        style={{
+          width: "44px",
+          height: "44px",
+          borderRadius: "50%",
+          backgroundColor: isMine ? "rgba(255,255,255,0.98)" : "var(--bg-hover)",
+          border: "none",
+          display: "flex",
+          alignItems: "center",
           justifyContent: "center",
           cursor: "pointer",
-          color: isMine ? "#000" : "var(--text-primary)", 
+          color: isMine ? "#000" : "var(--text-primary)",
           flexShrink: 0,
           transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
           boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
@@ -202,9 +203,9 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
         {isPlaying ? <Pause size={22} weight="fill" /> : <Play size={22} weight="fill" style={{ marginLeft: isPlaying ? 0 : "2px" }} />}
       </button>
       <canvas ref={canvasRef} style={{ height: "36px", flex: 1, maxWidth: "180px", cursor: "pointer" }} />
-      <audio 
-        ref={audioRef} 
-        src={url} 
+      <audio
+        ref={audioRef}
+        src={url}
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
         onEnded={() => setIsPlaying(false)}
@@ -217,21 +218,21 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
   );
 }
 
-const ConversationItem = memo(({ 
-  convo, 
-  isActive, 
-  typingUsers, 
-  currentUser, 
-  convoMenuId, 
-  setConvoMenuId, 
-  deletingConvoId, 
+const ConversationItem = memo(({
+  convo,
+  isActive,
+  typingUsers,
+  currentUser,
+  convoMenuId,
+  setConvoMenuId,
+  deletingConvoId,
   onSelect,
   onProfile,
   onDelete
-}: { 
-  convo: Conversation, 
-  isActive: boolean, 
-  typingUsers: Record<string, boolean>, 
+}: {
+  convo: Conversation,
+  isActive: boolean,
+  typingUsers: Record<string, boolean>,
   currentUser: any,
   convoMenuId: number | null,
   setConvoMenuId: (id: number | null) => void,
@@ -351,22 +352,22 @@ const ConversationItem = memo(({
   );
 });
 
-const MessageBubble = memo(({ 
-  msg, 
-  isMine, 
+const MessageBubble = memo(({
+  msg,
+  isMine,
   showSender,
   isLastInGroup,
-  activeConvo, 
-  currentUser, 
-  messageMenuId, 
-  setMessageMenuId, 
-  deletingMessageId, 
-  setDeletingMessageId, 
-  onDelete, 
-  onReply, 
-  onReaction, 
-  onPreviewImage, 
-  reactingTo, 
+  activeConvo,
+  currentUser,
+  messageMenuId,
+  setMessageMenuId,
+  deletingMessageId,
+  setDeletingMessageId,
+  onDelete,
+  onReply,
+  onReaction,
+  onPreviewImage,
+  reactingTo,
   setReactingTo,
   onNavigatePost,
   onNavigateProject
@@ -391,21 +392,21 @@ const MessageBubble = memo(({
   isLastInGroup: boolean
 }) => {
   return (
-    <div className="message-row" style={{ 
-      display: "flex", 
-      flexDirection: "column", 
-      alignItems: isMine ? "flex-end" : "flex-start", 
-      gap: "2px", 
-      width: "100%", 
+    <div className="message-row" style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: isMine ? "flex-end" : "flex-start",
+      gap: "2px",
+      width: "100%",
       position: "relative",
       marginBottom: isLastInGroup ? "12px" : "2px"
     }}>
       {showSender && !isMine && (
-        <span style={{ 
-          fontSize: "12px", 
-          fontWeight: 700, 
-          color: "var(--text-primary)", 
-          marginBottom: "6px", 
+        <span style={{
+          fontSize: "12px",
+          fontWeight: 700,
+          color: "var(--text-primary)",
+          marginBottom: "6px",
           padding: "0 12px",
           display: "flex",
           alignItems: "center",
@@ -415,22 +416,22 @@ const MessageBubble = memo(({
           <VerifiedBadge username={activeConvo.partner.username} size="12px" />
         </span>
       )}
-      
+
       {msg.reply_to && (
-        <div 
-          style={{ 
-            padding: "8px 14px", 
-            backgroundColor: "var(--bg-hover)", 
-            borderLeft: "3px solid var(--text-tertiary)", 
-            borderRadius: "12px", 
-            fontSize: "12px", 
-            color: "var(--text-secondary)", 
-            marginBottom: "4px", 
-            maxWidth: "85%", 
-            cursor: "pointer", 
+        <div
+          style={{
+            padding: "8px 14px",
+            backgroundColor: "var(--bg-hover)",
+            borderLeft: "3px solid var(--text-tertiary)",
+            borderRadius: "12px",
+            fontSize: "12px",
+            color: "var(--text-secondary)",
+            marginBottom: "4px",
+            maxWidth: "85%",
+            cursor: "pointer",
             opacity: 0.9,
             margin: isMine ? "0 0 4px auto" : "0 auto 4px 0"
-          }} 
+          }}
           onClick={() => document.getElementById(`msg-${msg.reply_to?.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
         >
           <div style={{ fontWeight: 800, fontSize: "11px", marginBottom: "2px", color: "var(--text-primary)" }}>
@@ -442,49 +443,49 @@ const MessageBubble = memo(({
         </div>
       )}
 
-      <div style={{ 
-        display: "flex", 
-        flexDirection: isMine ? "row-reverse" : "row", 
-        alignItems: "flex-end", 
-        gap: "8px", 
+      <div style={{
+        display: "flex",
+        flexDirection: isMine ? "row-reverse" : "row",
+        alignItems: "flex-end",
+        gap: "8px",
         maxWidth: "85%",
       }}>
         <div style={{ position: "relative" }}>
           <motion.div
             id={`msg-${msg.id}`}
             onContextMenu={(e) => { e.preventDefault(); setReactingTo(msg.id); }}
-            style={{ 
-              padding: "10px 16px", 
-              borderRadius: isMine 
-                ? "20px 20px 4px 20px" 
-                : "20px 20px 20px 4px", 
-              backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-hover)", 
-              color: isMine ? "var(--bg-page)" : "var(--text-primary)", 
-              fontSize: "14.5px", 
-              lineHeight: 1.55, 
-              border: isMine ? "none" : "1px solid var(--border-hairline)", 
-              wordBreak: "break-word", 
+            style={{
+              padding: "10px 16px",
+              borderRadius: isMine
+                ? "20px 20px 4px 20px"
+                : "20px 20px 20px 4px",
+              backgroundColor: isMine ? "var(--text-primary)" : "var(--bg-hover)",
+              color: isMine ? "var(--bg-page)" : "var(--text-primary)",
+              fontSize: "14.5px",
+              lineHeight: 1.55,
+              border: isMine ? "none" : "1px solid var(--border-hairline)",
+              wordBreak: "break-word",
               boxShadow: isMine ? "0 4px 15px rgba(0,0,0,0.1)" : "none",
-              cursor: "pointer", 
+              cursor: "pointer",
               userSelect: "none",
               position: "relative"
             }}
             onDoubleClick={(e) => { e.stopPropagation(); onReaction(msg.id, "❤️"); }}
           >
             {msg.image_url && (
-              <img 
-                src={msg.image_url} 
-                alt="" 
-                style={{ 
-                  maxWidth: "100%", 
-                  maxHeight: "350px", 
-                  borderRadius: "12px", 
-                  marginBottom: msg.content ? "10px" : 0, 
-                  display: "block", 
+              <img
+                src={msg.image_url}
+                alt=""
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "350px",
+                  borderRadius: "12px",
+                  marginBottom: msg.content ? "10px" : 0,
+                  display: "block",
                   cursor: "pointer",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
-                }} 
-                onClick={() => onPreviewImage(msg.image_url!)} 
+                }}
+                onClick={() => onPreviewImage(msg.image_url!)}
               />
             )}
             {msg.audio_url && <div style={{ marginTop: msg.image_url ? "10px" : 0 }}><VoiceWaveform url={msg.audio_url} isMine={isMine} /></div>}
@@ -509,33 +510,33 @@ const MessageBubble = memo(({
                 </div>
               </div>
             )}
-            
+
             {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-              <div style={{ 
+              <div style={{
                 position: "absolute",
                 bottom: "-14px",
                 [isMine ? "left" : "right"]: "8px",
-                display: "flex", 
-                flexWrap: "wrap", 
-                gap: "2px", 
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "2px",
                 zIndex: 2
               }}>
                 {Object.entries(msg.reactions).map(([emoji, userIds]) => {
                   const hasReacted = userIds.includes(currentUser!.id);
                   return (
-                    <div 
-                      key={emoji} 
-                      onClick={() => onReaction(msg.id, emoji)} 
-                      style={{ 
-                        padding: "2px 6px", 
-                        backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-page)", 
-                        color: hasReacted ? "var(--bg-page)" : "var(--text-primary)", 
-                        borderRadius: "10px", 
-                        fontSize: "11px", 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "3px", 
-                        cursor: "pointer", 
+                    <div
+                      key={emoji}
+                      onClick={() => onReaction(msg.id, emoji)}
+                      style={{
+                        padding: "2px 6px",
+                        backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-page)",
+                        color: hasReacted ? "var(--bg-page)" : "var(--text-primary)",
+                        borderRadius: "10px",
+                        fontSize: "11px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "3px",
+                        cursor: "pointer",
                         border: "1px solid var(--border-hairline)",
                         boxShadow: "0 2px 5px rgba(0,0,0,0.05)"
                       }}
@@ -550,48 +551,48 @@ const MessageBubble = memo(({
           </motion.div>
         </div>
 
-        <div className="msg-actions" style={{ 
-          display: "flex", 
-          flexDirection: "column", 
+        <div className="msg-actions" style={{
+          display: "flex",
+          flexDirection: "column",
           alignItems: isMine ? "flex-end" : "flex-start",
           opacity: messageMenuId === msg.id ? 1 : 0,
           transition: "opacity 0.2s",
           paddingBottom: "4px"
         }}>
           <div style={{ position: "relative" }}>
-            <button 
-              onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }} 
+            <button
+              onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }}
               style={{ background: "none", border: "none", padding: "4px", cursor: "pointer", color: "var(--text-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%" }}
             >
               <DotsThree size={20} weight="bold" />
             </button>
             {messageMenuId === msg.id && (
-              <div style={{ 
-                position: "absolute", 
-                bottom: "100%", 
-                [isMine ? "right" : "left"]: 0, 
-                marginBottom: "8px", 
-                backgroundColor: "var(--bg-page)", 
-                border: "1px solid var(--border-hairline)", 
-                borderRadius: "12px", 
-                boxShadow: "0 8px 30px rgba(0,0,0,0.2)", 
-                zIndex: 1000, 
-                minWidth: "170px", 
-                overflow: "hidden" 
+              <div style={{
+                position: "absolute",
+                bottom: "100%",
+                [isMine ? "right" : "left"]: 0,
+                marginBottom: "8px",
+                backgroundColor: "var(--bg-page)",
+                border: "1px solid var(--border-hairline)",
+                borderRadius: "12px",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
+                zIndex: 1000,
+                minWidth: "170px",
+                overflow: "hidden"
               }}>
                 {msg.content && (
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       navigator.clipboard.writeText(msg.content);
-                      toast.success("Copied to clipboard", { 
-                        position: "bottom-center", 
+                      toast.success("Copied to clipboard", {
+                        position: "bottom-center",
                         autoClose: 1500,
                         hideProgressBar: true,
                         style: { backgroundColor: "var(--bg-page)", color: "var(--text-primary)", border: "1px solid var(--border-hairline)", borderRadius: "12px", fontSize: "13px", fontWeight: 600 }
                       });
                       setMessageMenuId(null);
-                    }} 
+                    }}
                     style={{ width: "100%", padding: "12px 16px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}
                   >
                     <Copy size={16} weight="bold" /> Copy text
@@ -624,11 +625,11 @@ const MessageBubble = memo(({
         </div>
       </div>
 
-      <div style={{ 
-        display: "flex", 
-        alignItems: "center", 
-        gap: "6px", 
-        padding: "2px 4px 0", 
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        padding: "2px 4px 0",
         alignSelf: isMine ? "flex-end" : "flex-start",
         marginRight: isMine ? "8px" : 0,
         marginLeft: isMine ? 0 : "8px"
@@ -688,13 +689,13 @@ export default function Messages() {
   const [reactingTo, setReactingTo] = useState<number | null>(null);
   const [sending, setSending] = useState(false);
   const { announce } = useActivityBroadcast();
-  
+
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  
+
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -761,11 +762,11 @@ export default function Messages() {
   useEffect(() => {
     if (qConversations && qConversations.length > 0) {
       // Only update if the length or first item changed to avoid loops
-      if (conversations.length !== qConversations.length || 
-          (conversations[0]?.id !== qConversations[0]?.id)) {
+      if (conversations.length !== qConversations.length ||
+        (conversations[0]?.id !== qConversations[0]?.id)) {
         setConversations(qConversations);
       }
-      
+
       // Auto-select conversation from URL
       if (targetUserId && !activeConvo && !hasAttemptedRef.current) {
         const existing = qConversations.find((c: Conversation) => String(c.partner.id) === String(targetUserId));
@@ -799,9 +800,9 @@ export default function Messages() {
     // Update local messages when the background query finishes
     // Added guards to prevent infinite loops
     if (!qMessagesLoading && qMessages) {
-      const hasChanged = qMessages.length !== messages.filter(m => m.status !== 'sending').length || 
-                        (qMessages.length > 0 && messages.length > 0 && qMessages[0].id !== messages[0].id);
-      
+      const hasChanged = qMessages.length !== messages.filter(m => m.status !== 'sending').length ||
+        (qMessages.length > 0 && messages.length > 0 && qMessages[0].id !== messages[0].id);
+
       if (hasChanged) {
         setMessages(qMessages);
         setTimeout(() => scrollToBottom(false), 50);
@@ -885,12 +886,12 @@ export default function Messages() {
 
     const handleMessagesRead = ({ conversationId, readerId }: { conversationId: number, readerId: string }) => {
       setMessages((prev) => (Array.isArray(prev) ? prev : []).map(m => (m.conversation_id === conversationId && !m.is_read && m.sender_id !== readerId) ? { ...m, is_read: true } : m));
-      
+
       // Also update conversations list to clear unread count for that convo
-      setConversations(prev => (Array.isArray(prev) ? prev : []).map(c => 
-        (c.id === conversationId && readerId === c.partner.id) 
-        ? { ...c, unread_count: 0 } 
-        : c
+      setConversations(prev => (Array.isArray(prev) ? prev : []).map(c =>
+        (c.id === conversationId && readerId === c.partner.id)
+          ? { ...c, unread_count: 0 }
+          : c
       ));
     };
 
@@ -911,7 +912,7 @@ export default function Messages() {
       });
       queryClient.invalidateQueries({ queryKey: ['messages', payload.conversation_id] });
       scrollToBottom(true);
-      
+
       if (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) {
         socket.emit("mark_read", {
           senderId: currentUser.id,
@@ -964,7 +965,7 @@ export default function Messages() {
         const picker = document.querySelector(".emoji-picker-overlay");
         const menu = document.querySelector(".message-action-menu");
         const convoMenu = document.querySelector(".convo-action-menu");
-        
+
         if (picker && !picker.contains(e.target as Node)) {
           setReactingTo(null);
         }
@@ -1277,11 +1278,11 @@ export default function Messages() {
 
       // Also update local state
       setConversations(prev => (Array.isArray(prev) ? prev : []).filter(c => c.id !== convoId));
-      
+
       if (activeConvo?.id === convoId) {
         setActiveConvo(null);
       }
-      
+
       toast.success("Conversation deleted");
     } catch (error) {
       console.error("Error deleting conversation:", error);
@@ -1697,7 +1698,7 @@ export default function Messages() {
                           width: "200px",
                           height: "60px",
                           backgroundColor: "var(--bg-hover)",
-                                  borderRadius: "var(--radius-sm)",
+                          borderRadius: "var(--radius-sm)",
                           animation: "shimmer 1.5s infinite linear"
                         }} />
                       </div>
@@ -1741,20 +1742,20 @@ export default function Messages() {
                         <ChatTeardropDots size={18} weight="fill" color="var(--text-primary)" />
                       </div>
                     </div>
-                    
-                    <h3 style={{ 
-                      fontSize: "20px", 
-                      fontWeight: 800, 
-                      color: "var(--text-primary)", 
+
+                    <h3 style={{
+                      fontSize: "20px",
+                      fontWeight: 800,
+                      color: "var(--text-primary)",
                       margin: "0 0 8px 0",
                       letterSpacing: "-0.01em"
                     }}>
                       Start of conversation with {activeConvo.partner.name.split(' ')[0]}
                     </h3>
-                    
-                    <p style={{ 
-                      fontSize: "14px", 
-                      color: "var(--text-tertiary)", 
+
+                    <p style={{
+                      fontSize: "14px",
+                      color: "var(--text-tertiary)",
                       maxWidth: "280px",
                       lineHeight: "1.6",
                       margin: 0
@@ -2330,6 +2331,7 @@ export default function Messages() {
         </div>
       )}
 
+      <SEO title="Messages" description="Connect and collaborate with other builders through direct messaging on Codeown." />
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }

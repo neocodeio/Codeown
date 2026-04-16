@@ -3,18 +3,19 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { ShareableAnalyticsCard } from "../components/ShareableAnalyticsCard";
-import { 
-    NotePencil, 
-    Heart, 
-    RocketLaunch, 
-    ArrowCircleUp, 
-    ChatText, 
-    Users, 
-    Eye, 
+import {
+    NotePencil,
+    Heart,
+    RocketLaunch,
+    ArrowCircleUp,
+    ChatText,
+    Users,
+    Eye,
     Lightning
 } from "phosphor-react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import { SEO } from "../components/SEO";
 
 interface DashboardStats {
     posts_count: number;
@@ -62,8 +63,8 @@ export default function Dashboard() {
                 cursor: "default",
                 gridColumn: spanFull ? "1 / -1" : "auto",
             }}
-            onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--text-tertiary)"}
-            onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border-hairline)"}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--text-tertiary)"}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border-hairline)"}
             >
                 <div style={{
                     display: "flex",
@@ -85,18 +86,18 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                    <div style={{ 
-                        fontSize: "13px", 
-                        color: "var(--text-tertiary)", 
+                    <div style={{
+                        fontSize: "13px",
+                        color: "var(--text-tertiary)",
                         fontWeight: 500,
                         marginBottom: "4px"
                     }}>
                         {title}
                     </div>
-                    <div style={{ 
-                        fontSize: "32px", 
-                        fontWeight: 600, 
-                        color: "var(--text-primary)", 
+                    <div style={{
+                        fontSize: "32px",
+                        fontWeight: 600,
+                        color: "var(--text-primary)",
                         letterSpacing: "-0.8px"
                     }}>
                         {loading ? "..." : value?.toLocaleString()}
@@ -107,14 +108,15 @@ export default function Dashboard() {
     };
 
     return (
-        <main style={{ 
-            width: "100%", 
+        <main style={{
+            width: "100%",
             maxWidth: "100%",
             backgroundColor: "var(--bg-page)"
         }}>
-            <div style={{ 
-                display: "flex", 
-                flexDirection: "row", 
+            <SEO title="Dashboard" description="Review your contribution metrics and community reach on Codeown." />
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
                 width: "100%",
                 maxWidth: "100%",
                 minHeight: "100vh",
@@ -126,19 +128,19 @@ export default function Dashboard() {
                     borderRight: isMobile ? "none" : "1px solid var(--border-hairline)",
                     padding: isMobile ? "24px 16px" : "48px 40px",
                 }}>
-                    <header style={{ 
-                        display: "flex", 
-                        justifyContent: "space-between", 
-                        alignItems: "flex-end", 
+                    <header style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-end",
                         marginBottom: "56px",
                         gap: "24px",
                         flexWrap: "wrap"
                     }}>
                         <div>
-                            <h1 style={{ 
-                                fontSize: isMobile ? "32px" : "36px", 
-                                fontWeight: 700, 
-                                color: "var(--text-primary)", 
+                            <h1 style={{
+                                fontSize: isMobile ? "32px" : "36px",
+                                fontWeight: 700,
+                                color: "var(--text-primary)",
                                 margin: 0,
                                 letterSpacing: "-1px",
                             }}>
@@ -150,7 +152,7 @@ export default function Dashboard() {
                         </div>
 
                         {stats && user && (
-                            <ShareableAnalyticsCard 
+                            <ShareableAnalyticsCard
                                 user={{
                                     name: user.fullName || "User",
                                     username: user.username || "",

@@ -20,6 +20,8 @@ import {
   Warning
 } from 'phosphor-react';
 
+import { SEO } from '../components/SEO.tsx';
+
 export const StartupProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -68,6 +70,7 @@ export const StartupProfile: React.FC = () => {
   if (!startup) {
     return (
       <div style={{ padding: isMobile ? '60px 20px' : '100px 40px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+        <SEO title="Startup Not Found" description="The requested startup profile could not be found on Codeown." />
         <Warning size={48} weight="thin" color="var(--text-tertiary)" style={{ marginBottom: '24px' }} />
         <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px' }}>Startup Not Found</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>This startup might have been removed or the link is incorrect.</p>
@@ -78,6 +81,11 @@ export const StartupProfile: React.FC = () => {
 
   return (
     <div className="container" style={{ padding: isMobile ? '20px' : '60px 40px', maxWidth: 'var(--max-width)' }}>
+      <SEO
+        title={startup.name}
+        description={startup.tagline}
+        image={startup.logo_url || undefined}
+      />
       {/* Profile Header */}
       <div style={{
         backgroundColor: 'var(--bg-card)',

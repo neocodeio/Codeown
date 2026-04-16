@@ -16,6 +16,7 @@ import InviteModal from "../components/InviteModal";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useState } from "react";
 import { Gift } from "phosphor-react";
+import { SEO } from "../components/SEO";
 
 interface LeaderboardUser {
     id: string;
@@ -71,6 +72,7 @@ export default function Leaderboard() {
             minHeight: "100vh",
             backgroundColor: "var(--bg-page)",
         }}>
+            <SEO title="Builders" description="The most active builders on the platform. Ranked by Experience Points (XP)." />
             <style>{`
                 .leaderboard-container { animation: tabContentEnter 0.4s ease-out; }
                 .top-podium-card { background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: 28px; position: relative; transition: all 0.3s var(--ease-smooth); }

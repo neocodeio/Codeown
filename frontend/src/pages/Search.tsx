@@ -15,6 +15,7 @@ import { StartupCard } from "../components/StartupCard";
 import type { Startup } from "../types/startup";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "../hooks/useDebounce";
+import { SEO } from "../components/SEO";
 
 interface SearchUser {
   id: string;
@@ -146,7 +147,7 @@ export default function Search() {
       const savedHistory = localStorage.getItem("codeown_search_history");
       let currentHistory: string[] = [];
       if (savedHistory) {
-        try { currentHistory = JSON.parse(savedHistory); } catch (e) {}
+        try { currentHistory = JSON.parse(savedHistory); } catch (e) { }
       }
       const newHistory = [debouncedQuery.trim(), ...currentHistory.filter((item) => item !== debouncedQuery.trim())].slice(0, 6);
       setHistory(newHistory);
@@ -205,26 +206,27 @@ export default function Search() {
   const postsSorted =
     sortOption === "newest"
       ? [...postsData].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
       : postsData;
 
   const projectsSorted =
     sortOption === "newest"
       ? [...projectsData].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
       : projectsData;
 
   const startupsSorted =
     sortOption === "newest"
       ? [...startupsData].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
       : startupsData;
 
   return (
     <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", paddingBottom: "64px" }}>
+      <SEO title="Search" description="Search for builders, projects, and startups on Codeown." />
 
       {/* Top Search Bar Configuration */}
       <div style={{
@@ -269,7 +271,7 @@ export default function Search() {
             />
 
             {query && (
-               <button 
+              <button
                 onClick={() => { setQuery(""); setSearchParams({}); }}
                 style={{
                   border: "none",
@@ -283,9 +285,9 @@ export default function Search() {
                   cursor: "pointer",
                   color: "var(--text-tertiary)"
                 }}
-               >
+              >
                 <X size={14} weight="bold" />
-               </button>
+              </button>
             )}
           </div>
         </div>
@@ -293,7 +295,7 @@ export default function Search() {
 
       {/* Results Area */}
       <div className="container" style={{ maxWidth: "1000px", margin: "40px auto", padding: "0 20px" }}>
-        
+
         {loading ? (
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             {[...Array(3)].map((_, i) => <PostCardSkeleton key={i} />)}
@@ -376,9 +378,9 @@ export default function Search() {
                 paddingBottom: "24px"
               }}
             >
-              <div style={{ 
-                display: "flex", 
-                alignItems: "center", 
+              <div style={{
+                display: "flex",
+                alignItems: "center",
                 justifyContent: "space-between",
                 gap: "20px",
                 flexWrap: "wrap"
@@ -610,9 +612,9 @@ function EmptyState({ type }: { type: string }) {
       borderRadius: "var(--radius-sm)",
       color: "var(--text-tertiary)"
     }}>
-      <div style={{ 
-        fontSize: "14px", 
-        fontWeight: 600, 
+      <div style={{
+        fontSize: "14px",
+        fontWeight: 600,
         color: "var(--text-primary)",
         marginBottom: "8px"
       }}>

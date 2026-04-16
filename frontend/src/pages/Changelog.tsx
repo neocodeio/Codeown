@@ -83,7 +83,7 @@ export default function Changelog() {
             minHeight: "100vh",
             width: "100%",
         }}>
-            <SEO title="Development Logs" description="Iterative progress of the Codeown platform." />
+            <SEO title="Changelog" description="Iterative progress of the Codeown platform." />
             <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
 
             <div style={{

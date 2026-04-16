@@ -3,7 +3,7 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useNavigate } from "react-router-dom";
-import { 
+import {
     Eye,
     MouseSimple,
     CaretLeft,
@@ -35,8 +35,8 @@ export default function Analytics() {
                 setLoading(true);
                 const token = await getToken();
                 const [statsRes, userRes] = await Promise.all([
-                   api.get("/analytics/summary", { headers: { Authorization: `Bearer ${token}` } }),
-                   api.get("/users/me", { headers: { Authorization: `Bearer ${token}` } })
+                    api.get("/analytics/summary", { headers: { Authorization: `Bearer ${token}` } }),
+                    api.get("/users/me", { headers: { Authorization: `Bearer ${token}` } })
                 ]);
                 setStats(statsRes.data);
                 setUserData(userRes.data);
@@ -90,7 +90,7 @@ export default function Analytics() {
 
     return (
         <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", padding: "40px 24px" }}>
-            <SEO title="Analytics | Codeown" description="Track your project views and opportunities." />
+            <SEO title={`${userData?.name || 'User'}'s Analytics`} description="Track your project views and opportunities." />
 
             <div style={{ maxWidth: "800px", margin: "0 auto" }}>
                 <button
@@ -116,10 +116,10 @@ export default function Analytics() {
                     Back
                 </button>
 
-                <div style={{ 
-                    display: "flex", 
-                    justifyContent: "space-between", 
-                    alignItems: "flex-end", 
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
                     marginBottom: "56px",
                     gap: "24px",
                     flexWrap: "wrap"
@@ -134,7 +134,7 @@ export default function Analytics() {
                     </div>
 
                     {stats && userData && (
-                        <ShareableAnalyticsCard 
+                        <ShareableAnalyticsCard
                             user={{
                                 name: userData.name,
                                 username: userData.username,
@@ -275,8 +275,8 @@ export default function Analytics() {
                                     gap: "16px",
                                     transition: "all 0.15s ease"
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                                 >
                                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                                         <div style={{

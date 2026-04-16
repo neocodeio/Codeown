@@ -9,6 +9,7 @@ import { useClerkUser } from '../hooks/useClerkUser.ts';
 
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '../hooks/useDebounce';
+import { SEO } from '../components/SEO';
 
 export const StartupDirectory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,12 +50,13 @@ export const StartupDirectory: React.FC = () => {
   }, [startups, searchQuery, filterStatus]);
 
   return (
-    <div className="container" style={{ 
-      padding: isMobile ? '24px 16px' : '80px 40px', 
+    <div className="container" style={{
+      padding: isMobile ? '24px 16px' : '80px 40px',
       maxWidth: 'var(--max-width)',
       backgroundColor: 'var(--bg-page)',
       minHeight: '100vh'
     }}>
+      <SEO title="Startups" description="Discover and connect with the next generation of technology builders on Codeown." />
       <div style={{
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
@@ -138,13 +140,13 @@ export const StartupDirectory: React.FC = () => {
           />
         </div>
 
-        <div style={{ 
-          display: 'flex', 
-          gap: '8px', 
+        <div style={{
+          display: 'flex',
+          gap: '8px',
           width: isMobile ? 'calc(100% + 32px)' : 'auto',
           marginLeft: isMobile ? '-16px' : '0',
           marginRight: isMobile ? '-16px' : '0',
-          overflowX: 'auto', 
+          overflowX: 'auto',
           padding: isMobile ? '0 16px 4px 16px' : '0',
           scrollbarWidth: 'none',
           WebkitOverflowScrolling: 'touch'
