@@ -37,6 +37,7 @@ import AvailabilityBadge from "../components/AvailabilityBadge";
 import { socket } from "../lib/socket";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 import { SEO } from "../components/SEO";
+import alertSound from "../assets/notification-alert.mp3";
 
 interface Partner {
   id: string;
@@ -905,14 +906,32 @@ export default function Messages() {
     };
 
     const handleNewMessage = (payload: any) => {
-      setMessages((prev) => {
-        const safePrev = Array.isArray(prev) ? prev : [];
-        const exists = safePrev.some(m => m.id === payload.id);
-        if (exists) return prev;
-        return [...safePrev, payload];
-      });
+      // 1. Play sound if from others
+      if (payload.sender_id !== currentUser?.id) {
+        new Audio(alertSound).play().catch(() => { });
+      }
+
+      // 2. Add to messages if it's the current chat
+      const isCorrectChat = activeConvo && (
+        activeConvo.id === payload.conversation_id ||
+        (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id)
+      );
+
+      if (isCorrectChat) {
+        // If it was a placeholder conversation, update the ID now that we have one
+        if (activeConvo?.id === 0) {
+          setActiveConvo(prev => prev ? { ...prev, id: payload.conversation_id } : null);
+        }
+
+        setMessages((prev) => {
+          const safePrev = Array.isArray(prev) ? prev : [];
+          if (safePrev.some(m => m.id === payload.id)) return safePrev;
+          return [...safePrev, payload];
+        });
+        scrollToBottom(true);
+      }
+
       queryClient.invalidateQueries({ queryKey: ['messages', payload.conversation_id] });
-      scrollToBottom(true);
 
       if (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) {
         socket.emit("mark_read", {
@@ -936,7 +955,7 @@ export default function Messages() {
           ...convo,
           id: convoId,
           last_message: payload,
-          unread_count: (activeConvo && activeConvo.id === convoId) ? 0 : (convo.unread_count || 0) + 1
+          unread_count: (activeConvo && (activeConvo.id === convoId || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) ? 0 : (convo.unread_count || 0) + 1
         };
         const [moved] = updated.splice(convoIndex, 1);
         return [moved, ...updated];
