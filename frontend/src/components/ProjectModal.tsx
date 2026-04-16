@@ -459,6 +459,11 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                     </div>
 
                     <div>
+                        <label className="project-label">Live demo / Website URL</label>
+                        <input type="url" name="live_demo" value={formData.live_demo} onChange={handleInputChange} className="project-form-input" placeholder="https://yourproject.com" />
+                    </div>
+
+                    <div>
                         <label className="project-label">Tech stack *</label>
                         <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
                             <input type="text" value={techInput} onChange={(e) => setTechInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())} placeholder="React, Node.js..." className="project-form-input" style={{ flex: 1 }} />
