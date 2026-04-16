@@ -39,6 +39,7 @@ import LinkPreview from "./LinkPreview";
 interface ContentRendererProps {
   content: string;
   fontSize?: string;
+  hidePreview?: boolean;
 }
 
 export const CodeBlock = ({ language, code }: { language: string; code: string }) => {
@@ -155,7 +156,7 @@ export const CodeBlock = ({ language, code }: { language: string; code: string }
   );
 };
 
-export default function ContentRenderer({ content, fontSize = "16px" }: ContentRendererProps) {
+export default function ContentRenderer({ content, fontSize = "16px", hidePreview = false }: ContentRendererProps) {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -240,7 +241,7 @@ export default function ContentRenderer({ content, fontSize = "16px" }: ContentR
       }
     }
 
-    if (firstUrl) {
+    if (firstUrl && !hidePreview) {
       elements.push(<LinkPreview key={`lp-${key++}`} url={firstUrl} />);
     }
 

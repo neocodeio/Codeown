@@ -480,6 +480,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 ? post.content.substring(0, 300) + "..."
                 : post.content
               }
+              hidePreview={!!(post.images && post.images.length > 0)}
             />
 
             {(post as any).code_snippet && (
