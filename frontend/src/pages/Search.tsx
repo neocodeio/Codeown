@@ -276,17 +276,20 @@ export default function Search() {
                 style={{
                   border: "none",
                   background: "var(--bg-hover)",
-                  width: "32px",
-                  height: "32px",
+                  width: "28px",
+                  height: "30px",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   cursor: "pointer",
-                  color: "var(--text-tertiary)"
+                  color: "var(--text-primary)",
+                  transition: "all 0.2s"
                 }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(var(--text-primary-rgb), 0.1)"}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
               >
-                <X size={14} weight="bold" />
+                <h4 style={{ color: "var(--text-primary)" }}>X</h4>
               </button>
             )}
           </div>
