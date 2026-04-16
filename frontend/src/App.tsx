@@ -463,7 +463,7 @@ export default function App() {
   const isAuthRoute = ["/sign-in", "/sign-up", "/forgot-password", "/onboarding"].includes(location.pathname);
 
   const isStandardPage =
-    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups"].includes(location.pathname) ||
+    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups", "/search"].includes(location.pathname) ||
     location.pathname.startsWith("/post/") ||
     location.pathname.startsWith("/project/") ||
     location.pathname.startsWith("/user/") ||

@@ -4,7 +4,7 @@ import api from "../api/axios";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
-import { MagnifyingGlass, Users, Layout, Rocket, Clock, X, Buildings, CheckCircle } from "phosphor-react";
+import { MagnifyingGlass, Users, Layout, Rocket, Clock, Buildings, CheckCircle } from "phosphor-react";
 import type { Post } from "../hooks/usePosts";
 import type { Project } from "../types/project";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -16,6 +16,11 @@ import type { Startup } from "../types/startup";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "../hooks/useDebounce";
 import { SEO } from "../components/SEO";
+import { useWindowSize } from "../hooks/useWindowSize";
+import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import BackToTop from "../components/BackToTop";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
 
 interface SearchUser {
   id: string;
@@ -224,382 +229,432 @@ export default function Search() {
       )
       : startupsData;
 
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+  const isDesktop = width >= 1200;
+
   return (
-    <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", paddingBottom: "64px" }}>
+    <main style={{ padding: 0, backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
       <SEO title="Search" description="Search for builders, projects, and startups on Codeown." />
 
-      {/* Top Search Bar Configuration */}
       <div style={{
-        position: "sticky",
-        top: 0,
-        backgroundColor: "var(--bg-page)",
-        zIndex: 100,
-        borderBottom: "0.5px solid var(--border-hairline)",
-        padding: "24px 0"
+        display: "flex",
+        justifyContent: "space-between",
+        width: "100%",
+        maxWidth: isDesktop ? "920px" : "100%",
+        margin: "0 auto",
+        padding: "0",
       }}>
-        <div className="container" style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 24px" }}>
+        {/* ── Main Search Column ── */}
+        <div style={{
+          width: isDesktop ? "var(--feed-width)" : "100%",
+          maxWidth: isDesktop ? "var(--feed-width)" : "600px",
+          margin: isDesktop ? "0" : "0 auto",
+          flexShrink: 0,
+          borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+          borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+          minHeight: "100vh",
+          position: "relative",
+          backgroundColor: "var(--bg-page)",
+        }}>
+          {/* ── Sticky Search Header ── */}
           <div style={{
-            display: "flex",
-            alignItems: "center",
+            position: "sticky",
+            top: isMobile ? "64px" : "0",
+            zIndex: 100,
             backgroundColor: "var(--bg-page)",
-            border: "0.5px solid var(--border-hairline)",
-            borderRadius: "var(--radius-sm)",
-            padding: "8px 8px 8px 16px",
-            gap: "12px",
-            height: "56px",
-            width: "100%",
-            boxSizing: "border-box"
+            borderBottom: "0.5px solid var(--border-hairline)",
+            padding: "12px 16px"
           }}>
-            <MagnifyingGlass size={20} weight="regular" style={{ color: "var(--text-tertiary)" }} />
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "var(--bg-hover)",
+              border: "0.5px solid var(--border-hairline)",
+              borderRadius: "14px",
+              padding: "0 12px 0 16px",
+              gap: "12px",
+              height: "48px",
+              width: "100%",
+              boxSizing: "border-box",
+              transition: "all 0.2s ease"
+            }}>
+              <MagnifyingGlass size={18} weight="regular" style={{ color: "var(--text-tertiary)" }} />
 
-            <input
-              type="text"
-              value={query}
-              onChange={handleSearch}
-              placeholder={`Search workers, projects, startups...`}
-              style={{
-                flex: 1,
-                border: "none",
-                outline: "none",
-                fontSize: "16px",
-                fontWeight: 500,
-                color: "var(--text-primary)",
-                background: "transparent",
-                minWidth: 0,
-              }}
-              autoFocus
-            />
-
-            {query && (
-              <button
-                onClick={() => { setQuery(""); setSearchParams({}); }}
+              <input
+                type="text"
+                value={query}
+                onChange={handleSearch}
+                placeholder={`Search workers, projects, startups...`}
                 style={{
+                  flex: 1,
                   border: "none",
-                  background: "var(--bg-hover)",
-                  width: "28px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
+                  outline: "none",
+                  fontSize: "14.5px",
+                  fontWeight: 600,
                   color: "var(--text-primary)",
-                  transition: "all 0.2s"
+                  background: "transparent",
+                  minWidth: 0,
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(var(--text-primary-rgb), 0.1)"}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-              >
-                <h4 style={{ color: "var(--text-primary)" }}>X</h4>
-              </button>
+                autoFocus
+              />
+
+              {query && (
+                <button
+                  onClick={() => { setQuery(""); setSearchParams({}); }}
+                  style={{
+                    border: "none",
+                    background: "var(--bg-page)",
+                    width: "28px",
+                    height: "28px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    padding: 0
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
+                >
+                  <HugeiconsIcon icon={Cancel01Icon} size={14} style={{ color: "var(--text-primary)" }} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* ── Results Area ── */}
+          <div style={{ padding: "24px 16px" }}>
+
+            {loading ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                {[...Array(3)].map((_, i) => <PostCardSkeleton key={i} />)}
+              </div>
+            ) : (!query && !showOnlyCofounder) ? (
+              <div className="fade-in">
+                {history.length > 0 ? (
+                  <div style={{ maxWidth: "100%", margin: "0 auto" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px", color: "var(--text-tertiary)" }}>
+                      <Clock size={16} />
+                      <span style={{ fontSize: "13px", fontWeight: 700 }}>Recent Searches</span>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      {history.map((h, i) => (
+                        <div
+                          key={i}
+                          onClick={() => handleHistoryClick(h)}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "12px 14px",
+                            backgroundColor: "transparent",
+                            borderRadius: "12px",
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "transparent";
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                            <MagnifyingGlass size={16} weight="regular" style={{ color: "var(--text-tertiary)" }} />
+                            <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)" }}>{h}</span>
+                          </div>
+                          <button
+                            onClick={(e) => removeFromHistory(e, h)}
+                            style={{
+                              border: "none",
+                              background: "none",
+                              padding: "6px",
+                              cursor: "pointer",
+                              color: "var(--text-tertiary)",
+                              borderRadius: "8px",
+                              transition: "all 0.2s"
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = "#ef4444"}
+                            onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                          >
+                            <HugeiconsIcon icon={Cancel01Icon} size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign: "center", padding: "80px 20px", color: "var(--text-tertiary)" }}>
+                    <MagnifyingGlass size={48} weight="regular" style={{ opacity: 0.1, marginBottom: "20px" }} />
+                    <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-secondary)", marginBottom: "4px" }}>Search Codeown</div>
+                    <p style={{ margin: 0, fontSize: "14px", color: "var(--text-tertiary)" }}>Find people, posts, and projects from the community</p>
+                  </div>
+                )}
+              </div>
+            ) : !loading && !usersData.length && !postsData.length && !projectsData.length && !startupsData.length ? (
+              <div style={{ textAlign: "center", padding: "80px 20px", color: "var(--text-tertiary)" }}>
+                <div style={{ fontSize: "14px", fontWeight: 700 }}>No results found for "{query}"</div>
+              </div>
+            ) : (
+              <div className="fade-in">
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "20px",
+                    marginBottom: "32px",
+                    borderBottom: "0.5px solid var(--border-hairline)",
+                    paddingBottom: "20px"
+                  }}
+                >
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "16px",
+                    flexWrap: "wrap"
+                  }}>
+                    <div style={{ fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 600 }}>
+                      <span style={{ color: "var(--text-primary)" }}>{query}</span>
+                      <span style={{ marginLeft: "6px", opacity: 0.5 }}>
+                        · {peopleResults.length} people · {postsData.length} posts
+                      </span>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        backgroundColor: "var(--bg-hover)",
+                        padding: "3px",
+                        borderRadius: "100px",
+                        border: "0.5px solid var(--border-hairline)",
+                      }}
+                    >
+                      {[
+                        { id: "best", label: "Best match" },
+                        { id: "newest", label: "Newest" },
+                      ].map((opt) => (
+                        <button
+                          key={opt.id}
+                          onClick={() => setSortOption(opt.id as SortOption)}
+                          style={{
+                            padding: "5px 12px",
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            border: "none",
+                            borderRadius: "100px",
+                            backgroundColor: sortOption === opt.id ? "var(--text-primary)" : "transparent",
+                            color: sortOption === opt.id ? "var(--bg-page)" : "var(--text-tertiary)",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      overflowX: "auto",
+                      paddingBottom: "4px",
+                      scrollbarWidth: "none"
+                    }}
+                    className="no-scrollbar"
+                  >
+                    {[
+                      { id: "people", label: "People", icon: Users },
+                      { id: "posts", label: "Posts", icon: Layout },
+                      { id: "projects", label: "Projects", icon: Rocket },
+                      { id: "startups", label: "Startups", icon: Buildings },
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => setActiveFilter(opt.id as FilterType)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          padding: "8px 16px",
+                          borderRadius: "100px",
+                          border: "0.5px solid",
+                          borderColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--border-hairline)",
+                          backgroundColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--bg-page)",
+                          color: activeFilter === opt.id ? "var(--bg-page)" : "var(--text-secondary)",
+                          fontSize: "12.5px",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                          whiteSpace: "nowrap"
+                        }}
+                      >
+                        <opt.icon size={14} weight={activeFilter === opt.id ? "bold" : "regular"} />
+                        {opt.label}
+                      </button>
+                    ))}
+
+                    {activeFilter === "projects" && (
+                      <button
+                        onClick={() => setShowOnlyCofounder(!showOnlyCofounder)}
+                        style={{
+                          padding: "8px 16px",
+                          borderRadius: "100px",
+                          border: "1px dashed",
+                          borderColor: showOnlyCofounder ? "var(--text-primary)" : "var(--border-hairline)",
+                          backgroundColor: showOnlyCofounder ? "rgba(var(--text-primary-rgb), 0.1)" : "transparent",
+                          color: showOnlyCofounder ? "var(--text-primary)" : "var(--text-tertiary)",
+                          fontSize: "12.5px",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginLeft: "auto"
+                        }}
+                      >
+                        {showOnlyCofounder ? <CheckCircle size={14} weight="fill" /> : <Users size={14} />}
+                        Co-Founder
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {activeFilter === "people" && (
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))",
+                    gap: "16px"
+                  }}>
+                    {peopleResults.map((user) => (
+                      <div key={user.id}
+                        onClick={() => navigate(user.username ? `/${user.username}` : `/user/${user.id}`)}
+                        style={{
+                          border: "0.5px solid var(--border-hairline)",
+                          borderRadius: "20px",
+                          padding: "24px 20px",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          textAlign: "center",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          backgroundColor: "var(--bg-page)"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                        }}
+                      >
+                        <div style={{ position: "relative", marginBottom: "14px" }}>
+                          <AvailabilityBadge
+                            avatarUrl={user.avatar_url}
+                            name={user.name}
+                            size={70}
+                            isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
+                          />
+                        </div>
+
+                        <h3 style={{ margin: "0 0 2px", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                          {user.name}
+                          <VerifiedBadge username={user.username} size="14px" />
+                        </h3>
+                        <p style={{ margin: "0 0 20px", fontSize: "13px", color: "var(--text-tertiary)", fontWeight: 500 }}>@{user.username || "user"}</p>
+
+                        <button
+                          onClick={(e) => handleFollow(e, user.id)}
+                          style={{
+                            backgroundColor: currentUserFollowing.includes(user.id) ? "transparent" : "var(--text-primary)",
+                            color: currentUserFollowing.includes(user.id) ? "var(--text-primary)" : "var(--bg-page)",
+                            border: currentUserFollowing.includes(user.id) ? "0.5px solid var(--border-hairline)" : "none",
+                            borderRadius: "12px",
+                            padding: "8px 20px",
+                            fontWeight: 700,
+                            fontSize: "12px",
+                            cursor: "pointer",
+                            width: "100%",
+                            transition: "all 0.15s ease"
+                          }}
+                        >
+                          {currentUserFollowing.includes(user.id) ? "Following" : "Follow"}
+                        </button>
+                      </div>
+                    ))}
+                    {peopleResults.length === 0 && <EmptyState type="People" />}
+                  </div>
+                )}
+
+                {activeFilter === "posts" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+                    {postsSorted.map((post) => (
+                      <div key={post.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
+                        <PostCard post={post as Post} />
+                      </div>
+                    ))}
+                    {postsSorted.length === 0 && <EmptyState type="Posts" />}
+                  </div>
+                )}
+
+                {activeFilter === "projects" && (
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr",
+                    gap: "0"
+                  }}>
+                    {projectsSorted.map((project) => (
+                      <div key={project.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
+                        <ProjectCard project={project as Project} />
+                      </div>
+                    ))}
+                    {projectsSorted.length === 0 && <EmptyState type="Projects" />}
+                  </div>
+                )}
+
+                {activeFilter === "startups" && (
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
+                    gap: "16px"
+                  }}>
+                    {startupsSorted.map((startup) => (
+                      <StartupCard key={startup.id} startup={startup} />
+                    ))}
+                    {startupsSorted.length === 0 && <EmptyState type="Startups" />}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Results Area */}
-      <div className="container" style={{ maxWidth: "1000px", margin: "40px auto", padding: "0 20px" }}>
-
-        {loading ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            {[...Array(3)].map((_, i) => <PostCardSkeleton key={i} />)}
-          </div>
-        ) : (!query && !showOnlyCofounder) ? (
-          <div className="fade-in">
-            {history.length > 0 ? (
-              <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", color: "var(--text-tertiary)" }}>
-                  <Clock size={16} />
-                  <span style={{ fontSize: "13px", fontWeight: 600 }}>Recent Searches</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                  {history.map((h, i) => (
-                    <div
-                      key={i}
-                      onClick={() => handleHistoryClick(h)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "14px 16px",
-                        backgroundColor: "transparent",
-                        borderRadius: "var(--radius-sm)",
-                        cursor: "pointer",
-                        transition: "all 0.15s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                        <MagnifyingGlass size={16} weight="regular" style={{ color: "var(--text-tertiary)" }} />
-                        <span style={{ fontSize: "14.5px", fontWeight: 500, color: "var(--text-primary)" }}>{h}</span>
-                      </div>
-                      <button
-                        onClick={(e) => removeFromHistory(e, h)}
-                        style={{
-                          border: "none",
-                          background: "none",
-                          padding: "8px",
-                          cursor: "pointer",
-                          color: "var(--text-tertiary)",
-                          borderRadius: "var(--radius-sm)",
-                          transition: "all 0.2s"
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.color = "#ef4444"}
-                        onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div style={{ textAlign: "center", padding: "80px 40px", color: "var(--text-tertiary)" }}>
-                <MagnifyingGlass size={64} weight="regular" style={{ opacity: 0.1, marginBottom: "24px" }} />
-                <div style={{ fontSize: "16px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Search Codeown</div>
-                <p style={{ margin: 0, fontSize: "15px", color: "var(--text-tertiary)" }}>Find people, posts, and projects from the community</p>
-              </div>
-            )}
-          </div>
-        ) : !loading && !usersData.length && !postsData.length && !projectsData.length && !startupsData.length ? (
-          <div style={{ textAlign: "center", padding: "80px 40px", color: "var(--text-tertiary)" }}>
-            <div style={{ fontSize: "15px", fontWeight: 600 }}>No results found for "{query}"</div>
-          </div>
-        ) : (
-          <div className="fade-in">
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "24px",
-                marginBottom: "40px",
-                borderBottom: "0.5px solid var(--border-hairline)",
-                paddingBottom: "24px"
-              }}
-            >
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "20px",
-                flexWrap: "wrap"
-              }}>
-                <div style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 500 }}>
-                  <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{query}</span>
-                  <span style={{ marginLeft: "8px", opacity: 0.6 }}>
-                    · {peopleResults.length} people · {postsData.length} posts · {projectsData.length} projects · {startupsData.length} startups
-                  </span>
-                </div>
-
-                <div
-                  style={{
-                    display: "inline-flex",
-                    backgroundColor: "var(--bg-hover)",
-                    padding: "4px",
-                    borderRadius: "100px",
-                    border: "0.5px solid var(--border-hairline)",
-                  }}
-                >
-                  {[
-                    { id: "best", label: "Best match" },
-                    { id: "newest", label: "Newest" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => setSortOption(opt.id as SortOption)}
-                      style={{
-                        padding: "6px 16px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        border: "none",
-                        borderRadius: "100px",
-                        backgroundColor: sortOption === opt.id ? "var(--text-primary)" : "transparent",
-                        color: sortOption === opt.id ? "var(--bg-page)" : "var(--text-tertiary)",
-                        cursor: "pointer",
-                        transition: "all 0.2s ease",
-                      }}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  overflowX: "auto",
-                  paddingBottom: "4px",
-                  scrollbarWidth: "none"
-                }}
-              >
-                {[
-                  { id: "people", label: "People", icon: Users },
-                  { id: "posts", label: "Posts", icon: Layout },
-                  { id: "projects", label: "Projects", icon: Rocket },
-                  { id: "startups", label: "Startups", icon: Buildings },
-                ].map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setActiveFilter(opt.id as FilterType)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "10px 20px",
-                      borderRadius: "100px",
-                      border: "0.5px solid",
-                      borderColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--border-hairline)",
-                      backgroundColor: activeFilter === opt.id ? "var(--text-primary)" : "var(--bg-page)",
-                      color: activeFilter === opt.id ? "var(--bg-page)" : "var(--text-secondary)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                    <opt.icon size={16} weight={activeFilter === opt.id ? "bold" : "regular"} />
-                    {opt.label}
-                  </button>
-                ))}
-
-                {activeFilter === "projects" && (
-                  <button
-                    onClick={() => setShowOnlyCofounder(!showOnlyCofounder)}
-                    style={{
-                      padding: "10px 20px",
-                      borderRadius: "100px",
-                      border: "1px dashed",
-                      borderColor: showOnlyCofounder ? "var(--text-primary)" : "var(--border-hairline)",
-                      backgroundColor: showOnlyCofounder ? "rgba(var(--text-primary-rgb), 0.1)" : "transparent",
-                      color: showOnlyCofounder ? "var(--text-primary)" : "var(--text-tertiary)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      marginLeft: "auto"
-                    }}
-                  >
-                    {showOnlyCofounder ? <CheckCircle size={16} weight="fill" /> : <Users size={16} />}
-                    Seeking Co-Founder
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {activeFilter === "people" && (
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
-                gap: "24px"
-              }}>
-                {peopleResults.map((user) => (
-                  <div key={user.id}
-                    onClick={() => navigate(user.username ? `/${user.username}` : `/user/${user.id}`)}
-                    style={{
-                      border: "0.5px solid var(--border-hairline)",
-                      borderRadius: "var(--radius-sm)",
-                      padding: "32px 24px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      textAlign: "center",
-                      cursor: "pointer",
-                      transition: "all 0.15s ease",
-                      backgroundColor: "var(--bg-page)"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--bg-page)";
-                    }}
-                  >
-                    <div style={{ position: "relative", marginBottom: "16px" }}>
-                      <AvailabilityBadge
-                        avatarUrl={user.avatar_url}
-                        name={user.name}
-                        size={80}
-                        isOpenToOpportunities={user.is_pro === true && user.is_hirable === true}
-                      />
-                    </div>
-
-                    <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 600, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
-                      {user.name}
-                      <VerifiedBadge username={user.username} size="14px" />
-                    </h3>
-                    <p style={{ margin: "0 0 24px", fontSize: "13.5px", color: "var(--text-tertiary)", fontWeight: 400 }}>@{user.username || "user"}</p>
-
-                    <button
-                      onClick={(e) => handleFollow(e, user.id)}
-                      style={{
-                        backgroundColor: currentUserFollowing.includes(user.id) ? "transparent" : "var(--text-primary)",
-                        color: currentUserFollowing.includes(user.id) ? "var(--text-primary)" : "var(--bg-page)",
-                        border: currentUserFollowing.includes(user.id) ? "0.5px solid var(--border-hairline)" : "none",
-                        borderRadius: "var(--radius-sm)",
-                        padding: "10px 24px",
-                        fontWeight: 600,
-                        fontSize: "13px",
-                        cursor: "pointer",
-                        width: "100%",
-                        transition: "all 0.15s ease"
-                      }}
-                    >
-                      {currentUserFollowing.includes(user.id) ? "Following" : "Follow"}
-                    </button>
-                  </div>
-                ))}
-                {peopleResults.length === 0 && <EmptyState type="People" />}
-              </div>
-            )}
-
-            {activeFilter === "posts" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                {postsSorted.map((post) => (
-                  <PostCard key={post.id} post={post as Post} />
-                ))}
-                {postsSorted.length === 0 && <EmptyState type="Posts" />}
-              </div>
-            )}
-
-            {activeFilter === "projects" && (
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))",
-                gap: "24px"
-              }}>
-                {projectsSorted.map((project) => (
-                  <ProjectCard key={project.id} project={project as Project} />
-                ))}
-                {projectsSorted.length === 0 && <EmptyState type="Projects" />}
-              </div>
-            )}
-
-            {activeFilter === "startups" && (
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))",
-                gap: "24px"
-              }}>
-                {startupsSorted.map((startup) => (
-                  <StartupCard key={startup.id} startup={startup} />
-                ))}
-                {startupsSorted.length === 0 && <EmptyState type="Startups" />}
-              </div>
-            )}
-          </div>
+        {/* ── Right Sidebar ── */}
+        {isDesktop && (
+          <aside style={{
+            width: "300px",
+            position: "sticky",
+            top: 0,
+            alignSelf: "flex-start",
+            flexShrink: 0,
+            zIndex: 1,
+          }}>
+            <RecommendedUsersSidebar />
+          </aside>
         )}
       </div>
+
+      <BackToTop />
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </main>
   );
 }
