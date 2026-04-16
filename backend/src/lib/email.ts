@@ -3,30 +3,163 @@ import { Resend } from "resend";
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
+/**
+ * Standard Premium Email Layout wrapper
+ */
+function renderEmailLayout(content: string, options: { title: string; showFooter?: boolean } = { title: "Codeown", showFooter: true }) {
+  const currentYear = new Date().getFullYear();
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;800&display=swap');
+        
+        body {
+          background-color: #f8fafc;
+          margin: 0;
+          padding: 0;
+          -webkit-font-smoothing: antialiased;
+          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .wrapper {
+          width: 100%;
+          background-color: #f8fafc;
+          padding: 48px 16px;
+        }
+        .card {
+          max-width: 560px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 24px;
+          overflow: hidden;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+          border: 1px solid #e2e8f0;
+        }
+        .header-banner {
+          background-color: #000000;
+          height: 8px;
+          width: 100%;
+        }
+        .inner-padding {
+          padding: 48px;
+        }
+        .logo-label {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 800;
+          color: #000000;
+          background: #e7f5ed;
+          padding: 4px 10px;
+          border-radius: 6px;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          margin-bottom: 32px;
+          display: inline-block;
+        }
+        h1 {
+          font-size: 32px;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0 0 16px 0;
+          letter-spacing: -0.04em;
+          line-height: 1.1;
+        }
+        .text {
+          font-size: 16px;
+          line-height: 1.6;
+          color: #475569;
+          margin-bottom: 32px;
+        }
+        .btn {
+          background-color: #000000;
+          color: #ffffff !important;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 15px;
+          display: inline-block;
+          transition: all 0.2s ease;
+        }
+        .footer {
+          padding: 32px 48px 48px;
+          background-color: #f8fafc;
+          text-align: center;
+          border-top: 1px solid #e2e8f0;
+        }
+        .footer-text {
+          font-size: 12px;
+          color: #94a3b8;
+          margin-bottom: 12px;
+          font-weight: 500;
+        }
+        .footer-links a {
+          color: #64748b;
+          text-decoration: none;
+          margin: 0 8px;
+          font-weight: 600;
+          font-size: 12px;
+        }
+        @media (max-width: 600px) {
+          .inner-padding { padding: 32px 24px; }
+          .footer { padding: 32px 24px 40px; }
+          h1 { font-size: 26px; }
+          .btn { width: 100%; text-align: center; box-sizing: border-box; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="wrapper">
+        <div class="card">
+          <div class="header-banner"></div>
+          <div class="inner-padding">
+            <span class="logo-label">CODEOWN // ${options.title.toUpperCase()}</span>
+            ${content}
+          </div>
+          ${options.showFooter ? `
+          <div class="footer">
+            <p class="footer-text">The Developer Operating System.</p>
+            <div class="footer-links">
+              <a href="https://codeown.space/ship">Ship</a>
+              <a href="https://codeown.space/search">Explore</a>
+              <a href="https://codeown.space/privacy">Privacy</a>
+            </div>
+            <p class="footer-text" style="margin-top: 24px; opacity: 0.5;">
+              &copy; ${currentYear} Codeown
+            </p>
+          </div>
+          ` : ''}
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export async function sendShipWeekLaunchEmail(email: string, name: string, competitionName: string, deadline: string) {
   if (!resend) return;
-
   try {
     await resend.emails.send({
       from: "Codeown <founders@codeown.space>",
       to: email,
       subject: `🚀 New Ship Week is LIVE: ${competitionName}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #0f172a;">
-          <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.04em;">Season 1 is Here.</h1>
-          <p style="font-size: 18px; line-height: 1.6; color: #475569;">
-            Hi ${name}, a new high-stakes competition has just been launched on Codeown.
-          </p>
-          <div style="background: #f8fafc; padding: 32px; border-radius: 24px; border: 1px solid #e2e8f0; margin: 32px 0;">
-            <h2 style="margin: 0 0 8px 0; font-size: 20px;">${competitionName}</h2>
-            <p style="margin: 0; color: #64748b; font-size: 14px;">Deadline: ${new Date(deadline).toLocaleDateString()} 11:59PM</p>
-          </div>
-          <p style="font-size: 16px; line-height: 1.6;">
-            Remember: You must ship <strong>3 daily updates</strong> this week to unlock the submission button.
-          </p>
-          <a href="https://codeown.space/ship" style="display: inline-block; background: #000; color: #fff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; margin-top: 24px;">ENTER THE HUB</a>
+      html: renderEmailLayout(`
+        <h1>Season 1 is Here.</h1>
+        <p class="text">
+          Hi ${name}, a new high-stakes competition has just been launched on Codeown. It's time to build in public.
+        </p>
+        <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 32px;">
+          <h2 style="margin: 0 0 6px 0; font-size: 18px; color: #0f172a;">${competitionName}</h2>
+          <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 600;">DEADLINE: ${new Date(deadline).toLocaleDateString()} 11:59PM</p>
         </div>
-      `
+        <p class="text" style="font-size: 14px; opacity: 0.8;">
+          Requirement: You must ship <strong>3 daily updates</strong> this week to unlock the submission button.
+        </p>
+        <a href="https://codeown.space/ship" class="btn">Enter the Hub &rarr;</a>
+      `, { title: "Competition" })
     });
   } catch (err) {
     console.error("Failed to send competition email", err);
@@ -42,25 +175,22 @@ export async function sendShipWeekBatchEmail(recipients: { email: string; name: 
   const batchSize = 100;
   for (let i = 0; i < recipients.length; i += batchSize) {
     const chunk = recipients.slice(i, i + batchSize);
-    
     try {
       await resend.batch.send(chunk.map(u => ({
         from: "Codeown <founders@codeown.space>",
         to: u.email,
         subject: `🚀 New Ship Week: ${competitionName}`,
-        html: `
-          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #0f172a;">
-            <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.04em;">Season 1 Begins.</h1>
-            <p style="font-size: 18px; line-height: 1.6; color: #475569;">
-              Hi ${u.name}, a new high-stakes competition is live!
-            </p>
-            <div style="background: #f8fafc; padding: 32px; border-radius: 24px; border: 1px solid #e2e8f0; margin: 32px 0;">
-              <h2 style="margin: 0 0 8px 0; font-size: 20px;">${competitionName}</h2>
-              <p style="margin: 0; color: #64748b; font-size: 14px;">Deadline: ${new Date(deadline).toLocaleDateString()}</p>
-            </div>
-            <a href="https://codeown.space/ship" style="display: inline-block; background: #000; color: #fff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700;">ENTER THE HUB</a>
+        html: renderEmailLayout(`
+          <h1>Season 1 Begins.</h1>
+          <p class="text">
+            Hi ${u.name}, a new high-stakes competition is live! Are you ready to ship?
+          </p>
+          <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 32px;">
+            <h2 style="margin: 0 0 6px 0; font-size: 18px; color: #0f172a;">${competitionName}</h2>
+            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 600;">DEADLINE: ${new Date(deadline).toLocaleDateString()}</p>
           </div>
-        `
+          <a href="https://codeown.space/ship" class="btn">Enter the Hub &rarr;</a>
+        `, { title: "Launch" })
       })));
     } catch (err) {
       console.error("Batch email failure", err);
@@ -79,211 +209,30 @@ export async function sendWelcomeEmail(email: string, name: string) {
       from: "Codeown Team <welcome@codeown.space>",
       to: email,
       subject: "Welcome to Codeown! 🚀",
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
-            
-            body {
-              background-color: #f8fafc;
-              margin: 0;
-              padding: 0;
-              -webkit-font-smoothing: antialiased;
-              font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            }
-            .wrapper {
-              width: 100%;
-              background-color: #f8fafc;
-              padding: 48px 16px;
-            }
-            .card {
-              max-width: 560px;
-              margin: 0 auto;
-              background-color: #ffffff;
-              border-radius: 24px;
-              overflow: hidden;
-              box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-              border: 1px solid #e2e8f0;
-            }
-            .header-banner {
-              background-color: #000000;
-              height: 8px;
-              width: 100%;
-            }
-            .inner-padding {
-              padding: 48px;
-            }
-            .logo-section {
-              margin-bottom: 40px;
-              display: flex;
-              align-items: center;
-              gap: 8px;
-            }
-            .logo-label {
-              font-family: 'JetBrains Mono', monospace;
-              font-size: 12px;
-              font-weight: 500;
-              color: #000000;
-              background: #e7f5ed;
-              padding: 4px 8px;
-              border-radius: 6px;
-              text-transform: uppercase;
-              letter-spacing: 0.05em;
-            }
-            h1 {
-              font-size: 32px;
-              font-weight: 800;
-              color: #0f172a;
-              margin: 0 0 16px 0;
-              letter-spacing: -0.04em;
-              line-height: 1.1;
-            }
-            .intro-text {
-              font-size: 16px;
-              line-height: 1.6;
-              color: #475569;
-              margin-bottom: 40px;
-            }
-            .steps-container {
-              position: relative;
-              margin-bottom: 48px;
-            }
-            .step {
-              position: relative;
-              padding-left: 32px;
-              margin-bottom: 24px;
-            }
-            .step-line {
-              position: absolute;
-              left: 11px;
-              top: 24px;
-              bottom: -12px;
-              width: 2px;
-              background-color: #f1f5f9;
-            }
-            .step:last-child .step-line {
-              display: none;
-            }
-            .step-dot {
-              position: absolute;
-              left: 0;
-              top: 4px;
-              width: 24px;
-              height: 24px;
-              background: #ffffff;
-              border: 2px solid #000000;
-              border-radius: 50%;
-              box-sizing: border-box;
-            }
-            .step-title {
-              font-size: 15px;
-              font-weight: 700;
-              color: #0f172a;
-              margin-bottom: 4px;
-            }
-            .step-desc {
-              font-size: 14px;
-              color: #64748b;
-              line-height: 1.5;
-            }
-            .cta-container {
-              margin-top: 48px;
-            }
-            .btn {
-              background-color: #000000;
-              color: #ffffff !important;
-              padding: 16px 32px;
-              text-decoration: none;
-              border-radius: 12px;
-              font-weight: 700;
-              font-size: 15px;
-              display: inline-block;
-              transition: all 0.2s ease;
-            }
-            .footer {
-              padding: 32px 48px 48px;
-              background-color: #f8fafc;
-              text-align: center;
-              border-top: 1px solid #e2e8f0;
-            }
-            .footer-text {
-              font-size: 12px;
-              color: #94a3b8;
-              margin-bottom: 16px;
-              font-weight: 500;
-              }
-            .footer-links a {
-              color: #64748b;
-              text-decoration: none;
-              margin: 0 12px;
-              font-weight: 600;
-              font-size: 12px;
-            }
-            @media (max-width: 600px) {
-              .inner-padding { padding: 32px 24px; }
-              .footer { padding: 32px 24px 40px; }
-              h1 { font-size: 28px; }
-              .btn { width: 100%; text-align: center; box-sizing: border-box; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="wrapper">
-            <div class="card">
-              <div class="header-banner"></div>
-              <div class="inner-padding">
-                <div class="logo-section">
-                  <span class="logo-label">Codeown.v1.0</span>
-                </div>
-                
-                <h1>Your journey begins here.</h1>
-                <p class="intro-text">Welcome, ${name}. You're now connected to the Developer Operating System. Here's what's next on your roadmap:</p>
-                
-                <div class="steps-container">
-                  <div class="step">
-                    <div class="step-line"></div>
-                    <div class="step-dot"></div>
-                    <div class="step-title">Claim Your Identity</div>
-                    <div class="step-desc">Complete your profile to secure your unique handle and showcase your stack.</div>
-                  </div>
-                  <div class="step">
-                    <div class="step-line"></div>
-                    <div class="step-dot"></div>
-                    <div class="step-title">Ship Your First Project</div>
-                    <div class="step-desc">Turn your repositories into beautiful showcases that capture the attention of the community.</div>
-                  </div>
-                  <div class="step">
-                    <div class="step-dot"></div>
-                    <div class="step-title">Connect & Grow</div>
-                    <div class="step-desc">Follow other creators, share insights, and collaborate on the next big thing.</div>
-                  </div>
-                </div>
-
-                <div class="cta-container">
-                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="btn">Enter Codeown &rarr;</a>
-                </div>
-              </div>
-              
-              <div class="footer">
-                <p class="footer-text">Built for the next generation of developers.</p>
-                <div class="footer-links">
-                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/about">About</a>
-                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/privacy">Privacy</a>
-                  <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/terms">Terms</a>
-                </div>
-                <p class="footer-text" style="margin-top: 24px; opacity: 0.5;">
-                  &copy; ${new Date().getFullYear()} Codeown
-                </p>
-              </div>
-            </div>
+      html: renderEmailLayout(`
+        <h1>Your journey begins here.</h1>
+        <p class="text">Welcome, ${name}. You're now connected to the Developer Operating System. Here's what's next on your roadmap:</p>
+        
+        <div style="margin-bottom: 40px;">
+          <div style="margin-bottom: 24px; position: relative; padding-left: 28px;">
+            <div style="position: absolute; left: 0; top: 2px; width: 14px; height: 14px; border: 2px solid #000; border-radius: 50%;"></div>
+            <div style="font-weight: 700; color: #0f172a; font-size: 15px;">Claim Your Identity</div>
+            <div style="color: #64748b; font-size: 13px;">Complete your profile to secure your unique handle.</div>
           </div>
-        </body>
-        </html>
-      `,
+          <div style="margin-bottom: 24px; position: relative; padding-left: 28px;">
+            <div style="position: absolute; left: 0; top: 2px; width: 14px; height: 14px; border: 2px solid #000; border-radius: 50%;"></div>
+            <div style="font-weight: 700; color: #0f172a; font-size: 15px;">Ship Your First Project</div>
+            <div style="color: #64748b; font-size: 13px;">Turn your repositories into beautiful showcases.</div>
+          </div>
+          <div style="position: relative; padding-left: 28px;">
+            <div style="position: absolute; left: 0; top: 2px; width: 14px; height: 14px; border: 2px solid #000; border-radius: 50%;"></div>
+            <div style="font-weight: 700; color: #0f172a; font-size: 15px;">Connect & Grow</div>
+            <div style="color: #64748b; font-size: 13px;">Follow other creators and share insights.</div>
+          </div>
+        </div>
+
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" class="btn">Enter Codeown &rarr;</a>
+      `, { title: "v1.0.0" })
     });
 
 
@@ -304,15 +253,17 @@ export async function sendOrgRegistrationNotification(adminEmail: string, orgDat
       from: "Codeown System <system@codeown.space>",
       to: adminEmail,
       subject: `New Organization Registration: ${orgData.name}`,
-      html: `
-                <h2>New Organization Request</h2>
-                <p><strong>Name:</strong> ${orgData.name}</p>
-                <p><strong>Website:</strong> ${orgData.website}</p>
-                <p><strong>Domain Email:</strong> ${orgData.domain_email}</p>
-                <p><strong>Industry:</strong> ${orgData.industry}</p>
-                <p><strong>Description:</strong> ${orgData.description}</p>
-                <p>Please review this registration in Supabase and update the status.</p>
-            `
+      html: renderEmailLayout(`
+        <h1>New Request.</h1>
+        <p class="text">A new organization has requested registration on the platform.</p>
+        <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 32px;">
+          <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Name:</strong> ${orgData.name}</p>
+          <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Website:</strong> ${orgData.website}</p>
+          <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Industry:</strong> ${orgData.industry}</p>
+          <p style="margin: 0; font-size: 14px;"><strong>Domain:</strong> ${orgData.domain_email}</p>
+        </div>
+        <p class="text" style="font-size: 14px;">Please review this registration in Supabase and update the status.</p>
+      `, { title: "Admin" })
     });
   } catch (err) {
     console.error("Error sending org registration notification:", err);
@@ -332,13 +283,12 @@ export async function sendOrgStatusUpdateEmail(email: string, orgName: string, s
       from: "Codeown <support@codeown.space>",
       to: email,
       subject: subject,
-      html: `
-                <div style="font-family: sans-serif; padding: 20px;">
-                    <h2>Status Update: ${orgName}</h2>
-                    <p>${message}</p>
-                    ${isApproved ? '<a href="https://codeown.space/search" style="padding: 10px 20px; background: #6366f1; color: white; text-decoration: none; border-radius: 5px;">Discover Developers</a>' : ''}
-                </div>
-            `
+      html: renderEmailLayout(`
+        <h1>Status Update.</h1>
+        <p class="text">Regarding your registration for <strong>${orgName}</strong>:</p>
+        <p class="text" style="font-weight: 700; color: #000;">${message}</p>
+        ${isApproved ? `<a href="https://codeown.space/search" class="btn">Discover Developers &rarr;</a>` : ''}
+      `, { title: "Organization" })
     });
   } catch (err) {
     console.error("Error sending org status update email:", err);
@@ -352,13 +302,13 @@ export async function sendNewFollowerEmail(email: string, userName: string, foll
       from: "Codeown <notifications@codeown.space>",
       to: email,
       subject: `${followerName} just followed you on Codeown! 🎉`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2>Hey ${userName},</h2>
-          <p><strong>${followerName}</strong> (@${followerUsername}) just started following you on Codeown.</p>
-          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/${followerUsername}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View their Profile</a>
-        </div>
-      `
+      html: renderEmailLayout(`
+        <h1>New Connection.</h1>
+        <p class="text">
+          <strong>${followerName}</strong> (@${followerUsername}) just started following you on Codeown. Your network is growing.
+        </p>
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/${followerUsername}" class="btn">View Profile &rarr;</a>
+      `, { title: "Network" })
     });
   } catch (err) {
     console.error("Error sending new follower email:", err);
@@ -366,10 +316,10 @@ export async function sendNewFollowerEmail(email: string, userName: string, foll
 }
 
 export async function sendNewLikeEmail(
-  email: string, 
-  userName: string, 
-  likerName: string, 
-  contentType: 'post' | 'project' | 'comment', 
+  email: string,
+  userName: string,
+  likerName: string,
+  contentType: 'post' | 'project' | 'comment',
   contentId: number,
   isSave: boolean = false
 ) {
@@ -379,9 +329,9 @@ export async function sendNewLikeEmail(
       contentType === 'project'
         ? `/project/${contentId}`
         : contentType === 'comment'
-        ? `/comment/${contentId}`
-        : `/`;
-    
+          ? `/comment/${contentId}`
+          : `/`;
+
     const actionLabel = isSave ? 'saved' : 'liked';
     const subjectEmoji = isSave ? '🔖' : '❤️';
     const typeLabel = contentType === 'comment' ? 'comment' : contentType;
@@ -390,13 +340,13 @@ export async function sendNewLikeEmail(
       from: "Codeown <notifications@codeown.space>",
       to: email,
       subject: `${likerName} ${actionLabel} your ${typeLabel}! ${subjectEmoji}`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2>Hey ${userName || 'Developer'},</h2>
-          <p><strong>${likerName || 'Someone'}</strong> just ${actionLabel} your ${typeLabel}.</p>
-          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View ${typeLabel}</a>
-        </div>
-      `
+      html: renderEmailLayout(`
+        <h1>Content ${actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1)}.</h1>
+        <p class="text">
+          <strong>${likerName || 'Someone'}</strong> just ${actionLabel} your ${typeLabel}. Your work is being noticed by the community.
+        </p>
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" class="btn">View ${typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1)} &rarr;</a>
+      `, { title: "Activity" })
     });
   } catch (err) {
     console.error("Error sending like/save email:", err);
@@ -404,10 +354,10 @@ export async function sendNewLikeEmail(
 }
 
 export async function sendNewCommentEmail(
-  email: string, 
-  userName: string, 
-  commenterName: string, 
-  contentId: number, 
+  email: string,
+  userName: string,
+  commenterName: string,
+  contentId: number,
   contentType: 'post' | 'project' = 'post',
   isReply: boolean = false
 ) {
@@ -419,18 +369,18 @@ export async function sendNewCommentEmail(
     const url = contentType === 'project' ? `/project/${contentId}` : `/`;
     const typeLabel = contentType === 'project' ? 'project' : 'post';
     const actionLabel = isReply ? 'replied to you' : `commented on your ${typeLabel}`;
-    
+
     await resend.emails.send({
       from: "Codeown <notifications@codeown.space>",
       to: email,
       subject: `${commenterName} ${actionLabel}! 💬`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2>Hey ${userName || 'Developer'},</h2>
-          <p><strong>${commenterName || 'Someone'}</strong> just ${actionLabel} on Codeown.</p>
-          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View Discussion</a>
-        </div>
-      `
+      html: renderEmailLayout(`
+        <h1>New Discussion.</h1>
+        <p class="text">
+          <strong>${commenterName || 'Someone'}</strong> just ${actionLabel} on Codeown. Join the conversation.
+        </p>
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" class="btn">View Conversation &rarr;</a>
+      `, { title: "Community" })
     });
   } catch (err) {
     console.error("Error sending comment email:", err);
@@ -441,18 +391,18 @@ export async function sendNewMentionEmail(email: string, userName: string, actor
   if (!resend) return;
   try {
     const url = contentType === 'project' ? `/project/${contentId}` : contentType === 'comment' ? `/comment/${contentId}` : `/`;
-    
+
     await resend.emails.send({
       from: "Codeown <notifications@codeown.space>",
       to: email,
       subject: `${actorName} mentioned you on Codeown! ✨`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2>Hey ${userName},</h2>
-          <p><strong>${actorName}</strong> just mentioned you in a ${contentType}.</p>
-          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 10px 20px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">View Mention</a>
-        </div>
-      `
+      html: renderEmailLayout(`
+        <h1>You're Mentioned.</h1>
+        <p class="text">
+          <strong>${actorName}</strong> just tagged you in a ${contentType}. Check out what they said.
+        </p>
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" class="btn">View Mention &rarr;</a>
+      `, { title: "Alert" })
     });
   } catch (err) {
     console.error("Error sending mention email:", err);
@@ -466,16 +416,18 @@ export async function sendStreakWarningEmail(email: string, userName: string, st
       from: "Codeown <notifications@codeown.space>",
       to: email,
       subject: `Urgent: You have 8 hours to save your ${streakCount}-day streak! 🔥`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2>Hey ${userName},</h2>
-          <p>You're about to lose your <strong>${streakCount}-day coding streak</strong>!</p>
-          <p>You haven't been active in 16 hours. You have exactly <strong>8 hours left</strong> to log in and keep your momentum going before it resets to zero.</p>
-          <div style="margin-top: 24px;">
-            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/" style="padding: 12px 24px; background: #000000; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">Save My Streak &rarr;</a>
-          </div>
+      html: renderEmailLayout(`
+        <h1>Don't Stop Now.</h1>
+        <p class="text">
+          Hey ${userName}, you're about to lose your <strong>${streakCount}-day coding streak</strong>! You have exactly <strong>8 hours left</strong> to log in and keep your momentum alive.
+        </p>
+        <div style="background: #fff; border: 2px solid #000; padding: 24px; border-radius: 16px; text-align: center; margin-bottom: 32px;">
+          <div style="font-size: 48px; margin-bottom: 8px;">🔥</div>
+          <div style="font-size: 24px; font-weight: 800;">${streakCount} DAYS</div>
+          <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase;">Current Momentum</div>
         </div>
-      `
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/" class="btn">Save My Streak &rarr;</a>
+      `, { title: "Retention" })
     });
   } catch (err) {
     console.error("Error sending streak email:", err);
@@ -485,12 +437,12 @@ export async function sendStreakWarningEmail(email: string, userName: string, st
 export async function sendWeeklyDigestEmail(email: string, userName: string, projects: any[]) {
   if (!resend) return;
   if (!projects || projects.length === 0) return;
-  
+
   const projectsHtml = projects.map(p => `
-    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eef2f7;">
-      <h3 style="margin-bottom: 5px;">${p.title}</h3>
-      <p style="color: #64748b; margin-top: 0;">${p.description || 'Check out this awesome new project.'}</p>
-      <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/project/${p.id}" style="color: #3b82f6; text-decoration: none; font-weight: bold;">View Project &rarr;</a>
+    <div style="margin-bottom: 24px; padding: 20px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
+      <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a;">${p.title}</h3>
+      <p style="margin: 0 0 16px 0; font-size: 14px; color: #64748b; line-height: 1.5;">${p.description || 'Check out this trending project on Codeown.'}</p>
+      <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/project/${p.id}" style="color: #000000; text-decoration: none; font-weight: 700; font-size: 13px;">View Project &rarr;</a>
     </div>
   `).join('');
 
@@ -499,18 +451,16 @@ export async function sendWeeklyDigestEmail(email: string, userName: string, pro
       from: "Codeown Weekly <digest@codeown.space>",
       to: email,
       subject: "Here are the top trending projects on Codeown this week 🚀",
-      html: `
-        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-          <h2>Happy Friday, ${userName}!</h2>
-          <p>Here are the top projects launched this week that you don't want to miss.</p>
-          <div style="margin-top: 30px;">
-            ${projectsHtml}
-          </div>
-          <div style="margin-top: 30px; text-align: center;">
-            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/search?type=projects" style="padding: 12px 24px; background: #0f172a; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">Discover More Projects</a>
-          </div>
+      html: renderEmailLayout(`
+        <h1>Weekly Hotlist.</h1>
+        <p class="text">Happy Friday, ${userName}! Here are the top projects launched this week that you don't want to miss.</p>
+        <div style="margin-top: 32px;">
+          ${projectsHtml}
         </div>
-      `
+        <div style="text-align: center; margin-top: 16px;">
+          <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/search?type=projects" class="btn">Explore All Projects &rarr;</a>
+        </div>
+      `, { title: "Digest" })
     });
   } catch (err) {
     console.error("Error sending weekly digest:", err);
@@ -525,72 +475,38 @@ export async function sendPersonalWeeklyRecapEmail(email: string, userName: stri
       from: "Codeown Activity <stats@codeown.space>",
       to: email,
       subject: `Your Week on Codeown: +${stats.new_followers} new followers! 🔥`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            .stat-box {
-              padding: 20px;
-              background: #f8fafc;
-              border-radius: 16px;
-              text-align: center;
-              margin-bottom: 20px;
-            }
-            .stat-value {
-              font-size: 28px;
-              font-weight: 800;
-              color: #0f172a;
-              margin: 0;
-            }
-            .stat-label {
-              font-size: 14px;
-              color: #64748b;
-              font-weight: 600;
-              text-transform: uppercase;
-            }
-          </style>
-        </head>
-        <body style="font-family: sans-serif; background-color: #f8fafc; padding: 40px 20px;">
-          <div style="max-width: 500px; margin: 0 auto; background: #fff; border-radius: 24px; padding: 40px; border: 1px solid #e2e8f0;">
-            <div style="text-align: center; margin-bottom: 32px;">
-              <div style="background: #000; color: #fff; display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 12px; margin-bottom: 16px;">WEEKLY RECAP</div>
-              <h1 style="font-size: 32px; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: -1px;">You're killing it, ${userName}!</h1>
-              <p style="color: #64748b; font-size: 16px; margin-top: 8px;">Here is your activity for the past 7 days.</p>
+      html: renderEmailLayout(`
+        <h1>Weekly Recap.</h1>
+        <p class="text">You're killing it, ${userName}! Here is your activity for the past 7 days across the platform.</p>
+        
+        <div style="display: table; width: 100%; border-collapse: separate; border-spacing: 12px 0; margin-bottom: 32px;">
+          <div style="display: table-row;">
+            <div style="display: table-cell; background: #e0f2fe; border-radius: 16px; padding: 20px; text-align: center; width: 50%;">
+              <div style="font-size: 24px; font-weight: 800; color: #0369a1;">+${stats.new_followers}</div>
+              <div style="font-size: 11px; font-weight: 700; color: #0369a1; text-transform: uppercase;">Followers</div>
             </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-              <div class="stat-box" style="background: #e0f2fe;">
-                <p class="stat-value" style="color: #0369a1;">+${stats.new_followers}</p>
-                <p class="stat-label">Followers</p>
-              </div>
-              <div class="stat-box" style="background: #fef3c7;">
-                <p class="stat-value" style="color: #b45309;">${stats.project_views + stats.post_views}</p>
-                <p class="stat-label">Views</p>
-              </div>
-              <div class="stat-box" style="background: #fce7f3;">
-                <p class="stat-value" style="color: #be185d;">${stats.new_likes}</p>
-                <p class="stat-label">Likes</p>
-              </div>
-              <div class="stat-box" style="background: #ffedd5;">
-                <p class="stat-value" style="color: #ea580c;">${stats.streak}d</p>
-                <p class="stat-label">Streak</p>
-              </div>
+            <div style="display: table-cell; background: #fef3c7; border-radius: 16px; padding: 20px; text-align: center; width: 50%;">
+              <div style="font-size: 24px; font-weight: 800; color: #b45309;">${stats.project_views + stats.post_views}</div>
+              <div style="font-size: 11px; font-weight: 700; color: #b45309; text-transform: uppercase;">Views</div>
             </div>
-
-            <div style="margin-top: 32px; text-align: center;">
-              <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}" style="background: #000; color: #fff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block;">View Profile Highlights</a>
-            </div>
-
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
-            
-            <p style="text-align: center; font-size: 12px; color: #94a3b8;">
-              You received this because you're a member of the Codeown community.
-            </p>
           </div>
-        </body>
-        </html>
-      `
+        </div>
+        
+        <div style="display: table; width: 100%; border-collapse: separate; border-spacing: 12px 0; margin-bottom: 32px;">
+          <div style="display: table-row;">
+            <div style="display: table-cell; background: #fce7f3; border-radius: 16px; padding: 20px; text-align: center; width: 50%;">
+              <div style="font-size: 24px; font-weight: 800; color: #be185d;">${stats.new_likes}</div>
+              <div style="font-size: 11px; font-weight: 700; color: #be185d; text-transform: uppercase;">Likes</div>
+            </div>
+            <div style="display: table-cell; background: #ffedd5; border-radius: 16px; padding: 20px; text-align: center; width: 50%;">
+              <div style="font-size: 24px; font-weight: 800; color: #ea580c;">${stats.streak}d</div>
+              <div style="font-size: 11px; font-weight: 700; color: #ea580c; text-transform: uppercase;">Streak</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}" class="btn" style="width: 100%; text-align: center; box-sizing: border-box;">View Full Report &rarr;</a>
+      `, { title: "Activity" })
     });
 
     if (error) console.error("Error sending weekly recap email:", error);
@@ -618,42 +534,21 @@ export async function sendCofounderRequestEmail(
       from: "Codeown <notifications@codeown.space>",
       to: ownerEmail,
       subject: `New Co-Founder Request for "${projectTitle}" from @${requesterUsername}! 🚀`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px;">
-          <h2 style="color: #0f172a; margin-bottom: 24px;">Hey ${ownerName},</h2>
-          <p style="font-size: 16px; color: #475569; line-height: 1.6;">
-            <strong>${requesterName}</strong> (@${requesterUsername}) is interested in becoming a Co-Founder for your project <strong>${projectTitle}</strong>.
-          </p>
-          
-          <div style="background-color: #f8fafc; padding: 24px; border-radius: 8px; margin: 24px 0;">
-            <h3 style="font-size: 14px; text-transform: uppercase; color: #64748b; margin-top: 0; letter-spacing: 0.05em;">Application Details</h3>
-            
-            <p style="margin-bottom: 16px;">
-              <strong style="display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Skills:</strong>
-              <span style="font-size: 14px; color: #0f172a;">${applicationData.skills.join(", ") || "N/A"}</span>
-            </p>
-            
-            <p style="margin-bottom: 16px;">
-              <strong style="display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Weekly Commitment:</strong>
-              <span style="font-size: 14px; color: #0f172a;">${applicationData.hoursPerWeek} hours</span>
-            </p>
-            
-            <p style="margin-bottom: 16px;">
-              <strong style="display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase;">Why join?</strong>
-              <span style="font-size: 14px; color: #0f172a;">${applicationData.reason}</span>
-            </p>
-            
-            <p style="margin-bottom: 0;">
-              <strong style="display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase;">What I bring:</strong>
-              <span style="font-size: 14px; color: #0f172a;">${applicationData.contribution}</span>
-            </p>
-          </div>
-          
-          <div style="text-align: center; margin-top: 32px;">
-            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/messages?userId=${requesterUsername}" style="padding: 12px 32px; background: #000000; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">Message @${requesterUsername} &rarr;</a>
-          </div>
+      html: renderEmailLayout(`
+        <h1>New Partner.</h1>
+        <p class="text">
+          <strong>${requesterName}</strong> (@${requesterUsername}) is interested in becoming a Co-Founder for <strong>${projectTitle}</strong>.
+        </p>
+        
+        <div style="background-color: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 32px;">
+          <h3 style="font-size: 11px; text-transform: uppercase; color: #94a3b8; margin-top: 0; letter-spacing: 0.1em; font-family: 'JetBrains Mono', monospace;">Application Details</h3>
+          <p style="margin: 16px 0 8px 0; font-size: 14px; color: #0f172a;"><strong>Skills:</strong> ${applicationData.skills.join(", ") || "N/A"}</p>
+          <p style="margin: 0 0 8px 0; font-size: 14px; color: #0f172a;"><strong>Commitment:</strong> ${applicationData.hoursPerWeek} hours/week</p>
+          <p style="margin: 0 0 8px 0; font-size: 14px; color: #0f172a;"><strong>Reason:</strong> ${applicationData.reason.substring(0, 100)}${applicationData.reason.length > 100 ? '...' : ''}</p>
         </div>
-      `
+        
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/messages?userId=${requesterUsername}" class="btn">Message @${requesterUsername} &rarr;</a>
+      `, { title: "Founders" })
     });
   } catch (err) {
     console.error("Error sending cofounder request email:", err);
@@ -667,17 +562,13 @@ export async function sendNewMessageEmail(email: string, userName: string, sende
       from: "Codeown <messages@codeown.space>",
       to: email,
       subject: `${senderName} sent you a message on Codeown! 💬`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px;">
-          <h2 style="color: #0f172a; margin-bottom: 24px;">Hey ${userName},</h2>
-          <p style="font-size: 16px; color: #475569; line-height: 1.6;">
-            <strong>${senderName}</strong> (@${senderUsername}) just sent you a new message on Codeown.
-          </p>
-          <div style="text-align: center; margin-top: 32px;">
-            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/messages?userId=${senderUsername}" style="padding: 12px 32px; background: #000000; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">View Message &rarr;</a>
-          </div>
-        </div>
-      `
+      html: renderEmailLayout(`
+        <h1>New Message.</h1>
+        <p class="text">
+          <strong>${senderName}</strong> (@${senderUsername}) just sent you a new message.
+        </p>
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/messages?userId=${senderUsername}" class="btn">View Message &rarr;</a>
+      `, { title: "Chat" })
     });
   } catch (err) {
     console.error("Error sending new message email:", err);
@@ -696,55 +587,45 @@ export async function sendMilestoneEmail(email: string, name: string, milestone:
         <!DOCTYPE html>
         <html>
         <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@800&display=swap');
+             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@800&display=swap');
+             body { background-color: #000; margin: 0; padding: 0; }
+             .milestone-card {
+                max-width: 500px;
+                margin: 40px auto;
+                background: #000;
+                border: 0.5px solid rgba(255,255,255,0.1);
+                border-radius: 24px;
+                padding: 48px;
+                text-align: center;
+                box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+             }
+             .milestone-title { color: #fff; font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -0.04em; text-transform: uppercase; }
+             .milestone-desc { color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; }
+             .badge { background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.1); padding: 32px; border-radius: 16px; margin: 40px 0; }
+             .badge-value { color: #fff; font-size: 40px; font-weight: 900; margin: 0; font-family: 'Inter', sans-serif; }
+             .btn-white { background: #fff; color: #000; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: 900; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-transform: uppercase; display: inline-block; }
           </style>
         </head>
-        <body style="font-family: 'Inter', sans-serif; background-color: #000; margin: 0; padding: 40px 20px;">
-          <div style="max-width: 500px; margin: 0 auto; background: #000; border: 0.5px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 48px; position: relative; overflow: hidden;">
+        <body>
+          <div class="milestone-card">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; color: #fff; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 40px;">CODEOWN // MILESTONE</div>
+            <div style="font-size: 64px; margin-bottom: 24px;">${emoji}</div>
+            <h1 class="milestone-title">Time flies.</h1>
+            <p class="milestone-desc">${name || 'DEVELOPER'} REACHED A NEW RECORD</p>
             
-            <!-- Logo Section -->
-            <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                 <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 800; color: #fff; letter-spacing: 0.2em; text-transform: uppercase;">CODEOWN.SYSTEM</div>
-                 <div style="font-size: 8px; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: 'JetBrains Mono', monospace;">ARCHIVE • MILSTONE_STATION_v2.0</div>
-              </div>
-              <div style="background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 2px; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800;">
-                CORE_EVENT
-              </div>
+            <div class="badge">
+              <div class="badge-value">${milestone.toUpperCase()}</div>
+              <div style="font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px;">MEMBERSHIP_DURATION</div>
             </div>
 
-            <div style="text-align: center; margin-bottom: 40px;">
-              <div style="font-size: 64px; margin-bottom: 24px;">${emoji}</div>
-              <h1 style="color: #fff; font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -1.5px; text-transform: uppercase; font-family: 'Inter', sans-serif;">
-                Time flies.
-              </h1>
-              <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em;">
-                ${name || 'DEVELOPER'} REACHED A NEW RECORD
-              </p>
-            </div>
-
-            <!-- Card Logic -->
-            <div style="background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.1); padding: 32px; border-radius: 8px; margin-bottom: 40px; text-align: center;">
-              <div style="color: #fff; font-size: 40px; font-weight: 900; margin-bottom: 8px; font-family: 'Inter', sans-serif;">${milestone.toUpperCase()}</div>
-              <div style="font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em;">MEMBERSHIP_DURATION</div>
-            </div>
-
-            <p style="color: rgba(255,255,255,0.7); font-size: 15px; line-height: 1.6; text-align: center; margin-bottom: 40px;">
-              Exactly one ${milestone.toLowerCase()} has passed since you initialized your core directory on Codeown. Thank you for being a vital part of the next generation of builders.
+            <p style="color: rgba(255,255,255,0.7); font-size: 15px; line-height: 1.6; margin-bottom: 40px;">
+              Exactly one ${milestone.toLowerCase()} has passed since you initialized your core directory on Codeown.
             </p>
 
-            <div style="text-align: center;">
-              <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}/profile" style="background: #fff; color: #000; padding: 18px 36px; border-radius: 4px; text-decoration: none; font-weight: 900; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-transform: uppercase; display: inline-block;">
-                ENTER_DASHBOARD &rarr;
-              </a>
-            </div>
-
-            <div style="margin-top: 64px; border-top: 0.5px solid rgba(255,255,255,0.1); padding-top: 24px; text-align: center;">
-               <div style="font-family: 'JetBrains Mono', monospace; font-size: 8px; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 0.2em;">
-                 &copy; ${new Date().getFullYear()} CODEOWN • DECENTRALIZED_OPERATING_SYSTEM
-               </div>
-            </div>
+            <a href="https://codeown.space/profile" class="btn-white">ENTER DASHBOARD &rarr;</a>
           </div>
         </body>
         </html>
@@ -765,17 +646,13 @@ export async function sendStartupUpvoteEmail(email: string, userName: string, up
       from: "Codeown <notifications@codeown.space>",
       to: email,
       subject: `New Upvote for "${startupName}"! 🚀`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px;">
-          <h2 style="color: #0f172a; margin-bottom: 24px;">Hey ${userName},</h2>
-          <p style="font-size: 16px; color: #475569; line-height: 1.6;">
-            <strong>${upvoterName}</strong> just upvoted your startup <strong>${startupName}</strong> on Codeown!
-          </p>
-          <div style="text-align: center; margin-top: 32px;">
-            <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" style="padding: 12px 32px; background: #000000; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">View Startup &rarr;</a>
-          </div>
-        </div>
-      `
+      html: renderEmailLayout(`
+        <h1>Project Upvoted.</h1>
+        <p class="text">
+          <strong>${upvoterName}</strong> just upvoted your project <strong>${startupName}</strong>. You're climbing the ranks.
+        </p>
+        <a href="${process.env.FRONTEND_URL || 'https://codeown.space'}${url}" class="btn">View Project &rarr;</a>
+      `, { title: "Station" })
     });
   } catch (err) {
     console.error("Error sending startup upvote email:", err);
