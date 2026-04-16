@@ -101,6 +101,11 @@ export function useNotifications() {
     loading: isLoading,
     fetchNotifications,
     markAsRead: markReadMutation.mutate,
-    refreshUnreadCount: () => {}, // No-op since we fetch only once on mount
-  }), [notifications, unreadCount, messageUnreadCount, isLoading, fetchNotifications, markReadMutation.mutate]);
+    clearMessageNotifications: (actorId: string) => {
+      queryClient.setQueryData<Notification[]>(["notifications"], (old = []) => {
+        return old.map(n => (n.type === "message" && n.actor_id === actorId) ? { ...n, read: true } : n);
+      });
+    },
+    refreshUnreadCount: () => { }, // No-op since we fetch only once on mount
+  }), [notifications, unreadCount, messageUnreadCount, isLoading, fetchNotifications, markReadMutation.mutate, queryClient]);
 }

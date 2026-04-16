@@ -38,6 +38,7 @@ import { socket } from "../lib/socket";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 import { SEO } from "../components/SEO";
 import alertSound from "../assets/notification-alert.mp3";
+import { useNotifications } from "../hooks/useNotifications";
 
 interface Partner {
   id: string;
@@ -48,8 +49,8 @@ interface Partner {
 }
 
 interface Message {
-  id: number;
-  conversation_id: number;
+  id: number | string;
+  conversation_id: number | string;
   sender_id: string;
   content: string;
   created_at: string;
@@ -59,17 +60,17 @@ interface Message {
   image_url?: string;
   audio_url?: string;
   reply_to?: {
-    id: number;
+    id: number | string;
     content: string;
     sender_id: string;
     image_url?: string;
     audio_url?: string;
   };
   reactions?: { [emoji: string]: string[] };
-  shared_post_id?: number;
-  shared_project_id?: number;
+  shared_post_id?: number | string;
+  shared_project_id?: number | string;
   shared_post?: {
-    id: number;
+    id: number | string;
     title: string;
     content: string;
     images: string[];
@@ -80,7 +81,7 @@ interface Message {
     };
   };
   shared_project?: {
-    id: number;
+    id: number | string;
     title: string;
     description: string;
     cover_image: string;
@@ -93,7 +94,7 @@ interface Message {
 }
 
 interface Conversation {
-  id: number;
+  id: number | string;
   partner: Partner;
   last_message: Message | null;
   unread_count?: number;
@@ -233,12 +234,12 @@ const ConversationItem = memo(({
   isActive: boolean,
   typingUsers: Record<string, boolean>,
   currentUser: any,
-  convoMenuId: number | null,
-  setConvoMenuId: (id: number | null) => void,
-  deletingConvoId: number | null,
+  convoMenuId: number | string | null,
+  setConvoMenuId: (id: number | string | null) => void,
+  deletingConvoId: number | string | null,
   onSelect: (c: Conversation) => void,
   onProfile: (c: Conversation) => void,
-  onDelete: (cId: number) => void
+  onDelete: (cId: number | string) => void
 }) => {
   return (
     <div
@@ -375,18 +376,18 @@ const MessageBubble = memo(({
   isMine: boolean,
   activeConvo: Conversation,
   currentUser: any,
-  messageMenuId: number | null,
-  setMessageMenuId: (id: number | null) => void,
-  deletingMessageId: number | null,
-  setDeletingMessageId: (id: number | null) => void,
-  onDelete: (id: number) => void,
+  messageMenuId: number | string | null,
+  setMessageMenuId: (id: number | string | null) => void,
+  deletingMessageId: number | string | null,
+  setDeletingMessageId: (id: number | string | null) => void,
+  onDelete: (id: number | string) => void,
   onReply: (m: Message) => void,
-  onReaction: (id: number, e: string) => void,
+  onReaction: (id: number | string, e: string) => void,
   onPreviewImage: (url: string) => void,
-  reactingTo: number | null,
-  setReactingTo: (id: number | null) => void,
-  onNavigatePost: (id: number) => void,
-  onNavigateProject: (id: number) => void,
+  reactingTo: number | string | null,
+  setReactingTo: (id: number | string | null) => void,
+  onNavigatePost: (id: number | string) => void,
+  onNavigateProject: (id: number | string) => void,
   showSender: boolean,
   isLastInGroup: boolean
 }) => {
@@ -685,9 +686,10 @@ export default function Messages() {
   const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const [reactingTo, setReactingTo] = useState<number | null>(null);
+  const [reactingTo, setReactingTo] = useState<number | string | null>(null);
   const [sending, setSending] = useState(false);
   const { announce } = useActivityBroadcast();
+  const { clearMessageNotifications } = useNotifications();
 
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -796,6 +798,7 @@ export default function Messages() {
         const existing = qConversations.find((c: Conversation) => String(c.partner.id) === String(targetUserId));
         if (existing) {
           setActiveConvo(existing);
+          clearMessageNotifications(String(existing.partner.id));
         } else {
           hasAttemptedRef.current = true;
           startPlaceholderConvo(targetUserId);
@@ -866,10 +869,10 @@ export default function Messages() {
   // Load messages from cache is now handled in the main activeConvo effect
 
   const [typingUsers, setTypingUsers] = useState<Record<string, boolean>>({});
-  const [messageMenuId, setMessageMenuId] = useState<number | null>(null);
-  const [deletingMessageId, setDeletingMessageId] = useState<number | null>(null);
-  const [convoMenuId, setConvoMenuId] = useState<number | null>(null);
-  const [deletingConvoId, setDeletingConvoId] = useState<number | null>(null);
+  const [messageMenuId, setMessageMenuId] = useState<number | string | null>(null);
+  const [deletingMessageId, setDeletingMessageId] = useState<number | string | null>(null);
+  const [convoMenuId, setConvoMenuId] = useState<number | string | null>(null);
+  const [deletingConvoId, setDeletingConvoId] = useState<number | string | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
@@ -913,8 +916,8 @@ export default function Messages() {
 
       // 2. Add to messages if it's the current chat
       const isCorrectChat = activeConvo && (
-        activeConvo.id === payload.conversation_id ||
-        (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id)
+        String(activeConvo.id) === String(payload.conversation_id) ||
+        (String(activeConvo.id) === "0" && String(activeConvo.partner.id) === String(payload.sender_id))
       );
 
       if (isCorrectChat) {
@@ -922,10 +925,11 @@ export default function Messages() {
         if (activeConvo?.id === 0) {
           setActiveConvo(prev => prev ? { ...prev, id: payload.conversation_id } : null);
         }
+        clearMessageNotifications(payload.sender_id);
 
         setMessages((prev) => {
           const safePrev = Array.isArray(prev) ? prev : [];
-          if (safePrev.some(m => m.id === payload.id)) return safePrev;
+          if (safePrev.some(m => String(m.id) === String(payload.id))) return safePrev;
           return [...safePrev, payload];
         });
         scrollToBottom(true);
@@ -933,7 +937,7 @@ export default function Messages() {
 
       queryClient.invalidateQueries({ queryKey: ['messages', payload.conversation_id] });
 
-      if (activeConvo && (activeConvo.id === payload.conversation_id || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) {
+      if (activeConvo && (String(activeConvo.id) === String(payload.conversation_id) || (String(activeConvo.id) === "0" && String(activeConvo.partner.id) === String(payload.sender_id)))) {
         socket.emit("mark_read", {
           senderId: currentUser.id,
           receiverId: payload.sender_id,
@@ -944,7 +948,7 @@ export default function Messages() {
       setConversations((prev) => {
         const convoId = payload.conversation_id;
         const safePrev = Array.isArray(prev) ? prev : [];
-        const convoIndex = safePrev.findIndex(c => c.id === convoId || (c.id === 0 && c.partner.id === payload.sender_id));
+        const convoIndex = safePrev.findIndex(c => String(c.id) === String(convoId) || (String(c.id) === "0" && String(c.partner.id) === String(payload.sender_id)));
         if (convoIndex === -1) {
           queryClient.invalidateQueries({ queryKey: ['conversations'] });
           return prev;
@@ -955,7 +959,7 @@ export default function Messages() {
           ...convo,
           id: convoId,
           last_message: payload,
-          unread_count: (activeConvo && (activeConvo.id === convoId || (activeConvo.id === 0 && activeConvo.partner.id === payload.sender_id))) ? 0 : (convo.unread_count || 0) + 1
+          unread_count: (activeConvo && (String(activeConvo.id) === String(convoId) || (String(activeConvo.id) === "0" && String(activeConvo.partner.id) === String(payload.sender_id)))) ? 0 : (convo.unread_count || 0) + 1
         };
         const [moved] = updated.splice(convoIndex, 1);
         return [moved, ...updated];
@@ -1224,7 +1228,7 @@ export default function Messages() {
     }
   };
 
-  const handleReaction = async (messageId: number, emoji: string) => {
+  const handleReaction = async (messageId: number | string, emoji: string) => {
     try {
       const token = await getToken();
       await api.patch(`/messages/message/${messageId}/reaction`, { emoji }, {
@@ -1263,7 +1267,7 @@ export default function Messages() {
     }
   };
 
-  const handleDeleteMessage = async (messageId: number) => {
+  const handleDeleteMessage = async (messageId: number | string) => {
     try {
       const token = await getToken();
       await api.delete(`/messages/message/${messageId}`, {
@@ -1282,7 +1286,7 @@ export default function Messages() {
     }
   };
 
-  const handleDeleteConversation = async (convoId: number) => {
+  const handleDeleteConversation = async (convoId: number | string) => {
     try {
       setDeletingConvoId(convoId);
       const token = await getToken();
@@ -1587,6 +1591,7 @@ export default function Messages() {
                 deletingConvoId={deletingConvoId}
                 onSelect={(c) => {
                   setActiveConvo(c);
+                  clearMessageNotifications(c.partner.id);
                   if (c.unread_count && c.unread_count > 0) {
                     setConversations(prev =>
                       (Array.isArray(prev) ? prev : []).map(item => item.id === c.id ? { ...item, unread_count: 0 } : item)
