@@ -161,8 +161,12 @@ export default function NotificationsPage() {
         let previewText = "";
 
         if (["comment", "reply", "mention", "like"].includes(notification.type)) {
-            // Priority given to the 'content' field, fallback to metadata for legacy entries
-            previewText = notification.content || notification.metadata?.postContent || notification.metadata?.commentText || notification.metadata?.text || "";
+            // Priority: direct content column > new universal preview_text > legacy metadata keys
+            previewText = notification.content ||
+                notification.metadata?.preview_text ||
+                notification.metadata?.postContent ||
+                notification.metadata?.commentText ||
+                notification.metadata?.text || "";
         }
 
         if (!previewText) return null;
