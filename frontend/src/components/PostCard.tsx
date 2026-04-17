@@ -249,7 +249,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         gap: isMobile ? "12px" : "16px",
         transition: "background-color 0.15s linear",
         width: "100%",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+        borderRadius: "var(--radius-md)"
       }}
       onClick={handleCardClick}
       onMouseEnter={(e) => {
@@ -332,8 +333,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       color: "#0096ff",
                       fontWeight: 600,
                       cursor: "pointer",
-                      padding: "1px 6px",
-                      borderRadius: "6px",
+                      padding: "1px 8px",
+                      borderRadius: "var(--radius-xs)",
                       transition: "all 0.15s ease",
                       backgroundColor: "rgba(0, 150, 255, 0.05)"
                     }}
@@ -546,7 +547,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     justifyContent: "space-between",
                     padding: "12px 16px",
                     backgroundColor: "var(--bg-hover)",
-                    borderRadius: "14px",
+                    borderRadius: "var(--radius-sm)",
                     border: "1px solid var(--border-hairline)",
                     cursor: "pointer",
                     transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -654,6 +655,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                         width: `${percentage}%`,
                         backgroundColor: "var(--bg-hover)",
                         borderRight: percentage > 0 ? "1px solid var(--border-hairline)" : "none",
+                        borderRadius: "var(--radius-sm)",
                         transition: "width 1s cubic-bezier(0.4, 0, 0.2, 1)",
                         zIndex: 0
                       }} />
