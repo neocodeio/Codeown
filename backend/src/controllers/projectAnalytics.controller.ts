@@ -126,15 +126,15 @@ export async function getProjectAnalytics(req: Request, res: Response) {
         });
 
         // 4. Process views timeline
-        const viewsByDay: any = {};
+        const viewsByDay: Record<string, number> = {};
         for (let i = 29; i >= 0; i--) {
             const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-            const key = d.toISOString().split("T")[0];
+            const key = d.toISOString().split("T")[0] as string;
             viewsByDay[key] = 0;
         }
         (viewsTimelineRes.data || []).forEach((ev: any) => {
             if (ev.created_at) {
-                const day = new Date(ev.created_at).toISOString().split("T")[0];
+                const day = new Date(ev.created_at).toISOString().split("T")[0] as string;
                 if (viewsByDay[day] !== undefined) {
                     viewsByDay[day]++;
                 }
@@ -142,6 +142,7 @@ export async function getProjectAnalytics(req: Request, res: Response) {
         });
 
         const viewsTimeline = Object.entries(viewsByDay).map(([date, count]) => ({
+
             date,
             views: count,
         }));

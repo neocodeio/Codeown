@@ -19,6 +19,7 @@ import {
 } from "phosphor-react";
 import { formatRelativeDate } from "../utils/date";
 
+
 interface ProjectAnalyticsDashboardProps {
     projectId: number;
     projectTitle: string;
@@ -41,7 +42,8 @@ export default function ProjectAnalyticsDashboard({ projectId, projectTitle }: P
             console.log("Full Analytics Response Data:", res.data);
             return res.data;
         },
-        staleTime: 2 * 60 * 1000,
+        staleTime: 5000,
+        refetchInterval: 15000, // Refresh every 15 seconds for real-time feel
     });
 
 
