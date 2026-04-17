@@ -19,6 +19,7 @@ import ShareModal from "../components/ShareModal";
 import PostCard from "../components/PostCard";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import CoFounderRequestModal from "../components/CoFounderRequestModal";
+import ProjectAnalyticsDashboard from "../components/ProjectAnalyticsDashboard";
 import { toast } from "react-toastify";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 
@@ -47,7 +48,7 @@ export default function ProjectDetail() {
   const [isShipModalOpen, setIsShipModalOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
-  const [activeTab, setActiveTab] = useState<"details" | "posts">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "posts" | "analytics">("details");
 
   const viewLogged = useRef(false);
 
@@ -551,6 +552,28 @@ export default function ProjectDetail() {
                 >
                   Posts
                 </button>
+                {isOwnProject && (
+                  <button
+                    onClick={() => setActiveTab("analytics")}
+                    style={{
+                      padding: "12px 24px",
+                      background: "none",
+                      border: "none",
+                      borderBottom: activeTab === "analytics" ? "3px solid var(--text-primary)" : "3px solid transparent",
+                      color: activeTab === "analytics" ? "var(--text-primary)" : "var(--text-tertiary)",
+                      fontWeight: 800,
+                      fontSize: "14px",
+                      cursor: "pointer",
+                      borderRadius: "0px",
+                      transition: "all 0.2s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px"
+                    }}
+                  >
+                    Analytics
+                  </button>
+                )}
               </div>
 
               {/* Tab Content */}
@@ -627,6 +650,10 @@ export default function ProjectDetail() {
                       ))
                     )}
                   </div>
+                )}
+
+                {activeTab === "analytics" && isOwnProject && (
+                  <ProjectAnalyticsDashboard projectId={project.id} projectTitle={project.title} />
                 )}
               </div>
             </div>
