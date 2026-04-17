@@ -839,11 +839,15 @@ export default function PostDetail() {
                 gap: "4px"
               }}>
                 <span>{formatFullTwitterDate(post.created_at)}</span>
-                <span style={{ margin: "0 2px" }}>·</span>
-                <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>
-                  <RollingNumber value={post.view_count || 0} fontWeight={700} fontSize="15px" color="var(--text-primary)" />
-                </span>
-                <span>{post.view_count === 1 ? "View" : "Views"}</span>
+                {post.view_count && post.view_count > 0 ? (
+                  <>
+                    <span style={{ margin: "0 2px" }}>·</span>
+                    <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>
+                      <RollingNumber value={post.view_count} fontWeight={700} fontSize="15px" color="var(--text-primary)" />
+                    </span>
+                    <span>{post.view_count === 1 ? "View" : "Views"}</span>
+                  </>
+                ) : null}
               </div>
 
               {/* Actions Row */}
