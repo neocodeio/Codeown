@@ -1,16 +1,16 @@
 
 import { supabase } from "../lib/supabase.js";
 import { isUserOnline } from "../lib/socket.js";
-import { 
-  sendNewLikeEmail, 
-  sendNewFollowerEmail, 
-  sendNewCommentEmail, 
-  sendNewMessageEmail,
-  sendNewMentionEmail,
-  sendCofounderRequestEmail,
-  sendStartupUpvoteEmail,
-  sendShipWeekLaunchEmail,
-  sendShipWeekBatchEmail
+import {
+    sendNewLikeEmail,
+    sendNewFollowerEmail,
+    sendNewCommentEmail,
+    sendNewMessageEmail,
+    sendNewMentionEmail,
+    sendCofounderRequestEmail,
+    sendStartupUpvoteEmail,
+    sendShipWeekLaunchEmail,
+    sendShipWeekBatchEmail
 } from "../lib/email.js";
 
 export async function isUserActive(userId: string): Promise<boolean> {
@@ -33,7 +33,7 @@ export async function isUserActive(userId: string): Promise<boolean> {
         const lastActive = new Date(user.last_active_at);
         const now = new Date();
         const diffMins = (now.getTime() - lastActive.getTime()) / (1000 * 60);
-        
+
         // 2 minutes is safer for "Just left the site" window
         if (diffMins < 2) {
             return true;
@@ -53,6 +53,7 @@ interface SendNotificationParams {
     projectId?: number | undefined;
     commentId?: number | undefined;
     startupId?: string | undefined;
+    content?: string | undefined;
     data?: any; // Extra info for email
 }
 
@@ -67,6 +68,7 @@ export async function notify(params: SendNotificationParams) {
         type,
         actor_id: actorId,
         read: false,
+        content: params.content || null,
         metadata: data || {}
     };
 
@@ -237,18 +239,18 @@ export async function broadcastShipWeek(adminId: string, competitionName: string
     const validRecipients = users
         .filter(u => u.email)
         .map(u => ({ email: u.email!, name: u.name || "Builder" }));
-    
+
     sendShipWeekBatchEmail(validRecipients, competitionName, deadline).catch(e => console.error("Batch fail", e));
 
     // 4. Emit socket events (Real-time updates)
     for (const u of users) {
         try {
             const { getIO } = await import("../lib/socket.js");
-            getIO().to(u.id).emit("new_notification", { 
-                type: "ship_week_launch", 
-                actorId: adminId, 
-                data: { competitionName, deadline } 
+            getIO().to(u.id).emit("new_notification", {
+                type: "ship_week_launch",
+                actorId: adminId,
+                data: { competitionName, deadline }
             });
-        } catch (e) {}
+        } catch (e) { }
     }
 }

@@ -160,12 +160,9 @@ export default function NotificationsPage() {
     const renderContentPreview = (notification: Notification) => {
         let previewText = "";
 
-        if (["comment", "reply", "mention"].includes(notification.type)) {
-            // For these, notification.content usually holds the text
-            previewText = notification.content || "";
-        } else if (notification.type === "like") {
-            // For likes, it's often in metadata
-            previewText = notification.metadata?.postContent || notification.metadata?.commentText || notification.metadata?.text || "";
+        if (["comment", "reply", "mention", "like"].includes(notification.type)) {
+            // Priority given to the 'content' field, fallback to metadata for legacy entries
+            previewText = notification.content || notification.metadata?.postContent || notification.metadata?.commentText || notification.metadata?.text || "";
         }
 
         if (!previewText) return null;

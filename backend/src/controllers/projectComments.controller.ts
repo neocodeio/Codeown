@@ -101,7 +101,8 @@ export async function createProjectComment(req: Request, res: Response) {
           actorId: userId,
           type: "reply",
           projectId: parseInt(id as string) || undefined,
-          commentId: comment.id || undefined
+          commentId: comment.id || undefined,
+          content: content?.trim() || ""
         });
       } catch (err: any) {
         console.error("Error creating project reply notification:", err);
@@ -116,7 +117,8 @@ export async function createProjectComment(req: Request, res: Response) {
           actorId: userId,
           type: "comment",
           projectId: parseInt(id as string) || undefined,
-          commentId: comment.id || undefined
+          commentId: comment.id || undefined,
+          content: content?.trim() || ""
         });
       } catch (err: any) {
         console.error("Error creating project comment notification:", err);
@@ -148,7 +150,8 @@ export async function createProjectComment(req: Request, res: Response) {
                   actorId: userId,
                   type: "mention",
                   projectId: parseInt(id as string) || undefined,
-                  commentId: comment.id || undefined
+                  commentId: comment.id || undefined,
+                  content: content?.trim() || ""
                 });
               } catch (err: any) {
                 console.error("Error creating project mention notification:", err);

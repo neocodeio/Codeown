@@ -72,7 +72,7 @@ export async function likePost(req: Request, res: Response) {
 
       const { data: post } = await supabase
         .from("posts")
-        .select("user_id")
+        .select("user_id, content")
         .eq("id", postIdNum)
         .single();
 
@@ -82,7 +82,9 @@ export async function likePost(req: Request, res: Response) {
             userId: post.user_id,
             actorId: userId,
             type: "like",
-            postId: postIdNum
+            postId: postIdNum,
+            content: post.content,
+            data: { postContent: post.content }
           });
         } catch (notifErr) {
           console.error("Error creating like notification:", notifErr);
@@ -98,7 +100,7 @@ export async function likePost(req: Request, res: Response) {
         .eq("post_id", postIdNum);
 
       const updatedCount = count || 0;
-      
+
       // Emit real-time update
       const { emitUpdate } = await import("../lib/socket.js");
       emitUpdate("post_liked", { id: postIdNum, likeCount: updatedCount });
@@ -166,7 +168,7 @@ export async function likeComment(req: Request, res: Response) {
 
     // Determine context (Project or Post)
     let actualType: 'post' | 'project' = type === 'project' ? 'project' : type === 'post' ? 'post' : 'post';
-    
+
     // Auto-resolve if type is not provided
     if (!type) {
       const { data: pc } = await supabase.from("comments").select("id").eq("id", commentId).maybeSingle();
@@ -200,7 +202,7 @@ export async function likeComment(req: Request, res: Response) {
       return res.json({ liked: false, likeCount: newCount });
     } else {
       await supabase.from(likesTable).insert({ user_id: userId, comment_id: commentId });
-      
+
       // Notification & XP
       try {
         const { data: c } = await supabase.from(commentsTable).select("user_id, " + (actualType === 'project' ? 'project_id' : 'post_id')).eq("id", commentId).single();
@@ -212,7 +214,9 @@ export async function likeComment(req: Request, res: Response) {
             type: "like",
             commentId: commentId,
             projectId: actualType === 'project' ? (c as any).project_id : undefined,
-            postId: actualType === 'post' ? (c as any).post_id : undefined
+            postId: actualType === 'post' ? (c as any).post_id : undefined,
+            content: (c as any).content,
+            data: { commentText: (c as any).content }
           });
 
           // 2. Award XP
