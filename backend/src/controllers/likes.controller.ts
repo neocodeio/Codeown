@@ -72,7 +72,7 @@ export async function likePost(req: Request, res: Response) {
 
       const { data: post } = await supabase
         .from("posts")
-        .select("user_id, content")
+        .select("user_id")
         .eq("id", postIdNum)
         .single();
 
@@ -82,9 +82,7 @@ export async function likePost(req: Request, res: Response) {
             userId: post.user_id,
             actorId: userId,
             type: "like",
-            postId: postIdNum,
-            content: post.content,
-            data: { postContent: post.content }
+            postId: postIdNum
           });
         } catch (notifErr) {
           console.error("Error creating like notification:", notifErr);
@@ -214,9 +212,7 @@ export async function likeComment(req: Request, res: Response) {
             type: "like",
             commentId: commentId,
             projectId: actualType === 'project' ? (c as any).project_id : undefined,
-            postId: actualType === 'post' ? (c as any).post_id : undefined,
-            content: (c as any).content,
-            data: { commentText: (c as any).content }
+            postId: actualType === 'post' ? (c as any).post_id : undefined
           });
 
           // 2. Award XP

@@ -53,51 +53,21 @@ interface SendNotificationParams {
     projectId?: number | undefined;
     commentId?: number | undefined;
     startupId?: string | undefined;
-    content?: string | undefined;
     data?: any; // Extra info for email
 }
 
 export async function notify(params: SendNotificationParams) {
     const { userId, actorId, type, postId, projectId, commentId, startupId, data } = params;
 
-    // 1. Enrich data with content previews if missing
-    let enrichedData = { ... (data || {}) };
-    let previewText = params.content || enrichedData.preview_text || enrichedData.postContent || enrichedData.commentText || enrichedData.text;
+    console.log(`[NotificationService] Processing ${type} notification for user ${userId} from ${actorId}`);
 
-    if (!previewText) {
-        try {
-            if (commentId) {
-                // Try to fetch from comments or project_comments
-                const { data: c } = await supabase.from("comments").select("content").eq("id", commentId).maybeSingle();
-                if (c) previewText = c.content;
-                else {
-                    const { data: pc } = await supabase.from("project_comments").select("content").eq("id", commentId).maybeSingle();
-                    if (pc) previewText = pc.content;
-                }
-            } else if (postId) {
-                const { data: p } = await supabase.from("posts").select("content").eq("id", postId).single();
-                if (p) previewText = p.content;
-            } else if (projectId) {
-                const { data: proj } = await supabase.from("projects").select("description").eq("id", projectId).single();
-                if (proj) previewText = proj.description;
-            }
-        } catch (e) {
-            console.error("[NotificationService] Error auto-fetching preview:", e);
-        }
-    }
-
-    if (previewText) {
-        enrichedData.preview_text = previewText;
-    }
-
-    // Always create the notification in the DB
+    // 1. Always create the notification in the DB
     const insertData: any = {
         user_id: userId,
         type,
         actor_id: actorId,
         read: false,
-        content: previewText || null, // Best effort for the column
-        metadata: enrichedData
+        metadata: data || {}
     };
 
     if (postId) insertData.post_id = postId;
@@ -107,13 +77,15 @@ export async function notify(params: SendNotificationParams) {
 
     let { error: notifError } = await supabase.from("notifications").insert(insertData);
 
-    // If 'content' column is truly missing, retry without it
-    if (notifError && (notifError.code === '42703' || notifError.message?.includes('content'))) {
-        console.warn("[NotificationService] 'content' column missing, retrying with metadata only...");
-        const fallbackData = { ...insertData };
-        delete fallbackData.content;
+    // If it fails with 'startup_upvote' (likely due to missing enum value), retry with a fallback type
+    if (notifError && type === 'startup_upvote') {
+        const fallbackData = { ...insertData, type: 'like' as any };
         const { error: retryError } = await supabase.from("notifications").insert(fallbackData);
         notifError = retryError;
+    }
+
+    if (notifError) {
+        console.error(`[NotificationService] DB Insert Error:`, notifError);
     }
 
     // 1.5 Emit socket event for the specific user so the UI updates instantly

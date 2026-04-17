@@ -291,8 +291,7 @@ export async function createComment(req: Request, res: Response) {
           actorId: userId,
           type: "reply",
           postId: postIdInt || undefined,
-          commentId: commentId || undefined,
-          content: content?.trim() || ""
+          commentId: commentId || undefined
         });
       } catch (replyNotifErr: any) {
         console.error("Error creating reply notification:", replyNotifErr);
@@ -307,8 +306,7 @@ export async function createComment(req: Request, res: Response) {
           actorId: userId,
           type: "comment",
           postId: postIdInt || undefined,
-          commentId: commentId || undefined,
-          content: content?.trim() || ""
+          commentId: commentId || undefined
         });
       } catch (notifError: any) {
         console.error("Error creating comment notification or email:", notifError);
@@ -331,8 +329,7 @@ export async function createComment(req: Request, res: Response) {
                 actorId: userId,
                 type: "mention",
                 postId: postIdInt || undefined,
-                commentId: commentId || undefined,
-                content: content?.trim() || ""
+                commentId: commentId || undefined
               });
             } catch (err: any) {
               console.error("Error creating mention notification:", err);
