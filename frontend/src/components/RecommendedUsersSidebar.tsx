@@ -8,7 +8,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
     Rocket01Icon,
     UserGroupIcon,
-    ArrowUp01Icon,
     ArrowUp02Icon,
     ArrowRight01Icon
 } from "@hugeicons/core-free-icons";
@@ -201,6 +200,11 @@ export default function RecommendedUsersSidebar() {
                 .sidebar-item { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 12px; }
                 .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: 12px; animation: skeleton-pulse 2s infinite ease-in-out; }
                 @keyframes skeleton-pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+                @keyframes pulse-green {
+                    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 186, 124, 0.7); }
+                    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 186, 124, 0); }
+                    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 186, 124, 0); }
+                }
             `}</style>
 
             {/* Section 1: Who to follow */}
@@ -294,75 +298,22 @@ export default function RecommendedUsersSidebar() {
                 </div>
             </div>
 
-            {/* Sponsor Section: Don Workspace */}
-            {/* <div className="sidebar-section" style={{ backgroundColor: "rgba(var(--text-primary-rgb), 0.02)" }}>
-                <a
-                    href="https://www.donos.pro/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: "none", color: "inherit", display: "block" }}
-                >
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: "14px" }}>
-                        <div style={{
-                            width: "48px",
-                            height: "48px",
-                            borderRadius: "14px",
-                            overflow: "hidden",
-                            backgroundColor: "#fff",
-                            border: "1px solid var(--border-hairline)",
-                            flexShrink: 0,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            padding: "4px",
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
-                        }}>
-                            <img
-                                src={donosLogo}
-                                alt="Don Workspace"
-                                style={{ width: "100%", height: "100%", objectFit: "contain" }}
-                            />
-                        </div>
-                        <div style={{ minWidth: 0, flex: 1 }}>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
-                                <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)" }}>Don Workspace</span>
-                                <span style={{
-                                    fontSize: "9px",
-                                    fontWeight: 900,
-                                    color: "var(--text-primary)",
-                                    letterSpacing: "0.05em",
-                                    padding: "2px 8px",
-                                    borderRadius: "100px",
-                                    backgroundColor: "rgba(var(--text-primary-rgb), 0.1)",
-                                    border: "1px solid var(--border-hairline)"
-                                }}>SPONSOR</span>
-                            </div>
-                            <p style={{
-                                fontSize: "12px",
-                                color: "var(--text-tertiary)",
-                                lineHeight: "1.5",
-                                margin: 0,
-                                fontWeight: 500,
-                                display: "-webkit-box",
-                                WebkitLineClamp: 3,
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden"
-                            }}>
-                                The AI-powered workspace for modern builders. Organize your projects and team in one dashboard.
-                            </p>
-                        </div>
-                    </div>
-                </a>
-            </div> */}
-
             {/* Section 4: Trending */}
             {!trendingLoading && Array.isArray(trendingTags) && (
                 <div className="sidebar-section">
                     <div className="sidebar-title-row">
-                        <h3 className="sidebar-title">
-                            <HugeiconsIcon icon={ArrowUp01Icon} size={16} />
-                            Trending Now
-                        </h3>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <div style={{
+                                width: "6px",
+                                height: "6px",
+                                borderRadius: "50%",
+                                backgroundColor: "#00BA7C",
+                                animation: "pulse-green 2s infinite"
+                            }} />
+                            <h3 className="sidebar-title" style={{ gap: "8px" }}>
+                                Trending Now
+                            </h3>
+                        </div>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                         {trendingTags.slice(0, 5).map((tag: any, idx: number) => (
@@ -433,4 +384,3 @@ export default function RecommendedUsersSidebar() {
         </div>
     );
 }
-

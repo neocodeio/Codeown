@@ -10,37 +10,41 @@ import MentionInput from "../components/MentionInput";
 import CommentBlock, { type CommentWithMeta } from "../components/CommentBlock";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
-import { formatRelativeDate } from "../utils/date";
+import { formatFullTwitterDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import { useWindowSize } from "../hooks/useWindowSize";
 import ShareModal from "../components/ShareModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  CaretLeft,
-  ChatTeardropText,
-  Heart,
-  ShareNetwork,
-  BookmarkSimple,
-  ChartBar,
-  PaperPlaneTilt,
-  CheckCircle,
-  DownloadSimple,
-  Paperclip,
-  DotsThree,
-  PushPin,
-  PencilSimple,
-  Trash
-} from "phosphor-react";
+  ArrowLeft01Icon,
+  Comment01Icon,
+  Share01Icon,
+  Bookmark02Icon,
+  Chart01Icon,
+  SentIcon,
+  CheckmarkCircle01Icon,
+  Download01Icon,
+  Attachment01Icon,
+  MoreHorizontalIcon,
+  PinIcon,
+  PencilEdit01Icon,
+  Delete02Icon,
+  GifIcon,
+  Image01Icon
+} from "@hugeicons/core-free-icons";
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
 import SendToChatModal from "../components/SendToChatModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import EditPostModal from "../components/EditPostModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { Gif, Image as ImageIcon } from "phosphor-react";
+import { faXmark, faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import GifPicker from "../components/GifPicker";
+import RollingNumber from "../components/RollingNumber";
+import { socket } from "../lib/socket";
 
 interface Post {
   id: number;
@@ -167,7 +171,22 @@ export default function PostDetail() {
       fetchLikeStatus();
       fetchSavedStatus();
     }
-  }, [id, fetchLikeStatus, fetchSavedStatus]);
+
+    // Real-time view updates
+    const handleViewUpdate = (data: { postId: number | string, viewCount: number }) => {
+      if (String(data.postId) === String(id)) {
+        queryClient.setQueryData(["post", id], (old: any) => {
+          if (!old) return old;
+          return { ...old, view_count: data.viewCount };
+        });
+      }
+    };
+
+    socket.on("post_view_update", handleViewUpdate);
+    return () => {
+      socket.off("post_view_update", handleViewUpdate);
+    };
+  }, [id, fetchLikeStatus, fetchSavedStatus, queryClient]);
 
   const isOwnPost = user?.id === post?.user_id;
   const isPinned = isPinnedLocal;
@@ -441,7 +460,7 @@ export default function PostDetail() {
                     transition: "all 0.15s ease",
                   }}
                 >
-                  <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
+                  <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
                 </button>
                 <h1 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
                   Post
@@ -468,7 +487,7 @@ export default function PostDetail() {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
-                    <DotsThree size={24} weight="bold" />
+                    <HugeiconsIcon icon={MoreHorizontalIcon} size={24} />
                   </button>
 
                   {isMenuOpen && (
@@ -506,7 +525,7 @@ export default function PostDetail() {
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                         onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
                       >
-                        <PushPin size={18} weight={isPinned ? "fill" : "regular"} />
+                        <HugeiconsIcon icon={PinIcon} size={18} {...({ variant: isPinned ? "solid" : "outline" } as any)} />
                         {isPinned ? "Unpin Post" : "Pin Post"}
                       </button>
 
@@ -531,7 +550,7 @@ export default function PostDetail() {
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                         onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
                       >
-                        <PencilSimple size={18} />
+                        <HugeiconsIcon icon={PencilEdit01Icon} size={18} />
                         Edit Post
                       </button>
 
@@ -558,7 +577,7 @@ export default function PostDetail() {
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.08)"}
                         onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
                       >
-                        <Trash size={18} />
+                        <HugeiconsIcon icon={Delete02Icon} size={18} />
                         Delete Post
                       </button>
                     </div>
@@ -586,7 +605,7 @@ export default function PostDetail() {
                     <VerifiedBadge username={post.user?.username} size="14px" />
                   </div>
                   <div style={{ fontSize: "12.5px", color: "var(--text-tertiary)", marginTop: "1px", fontWeight: 500, display: "flex", alignItems: "center", gap: "6px" }}>
-                    @{post.user?.username || 'user'} • {formatRelativeDate(post.created_at)}
+                    @{post.user?.username || 'user'}
                     {post.project && (
                       <>
                         <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
@@ -652,7 +671,7 @@ export default function PostDetail() {
                   marginBottom: "32px"
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                    <DownloadSimple size={18} weight="bold" color="var(--text-primary)" />
+                    <HugeiconsIcon icon={Download01Icon} size={18} />
                     <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>Downloads</span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))", gap: "10px" }}>
@@ -694,7 +713,7 @@ export default function PostDetail() {
                             border: "0.5px solid var(--border-hairline)",
                             flexShrink: 0
                           }}>
-                            <Paperclip size={18} color="var(--text-primary)" />
+                            <HugeiconsIcon icon={Attachment01Icon} size={18} color="var(--text-primary)" />
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
                             <span style={{
@@ -712,7 +731,7 @@ export default function PostDetail() {
                             </span>
                           </div>
                         </div>
-                        <DownloadSimple size={20} color="var(--text-tertiary)" weight="thin" />
+                        <HugeiconsIcon icon={Download01Icon} size={20} color="var(--text-tertiary)" />
                       </div>
                     ))}
                   </div>
@@ -732,7 +751,7 @@ export default function PostDetail() {
                   gap: "16px"
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                    <ChartBar size={18} weight="bold" color="var(--text-primary)" />
+                    <HugeiconsIcon icon={Chart01Icon} size={18} />
                     <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>Poll</span>
                   </div>
 
@@ -785,7 +804,7 @@ export default function PostDetail() {
                               opacity: isSelected ? 1 : 0.8
                             }}>
                               {option || "Option " + (idx + 1)}
-                              {isSelected && <CheckCircle size={14} weight="fill" style={{ marginLeft: "8px", verticalAlign: "middle" }} />}
+                              {isSelected && <HugeiconsIcon icon={CheckmarkCircle01Icon} size={14} {...({ variant: "solid" } as any)} style={{ marginLeft: "8px", verticalAlign: "middle" }} />}
                             </span>
                             {votedOption !== null && (
                               <span style={{
@@ -809,6 +828,24 @@ export default function PostDetail() {
                 </div>
               )}
 
+              <div style={{
+                padding: "16px 0",
+                color: "var(--text-tertiary)",
+                fontSize: "15px",
+                fontWeight: 600,
+                letterSpacing: "-0.01em",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px"
+              }}>
+                <span>{formatFullTwitterDate(post.created_at)}</span>
+                <span style={{ margin: "0 2px" }}>·</span>
+                <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>
+                  <RollingNumber value={post.view_count || 0} fontWeight={700} fontSize="15px" color="var(--text-primary)" />
+                </span>
+                <span>{post.view_count === 1 ? "View" : "Views"}</span>
+              </div>
+
               {/* Actions Row */}
               <div style={{
                 display: "flex",
@@ -825,7 +862,7 @@ export default function PostDetail() {
                     onClick={() => document.querySelector('textarea')?.focus()}
                     style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }}
                   >
-                    <ChatTeardropText size={20} weight="thin" />
+                    <HugeiconsIcon icon={Comment01Icon} size={20} />
                     <span style={{ fontSize: "13px", fontWeight: 600 }}>{comments.length}</span>
                   </button>
 
@@ -834,20 +871,27 @@ export default function PostDetail() {
                     disabled={likeLoading}
                     style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "#f91880" : "var(--text-secondary)", cursor: "pointer" }}
                   >
-                    <Heart size={20} weight={isLiked ? "fill" : "thin"} />
+                    <FontAwesomeIcon
+                      icon={isLiked ? faHeartSolid : faHeartRegular}
+                      style={{
+                        fontSize: "20px",
+                        color: isLiked ? "#f91880" : "var(--text-secondary)",
+                        transition: "all 0.2s ease"
+                      }}
+                    />
                     <span style={{ fontSize: "13px", fontWeight: 600 }}>{likeCount}</span>
                   </button>
                 </div>
 
                 <div style={{ display: "flex", gap: "16px" }}>
                   <button onClick={handleShare} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
-                    <ShareNetwork size={20} weight="thin" />
+                    <HugeiconsIcon icon={Share01Icon} size={20} />
                   </button>
                   <button onClick={handleSendToChat} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
-                    <PaperPlaneTilt size={20} weight="thin" />
+                    <HugeiconsIcon icon={SentIcon} size={20} />
                   </button>
                   <button onClick={toggleSave} style={{ background: "none", border: "none", color: isSaved ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
-                    <BookmarkSimple size={20} weight={isSaved ? "fill" : "thin"} />
+                    <HugeiconsIcon icon={Bookmark02Icon} size={20} {...({ variant: isSaved ? "solid" : "outline" } as any)} />
                   </button>
                 </div>
               </div>
@@ -922,7 +966,7 @@ export default function PostDetail() {
                             border: "0.5px solid var(--border-hairline)", borderRadius: "100px", cursor: "pointer", fontSize: "11px", fontWeight: 700, textTransform: "uppercase"
                           }}
                         >
-                          <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
+                          <HugeiconsIcon icon={GifIcon} size={18} />
                         </button>
                         {isGifPickerOpen && (
                           <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
@@ -936,7 +980,7 @@ export default function PostDetail() {
                         backgroundColor: "transparent", color: "var(--text-tertiary)",
                         border: "0.5px solid var(--border-hairline)", borderRadius: "100px", cursor: "pointer", fontSize: "11px", fontWeight: 700, textTransform: "uppercase"
                       }}>
-                        <ImageIcon size={18} weight={selectedImage ? "fill" : "bold"} />
+                        <HugeiconsIcon icon={Image01Icon} size={18} />
                         <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} disabled={isUploading} />
                       </label>
                     </div>

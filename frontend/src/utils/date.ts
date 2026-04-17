@@ -91,3 +91,31 @@ export const formatCompactRelativeDate = (dateString: string) => {
         day: "numeric"
     });
 };
+
+export const formatFullTwitterDate = (dateString: string) => {
+    if (!dateString) return "";
+
+    const normalizedString = dateString.includes('Z') || dateString.includes('+')
+        ? dateString
+        : dateString.replace(' ', 'T') + 'Z';
+
+    let date = new Date(normalizedString);
+    if (isNaN(date.getTime())) {
+        date = new Date(dateString);
+    }
+    if (isNaN(date.getTime())) return "";
+
+    const time = date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
+
+    const fullDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+
+    return `${time} · ${fullDate}`;
+};
