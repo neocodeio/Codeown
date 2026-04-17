@@ -3,22 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-    CaretLeft,
-    Bell,
-    Eye,
-    Heart,
-    ChatTeardropText,
-    UserPlus,
-    ArrowUp,
-    At,
-    BookmarkSimple,
-    EnvelopeSimple,
-    Handshake,
-    Flame,
-    Star,
-    Trophy,
-} from "phosphor-react";
+    ArrowLeft01Icon,
+    Notification01Icon,
+    ViewIcon,
+    FavouriteIcon,
+    Comment01Icon,
+    UserAdd01Icon,
+    ArrowUp01Icon,
+    MailAtSign01Icon,
+    Bookmark02Icon,
+    Mail01Icon,
+    UserGroupIcon,
+    FireIcon,
+    StarIcon,
+    MedalIcon,
+} from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
@@ -59,37 +60,36 @@ export default function NotificationsPage() {
 
     const getNotificationIcon = (notification: Notification) => {
         const size = 18;
-        const weight = "thin";
         switch (notification.type) {
             case "like":
                 if (notification.project_id) {
-                    return { icon: <ArrowUp size={size} weight={weight} />, color: "var(--text-primary)" };
+                    return { icon: <HugeiconsIcon icon={ArrowUp01Icon} size={size} />, color: "var(--text-primary)" };
                 }
-                return { icon: <Heart size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={FavouriteIcon} size={size} />, color: "var(--text-primary)" };
             case "comment":
             case "reply":
-                return { icon: <ChatTeardropText size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={Comment01Icon} size={size} />, color: "var(--text-primary)" };
             case "follow":
-                return { icon: <UserPlus size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={UserAdd01Icon} size={size} />, color: "var(--text-primary)" };
             case "mention":
-                return { icon: <At size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={MailAtSign01Icon} size={size} />, color: "var(--text-primary)" };
             case "save":
-                return { icon: <BookmarkSimple size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={Bookmark02Icon} size={size} />, color: "var(--text-primary)" };
             case "message":
-                return { icon: <EnvelopeSimple size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={Mail01Icon} size={size} />, color: "var(--text-primary)" };
             case "profile_view":
             case "project_view":
-                return { icon: <Eye size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={ViewIcon} size={size} />, color: "var(--text-primary)" };
             case "cofounder_request":
-                return { icon: <Handshake size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={UserGroupIcon} size={size} />, color: "var(--text-primary)" };
             case "streak_warning":
-                return { icon: <Flame size={size} weight={weight} />, color: "#f97316" }; // Orange color for fire
+                return { icon: <HugeiconsIcon icon={FireIcon} size={size} />, color: "#f97316" };
             case "milestone":
-                return { icon: <Trophy size={size} weight={weight} />, color: "#fff" };
+                return { icon: <HugeiconsIcon icon={MedalIcon} size={size} />, color: "#fff" };
             case "startup_upvote":
-                return { icon: <ArrowUp size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={ArrowUp01Icon} size={size} />, color: "var(--text-primary)" };
             default:
-                return { icon: <Bell size={size} weight={weight} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={Notification01Icon} size={size} />, color: "var(--text-primary)" };
         }
     };
 
@@ -153,8 +153,43 @@ export default function NotificationsPage() {
                 const startupName = notification.metadata?.startupName || "your startup";
                 return <>{nameWrapper} Upvoted <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{startupName}</span></>;
             default:
-                return <>{notification.content || "New notification"}</>;
+                return null;
         }
+    };
+
+    const renderContentPreview = (notification: Notification) => {
+        let previewText = "";
+
+        if (["comment", "reply", "mention"].includes(notification.type)) {
+            // For these, notification.content usually holds the text
+            previewText = notification.content || "";
+        } else if (notification.type === "like") {
+            // For likes, it's often in metadata
+            previewText = notification.metadata?.postContent || notification.metadata?.commentText || notification.metadata?.text || "";
+        }
+
+        if (!previewText) return null;
+
+        return (
+            <div style={{
+                marginTop: "12px",
+                padding: "12px 16px",
+                backgroundColor: "var(--bg-card)",
+                border: "0.5px solid var(--border-hairline)",
+                borderRadius: "12px",
+                fontSize: "14px",
+                color: "var(--text-secondary)",
+                lineHeight: 1.5,
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word"
+            }}>
+                {previewText}
+            </div>
+        );
     };
 
     const isMobile = width < 768;
@@ -222,7 +257,7 @@ export default function NotificationsPage() {
                                 transition: "all 0.15s ease",
                             }}
                         >
-                            <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
+                            <HugeiconsIcon icon={ArrowLeft01Icon} size={20} color="var(--text-primary)" />
                         </button>
 
                         <div style={{ flex: 1 }}>
@@ -295,7 +330,7 @@ export default function NotificationsPage() {
                                     color: "var(--text-tertiary)",
                                     border: "0.5px solid var(--border-hairline)"
                                 }}>
-                                    <Bell size={32} weight="regular" style={{ opacity: 0.5 }} />
+                                    <HugeiconsIcon icon={Notification01Icon} size={32} style={{ opacity: 0.5 }} />
                                 </div>
                                 <h2 style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Nothing yet</h2>
                                 <p style={{ fontSize: "14px", color: "var(--text-tertiary)", margin: 0, maxWidth: "260px", lineHeight: 1.6 }}>
@@ -360,7 +395,7 @@ export default function NotificationsPage() {
                                             overflow: "hidden"
                                         }}>
                                             <div style={{ position: "absolute", top: "-10px", right: "-10px", opacity: 0.1, pointerEvents: "none" }}>
-                                                <Star size={80} weight="fill" color="var(--text-primary)" />
+                                                <HugeiconsIcon icon={StarIcon} size={80} {...({ variant: "solid" } as any)} style={{ color: "var(--text-primary)" }} />
                                             </div>
 
                                             <div style={{ display: "flex", alignItems: "center", gap: "12px", zIndex: 1 }}>
@@ -416,8 +451,9 @@ export default function NotificationsPage() {
                                                 }}>
                                                     {getNotificationMessage(notification)}
                                                 </p>
+                                                {renderContentPreview(notification)}
                                                 <p style={{
-                                                    margin: "6px 0 0",
+                                                    margin: "8px 0 0",
                                                     fontSize: "12px",
                                                     color: "var(--text-tertiary)",
                                                     fontWeight: 500
