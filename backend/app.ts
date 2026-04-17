@@ -25,7 +25,6 @@ import leaderboardRoutes from "./src/routes/leaderboard.routes.js";
 import changelogsRoutes from "./src/routes/changelogs.routes.js";
 import startupsRoutes from "./src/routes/startups.routes.js";
 import shipRoutes from "./src/routes/ship.routes.js";
-import publicRoutes from "./src/routes/public.routes.js";
 import { handleDodoWebhook, handleClerkWebhook } from "./src/controllers/webhooks.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -162,7 +161,6 @@ app.use("/leaderboard", leaderboardRoutes);
 app.use("/changelogs", changelogsRoutes);
 app.use("/startups", startupsRoutes);
 app.use("/ship", shipRoutes);
-app.use("/v1/public", publicRoutes);
 
 // Static assets should be served first (except index.html)
 app.use(express.static(path.join(__dirname, "../frontend/dist"), { index: false }));
