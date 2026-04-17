@@ -202,7 +202,7 @@ export default function Navbar() {
         <Link to="/changelog" style={linkStyle("/changelog")}><HugeiconsIcon icon={DocumentCodeIcon} size={20} /><span>Changelog</span></Link>
 
         {isSignedIn && (
-          <div style={{ marginTop: window.innerHeight < 850 ? "10px" : "20px", paddingTop: window.innerHeight < 850 ? "10px" : "20px", borderTop: "1px solid var(--border-hairline)" }}>
+          <div style={{ marginTop: "4px" }}>
             <Link to="/messages" style={linkStyle("/messages")}>
               <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
                 <HugeiconsIcon icon={Chat01Icon} size={20} />
