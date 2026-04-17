@@ -187,7 +187,7 @@ export default function Navbar() {
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
           <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "32px", width: "auto" }} />
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontSize: "19px", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>Codeown.space</span>
+            <span style={{ fontSize: "19px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>Codeown.space</span>
           </div>
         </Link>
       </div>
@@ -206,14 +206,14 @@ export default function Navbar() {
             <Link to="/messages" style={linkStyle("/messages")}>
               <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
                 <HugeiconsIcon icon={Chat01Icon} size={20} />
-                {messageUnreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>{messageUnreadCount}</span>}
+                {messageUnreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
               </div>
               <span>Messages</span>
             </Link>
             <Link to="/notifications" style={linkStyle("/notifications")}>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <HugeiconsIcon icon={Notification01Icon} size={20} />
-                {unreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>{unreadCount}</span>}
+                {unreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{unreadCount}</span>}
               </div>
               <span>Notifications</span>
             </Link>
@@ -238,7 +238,7 @@ export default function Navbar() {
                   marginBottom: "8px",
                   backgroundColor: "var(--bg-page)",
                   border: "1px solid var(--border-hairline)",
-                  borderRadius: "18px",
+                  borderRadius: "var(--radius-md)",
                   padding: "6px",
                   zIndex: 2200,
                   animation: "reactionFadeUpSimple 0.15s ease-out"
@@ -247,7 +247,7 @@ export default function Navbar() {
                     onClick={(e) => { e.stopPropagation(); setIsModalOpen(true); setIsPostSelectorOpen(false); }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", transition: "all 0.15s ease" }}
+                    style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", transition: "all var(--transition-fast)" }}
                   >
                     <HugeiconsIcon icon={PlusSignIcon} size={16} /> <span style={{ color: "var(--text-primary)" }}>Add post</span>
                   </div>
@@ -255,7 +255,7 @@ export default function Navbar() {
                     onClick={(e) => { e.stopPropagation(); setIsProjectModalOpen(true); setIsPostSelectorOpen(false); }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                    style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", transition: "all 0.15s ease" }}
+                    style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "12px", fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", transition: "all var(--transition-fast)" }}
                   >
                     <HugeiconsIcon icon={Rocket01Icon} size={16} /> <span style={{ color: "var(--text-primary)" }}>Launch project</span>
                   </div>
@@ -271,7 +271,7 @@ export default function Navbar() {
 
       <div style={{ padding: window.innerHeight < 850 ? "12px 0" : "24px 0" }}>
         {isSignedIn && user ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", borderRadius: "20px", backgroundColor: "var(--bg-hover)", border: "1px solid var(--border-hairline)", cursor: "pointer" }} onClick={() => navigate(`/${profile?.username || user.username}`)}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", borderRadius: "var(--radius-md)", backgroundColor: "var(--bg-hover)", border: "1px solid var(--border-hairline)", cursor: "pointer" }} onClick={() => navigate(`/${profile?.username || user.username}`)}>
             <AvailabilityBadge avatarUrl={userAvatarUrl || user.imageUrl} name={profile?.name || user.fullName || "User"} size={38} isOpenToOpportunities={profile?.is_hirable === true} isOG={profile?.is_og} username={profile?.username || user?.username} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{profile?.name || user.fullName || "User"}</div>
@@ -282,7 +282,7 @@ export default function Navbar() {
               <div style={{ position: "relative" }}>
                 <button onClick={(e) => { e.stopPropagation(); setIsLogoutOpen(!isLogoutOpen); }} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "6px" }}><HugeiconsIcon icon={MoreHorizontalIcon} size={18} /></button>
                 {isLogoutOpen && (
-                  <div style={{ position: "absolute", bottom: "100%", right: 0, marginBottom: "12px", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "16px", padding: "6px", minWidth: "160px", zIndex: 100, boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }}>
+                  <div style={{ position: "absolute", bottom: "100%", right: 0, marginBottom: "12px", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", padding: "6px", minWidth: "160px", zIndex: 100, boxShadow: "var(--shadow-lg)" }}>
                     <button onClick={() => signOut()} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "12px", background: "none", border: "none", color: "#ef4444", fontWeight: 700, fontSize: "13px", cursor: "pointer" }}><HugeiconsIcon icon={Logout03Icon} size={18} /> Logout</button>
                   </div>
                 )}
@@ -291,7 +291,7 @@ export default function Navbar() {
           </div>
         ) : (
           <Link to="/sign-in" style={{ textDecoration: "none" }}>
-            <button style={{ width: "100%", padding: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "16px", fontWeight: 800, cursor: "pointer", fontSize: "15px", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}><HugeiconsIcon icon={Login03Icon} size={20} /> Sign In</button>
+            <button style={{ width: "100%", padding: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "var(--radius-sm)", fontWeight: 700, cursor: "pointer", fontSize: "15px", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}><HugeiconsIcon icon={Login03Icon} size={20} /> Sign In</button>
           </Link>
         )}
 
@@ -376,7 +376,7 @@ export default function Navbar() {
         <div onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)} style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: isCreateMenuOpen ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={PlusSignIcon} size={26} style={{ transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
           {isCreateMenuOpen && (
-            <div style={{ position: "absolute", bottom: "80px", left: "50%", transform: "translateX(-50%)", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "24px", padding: "10px", minWidth: "220px", zIndex: 2001, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}>
+            <div style={{ position: "absolute", bottom: "80px", left: "50%", transform: "translateX(-50%)", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "var(--radius-md)", padding: "10px", minWidth: "220px", zIndex: 2001, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}>
               <style>{`.mobile-menu-item { padding: 12px 16px; display: flex; alignItems: center; gap: 12px; cursor: pointer; color: var(--text-primary); font-weight: 700; font-size: 15px; border-radius: 16px; transition: all 0.2s; } .mobile-menu-item:active { background: var(--bg-hover); transform: scale(0.98); }`}</style>
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}><HugeiconsIcon icon={PlusSignIcon} size={18} /> Add post</div>
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}><HugeiconsIcon icon={Rocket01Icon} size={18} /> Launch project</div>
@@ -391,12 +391,12 @@ export default function Navbar() {
 
         <Link to="/messages" style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: location.pathname === "/messages" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={Chat01Icon} size={22} />
-          {messageUnreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>{messageUnreadCount}</span>}
+          {messageUnreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
         </Link>
 
         <Link to="/notifications" style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: location.pathname === "/notifications" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={Notification01Icon} size={22} />
-          {unreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>{unreadCount}</span>}
+          {unreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{unreadCount}</span>}
         </Link>
 
         <Link to={(profile?.username || user?.username) ? `/${profile?.username || user?.username}` : "/profile"} style={{ flex: 1, display: "flex", justifyContent: "center" }}>

@@ -353,11 +353,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             {post.post_type && (
               <span style={{
                 fontSize: "9.5px",
-                fontWeight: 900,
+                fontWeight: 700,
                 color: "var(--text-primary)",
                 backgroundColor: "var(--bg-hover)",
                 padding: "2px 10px",
-                borderRadius: "100px",
+                borderRadius: "var(--radius-pill)",
                 display: isMobile ? "none" : "flex",
                 alignItems: "center",
                 gap: "4px",
@@ -417,7 +417,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     backgroundColor: "var(--bg-card)",
                     border: "0.5px solid var(--border-hairline)",
                     borderRadius: "var(--radius-md)",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+                    boxShadow: "var(--shadow-lg)",
                     zIndex: 100,
                     minWidth: "160px",
                     padding: "6px",
@@ -500,7 +500,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   border: "none",
                   color: "var(--text-primary)",
                   fontSize: "13px",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   cursor: "pointer",
                   padding: "4px 0",
                   marginTop: "8px",
@@ -553,7 +553,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "var(--text-primary)";
-                    e.currentTarget.style.transform = "translateY(-1px)";
+                    e.currentTarget.style.transform = "translateY(0)";
                     e.currentTarget.style.backgroundColor = "var(--bg-page)";
                   }}
                   onMouseLeave={(e) => {
@@ -566,7 +566,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     <div style={{
                       width: "36px",
                       height: "36px",
-                      borderRadius: "10px",
+                      borderRadius: "var(--radius-xs)",
                       backgroundColor: "var(--bg-page)",
                       display: "flex",
                       alignItems: "center",
@@ -635,7 +635,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       padding: "14px 16px",
                       backgroundColor: "transparent",
                       border: isSelected ? "1.5px solid var(--text-primary)" : "1.5px solid var(--border-hairline)",
-                      borderRadius: "14px",
+                      borderRadius: "var(--radius-sm)",
                       cursor: votedOption !== null ? "default" : "pointer",
                       textAlign: "left",
                       overflow: "hidden",
@@ -671,7 +671,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       {votedOption !== null && (
                         <span style={{
                           fontSize: "13px",
-                          fontWeight: 800,
+                          fontWeight: 700,
                           color: isSelected ? "var(--text-primary)" : "var(--text-tertiary)",
                         }}>
                           {percentage}%

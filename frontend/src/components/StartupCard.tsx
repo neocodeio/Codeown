@@ -55,10 +55,10 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
     // Optimistic Update
     const previousUpvotes = upvotes;
     const previousHasUpvoted = hasUpvoted;
-    
+
     const newHasUpvoted = !previousHasUpvoted;
     const newUpvotes = newHasUpvoted ? previousUpvotes + 1 : Math.max(0, previousUpvotes - 1);
-    
+
     setUpvotes(newUpvotes);
     setHasUpvoted(newHasUpvoted);
     setIsUpvoting(true);
@@ -96,7 +96,7 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
       <div style={{
         backgroundColor: 'var(--bg-card)',
         border: '0.5px solid var(--border-hairline)',
-        borderRadius: '16px',
+        borderRadius: 'var(--radius-sm)',
         padding: isMobile ? '20px' : '24px',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         height: '100%',
@@ -171,7 +171,7 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
               {startup.tagline}
             </p>
           </div>
-          
+
           <button
             onClick={handleUpvote}
             style={{
@@ -193,7 +193,7 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
             className="upvote-btn"
           >
             <CaretUp size={16} weight="bold" />
-            <span style={{ fontSize: '13px', fontWeight: 800 }}>{upvotes}</span>
+            <span style={{ fontSize: '13px', fontWeight: 700 }}>{upvotes}</span>
           </button>
         </div>
 
@@ -207,15 +207,15 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
           borderTop: '0.5px solid var(--border-hairline)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
-             <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>by</span>
-             <span style={{ 
-               fontSize: '13px', 
-               fontWeight: 600, 
-               color: 'var(--text-primary)',
-               whiteSpace: 'nowrap',
-               overflow: 'hidden',
-               textOverflow: 'ellipsis'
-             }}>@{startup.user?.username || "founder"}</span>
+            <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>by</span>
+            <span style={{
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>@{startup.user?.username || "founder"}</span>
           </div>
 
           <div style={{ display: 'flex', gap: '12px' }}>
@@ -246,7 +246,7 @@ export const StartupCard: React.FC<StartupCardProps> = ({ startup, onUpvoteUpdat
           }
           .upvote-btn:hover {
             opacity: 0.9;
-            transform: scale(1.05);
+            transform: scale(1);
           }
         `}</style>
       </div>

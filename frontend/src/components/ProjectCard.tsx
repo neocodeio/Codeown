@@ -344,7 +344,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 onClick={handleUserClick}
                 style={{
                   fontSize: "15px",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   color: "var(--text-primary)",
                   letterSpacing: "-0.015em",
                   cursor: "pointer"
@@ -372,7 +372,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   backgroundColor: "rgba(34, 197, 94, 0.08)",
                   border: "0.5px solid rgba(34, 197, 94, 0.2)",
                   padding: "2px 10px",
-                  borderRadius: "100px",
+                  borderRadius: "var(--radius-pill)",
                 }}>
                   <span style={{ fontSize: "11px", fontWeight: 600, color: "#16a34a" }}>Seeking Co-founder</span>
                 </div>
@@ -389,7 +389,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   backgroundColor: project.tech_match >= 80 ? "rgba(74, 222, 128, 0.08)" : "rgba(56, 189, 248, 0.08)",
                   border: project.tech_match >= 80 ? "0.5px solid rgba(74, 222, 128, 0.2)" : "0.5px solid rgba(56, 189, 248, 0.2)",
                   padding: "2px 10px",
-                  borderRadius: "100px",
+                  borderRadius: "var(--radius-pill)",
                 }}>
                   <Sparkle size={12} weight="fill" color={project.tech_match >= 80 ? "#16a34a" : "#0284c7"} />
                   <span style={{ fontSize: "11px", fontWeight: 600, color: project.tech_match >= 80 ? "#16a34a" : "#0284c7" }}>
@@ -403,14 +403,14 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             <div style={{
               marginLeft: "8px",
               padding: "2px 10px",
-              borderRadius: "100px",
+              borderRadius: "var(--radius-pill)",
               backgroundColor: "transparent",
               border: "0.5px solid var(--border-hairline)",
               display: "flex",
               alignItems: "center",
               gap: "6px"
             }}>
-              <div style={{ width: "6px", height: "6px", borderRadius: "100px", backgroundColor: getStatusColor(project.status) }} />
+              <div style={{ width: "6px", height: "6px", borderRadius: "var(--radius-pill)", backgroundColor: getStatusColor(project.status) }} />
               <span style={{ fontSize: "11px", fontWeight: 500, color: "var(--text-secondary)" }}>{project.status.replace("_", " ")}</span>
             </div>
           </div>
@@ -422,7 +422,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 style={{
                   background: "none", border: "none", color: "var(--text-tertiary)",
                   cursor: "pointer", padding: "4px", borderRadius: "var(--radius-sm)",
-                  transition: "all 0.15s ease"
+                  transition: "all var(--transition-fast)"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
@@ -473,14 +473,14 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   }}
                   style={{
                     padding: "4px 12px",
-                    borderRadius: "100px",
+                    borderRadius: "var(--radius-pill)",
                     border: "0.5px solid var(--border-hairline)",
                     backgroundColor: "transparent",
                     color: "var(--text-tertiary)",
                     fontSize: "11px",
                     fontWeight: 600,
                     cursor: "pointer",
-                    transition: "all 0.15s ease",
+                    transition: "all var(--transition-fast)",
                     display: "flex",
                     alignItems: "center",
                     gap: "6px"
@@ -567,7 +567,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   display: "flex", alignItems: "center", gap: "6px",
                   background: "none", border: "none", padding: "4px 0",
                   cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
-                  transition: "all 0.2s ease",
+                  transition: "all var(--transition-normal)",
                   fontSize: "13px",
                   fontWeight: 600
                 }}

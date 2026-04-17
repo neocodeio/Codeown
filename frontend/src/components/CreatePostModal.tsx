@@ -279,7 +279,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
         className="modal-content-wrapper"
         style={{
           backgroundColor: "var(--bg-page)",
-          borderRadius: "24px",
+          borderRadius: "var(--radius-md)",
           width: "100%",
           maxWidth: "580px",
           maxHeight: "85vh",
@@ -314,7 +314,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
           .editor-toolbar-btn:hover {
             background-color: var(--bg-hover);
             color: var(--text-primary);
-            transform: translateY(-1px);
+            transform: translateY(0);
           }
           .tab-trigger {
             padding: 8px 16px;
@@ -364,7 +364,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
 
         {/* Header - Integrated with Tabs */}
         <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border-hairline)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", gap: "6px", backgroundColor: "var(--bg-hover)", padding: "4px", borderRadius: "100px" }}>
+          <div style={{ display: "flex", gap: "6px", backgroundColor: "var(--bg-hover)", padding: "4px", borderRadius: "var(--radius-pill)" }}>
             <button className={`tab-trigger ${activeTab === "write" ? "active" : ""}`} onClick={() => setActiveTab("write")}>Write</button>
             <button className={`tab-trigger ${activeTab === "preview" ? "active" : ""}`} onClick={() => setActiveTab("preview")}>Preview</button>
           </div>
@@ -407,7 +407,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
                 style={{
                   width: "100%",
                   fontSize: "20px",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   border: "none",
                   outline: "none",
                   padding: "0",
@@ -443,12 +443,12 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
             <div style={{ display: "flex", gap: "12px", overflowX: "auto", paddingBottom: "8px" }} className="hide-scrollbar">
               {images.map((img, idx) => (
                 <div key={idx} style={{ position: "relative", minWidth: "120px", width: "120px", height: "120px", flexShrink: 0 }}>
-                  <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "16px", border: "1px solid var(--border-hairline)" }} />
+                  <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)" }} />
                   <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "6px", right: "6px", width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "rgba(0,0,0,0.6)", color: "white", border: "none", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>&times;</button>
                 </div>
               ))}
               {attachments.map((file, idx) => (
-                <div key={idx} style={{ position: "relative", minWidth: "160px", padding: "12px", backgroundColor: "var(--bg-hover)", borderRadius: "16px", border: "1px solid var(--border-hairline)", display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+                <div key={idx} style={{ position: "relative", minWidth: "160px", padding: "12px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)", display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
                   <FontAwesomeIcon icon={faPaperclip} style={{ color: "var(--text-tertiary)" }} />
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{file.name}</div>
@@ -464,7 +464,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
           {tags.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
               {tags.map((tag, idx) => (
-                <span key={idx} style={{ padding: "4px 12px", borderRadius: "100px", background: "rgba(var(--text-primary-rgb), 0.05)", border: "1px solid var(--border-hairline)", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
+                <span key={idx} style={{ padding: "4px 12px", borderRadius: "var(--radius-pill)", background: "rgba(var(--text-primary-rgb), 0.05)", border: "1px solid var(--border-hairline)", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
                   #{tag}
                   <button onClick={() => setTags(tags.filter((_, i) => i !== idx))} style={{ border: "none", background: "none", padding: 0, color: "var(--text-tertiary)", cursor: "pointer", fontSize: "14px" }}>&times;</button>
                 </span>
@@ -523,7 +523,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
                 alignItems: "center",
                 gap: "8px",
                 padding: "8px 14px",
-                borderRadius: "100px",
+                borderRadius: "var(--radius-pill)",
                 border: selectedProjectId ? "1.5px solid var(--text-primary)" : "1px solid var(--border-hairline)",
                 backgroundColor: "var(--bg-card)",
                 color: selectedProjectId ? "var(--text-primary)" : "var(--text-secondary)",
@@ -559,8 +559,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
                 width: "220px",
                 backgroundColor: "var(--bg-page)",
                 border: "1px solid var(--border-hairline)",
-                borderRadius: "16px",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                borderRadius: "var(--radius-sm)",
+                boxShadow: "var(--shadow-lg)",
                 padding: "6px",
                 zIndex: 1000,
                 display: "flex",
@@ -571,7 +571,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
               }}>
                 <button
                   onClick={() => { setSelectedProjectId(null); setIsProjectMenuOpen(false); }}
-                  style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "10px", border: "none", backgroundColor: !selectedProjectId ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", textAlign: "left" }}
+                  style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "var(--radius-xs)", border: "none", backgroundColor: !selectedProjectId ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", textAlign: "left" }}
                 >
                   <MinusCircle size={16} /> None
                 </button>
@@ -579,7 +579,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
                   <button
                     key={project.id}
                     onClick={() => { setSelectedProjectId(project.id); setIsProjectMenuOpen(false); }}
-                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "10px", border: "none", backgroundColor: selectedProjectId === project.id ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", textAlign: "left" }}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "var(--radius-xs)", border: "none", backgroundColor: selectedProjectId === project.id ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", textAlign: "left" }}
                   >
                     <div style={{ width: "20px", height: "20px", borderRadius: "4px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                       {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <Rocket size={12} />}
@@ -600,18 +600,16 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
               disabled={(!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit}
               style={{
                 padding: "10px 24px",
-                borderRadius: "100px",
+                borderRadius: "var(--radius-pill)",
                 border: "none",
                 background: "var(--text-primary)",
                 color: "var(--bg-page)",
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: "14px",
                 cursor: "pointer",
                 transition: "all 0.2s",
                 opacity: ((!content.trim() && images.length === 0 && attachments.length === 0) || isSubmitting || content.length > charLimit) ? 0.3 : 1,
               }}
-              onMouseEnter={e => { if (!((!content.trim() && images.length === 0) || isSubmitting)) e.currentTarget.style.transform = "scale(1.03)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
             >
               {isSubmitting ? "Posting..." : "Post"}
             </button>
