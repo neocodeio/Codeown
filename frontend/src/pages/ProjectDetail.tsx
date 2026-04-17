@@ -578,7 +578,7 @@ export default function ProjectDetail() {
 
               {/* Tab Content */}
               <div style={{ minHeight: "400px" }}>
-                {activeTab === "details" ? (
+                {activeTab === "details" && (
                   <div>
                     <div style={{ fontSize: "16px", lineHeight: 1.8, color: "var(--text-primary)", marginBottom: "32px" }}>
                       <ContentRenderer content={project.description || ""} />
@@ -630,7 +630,9 @@ export default function ProjectDetail() {
                       <CommentsSection resourceId={Number(id)} resourceType="project" />
                     </div>
                   </div>
-                ) : (
+                )}
+
+                {activeTab === "posts" && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "1px", backgroundColor: "var(--border-hairline)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", overflow: "hidden" }}>
                     {postsLoading ? (
                       <div style={{ padding: "40px", textAlign: "center", color: "var(--text-tertiary)", backgroundColor: "var(--bg-page)" }}>
@@ -655,6 +657,7 @@ export default function ProjectDetail() {
                 {activeTab === "analytics" && isOwnProject && (
                   <ProjectAnalyticsDashboard projectId={project.id} projectTitle={project.title} />
                 )}
+
               </div>
             </div>
           </div>
