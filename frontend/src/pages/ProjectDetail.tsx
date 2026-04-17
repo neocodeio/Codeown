@@ -10,7 +10,7 @@ import { formatRelativeDate } from "../utils/date";
 import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
-import { CaretLeft, Globe, GithubLogo, Star, BookmarkSimple, ShareNetwork, Handshake, Rocket, Plus } from "phosphor-react";
+import { CaretLeft, GithubLogo, Star, BookmarkSimple, ShareNetwork, Handshake, Rocket, Plus } from "phosphor-react";
 import CreatePostModal from "../components/CreatePostModal";
 import Lightbox from "../components/Lightbox";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -24,6 +24,8 @@ import { toast } from "react-toastify";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
 
 export default function ProjectDetail() {
   const { width } = useWindowSize();
@@ -40,8 +42,6 @@ export default function ProjectDetail() {
   const [isSaved, setIsSaved] = useState(false);
 
   const [likeCount, setLikeCount] = useState(0);
-  const [userRating, setUserRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isCofounderModalOpen, setIsCofounderModalOpen] = useState(false);
@@ -113,7 +113,6 @@ export default function ProjectDetail() {
   useEffect(() => {
     if (project) {
       setLikeCount(project.like_count || 0);
-      setUserRating(project.user_rating || 0);
     }
   }, [project]);
 
@@ -195,7 +194,6 @@ export default function ProjectDetail() {
     try {
       const token = await getToken();
       await api.post(`/projects/${id}/rate`, { rating }, { headers: { Authorization: `Bearer ${token}` } });
-      setUserRating(rating);
       await queryClient.invalidateQueries({ queryKey: ["project", id] });
     } catch (error) { console.error(error); }
   };
@@ -232,115 +230,130 @@ export default function ProjectDetail() {
   const shareUrl = `${window.location.origin}/project/${id}`;
 
   const ProjectActions = () => (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "stretch", width: "100%" }}>
-      {project.live_demo && (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      {project.live_demo ? (
         <a href={project.live_demo} target="_blank" rel="noreferrer" style={{
-          flex: 1, minWidth: "140px", display: "flex", alignItems: "center", gap: "8px", padding: "14px 20px",
-          backgroundColor: "var(--text-primary)", color: "var(--bg-page)",
-          borderRadius: "14px", textDecoration: "none",
-          fontWeight: 700, fontSize: "13px", justifyContent: "center",
-          transition: "transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s"
-        }} onMouseEnter={e => { e.currentTarget.style.opacity = "0.9"; e.currentTarget.style.transform = "scale(1.02)"; }} onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scale(1)"; }}>
-          <Globe size={18} weight="bold" /> Live Demo
+          display: "flex", alignItems: "center", gap: "8px", padding: "10px 24px",
+          backgroundColor: "#757DFF", color: "white",
+          borderRadius: "100px", textDecoration: "none",
+          fontWeight: 800, fontSize: "12px",
+          transition: "all 0.2s cubic-bezier(0.23, 1, 0.32, 1)",
+          whiteSpace: "nowrap"
+        }} onMouseEnter={e => {
+          e.currentTarget.style.transform = "translateY(-1px) scale(1.02)";
+        }} onMouseLeave={e => {
+          e.currentTarget.style.transform = "translateY(0) scale(1)";
+        }}>
+          Visit
+          <HugeiconsIcon icon={ArrowUpRight01Icon} size={16} />
         </a>
-      )}
-      {project.github_repo && (
-        <a href={project.github_repo} target="_blank" rel="noreferrer" style={{
-          flex: 1, minWidth: "140px", display: "flex", alignItems: "center", gap: "8px", padding: "14px 20px",
-          backgroundColor: "var(--bg-hover)", color: "var(--text-primary)",
-          borderRadius: "14px", border: "0.5px solid var(--border-hairline)",
-          textDecoration: "none", fontWeight: 700, fontSize: "13px", justifyContent: "center",
-          transition: "all 0.2s ease"
-        }} onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--border-hairline)"; }} onMouseLeave={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}>
-          <GithubLogo size={18} weight="bold" /> GitHub
-        </a>
-      )}
-      {!project.live_demo && !project.github_repo && (
-        <div style={{ flex: 1, padding: "14px", backgroundColor: "var(--bg-hover)", borderRadius: "14px", border: "0.5px solid var(--border-hairline)", color: "var(--text-tertiary)", fontSize: "12px", textAlign: "center", fontWeight: 600 }}>
-          No external links provided
+      ) : (
+        <div style={{
+          display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px",
+          backgroundColor: "rgba(var(--text-primary-rgb), 0.01)", color: "var(--text-tertiary)",
+          borderRadius: "100px", border: "0.5px solid var(--border-hairline)",
+          fontWeight: 700, fontSize: "11px", opacity: 0.6, whiteSpace: "nowrap"
+        }}>
+          <Rocket size={14} weight="thin" />
+          Local
         </div>
       )}
     </div>
   );
 
   const ProjectMetadata = () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px" }}>
-        {/* Rating Section */}
-        <div>
-          <h4 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px" }}>Rating</h4>
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.5fr", gap: "16px" }}>
+        {/* Rating Column */}
+        <div style={{ padding: "20px", backgroundColor: "rgba(var(--text-primary-rgb), 0.01)", borderRadius: "20px", border: "0.5px solid var(--border-hairline)" }}>
+          <h4 style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "16px" }}>Rating</h4>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1 }}>
+            <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
               {project.rating ? project.rating.toFixed(1) : "0.0"}
             </div>
-            <div>
-              <div style={{ display: "flex", gap: "2px", marginBottom: "4px" }}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={14}
-                    weight={(hoverRating || userRating || (project.rating || 0)) >= star ? "fill" : "regular"}
-                    style={{
-                      color: (hoverRating || userRating || (project.rating || 0)) >= star ? "var(--text-primary)" : "var(--text-tertiary)",
-                      cursor: "pointer"
-                    }}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    onClick={() => handleRate(star)}
-                  />
-                ))}
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>
-                {project.rating_count || 0} votes
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tech Section */}
-        {project.technologies_used && project.technologies_used.length > 0 && (
-          <div>
-            <h4 style={{ fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px" }}>Stack</h4>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-              {project.technologies_used.map(tech => (
-                <span key={tech} style={{
-                  fontSize: "10px", padding: "4px 10px",
-                  backgroundColor: "rgba(var(--text-primary-rgb), 0.03)",
-                  border: "0.5px solid var(--border-hairline)",
-                  borderRadius: "6px",
-                  color: "var(--text-secondary)",
-                  fontWeight: 700,
-                  textTransform: "lowercase"
-                }}>
-                  {tech}
-                </span>
+            <div style={{ display: "flex", gap: "2px" }}>
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star
+                  key={s}
+                  size={14}
+                  weight={(project.rating || 0) >= s ? "fill" : "regular"}
+                  style={{ color: (project.rating || 0) >= s ? "var(--text-primary)" : "var(--text-tertiary)", cursor: "pointer" }}
+                  onClick={() => handleRate(s)}
+                />
               ))}
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Tech Stack Column */}
+        <div style={{ padding: "20px", backgroundColor: "rgba(var(--text-primary-rgb), 0.01)", borderRadius: "20px", border: "0.5px solid var(--border-hairline)" }}>
+          <h4 style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "16px" }}>Tech Stack</h4>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+            {project.technologies_used && project.technologies_used.length > 0 ? (
+              project.technologies_used.map(tech => (
+                <span key={tech} style={{
+                  fontSize: "11px", padding: "4px 10px",
+                  backgroundColor: "var(--bg-page)",
+                  border: "0.5px solid var(--border-hairline)",
+                  borderRadius: "8px",
+                  color: "var(--text-secondary)",
+                  fontWeight: 700
+                }}>
+                  {tech}
+                </span>
+              ))
+            ) : (
+              <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>No stack listed</span>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Owner Actions */}
-      {isOwnProject && (
-        <div style={{ display: "flex", gap: "10px", paddingTop: "24px", borderTop: "1px solid var(--border-hairline)" }}>
-          <button onClick={() => setIsEditModalOpen(true)} style={{
-            flex: 1, padding: "10px", background: "none",
-            border: "0.5px solid var(--border-hairline)", color: "var(--text-primary)",
-            borderRadius: "12px", fontWeight: 700, fontSize: "12px", cursor: "pointer",
-            transition: "all 0.2s"
-          }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}>
-            Edit
-          </button>
-          <button onClick={() => setIsDeleteModalOpen(true)} style={{
-            padding: "10px 20px", background: "none",
-            border: "0.5px solid var(--border-hairline)", color: "#ef4444",
-            borderRadius: "12px", fontWeight: 700, fontSize: "12px", cursor: "pointer",
-            transition: "all 0.2s"
-          }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.05)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}>
-            Delete
-          </button>
-        </div>
-      )}
+      {/* Action Row */}
+      <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+        {project.github_repo && (
+          <a href={project.github_repo} target="_blank" rel="noreferrer" style={{
+            flex: 1, display: "flex", alignItems: "center", gap: "8px", padding: "12px 20px",
+            backgroundColor: "var(--bg-hover)", color: "var(--text-primary)",
+            borderRadius: "14px", border: "0.5px solid var(--border-hairline)",
+            textDecoration: "none", fontWeight: 700, fontSize: "13px", justifyContent: "center",
+            transition: "all 0.2s ease"
+          }} onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--text-primary)"; }} onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-hairline)"; }}>
+            <GithubLogo size={18} weight="bold" /> Repository
+          </a>
+        )}
+
+        {isOwnProject && (
+          <>
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              style={{
+                padding: "12px 24px", backgroundColor: "transparent",
+                border: "0.5px solid var(--border-hairline)", color: "var(--text-primary)",
+                borderRadius: "14px", fontWeight: 700, fontSize: "13px", cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => setIsDeleteModalOpen(true)}
+              style={{
+                padding: "12px 20px", backgroundColor: "transparent",
+                border: "0.5px solid var(--border-hairline)", color: "#ef4444",
+                borderRadius: "14px", fontWeight: 700, fontSize: "13px", cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.05)"}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+            >
+              Delete
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 
@@ -422,9 +435,14 @@ export default function ProjectDetail() {
 
             {/* Content Top */}
             <div style={{ padding: isMobile ? "24px 16px" : "32px 24px" }}>
-              <h2 style={{ fontSize: isMobile ? "28px" : "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em", margin: "0 0 24px" }}>
-                {project.title}
-              </h2>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px", marginBottom: "24px" }}>
+                <h2 style={{ fontSize: isMobile ? "28px" : "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em", margin: 0 }}>
+                  {project.title}
+                </h2>
+                <div style={{ paddingTop: "4px" }}>
+                  <ProjectActions />
+                </div>
+              </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
                 <div onClick={() => navigate(`/${project.user?.username || project.user_id}`)} style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}>
@@ -509,12 +527,6 @@ export default function ProjectDetail() {
                 </div>
               )}
 
-              {/* Mobile Actions */}
-              {!isDesktop && (
-                <div style={{ marginBottom: "40px" }}>
-                  <ProjectActions />
-                </div>
-              )}
 
               {/* Tabs */}
               <div style={{ display: "flex", borderBottom: "0.5px solid var(--border-hairline)", marginBottom: "32px" }}>
@@ -584,21 +596,14 @@ export default function ProjectDetail() {
                       <ContentRenderer content={project.description || ""} />
                     </div>
 
-                    {/* Integrated Project Info Card */}
+                    {/* Studio Layout: vertically optimized project hub */}
                     <div style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: "24px",
-                      padding: "32px",
-                      backgroundColor: "var(--bg-hover)",
-                      borderRadius: "var(--radius-md)",
-                      border: "0.5px solid var(--border-hairline)",
+                      gap: "16px",
                       marginBottom: "48px"
                     }}>
-                      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "32px" }}>
-                        <ProjectActions />
-                        <ProjectMetadata />
-                      </div>
+                      <ProjectMetadata />
                     </div>
 
                     {/* Join Mission Card */}
