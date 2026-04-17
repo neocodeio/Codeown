@@ -12,7 +12,7 @@ import {
     ArrowUp02Icon,
     ArrowRight01Icon
 } from "@hugeicons/core-free-icons";
-import StreakBadge from "./StreakBadge";
+
 import UserHoverCard from "./UserHoverCard";
 import VerifiedBadge from "./VerifiedBadge";
 import { formatRelativeDate } from "../utils/date";
@@ -161,20 +161,6 @@ export default function RecommendedUsersSidebar() {
         refetchOnWindowFocus: false,
     });
 
-    // 5. Streak count fetch
-    const { data: streakData } = useQuery({
-        queryKey: ["streakCount"],
-        queryFn: async () => {
-            const token = await getToken();
-            if (!token) return { streak_count: 0 };
-            const res = await api.post("/users/streak/update", {}, { headers: { Authorization: `Bearer ${token}` } });
-            return res.data || { streak_count: 0 };
-        },
-        enabled: isDesktop && isSignedIn,
-        staleTime: 30 * 60 * 1000,
-        refetchOnWindowFocus: false,
-    });
-
     const handleFollow = async (targetId: string, currentStatus: boolean) => {
         if (!isSignedIn) { navigate("/sign-in"); return; }
         queryClient.setQueryData(["recommendedUsers"], (old: any[] = []) =>
@@ -191,7 +177,6 @@ export default function RecommendedUsersSidebar() {
         }
     };
 
-    const streakCount = streakData?.streak_count ?? 0;
     const isMobile = width < 1100;
     if (isMobile) return null;
 
@@ -225,7 +210,6 @@ export default function RecommendedUsersSidebar() {
                         <HugeiconsIcon icon={UserGroupIcon} size={16} />
                         Who to Follow
                     </h3>
-                    {streakCount > 0 && <StreakBadge count={streakCount} />}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                     {followersLoading ? (

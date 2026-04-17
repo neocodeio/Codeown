@@ -18,11 +18,8 @@ import {
   UserIcon,
   Notification01Icon,
   PlusSignIcon,
-  Logout03Icon,
-  MoreHorizontalIcon,
-  Login03Icon,
   UserGroupIcon,
-  Sun01Icon,
+  Sun03Icon,
   Moon02Icon,
   DocumentCodeIcon,
   Building02Icon,
@@ -32,9 +29,7 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
 import logoWhite from "../assets/logo-white.png";
-import DeveloperIDCardModal from "./DeveloperIDCardModal";
 import StreakBadge from "./StreakBadge";
-import AvailabilityBadge from "./AvailabilityBadge";
 
 const StatusBadge = () => {
   const [activeCount, setActiveCount] = useState(1);
@@ -91,7 +86,6 @@ const StatusBadge = () => {
 
 export default function Navbar() {
   const { isSignedIn, user } = useClerkUser();
-  const { signOut } = useClerkAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -102,11 +96,8 @@ export default function Navbar() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isPostSelectorOpen, setIsPostSelectorOpen] = useState(false);
-  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const { unreadCount, messageUnreadCount } = useNotifications();
   const [profile, setProfile] = useState<any>(null);
-  const [projectsCount, setProjectsCount] = useState(0);
-  const [isIDCardOpen, setIsIDCardOpen] = useState(false);
   const { getToken } = useClerkAuth();
 
   useEffect(() => {
@@ -114,12 +105,10 @@ export default function Navbar() {
       if (isSignedIn && user?.id) {
         try {
           const token = await getToken();
-          const [userRes, projectsRes] = await Promise.all([
-            api.get(`/users/${user.id}`, { headers: { Authorization: `Bearer ${token}` } }),
-            api.get(`/projects/user/${user.id}`, { headers: { Authorization: `Bearer ${token}` } })
-          ]);
-          setProfile(userRes.data);
-          setProjectsCount(projectsRes.data?.length || 0);
+          const res = await api.get(`/users/${user.id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setProfile(res.data);
         } catch (err) {
           console.error("Navbar profile fetch failed", err);
         }
@@ -136,14 +125,10 @@ export default function Navbar() {
     profile?.name || user?.fullName || "User"
   );
 
-  const logoutRef = useRef<HTMLDivElement>(null);
   const postSelectorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (logoutRef.current && !logoutRef.current.contains(event.target as Node)) {
-        setIsLogoutOpen(false);
-      }
       if (postSelectorRef.current && !postSelectorRef.current.contains(event.target as Node)) {
         setIsPostSelectorOpen(false);
       }
@@ -165,11 +150,11 @@ export default function Navbar() {
       textDecoration: "none",
       color: "var(--text-primary)",
       backgroundColor: "transparent",
-      fontWeight: "700",
+      fontWeight: isActive ? "800" : "400",
       fontSize: isUltraShort ? "14px" : "15px",
       transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-      marginBottom: isUltraShort ? "2px" : "4px",
-      opacity: isActive ? 1 : 0.65,
+      marginBottom: isUltraShort ? "8px" : "4px",
+      opacity: isActive ? 1 : 0.8,
     };
   };
 
@@ -206,16 +191,9 @@ export default function Navbar() {
             <Link to="/messages" style={linkStyle("/messages")}>
               <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
                 <HugeiconsIcon icon={Chat01Icon} size={20} />
-                {messageUnreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
+                {messageUnreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
               </div>
               <span>Messages</span>
-            </Link>
-            <Link to="/notifications" style={linkStyle("/notifications")}>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <HugeiconsIcon icon={Notification01Icon} size={20} />
-                {unreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{unreadCount}</span>}
-              </div>
-              <span>Notifications</span>
             </Link>
             <div
               style={{ position: "relative", marginBottom: "4px" }}
@@ -262,7 +240,7 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            <div onClick={() => { const username = profile?.username || user?.username; if (username) navigate(`/${username}`); }} style={{ ...linkStyle("/profile"), cursor: "pointer" }}><HugeiconsIcon icon={UserIcon} size={20} /><span>Your Profile</span></div>
+            <div onClick={() => { const username = profile?.username || user?.username; if (username) navigate(`/${username}`); }} style={{ ...linkStyle("/profile"), cursor: "pointer" }}><HugeiconsIcon icon={UserIcon} size={20} /><span>Profile</span></div>
           </div>
         )}
       </nav>
@@ -270,31 +248,6 @@ export default function Navbar() {
       <div style={{ flex: 1 }}></div>
 
       <div style={{ padding: window.innerHeight < 850 ? "12px 0" : "24px 0" }}>
-        {isSignedIn && user ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", borderRadius: "var(--radius-md)", backgroundColor: "var(--bg-hover)", border: "1px solid var(--border-hairline)", cursor: "pointer" }} onClick={() => navigate(`/${profile?.username || user.username}`)}>
-            <AvailabilityBadge avatarUrl={userAvatarUrl || user.imageUrl} name={profile?.name || user.fullName || "User"} size={38} isOpenToOpportunities={profile?.is_hirable === true} isOG={profile?.is_og} username={profile?.username || user?.username} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{profile?.name || user.fullName || "User"}</div>
-              <div style={{ color: "var(--text-tertiary)", fontSize: "12px", fontWeight: 600 }}>@{profile?.username || user.username}</div>
-            </div>
-            <div ref={logoutRef} style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-              <button onClick={(e) => { e.stopPropagation(); toggleTheme(); }} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "6px" }}>{theme === 'light' ? <HugeiconsIcon icon={Moon02Icon} size={18} /> : <HugeiconsIcon icon={Sun01Icon} size={18} />}</button>
-              <div style={{ position: "relative" }}>
-                <button onClick={(e) => { e.stopPropagation(); setIsLogoutOpen(!isLogoutOpen); }} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "6px" }}><HugeiconsIcon icon={MoreHorizontalIcon} size={18} /></button>
-                {isLogoutOpen && (
-                  <div style={{ position: "absolute", bottom: "100%", right: 0, marginBottom: "12px", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", padding: "6px", minWidth: "160px", zIndex: 100, boxShadow: "var(--shadow-lg)" }}>
-                    <button onClick={() => signOut()} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "12px", background: "none", border: "none", color: "#ef4444", fontWeight: 700, fontSize: "13px", cursor: "pointer" }}><HugeiconsIcon icon={Logout03Icon} size={18} /> Logout</button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <Link to="/sign-in" style={{ textDecoration: "none" }}>
-            <button style={{ width: "100%", padding: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", borderRadius: "var(--radius-sm)", fontWeight: 700, cursor: "pointer", fontSize: "15px", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}><HugeiconsIcon icon={Login03Icon} size={20} /> Sign In</button>
-          </Link>
-        )}
-
         {/* System Status */}
         <div style={{ padding: "0 10px", display: "flex", justifyContent: "center" }}>
           <StatusBadge />
@@ -332,10 +285,30 @@ export default function Navbar() {
             fontWeight: 700,
             color: "var(--text-tertiary)",
             opacity: 0.4,
-            marginTop: "-9px",
-            letterSpacing: "0.02em"
+            marginTop: "-5px",
+            letterSpacing: "0.02em",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px"
           }}>
-            © {new Date().getFullYear()} Codeown
+            <span>© {new Date().getFullYear()} Codeown</span>
+            <button
+              onClick={toggleTheme}
+              style={{
+                background: "#e0e0e0",
+                border: "1px solid var(--border-hairline)",
+                cursor: "pointer",
+                color: "#000",
+                borderRadius: "35%",
+                padding: "2px",
+                display: "flex",
+                alignItems: "center",
+                opacity: 0.8
+              }}
+            >
+              {theme === 'light' ? <HugeiconsIcon icon={Moon02Icon} size={14} /> : <HugeiconsIcon icon={Sun03Icon} size={14} />}
+            </button>
           </div>
         </div>
 
@@ -364,8 +337,8 @@ export default function Navbar() {
           <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>Codeown</span>
         </Link>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <button onClick={toggleTheme} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "8px" }}>{theme === 'light' ? <HugeiconsIcon icon={Moon02Icon} size={20} /> : <HugeiconsIcon icon={Sun01Icon} size={20} />}</button>
-          {isSignedIn && <div onClick={() => setIsIDCardOpen(true)} style={{ padding: "4px", cursor: "pointer" }}><StreakBadge count={profile?.streak_count || 0} /></div>}
+          <button onClick={toggleTheme} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "8px" }}>{theme === 'light' ? <HugeiconsIcon icon={Moon02Icon} size={20} /> : <HugeiconsIcon icon={Sun03Icon} size={20} />}</button>
+          {isSignedIn && <div style={{ padding: "4px" }}><StreakBadge count={profile?.streak_count || 0} /></div>}
         </div>
       </div>
 
@@ -391,12 +364,12 @@ export default function Navbar() {
 
         <Link to="/messages" style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: location.pathname === "/messages" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={Chat01Icon} size={22} />
-          {messageUnreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
+          {messageUnreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
         </Link>
 
         <Link to="/notifications" style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: location.pathname === "/notifications" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={Notification01Icon} size={22} />
-          {unreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{unreadCount}</span>}
+          {unreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{unreadCount}</span>}
         </Link>
 
         <Link to={(profile?.username || user?.username) ? `/${profile?.username || user?.username}` : "/profile"} style={{ flex: 1, display: "flex", justifyContent: "center" }}>
@@ -406,22 +379,6 @@ export default function Navbar() {
 
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
-      {isSignedIn && profile && (
-        <DeveloperIDCardModal
-          isOpen={isIDCardOpen}
-          onClose={() => setIsIDCardOpen(false)}
-          user={{
-            name: profile.name || user?.fullName || "Developer",
-            username: profile.username || user?.username || null,
-            avatar_url: profile.avatar_url || user?.imageUrl || null,
-            created_at: profile.created_at || null,
-            skills: profile.skills || [],
-            is_pro: profile.is_pro || false,
-            bio: profile.bio || null
-          }}
-          projectsCount={projectsCount}
-        />
-      )}
     </>
   );
 }
