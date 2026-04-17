@@ -128,7 +128,7 @@ export default function Navbar() {
     fetchProfile();
   }, [isSignedIn, user?.id, getToken]);
 
-  useFaviconNotification(unreadCount + messageUnreadCount, logoWhite);
+  useFaviconNotification(unreadCount + messageUnreadCount, '/icon.png');
 
   const { avatarUrl: userAvatarUrl } = useAvatar(
     user?.id,

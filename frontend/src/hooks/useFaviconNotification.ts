@@ -9,12 +9,26 @@ export const useFaviconNotification = (unreadCount: number, baseIconUrl?: string
         const currentFavicon = faviconLink?.href || '';
         const originalFavicon = baseIconUrl || ((!currentFavicon.startsWith('data:') && currentFavicon)
             ? currentFavicon
-            : '/favicon.png');
+            : '/icon.png'); // Use /icon.png as default to match index.html
 
         // If no notifications, reset to original and stop
         if (unreadCount <= 0) {
-            if (faviconLink && faviconLink.href !== originalFavicon) faviconLink.href = originalFavicon;
-            if (appleIcon && appleIcon.href !== originalFavicon) appleIcon.href = originalFavicon;
+            const links = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]');
+            links.forEach(link => {
+                const hlink = link as HTMLLinkElement;
+                if (hlink.href !== originalFavicon) {
+                    // To force browser refresh, we sometimes need to remove and re-append
+                    const parent = hlink.parentNode;
+                    const next = hlink.nextSibling;
+                    if (parent) {
+                        parent.removeChild(hlink);
+                        hlink.href = originalFavicon;
+                        parent.insertBefore(hlink, next);
+                    } else {
+                        hlink.href = originalFavicon;
+                    }
+                }
+            });
             return;
         }
 
