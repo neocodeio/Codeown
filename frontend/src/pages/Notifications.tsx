@@ -157,7 +157,7 @@ export default function NotificationsPage() {
         }
     };
 
-    const renderContentPreview = (notification: Notification) => {
+    const renderContentPreview = (notification: Notification, isPlain: boolean = false) => {
         let previewText = "";
 
         if (["comment", "reply", "mention", "like"].includes(notification.type)) {
@@ -167,22 +167,33 @@ export default function NotificationsPage() {
 
         if (!previewText) return null;
 
+        if (isPlain) {
+            return (
+                <div style={{
+                    marginTop: "4px",
+                    fontSize: "14.5px",
+                    color: "var(--text-tertiary)",
+                    lineHeight: 1.5,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    fontWeight: 400
+                }}>
+                    {previewText}
+                </div>
+            );
+        }
+
         return (
             <div style={{
-                marginTop: "12px",
-                padding: "12px 16px",
-                backgroundColor: "var(--bg-card)",
-                border: "0.5px solid var(--border-hairline)",
-                borderRadius: "12px",
-                fontSize: "14px",
-                color: "var(--text-secondary)",
-                lineHeight: 1.5,
-                display: "-webkit-box",
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
+                marginTop: "10px",
+                fontSize: "15px",
+                color: "var(--text-primary)",
+                lineHeight: 1.6,
                 whiteSpace: "pre-wrap",
-                wordBreak: "break-word"
+                wordBreak: "break-word",
+                fontWeight: 400
             }}>
                 {previewText}
             </div>
@@ -367,17 +378,6 @@ export default function NotificationsPage() {
                                         }} />
                                     )}
 
-                                    {/* Left: Action Icon */}
-                                    <div style={{
-                                        width: "24px",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        paddingTop: "4px",
-                                        flexShrink: 0
-                                    }}>
-                                        {itemStyle.icon}
-                                    </div>
-
                                     {notification.type === "milestone" ? (
                                         <div style={{
                                             flex: 1,
@@ -419,44 +419,63 @@ export default function NotificationsPage() {
                                                 </p>
                                             </div>
                                         </div>
-                                    ) : (
+                                    ) : ["comment", "reply", "mention"].includes(notification.type) ? (
                                         <>
-                                            {/* Left-Middle: Avatar */}
+                                            {/* Content-style Notification: Avatar on left */}
                                             <div style={{ flexShrink: 0 }}>
                                                 <img
                                                     src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
                                                     alt=""
-                                                    style={{
-                                                        width: "40px",
-                                                        height: "40px",
-                                                        borderRadius: "10px",
-                                                        objectFit: "cover",
-                                                        border: "0.5px solid var(--border-hairline)",
-                                                        backgroundColor: "var(--bg-hover)"
-                                                    }}
+                                                    style={{ width: "42px", height: "42px", borderRadius: "10px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
                                                 />
                                             </div>
-
-                                            {/* Middle: Text Content */}
                                             <div style={{ flex: 1, minWidth: 0 }}>
-                                                <p style={{
-                                                    margin: 0,
-                                                    fontSize: "14.5px",
-                                                    color: "var(--text-primary)",
-                                                    lineHeight: 1.5,
-                                                    fontWeight: notification.read ? 400 : 600,
-                                                }}>
-                                                    {getNotificationMessage(notification)}
-                                                </p>
-                                                {renderContentPreview(notification)}
-                                                <p style={{
-                                                    margin: "8px 0 0",
-                                                    fontSize: "12px",
-                                                    color: "var(--text-tertiary)",
-                                                    fontWeight: 500
-                                                }}>
-                                                    {formatRelativeDate(notification.created_at)}
-                                                </p>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                                                    <span style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)" }}>{notification.actor?.name || "User"}</span>
+                                                    <VerifiedBadge username={notification.actor?.username} size="14px" />
+                                                    <span style={{ color: "var(--text-tertiary)", fontSize: "14px" }}>@{notification.actor?.username || "user"}</span>
+                                                    <span style={{ color: "var(--text-tertiary)", fontSize: "14px" }}>·</span>
+                                                    <span style={{ color: "var(--text-tertiary)", fontSize: "14px" }}>{formatRelativeDate(notification.created_at)}</span>
+                                                </div>
+                                                {notification.type === "comment" && (
+                                                    <div style={{ fontSize: "14px", color: "var(--text-tertiary)", marginBottom: "4px" }}>
+                                                        Commented on your {notification.project_id ? "project" : "post"}
+                                                    </div>
+                                                )}
+                                                {notification.type === "reply" && (
+                                                    <div style={{ fontSize: "14px", color: "var(--text-tertiary)", marginBottom: "4px" }}>
+                                                        Replying to <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>your comment</span>
+                                                    </div>
+                                                )}
+                                                {notification.type === "mention" && (
+                                                    <div style={{ fontSize: "14px", color: "var(--text-tertiary)", marginBottom: "4px" }}>
+                                                        Mentioned you in a {notification.comment_id ? "comment" : "post"}
+                                                    </div>
+                                                )}
+                                                {renderContentPreview(notification, false)}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* Action-style Notification: Icon on left */}
+                                            <div style={{ width: "24px", display: "flex", justifyContent: "center", paddingTop: "4px", flexShrink: 0 }}>
+                                                {itemStyle.icon}
+                                            </div>
+                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                                        <img
+                                                            src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
+                                                            alt=""
+                                                            style={{ width: "32px", height: "32px", borderRadius: "8px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+                                                        />
+                                                        <div style={{ fontSize: "14.5px", color: "var(--text-primary)", fontWeight: 500 }}>
+                                                            {getNotificationMessage(notification)}
+                                                            <span style={{ marginLeft: "6px", color: "var(--text-tertiary)" }}>· {formatRelativeDate(notification.created_at)}</span>
+                                                        </div>
+                                                    </div>
+                                                    {renderContentPreview(notification, true)}
+                                                </div>
                                             </div>
                                         </>
                                     )}
