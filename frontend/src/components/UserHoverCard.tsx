@@ -6,7 +6,8 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useFollow } from "../hooks/useFollow";
 import VerifiedBadge from "./VerifiedBadge";
-import StreakBadge from "./StreakBadge";
+import { Chat01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 
 interface UserProfile {
   id: string;
@@ -51,7 +52,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
   const { user: clerkUser } = useClerkUser();
   const isOwnProfile = clerkUser?.id === userId;
 
-  const { isFollowing, followerCount, followingCount, loading: followLoading, toggleFollow, fetchFollowStatus } = useFollow(show ? userId : null);
+  const { isFollowing, followerCount, loading: followLoading, toggleFollow, fetchFollowStatus } = useFollow(show ? userId : null);
 
   const fetchUser = useCallback(async () => {
     if (!userId || hasLoadedUser) return;
@@ -176,94 +177,132 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
         </div>
       ) : user ? (
         <>
-          <div style={{ padding: "20px 20px 16px" }}>
-            <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
-              <img
-                src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
-                alt=""
-                style={{ width: 48, height: 48, borderRadius: "var(--radius-sm)", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--border-hairline)" }}
-              />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  onClick={handleProfileClick}
+          <div style={{ padding: "20px" }}>
+            {/* Header: Avatar and Actions */}
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: "16px"
+            }}>
+              <div
+                onClick={handleProfileClick}
+                style={{ cursor: "pointer" }}
+              >
+                <img
+                  src={user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=000&color=fff&bold=true`}
+                  alt=""
                   style={{
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    flexWrap: "wrap",
+                    width: 60,
+                    height: 60,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    flexShrink: 0,
+                    border: "0.5px solid var(--border-hairline)"
                   }}
-                >
-                  <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)" }}>
-                    {user.name}
-                  </span>
-                  <VerifiedBadge username={user.username} isPro={user.is_pro} size="12px" />
-                  {user.streak_count !== undefined && user.streak_count > 0 && (
-                    <div style={{ marginLeft: "2px" }}>
-                       <StreakBadge count={user.streak_count} mini />
-                    </div>
-                  )}
-                </div>
-                <span style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>
-                  @{user.username || "user"}
-                </span>
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                {!isOwnProfile && (
+                  <>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate(`/messages?userId=${user.id}`); }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "50%",
+                        border: "0.5px solid var(--border-hairline)",
+                        backgroundColor: "transparent",
+                        color: "var(--text-primary)",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                    >
+                      <HugeiconsIcon
+                        icon={Chat01Icon}
+                        size={24}
+                        style={{ minWidth: 20, minHeight: 20 }}
+                      />
+                    </button>
+                    <button
+                      onClick={handleFollowClick}
+                      disabled={followLoading}
+                      style={{
+                        padding: "0 18px",
+                        height: "36px",
+                        borderRadius: "100px",
+                        border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
+                        fontSize: "13px",
+                        fontWeight: 700,
+                        cursor: followLoading ? "wait" : "pointer",
+                        backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
+                        color: isFollowing ? "var(--text-primary)" : "var(--bg-page)",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {followLoading ? "..." : isFollowing ? "Following" : "Follow"}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
-            {user.bio && (
-              <p
+
+            {/* Info Section */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              <div
+                onClick={handleProfileClick}
                 style={{
-                  fontSize: "13px",
-                  lineHeight: 1.6,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  cursor: "pointer"
+                }}
+              >
+                <h3 style={{
+                  fontSize: "17px",
+                  fontWeight: 800,
+                  color: "var(--text-primary)",
+                  margin: 0
+                }}>
+                  {user.name}
+                </h3>
+                <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
+              </div>
+
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "13.5px",
+                color: "var(--text-tertiary)",
+                fontWeight: 500
+              }}>
+                <span>@{user.username || "user"}</span>
+                <span>•</span>
+                <span>
+                  <strong style={{ color: "var(--text-secondary)" }}>{followerCount ?? user.follower_count ?? 0}</strong> followers
+                </span>
+              </div>
+
+              {user.bio && (
+                <p style={{
+                  fontSize: "13.5px",
+                  lineHeight: 1.5,
                   color: "var(--text-secondary)",
-                  margin: "16px 0 0",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
-              >
-                {user.bio}
-              </p>
-            )}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "20px",
-              padding: "16px 20px",
-              borderTop: "0.5px solid var(--border-hairline)",
-            }}
-          >
-            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>
-              <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{followerCount ?? user.follower_count ?? 0}</span> followers
-            </span>
-            <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>
-              <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{followingCount ?? user.following_count ?? 0}</span> following
-            </span>
-          </div>
-          {!isOwnProfile && (
-            <div style={{ padding: "0 20px 20px" }}>
-                <button
-                onClick={handleFollowClick}
-                disabled={followLoading}
-                style={{
-                  width: "100%",
-                  padding: "10px 16px",
-                  borderRadius: "var(--radius-sm)",
-                  border: isFollowing ? "0.5px solid var(--border-hairline)" : "none",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  cursor: followLoading ? "wait" : "pointer",
-                  backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
-                  color: isFollowing ? "var(--text-primary)" : "var(--bg-page)",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                {followLoading ? "..." : isFollowing ? "Following" : "Follow"}
-              </button>
+                  margin: "10px 0 0",
+                  fontWeight: 400
+                }}>
+                  {user.bio}
+                </p>
+              )}
             </div>
-          )}
+          </div>
         </>
       ) : (
         <div style={{ padding: "32px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px" }}>

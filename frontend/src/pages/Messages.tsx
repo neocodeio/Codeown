@@ -11,7 +11,7 @@ import {
   SentIcon,
   ArrowLeft01Icon,
   Chat01Icon,
-  UserAdd01Icon,
+  MessageAdd01Icon,
   Search01Icon,
   Image01Icon,
   UserIcon,
@@ -568,9 +568,9 @@ const MessageBubble = memo(({
             {messageMenuId === msg.id && (
               <div style={{
                 position: "absolute",
-                bottom: "100%",
+                top: "100%",
                 [isMine ? "right" : "left"]: 0,
-                marginBottom: "8px",
+                marginTop: "8px",
                 backgroundColor: "var(--bg-page)",
                 border: "1px solid var(--border-hairline)",
                 borderRadius: "12px",
@@ -1436,8 +1436,6 @@ export default function Messages() {
                   width: "36px",
                   height: "36px",
                   borderRadius: "var(--radius-sm)",
-                  border: "1px solid var(--text-primary)",
-                  backgroundColor: "var(--bg-input)",
                   color: "var(--text-primary)",
                   display: "flex",
                   alignItems: "center",
@@ -1449,15 +1447,13 @@ export default function Messages() {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                  e.currentTarget.style.transform = "scale(1.05)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--bg-input)";
-                  e.currentTarget.style.transform = "scale(1)";
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "22px", height: "22px" }}>
-                  <HugeiconsIcon icon={UserAdd01Icon} size={22} />
+                  <HugeiconsIcon icon={MessageAdd01Icon} size={22} />
                 </div>
               </button>
             </div>
@@ -1542,7 +1538,7 @@ export default function Messages() {
                     border: "0.5px solid var(--border-hairline)"
                   }}
                 >
-                  <HugeiconsIcon icon={UserAdd01Icon} size={24} style={{ color: "var(--text-tertiary)" }} />
+                  <HugeiconsIcon icon={MessageAdd01Icon} size={24} style={{ color: "var(--text-tertiary)" }} />
                 </div>
                 <div>
                   <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "14px" }}>
@@ -1614,7 +1610,7 @@ export default function Messages() {
               {/* Header */}
               <div
                 style={{
-                  padding: isMobile ? "20px" : "28px 24px",
+                  padding: isMobile ? "20px" : "14px",
                   borderBottom: "0.5px solid var(--border-hairline)",
                   display: "flex",
                   alignItems: "center",
