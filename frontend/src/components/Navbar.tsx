@@ -24,7 +24,8 @@ import {
   DocumentCodeIcon,
   Building02Icon,
   MedalIcon,
-  Chart01Icon
+  Chart01Icon,
+  ArrowRight02Icon
 } from "@hugeicons/core-free-icons";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -240,7 +241,33 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            <div onClick={() => { const username = profile?.username || user?.username; if (username) navigate(`/${username}`); }} style={{ ...linkStyle("/profile"), cursor: "pointer" }}><HugeiconsIcon icon={UserIcon} size={20} /><span>Profile</span></div>
+            <div
+              onClick={() => { const username = profile?.username || user?.username; if (username) navigate(`/${username}`); }}
+              style={{ ...linkStyle("/profile"), cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: window.innerHeight < 850 ? "10px" : "14px" }}>
+                <img
+                  src={userAvatarUrl}
+                  alt=""
+                  style={{
+                    width: window.innerHeight < 850 ? "20px" : "24px",
+                    height: window.innerHeight < 850 ? "20px" : "24px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    border: "0.5px solid var(--border-hairline)"
+                  }}
+                />
+                <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                  <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {profile?.name?.split(" ")[0] || user?.firstName || "Me"}
+                  </span>
+                  <span style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: "-1px" }}>
+                    @{profile?.username || user?.username || "user"}
+                  </span>
+                </div>
+              </div>
+              <HugeiconsIcon icon={ArrowRight02Icon} size={16} />
+            </div>
           </div>
         )}
       </nav>
