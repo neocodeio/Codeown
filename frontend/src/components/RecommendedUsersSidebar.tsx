@@ -328,24 +328,55 @@ export default function RecommendedUsersSidebar() {
                                     alignItems: "center",
                                     justifyContent: "space-between",
                                     textDecoration: "none",
-                                    padding: "10px 12px",
-                                    margin: "0 -12px"
+                                    padding: "10px 14px", // Increased padding slightly
+                                    margin: "0 -14px",
+                                    borderRadius: "12px",
+                                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
                                 }}
                                 className="sidebar-item"
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(var(--text-primary-rgb), 0.03)"}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                             >
-                                <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
-                                    <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-tertiary)", width: "16px", opacity: 0.5 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                                    <span style={{
+                                        fontSize: "13px",
+                                        fontWeight: 700,
+                                        color: "var(--text-tertiary)",
+                                        width: "18px",
+                                        textAlign: "center"
+                                    }}>
                                         {idx + 1}
                                     </span>
-                                    <span style={{ fontSize: "14.5px", fontWeight: 800, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                        #{tag.name}
+                                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "1px" }}>
+                                        <span style={{
+                                            fontSize: "14px",
+                                            fontWeight: 800,
+                                            color: "var(--text-primary)",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                            letterSpacing: "-0.01em"
+                                        }}>
+                                            #{tag.name}
+                                        </span>
+                                        <span style={{
+                                            fontSize: "11px",
+                                            color: "var(--text-tertiary)",
+                                            fontWeight: 500,
+                                            opacity: 0.7
+                                        }}>
+                                            Last post {formatRelativeDate(tag.last_posted_at)}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                                    <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 700 }}>
+                                        {tag.count}
+                                    </span>
+                                    <span style={{ fontSize: "9px", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.02em", opacity: 0.5 }}>
+                                        posts
                                     </span>
                                 </div>
-                                <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}>
-                                    {tag.count}
-                                </span>
                             </Link>
                         ))}
                     </div>
