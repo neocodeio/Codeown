@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -33,6 +33,32 @@ export default function NotificationsPage() {
     const isMobile = width < 768;
     const isDesktop = width >= 1200;
 
+    // Grouping logic for "like" notifications
+    const groupedNotifications = useMemo(() => {
+        const grouped: (Notification & { groupCount?: number; groupIds?: number[] })[] = [];
+        const likeMap = new Map<string, number>();
+
+        notifications.forEach((n) => {
+            if (n.type === "like") {
+                const key = n.post_id ? `post_${n.post_id}` : n.project_id ? `project_${n.project_id}` : null;
+                if (key) {
+                    if (likeMap.has(key)) {
+                        const idx = likeMap.get(key)!;
+                        grouped[idx].groupCount = (grouped[idx].groupCount || 1) + 1;
+                        if (!grouped[idx].groupIds) grouped[idx].groupIds = [grouped[idx].id];
+                        grouped[idx].groupIds?.push(n.id);
+                        // If any unread in group, mark group as unread
+                        if (!n.read) grouped[idx].read = false;
+                        return;
+                    }
+                    likeMap.set(key, grouped.length);
+                }
+            }
+            grouped.push({ ...n });
+        });
+        return grouped;
+    }, [notifications]);
+
     // Automatically mark all as read when entering the page
     useEffect(() => {
         if (!loading && unreadCount > 0) {
@@ -40,9 +66,13 @@ export default function NotificationsPage() {
         }
     }, [loading, unreadCount, markAsRead]);
 
-    const handleNotificationClick = (notification: Notification) => {
+    const handleNotificationClick = (notification: Notification & { groupIds?: number[] }) => {
         if (!notification.read) {
-            markAsRead(notification.id);
+            if (notification.groupIds) {
+                notification.groupIds.forEach(id => markAsRead(id));
+            } else {
+                markAsRead(notification.id);
+            }
         }
 
         if (notification.post_id) {
@@ -95,7 +125,7 @@ export default function NotificationsPage() {
         }
     };
 
-    const getNotificationMessage = (notification: Notification) => {
+    const getNotificationMessage = (notification: Notification & { groupCount?: number }) => {
         const actorName = notification.actor?.name || "Someone";
         const username = notification.actor?.username;
 
@@ -114,6 +144,13 @@ export default function NotificationsPage() {
 
         switch (notification.type) {
             case "like":
+                if (notification.groupCount && notification.groupCount > 1) {
+                    return (
+                        <>
+                            {nameWrapper} and <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{notification.groupCount - 1} others</span> liked your {notification.project_id ? "project" : "post"}
+                        </>
+                    );
+                }
                 return <>{nameWrapper} liked your {notification.project_id ? "project" : "post"}</>;
             case "comment":
                 return <>{nameWrapper} commented on your post</>;
@@ -268,7 +305,7 @@ export default function NotificationsPage() {
                             </div>
                         )}
 
-                        {notifications.map((notification) => {
+                        {groupedNotifications.map((notification) => {
                             const { icon, color } = getNotificationIcon(notification);
                             return (
                                 <div
@@ -305,13 +342,11 @@ export default function NotificationsPage() {
                                         width: "40px",
                                         height: "40px",
                                         borderRadius: "12px",
-                                        backgroundColor: "var(--bg-hover)",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
                                         flexShrink: 0,
                                         color: color,
-                                        border: "0.5px solid var(--border-hairline)"
                                     }}>
                                         {icon}
                                     </div>
@@ -364,6 +399,7 @@ export default function NotificationsPage() {
                                                     color: "var(--text-primary)",
                                                     lineHeight: 1.5,
                                                     fontWeight: notification.read ? 400 : 600,
+                                                    wordBreak: "break-word"
                                                 }}>
                                                     {getNotificationMessage(notification)}
                                                 </p>

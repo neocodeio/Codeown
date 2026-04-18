@@ -279,7 +279,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 project_id: selectedProjectId
             };
 
-            await api.post("/posts", postData, {
+            const res = await api.post("/posts", postData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -291,6 +291,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
             setIsPoll(false);
             setPollOptions(["", ""]);
             setSelectedProjectId(null);
+            window.dispatchEvent(new CustomEvent("postCreated", { detail: res.data }));
             onCreated();
         } catch (error) {
             console.error("Failed to post:", error);

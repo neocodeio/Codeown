@@ -9,7 +9,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
     ArrowDown01Icon,
     Rocket01Icon,
-    LicenseIcon
+    LicenseIcon,
+    ArrowUp01Icon
 } from "@hugeicons/core-free-icons";
 
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
@@ -28,6 +29,20 @@ export default function Feed() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [newPostActors, setNewPostActors] = useState<any[]>([]);
+    const [scrolledDown, setScrolledDown] = useState(false);
+
+    // Track scroll position for the pill
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolledDown(window.scrollY > 600);
+            if (window.scrollY < 100) {
+                setNewPostActors([]);
+            }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -106,8 +121,32 @@ export default function Feed() {
 
     const currentItems = feedType === "posts" ? posts : projects;
 
-    const handlePostCreated = useCallback(() => fetchPosts(undefined, false), [fetchPosts]);
+    const handlePostCreated = useCallback((e?: any) => {
+        // This is called either via global event (real-time/local dispatch)
+        // or directly via onCreated callback.
+        const newPost = e?.detail;
+
+        // If we have the post data and user is scrolled down, show the pill
+        if (window.scrollY > 400 && newPost) {
+            setNewPostActors(prev => {
+                const actor = newPost.user || newPost.actor;
+                if (!actor) return prev;
+                if (prev.some(a => a.id === actor.id || a.username === actor.username)) return prev;
+                return [actor, ...prev].slice(0, 3);
+            });
+        }
+        // Note: We don't call fetchPosts(undefined, false) here anymore
+        // because App.tsx already updates the query cache in real-time.
+    }, []);
+
     const handleProjectCreated = useCallback(() => fetchProjects(undefined, false), [fetchProjects]);
+
+    const handleScrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        setNewPostActors([]);
+        // Optional: force a refetch if needed, but cache should be fresh
+        fetchPosts(undefined, false);
+    };
 
     useEffect(() => {
         window.addEventListener("postCreated", handlePostCreated);
@@ -145,6 +184,69 @@ export default function Feed() {
                     position: "relative",
                     backgroundColor: "var(--bg-page)",
                 }}>
+                    {/* ── New Posts Pill ── */}
+                    {newPostActors.length > 0 && scrolledDown && (
+                        <div style={{
+                            position: "fixed",
+                            top: isMobile ? "80px" : "80px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            zIndex: 1000,
+                            animation: "pillFadeUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards"
+                        }}>
+                            <button
+                                onClick={handleScrollToTop}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    backgroundColor: "#1d9bf0", // Twitter-like blue from reference
+                                    color: "#fff",
+                                    padding: "10px 18px 10px 16px",
+                                    borderRadius: "100px",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    boxShadow: "0 8px 30px rgba(29, 155, 240, 0.4)",
+                                    fontSize: "15px",
+                                    fontWeight: 700,
+                                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                                    backdropFilter: "blur(10px)"
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.transform = "translateY(-2px) scale(1.02)";
+                                    e.currentTarget.style.boxShadow = "0 12px 40px rgba(29, 155, 240, 0.6)";
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.transform = "none";
+                                    e.currentTarget.style.boxShadow = "0 8px 30px rgba(29, 155, 240, 0.4)";
+                                }}
+                            >
+                                <HugeiconsIcon icon={ArrowUp01Icon} size={18} />
+                                <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
+                                    <div style={{ display: "flex", alignItems: "center", marginRight: "12px" }}>
+                                        {newPostActors.map((actor, i) => (
+                                            <img
+                                                key={actor.id || i}
+                                                src={actor.avatar_url || "https://images.clerk.dev/static/avatar.png"}
+                                                alt=""
+                                                style={{
+                                                    width: "26px",
+                                                    height: "26px",
+                                                    borderRadius: "50%",
+                                                    border: "2px solid #1d9bf0",
+                                                    marginLeft: i === 0 ? 0 : "-12px",
+                                                    objectFit: "cover",
+                                                    zIndex: 3 - i,
+                                                    boxShadow: "0 0 10px rgba(0,0,0,0.1)"
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                    <span style={{ letterSpacing: "-0.01em" }}>posted</span>
+                                </div>
+                            </button>
+                        </div>
+                    )}
 
                     {/* ── Precision Glassmorphism Header ── */}
                     <div style={{
@@ -426,6 +528,10 @@ export default function Feed() {
                 }
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                @keyframes pillFadeUp {
+                    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+                }
                 @keyframes slideDownFadeIn {
                     from { opacity: 0; transform: translateY(-5px); }
                     to { opacity: 1; transform: translateY(0); }

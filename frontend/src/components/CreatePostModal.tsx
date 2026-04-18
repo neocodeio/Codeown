@@ -243,10 +243,10 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
         language: normalizeLanguage(language),
         project_id: selectedProjectId || null,
       };
-      await api.post("/posts", payload, {
+      const res = await api.post("/posts", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      window.dispatchEvent(new CustomEvent("postCreated"));
+      window.dispatchEvent(new CustomEvent("postCreated", { detail: res.data }));
       onCreated();
       onClose();
     } catch (error: any) {

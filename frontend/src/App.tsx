@@ -118,6 +118,7 @@ export default function App() {
     const handleUpdate = ({ type, data }: { type: string, data: any }) => {
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
         if (type === "post_created") {
+          window.dispatchEvent(new CustomEvent("postCreated", { detail: data }));
           queryClient.setQueriesData({ queryKey: ["posts"] }, (oldData: any) => {
             if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
             const firstPage = oldData.pages[0];
