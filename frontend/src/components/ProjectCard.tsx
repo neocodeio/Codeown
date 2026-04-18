@@ -113,6 +113,7 @@ import UserHoverCard from "./UserHoverCard";
 import RollingNumber from "./RollingNumber";
 import QuickCommentModal from "./QuickCommentModal";
 import Lightbox from "./Lightbox";
+import InlineFollowButton from "./InlineFollowButton";
 
 interface ProjectCardProps {
   project: Project;
@@ -338,7 +339,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
           alignItems: "flex-start",
           marginBottom: "6px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
             <UserHoverCard userId={project.user_id} user={project.user as any}>
               <span
                 onClick={handleUserClick}
@@ -354,6 +355,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
               </span>
             </UserHoverCard>
             <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="14px" />
+            <InlineFollowButton userId={project.user_id} />
             <span style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 400 }}>
               @{project.user?.username || 'user'}
             </span>

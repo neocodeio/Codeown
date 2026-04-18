@@ -33,6 +33,7 @@ import UserHoverCard from "./UserHoverCard";
 import Lightbox from "./Lightbox";
 import RollingNumber from "./RollingNumber";
 import QuickCommentModal from "./QuickCommentModal";
+import InlineFollowButton from "./InlineFollowButton";
 
 interface PostCardProps {
   post: Post;
@@ -286,8 +287,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         }}>
           <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
             {/* Name + Badges Row */}
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                 <UserHoverCard userId={post.user_id} user={post.user as any}>
                   <span
                     onClick={handleUserClick}
@@ -303,6 +304,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   </span>
                 </UserHoverCard>
                 <VerifiedBadge username={post.user?.username} isPro={post.user?.is_pro} size="14px" />
+                <InlineFollowButton userId={post.user_id} />
               </div>
             </div>
 

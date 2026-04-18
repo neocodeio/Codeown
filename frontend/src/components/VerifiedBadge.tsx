@@ -33,7 +33,7 @@ export default function VerifiedBadge({ username, size = "14px", color }: Verifi
                     style={{
                         color: (color || "#00A2FF") + " !important",
                         marginLeft: "0px",
-                        marginRight: "4.5px",
+                        marginRight: "-4.5px",
                         verticalAlign: "middle",
                         flexShrink: 0,
                     }}
