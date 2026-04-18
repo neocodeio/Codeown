@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { X, MagnifyingGlass, PaperPlaneTilt } from "phosphor-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon, Search01Icon, SentIcon } from "@hugeicons/core-free-icons";
 import AvailabilityBadge from "./AvailabilityBadge";
 import { toast } from "react-toastify";
 
@@ -82,7 +83,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
 
   if (!isOpen) return null;
 
-  const filtered = (Array.isArray(conversations) ? conversations : []).filter(c => 
+  const filtered = (Array.isArray(conversations) ? conversations : []).filter(c =>
     c.partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.partner.username?.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -122,13 +123,13 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
             Share to chat
           </h2>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer" }}>
-            <X size={20} weight="bold" />
+            <HugeiconsIcon icon={Cancel01Icon} size={20} />
           </button>
         </div>
 
         <div style={{ padding: "16px", borderBottom: "0.5px solid var(--border-hairline)" }}>
           <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-            <MagnifyingGlass size={18} weight="thin" style={{ position: "absolute", left: "12px", color: "var(--text-tertiary)" }} />
+            <HugeiconsIcon icon={Search01Icon} size={18} style={{ position: "absolute", left: "12px", color: "var(--text-tertiary)" }} />
             <input
               type="text"
               placeholder="Search conversations..."
@@ -137,7 +138,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
               style={{
                 width: "100%",
                 padding: "12px 12px 12px 40px",
-                  borderRadius: "var(--radius-md)",
+                borderRadius: "var(--radius-md)",
                 border: "0.5px solid var(--border-hairline)",
                 backgroundColor: "var(--bg-input)",
                 color: "var(--text-primary)",
@@ -164,7 +165,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
                 onClick={() => handleSend(convo.id)}
                 style={{
                   padding: "12px",
-                    borderRadius: "var(--radius-md)",
+                  borderRadius: "var(--radius-md)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
@@ -196,7 +197,7 @@ export default function SendToChatModal({ isOpen, onClose, postId, projectId, in
                     gap: "6px"
                   }}
                 >
-                  {sendingId === convo.id ? "..." : <><PaperPlaneTilt size={14} weight="bold" /> Send</>}
+                  {sendingId === convo.id ? "..." : <><HugeiconsIcon icon={SentIcon} size={14} /> Send</>}
                 </button>
               </div>
             ))

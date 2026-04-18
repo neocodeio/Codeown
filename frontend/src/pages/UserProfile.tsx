@@ -9,22 +9,23 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FollowersModal from "../components/FollowersModal";
 import { formatProfileJoinDate } from "../utils/date";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Calendar,
-  Rocket,
-  Buildings,
-  SquaresFour,
-  PushPin,
-  MapPin,
-  Link,
-  IdentificationCard,
-  FileText,
-  GithubLogo,
-  TwitterLogo,
-  LinkedinLogo,
-  InstagramLogo,
-  ChatCircle
-} from "phosphor-react";
+  Calendar03Icon,
+  Rocket01Icon,
+  Building02Icon,
+  Grid02Icon,
+  PinIcon,
+  Location01Icon,
+  Link01Icon,
+  IdentityCardIcon,
+  LicenseIcon,
+  GithubIcon,
+  NewTwitterIcon,
+  Linkedin01Icon,
+  InstagramIcon,
+  Chat01Icon
+} from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -311,10 +312,10 @@ export default function UserProfile() {
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
                 >
-                  <ChatCircle size={18} weight="regular" />
+                  <HugeiconsIcon icon={Chat01Icon} size={18} />
                 </button>
                 <button onClick={() => setIsIDCardModalOpen(true)} style={{ padding: "8px", borderRadius: "100px", border: "1px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer" }} >
-                  <IdentificationCard size={20} />
+                  <HugeiconsIcon icon={IdentityCardIcon} size={20} />
                 </button>
               </div>
 
@@ -327,7 +328,7 @@ export default function UserProfile() {
                 {user.bio && <p style={{ fontSize: "15px", lineHeight: 1.5, marginBottom: "16px" }}>{user.bio}</p>}
 
                 <div style={{ display: "flex", gap: "16px", color: "var(--text-tertiary)", fontSize: "13px", flexWrap: "wrap", marginBottom: "20px", alignItems: "center" }}>
-                  {user.location && <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><MapPin size={16} /> {user.location}</span>}
+                  {user.location && <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><HugeiconsIcon icon={Location01Icon} size={16} /> {user.location}</span>}
                   {user.website_url && (
                     <a
                       href={user.website_url.startsWith("http") ? user.website_url : `https://${user.website_url}`}
@@ -335,18 +336,18 @@ export default function UserProfile() {
                       rel="noopener noreferrer"
                       style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-primary)", textDecoration: "none" }}
                     >
-                      <Link size={16} />
+                      <HugeiconsIcon icon={Link01Icon} size={16} />
                       {user.website_url.replace(/https?:\/\//, "")}
                     </a>
                   )}
-                  <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><Calendar size={16} /> Joined {formatProfileJoinDate(user.created_at || "")}</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><HugeiconsIcon icon={Calendar03Icon} size={16} /> Joined {formatProfileJoinDate(user.created_at || "")}</span>
                 </div>
 
                 <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "24px" }}>
-                  {user.github_url && <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="GitHub"> <GithubLogo size={20} weight="thin" /> </a>}
-                  {user.linkedin_url && <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="LinkedIn"> <LinkedinLogo size={20} weight="thin" /> </a>}
-                  {user.twitter_url && <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Twitter"> <TwitterLogo size={20} weight="thin" /> </a>}
-                  {user.instagram_url && <a href={user.instagram_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Instagram"> <InstagramLogo size={20} weight="thin" /> </a>}
+                  {user.github_url && <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="GitHub"> <HugeiconsIcon icon={GithubIcon} size={20} /> </a>}
+                  {user.linkedin_url && <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="LinkedIn"> <HugeiconsIcon icon={Linkedin01Icon} size={20} /> </a>}
+                  {user.twitter_url && <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Twitter"> <HugeiconsIcon icon={NewTwitterIcon} size={20} /> </a>}
+                  {user.instagram_url && <a href={user.instagram_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Instagram"> <HugeiconsIcon icon={InstagramIcon} size={20} /> </a>}
                 </div>
 
                 {user.skills && user.skills.length > 0 && (
@@ -456,9 +457,9 @@ export default function UserProfile() {
 
 
             <div className="tabs-row" style={{ display: "flex", overflowX: "auto", borderBottom: "0.5px solid var(--border-hairline)", marginBottom: "32px", gap: "24px", padding: isMobile ? "0 16px" : "0 24px", msOverflowStyle: "none", scrollbarWidth: "none" }}>
-              {[{ id: "posts", icon: FileText, label: "Posts" }, { id: "projects", icon: SquaresFour, label: "Projects" }, { id: "startups", icon: Buildings, label: "Startups" }].map(tab => (
+              {[{ id: "posts", icon: LicenseIcon, label: "Posts" }, { id: "projects", icon: Rocket01Icon, label: "Projects" }, { id: "startups", icon: Building02Icon, label: "Startups" }].map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
-                  <tab.icon size={18} weight={activeTab === tab.id ? "fill" : "thin"} />
+                  <HugeiconsIcon icon={tab.icon} size={18} />
                   {tab.label}
                 </button>
               ))}
@@ -467,15 +468,15 @@ export default function UserProfile() {
             <div style={{ minHeight: "400px" }}>
               {activeTab === "posts" ? (
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  {postsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : posts.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <Rocket size={40} weight="thin" style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No posts yet</p> </div>) : ([...posts].sort((a, b) => { if (user.pinned_post_id === a.id) return -1; if (user.pinned_post_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_post_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <PushPin size={14} weight="regular" /> Pinned post </div>)} <PostCard post={p} onUpdated={fetchUserPosts} /> </div>)))}
+                  {postsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : posts.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No posts yet</p> </div>) : ([...posts].sort((a, b) => { if (user.pinned_post_id === a.id) return -1; if (user.pinned_post_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_post_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <HugeiconsIcon icon={PinIcon} size={14} /> Pinned post </div>)} <PostCard post={p} onUpdated={fetchUserPosts} /> </div>)))}
                 </div>
               ) : activeTab === "startups" ? (
                 <div className="tab-content-enter">
-                  {loadingStartups ? <div className="skeleton-pulse" style={{ height: "140px", borderRadius: "var(--radius-sm)" }} /> : startups.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <Buildings size={40} weight="thin" style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No startups yet</p> </div>) : (<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}> {startups.map((s) => (<StartupCard key={s.id} startup={s} />))} </div>)}
+                  {loadingStartups ? <div className="skeleton-pulse" style={{ height: "140px", borderRadius: "var(--radius-sm)" }} /> : startups.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Building02Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No startups yet</p> </div>) : (<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}> {startups.map((s) => (<StartupCard key={s.id} startup={s} />))} </div>)}
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  {projectsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : projects.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <SquaresFour size={40} weight="thin" style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No projects yet</p> </div>) : ([...projects].sort((a, b) => { if (user.pinned_project_id === a.id) return -1; if (user.pinned_project_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_project_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <PushPin size={14} weight="regular" /> Pinned project </div>)} <ProjectCard project={p} onUpdated={fetchUserProjects} /> </div>)))}
+                  {projectsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : projects.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Grid02Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No projects yet</p> </div>) : ([...projects].sort((a, b) => { if (user.pinned_project_id === a.id) return -1; if (user.pinned_project_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_project_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <HugeiconsIcon icon={PinIcon} size={14} /> Pinned project </div>)} <ProjectCard project={p} onUpdated={fetchUserProjects} isPinned={user.pinned_project_id === p.id} /> </div>)))}
                 </div>
               )}
             </div>

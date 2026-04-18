@@ -4,7 +4,6 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useAvatar } from "../hooks/useAvatar";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { PlusCircle, MinusCircle, CaretDown, ArrowsClockwise, Paperclip, Rocket } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
     ImageAdd01Icon,
@@ -14,7 +13,13 @@ import {
     Cancel01Icon,
     WorkIcon,
     HourglassIcon,
-    ConfusedIcon
+    ConfusedIcon,
+    AddCircleIcon,
+    MinusPlusCircle01Icon,
+    ArrowDown01Icon,
+    ReloadIcon,
+    Attachment01Icon,
+    Rocket01Icon
 } from "@hugeicons/core-free-icons";
 import MentionInput from "./MentionInput";
 import LinkPreview from "./LinkPreview";
@@ -521,7 +526,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 }}
                             >
                                 <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-                                    <Paperclip size={18} style={{ color: "var(--text-tertiary)", flexShrink: 0 }} />
+                                    <HugeiconsIcon icon={Attachment01Icon} size={18} style={{ color: "var(--text-tertiary)", flexShrink: 0 }} />
                                     <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
                                         <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                             {file.name}
@@ -592,7 +597,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         onClick={() => removePollOption(index)}
                                         style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: "4px" }}
                                     >
-                                        <MinusCircle size={20} />
+                                        <HugeiconsIcon icon={MinusPlusCircle01Icon} size={20} />
                                     </button>
                                 )}
                             </div>
@@ -614,7 +619,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     marginTop: "4px",
                                 }}
                             >
-                                <PlusCircle size={18} />
+                                <HugeiconsIcon icon={AddCircleIcon} size={18} />
                                 Add option
                             </button>
                         )}
@@ -798,13 +803,13 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                                 postType === "Stuck" ? "#dc2626" :
                                                     "#7c3aed"
                                     }}>
-                                        {postType === "Update" && <ArrowsClockwise size={13} weight="bold" />}
+                                        {postType === "Update" && <HugeiconsIcon icon={ReloadIcon} size={13} />}
                                         {postType === "WIP" && <HugeiconsIcon icon={WorkIcon} size={13} />}
                                         {postType === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={13} />}
                                         {postType === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={13} />}
                                     </span>
                                     <span style={{ opacity: 0.9 }}>{postType}</span>
-                                    <CaretDown size={11} weight="bold" style={{
+                                    <HugeiconsIcon icon={ArrowDown01Icon} size={11} style={{
                                         opacity: 0.4,
                                         transform: isTypeMenuOpen ? "rotate(-180deg)" : "none",
                                         transition: "transform 0.2s ease"
@@ -829,7 +834,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         animation: "fadeIn 0.15s ease-out"
                                     }}>
                                         {[
-                                            { label: "Update", icon: <ArrowsClockwise size={16} />, color: "var(--text-tertiary)" },
+                                            { label: "Update", icon: <HugeiconsIcon icon={ReloadIcon} size={16} />, color: "var(--text-tertiary)" },
                                             { label: "WIP", icon: <HugeiconsIcon icon={WorkIcon} size={16} />, color: "#ffaa00" },
                                             { label: "Stuck", icon: <HugeiconsIcon icon={HourglassIcon} size={16} />, color: "#ff4d4f" },
                                             { label: "Advice", icon: <HugeiconsIcon icon={ConfusedIcon} size={16} />, color: "#a855f7" }
@@ -912,7 +917,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: 0.9 }}>
                                         {selectedProject ? selectedProject.name.split(' ')[0] : "Project"}
                                     </span>
-                                    <CaretDown size={11} weight="bold" style={{
+                                    <HugeiconsIcon icon={ArrowDown01Icon} size={11} style={{
                                         opacity: 0.4,
                                         transform: isProjectMenuOpen ? "rotate(-180deg)" : "none",
                                         transition: "transform 0.2s ease"
@@ -958,7 +963,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                             }}
                                         >
                                             <div style={{ width: "20px", display: "flex", justifyContent: "center" }}>
-                                                <MinusCircle size={14} />
+                                                <HugeiconsIcon icon={MinusPlusCircle01Icon} size={14} />
                                             </div>
                                             None
                                         </button>
@@ -1002,7 +1007,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                                     overflow: "hidden",
                                                     flexShrink: 0
                                                 }}>
-                                                    {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <Rocket size={12} />}
+                                                    {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <HugeiconsIcon icon={Rocket01Icon} size={12} />}
                                                 </div>
                                                 <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontWeight: selectedProjectId === project.id ? 600 : 500 }}>{project.name}</span>
                                             </button>

@@ -3,16 +3,17 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { ShareableAnalyticsCard } from "../components/ShareableAnalyticsCard";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-    NotePencil,
-    Heart,
-    RocketLaunch,
-    ArrowCircleUp,
-    ChatText,
-    Users,
-    Eye,
-    Lightning
-} from "phosphor-react";
+    LicenseIcon,
+    FavouriteIcon,
+    Rocket01Icon,
+    ArrowUp01Icon,
+    Chat01Icon,
+    UserGroupIcon,
+    ViewIcon,
+    FlashIcon
+} from "@hugeicons/core-free-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { SEO } from "../components/SEO";
@@ -81,7 +82,7 @@ export default function Dashboard() {
                         justifyContent: "center",
                         color: color
                     }}>
-                        <Icon size={20} weight="regular" />
+                        <HugeiconsIcon icon={Icon} size={20} />
                     </div>
                 </div>
 
@@ -181,9 +182,9 @@ export default function Dashboard() {
                             gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(260px, 1fr))",
                             gap: "24px"
                         }}>
-                            <StatCard title="Total Posts" value={stats?.posts_count} icon={NotePencil} color="#6366f1" />
-                            <StatCard title="Projects Launched" value={stats?.projects_count} icon={RocketLaunch} color="#8b5cf6" />
-                            <StatCard title="Consistency Streak" value={stats?.streak_count} icon={Lightning} color="#ef4444" spanFull={!isMobile} />
+                            <StatCard title="Total Posts" value={stats?.posts_count} icon={LicenseIcon} color="#6366f1" />
+                            <StatCard title="Projects Launched" value={stats?.projects_count} icon={Rocket01Icon} color="#8b5cf6" />
+                            <StatCard title="Consistency Streak" value={stats?.streak_count} icon={FlashIcon} color="#ef4444" spanFull={!isMobile} />
                         </div>
                     </section>
 
@@ -200,11 +201,11 @@ export default function Dashboard() {
                             gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(260px, 1fr))",
                             gap: "24px"
                         }}>
-                            <StatCard title="Total Likes" value={stats?.total_post_likes} icon={Heart} color="#ec4899" />
-                            <StatCard title="Project Upvotes" value={stats?.total_project_upvotes} icon={ArrowCircleUp} color="#f59e0b" />
-                            <StatCard title="Followers" value={stats?.follower_count} icon={Users} color="#3b82f6" />
-                            <StatCard title="Profile Visitors" value={stats?.profile_views} icon={Eye} color="#06b6d4" />
-                            <StatCard title="Total Comments" value={stats?.total_comments} icon={ChatText} color="#10b981" spanFull={!isMobile} />
+                            <StatCard title="Total Likes" value={stats?.total_post_likes} icon={FavouriteIcon} color="#ec4899" />
+                            <StatCard title="Project Upvotes" value={stats?.total_project_upvotes} icon={ArrowUp01Icon} color="#f59e0b" />
+                            <StatCard title="Followers" value={stats?.follower_count} icon={UserGroupIcon} color="#3b82f6" />
+                            <StatCard title="Profile Visitors" value={stats?.profile_views} icon={ViewIcon} color="#06b6d4" />
+                            <StatCard title="Total Comments" value={stats?.total_comments} icon={Chat01Icon} color="#10b981" spanFull={!isMobile} />
                         </div>
                     </section>
                 </div>

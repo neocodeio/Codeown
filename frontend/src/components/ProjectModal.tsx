@@ -4,7 +4,8 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
 import api from "../api/axios";
 import type { Project, ProjectFormData } from "../types/project";
-import { X, Check, GithubLogo } from "phosphor-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon, Tick01Icon, GithubIcon } from "@hugeicons/core-free-icons";
 import { validateImageSize } from "../constants/upload";
 import { toast } from "react-toastify";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
@@ -442,7 +443,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                                 <label className="project-label" style={{ marginBottom: 0 }}>GitHub repo</label>
                                 <button type="button" onClick={handleGitHubImport} disabled={fetchingGitHub || !formData.github_repo} style={{ background: "none", border: "none", color: "var(--text-primary)", fontSize: "11px", fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", opacity: !formData.github_repo ? 0.4 : 1 }}>
-                                    <GithubLogo size={14} />
+                                    <HugeiconsIcon icon={GithubIcon} size={14} />
                                     {fetchingGitHub ? "Importing..." : "Auto-fill from GitHub"}
                                 </button>
                             </div>
@@ -472,7 +473,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                             {formData.technologies_used.map((tech, i) => (
                                 <span key={i} style={{ padding: "6px 14px", borderRadius: "100px", background: "var(--bg-hover)", border: "1px solid var(--border-hairline)", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
-                                    {tech} <button onClick={() => handleRemoveTech(tech)} style={{ border: "none", background: "none", color: "var(--text-tertiary)", cursor: "pointer" }}><X size={12} /></button>
+                                    {tech} <button onClick={() => handleRemoveTech(tech)} style={{ border: "none", background: "none", color: "var(--text-tertiary)", cursor: "pointer" }}><HugeiconsIcon icon={Cancel01Icon} size={12} /></button>
                                 </span>
                             ))}
                         </div>
@@ -487,7 +488,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                         <div style={{ position: "relative", width: "20px", height: "20px" }}>
                             <input type="checkbox" checked={formData.looking_for_contributors || false} onChange={(e) => setFormData(p => ({ ...p, looking_for_contributors: e.target.checked }))} style={{ position: "absolute", opacity: 0, width: "100%", height: "100%", cursor: "pointer" }} />
                             <div style={{ width: "100%", height: "100%", border: "1px solid var(--border-hairline)", borderRadius: "6px", backgroundColor: formData.looking_for_contributors ? "var(--text-primary)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                {formData.looking_for_contributors && <Check size={14} weight="bold" color="var(--bg-page)" />}
+                                {formData.looking_for_contributors && <HugeiconsIcon icon={Tick01Icon} size={14} style={{ color: "var(--bg-page)" }} />}
                             </div>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -505,7 +506,7 @@ export default function ProjectModal({ isOpen, onClose, onUpdated, project }: Pr
                                 </div>
                             ) : (
                                 <div style={{ width: "80px", height: "80px", borderRadius: "12px", backgroundColor: "var(--bg-hover)", border: "1px dashed var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)", flexShrink: 0 }}>
-                                    <X size={24} weight="thin" />
+                                    <HugeiconsIcon icon={Cancel01Icon} size={24} />
                                 </div>
                             )}
                             <div style={{ flex: 1 }}>

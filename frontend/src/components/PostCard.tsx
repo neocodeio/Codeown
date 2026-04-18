@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, memo } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -9,8 +10,6 @@ import ImageSlider from "./ImageSlider";
 import ContentRenderer, { CodeBlock } from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
-import { DotsThree, PencilSimple, Trash, ChartBar, PushPin, ArrowsClockwise, CheckCircle, DownloadSimple, Paperclip } from "phosphor-react";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   WorkIcon,
   HourglassIcon,
@@ -19,7 +18,16 @@ import {
   FavouriteIcon,
   Bookmark02Icon,
   Share01Icon,
-  SentIcon
+  SentIcon,
+  MoreHorizontalIcon,
+  PencilEdit02Icon,
+  Delete02Icon,
+  ChartBarLineIcon,
+  PinIcon,
+  ReloadIcon,
+  CheckmarkCircle02Icon,
+  Download01Icon,
+  AttachmentIcon
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -380,7 +388,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       post.post_type === "Stuck" ? "#ff4d4f" :
                         "#a855f7"
                 }}>
-                  {post.post_type === "Update" && <ArrowsClockwise size={11} weight="bold" />}
+                  {post.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={11} />}
                   {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={11} />}
                   {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={11} />}
                   {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={11} />}
@@ -407,7 +415,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                   onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
                 >
-                  <DotsThree size={22} weight="thin" />
+                  <HugeiconsIcon icon={MoreHorizontalIcon} size={22} />
                 </button>
 
                 {isMenuOpen && (
@@ -415,20 +423,20 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     position: "absolute",
                     top: "100%",
                     right: "0",
-                    marginTop: "4px",
+                    marginTop: "8px",
                     backgroundColor: "var(--bg-card)",
                     border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "var(--radius-md)",
-                    boxShadow: "var(--shadow-lg)",
-                    zIndex: 100,
-                    minWidth: "160px",
+                    borderRadius: "14px",
+                    boxShadow: "0 10px 30px -10px rgba(0,0,0,0.15)",
+                    zIndex: 1000,
+                    minWidth: isMobile ? "200px" : "180px",
                     padding: "6px",
-                    animation: "dropdownFadeIn 0.15s ease-out"
+                    animation: "dropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)"
                   }}>
                     {[
-                      { icon: PencilSimple, label: "Edit post", onClick: handleEdit, color: "var(--text-primary)" },
-                      { icon: PushPin, label: isPinned ? "Unpin from profile" : "Pin to profile", onClick: handlePinPost, color: "var(--text-primary)", weight: isPinned ? "fill" : "regular" },
-                      { icon: Trash, label: "Delete post", onClick: handleDeleteClick, color: "#ff4d4f" }
+                      { icon: PencilEdit02Icon, label: "Edit post", onClick: handleEdit, color: "var(--text-primary)" },
+                      { icon: PinIcon, label: isPinned ? "Unpin from profile" : "Pin to profile", onClick: handlePinPost, color: "var(--text-primary)" },
+                      { icon: Delete02Icon, label: "Delete post", onClick: handleDeleteClick, color: "#ff4d4f" }
                     ].map((item, i) => (
                       <button
                         key={i}
@@ -436,23 +444,31 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "10px",
+                          gap: "12px",
                           width: "100%",
-                          padding: "10px 12px",
+                          padding: "10px 14px",
                           background: "none",
                           border: "none",
                           color: item.color,
-                          fontSize: "13px",
-                          fontWeight: 500,
+                          fontSize: "14px",
+                          fontWeight: 600,
                           cursor: "pointer",
-                          borderRadius: "var(--radius-sm)",
-                          transition: "background-color 0.15s linear"
+                          borderRadius: "10px",
+                          textAlign: "left",
+                          whiteSpace: "nowrap",
+                          transition: "all 0.1s ease"
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = item.color === "#ff4d4f" ? "rgba(255, 77, 79, 0.1)" : "var(--bg-hover)"}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = item.color === "#ff4d4f" ? "rgba(255, 77, 79, 0.08)" : "var(--bg-hover)";
+                          e.currentTarget.style.transform = "translateX(4px)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.transform = "none";
+                        }}
                       >
-                        <item.icon size={16} weight={(item as any).weight || "regular"} />
-                        {item.label}
+                        <HugeiconsIcon icon={item.icon} size={18} />
+                        <span style={{ flex: 1 }}>{item.label}</span>
                       </button>
                     ))}
                   </div>
@@ -576,7 +592,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       border: "0.5px solid var(--border-hairline)",
                       flexShrink: 0
                     }}>
-                      <Paperclip size={18} color="var(--text-primary)" />
+                      <HugeiconsIcon icon={AttachmentIcon} size={18} style={{ color: "var(--text-primary)" }} />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
                       <span style={{
@@ -594,7 +610,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       </span>
                     </div>
                   </div>
-                  <DownloadSimple size={20} color="var(--text-tertiary)" weight="thin" />
+                  <HugeiconsIcon icon={Download01Icon} size={20} style={{ color: "var(--text-tertiary)" }} />
                 </div>
               ))}
             </div>
@@ -614,7 +630,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             gap: "10px"
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-              <ChartBar size={18} weight="bold" color="var(--text-primary)" />
+              <HugeiconsIcon icon={ChartBarLineIcon} size={18} style={{ color: "var(--text-primary)" }} />
               <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>Poll</span>
             </div>
 
@@ -669,7 +685,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                         opacity: isSelected ? 1 : 0.8
                       }}>
                         {option || "Option " + (idx + 1)}
-                        {isSelected && <CheckCircle size={14} weight="fill" style={{ marginLeft: "8px", verticalAlign: "middle" }} />}
+                        {isSelected && <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} style={{ marginLeft: "8px", verticalAlign: "middle" }} />}
                       </span>
                       {votedOption !== null && (
                         <span style={{
@@ -758,7 +774,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 <HugeiconsIcon
                   icon={Icon}
                   size={20}
-                  className={action.active && (Icon === FavouriteIcon || Icon === Bookmark02Icon) ? "hugeicon-filled" : ""}
+                  className={action.active && Icon === FavouriteIcon ? "hugeicon-filled" : ""}
                 />
                 {Icon === FavouriteIcon ? (
                   <RollingNumber value={action.count || 0} fontWeight={600} fontSize="13px" color="inherit" />

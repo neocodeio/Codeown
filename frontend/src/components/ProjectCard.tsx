@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, memo } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -7,14 +8,17 @@ import { useProjectSaved } from "../hooks/useProjectSaved";
 import api from "../api/axios";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
-import { DotsThree, PencilSimple, Trash, PushPin, Sparkle } from "phosphor-react";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   TriangleIcon,
   Comment01Icon,
   Bookmark02Icon,
   Share01Icon,
-  SentIcon
+  SentIcon,
+  MoreHorizontalIcon,
+  PencilEdit02Icon,
+  Delete02Icon,
+  PinIcon,
+  SparklesIcon
 } from "@hugeicons/core-free-icons";
 
 import { formatRelativeDate } from "../utils/date";
@@ -393,7 +397,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                   padding: "2px 10px",
                   borderRadius: "var(--radius-pill)",
                 }}>
-                  <Sparkle size={12} weight="fill" color={project.tech_match >= 80 ? "#16a34a" : "#0284c7"} />
+                  <HugeiconsIcon icon={SparklesIcon} size={12} style={{ color: project.tech_match >= 80 ? "#16a34a" : "#0284c7" }} />
                   <span style={{ fontSize: "11px", fontWeight: 600, color: project.tech_match >= 80 ? "#16a34a" : "#0284c7" }}>
                     {project.tech_match}% Match
                   </span>
@@ -429,28 +433,60 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
               >
-                <DotsThree size={22} weight="thin" />
+                <HugeiconsIcon icon={MoreHorizontalIcon} size={22} />
               </button>
 
               {isMenuOpen && (
                 <div style={{
-                  position: "absolute", top: "100%", right: 0,
-                  backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)",
-                  boxShadow: "none", zIndex: 10, padding: "4px", minWidth: "160px"
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  marginTop: "8px",
+                  backgroundColor: "var(--bg-card)",
+                  border: "0.5px solid var(--border-hairline)",
+                  borderRadius: "14px",
+                  boxShadow: "0 10px 30px -10px rgba(0,0,0,0.15)",
+                  zIndex: 1000,
+                  minWidth: isMobile ? "200px" : "180px",
+                  padding: "6px",
+                  animation: "dropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)"
                 }}>
                   {[
-                    { icon: PushPin, label: isPinned ? "Unpin" : "Pin to profile", onClick: handlePinProject, color: "var(--text-primary)" },
-                    { icon: PencilSimple, label: "Edit", onClick: handleEditClick, color: "var(--text-primary)" },
-                    { icon: Trash, label: "Delete", onClick: handleDeleteClick, color: "#ef4444" }
+                    { icon: PinIcon, label: isPinned ? "Unpin from profile" : "Pin to profile", onClick: handlePinProject, color: "var(--text-primary)" },
+                    { icon: PencilEdit02Icon, label: "Edit project", onClick: handleEditClick, color: "var(--text-primary)" },
+                    { icon: Delete02Icon, label: "Delete project", onClick: handleDeleteClick, color: "#ef4444" }
                   ].map((item, i) => (
-                    <button key={i} onClick={(e) => { item.onClick(e); setIsMenuOpen(false); }} style={{
-                      width: "100%", padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px",
-                      border: "none", background: "none", cursor: "pointer", borderRadius: "var(--radius-sm)",
-                      fontSize: "13px", fontWeight: 500, color: item.color
-                    }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
-                      <item.icon size={16} weight="regular" />
-                      {item.label}
+                    <button
+                      key={i}
+                      onClick={(e) => { item.onClick(e); setIsMenuOpen(false); }}
+                      style={{
+                        width: "100%",
+                        padding: "10px 14px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        border: "none",
+                        background: "none",
+                        cursor: "pointer",
+                        borderRadius: "10px",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: item.color,
+                        textAlign: "left",
+                        whiteSpace: "nowrap",
+                        transition: "all 0.1s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = item.color === "#ef4444" ? "rgba(239, 68, 68, 0.08)" : "var(--bg-hover)";
+                        e.currentTarget.style.transform = "translateX(4px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.transform = "none";
+                      }}
+                    >
+                      <HugeiconsIcon icon={item.icon} size={18} />
+                      <span style={{ flex: 1 }}>{item.label}</span>
                     </button>
                   ))}
                 </div>
@@ -583,7 +619,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
                 <HugeiconsIcon
                   icon={Icon}
                   size={20}
-                  className={action.active && (Icon === Bookmark02Icon || Icon === TriangleIcon) ? "hugeicon-filled" : ""}
+                  className={action.active && (Icon === TriangleIcon || Icon === Bookmark02Icon) ? "hugeicon-filled" : ""}
                 />
                 {Icon === TriangleIcon ? (
                   <RollingNumber value={action.count || 0} fontWeight={600} fontSize="13px" color="inherit" />

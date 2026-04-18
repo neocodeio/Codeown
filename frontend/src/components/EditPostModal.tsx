@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage, faPaperclip } from "@fortawesome/free-solid-svg-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Image01Icon, AttachmentIcon } from "@hugeicons/core-free-icons";
 import { normalizeLanguage } from "../utils/language";
 import { validateImageSize } from "../constants/upload";
 
@@ -371,7 +371,7 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                     boxSizing: "border-box",
                   }}
                 >
-                  <FontAwesomeIcon icon={faImage} style={{ marginRight: "8px" }} />
+                  <HugeiconsIcon icon={Image01Icon} style={{ marginRight: "8px" }} />
                   Upload Images
                 </label>
                 {images.length > 0 && (
@@ -437,20 +437,20 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                 {attachments.length > 0 ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {attachments.map((file, index) => (
-                      <div 
-                        key={index} 
-                        style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
-                          justifyContent: "space-between", 
-                          padding: "10px 14px", 
-                          backgroundColor: "#f8fafc", 
-                          borderRadius: "var(--radius-md)", 
-                          border: "1px solid #e4e7eb" 
+                      <div
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "10px 14px",
+                          backgroundColor: "#f8fafc",
+                          borderRadius: "var(--radius-md)",
+                          border: "1px solid #e4e7eb"
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-                          <FontAwesomeIcon icon={faPaperclip} style={{ color: "#64748b" }} />
+                          <HugeiconsIcon icon={AttachmentIcon} style={{ color: "#64748b" }} />
                           <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
                             <span style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                               {file.name}
@@ -460,9 +460,9 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
                             </span>
                           </div>
                         </div>
-                        <button 
-                          type="button" 
-                          onClick={() => setAttachments([])} 
+                        <button
+                          type="button"
+                          onClick={() => setAttachments([])}
                           style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "4px" }}
                         >
                           ×

@@ -2,21 +2,25 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  faImage,
-  faCode,
-  faBold,
-  faItalic,
-  faHeading,
-  faLink,
-  faPaperclip
-} from "@fortawesome/free-solid-svg-icons";
+  Image01Icon,
+  SourceCodeIcon,
+  BoldIcon,
+  ItalicIcon,
+  Heading01Icon,
+  Link01Icon,
+  Attachment01Icon,
+  Rocket01Icon,
+  ArrowDown01Icon,
+  MinusPlusCircle01Icon,
+  Cancel01Icon
+} from "@hugeicons/core-free-icons";
 import MentionInput from "./MentionInput";
 import ContentRenderer from "./ContentRenderer";
 import { normalizeLanguage } from "../utils/language";
 import { validateImageSize, validateFileSize } from "../constants/upload";
-import { Rocket, CaretDown, MinusCircle } from "phosphor-react";
+// Removed phosphor-react import
 import { useUserProjects } from "../hooks/useUserProjects";
 import { useClerkUser } from "../hooks/useClerkUser";
 
@@ -390,7 +394,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
             onMouseEnter={e => { e.currentTarget.style.color = "var(--text-primary)"; }}
             onMouseLeave={e => { e.currentTarget.style.color = "var(--text-tertiary)"; }}
           >
-            &times;
+            <HugeiconsIcon icon={Cancel01Icon} size={24} />
           </button>
         </div>
 
@@ -444,17 +448,21 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
               {images.map((img, idx) => (
                 <div key={idx} style={{ position: "relative", minWidth: "120px", width: "120px", height: "120px", flexShrink: 0 }}>
                   <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)" }} />
-                  <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "6px", right: "6px", width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "rgba(0,0,0,0.6)", color: "white", border: "none", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>&times;</button>
+                  <button onClick={() => removeImage(idx)} style={{ position: "absolute", top: "6px", right: "6px", width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "rgba(0,0,0,0.6)", color: "white", border: "none", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)", cursor: "pointer" }}>
+                    <HugeiconsIcon icon={Cancel01Icon} size={14} />
+                  </button>
                 </div>
               ))}
               {attachments.map((file, idx) => (
                 <div key={idx} style={{ position: "relative", minWidth: "160px", padding: "12px", backgroundColor: "var(--bg-hover)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-hairline)", display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-                  <FontAwesomeIcon icon={faPaperclip} style={{ color: "var(--text-tertiary)" }} />
+                  <HugeiconsIcon icon={Attachment01Icon} size={18} style={{ color: "var(--text-tertiary)" }} />
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{file.name}</div>
                     <div style={{ fontSize: "10px", color: "var(--text-tertiary)" }}>{(file.size / 1024).toFixed(0)} KB</div>
                   </div>
-                  <button onClick={() => removeAttachment(idx)} style={{ marginLeft: "auto", background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer" }}>&times;</button>
+                  <button onClick={() => removeAttachment(idx)} style={{ marginLeft: "auto", background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center" }}>
+                    <HugeiconsIcon icon={Cancel01Icon} size={16} />
+                  </button>
                 </div>
               ))}
             </div>
@@ -466,7 +474,9 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
               {tags.map((tag, idx) => (
                 <span key={idx} style={{ padding: "4px 12px", borderRadius: "var(--radius-pill)", background: "rgba(var(--text-primary-rgb), 0.05)", border: "1px solid var(--border-hairline)", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
                   #{tag}
-                  <button onClick={() => setTags(tags.filter((_, i) => i !== idx))} style={{ border: "none", background: "none", padding: 0, color: "var(--text-tertiary)", cursor: "pointer", fontSize: "14px" }}>&times;</button>
+                  <button onClick={() => setTags(tags.filter((_, i) => i !== idx))} style={{ border: "none", background: "none", padding: 0, color: "var(--text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center" }}>
+                    <HugeiconsIcon icon={Cancel01Icon} size={14} />
+                  </button>
                 </span>
               ))}
             </div>
@@ -476,19 +486,19 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
           {activeTab === "write" && (
             <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: "4px", borderTop: "1px solid var(--border-hairline)", paddingTop: "16px", flexWrap: "wrap" }}>
               <label className="editor-toolbar-btn" title="Add Image">
-                <FontAwesomeIcon icon={faImage} />
+                <HugeiconsIcon icon={Image01Icon} size={18} />
                 <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
               </label>
               <label className="editor-toolbar-btn" title="Attach File">
-                <FontAwesomeIcon icon={faPaperclip} />
+                <HugeiconsIcon icon={Attachment01Icon} size={18} />
                 <input type="file" onChange={handleFileUpload} style={{ display: "none" }} />
               </label>
               <div style={{ width: "1px", height: "16px", backgroundColor: "var(--border-hairline)", margin: "0 6px" }} />
-              <button className="editor-toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><FontAwesomeIcon icon={faBold} /></button>
-              <button className="editor-toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><FontAwesomeIcon icon={faItalic} /></button>
-              <button className="editor-toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><FontAwesomeIcon icon={faHeading} /></button>
-              <button className="editor-toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><FontAwesomeIcon icon={faCode} /></button>
-              <button className="editor-toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><FontAwesomeIcon icon={faLink} /></button>
+              <button className="editor-toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><HugeiconsIcon icon={BoldIcon} size={18} /></button>
+              <button className="editor-toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><HugeiconsIcon icon={ItalicIcon} size={18} /></button>
+              <button className="editor-toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><HugeiconsIcon icon={Heading01Icon} size={18} /></button>
+              <button className="editor-toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><HugeiconsIcon icon={SourceCodeIcon} size={18} /></button>
+              <button className="editor-toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><HugeiconsIcon icon={Link01Icon} size={18} /></button>
 
               <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
                 <input
@@ -536,14 +546,14 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
               {selectedProject?.cover_image ? (
                 <img src={selectedProject.cover_image} style={{ width: "16px", height: "16px", borderRadius: "4px", objectFit: "cover" }} alt="" />
               ) : (
-                <Rocket size={14} weight={selectedProjectId ? "fill" : "regular"} />
+                <HugeiconsIcon icon={Rocket01Icon} size={14} />
               )}
               <span style={{ maxWidth: "100px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {selectedProject?.name || "Target Project"}
               </span>
-              <CaretDown
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
                 size={12}
-                weight="bold"
                 style={{
                   transform: isProjectMenuOpen ? "rotate(-180deg)" : "none",
                   transition: "transform 0.2s ease"
@@ -573,7 +583,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
                   onClick={() => { setSelectedProjectId(null); setIsProjectMenuOpen(false); }}
                   style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "var(--radius-xs)", border: "none", backgroundColor: !selectedProjectId ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", textAlign: "left" }}
                 >
-                  <MinusCircle size={16} /> None
+                  <HugeiconsIcon icon={MinusPlusCircle01Icon} size={16} /> None
                 </button>
                 {userProjects.map((project: any) => (
                   <button
@@ -582,7 +592,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
                     style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "var(--radius-xs)", border: "none", backgroundColor: selectedProjectId === project.id ? "var(--bg-hover)" : "transparent", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", textAlign: "left" }}
                   >
                     <div style={{ width: "20px", height: "20px", borderRadius: "4px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                      {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <Rocket size={12} />}
+                      {project.cover_image ? <img src={project.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <HugeiconsIcon icon={Rocket01Icon} size={12} />}
                     </div>
                     {project.name}
                   </button>

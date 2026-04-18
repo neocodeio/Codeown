@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { socket } from "../lib/socket";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -10,7 +11,19 @@ import { formatRelativeDate } from "../utils/date";
 import ProjectModal from "../components/ProjectModal";
 import CommentsSection from "../components/CommentsSection";
 import ContentRenderer from "../components/ContentRenderer";
-import { CaretLeft, GithubLogo, Star, BookmarkSimple, ShareNetwork, Handshake, Rocket, Plus } from "phosphor-react";
+import {
+  ArrowLeft01Icon,
+  GithubIcon,
+  FavouriteIcon,
+  Bookmark01Icon,
+  Share01Icon,
+  UserGroupIcon,
+  Rocket01Icon,
+  Add01Icon,
+  ArrowUpRight01Icon,
+  TriangleIcon
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import CreatePostModal from "../components/CreatePostModal";
 import Lightbox from "../components/Lightbox";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -23,9 +36,7 @@ import ProjectAnalyticsDashboard from "../components/ProjectAnalyticsDashboard";
 import { toast } from "react-toastify";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
+
 
 export default function ProjectDetail() {
   const { width } = useWindowSize();
@@ -254,7 +265,7 @@ export default function ProjectDetail() {
           borderRadius: "100px", border: "0.5px solid var(--border-hairline)",
           fontWeight: 700, fontSize: "11px", opacity: 0.6, whiteSpace: "nowrap"
         }}>
-          <Rocket size={14} weight="thin" />
+          <HugeiconsIcon icon={Rocket01Icon} size={14} />
           Local
         </div>
       )}
@@ -273,10 +284,10 @@ export default function ProjectDetail() {
             </div>
             <div style={{ display: "flex", gap: "2px" }}>
               {[1, 2, 3, 4, 5].map((s) => (
-                <Star
+                <HugeiconsIcon
+                  icon={FavouriteIcon}
                   key={s}
                   size={14}
-                  weight={(project.rating || 0) >= s ? "fill" : "regular"}
                   style={{ color: (project.rating || 0) >= s ? "var(--text-primary)" : "var(--text-tertiary)", cursor: "pointer" }}
                   onClick={() => handleRate(s)}
                 />
@@ -319,7 +330,7 @@ export default function ProjectDetail() {
             textDecoration: "none", fontWeight: 700, fontSize: "13px", justifyContent: "center",
             transition: "all 0.2s ease"
           }} onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--text-primary)"; }} onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-hairline)"; }}>
-            <GithubLogo size={18} weight="bold" /> Repository
+            <HugeiconsIcon icon={GithubIcon} size={18} /> Repository
           </a>
         )}
 
@@ -414,7 +425,7 @@ export default function ProjectDetail() {
                   transition: "all 0.15s ease",
                 }}
               >
-                <CaretLeft size={20} weight="thin" color="var(--text-primary)" />
+                <HugeiconsIcon icon={ArrowLeft01Icon} size={20} style={{ color: "var(--text-primary)" }} />
               </button>
               <h1 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
                 Project
@@ -471,14 +482,18 @@ export default function ProjectDetail() {
                     fontSize: "14px",
                     fontWeight: 700
                   }}>
-                    <Star size={18} weight={isLiked ? "fill" : "regular"} />
+                    <HugeiconsIcon
+                      icon={TriangleIcon}
+                      size={18}
+                      className={isLiked ? "hugeicon-filled" : ""}
+                    />
                     <span>{likeCount}</span>
                   </button>
                   <button onClick={handleSave} style={{ background: isSaved ? "var(--bg-hover)" : "transparent", border: "0.5px solid var(--border-hairline)", color: isSaved ? "var(--text-primary)" : "var(--text-tertiary)", borderRadius: "100px", padding: "8px", display: "flex", cursor: "pointer" }}>
-                    <BookmarkSimple size={18} weight={isSaved ? "fill" : "regular"} />
+                    <HugeiconsIcon icon={Bookmark01Icon} size={18} />
                   </button>
                   <button onClick={() => setIsShareModalOpen(true)} style={{ background: "transparent", border: "0.5px solid var(--border-hairline)", color: "var(--text-tertiary)", borderRadius: "100px", padding: "8px", display: "flex", cursor: "pointer" }}>
-                    <ShareNetwork size={18} />
+                    <HugeiconsIcon icon={Share01Icon} size={18} />
                   </button>
                 </div>
               </div>
@@ -512,7 +527,7 @@ export default function ProjectDetail() {
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
-                  <Plus size={16} weight="bold" />
+                  <HugeiconsIcon icon={Add01Icon} size={16} />
                   Ship Update
                 </button>
               )}
@@ -521,7 +536,7 @@ export default function ProjectDetail() {
               {project.founder_vision && (
                 <div style={{ marginBottom: "40px", padding: "24px", backgroundColor: "var(--bg-hover)", borderLeft: "4px solid var(--text-primary)", borderRadius: "0 var(--radius-sm) var(--radius-sm) 0" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "11px", fontWeight: 800, color: "var(--text-tertiary)", textTransform: "uppercase", marginBottom: "12px" }}>
-                    <Rocket size={16} weight="fill" /> Founder's Vision
+                    <HugeiconsIcon icon={Rocket01Icon} size={16} /> Founder's Vision
                   </div>
                   <p style={{ margin: 0, fontSize: "16px", fontWeight: 500, color: "var(--text-primary)", lineHeight: 1.6, fontStyle: "italic" }}>"{project.founder_vision}"</p>
                 </div>
@@ -610,7 +625,7 @@ export default function ProjectDetail() {
                     {project.looking_for_contributors && !isOwnProject && (
                       <div style={{ padding: "32px", backgroundColor: "var(--bg-hover)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-md)", marginBottom: "48px" }}>
                         <h3 style={{ margin: "0 0 12px", fontSize: "17px", fontWeight: 700, display: "flex", alignItems: "center", gap: "12px", color: "var(--text-primary)" }}>
-                          <Handshake size={24} weight="fill" /> Join as a Co-Founder
+                          <HugeiconsIcon icon={UserGroupIcon} size={24} /> Join as a Co-Founder
                         </h3>
                         <p style={{ margin: "0 0 24px", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>The creator is looking for specialized partners to help build this mission. Send a pitch if you're interested.</p>
                         <button
@@ -645,7 +660,7 @@ export default function ProjectDetail() {
                       </div>
                     ) : postsData.posts.length === 0 ? (
                       <div style={{ padding: "80px 40px", textAlign: "center", color: "var(--text-tertiary)", backgroundColor: "var(--bg-page)" }}>
-                        <Rocket size={40} weight="thin" style={{ marginBottom: "16px", opacity: 0.5 }} />
+                        <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ marginBottom: "16px", opacity: 0.5 }} />
                         <p style={{ fontWeight: 700, color: "var(--text-primary)", margin: "0 0 8px" }}>No ships yet</p>
                         <p style={{ fontSize: "13px" }}>Every post tagged with this project will appear here.</p>
                       </div>

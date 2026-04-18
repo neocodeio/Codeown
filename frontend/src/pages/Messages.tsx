@@ -6,29 +6,28 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { motion } from "framer-motion";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  PaperPlaneTilt,
-  CaretLeft,
-  ChatTeardropText,
-  NotePencil,
-  MagnifyingGlass,
-  Image as ImageIcon,
-  User as UserIcon,
-  X,
-  ArrowClockwise,
-  Trash,
-  DotsThree,
-  Microphone,
-  StopCircle,
-  Gif,
-  ChatTeardropDots,
-  Info,
-  Check,
-  Checks,
-  Play,
-  Pause,
-  Copy
-} from "phosphor-react";
+  SentIcon,
+  ArrowLeft01Icon,
+  Chat01Icon,
+  UserAdd01Icon,
+  Search01Icon,
+  Image01Icon,
+  UserIcon,
+  Cancel01Icon,
+  ReloadIcon,
+  Delete02Icon,
+  MoreHorizontalIcon,
+  Mic01Icon,
+  Square01Icon,
+  GifIcon,
+  InformationCircleIcon,
+  TickDouble02Icon,
+  PlayIcon,
+  PauseIcon,
+  CopyIcon
+} from "@hugeicons/core-free-icons";
 import { toast } from "react-toastify";
 import NewMessageModal from "../components/NewMessageModal";
 import GifPicker from "../components/GifPicker";
@@ -200,7 +199,7 @@ function VoiceWaveform({ url, isMine }: { url: string, isMine: boolean }) {
           e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
         }}
       >
-        {isPlaying ? <Pause size={22} weight="fill" /> : <Play size={22} weight="fill" style={{ marginLeft: isPlaying ? 0 : "2px" }} />}
+        {isPlaying ? <HugeiconsIcon icon={PauseIcon} size={22} /> : <HugeiconsIcon icon={PlayIcon} size={22} style={{ marginLeft: isPlaying ? 0 : "2px" }} />}
       </button>
       <canvas ref={canvasRef} style={{ height: "36px", flex: 1, maxWidth: "180px", cursor: "pointer" }} />
       <audio
@@ -315,7 +314,7 @@ const ConversationItem = memo(({
                   color: "var(--text-primary)",
                 }}
               >
-                <DotsThree size={22} weight="bold" />
+                <HugeiconsIcon icon={MoreHorizontalIcon} size={22} />
               </button>
               {convoMenuId === convo.id && (
                 <div style={{
@@ -334,8 +333,8 @@ const ConversationItem = memo(({
                   flexDirection: "column",
                   gap: "4px"
                 }}>
-                  <button onClick={() => onProfile(convo)} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px", border: "none", backgroundColor: "transparent", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 500, color: "var(--text-primary)" }}><UserIcon size={18} /> Profile</button>
-                  <button onClick={() => onDelete(convo.id)} disabled={deletingConvoId === convo.id} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px", border: "none", backgroundColor: "transparent", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 500, color: "#ff4444" }}><Trash size={18} /> Delete chat</button>
+                  <button onClick={() => onProfile(convo)} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px", border: "none", backgroundColor: "transparent", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 500, color: "var(--text-primary)" }}><HugeiconsIcon icon={UserIcon} size={18} /> Profile</button>
+                  <button onClick={() => onDelete(convo.id)} disabled={deletingConvoId === convo.id} style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px", border: "none", backgroundColor: "transparent", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: 500, color: "#ff4444" }}><HugeiconsIcon icon={Delete02Icon} size={18} /> Delete chat</button>
                 </div>
               )}
             </div>
@@ -564,7 +563,7 @@ const MessageBubble = memo(({
               onClick={(e) => { e.stopPropagation(); setMessageMenuId(messageMenuId === msg.id ? null : msg.id); }}
               style={{ background: "none", border: "none", padding: "4px", cursor: "pointer", color: "var(--text-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%" }}
             >
-              <DotsThree size={20} weight="bold" />
+              <HugeiconsIcon icon={MoreHorizontalIcon} size={20} />
             </button>
             {messageMenuId === msg.id && (
               <div style={{
@@ -595,11 +594,11 @@ const MessageBubble = memo(({
                     }}
                     style={{ width: "100%", padding: "12px 16px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}
                   >
-                    <Copy size={16} weight="bold" /> Copy text
+                    <HugeiconsIcon icon={CopyIcon} size={16} /> Copy text
                   </button>
                 )}
                 <button onClick={() => { onReply(msg); setMessageMenuId(null); }} style={{ width: "100%", padding: "12px 16px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
-                  <PaperPlaneTilt size={16} weight="bold" /> Reply
+                  <HugeiconsIcon icon={SentIcon} size={16} /> Reply
                 </button>
                 {isMine && (
                   <>
@@ -614,7 +613,7 @@ const MessageBubble = memo(({
                       </div>
                     ) : (
                       <button onClick={(e) => { e.stopPropagation(); setDeletingMessageId(msg.id); }} style={{ width: "100%", padding: "12px 16px", background: "none", border: "none", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "#ef4444" }}>
-                        <Trash size={16} weight="bold" /> Delete
+                        <HugeiconsIcon icon={Delete02Icon} size={16} /> Delete
                       </button>
                     )}
                   </>
@@ -641,11 +640,11 @@ const MessageBubble = memo(({
           msg.status === 'sending' ? (
             <div style={{ width: "8px", height: "8px", borderRadius: "50%", border: "1.5px solid var(--text-tertiary)", borderTopColor: "transparent", animation: "spin 1s linear infinite" }} />
           ) : msg.status === 'error' ? (
-            <Info size={12} weight="bold" color="#ef4444" />
+            <HugeiconsIcon icon={InformationCircleIcon} size={12} color="#ef4444" />
           ) : msg.is_read ? (
-            <Checks size={14} weight="bold" color="#3B82F6" />
+            <HugeiconsIcon icon={TickDouble02Icon} size={14} color="#3B82F6" />
           ) : (
-            <Check size={14} weight="bold" style={{ opacity: 0.6 }} />
+            <HugeiconsIcon icon={TickDouble02Icon} size={14} color="var(--text-tertiary)" />
           )
         )}
       </div>
@@ -1458,7 +1457,7 @@ export default function Messages() {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "22px", height: "22px" }}>
-                  <NotePencil size={22} weight="bold" />
+                  <HugeiconsIcon icon={UserAdd01Icon} size={22} />
                 </div>
               </button>
             </div>
@@ -1474,11 +1473,7 @@ export default function Messages() {
                 border: "0.5px solid var(--border-hairline)",
               }}
             >
-              <MagnifyingGlass
-                size={16}
-                weight="thin"
-                style={{ color: "var(--text-tertiary)", flexShrink: 0 }}
-              />
+              <HugeiconsIcon icon={Search01Icon} size={16} style={{ color: "var(--text-tertiary)", flexShrink: 0 }} />
               <input
                 type="text"
                 placeholder="Search..."
@@ -1547,11 +1542,7 @@ export default function Messages() {
                     border: "0.5px solid var(--border-hairline)"
                   }}
                 >
-                  <NotePencil
-                    size={24}
-                    weight="thin"
-                    style={{ color: "var(--text-tertiary)" }}
-                  />
+                  <HugeiconsIcon icon={UserAdd01Icon} size={24} style={{ color: "var(--text-tertiary)" }} />
                 </div>
                 <div>
                   <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "14px" }}>
@@ -1647,10 +1638,7 @@ export default function Messages() {
                       justifyContent: "center",
                     }}
                   >
-                    <CaretLeft
-                      size={20}
-                      weight="thin"
-                    />
+                    <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
                   </button>
                 )}
                 <div
@@ -1764,7 +1752,7 @@ export default function Messages() {
                         border: "0.5px solid var(--border-hairline)",
                         boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
                       }}>
-                        <ChatTeardropDots size={18} weight="fill" color="var(--text-primary)" />
+                        <HugeiconsIcon icon={Chat01Icon} size={18} color="var(--text-primary)" />
                       </div>
                     </div>
 
@@ -1801,7 +1789,7 @@ export default function Messages() {
                       alignItems: "center",
                       gap: "8px"
                     }}>
-                      <Info size={14} weight="bold" />
+                      <HugeiconsIcon icon={InformationCircleIcon} size={14} />
                       Messages are encrypted end-to-end
                     </div>
                   </div>
@@ -1914,7 +1902,7 @@ export default function Messages() {
                         justifyContent: "center"
                       }}
                     >
-                      <X size={18} weight="bold" />
+                      <HugeiconsIcon icon={Cancel01Icon} size={18} />
                     </button>
                   </div>
                 )}
@@ -1963,7 +1951,7 @@ export default function Messages() {
                           zIndex: 10
                         }}
                       >
-                        <X size={12} weight="bold" />
+                        <HugeiconsIcon icon={Cancel01Icon} size={12} />
                       </button>
                     </div>
                     <div style={{ flex: 1 }}>
@@ -2018,7 +2006,7 @@ export default function Messages() {
                         e.currentTarget.style.color = "var(--text-primary)";
                       }}
                     >
-                      <X size={16} weight="bold" color="currentColor" />
+                      <HugeiconsIcon icon={Cancel01Icon} size={16} />
                     </button>
                   </div>
                 )}
@@ -2055,7 +2043,7 @@ export default function Messages() {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
-                    <ImageIcon size={28} weight="regular" style={{ width: "28px", height: "28px" }} />
+                    <HugeiconsIcon icon={Image01Icon} size={28} />
                   </button>
 
                   {/* Gif Button */}
@@ -2082,7 +2070,7 @@ export default function Messages() {
                         if (!isGifPickerOpen) e.currentTarget.style.backgroundColor = "transparent";
                       }}
                     >
-                      <Gif size={28} weight={isGifPickerOpen ? "bold" : "regular"} style={{ width: "28px", height: "28px" }} />
+                      <HugeiconsIcon icon={GifIcon} size={28} />
                     </button>
 
                     {isGifPickerOpen && (
@@ -2131,7 +2119,7 @@ export default function Messages() {
                         if (!isRecording) e.currentTarget.style.backgroundColor = "transparent";
                       }}
                     >
-                      {isRecording ? <StopCircle size={28} weight="fill" style={{ width: "28px", height: "28px" }} /> : <Microphone size={28} weight="regular" style={{ width: "28px", height: "28px" }} />}
+                      {isRecording ? <HugeiconsIcon icon={Square01Icon} size={28} /> : <HugeiconsIcon icon={Mic01Icon} size={28} />}
                     </button>
                   )}
 
@@ -2213,13 +2201,9 @@ export default function Messages() {
                     }}
                   >
                     {uploadingImage || isUploadingAudio ? (
-                      <ArrowClockwise size={26} weight="bold" style={{ width: "26px", height: "26px" }} className="spin-animation" />
+                      <HugeiconsIcon icon={ReloadIcon} size={26} className="spin-animation" />
                     ) : (
-                      <PaperPlaneTilt
-                        size={26}
-                        weight="fill"
-                        style={{ width: "26px", height: "26px" }}
-                      />
+                      <HugeiconsIcon icon={SentIcon} size={26} />
                     )}
                   </button>
                 </form>
@@ -2251,11 +2235,7 @@ export default function Messages() {
                   border: "0.5px solid var(--border-hairline)"
                 }}
               >
-                <ChatTeardropText
-                  size={32}
-                  weight="thin"
-                  style={{ color: "var(--text-tertiary)" }}
-                />
+                <HugeiconsIcon icon={Chat01Icon} size={32} style={{ color: "var(--text-tertiary)" }} />
               </div>
               <div>
                 <h3
@@ -2337,7 +2317,7 @@ export default function Messages() {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)"}
           >
-            <X size={24} weight="bold" />
+            <HugeiconsIcon icon={Cancel01Icon} size={24} />
           </button>
 
           <img

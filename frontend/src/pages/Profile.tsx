@@ -27,13 +27,33 @@ import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
 import XPInfo from "../components/XPInfo";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  PencilSimple, SignOut, Key, ShareNetwork, CalendarBlank, SquaresFour,
-  Rocket, Buildings, BookmarkSimple, DotsThreeVertical, PushPin, Camera,
-  MapPin, Link as LinkIcon, TwitterLogo, LinkedinLogo, GithubLogo,
-  ChartBar, IdentificationCard, Plus, Handshake, FileText, InstagramLogo,
-  Gift
-} from "phosphor-react";
+  PencilEdit02Icon,
+  Logout02Icon,
+  Key01Icon,
+  Share01Icon,
+  Calendar03Icon,
+  LicenseIcon,
+  Rocket01Icon,
+  Building02Icon,
+  Bookmark02Icon,
+  MoreVerticalIcon,
+  PinIcon,
+  Camera01Icon,
+  Location01Icon,
+  Link01Icon,
+  NewTwitterIcon,
+  Linkedin01Icon,
+  GithubIcon,
+  Chart01Icon,
+  IdentityCardIcon,
+  PlusSignIcon,
+  WorkIcon,
+  Note01Icon,
+  InstagramIcon,
+  GiftIcon
+} from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -331,7 +351,7 @@ export default function Profile() {
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(15, 23, 42, 0.8)"; e.currentTarget.style.transform = "scale(1.05)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(15, 23, 42, 0.6)"; e.currentTarget.style.transform = "scale(1)"; }}
               >
-                <Camera size={22} weight="bold" />
+                <HugeiconsIcon icon={Camera01Icon} size={22} />
               </button>
             </div>
 
@@ -344,7 +364,7 @@ export default function Profile() {
               >
                 <AvailabilityBadge avatarUrl={avatarUrl} name={userProfile?.name || user?.fullName || "User"} size={isMobile ? 80 : 120} isOpenToOpportunities={userProfile?.is_pro === true && userProfile?.is_hirable === true} />
                 <div style={{ position: "absolute", bottom: "4px", right: "4px", width: "24px", height: "24px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--bg-page)", zIndex: 20, boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)", transition: "transform 0.2s ease" }} >
-                  <Camera size={12} weight="bold" />
+                  <HugeiconsIcon icon={Camera01Icon} size={12} />
                 </div>
               </div>
 
@@ -359,36 +379,36 @@ export default function Profile() {
                     Portfolio
                   </button>
                   <button onClick={() => setIsEditModalOpen(true)} style={{ padding: "8px", borderRadius: "100px", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} >
-                    <PencilSimple size={16} weight="regular" />
+                    <HugeiconsIcon icon={PencilEdit02Icon} size={16} />
                   </button>
                   {userProfile?.is_pro && (
                     <button onClick={() => navigate("/analytics")} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)", backgroundColor: "transparent", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} >
-                      <ChartBar size={16} weight="regular" />
+                      <HugeiconsIcon icon={Chart01Icon} size={16} />
                       Analytics
                       <span style={{ fontSize: '9px', backgroundColor: 'var(--text-primary)', color: 'var(--bg-page)', padding: '2px 4px', borderRadius: 'var(--radius-xs)', fontWeight: 700 }}>PRO</span>
                     </button>
                   )}
                   <button onClick={() => setIsIDCardModalOpen(true)} style={{ padding: "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="View ID card" >
-                    <IdentificationCard size={18} weight="regular" />
+                    <HugeiconsIcon icon={IdentityCardIcon} size={18} />
                   </button>
                 </div>
 
                 <div style={{ display: "flex", gap: "8px", marginLeft: isMobile ? 0 : "auto", width: isMobile ? "100%" : "auto", justifyContent: isMobile ? "flex-start" : "flex-end", flexWrap: "wrap", }}>
                   <button onClick={() => { const u = userProfile?.username || user?.username; const shareUrl = u ? `${window.location.origin}/${u}` : `${window.location.origin}/user/${user?.id}`; navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!")); }} style={{ padding: "6px 8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="Share profile" >
-                    <ShareNetwork size={18} weight="thin" style={{ verticalAlign: "middle" }} />
+                    <HugeiconsIcon icon={Share01Icon} size={18} />
                   </button>
                   <div style={{ position: "relative" }}>
                     <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }} style={{ padding: "6px 8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="More options" >
-                      <DotsThreeVertical size={18} weight="thin" style={{ verticalAlign: "middle" }} />
+                      <HugeiconsIcon icon={MoreVerticalIcon} size={18} />
                     </button>
                     {isMenuOpen && (
                       <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", width: "200px", zIndex: 100, backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)", overflow: "hidden", animation: "tabContentEnter 0.2s ease-out" }}>
                         <button style={{ width: "100%", padding: "12px 16px", border: "none", background: "none", textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", fontWeight: 600, fontSize: "13px", color: "var(--text-primary)", transition: "background-color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }} >
-                          <Key size={18} weight="thin" />
+                          <HugeiconsIcon icon={Key01Icon} size={18} />
                           Reset Password
                         </button>
                         <button style={{ width: "100%", padding: "12px 16px", border: "none", background: "none", textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", fontWeight: 600, fontSize: "13px", color: "#ef4444", borderTop: "0.5px solid var(--border-hairline)", transition: "background-color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} onClick={() => { setIsMenuOpen(false); handleSignOut(); }} >
-                          <SignOut size={18} weight="thin" />
+                          <HugeiconsIcon icon={Logout02Icon} size={18} />
                           Sign Out
                         </button>
                       </div>
@@ -404,7 +424,7 @@ export default function Profile() {
               {userProfile?.bio && <p style={{ fontSize: "15px", lineHeight: 1.6, color: "var(--text-secondary)", margin: "0 0 24px 0" }}> <BioRenderer bio={userProfile.bio} /> </p>}
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", alignItems: "center", color: "var(--text-tertiary)", fontSize: "13px", marginBottom: "20px", fontWeight: 500 }}>
-                {userProfile?.location && <span style={{ display: "flex", alignItems: "center", gap: "6px" }}> <MapPin size={14} weight="regular" /> {userProfile.location} </span>}
+                {userProfile?.location && <span style={{ display: "flex", alignItems: "center", gap: "6px" }}> <HugeiconsIcon icon={Location01Icon} size={14} /> {userProfile.location} </span>}
                 {userProfile?.website_url && (
                   <a
                     href={userProfile.website_url.startsWith("http") ? userProfile.website_url : `https://${userProfile.website_url}`}
@@ -412,11 +432,11 @@ export default function Profile() {
                     rel="noopener noreferrer"
                     style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-primary)", textDecoration: "none" }}
                   >
-                    <LinkIcon size={14} weight="regular" />
+                    <HugeiconsIcon icon={Link01Icon} size={14} />
                     {userProfile.website_url.replace(/^https?:\/\//, "")}
                   </a>
                 )}
-                {userProfile?.created_at && <span style={{ display: "flex", alignItems: "center", gap: "6px" }}> <CalendarBlank size={14} weight="regular" /> Joined {formatProfileJoinDate(userProfile.created_at)} </span>}
+                {userProfile?.created_at && <span style={{ display: "flex", alignItems: "center", gap: "6px" }}> <HugeiconsIcon icon={Calendar03Icon} size={14} /> Joined {formatProfileJoinDate(userProfile.created_at)} </span>}
               </div>
 
               {userProfile?.skills && userProfile.skills.length > 0 && (
@@ -442,10 +462,10 @@ export default function Profile() {
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                  {userProfile?.github_url && <a href={userProfile.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="GitHub"> <GithubLogo size={20} weight="thin" /> </a>}
-                  {userProfile?.linkedin_url && <a href={userProfile.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="LinkedIn"> <LinkedinLogo size={20} weight="thin" /> </a>}
-                  {userProfile?.twitter_url && <a href={userProfile.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Twitter"> <TwitterLogo size={20} weight="thin" /> </a>}
-                  {userProfile?.instagram_url && <a href={userProfile.instagram_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Instagram"> <InstagramLogo size={20} weight="thin" /> </a>}
+                  {userProfile?.github_url && <a href={userProfile.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="GitHub"> <HugeiconsIcon icon={GithubIcon} size={20} /> </a>}
+                  {userProfile?.linkedin_url && <a href={userProfile.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="LinkedIn"> <HugeiconsIcon icon={Linkedin01Icon} size={20} /> </a>}
+                  {userProfile?.twitter_url && <a href={userProfile.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Twitter"> <HugeiconsIcon icon={NewTwitterIcon} size={20} /> </a>}
+                  {userProfile?.instagram_url && <a href={userProfile.instagram_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Instagram"> <HugeiconsIcon icon={InstagramIcon} size={20} /> </a>}
                 </div>
               </div>
 
@@ -537,7 +557,7 @@ export default function Profile() {
                           >
                             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                               <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <Gift size={18} weight="duotone" />
+                                <HugeiconsIcon icon={GiftIcon} size={18} />
                               </div>
                               <div>
                                 <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>Grow the community</div>
@@ -578,14 +598,14 @@ export default function Profile() {
             <div style={{ padding: isMobile ? "0 16px" : "0 24px", }}>
               <div className="tabs-row" style={{ display: "flex", overflowX: "auto", borderBottom: "0.5px solid var(--border-hairline)", marginBottom: "32px", gap: "24px", padding: isMobile ? "0 16px" : "0" }}>
                 {[
-                  { id: "posts", icon: FileText, label: "Posts" },
-                  { id: "projects", icon: SquaresFour, label: "Projects" },
-                  { id: "startups", icon: Buildings, label: "Startups" },
-                  { id: "applications", icon: Handshake, label: "Applications" },
-                  { id: "saved", icon: BookmarkSimple, label: "Saved" }
+                  { id: "posts", icon: LicenseIcon, label: "Posts" },
+                  { id: "projects", icon: Rocket01Icon, label: "Projects" },
+                  { id: "startups", icon: Building02Icon, label: "Startups" },
+                  { id: "applications", icon: WorkIcon, label: "Applications" },
+                  { id: "saved", icon: Bookmark02Icon, label: "Saved" }
                 ].map((tab) => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
-                    <tab.icon size={18} weight={activeTab === tab.id ? "fill" : "thin"} />
+                    <HugeiconsIcon icon={tab.icon} size={18} />
                     {tab.label}
                   </button>
                 ))}
@@ -596,7 +616,7 @@ export default function Profile() {
                   <div className="tab-content-enter">
                     {postsLoading ? <div className="skeleton-pulse" style={{ height: "200px" }} /> : posts.length === 0 ? (
                       <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                        <SquaresFour size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                        <HugeiconsIcon icon={Note01Icon} size={48} style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
                         <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No posts yet.</p>
                       </div>
                     ) : (
@@ -606,7 +626,7 @@ export default function Profile() {
                         return 0;
                       }).map((p) => (
                         <div key={p.id} style={{ position: "relative" }}>
-                          {userProfile?.pinned_post_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700 }}> <PushPin size={12} weight="fill" /> Pinned </div>)}
+                          {userProfile?.pinned_post_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700 }}> <HugeiconsIcon icon={PinIcon} size={12} /> Pinned </div>)}
                           <PostCard post={p} onUpdated={fetchUserPosts} isPinned={userProfile?.pinned_post_id === p.id} />
                         </div>
                       ))
@@ -618,9 +638,9 @@ export default function Profile() {
                   <div className="tab-content-enter">
                     {projectsLoading ? <div className="skeleton-pulse" style={{ height: "200px" }} /> : projects.length === 0 ? (
                       <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                        <Rocket size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                        <HugeiconsIcon icon={Rocket01Icon} size={48} style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
                         <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px", marginBottom: "24px" }}>No projects added yet.</p>
-                        <button onClick={() => setIsProjectModalOpen(true)} style={{ margin: "0 auto", padding: "10px 24px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", cursor: "pointer", }} > <Plus size={14} weight="bold" style={{ marginRight: '8px' }} /> New project </button>
+                        <button onClick={() => setIsProjectModalOpen(true)} style={{ margin: "0 auto", padding: "10px 24px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", cursor: "pointer", }} > <HugeiconsIcon icon={PlusSignIcon} size={14} style={{ marginRight: '8px' }} /> New project </button>
                       </div>
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -630,7 +650,7 @@ export default function Profile() {
                           return 0;
                         }).map((p) => (
                           <div key={p.id} style={{ position: "relative" }}>
-                            {userProfile?.pinned_project_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700 }}> <PushPin size={12} weight="fill" /> Pinned </div>)}
+                            {userProfile?.pinned_project_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700 }}> <HugeiconsIcon icon={PinIcon} size={12} /> Pinned </div>)}
                             <ProjectCard project={p} onUpdated={fetchUserProjects} isPinned={userProfile?.pinned_project_id === p.id} />
                           </div>
                         ))}
@@ -643,7 +663,7 @@ export default function Profile() {
                   <div className="tab-content-enter">
                     {loadingStartups ? <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}> {[...Array(2)].map((_, i) => (<div key={i} className="skeleton-pulse" style={{ height: "160px", width: "100%", borderRadius: "var(--radius-sm)" }} />))} </div> : startups.length === 0 ? (
                       <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                        <Buildings size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                        <HugeiconsIcon icon={Building02Icon} size={48} style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
                         <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px", marginBottom: "24px" }}>No startups founded yet.</p>
                         <button onClick={() => navigate("/startup/new")} style={{ margin: "0 auto", padding: "10px 24px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, backgroundColor: "var(--text-primary)", color: "var(--bg-page)", border: "none", cursor: "pointer", }} > Launch a Startup </button>
                       </div>
@@ -659,7 +679,7 @@ export default function Profile() {
                   <div className="tab-content-enter">
                     {loadingApps ? <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}> {[...Array(3)].map((_, i) => (<div key={i} className="skeleton-pulse" style={{ height: "140px", width: "100%", borderRadius: "var(--radius-sm)" }} />))} </div> : applications.length === 0 ? (
                       <div style={{ padding: "60px 24px", textAlign: "center", backgroundColor: "rgba(255,255,255,0.02)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)" }}>
-                        <Handshake size={32} weight="thin" style={{ color: "var(--text-tertiary)", marginBottom: "16px" }} />
+                        <HugeiconsIcon icon={WorkIcon} size={32} style={{ color: "var(--text-tertiary)", marginBottom: "16px" }} />
                         <p style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px" }}>No applications</p>
                         <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginTop: "8px" }}>You haven't applied to join any projects as a co-founder yet.</p>
                       </div>
@@ -691,14 +711,14 @@ export default function Profile() {
                     {savedSubTab === "posts" ? (
                       savedPostsLoading ? <div className="skeleton-pulse" style={{ height: "200px" }} /> : savedPosts.length === 0 ? (
                         <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                          <BookmarkSimple size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                          <HugeiconsIcon icon={Bookmark02Icon} size={48} style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
                           <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No saved posts.</p>
                         </div>
                       ) : (savedPosts.map((p) => <PostCard key={p.id} post={p} onUpdated={fetchSavedPosts} />))
                     ) : (
                       savedProjectsLoading ? <div className="skeleton-pulse" style={{ height: "200px" }} /> : savedProjects.length === 0 ? (
                         <div style={{ textAlign: "center", padding: "80px 20px" }}>
-                          <BookmarkSimple size={48} weight="thin" style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
+                          <HugeiconsIcon icon={Bookmark02Icon} size={48} style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
                           <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No saved projects.</p>
                         </div>
                       ) : (savedProjects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />))

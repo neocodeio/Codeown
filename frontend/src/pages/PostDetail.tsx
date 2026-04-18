@@ -24,6 +24,7 @@ import {
   Bookmark02Icon,
   Chart01Icon,
   SentIcon,
+  FavouriteIcon,
   CheckmarkCircle01Icon,
   Download01Icon,
   Attachment01Icon,
@@ -40,8 +41,7 @@ import SendToChatModal from "../components/SendToChatModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import EditPostModal from "../components/EditPostModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import GifPicker from "../components/GifPicker";
 import RollingNumber from "../components/RollingNumber";
 import { socket } from "../lib/socket";
@@ -494,14 +494,15 @@ export default function PostDetail() {
                       position: "absolute",
                       top: "100%",
                       right: 0,
+                      marginTop: "8px",
                       backgroundColor: "var(--bg-card)",
-                      borderRadius: "12px",
+                      borderRadius: "14px",
                       border: "0.5px solid var(--border-hairline)",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                      boxShadow: "0 10px 30px -10px rgba(0,0,0,0.15)",
                       padding: "6px",
                       zIndex: 1000,
-                      minWidth: "160px",
-                      animation: "reactionFadeUp 0.15s ease-out"
+                      minWidth: isMobile ? "200px" : "180px",
+                      animation: "dropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)"
                     }}>
                       <button
                         onClick={handlePin}
@@ -509,23 +510,30 @@ export default function PostDetail() {
                           width: "100%",
                           display: "flex",
                           alignItems: "center",
-                          gap: "10px",
-                          padding: "10px 12px",
-                          borderRadius: "8px",
+                          gap: "12px",
+                          padding: "10px 14px",
+                          borderRadius: "10px",
                           border: "none",
                           backgroundColor: "transparent",
                           color: "var(--text-primary)",
-                          fontSize: "13px",
+                          fontSize: "14px",
                           fontWeight: 600,
                           cursor: "pointer",
-                          transition: "all 0.15s",
-                          textAlign: "left"
+                          transition: "all 0.1s ease",
+                          textAlign: "left",
+                          whiteSpace: "nowrap"
                         }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                          e.currentTarget.style.transform = "translateX(4px)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.transform = "none";
+                        }}
                       >
-                        <HugeiconsIcon icon={PinIcon} size={18} {...({ variant: isPinned ? "solid" : "outline" } as any)} />
-                        {isPinned ? "Unpin Post" : "Pin Post"}
+                        <HugeiconsIcon icon={PinIcon} size={18} />
+                        {isPinned ? "Unpin from profile" : "Pin to profile"}
                       </button>
 
                       <button
@@ -534,26 +542,33 @@ export default function PostDetail() {
                           width: "100%",
                           display: "flex",
                           alignItems: "center",
-                          gap: "10px",
-                          padding: "10px 12px",
-                          borderRadius: "8px",
+                          gap: "12px",
+                          padding: "10px 14px",
+                          borderRadius: "10px",
                           border: "none",
                           backgroundColor: "transparent",
                           color: "var(--text-primary)",
-                          fontSize: "13px",
+                          fontSize: "14px",
                           fontWeight: 600,
                           cursor: "pointer",
-                          transition: "all 0.15s",
-                          textAlign: "left"
+                          transition: "all 0.1s ease",
+                          textAlign: "left",
+                          whiteSpace: "nowrap"
                         }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                          e.currentTarget.style.transform = "translateX(4px)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.transform = "none";
+                        }}
                       >
                         <HugeiconsIcon icon={PencilEdit01Icon} size={18} />
                         Edit Post
                       </button>
 
-                      <div style={{ height: "0.5px", backgroundColor: "var(--border-hairline)", margin: "4px 8px" }} />
+                      <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", margin: "4px 8px" }} />
 
                       <button
                         onClick={() => { setIsDeleteModalOpen(true); setIsMenuOpen(false); }}
@@ -561,20 +576,27 @@ export default function PostDetail() {
                           width: "100%",
                           display: "flex",
                           alignItems: "center",
-                          gap: "10px",
-                          padding: "10px 12px",
-                          borderRadius: "8px",
+                          gap: "12px",
+                          padding: "10px 14px",
+                          borderRadius: "10px",
                           border: "none",
                           backgroundColor: "transparent",
                           color: "#ef4444",
-                          fontSize: "13px",
+                          fontSize: "14px",
                           fontWeight: 600,
                           cursor: "pointer",
-                          transition: "all 0.15s",
-                          textAlign: "left"
+                          transition: "all 0.1s ease",
+                          textAlign: "left",
+                          whiteSpace: "nowrap"
                         }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.08)"}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.08)";
+                          e.currentTarget.style.transform = "translateX(4px)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.transform = "none";
+                        }}
                       >
                         <HugeiconsIcon icon={Delete02Icon} size={18} />
                         Delete Post
@@ -874,13 +896,10 @@ export default function PostDetail() {
                     disabled={likeLoading}
                     style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "#f91880" : "var(--text-secondary)", cursor: "pointer" }}
                   >
-                    <FontAwesomeIcon
-                      icon={isLiked ? faHeartSolid : faHeartRegular}
-                      style={{
-                        fontSize: "20px",
-                        color: isLiked ? "#f91880" : "var(--text-secondary)",
-                        transition: "all 0.2s ease"
-                      }}
+                    <HugeiconsIcon
+                      icon={FavouriteIcon}
+                      size={20}
+                      className={isLiked ? "hugeicon-filled" : ""}
                     />
                     <span style={{ fontSize: "13px", fontWeight: 600 }}>{likeCount}</span>
                   </button>
