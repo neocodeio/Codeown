@@ -6,8 +6,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Image01Icon,
   SourceCodeIcon,
-  BoldIcon,
-  ItalicIcon,
+  TextBoldIcon,
+  TextItalicIcon,
   Heading01Icon,
   Link01Icon,
   Attachment01Icon,
@@ -494,8 +494,8 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
                 <input type="file" onChange={handleFileUpload} style={{ display: "none" }} />
               </label>
               <div style={{ width: "1px", height: "16px", backgroundColor: "var(--border-hairline)", margin: "0 6px" }} />
-              <button className="editor-toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><HugeiconsIcon icon={BoldIcon} size={18} /></button>
-              <button className="editor-toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><HugeiconsIcon icon={ItalicIcon} size={18} /></button>
+              <button className="editor-toolbar-btn" title="Bold" onClick={() => insertMarkdown("**", "**")}><HugeiconsIcon icon={TextBoldIcon} size={18} /></button>
+              <button className="editor-toolbar-btn" title="Italic" onClick={() => insertMarkdown("*", "*")}><HugeiconsIcon icon={TextItalicIcon} size={18} /></button>
               <button className="editor-toolbar-btn" title="Heading" onClick={() => insertBlockMarkdown("### ")}><HugeiconsIcon icon={Heading01Icon} size={18} /></button>
               <button className="editor-toolbar-btn" title="Code" onClick={() => insertMarkdown("`", "`")}><HugeiconsIcon icon={SourceCodeIcon} size={18} /></button>
               <button className="editor-toolbar-btn" title="Link" onClick={() => insertMarkdown("[", "](https://)")}><HugeiconsIcon icon={Link01Icon} size={18} /></button>
