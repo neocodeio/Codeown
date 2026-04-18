@@ -20,8 +20,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, _errorInfo: React.ErrorInfo) {
-    const isChunkLoadError = 
-      error?.name === 'ChunkLoadError' || 
+    const isChunkLoadError =
+      error?.name === 'ChunkLoadError' ||
       error?.message?.toLowerCase().includes('failed to fetch dynamically imported module') ||
       error?.message?.toLowerCase().includes('importing a module script failed') ||
       error?.message?.toLowerCase().includes('loading chunk') ||
@@ -29,22 +29,25 @@ export class ErrorBoundary extends Component<Props, State> {
       error?.message?.toLowerCase().includes('load failed');
 
     if (isChunkLoadError) {
-      console.warn("ChunkLoadError detected - Refreshing page...");
-      const refreshCount = Number(sessionStorage.getItem('chunk_error_count') || 0);
-      
-      // Allow up to 2 automatic refreshes before giving up
-      if (refreshCount < 2) {
-        sessionStorage.setItem('chunk_error_count', String(refreshCount + 1));
-        window.location.reload();
-      }
+      console.warn("Update detected - Performing silent refresh to load latest version...");
+      // We perform a silent reload immediately to fetch the new code chunks
+      // This prevents the user from seeing the 'Something went wrong' screen
+      window.location.reload();
     }
   }
 
   render() {
     if (this.state.hasError) {
-      const isChunkLoadError = 
-        this.state.error?.name === 'ChunkLoadError' || 
-        this.state.error?.message?.includes('Failed to fetch dynamically imported module');
+      const isChunkLoadError =
+        this.state.error?.name === 'ChunkLoadError' ||
+        this.state.error?.message?.toLowerCase().includes('failed to fetch dynamically imported module') ||
+        this.state.error?.message?.toLowerCase().includes('importing a module script failed') ||
+        this.state.error?.message?.toLowerCase().includes('loading chunk') ||
+        this.state.error?.message?.toLowerCase().includes('load failed');
+
+      // If it's a chunk error, we are already triggering a reload in componentDidCatch.
+      // We return null here to prevent the "Something went wrong" UI from flashing.
+      if (isChunkLoadError) return null;
 
       return (
         <div style={{
@@ -69,7 +72,7 @@ export class ErrorBoundary extends Component<Props, State> {
           }}>
             <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>Something went wrong</h2>
             <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: "1.6" }}>
-              {isChunkLoadError 
+              {isChunkLoadError
                 ? "The application was updated. A refresh is required to continue."
                 : (this.state.error?.message || "An unexpected error occurred")}
             </p>
