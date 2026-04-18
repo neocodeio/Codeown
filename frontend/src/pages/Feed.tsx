@@ -237,7 +237,6 @@ export default function Feed() {
                                                     marginLeft: i === 0 ? 0 : "-12px",
                                                     objectFit: "cover",
                                                     zIndex: 3 - i,
-                                                    boxShadow: "0 0 10px rgba(0,0,0,0.1)"
                                                 }}
                                             />
                                         ))}
