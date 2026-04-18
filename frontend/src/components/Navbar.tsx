@@ -128,6 +128,27 @@ export default function Navbar() {
 
   const postSelectorRef = useRef<HTMLDivElement>(null);
 
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      // Hide if scrolling down more than 100px, show if scrolling up
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    if (isMobile) {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    }
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (postSelectorRef.current && !postSelectorRef.current.contains(event.target as Node)) {
@@ -360,7 +381,22 @@ export default function Navbar() {
 
   return (
     <>
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "64px", backgroundColor: "var(--bg-page)", borderBottom: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", zIndex: 2000 }}>
+      <div style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "64px",
+        backgroundColor: "var(--bg-page)",
+        borderBottom: "0.5px solid var(--border-hairline)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 20px",
+        zIndex: 2000,
+        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        transform: isVisible ? "translateY(0)" : "translateY(-100%)"
+      }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
           <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "24px", width: "auto" }} />
           <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>Codeown</span>
@@ -371,7 +407,22 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, backgroundColor: "var(--bg-page)", borderTop: "0.5px solid var(--border-hairline)", display: "flex", justifyContent: "space-around", alignItems: "center", padding: "0 8px env(safe-area-inset-bottom, 16px) 8px", height: "calc(64px + env(safe-area-inset-bottom, 0px))", zIndex: 2000 }}>
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "var(--bg-page)",
+        borderTop: "0.5px solid var(--border-hairline)",
+        display: "flex",
+        justifyContent: "space-around",
+        alignItems: "center",
+        padding: "0 8px env(safe-area-inset-bottom, 16px) 8px",
+        height: "calc(64px + env(safe-area-inset-bottom, 0px))",
+        zIndex: 2000,
+        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        transform: isVisible ? "translateY(0)" : "translateY(100%)"
+      }}>
         <Link to="/" style={{ flex: 1, display: "flex", justifyContent: "center", color: location.pathname === "/" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Home01Icon} size={22} /></Link>
         <Link to="/search" style={{ flex: 1, display: "flex", justifyContent: "center", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Search01Icon} size={22} /></Link>
 

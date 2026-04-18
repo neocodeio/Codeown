@@ -31,16 +31,27 @@ export default function Feed() {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [newPostActors, setNewPostActors] = useState<any[]>([]);
     const [scrolledDown, setScrolledDown] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const lastScrollY = useRef(0);
 
     // Track scroll position for the pill
     useEffect(() => {
         const handleScroll = () => {
-            setScrolledDown(window.scrollY > 600);
-            if (window.scrollY < 100) {
+            const currentScrollY = window.scrollY;
+            setScrolledDown(currentScrollY > 600);
+            if (currentScrollY < 100) {
                 setNewPostActors([]);
             }
+
+            // Mobile header visibility logic
+            if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+                setIsVisible(false);
+            } else {
+                setIsVisible(true);
+            }
+            lastScrollY.current = currentScrollY;
         };
-        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
@@ -250,11 +261,12 @@ export default function Feed() {
                     {/* ── Precision Glassmorphism Header ── */}
                     <div style={{
                         position: "sticky",
-                        top: isMobile ? "64px" : "0",
+                        top: isMobile ? (isVisible ? "64px" : "0") : "0",
                         zIndex: 100,
                         backgroundColor: "var(--bg-header)",
                         backdropFilter: "blur(24px)",
                         borderBottom: "0.5px solid var(--border-hairline)",
+                        transition: "top 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     }}>
                         <div style={{
                             display: "flex",
