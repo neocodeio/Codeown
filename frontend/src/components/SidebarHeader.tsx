@@ -57,9 +57,11 @@ export default function SidebarHeader() {
             justifyContent: "flex-end",
             padding: "0 20px",
             gap: "10px",
-            zIndex: 10,
+            zIndex: 100,
             width: "100%",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
+            position: "sticky",
+            top: 0
         }}>
             {/* Search Input */}
             <div style={{
