@@ -128,10 +128,6 @@ export default function UserProfile() {
     };
   }, [param, user, queryClient]);
 
-  // Re-defining query options that were split by the injection
-  // Note: In a real scenario, these would be part of the original useQuery object
-  // but following the instruction to inject the logic into the flow:
-
   const isOwnProfile = currentUser?.id === user?.id;
 
   // 2. Secondary Actions (Follow status, tracking)
@@ -280,7 +276,7 @@ export default function UserProfile() {
         `}</style>
 
         <div style={{ display: "flex", justifyContent: (isDesktop && !isMobile) ? "flex-start" : "center", width: isDesktop ? "1020px" : "100%", maxWidth: "1020px", margin: (isDesktop && !isMobile) ? "0" : "0 auto", padding: "0", position: "relative", }}>
-          <div style={{ width: isDesktop ? "var(--feed-width)" : "100%", maxWidth: isDesktop ? "var(--feed-width)" : "700px", margin: isDesktop ? "0" : "0 auto", flexShrink: 0, borderLeft: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)", borderRight: (isDesktop && !isMobile) ? "0.5px solid var(--border-hairline)" : "none", backgroundColor: "var(--bg-page)", minHeight: "100vh", position: "relative", }}>
+          <div style={{ width: isDesktop ? "var(--feed-width)" : "100%", maxWidth: isDesktop ? "var(--feed-width)" : "700px", margin: isDesktop ? "0" : "0 auto", flexShrink: 0, borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)", borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", minHeight: "100vh", position: "relative", }}>
             <div style={{ width: "100%", height: isMobile ? "120px" : "240px", backgroundColor: "var(--bg-hover)", position: "relative", overflow: "hidden", borderBottom: "0.5px solid var(--border-hairline)", }}>
               {user.banner_url ? <img src={user.banner_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <div style={{ width: "100%", height: "100%", backgroundColor: "var(--bg-hover)" }} />}
             </div>
@@ -485,7 +481,7 @@ export default function UserProfile() {
             </div>
           </div>
 
-          {isDesktop && !isMobile && (<aside style={{ width: "340px", position: "sticky", top: 0, height: "100vh", flexShrink: 0, zIndex: 1, overflowY: "auto", msOverflowStyle: "none", scrollbarWidth: "none" }}> <RecommendedUsersSidebar /> </aside>)}
+          {isDesktop && (<aside style={{ width: "300px", position: "sticky", top: 0, height: "100vh", flexShrink: 0, zIndex: 1, display: "flex", flexDirection: "column" }}> <RecommendedUsersSidebar /> </aside>)}
         </div>
 
         {user?.id && (<FollowersModal isOpen={followersModalOpen} onClose={() => setFollowersModalOpen(false)} userId={user.id} type={followersModalType} title={followersModalType === "followers" ? "Followers" : "Following"} />)}

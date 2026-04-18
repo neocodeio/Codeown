@@ -250,7 +250,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         transition: "background-color 0.15s linear",
         width: "100%",
         boxSizing: "border-box",
-        borderRadius: "var(--radius-md)"
       }}
       onClick={handleCardClick}
       onMouseEnter={(e) => {

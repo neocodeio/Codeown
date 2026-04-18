@@ -18,7 +18,7 @@ import { formatRelativeDate } from "../utils/date";
 import { useProjectLikes } from "../hooks/useProjectLikes";
 
 import AvailabilityBadge from "./AvailabilityBadge";
-// import donosLogo from "../assets/donos.logo.png";
+import SidebarHeader from "./SidebarHeader";
 
 const getInitials = (title: string) => {
     const parts = title.trim().split(/\s+/);
@@ -199,6 +199,7 @@ export default function RecommendedUsersSidebar() {
                 .sidebar-title { font-size: 13px; font-weight: 800; color: var(--text-tertiary); margin: 0; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
                 .sidebar-item { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 12px; }
                 .skeleton-pulse { height: 40px; background-color: var(--bg-hover); border-radius: 12px; animation: skeleton-pulse 2s infinite ease-in-out; }
+                .header-search-input::placeholder { font-size: 12px; opacity: 0.6; }
                 @keyframes skeleton-pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
                 @keyframes pulse-green {
                     0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 186, 124, 0.7); }
@@ -206,6 +207,8 @@ export default function RecommendedUsersSidebar() {
                     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 186, 124, 0); }
                 }
             `}</style>
+
+            <SidebarHeader />
 
             {/* Section 1: Who to follow */}
             <div className="sidebar-section">

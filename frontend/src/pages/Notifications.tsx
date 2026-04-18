@@ -30,6 +30,8 @@ export default function NotificationsPage() {
     const { isSignedIn } = useClerkAuth();
     const navigate = useNavigate();
     const { width } = useWindowSize();
+    const isMobile = width < 768;
+    const isDesktop = width >= 1200;
 
     // Automatically mark all as read when entering the page
     useEffect(() => {
@@ -98,109 +100,88 @@ export default function NotificationsPage() {
         const username = notification.actor?.username;
 
         const nameWrapper = (
-            <span style={{ fontWeight: 600, display: "inline-flex", alignItems: "center", color: "var(--text-primary)", marginRight: "4px", fontSize: "14px" }}>
+            <span
+                style={{ fontWeight: 700, color: "var(--text-primary)", cursor: "pointer" }}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(username ? `/${username}` : `/user/${notification.actor_id}`);
+                }}
+            >
                 {actorName}
-                <VerifiedBadge username={username} size="14px" />
+                <VerifiedBadge username={username} size="12px" />
             </span>
         );
 
         switch (notification.type) {
-            case "message":
-                return <>{nameWrapper} Sent you a message</>;
             case "like":
-                if (notification.metadata?.startupName) {
-                    return <>{nameWrapper} Upvoted <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{notification.metadata.startupName}</span></>;
-                }
-                if (notification.project_id) {
-                    return <>{nameWrapper} Upvoted your project</>;
-                }
-                if (notification.comment_id) {
-                    return <>{nameWrapper} Liked your comment</>;
-                }
-                return <>{nameWrapper} Liked your post</>;
+                return <>{nameWrapper} liked your {notification.project_id ? "project" : "post"}</>;
             case "comment":
-                return <>{nameWrapper} {notification.project_id ? "Commented on your project" : "Commented on your post"}</>;
-            case "follow":
-                return <>{nameWrapper} Started following you</>;
-            case "mention":
-                if (notification.comment_id && notification.project_id) {
-                    return <>{nameWrapper} Mentioned you in a project comment</>;
-                } else if (notification.comment_id) {
-                    return <>{nameWrapper} Mentioned you in a comment</>;
-                }
-                return <>{nameWrapper} Mentioned you in a post</>;
+                return <>{nameWrapper} commented on your post</>;
             case "reply":
-                return <>{nameWrapper} Replied to your comment</>;
+                return <>{nameWrapper} replied to your comment</>;
+            case "follow":
+                return <>{nameWrapper} started following you</>;
+            case "mention":
+                return <>{nameWrapper} mentioned you in a post</>;
             case "save":
-                return <>{nameWrapper} Saved your project</>;
+                return <>{nameWrapper} saved your post</>;
+            case "message":
+                return <>{nameWrapper} sent you a message</>;
             case "profile_view":
+                return <>{nameWrapper} viewed your profile</>;
             case "project_view":
-                return <>{nameWrapper} {notification.project_id ? "Viewed your project" : "Viewed your profile"}</>;
+                return <>{nameWrapper} viewed your project</>;
             case "cofounder_request":
-                return <>{nameWrapper} Requested to be a Co-Founder for your project</>;
+                return <>{nameWrapper} requested to join your project as a co-founder</>;
             case "streak_warning":
-                return <span style={{ color: "#f97316" }}>{notification.content || "Your streak is about to break!"}</span>;
+                return <>Your streak is about to expire! Post something to keep it alive. <HugeiconsIcon icon={FireIcon} size={14} style={{ display: "inline", verticalAlign: "middle" }} /></>;
             case "milestone":
-                return (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}>Milestone achieved</span>
-                        <div style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
-                            {notification.metadata?.milestone || "New record"}
-                        </div>
-                    </div>
-                );
+                return <>Congratulations! You've reached a new milestone. <HugeiconsIcon icon={StarIcon} size={14} style={{ display: "inline", verticalAlign: "middle" }} /></>;
             case "startup_upvote":
-                const startupName = notification.metadata?.startupName || "your startup";
-                return <>{nameWrapper} Upvoted <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{startupName}</span></>;
+                return <>{nameWrapper} upvoted your startup</>;
             default:
-                return <>{notification.content || "New notification"}</>;
+                return <>You have a new notification</>;
         }
     };
 
-    const isMobile = width < 768;
-    const isDesktop = width >= 1200;
-
-    if (!isSignedIn && !loading) {
-        navigate("/sign-in");
-        return null;
+    if (!isSignedIn) {
+        return (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
+                <p style={{ color: "var(--text-tertiary)" }}>Please sign in to view notifications.</p>
+            </div>
+        );
     }
 
     return (
-        <main style={{
-            display: "flex",
-            backgroundColor: "var(--bg-page)",
-            minHeight: "100vh",
-            width: "100%",
-        }}>
-            <SEO
-                title="Notifications"
-                description="Stay updated with your latest interactions on Codeown."
-            />
+        <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
+            <SEO title="Notifications" description="Stay updated with your community." />
 
             <div style={{
                 display: "flex",
-                width: isDesktop ? "920px" : "100%",
-                maxWidth: "920px",
-                position: "relative",
+                justifyContent: "space-between",
+                width: "100%",
+                maxWidth: isDesktop ? "920px" : "100%",
+                margin: "0 auto",
+                padding: "0",
             }}>
                 {/* Main Notifications Column */}
                 <div style={{
-                    width: isDesktop ? "620px" : "100%",
-                    maxWidth: isDesktop ? "620px" : "700px",
-                    backgroundColor: "var(--bg-page)",
-                    borderLeft: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
-                    borderRight: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
-                    minHeight: "100vh",
+                    width: isDesktop ? "var(--feed-width)" : "100%",
+                    maxWidth: isDesktop ? "var(--feed-width)" : "600px",
                     margin: isDesktop ? "0" : "0 auto",
+                    flexShrink: 0,
+                    borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+                    borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+                    minHeight: "100vh",
                     position: "relative",
-                    flexShrink: 0
+                    backgroundColor: "var(--bg-page)",
                 }}>
                     {/* Header */}
                     <header style={{
                         position: "sticky",
-                        top: 0,
+                        top: isMobile ? "64px" : "0",
                         backgroundColor: "var(--bg-header)",
-                        backdropFilter: "blur(20px)",
+                        backdropFilter: "blur(24px)",
                         zIndex: 100,
                         padding: "16px 24px",
                         display: "flex",
@@ -249,134 +230,104 @@ export default function NotificationsPage() {
                                     fontSize: "12px",
                                     fontWeight: 600,
                                     cursor: "pointer",
-                                    transition: "all 0.15s ease"
+                                    transition: "all 0.2s"
                                 }}
-                                onMouseEnter={(e) => {
+                                onMouseEnter={e => {
                                     e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                    e.currentTarget.style.borderColor = "var(--text-primary)";
                                     e.currentTarget.style.color = "var(--text-primary)";
                                 }}
-                                onMouseLeave={(e) => {
+                                onMouseLeave={e => {
                                     e.currentTarget.style.backgroundColor = "transparent";
-                                    e.currentTarget.style.borderColor = "var(--border-hairline)";
                                     e.currentTarget.style.color = "var(--text-secondary)";
                                 }}
                             >
-                                Mark all read
+                                Mark all as read
                             </button>
                         )}
                     </header>
 
                     {/* Notifications List */}
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        {loading && (
-                            <div style={{ padding: "48px", textAlign: "center", color: "var(--text-tertiary)", fontWeight: 600, fontSize: "13px" }}>
-                                Syncing...
+                    <div style={{ minHeight: "100vh" }}>
+                        {loading && notifications.length === 0 && (
+                            <div style={{ padding: "60px", textAlign: "center", display: "flex", justifyContent: "center" }}>
+                                <div style={{
+                                    width: "20px", height: "20px",
+                                    border: "2px solid var(--border-hairline)",
+                                    borderTopColor: "var(--text-primary)",
+                                    borderRadius: "50%",
+                                    animation: "spin 0.8s linear infinite"
+                                }} />
                             </div>
                         )}
 
                         {!loading && notifications.length === 0 && (
-                            <div style={{
-                                padding: "100px 40px",
-                                textAlign: "center",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                gap: "16px"
-                            }}>
-                                <div style={{
-                                    width: "64px",
-                                    height: "64px",
-                                    borderRadius: "var(--radius-sm)",
-                                    backgroundColor: "var(--bg-hover)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    color: "var(--text-tertiary)",
-                                    border: "0.5px solid var(--border-hairline)"
-                                }}>
-                                    <HugeiconsIcon icon={Notification01Icon} size={32} style={{ opacity: 0.5 }} />
-                                </div>
-                                <h2 style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Nothing yet</h2>
-                                <p style={{ fontSize: "14px", color: "var(--text-tertiary)", margin: 0, maxWidth: "260px", lineHeight: 1.6 }}>
-                                    Interaction is the heartbeat of Codeown. Build, share, and connect to see updates here.
-                                </p>
+                            <div style={{ padding: "120px 24px", textAlign: "center" }}>
+                                <div style={{ marginBottom: "20px", fontSize: "32px", opacity: 0.2 }}>🔔</div>
+                                <h3 style={{ fontSize: "16px", fontWeight: "600", color: "var(--text-primary)", marginBottom: "8px" }}>No notifications yet</h3>
+                                <p style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>When someone interacts with you, it'll show up here.</p>
                             </div>
                         )}
 
                         {notifications.map((notification) => {
-                            const itemStyle = getNotificationIcon(notification);
+                            const { icon, color } = getNotificationIcon(notification);
                             return (
                                 <div
                                     key={notification.id}
                                     onClick={() => handleNotificationClick(notification)}
                                     style={{
-                                        padding: "20px 24px",
-                                        display: "flex",
-                                        gap: "20px",
-                                        cursor: "pointer",
-                                        transition: "all 0.15s ease",
-                                        backgroundColor: notification.read ? "var(--bg-page)" : "var(--bg-hover)",
+                                        padding: isMobile ? "16px" : "20px 24px",
                                         borderBottom: "0.5px solid var(--border-hairline)",
+                                        backgroundColor: notification.read ? "transparent" : "rgba(var(--text-primary-rgb), 0.02)",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        gap: "16px",
+                                        transition: "all 0.15s ease",
                                         position: "relative"
                                     }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = notification.read ? "var(--bg-page)" : "var(--bg-hover)"}
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = notification.read ? "transparent" : "rgba(var(--text-primary-rgb), 0.02)"}
                                 >
-                                    {/* Status Dot for Unread */}
                                     {!notification.read && (
                                         <div style={{
                                             position: "absolute",
-                                            left: 0,
-                                            top: 0,
-                                            bottom: 0,
-                                            width: "2px",
-                                            backgroundColor: "var(--text-primary)"
+                                            left: "4px",
+                                            top: "50%",
+                                            transform: "translateY(-50%)",
+                                            width: "4px",
+                                            height: "32px",
+                                            backgroundColor: "var(--text-primary)",
+                                            borderRadius: "0 4px 4px 0"
                                         }} />
                                     )}
 
-                                    {/* Left: Action Icon */}
+                                    {/* Left: Icon */}
                                     <div style={{
-                                        width: "24px",
+                                        width: "40px",
+                                        height: "40px",
+                                        borderRadius: "12px",
+                                        backgroundColor: "var(--bg-hover)",
                                         display: "flex",
+                                        alignItems: "center",
                                         justifyContent: "center",
-                                        paddingTop: "4px",
-                                        flexShrink: 0
+                                        flexShrink: 0,
+                                        color: color,
+                                        border: "0.5px solid var(--border-hairline)"
                                     }}>
-                                        {itemStyle.icon}
+                                        {icon}
                                     </div>
 
-                                    {notification.type === "milestone" ? (
-                                        <div style={{
-                                            flex: 1,
-                                            background: "var(--bg-hover)",
-                                            border: "0.5px solid var(--border-hairline)",
-                                            borderRadius: "var(--radius-sm)",
-                                            padding: "24px",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            gap: "16px",
-                                            position: "relative",
-                                            overflow: "hidden"
-                                        }}>
-                                            <div style={{ position: "absolute", top: "-10px", right: "-10px", opacity: 0.1, pointerEvents: "none" }}>
-                                                <HugeiconsIcon icon={StarIcon} size={80} {...({ variant: "solid" } as any)} style={{ color: "var(--text-primary)" }} />
-                                            </div>
-
-                                            <div style={{ display: "flex", alignItems: "center", gap: "12px", zIndex: 1 }}>
-                                                <div style={{ fontSize: "32px" }}>{notification.metadata?.emoji || "✨"}</div>
-                                                <div style={{ borderLeft: "0.5px solid var(--border-hairline)", paddingLeft: "12px" }}>
-                                                    <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 600 }}>Record unlocked</div>
-                                                    <div style={{ fontSize: "14.5px", color: "var(--text-primary)", fontWeight: 700 }}>{notification.metadata?.milestone}</div>
-                                                </div>
-                                            </div>
-
-                                            <p style={{ margin: 0, fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6, zIndex: 1 }}>
-                                                {notification.content}
+                                    {notification.type === "streak_warning" || notification.type === "milestone" ? (
+                                        <div style={{ flex: 1 }}>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: "14.5px",
+                                                color: "var(--text-primary)",
+                                                lineHeight: 1.5,
+                                                fontWeight: notification.read ? 400 : 700,
+                                            }}>
+                                                {getNotificationMessage(notification)}
                                             </p>
-
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "8px", zIndex: 1 }}>
-                                                <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 500 }}>Codeown notification</div>
+                                            <div style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "6px" }}>
                                                 <p style={{
                                                     margin: 0,
                                                     fontSize: "11px",
@@ -434,19 +385,25 @@ export default function NotificationsPage() {
                 </div>
 
                 {/* Right Sidebar - Desktop Only */}
-                {isDesktop && !isMobile && (
+                {isDesktop && (
                     <aside style={{
                         width: "300px",
-                        padding: "0",
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
                         flexShrink: 0,
+                        zIndex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        height: "100vh"
                     }}>
                         <RecommendedUsersSidebar />
                     </aside>
                 )}
             </div>
+            <style>{`
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            `}</style>
         </main>
     );
 }

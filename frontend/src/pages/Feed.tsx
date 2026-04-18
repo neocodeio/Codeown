@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
@@ -9,28 +9,19 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
     ArrowDown01Icon,
     Rocket01Icon,
-    LicenseIcon,
-    Notification01Icon,
-    Search01Icon
+    LicenseIcon
 } from "@hugeicons/core-free-icons";
 
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
 import { useProjects } from "../hooks/useProjects";
 import { useClerkAuth } from "../hooks/useClerkAuth";
-import { useClerkUser } from "../hooks/useClerkUser";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { PostCardSkeleton } from "../components/LoadingSkeleton";
 import { SEO } from "../components/SEO";
 import ActivityIndicator from "../components/ActivityIndicator";
-import { useQuery } from "@tanstack/react-query";
-import api from "../api/axios";
-import StreakBadge from "../components/StreakBadge";
-import { useNotifications } from "../hooks/useNotifications";
-import { Link } from "react-router-dom";
 
 
 export default function Feed() {
-    const navigate = useNavigate();
     const { width } = useWindowSize();
     const isMobile = width < 768;
     const isDesktop = width >= 1200;
@@ -76,26 +67,7 @@ export default function Feed() {
     };
 
     const handleFilterChange = (filter: FeedFilter) => updateParams({ filter });
-
     const { getToken } = useClerkAuth();
-    const { isSignedIn } = useClerkUser();
-    const { unreadCount } = useNotifications();
-
-    // Streak count fetch
-    const { data: streakData } = useQuery({
-        queryKey: ["streakCount"],
-        queryFn: async () => {
-            const token = await getToken();
-            if (!token) return { streak_count: 0 };
-            const res = await api.post("/users/streak/update", {}, { headers: { Authorization: `Bearer ${token}` } });
-            return res.data || { streak_count: 0 };
-        },
-        enabled: isDesktop && isSignedIn,
-        staleTime: 30 * 60 * 1000,
-        refetchOnWindowFocus: false,
-    });
-
-    const streakCount = streakData?.streak_count ?? 0;
 
 
     const {
@@ -149,16 +121,6 @@ export default function Feed() {
     const isInitialLoading = (feedType === "posts" && postsLoading && posts.length === 0) ||
         (feedType === "projects" && projectsLoading && projects.length === 0);
 
-    const [showNotificationTooltip, setShowNotificationTooltip] = useState(false);
-    const [showStreakTooltip, setShowStreakTooltip] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
-
-    const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" && searchQuery.trim()) {
-            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-        }
-    };
-
     return (
         <main style={{ padding: 0, backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
             <SEO title="Feed" description="Connect with builders worldwide." />
@@ -189,7 +151,8 @@ export default function Feed() {
                         position: "sticky",
                         top: isMobile ? "64px" : "0",
                         zIndex: 100,
-                        backgroundColor: "var(--bg-page)",
+                        backgroundColor: "var(--bg-header)",
+                        backdropFilter: "blur(24px)",
                         borderBottom: "0.5px solid var(--border-hairline)",
                     }}>
                         <div style={{
@@ -451,195 +414,6 @@ export default function Feed() {
                         flexDirection: "column",
                         height: "100vh"
                     }}>
-                        <div style={{
-                            height: "58px",
-                            flexShrink: 0,
-                            borderBottom: "0.5px solid var(--border-hairline)",
-                            backgroundColor: "var(--bg-page)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "flex-end",
-                            padding: "0 20px",
-                            gap: "10px",
-                            zIndex: 10
-                        }}>
-                            {/* Search Input */}
-                            <div style={{
-                                position: "relative",
-                                flex: 1,
-                                maxWidth: "240px",
-                                marginRight: "auto"
-                            }}>
-                                <span style={{
-                                    position: "absolute",
-                                    left: "12px",
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    color: "var(--text-tertiary)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    pointerEvents: "none"
-                                }}>
-                                    <HugeiconsIcon icon={Search01Icon} size={16} />
-                                </span>
-                                <input
-                                    type="text"
-                                    placeholder="Search Codeown"
-                                    className="header-search-input"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    onKeyDown={handleSearch}
-                                    style={{
-                                        width: "100%",
-                                        height: "36px",
-                                        backgroundColor: "var(--bg-page)",
-                                        borderRadius: "14px",
-                                        padding: "0 12px 0 36px",
-                                        fontSize: "12px",
-                                        color: "var(--text-primary)",
-                                        outline: "none",
-                                        transition: "all 0.2s ease"
-                                    }}
-                                    onFocus={(e) => {
-                                        e.currentTarget.style.borderColor = "var(--text-tertiary)";
-                                        // e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                    }}
-                                    onBlur={(e) => {
-                                        e.currentTarget.style.borderColor = "#e0e0e0";
-                                        e.currentTarget.style.backgroundColor = "var(--bg-page)";
-                                    }}
-                                />
-                            </div>
-
-                            {isSignedIn && (
-                                <div
-                                    style={{ position: "relative" }}
-                                    onMouseEnter={() => setShowNotificationTooltip(true)}
-                                    onMouseLeave={() => setShowNotificationTooltip(false)}
-                                >
-                                    <Link
-                                        to="/notifications"
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            width: "32px",
-                                            height: "32px",
-                                            borderRadius: "50%",
-                                            color: unreadCount > 0 ? "var(--text-primary)" : "var(--text-tertiary)",
-                                            position: "relative",
-                                            transition: "all 0.2s ease",
-                                            textDecoration: "none"
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.color = "var(--text-primary)";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.color = unreadCount > 0 ? "var(--text-primary)" : "var(--text-tertiary)";
-                                        }}
-                                    >
-                                        <HugeiconsIcon icon={Notification01Icon} size={20} />
-                                        {unreadCount > 0 && (
-                                            <span style={{
-                                                position: "absolute",
-                                                top: "-2px",
-                                                right: "-2px",
-                                                minWidth: "16px",
-                                                height: "16px",
-                                                backgroundColor: "#ef4444",
-                                                color: "#fff",
-                                                borderRadius: "50%",
-                                                fontSize: "9px",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                fontWeight: 800,
-                                                border: "2px solid var(--bg-page)"
-                                            }}>
-                                                {unreadCount}
-                                            </span>
-                                        )}
-                                    </Link>
-
-                                    {/* Tooltip */}
-                                    <div style={{
-                                        position: "absolute",
-                                        top: "calc(100% + 10px)",
-                                        left: "50%",
-                                        transform: showNotificationTooltip ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(-5px)",
-                                        opacity: showNotificationTooltip ? 1 : 0,
-                                        visibility: showNotificationTooltip ? "visible" : "hidden",
-                                        backgroundColor: "#000",
-                                        color: "#fff",
-                                        padding: "5px 12px",
-                                        borderRadius: "50px",
-                                        fontSize: "12px",
-                                        fontWeight: 600,
-                                        whiteSpace: "nowrap",
-                                        zIndex: 1000,
-                                        transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-                                        pointerEvents: "none",
-                                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                                    }}>
-                                        Notifications
-                                        {/* Arrow */}
-                                        <div style={{
-                                            position: "absolute",
-                                            top: "-4px",
-                                            left: "50%",
-                                            transform: "translateX(-50%) rotate(45deg)",
-                                            width: "8px",
-                                            height: "8px",
-                                            backgroundColor: "#000",
-                                            zIndex: -1
-                                        }} />
-                                    </div>
-                                </div>
-                            )}
-                            {streakCount > 0 && (
-                                <div
-                                    style={{ position: "relative" }}
-                                    onMouseEnter={() => setShowStreakTooltip(true)}
-                                    onMouseLeave={() => setShowStreakTooltip(false)}
-                                >
-                                    <StreakBadge count={streakCount} />
-
-                                    {/* Tooltip */}
-                                    <div style={{
-                                        position: "absolute",
-                                        top: "calc(100% + 10px)",
-                                        left: "50%",
-                                        transform: showStreakTooltip ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(-5px)",
-                                        opacity: showStreakTooltip ? 1 : 0,
-                                        visibility: showStreakTooltip ? "visible" : "hidden",
-                                        backgroundColor: "#000",
-                                        color: "#fff",
-                                        padding: "5px 12px",
-                                        borderRadius: "50px",
-                                        fontSize: "12px",
-                                        fontWeight: 600,
-                                        whiteSpace: "nowrap",
-                                        zIndex: 1000,
-                                        transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-                                        pointerEvents: "none",
-                                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                                    }}>
-                                        Activity Streak
-                                        {/* Arrow */}
-                                        <div style={{
-                                            position: "absolute",
-                                            top: "-4px",
-                                            left: "50%",
-                                            transform: "translateX(-50%) rotate(45deg)",
-                                            width: "8px",
-                                            height: "8px",
-                                            backgroundColor: "#000",
-                                            zIndex: -1
-                                        }} />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
                         <RecommendedUsersSidebar />
                     </aside>
                 )}

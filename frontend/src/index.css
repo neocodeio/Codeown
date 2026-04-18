@@ -73,10 +73,10 @@
   --border-light: #262626;
   --border-hairline: rgba(255, 255, 255, 0.06);
   --border-strong: #ffffff;
-  --bg-header: rgba(23, 23, 23, 0.85);
-  --bg-page-rgb: 23, 23, 23;
+  --bg-header: rgba(17, 17, 17, 0.85);
+  --bg-page-rgb: 17, 17, 17;
   --bg-card-rgb: 28, 28, 28;
-  --bg-header-rgb: 23, 23, 23;
+  --bg-header-rgb: 17, 17, 17;
   --text-primary-rgb: 255, 255, 255;
 
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);

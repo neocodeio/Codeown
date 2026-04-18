@@ -294,8 +294,8 @@ export default function Profile() {
             maxWidth: isDesktop ? "var(--feed-width)" : "700px",
             margin: "0",
             flexShrink: 0,
-            borderLeft: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)",
-            borderRight: (isDesktop && !isMobile) ? "0.5px solid var(--border-hairline)" : "none",
+            borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+            borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
             backgroundColor: "var(--bg-page)",
             minHeight: "100vh",
             position: "relative",
@@ -717,7 +717,7 @@ export default function Profile() {
             <DeveloperIDCardModal isOpen={isIDCardModalOpen} onClose={() => setIsIDCardModalOpen(false)} user={{ name: userProfile.name, username: userProfile.username, avatar_url: userProfile.avatar_url, created_at: userProfile.created_at, skills: userProfile.skills || [], is_pro: userProfile.is_pro || false, bio: userProfile.bio || "" }} projectsCount={projects.length} />
           )}
           <InviteModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} username={userProfile?.username || user?.username || null} />
-          {isDesktop && !isMobile && (<aside style={{ width: "300px", padding: "0 0 24px 0", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}> <RecommendedUsersSidebar /> </aside>)}
+          {isDesktop && (<aside style={{ width: "300px", padding: "0 0 24px 0", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}> <RecommendedUsersSidebar /> </aside>)}
         </div>
         <style>{`
           @media (max-width: 768px) {

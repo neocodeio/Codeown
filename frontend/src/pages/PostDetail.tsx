@@ -378,7 +378,7 @@ export default function PostDetail() {
   }
 
   const { width } = useWindowSize();
-  const isDesktop = width >= 1024;
+  const isDesktop = width >= 1200;
   const isMobile = width < 768;
 
   if (loading) return (
@@ -424,8 +424,8 @@ export default function PostDetail() {
             width: isDesktop ? "620px" : "100%",
             maxWidth: isDesktop ? "620px" : "700px",
             backgroundColor: "var(--bg-page)",
-            borderLeft: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
-            borderRight: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
+            borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+            borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
             minHeight: "100vh",
             margin: isDesktop ? "0" : "0 auto",
             position: "relative",
@@ -435,8 +435,7 @@ export default function PostDetail() {
             <header style={{
               position: "sticky",
               top: 0,
-              backgroundColor: "var(--bg-page)",
-              opacity: 0.98,
+              backgroundColor: "var(--bg-header)",
               backdropFilter: "blur(24px)",
               zIndex: 100,
               padding: "16px 24px",

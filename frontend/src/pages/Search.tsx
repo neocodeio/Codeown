@@ -278,8 +278,8 @@ export default function Search() {
             position: "sticky",
             top: isMobile ? "64px" : "0",
             zIndex: 100,
-            backgroundColor: "var(--bg-page)",
-            borderBottom: "0.5px solid var(--border-hairline)",
+            backgroundColor: "var(--bg-header)",
+            backdropFilter: "blur(24px)",
             padding: "12px 16px"
           }}>
             <div style={{
