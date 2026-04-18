@@ -99,6 +99,15 @@ a,
   transition: background-color 0.2s var(--ease-smooth), border-color 0.2s var(--ease-smooth), color 0.15s linear, opacity 0.2s ease, transform 0.2s var(--ease-smooth);
 }
 
+.sidebar-nav-link:hover {
+  transform: translateX(6px);
+  opacity: 1 !important;
+}
+
+.sidebar-nav-link:active {
+  transform: translateX(4px) scale(0.98);
+}
+
 /* Optimization for long lists - tells browser to optimize content that isn't currently on screen */
 .feed-item,
 .post-card,

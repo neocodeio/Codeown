@@ -179,17 +179,17 @@ export default function Navbar() {
       </div>
 
       <nav style={{ flexShrink: 0, marginTop: window.innerHeight < 850 ? "4px" : "0px" }}>
-        <Link to="/" style={linkStyle("/")}><HugeiconsIcon icon={Home01Icon} size={20} /><span>Home</span></Link>
-        <Link to="/search" style={linkStyle("/search")}><HugeiconsIcon icon={Search01Icon} size={20} /><span>Search</span></Link>
-        <Link to="/leaderboard" style={linkStyle("/leaderboard")}><HugeiconsIcon icon={UserGroupIcon} size={20} /><span>Builders</span></Link>
-        <Link to="/ogs" style={linkStyle("/ogs")}><HugeiconsIcon icon={MedalIcon} size={20} /><span>Our OGs</span></Link>
-        <Link to="/dashboard" style={linkStyle("/dashboard")}><HugeiconsIcon icon={Chart01Icon} size={20} /><span>Analytics</span></Link>
-        <Link to="/startups" style={linkStyle("/startups")}><HugeiconsIcon icon={Building02Icon} size={20} /><span>Startups</span></Link>
-        <Link to="/changelog" style={linkStyle("/changelog")}><HugeiconsIcon icon={DocumentCodeIcon} size={20} /><span>Changelog</span></Link>
+        <Link to="/" className="sidebar-nav-link" style={linkStyle("/")}><HugeiconsIcon icon={Home01Icon} size={20} /><span>Home</span></Link>
+        <Link to="/search" className="sidebar-nav-link" style={linkStyle("/search")}><HugeiconsIcon icon={Search01Icon} size={20} /><span>Search</span></Link>
+        <Link to="/leaderboard" className="sidebar-nav-link" style={linkStyle("/leaderboard")}><HugeiconsIcon icon={UserGroupIcon} size={20} /><span>Builders</span></Link>
+        <Link to="/ogs" className="sidebar-nav-link" style={linkStyle("/ogs")}><HugeiconsIcon icon={MedalIcon} size={20} /><span>Our OGs</span></Link>
+        <Link to="/dashboard" className="sidebar-nav-link" style={linkStyle("/dashboard")}><HugeiconsIcon icon={Chart01Icon} size={20} /><span>Analytics</span></Link>
+        <Link to="/startups" className="sidebar-nav-link" style={linkStyle("/startups")}><HugeiconsIcon icon={Building02Icon} size={20} /><span>Startups</span></Link>
+        <Link to="/changelog" className="sidebar-nav-link" style={linkStyle("/changelog")}><HugeiconsIcon icon={DocumentCodeIcon} size={20} /><span>Changelog</span></Link>
 
         {isSignedIn && (
           <div style={{ marginTop: "4px" }}>
-            <Link to="/messages" style={linkStyle("/messages")}>
+            <Link to="/messages" className="sidebar-nav-link" style={linkStyle("/messages")}>
               <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
                 <HugeiconsIcon icon={Chat01Icon} size={20} />
                 {messageUnreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
@@ -202,6 +202,7 @@ export default function Navbar() {
             >
               <div
                 onClick={() => setIsPostSelectorOpen(!isPostSelectorOpen)}
+                className="sidebar-nav-link"
                 style={{ ...linkStyle(""), cursor: "pointer", marginBottom: 0 }}
               >
                 <HugeiconsIcon icon={PlusSignIcon} size={20} />
@@ -243,6 +244,7 @@ export default function Navbar() {
             </div>
             <div
               onClick={() => { const username = profile?.username || user?.username; if (username) navigate(`/${username}`); }}
+              className="sidebar-nav-link"
               style={{ ...linkStyle("/profile"), cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: window.innerHeight < 850 ? "10px" : "14px" }}>
