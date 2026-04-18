@@ -4,6 +4,9 @@ import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-
 import Navbar from "./components/Navbar";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import FeedbackButton from "./components/FeedbackButton";
+import { useTheme } from "./context/ThemeContext";
+import logo from "./assets/icon-removebg.png";
+import logoWhite from "./assets/logo-white.png";
 import MessageNotificationToast from "./components/MessageNotificationToast";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { useWindowSize } from "./hooks/useWindowSize";
@@ -49,31 +52,70 @@ const StartupForm = lazy(() => import("./components/StartupForm").then(m => ({ d
 // const ShipWeek = lazy(() => import("./pages/ShipWeek"));
 
 // Basic loading fallback
-const PageLoader = () => (
-  <div style={{
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    width: "100%",
-    backgroundColor: "var(--bg-page)"
-  }}>
+const PageLoader = () => {
+  const { theme } = useTheme();
+  return (
     <div style={{
-      width: "24px",
-      height: "24px",
-      border: "0.5px solid var(--border-hairline)",
-      borderTopColor: "var(--text-primary)",
-      borderRadius: "50%",
-      animation: "spin 0.8s linear infinite"
-    }} />
-    <style>{`
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `}</style>
-  </div>
-);
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      width: "100%",
+      backgroundColor: "var(--bg-page)",
+      animation: "fadeIn 0.5s ease-out"
+    }}>
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "24px"
+      }}>
+        <img
+          src={theme === "dark" ? logoWhite : logo}
+          alt="Codeown"
+          style={{
+            height: "48px",
+            width: "auto",
+            animation: "pulse 2s infinite ease-in-out"
+          }}
+        />
+        <div style={{
+          width: "40px",
+          height: "2px",
+          backgroundColor: "var(--border-hairline)",
+          position: "relative",
+          overflow: "hidden",
+          borderRadius: "100px"
+        }}>
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%",
+            width: "50%",
+            backgroundColor: "var(--text-primary)",
+            animation: "loadingSlide 1.5s infinite ease-in-out"
+          }} />
+        </div>
+      </div>
+      <style>{`
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.05); opacity: 1; }
+          100% { transform: scale(1); opacity: 0.8; }
+        }
+        @keyframes loadingSlide {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+};
 
 export default function App() {
   const isCheckingRef = React.useRef(false);
@@ -475,13 +517,15 @@ export default function App() {
   if (!userLoaded) return <PageLoader />;
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: isMobile ? "column" : "row",
-      minHeight: "100vh",
-      backgroundColor: "var(--bg-page)",
-      justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start" // Center the whole block (Navbar + Feed)
-    }}>
+    <div
+      className="app-fade-in"
+      style={{
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        minHeight: "100vh",
+        backgroundColor: "var(--bg-page)",
+        justifyContent: (isStandardPage && isDesktop) ? "center" : "flex-start" // Center the whole block (Navbar + Feed)
+      }}>
       <ScrollToTop />
       {shouldShowNavbar && <Navbar />}
       <div
