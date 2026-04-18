@@ -35,7 +35,7 @@ export default function NotificationsPage() {
 
     // Grouping logic for "like" notifications
     const groupedNotifications = useMemo(() => {
-        const grouped: (Notification & { groupCount?: number; groupIds?: number[] })[] = [];
+        const grouped: (Notification & { groupCount?: number; groupIds?: number[]; actorIds?: Set<string> })[] = [];
         const likeMap = new Map<string, number>();
 
         notifications.forEach((n) => {
@@ -44,13 +44,21 @@ export default function NotificationsPage() {
                 if (key) {
                     if (likeMap.has(key)) {
                         const idx = likeMap.get(key)!;
-                        grouped[idx].groupCount = (grouped[idx].groupCount || 1) + 1;
-                        if (!grouped[idx].groupIds) grouped[idx].groupIds = [grouped[idx].id];
-                        grouped[idx].groupIds?.push(n.id);
-                        // If any unread in group, mark group as unread
-                        if (!n.read) grouped[idx].read = false;
-                        return;
+                        const group = grouped[idx];
+                        if (!group.actorIds) group.actorIds = new Set([group.actor_id]);
+
+                        // Only group if it's a NEW actor for this post/project
+                        if (!group.actorIds.has(n.actor_id)) {
+                            group.groupCount = (group.groupCount || 1) + 1;
+                            if (!group.groupIds) group.groupIds = [group.id];
+                            group.groupIds.push(n.id);
+                            group.actorIds.add(n.actor_id);
+                            // If any unread in group, mark group as unread
+                            if (!n.read) group.read = false;
+                            return;
+                        }
                     }
+                    // Reset or set the map pointer to the newest instance
                     likeMap.set(key, grouped.length);
                 }
             }
@@ -145,9 +153,10 @@ export default function NotificationsPage() {
         switch (notification.type) {
             case "like":
                 if (notification.groupCount && notification.groupCount > 1) {
+                    const othersCount = notification.groupCount - 1;
                     return (
                         <>
-                            {nameWrapper} and <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{notification.groupCount - 1} others</span> liked your {notification.project_id ? "project" : "post"}
+                            {nameWrapper} and <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{othersCount} {othersCount === 1 ? "other" : "others"}</span> liked your {notification.project_id ? "project" : "post"}
                         </>
                     );
                 }
