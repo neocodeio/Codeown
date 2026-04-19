@@ -119,3 +119,42 @@ export const formatFullTwitterDate = (dateString: string) => {
 
     return `${time} · ${fullDate}`;
 };
+
+export const formatMessageTimestamp = (dateString: string) => {
+    if (!dateString) return "";
+
+    const normalizedString = dateString.includes('Z') || dateString.includes('+')
+        ? dateString
+        : dateString.replace(' ', 'T') + 'Z';
+
+    let date = new Date(normalizedString);
+    if (isNaN(date.getTime())) {
+        date = new Date(dateString);
+    }
+    if (isNaN(date.getTime())) return "";
+
+    const now = new Date();
+
+    // Check if it's today
+    const isToday = date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear();
+
+    if (isToday) return "today";
+
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    const diffInDays = Math.floor(diffInSeconds / 86400);
+
+    if (diffInDays < 7) {
+        return `${Math.max(1, diffInDays)}d`;
+    }
+
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    if (diffInWeeks < 52) {
+        return `${diffInWeeks}w`;
+    }
+
+    const diffInYears = Math.floor(diffInDays / 365);
+    return `${diffInYears}y`;
+};
+

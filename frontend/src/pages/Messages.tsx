@@ -38,6 +38,7 @@ import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 import { SEO } from "../components/SEO";
 import alertSound from "../assets/notification-alert.mp3";
 import { useNotifications } from "../hooks/useNotifications";
+import { formatMessageTimestamp } from "../utils/date";
 
 interface Partner {
   id: string;
@@ -281,7 +282,7 @@ const ConversationItem = memo(({
           </div>
           <div style={{ position: "relative" }}>
             <span className="convo-timestamp-label" style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500, opacity: convoMenuId === convo.id ? 0 : 1, transition: "opacity 0.2s ease" }}>
-              {convo.last_message ? new Date(convo.last_message.created_at).toLocaleDateString([], { month: "short", day: "numeric" }) : ""}
+              {convo.last_message ? formatMessageTimestamp(convo.last_message.created_at) : ""}
             </span>
             <div
               className={`convo-dots-container ${convoMenuId === convo.id ? 'is-open' : ''}`}
