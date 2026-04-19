@@ -1,4 +1,5 @@
 import { getOptimizedImageUrl, handleImageError } from "../utils/image";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 interface ImageGridProps {
     images: string[];
@@ -6,9 +7,19 @@ interface ImageGridProps {
 }
 
 export default function ImageGrid({ images, onImageClick }: ImageGridProps) {
+    const { width } = useWindowSize();
+    const isMobile = width < 768;
+
     if (!images || images.length === 0) return null;
 
     const count = images.length;
+
+    // Determine the overall aspect ratio of the grid container
+    const getGridAspectRatio = () => {
+        if (count === 1) return "auto";
+        if (isMobile) return "1/1";
+        return "16/9";
+    };
 
     const renderImage = (src: string, index: number, style: React.CSSProperties = {}) => (
         <div
@@ -33,10 +44,10 @@ export default function ImageGrid({ images, onImageClick }: ImageGridProps) {
                     height: "100%",
                     objectFit: "cover",
                     display: "block",
-                    transition: "transform 0.3s ease",
+                    transition: "transform 0.4s cubic-bezier(0.2, 0, 0.2, 1)",
                 }}
                 onError={(e) => handleImageError(e.currentTarget)}
-                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
                 onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
             />
         </div>
@@ -52,10 +63,15 @@ export default function ImageGrid({ images, onImageClick }: ImageGridProps) {
             gridTemplateColumns: count === 1 ? "1fr" : "1fr 1fr",
             gridTemplateRows: count <= 2 ? "1fr" : "1fr 1fr",
             gap: "2px",
-            aspectRatio: count === 1 ? "auto" : "16/9",
-            maxHeight: "512px"
+            aspectRatio: getGridAspectRatio(),
+            maxHeight: count === 1 ? "600px" : isMobile ? "400px" : "512px",
+            backgroundColor: "var(--border-hairline)"
         }}>
-            {count === 1 && renderImage(images[0], 0, { aspectRatio: "16/9", maxHeight: "512px" })}
+            {count === 1 && renderImage(images[0], 0, {
+                maxHeight: "600px",
+                width: "100%",
+                aspectRatio: "auto"
+            })}
 
             {count === 2 && (
                 <>
@@ -86,13 +102,14 @@ export default function ImageGrid({ images, onImageClick }: ImageGridProps) {
                                 style={{
                                     position: "absolute",
                                     inset: 0,
-                                    backgroundColor: "rgba(0,0,0,0.5)",
+                                    backgroundColor: "rgba(0,0,0,0.6)",
+                                    backdropFilter: "blur(4px)",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
                                     color: "#fff",
-                                    fontSize: "20px",
-                                    fontWeight: 700,
+                                    fontSize: "24px",
+                                    fontWeight: 800,
                                     pointerEvents: "none"
                                 }}
                             >
