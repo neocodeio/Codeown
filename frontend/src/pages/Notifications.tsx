@@ -34,6 +34,7 @@ export default function NotificationsPage() {
 
     // Grouping logic for "like" notifications
     const groupedNotifications = useMemo(() => {
+        const TIME_THRESHOLD = 4 * 60 * 60 * 1000; // 4 hours
         const grouped: (Notification & {
             groupCount?: number;
             groupIds?: number[];
@@ -50,21 +51,27 @@ export default function NotificationsPage() {
             if (n.type === "like") {
                 const postKey = n.post_id ? `post_${n.post_id}` : n.project_id ? `project_${n.project_id}` : null;
                 const actorKey = n.actor_id;
+                const notifTime = new Date(n.created_at).getTime();
 
                 // 1. Priority: Group by POST (Many people liking the same post)
                 if (postKey && postLikeMap.has(postKey)) {
                     const idx = postLikeMap.get(postKey)!;
                     const group = grouped[idx];
-                    if (!group.actorIds) group.actorIds = new Set([group.actor_id]);
+                    const groupTime = new Date(group.created_at).getTime();
 
-                    if (!group.actorIds.has(n.actor_id)) {
-                        group.isMultiActor = true;
-                        group.groupCount = (group.groupCount || 1) + 1;
-                        if (!group.groupIds) group.groupIds = [group.id];
-                        group.groupIds.push(n.id);
-                        group.actorIds.add(n.actor_id);
-                        if (!n.read) group.read = false;
-                        return;
+                    // Only group if within threshold and same person hasn't already been added to this specific group
+                    if (Math.abs(groupTime - notifTime) < TIME_THRESHOLD) {
+                        if (!group.actorIds) group.actorIds = new Set([group.actor_id]);
+
+                        if (!group.actorIds.has(n.actor_id)) {
+                            group.isMultiActor = true;
+                            group.groupCount = (group.groupCount || 1) + 1;
+                            if (!group.groupIds) group.groupIds = [group.id];
+                            group.groupIds.push(n.id);
+                            group.actorIds.add(n.actor_id);
+                            if (!n.read) group.read = false;
+                            return;
+                        }
                     }
                 }
 
@@ -72,8 +79,10 @@ export default function NotificationsPage() {
                 if (actorKey && actorLikeMap.has(actorKey)) {
                     const idx = actorLikeMap.get(actorKey)!;
                     const group = grouped[idx];
-                    // Only group if the existing group isn't already a multi-actor group
-                    if (!group.isMultiActor) {
+                    const groupTime = new Date(group.created_at).getTime();
+
+                    // Only group if within threshold and not already grouping multiple people on one post
+                    if (Math.abs(groupTime - notifTime) < TIME_THRESHOLD && !group.isMultiActor) {
                         const currentPostId = n.post_id || n.project_id;
                         if (!group.postIds) group.postIds = new Set([group.post_id || group.project_id || 'unknown']);
 
