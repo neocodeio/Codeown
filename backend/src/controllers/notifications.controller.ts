@@ -73,8 +73,28 @@ export async function getNotifications(req: Request, res: Response) {
       }
     }
 
+    // Get post/project details for previews
+    const postIds = [...new Set(notifications.filter((n: any) => n.post_id).map((n: any) => n.post_id))];
+    const projectIds = [...new Set(notifications.filter((n: any) => n.project_id).map((n: any) => n.project_id))];
+
+    const { data: posts } = postIds.length > 0 ? await supabase
+      .from("posts")
+      .select("id, title, content, images")
+      .in("id", postIds) : { data: [] };
+
+    const { data: projects } = projectIds.length > 0 ? await supabase
+      .from("projects")
+      .select("id, name, description, cover_url")
+      .in("id", projectIds) : { data: [] };
+
+    const postMap = new Map((posts || []).map((p: any) => [p.id, p]));
+    const projectMap = new Map((projects || []).map((p: any) => [p.id, p]));
+
     const notificationsWithActors = notifications.map((notif: any) => {
       const actor = userMap.get(notif.actor_id);
+      const post = notif.post_id ? postMap.get(notif.post_id) : null;
+      const project = notif.project_id ? projectMap.get(notif.project_id) : null;
+
       return {
         ...notif,
         actor: actor ? {
@@ -88,6 +108,15 @@ export async function getNotifications(req: Request, res: Response) {
           username: null,
           avatar_url: null,
         },
+        post: post ? {
+          title: post.title,
+          content: post.content,
+          image: post.images?.[0] || null
+        } : null,
+        project: project ? {
+          name: project.name,
+          image: project.cover_url || null
+        } : null
       };
     });
 
@@ -182,6 +211,33 @@ export async function getUnreadCount(req: Request, res: Response) {
     return res.json({ count: count || 0 });
   } catch (error: any) {
     console.error("Unexpected error in getUnreadCount:", error);
+    return res.status(500).json({ error: "Internal server error", details: error?.message });
+  }
+}
+export async function deleteNotification(req: Request, res: Response) {
+  try {
+    const user = req.user;
+    const userId = user?.sub || user?.id || user?.userId;
+    const { notificationId } = req.params;
+
+    if (!userId) {
+      return res.status(401).json({ error: "User ID not found" });
+    }
+
+    const { error } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("id", parseInt(notificationId as string, 10))
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error deleting notification:", error);
+      return res.status(500).json({ error: "Failed to delete notification" });
+    }
+
+    return res.json({ message: "Notification deleted" });
+  } catch (error: any) {
+    console.error("Unexpected error in deleteNotification:", error);
     return res.status(500).json({ error: "Internal server error", details: error?.message });
   }
 }

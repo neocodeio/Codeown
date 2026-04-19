@@ -22,6 +22,16 @@ export interface Notification {
     username: string | null;
     avatar_url: string | null;
   };
+  post?: {
+    title: string | null;
+    content: string | null;
+    image: string | null;
+  } | null;
+  project?: {
+    name: string | null;
+    image: string | null;
+  } | null;
+  actors?: any[]; // for grouped notifications
 }
 
 export function useNotifications() {
@@ -93,6 +103,23 @@ export function useNotifications() {
     [allNotifications]
   );
 
+  // Delete notification mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (notificationId: number) => {
+      const token = await getToken();
+      if (!token) return;
+      await api.delete(`/notifications/${notificationId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return notificationId;
+    },
+    onSuccess: (deletedId) => {
+      queryClient.setQueryData<Notification[]>(["notifications"], (old = []) => {
+        return old.filter((n) => n.id !== deletedId);
+      });
+    },
+  });
+
   // Memoize return object to prevent unnecessary re-renders
   return useMemo(() => ({
     notifications,
@@ -101,11 +128,12 @@ export function useNotifications() {
     loading: isLoading,
     fetchNotifications,
     markAsRead: markReadMutation.mutate,
+    deleteNotification: deleteMutation.mutate,
     clearMessageNotifications: (actorId: string) => {
       queryClient.setQueryData<Notification[]>(["notifications"], (old = []) => {
         return old.map(n => (n.type === "message" && n.actor_id === actorId) ? { ...n, read: true } : n);
       });
     },
-    refreshUnreadCount: () => { }, // No-op since we fetch only once on mount
-  }), [notifications, unreadCount, messageUnreadCount, isLoading, fetchNotifications, markReadMutation.mutate, queryClient]);
+    refreshUnreadCount: () => { },
+  }), [notifications, unreadCount, messageUnreadCount, isLoading, fetchNotifications, markReadMutation.mutate, deleteMutation.mutate, queryClient]);
 }

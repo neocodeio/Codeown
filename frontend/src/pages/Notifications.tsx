@@ -23,14 +23,17 @@ import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import { Delete02Icon } from "@hugeicons/core-free-icons";
+import { useState } from "react";
 
 export default function NotificationsPage() {
-    const { notifications, unreadCount, markAsRead, loading } = useNotifications();
+    const { notifications, unreadCount, markAsRead, loading, deleteNotification } = useNotifications();
     const { isSignedIn } = useClerkAuth();
     const navigate = useNavigate();
     const { width } = useWindowSize();
     const isMobile = width < 768;
     const isDesktop = width >= 1200;
+    const [activeTab, setActiveTab] = useState<"All" | "Mentions">("All");
 
     // Grouping logic for "like" notifications
     const groupedNotifications = useMemo(() => {
@@ -39,6 +42,7 @@ export default function NotificationsPage() {
             groupCount?: number;
             groupIds?: number[];
             actorIds?: Set<string>;
+            actors?: any[];
             postIds?: Set<string | number>;
             isMultiActor?: boolean;
             isMultiPost?: boolean;
@@ -59,9 +63,11 @@ export default function NotificationsPage() {
                     const group = grouped[idx];
                     const groupTime = new Date(group.created_at).getTime();
 
-                    // Only group if within threshold and same person hasn't already been added to this specific group
                     if (Math.abs(groupTime - notifTime) < TIME_THRESHOLD) {
-                        if (!group.actorIds) group.actorIds = new Set([group.actor_id]);
+                        if (!group.actorIds) {
+                            group.actorIds = new Set([group.actor_id]);
+                            group.actors = [group.actor];
+                        }
 
                         if (!group.actorIds.has(n.actor_id)) {
                             group.isMultiActor = true;
@@ -69,6 +75,7 @@ export default function NotificationsPage() {
                             if (!group.groupIds) group.groupIds = [group.id];
                             group.groupIds.push(n.id);
                             group.actorIds.add(n.actor_id);
+                            group.actors?.push(n.actor);
                             if (!n.read) group.read = false;
                             return;
                         }
@@ -81,7 +88,6 @@ export default function NotificationsPage() {
                     const group = grouped[idx];
                     const groupTime = new Date(group.created_at).getTime();
 
-                    // Only group if within threshold and not already grouping multiple people on one post
                     if (Math.abs(groupTime - notifTime) < TIME_THRESHOLD && !group.isMultiActor) {
                         const currentPostId = n.post_id || n.project_id;
                         if (!group.postIds) group.postIds = new Set([group.post_id || group.project_id || 'unknown']);
@@ -98,15 +104,18 @@ export default function NotificationsPage() {
                     }
                 }
 
-                // Create new notification record and map it
                 const newIdx = grouped.length;
                 if (postKey) postLikeMap.set(postKey, newIdx);
                 actorLikeMap.set(actorKey, newIdx);
             }
             grouped.push({ ...n });
         });
+
+        if (activeTab === "Mentions") {
+            return grouped.filter(n => n.type === "mention");
+        }
         return grouped;
-    }, [notifications]);
+    }, [notifications, activeTab]);
 
     // Automatically mark all as read when entering the page
     useEffect(() => {
@@ -291,65 +300,114 @@ export default function NotificationsPage() {
                         zIndex: 100,
                         padding: "16px 24px",
                         display: "flex",
-                        alignItems: "center",
                         gap: "24px",
-                        borderBottom: "0.5px solid var(--border-hairline)"
+                        borderBottom: "0.5px solid var(--border-hairline)",
+                        flexDirection: "column",
+                        alignItems: "flex-start"
                     }}>
-                        <button
-                            onClick={() => navigate("/")}
-                            style={{
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                padding: "4px",
-                                borderRadius: "var(--radius-sm)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                transition: "all 0.15s ease",
-                            }}
-                        >
-                            <HugeiconsIcon icon={ArrowLeft01Icon} size={20} color="var(--text-primary)" />
-                        </button>
-
-                        <div style={{ flex: 1 }}>
-                            <h1 style={{
-                                fontSize: "16px",
-                                fontWeight: 700,
-                                color: "var(--text-primary)",
-                                margin: 0
-                            }}>
-                                Notifications
-                            </h1>
-                            {unreadCount > 0 && <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>{unreadCount} unread</span>}
-                        </div>
-
-                        {unreadCount > 0 && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
                             <button
-                                onClick={() => markAsRead("all")}
+                                onClick={() => navigate("/")}
                                 style={{
-                                    background: "transparent",
-                                    border: "0.5px solid var(--border-hairline)",
-                                    color: "var(--text-secondary)",
-                                    padding: "6px 14px",
-                                    borderRadius: "var(--radius-sm)",
-                                    fontSize: "12px",
-                                    fontWeight: 600,
+                                    background: "none",
+                                    border: "none",
                                     cursor: "pointer",
-                                    transition: "all 0.2s"
-                                }}
-                                onMouseEnter={e => {
-                                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                    e.currentTarget.style.color = "var(--text-primary)";
-                                }}
-                                onMouseLeave={e => {
-                                    e.currentTarget.style.backgroundColor = "transparent";
-                                    e.currentTarget.style.color = "var(--text-secondary)";
+                                    padding: "4px",
+                                    borderRadius: "var(--radius-sm)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    transition: "all 0.15s ease",
                                 }}
                             >
-                                Mark all as read
+                                <HugeiconsIcon icon={ArrowLeft01Icon} size={20} color="var(--text-primary)" />
                             </button>
-                        )}
+
+                            <div style={{ flex: 1 }}>
+                                <h1 style={{
+                                    fontSize: "16px",
+                                    fontWeight: 700,
+                                    color: "var(--text-primary)",
+                                    margin: 0
+                                }}>
+                                    Notifications
+                                </h1>
+                                {unreadCount > 0 && <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>{unreadCount} unread</span>}
+                            </div>
+
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={() => markAsRead("all")}
+                                    style={{
+                                        background: "transparent",
+                                        border: "0.5px solid var(--border-hairline)",
+                                        color: "var(--text-secondary)",
+                                        padding: "6px 14px",
+                                        borderRadius: "var(--radius-sm)",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                        transition: "all 0.2s"
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                        e.currentTarget.style.color = "var(--text-primary)";
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.backgroundColor = "transparent";
+                                        e.currentTarget.style.color = "var(--text-secondary)";
+                                    }}
+                                >
+                                    Mark all as read
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Tabs */}
+                        <div style={{ display: "flex", marginTop: "12px", marginBottom: "-18px", width: "100%" }}>
+                            {["All", "Mentions"].map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab as any)}
+                                    style={{
+                                        flex: 1,
+                                        background: "none",
+                                        border: "none",
+                                        padding: "16px 0",
+                                        fontSize: "15px",
+                                        fontWeight: 700,
+                                        cursor: "pointer",
+                                        color: activeTab === tab ? "var(--text-primary)" : "var(--text-tertiary)",
+                                        position: "relative",
+                                        transition: "all 0.2s ease",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        borderRadius: "0" // 0 border radius
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                                >
+                                    <span style={{ position: "relative" }}>
+                                        {tab}
+                                        {activeTab === tab && (
+                                            <div style={{
+                                                position: "absolute",
+                                                bottom: "-16px",
+                                                left: "50%",
+                                                transform: "translateX(-50%)",
+                                                width: "32px",
+                                                height: "4px",
+                                                backgroundColor: "var(--text-primary)",
+                                                borderRadius: "0", // 0 border radius for line too if preferred, or stick to bar
+                                                zIndex: 1
+                                            }} />
+                                        )}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
                     </header>
 
                     {/* Notifications List */}
@@ -380,6 +438,7 @@ export default function NotificationsPage() {
                                 <div
                                     key={notification.id}
                                     onClick={() => handleNotificationClick(notification)}
+                                    className="notification-row"
                                     style={{
                                         padding: isMobile ? "16px" : "20px 24px",
                                         borderBottom: "0.5px solid var(--border-hairline)",
@@ -388,7 +447,8 @@ export default function NotificationsPage() {
                                         display: "flex",
                                         gap: "16px",
                                         transition: "all 0.15s ease",
-                                        position: "relative"
+                                        position: "relative",
+                                        animation: !notification.read ? "pulse-bg 2.5s ease-in-out infinite" : "none"
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                                     onMouseLeave={e => e.currentTarget.style.backgroundColor = notification.read ? "transparent" : "rgba(var(--text-primary-rgb), 0.02)"}
@@ -444,20 +504,45 @@ export default function NotificationsPage() {
                                         </div>
                                     ) : (
                                         <>
-                                            {/* Left-Middle: Avatar */}
-                                            <div style={{ flexShrink: 0 }}>
-                                                <img
-                                                    src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
-                                                    alt=""
-                                                    style={{
-                                                        width: "40px",
-                                                        height: "40px",
-                                                        borderRadius: "10px",
-                                                        objectFit: "cover",
-                                                        border: "0.5px solid var(--border-hairline)",
-                                                        backgroundColor: "var(--bg-hover)"
-                                                    }}
-                                                />
+                                            {/* Left-Middle: Avatar or Avatar Stack */}
+                                            <div style={{ flexShrink: 0, position: "relative", width: "40px", height: "40px" }}>
+                                                {notification.isMultiActor && notification.actors && notification.actors.length > 1 ? (
+                                                    <div style={{ display: "flex", position: "relative", width: "40px", height: "40px" }}>
+                                                        {notification.actors.slice(0, 3).map((actor, idx) => (
+                                                            <img
+                                                                key={idx}
+                                                                src={actor?.avatar_url ?? "https://images.clerk.dev/static/avatar.png"}
+                                                                alt=""
+                                                                style={{
+                                                                    width: "28px",
+                                                                    height: "28px",
+                                                                    borderRadius: "8px",
+                                                                    objectFit: "cover",
+                                                                    border: "2px solid var(--bg-page)",
+                                                                    backgroundColor: "var(--bg-hover)",
+                                                                    position: "absolute",
+                                                                    left: idx * 12 + "px",
+                                                                    top: idx * 4 + "px",
+                                                                    zIndex: 3 - idx,
+                                                                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+                                                                }}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <img
+                                                        src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
+                                                        alt=""
+                                                        style={{
+                                                            width: "40px",
+                                                            height: "40px",
+                                                            borderRadius: "10px",
+                                                            objectFit: "cover",
+                                                            border: "0.5px solid var(--border-hairline)",
+                                                            backgroundColor: "var(--bg-hover)"
+                                                        }}
+                                                    />
+                                                )}
                                             </div>
 
                                             {/* Middle: Text Content */}
@@ -480,6 +565,73 @@ export default function NotificationsPage() {
                                                 }}>
                                                     {formatRelativeDate(notification.created_at)}
                                                 </p>
+                                            </div>
+
+                                            {/* Right: Preview or Delete */}
+                                            <div
+                                                className="notification-actions"
+                                                style={{
+                                                    flexShrink: 0,
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "12px"
+                                                }}
+                                            >
+                                                {(notification.post || notification.project) && (
+                                                    <div style={{
+                                                        width: "48px",
+                                                        height: "48px",
+                                                        borderRadius: "var(--radius-sm)",
+                                                        overflow: "hidden",
+                                                        border: "0.5px solid var(--border-hairline)",
+                                                        backgroundColor: "var(--bg-hover)",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center"
+                                                    }}>
+                                                        {notification.post?.image || notification.project?.image ? (
+                                                            <img
+                                                                src={(notification.post?.image || notification.project?.image) ?? undefined}
+                                                                alt=""
+                                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                            />
+                                                        ) : (
+                                                            <span style={{
+                                                                fontSize: "10px",
+                                                                color: "var(--text-tertiary)",
+                                                                padding: "4px",
+                                                                textAlign: "center",
+                                                                display: "-webkit-box",
+                                                                WebkitLineClamp: 3,
+                                                                WebkitBoxOrient: "vertical",
+                                                                overflow: "hidden"
+                                                            }}>
+                                                                {notification.post?.title || notification.post?.content || notification.project?.name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (notification.id) deleteNotification(notification.id);
+                                                    }}
+                                                    className="delete-btn"
+                                                    style={{
+                                                        background: "none",
+                                                        border: "none",
+                                                        cursor: "pointer",
+                                                        padding: "8px",
+                                                        borderRadius: "var(--radius-pill)",
+                                                        color: "#ff4d4f",
+                                                        opacity: 0,
+                                                        transition: "all 0.2s ease",
+                                                        display: isMobile ? "flex" : "flex"
+                                                    }}
+                                                >
+                                                    <HugeiconsIcon icon={Delete02Icon} size={18} />
+                                                </button>
                                             </div>
                                         </>
                                     )}
@@ -508,7 +660,21 @@ export default function NotificationsPage() {
             </div>
             <style>{`
                 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                @keyframes pulse-bg {
+                    0% { background-color: rgba(var(--text-primary-rgb), 0.02); }
+                    50% { background-color: rgba(var(--text-primary-rgb), 0.06); }
+                    100% { background-color: rgba(var(--text-primary-rgb), 0.02); }
+                }
+                .unread-pulse {
+                    animation: pulse-bg 2s ease-in-out infinite;
+                }
+                .notification-row:hover .delete-btn {
+                    opacity: 1 !important;
+                }
+                .delete-btn:hover {
+                    background-color: rgba(255, 77, 79, 0.1);
+                }
             `}</style>
-        </main>
+        </main >
     );
 }
