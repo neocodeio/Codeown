@@ -18,7 +18,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import MentionInput from "./MentionInput";
 import ContentRenderer from "./ContentRenderer";
-import { normalizeLanguage } from "../utils/language";
+
 import { validateImageSize, validateFileSize } from "../constants/upload";
 // Removed phosphor-react import
 import { useUserProjects } from "../hooks/useUserProjects";
@@ -38,7 +38,6 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
   const [attachments, setAttachments] = useState<{ name: string; type: string; size: number; data: string }[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
-  const [language, setLanguage] = useState<"en" | "ar">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const { getToken, isLoaded } = useClerkAuth();
@@ -61,7 +60,6 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
       setContent("");
       setImages([]);
       setAttachments([]);
-      setLanguage("en");
       setIsSubmitting(false);
       setActiveTab("write");
       setSelectedProjectId(initialProjectId || null);
@@ -244,7 +242,6 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
         images: images.length > 0 ? images : null,
         attachments: attachments.length > 0 ? attachments : null,
         tags: allTags.length > 0 ? allTags : null,
-        language: normalizeLanguage(language),
         project_id: selectedProjectId || null,
       };
       const res = await api.post("/posts", payload, {

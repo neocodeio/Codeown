@@ -4,7 +4,7 @@ import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Image01Icon, AttachmentIcon } from "@hugeicons/core-free-icons";
-import { normalizeLanguage } from "../utils/language";
+
 import { validateImageSize } from "../constants/upload";
 
 interface EditPostModalProps {
@@ -15,10 +15,8 @@ interface EditPostModalProps {
     id: number;
     title: string;
     content: string;
-
     images?: string[] | null;
     attachments?: { name: string; url?: string; data?: string; size: number }[] | null;
-    language?: "en" | "ar";
   };
 }
 
@@ -28,7 +26,6 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
 
   const [images, setImages] = useState<string[]>([]);
   const [attachments, setAttachments] = useState<{ name: string; url?: string; data?: string; size: number }[]>([]);
-  const [language, setLanguage] = useState<"en" | "ar">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { getToken, isLoaded } = useClerkAuth();
   const charLimit = 2000;
@@ -40,7 +37,6 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
 
       setImages(post.images || []);
       setAttachments(post.attachments || []);
-      setLanguage(normalizeLanguage(post.language));
     }
   }, [isOpen, post]);
 
@@ -111,7 +107,6 @@ export default function EditPostModal({ isOpen, onClose, onUpdated, post }: Edit
         content: content.trim(),
         images: images.length > 0 ? images : null,
         attachments: attachments.length > 0 ? attachments : null,
-        language: normalizeLanguage(language),
       };
 
       console.log("Submitting edit payload:", payload);

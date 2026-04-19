@@ -75,14 +75,12 @@ export default function Feed() {
     const feedType = (searchParams.get("type") as "posts" | "projects") || "posts";
     const feedFilter = (searchParams.get("filter") as FeedFilter) || "all";
     const selectedTag = searchParams.get("tag") || "";
-    const selectedLang = (searchParams.get("lang") as "en" | "ar" | "") || "";
 
     // Helper to update search params
     const updateParams = (newParams: Record<string, string | null>) => {
         setSearchParams(prev => {
             if (newParams.type && newParams.type !== feedType) {
                 prev.delete("tag");
-                prev.delete("lang");
             }
             Object.entries(newParams).forEach(([key, value]) => {
                 if (value === null || value === "") prev.delete(key);
@@ -101,7 +99,7 @@ export default function Feed() {
         loading: postsLoading,
         fetchPosts,
         hasMore: postsHasMore
-    } = usePosts(20, feedFilter, getToken, selectedTag, selectedLang || undefined, feedType === "posts");
+    } = usePosts(20, feedFilter, getToken, selectedTag, feedType === "posts");
 
     const {
         projects,

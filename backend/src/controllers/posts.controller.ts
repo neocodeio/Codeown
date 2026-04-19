@@ -7,8 +7,8 @@ import { GamificationService } from "../services/gamification.service.js";
 
 export async function getPosts(req: Request, res: Response) {
   try {
-    const { page = "1", limit = "10", filter = "all", tag, lang, projectId } = req.query;
-    console.log("getPosts query params:", { page, limit, filter, tag, lang, projectId });
+    const { page = "1", limit = "10", filter = "all", tag, projectId } = req.query;
+    console.log("getPosts query params:", { page, limit, filter, tag, projectId });
 
     const pageNum = parseInt(page as string, 10) || 1;
     const limitNum = parseInt(limit as string, 10) || 10;
@@ -17,14 +17,11 @@ export async function getPosts(req: Request, res: Response) {
     // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, language, poll, post_type, code_snippet, project_id, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)", { count: "exact" })
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)", { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
       .order("created_at", { ascending: false });
 
-    if (lang && typeof lang === 'string' && lang.trim().length > 0) {
-      const languageCode = lang.toLowerCase().trim();
-      postsQuery = postsQuery.eq("language", languageCode);
-    }
+
 
     if (tag) {
       postsQuery = postsQuery.contains("tags", [tag]);
@@ -235,7 +232,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Fetch posts for the user with specific columns only
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, language, poll, post_type, code_snippet, project_id, project:projects(id, name:title)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects(id, name:title)")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -405,7 +402,7 @@ export async function getPostsByUser(req: Request, res: Response) {
 export async function createPost(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { title, content, images, attachments, tags, language, poll, post_type, code_snippet, project_id } = req.body;
+    const { title, content, images, attachments, tags, poll, post_type, code_snippet, project_id } = req.body;
 
     // Validate input - Title is now optional
     const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
@@ -484,19 +481,7 @@ export async function createPost(req: Request, res: Response) {
       // Continue anyway - user might already exist, or we'll fetch from Clerk when displaying posts
     }
 
-    // Validate and sanitize language
-    let langCode = "en";
-    if (language) {
-      const rawLang = String(language).toLowerCase().trim();
-      if (rawLang === "ar" || rawLang === "arabic") {
-        langCode = "ar";
-      } else if (rawLang === "en" || rawLang === "english") {
-        langCode = "en";
-      }
-      // If it's neither, keep default "en"
-    }
 
-    console.log(`[CreatePost] Final language choice: '${langCode}' (Input was: '${language}')`);
 
     const { data: createdPost, error } = await supabase.from("posts")
       .insert({
@@ -506,7 +491,6 @@ export async function createPost(req: Request, res: Response) {
         images: imageUrls.length > 0 ? imageUrls : null,
         attachments: attachments || null,
         tags: allTags.length > 0 ? allTags : null,
-        language: langCode,
         poll: poll || null,
         post_type: post_type || "Update",
         code_snippet: code_snippet || null,
@@ -603,7 +587,7 @@ export async function updatePost(req: Request, res: Response) {
   try {
     const { user } = req;
     const { id } = req.params;
-    const { title, content, images, attachments, language, code_snippet, project_id } = req.body;
+    const { title, content, images, attachments, code_snippet, project_id } = req.body;
 
     const userId = user?.sub || user?.id || user?.userId;
 
@@ -639,12 +623,7 @@ export async function updatePost(req: Request, res: Response) {
     const updateData: any = {};
     if (title !== undefined) updateData.title = title.trim() || "";
     if (content !== undefined) updateData.content = content.trim();
-    if (language !== undefined) {
-      const rawLang = String(language).toLowerCase().trim();
-      const langCode = (rawLang === "ar" || rawLang === "arabic") ? "ar" : "en";
-      updateData.language = langCode;
-      console.log(`[UpdatePost] Updating language to: '${langCode}' (Input was: '${language}')`);
-    }
+
     if (code_snippet !== undefined) {
       updateData.code_snippet = code_snippet || null;
     }

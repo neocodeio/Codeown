@@ -29,7 +29,6 @@ export interface Post {
   isLiked?: boolean;
   isSaved?: boolean;
   view_count?: number;
-  language?: "en" | "ar";
   poll?: {
     options: string[];
     votes?: Record<number, number>;
@@ -47,7 +46,7 @@ export interface Post {
 
 export type FeedFilter = "all" | "following" | "contributors";
 
-export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string, lang?: "en" | "ar", enabled: boolean = true) {
+export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string, enabled: boolean = true) {
   const {
     data,
     fetchNextPage,
@@ -56,7 +55,7 @@ export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToke
     isLoading,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["posts", filter, tag ?? "", lang ?? ""],
+    queryKey: ["posts", filter, tag ?? ""],
     enabled,
     queryFn: async ({ pageParam = 1 }) => {
       const token = getToken ? await getToken() : null;
@@ -67,7 +66,6 @@ export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToke
       params.append("limit", limit.toString());
       if (filter && filter !== "all") params.append("filter", filter);
       if (tag) params.append("tag", tag);
-      if (lang) params.append("lang", lang);
 
       const url = `/posts?${params.toString()}`;
       const res = await api.get(url, { headers });

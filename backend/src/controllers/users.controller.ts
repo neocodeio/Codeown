@@ -778,7 +778,7 @@ export async function getUserProfile(req: Request, res: Response) {
         if (userData.pinned_post_id) {
             const { data: post } = await supabase
                 .from("posts")
-                .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language")
+                .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count")
                 .eq("id", userData.pinned_post_id)
                 .single();
 

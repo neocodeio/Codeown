@@ -44,7 +44,7 @@ export async function searchPosts(req: Request, res: Response) {
     // Search posts by title, content, or tags
     let postsQuery = supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, language, code_snippet, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" });
+      .select("id, title, content, user_id, created_at, images, tags, like_count, comment_count, view_count, code_snippet, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro)", { count: "exact" });
 
     if (query.startsWith("#")) {
       const tag = query.substring(1).toLowerCase();
