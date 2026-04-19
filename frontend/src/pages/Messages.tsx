@@ -650,7 +650,7 @@ const MessageBubble = memo(({
       </div>
 
       {reactingTo === msg.id && (
-        <div style={{ position: "absolute", bottom: "100%", [isMine ? "right" : "left"]: 0, backgroundColor: "var(--bg-page)", borderRadius: "30px", padding: "8px 16px", boxShadow: "0 10px 40px rgba(0,0,0,0.2)", border: "1px solid var(--border-hairline)", display: "flex", gap: "12px", zIndex: 1000, marginBottom: "12px" }}>
+        <div style={{ position: "absolute", top: "100%", [isMine ? "right" : "left"]: 0, backgroundColor: "var(--bg-page)", borderRadius: "30px", padding: "8px 16px", boxShadow: "0 10px 40px rgba(0,0,0,0.2)", border: "1px solid var(--border-hairline)", display: "flex", gap: "12px", zIndex: 1000, marginTop: "12px" }}>
           {["👍", "❤️", "😂", "😮", "😢", "🔥"].map((emoji) => (
             <button key={emoji} onClick={() => onReaction(msg.id, emoji)} style={{ background: "none", border: "none", fontSize: "22px", padding: "4px", cursor: "pointer", transition: "transform 0.1s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>{emoji}</button>
           ))}
