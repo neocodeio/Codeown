@@ -36,6 +36,13 @@ export default function NotificationsPage() {
     const [activeTab, setActiveTab] = useState<"All" | "Mentions">("All");
 
     // Grouping logic for "like" notifications
+    const [initialPulseActive, setInitialPulseActive] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setInitialPulseActive(false), 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     const groupedNotifications = useMemo(() => {
         const TIME_THRESHOLD = 4 * 60 * 60 * 1000; // 4 hours
         const grouped: (Notification & {
@@ -112,7 +119,7 @@ export default function NotificationsPage() {
         });
 
         if (activeTab === "Mentions") {
-            return grouped.filter(n => n.type === "mention");
+            return grouped.filter(n => n.type === "mention" || n.type === "reply" || n.type === "comment");
         }
         return grouped;
     }, [notifications, activeTab]);
@@ -448,7 +455,7 @@ export default function NotificationsPage() {
                                         gap: "16px",
                                         transition: "all 0.15s ease",
                                         position: "relative",
-                                        animation: !notification.read ? "pulse-bg 2.5s ease-in-out infinite" : "none"
+                                        animation: (!notification.read && initialPulseActive) ? "pulse-bg 1.5s ease-in-out infinite" : "none"
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
                                     onMouseLeave={e => e.currentTarget.style.backgroundColor = notification.read ? "transparent" : "rgba(var(--text-primary-rgb), 0.02)"}
@@ -466,175 +473,206 @@ export default function NotificationsPage() {
                                         }} />
                                     )}
 
-                                    {/* Left: Icon */}
-                                    <div style={{
-                                        width: "40px",
-                                        height: "40px",
-                                        borderRadius: "12px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        flexShrink: 0,
-                                        color: color,
-                                    }}>
-                                        {icon}
-                                    </div>
-
-                                    {notification.type === "streak_warning" || notification.type === "milestone" ? (
-                                        <div style={{ flex: 1 }}>
-                                            <p style={{
-                                                margin: 0,
-                                                fontSize: "14.5px",
-                                                color: "var(--text-primary)",
-                                                lineHeight: 1.5,
-                                                fontWeight: notification.read ? 400 : 700,
-                                            }}>
-                                                {getNotificationMessage(notification)}
-                                            </p>
-                                            <div style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "6px" }}>
-                                                <p style={{
-                                                    margin: 0,
-                                                    fontSize: "11px",
-                                                    color: "var(--text-tertiary)",
-                                                    fontWeight: 500
-                                                }}>
-                                                    {formatRelativeDate(notification.created_at)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ) : (
+                                    {notification.type === "mention" || notification.type === "reply" || notification.type === "comment" ? (
                                         <>
-                                            {/* Left-Middle: Avatar or Avatar Stack */}
-                                            <div style={{ flexShrink: 0, position: "relative", width: "40px", height: "40px" }}>
-                                                {notification.isMultiActor && notification.actors && notification.actors.length > 1 ? (
-                                                    <div style={{ display: "flex", position: "relative", width: "40px", height: "40px" }}>
-                                                        {notification.actors.slice(0, 3).map((actor, idx) => (
-                                                            <img
-                                                                key={idx}
-                                                                src={actor?.avatar_url ?? "https://images.clerk.dev/static/avatar.png"}
-                                                                alt=""
-                                                                style={{
-                                                                    width: "28px",
-                                                                    height: "28px",
-                                                                    borderRadius: "8px",
-                                                                    objectFit: "cover",
-                                                                    border: "2px solid var(--bg-page)",
-                                                                    backgroundColor: "var(--bg-hover)",
-                                                                    position: "absolute",
-                                                                    left: idx * 12 + "px",
-                                                                    top: idx * 4 + "px",
-                                                                    zIndex: 3 - idx,
-                                                                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-                                                                }}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <img
-                                                        src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
-                                                        alt=""
-                                                        style={{
-                                                            width: "40px",
-                                                            height: "40px",
-                                                            borderRadius: "10px",
-                                                            objectFit: "cover",
-                                                            border: "0.5px solid var(--border-hairline)",
-                                                            backgroundColor: "var(--bg-hover)"
-                                                        }}
-                                                    />
-                                                )}
+                                            {/* Twitter-like Content Style */}
+                                            <div style={{ flexShrink: 0 }}>
+                                                <img
+                                                    src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
+                                                    alt=""
+                                                    style={{
+                                                        width: "48px",
+                                                        height: "48px",
+                                                        borderRadius: "50%",
+                                                        objectFit: "cover",
+                                                        border: "0.5px solid var(--border-hairline)"
+                                                    }}
+                                                />
                                             </div>
+                                            <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "2px" }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap", justifyContent: "space-between" }}>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                                        <span style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "15px" }}>{notification.actor?.name || "User"}</span>
+                                                        {(notification.actor as any)?.is_verified && <VerifiedBadge size="14px" />}
+                                                        <span style={{ color: "var(--text-tertiary)", fontSize: "14px" }}>
+                                                            @{notification.actor?.username} · {formatRelativeDate(notification.created_at)}
+                                                        </span>
+                                                    </div>
+                                                </div>
 
-                                            {/* Middle: Text Content */}
-                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                {notification.type === "reply" && (
+                                                    <div style={{ fontSize: "13px", color: "var(--text-tertiary)", marginBottom: "4px" }}>
+                                                        Replying to <span style={{ color: "#1d9bf0", cursor: "pointer" }}>@you</span>
+                                                    </div>
+                                                )}
+
                                                 <p style={{
                                                     margin: 0,
-                                                    fontSize: "14.5px",
+                                                    fontSize: "15px",
                                                     color: "var(--text-primary)",
                                                     lineHeight: 1.5,
-                                                    fontWeight: notification.read ? 400 : 600,
+                                                    fontWeight: 400,
                                                     wordBreak: "break-word"
                                                 }}>
                                                     {getNotificationMessage(notification)}
                                                 </p>
-                                                <p style={{
-                                                    margin: "6px 0 0",
-                                                    fontSize: "12px",
-                                                    color: "var(--text-tertiary)",
-                                                    fontWeight: 500
-                                                }}>
-                                                    {formatRelativeDate(notification.created_at)}
-                                                </p>
-                                            </div>
 
-                                            {/* Right: Preview or Delete */}
-                                            <div
-                                                className="notification-actions"
-                                                style={{
-                                                    flexShrink: 0,
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: "12px"
-                                                }}
-                                            >
                                                 {(notification.post || notification.project) && (
                                                     <div style={{
-                                                        width: "48px",
-                                                        height: "48px",
-                                                        borderRadius: "var(--radius-sm)",
-                                                        overflow: "hidden",
+                                                        marginTop: "12px",
+                                                        padding: "12px",
+                                                        borderRadius: "16px",
                                                         border: "0.5px solid var(--border-hairline)",
-                                                        backgroundColor: "var(--bg-hover)",
+                                                        backgroundColor: "rgba(var(--text-primary-rgb), 0.03)",
                                                         display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center"
+                                                        gap: "12px"
                                                     }}>
-                                                        {notification.post?.image || notification.project?.image ? (
+                                                        {(notification.post?.image || notification.project?.image) && (
                                                             <img
                                                                 src={(notification.post?.image || notification.project?.image) ?? undefined}
-                                                                alt=""
-                                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                                style={{ width: "64px", height: "64px", borderRadius: "12px", objectFit: "cover" }}
                                                             />
-                                                        ) : (
-                                                            <span style={{
-                                                                fontSize: "10px",
-                                                                color: "var(--text-tertiary)",
-                                                                padding: "4px",
-                                                                textAlign: "center",
-                                                                display: "-webkit-box",
-                                                                WebkitLineClamp: 3,
-                                                                WebkitBoxOrient: "vertical",
-                                                                overflow: "hidden"
-                                                            }}>
-                                                                {notification.post?.title || notification.post?.content || notification.project?.name}
-                                                            </span>
                                                         )}
+                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <p style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
+                                                                {notification.post?.title || notification.project?.name}
+                                                            </p>
+                                                            <p style={{ fontSize: "13px", color: "var(--text-tertiary)", margin: "4px 0 0", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                                                {notification.post?.content || "View full discussion"}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 )}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* Awareness/Interaction Style */}
+                                            <div style={{
+                                                width: "40px",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "flex-end",
+                                                flexShrink: 0,
+                                            }}>
+                                                <div style={{ transform: "translateY(4px)", color: color }}>{icon}</div>
+                                            </div>
 
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        if (notification.id) deleteNotification(notification.id);
-                                                    }}
-                                                    className="delete-btn"
-                                                    style={{
-                                                        background: "none",
-                                                        border: "none",
-                                                        cursor: "pointer",
-                                                        padding: "8px",
-                                                        borderRadius: "var(--radius-pill)",
-                                                        color: "#ff4d4f",
-                                                        opacity: 0,
-                                                        transition: "all 0.2s ease",
-                                                        display: isMobile ? "flex" : "flex"
-                                                    }}
-                                                >
-                                                    <HugeiconsIcon icon={Delete02Icon} size={18} />
-                                                </button>
+                                            <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+                                                <div style={{ display: "flex", alignItems: "center" }}>
+                                                    {notification.isMultiActor && notification.actors && notification.actors.length > 1 ? (
+                                                        <div style={{ display: "flex", gap: "2px", flexWrap: "wrap", alignItems: "center" }}>
+                                                            {notification.actors.slice(0, 6).map((actor, idx) => (
+                                                                <img
+                                                                    key={idx}
+                                                                    src={actor?.avatar_url ?? "https://images.clerk.dev/static/avatar.png"}
+                                                                    alt=""
+                                                                    style={{
+                                                                        width: "32px",
+                                                                        height: "32px",
+                                                                        borderRadius: "50%",
+                                                                        objectFit: "cover",
+                                                                        border: "2px solid var(--bg-page)",
+                                                                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                                                                    }}
+                                                                />
+                                                            ))}
+                                                            {notification.actors.length > 6 && (
+                                                                <div style={{
+                                                                    width: "32px",
+                                                                    height: "32px",
+                                                                    borderRadius: "50%",
+                                                                    backgroundColor: "var(--bg-hover)",
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    justifyContent: "center",
+                                                                    fontSize: "10px",
+                                                                    color: "var(--text-tertiary)",
+                                                                    border: "1px solid var(--border-hairline)",
+                                                                    fontWeight: 700
+                                                                }}>
+                                                                    +{notification.actors.length - 6}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <img
+                                                            src={notification.actor?.avatar_url || "https://images.clerk.dev/static/avatar.png"}
+                                                            alt=""
+                                                            style={{
+                                                                width: "32px",
+                                                                height: "32px",
+                                                                borderRadius: "50%",
+                                                                objectFit: "cover",
+                                                                border: "0.5px solid var(--border-hairline)"
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+
+                                                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                                                    <p style={{
+                                                        margin: 0,
+                                                        fontSize: "15px",
+                                                        color: "var(--text-primary)",
+                                                        lineHeight: 1.4,
+                                                        fontWeight: 400,
+                                                        wordBreak: "break-word"
+                                                    }}>
+                                                        <span style={{ fontWeight: 700 }}>{notification.actor?.name || "User"}</span>
+                                                        {notification.groupCount && notification.groupCount > 1 ? ` and ${notification.groupCount - 1} others` : ""}
+                                                        {" "}{notification.type === "like" ? "liked your post" : notification.type === "follow" ? "followed you" : "interacted with you"}
+                                                    </p>
+
+                                                    {notification.post && (
+                                                        <p style={{
+                                                            margin: 0,
+                                                            fontSize: "15px",
+                                                            color: "var(--text-tertiary)",
+                                                            display: "-webkit-box",
+                                                            WebkitLineClamp: 2,
+                                                            WebkitBoxOrient: "vertical",
+                                                            overflow: "hidden"
+                                                        }}>
+                                                            {notification.post.title || notification.post.content}
+                                                        </p>
+                                                    )}
+
+                                                    <p style={{
+                                                        marginTop: "2px",
+                                                        fontSize: "13px",
+                                                        color: "var(--text-tertiary)",
+                                                        fontWeight: 400
+                                                    }}>
+                                                        {formatRelativeDate(notification.created_at)}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </>
                                     )}
+
+                                    {/* Action Button (Delete) on Hover */}
+                                    <div className="notification-actions" style={{ marginLeft: "auto", flexShrink: 0, position: "absolute", top: "12px", right: "12px" }}>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (notification.id) deleteNotification(notification.id);
+                                            }}
+                                            className="delete-btn"
+                                            style={{
+                                                background: "none",
+                                                border: "none",
+                                                cursor: "pointer",
+                                                padding: "8px",
+                                                borderRadius: "var(--radius-pill)",
+                                                color: "var(--text-tertiary)",
+                                                opacity: 0,
+                                                transition: "all 0.2s ease"
+                                            }}
+                                        >
+                                            <HugeiconsIcon icon={Delete02Icon} size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             );
                         })}
