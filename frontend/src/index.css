@@ -43,6 +43,9 @@
   --max-width: 1260px;
   --feed-width: 620px;
 
+  --skeleton-bg: #f0f2f5;
+  --skeleton-shimmer: rgba(255, 255, 255, 0.6);
+
   /* Typography */
   --font-main: 'Inter', -apple-system, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -59,10 +62,14 @@
   --bg-page: #111111;
   --bg-card: #1c1c1c;
   --bg-elevated: #222222;
-  --bg-hover: #262626;
+  --bg-hover: #1c1c1c;
   --bg-input: #1c1c1c;
 
-  --text-primary: #ffffff;
+  --skeleton-bg: #1c1c1c;
+  /* Same as --bg-hover */
+  --skeleton-shimmer: rgba(255, 255, 255, 0.05);
+
+  --text-primary: #f8fafc;
   --text-secondary: #a1a1a1;
   --text-tertiary: #666666;
 

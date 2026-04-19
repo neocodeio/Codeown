@@ -15,24 +15,16 @@ const ShimmerStyles = () => (
       background: linear-gradient(
         90deg,
         transparent,
-        rgba(255, 255, 255, 0.05),
+        var(--skeleton-shimmer),
         transparent
       );
       animation: shimmer 1.5s infinite;
     }
     .skeleton-block {
-      background-color: var(--bg-hover);
+      background-color: var(--skeleton-bg);
       border-radius: 4px;
       position: relative;
       overflow: hidden;
-    }
-    [data-theme='light'] .skeleton-shimmer {
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(0, 0, 0, 0.03),
-        transparent
-      );
     }
   `}</style>
 );
