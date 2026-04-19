@@ -843,7 +843,7 @@ export default function Messages() {
       } else {
         setMessages([]);
       }
-      setTimeout(() => scrollToBottom(true), 50);
+      setTimeout(() => scrollToBottom(true), 150);
     } else {
       setMessages([]);
     }
@@ -858,7 +858,7 @@ export default function Messages() {
 
       if (hasChanged) {
         setMessages(qMessages);
-        setTimeout(() => scrollToBottom(false), 50);
+        setTimeout(() => scrollToBottom(true), 150);
       }
     }
   }, [qMessages, qMessagesLoading]);
