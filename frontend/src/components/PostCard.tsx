@@ -6,7 +6,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import api from "../api/axios";
 import type { Post } from "../hooks/usePosts";
 import EditPostModal from "./EditPostModal";
-import ImageSlider from "./ImageSlider";
+import ImageGrid from "./ImageGrid";
 import ContentRenderer, { CodeBlock } from "./ContentRenderer";
 import { useLikes } from "../hooks/useLikes";
 import { useSaved } from "../hooks/useSaved";
@@ -15,7 +15,6 @@ import {
   HourglassIcon,
   ConfusedIcon,
   Comment01Icon,
-  FavouriteIcon,
   Bookmark02Icon,
   Share01Icon,
   SentIcon,
@@ -39,9 +38,9 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { toast } from "react-toastify";
 import UserHoverCard from "./UserHoverCard";
 import Lightbox from "./Lightbox";
-import RollingNumber from "./RollingNumber";
 import QuickCommentModal from "./QuickCommentModal";
 import InlineFollowButton from "./InlineFollowButton";
+import LikeButton from "./LikeButton";
 
 interface PostCardProps {
   post: Post;
@@ -536,8 +535,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         </div>
 
         {post.images && post.images.length > 0 && (
-          <div style={{ borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)", marginBottom: "16px" }}>
-            <ImageSlider images={post.images} onImageClick={handleImageClick} />
+          <div style={{ marginBottom: "16px" }}>
+            <ImageGrid images={post.images} onImageClick={handleImageClick} />
           </div>
         )}
 
@@ -713,79 +712,80 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         <div style={{
           display: "flex",
           marginTop: isMobile ? "24px" : "32px",
-          gap: isMobile ? "32px" : "64px",
           alignItems: "center",
-          justifyContent: "flex-start",
-          paddingRight: isMobile ? "0" : "0"
+          justifyContent: "space-between",
+          paddingRight: isMobile ? "0" : "12px",
+          maxWidth: "480px"
         }}>
-          {[
-            {
-              icon: Comment01Icon,
-              count: post.comment_count,
-              onClick: handleComment,
-              hoverColor: "var(--text-primary)",
-            },
-            {
-              icon: FavouriteIcon,
-              count: likeCount,
-              onClick: handleLike,
-              active: isLiked,
-              activeColor: "#ef4444",
-              filled: isLiked
-            },
-            {
-              icon: Bookmark02Icon,
-              onClick: handleSave,
-              active: isSaved,
-              activeColor: "var(--text-primary)",
-              filled: isSaved
-            },
-            {
-              icon: Share01Icon,
-              onClick: handleShare,
-              hoverColor: "var(--text-primary)",
-            },
-            {
-              icon: SentIcon,
-              onClick: handleSendToChat,
-              hoverColor: "var(--text-primary)",
-            }
-          ].map((action, i) => {
-            const Icon = action.icon;
-            return (
-              <button
-                key={i}
-                onClick={action.onClick}
-                style={{
-                  display: "flex", alignItems: "center", gap: "6px",
-                  background: "none", border: "none", padding: "4px 0",
-                  cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
-                  transition: "all 0.2s ease",
-                  fontSize: "13px",
-                  fontWeight: 600
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === FavouriteIcon ? "#ef4444" : "var(--text-primary)");
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
-                }}
-              >
-                <HugeiconsIcon
-                  icon={Icon}
-                  size={20}
-                  className={action.active && Icon === FavouriteIcon ? "hugeicon-filled" : ""}
-                />
-                {Icon === FavouriteIcon ? (
-                  <RollingNumber value={action.count || 0} fontWeight={600} fontSize="13px" color="inherit" />
-                ) : (
-                  action.count !== undefined && action.count > 0 && (
-                    <span>{action.count}</span>
-                  )
-                )}
-              </button>
-            );
-          })}
+          {/* Comment */}
+          <button
+            onClick={handleComment}
+            style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              background: "none", border: "none", padding: "4px 0",
+              cursor: "pointer", color: "var(--text-tertiary)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+          >
+            <HugeiconsIcon icon={Comment01Icon} size={20} />
+            {(post.comment_count ?? 0) > 0 && (
+              <span style={{ fontSize: "13px", fontWeight: 600 }}>{post.comment_count}</span>
+            )}
+          </button>
+
+          {/* Like */}
+          <LikeButton
+            isLiked={isLiked}
+            likeCount={likeCount}
+            onToggle={handleLike}
+          />
+
+          {/* Save */}
+          <button
+            onClick={handleSave}
+            style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              background: "none", border: "none", padding: "4px 0",
+              cursor: "pointer", color: isSaved ? "var(--text-primary)" : "var(--text-tertiary)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+            onMouseLeave={(e) => e.currentTarget.style.color = isSaved ? "var(--text-primary)" : "var(--text-tertiary)"}
+          >
+            <HugeiconsIcon icon={Bookmark02Icon} size={20} className={isSaved ? "hugeicon-filled" : ""} />
+          </button>
+
+          {/* Share */}
+          <button
+            onClick={handleShare}
+            style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              background: "none", border: "none", padding: "4px 0",
+              cursor: "pointer", color: "var(--text-tertiary)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+          >
+            <HugeiconsIcon icon={Share01Icon} size={20} />
+          </button>
+
+          {/* Send */}
+          <button
+            onClick={handleSendToChat}
+            style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              background: "none", border: "none", padding: "4px 0",
+              cursor: "pointer", color: "var(--text-tertiary)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+          >
+            <HugeiconsIcon icon={SentIcon} size={20} />
+          </button>
         </div>
       </div>
     </div>
