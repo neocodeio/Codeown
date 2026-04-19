@@ -32,8 +32,8 @@ export default function VerifiedBadge({ username, size = "14px", color }: Verifi
                     aria-label="Verified Official Account"
                     style={{
                         color: (color || "#00A2FF") + " !important",
-                        marginLeft: "0px",
-                        marginRight: "-4.5px",
+                        marginLeft: "2px",
+                        marginRight: "2px",
                         verticalAlign: "middle",
                         flexShrink: 0,
                     }}

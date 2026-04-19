@@ -18,7 +18,6 @@ import {
     UserGroupIcon,
     FireIcon,
     StarIcon,
-    MedalIcon,
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
@@ -35,32 +34,65 @@ export default function NotificationsPage() {
 
     // Grouping logic for "like" notifications
     const groupedNotifications = useMemo(() => {
-        const grouped: (Notification & { groupCount?: number; groupIds?: number[]; actorIds?: Set<string> })[] = [];
-        const likeMap = new Map<string, number>();
+        const grouped: (Notification & {
+            groupCount?: number;
+            groupIds?: number[];
+            actorIds?: Set<string>;
+            postIds?: Set<string | number>;
+            isMultiActor?: boolean;
+            isMultiPost?: boolean;
+        })[] = [];
+
+        const postLikeMap = new Map<string, number>();
+        const actorLikeMap = new Map<string, number>();
 
         notifications.forEach((n) => {
             if (n.type === "like") {
-                const key = n.post_id ? `post_${n.post_id}` : n.project_id ? `project_${n.project_id}` : null;
-                if (key) {
-                    if (likeMap.has(key)) {
-                        const idx = likeMap.get(key)!;
-                        const group = grouped[idx];
-                        if (!group.actorIds) group.actorIds = new Set([group.actor_id]);
+                const postKey = n.post_id ? `post_${n.post_id}` : n.project_id ? `project_${n.project_id}` : null;
+                const actorKey = n.actor_id;
 
-                        // Only group if it's a NEW actor for this post/project
-                        if (!group.actorIds.has(n.actor_id)) {
+                // 1. Priority: Group by POST (Many people liking the same post)
+                if (postKey && postLikeMap.has(postKey)) {
+                    const idx = postLikeMap.get(postKey)!;
+                    const group = grouped[idx];
+                    if (!group.actorIds) group.actorIds = new Set([group.actor_id]);
+
+                    if (!group.actorIds.has(n.actor_id)) {
+                        group.isMultiActor = true;
+                        group.groupCount = (group.groupCount || 1) + 1;
+                        if (!group.groupIds) group.groupIds = [group.id];
+                        group.groupIds.push(n.id);
+                        group.actorIds.add(n.actor_id);
+                        if (!n.read) group.read = false;
+                        return;
+                    }
+                }
+
+                // 2. Secondary: Group by ACTOR (Same person liking multiple of your posts)
+                if (actorKey && actorLikeMap.has(actorKey)) {
+                    const idx = actorLikeMap.get(actorKey)!;
+                    const group = grouped[idx];
+                    // Only group if the existing group isn't already a multi-actor group
+                    if (!group.isMultiActor) {
+                        const currentPostId = n.post_id || n.project_id;
+                        if (!group.postIds) group.postIds = new Set([group.post_id || group.project_id || 'unknown']);
+
+                        if (currentPostId && !group.postIds.has(currentPostId)) {
+                            group.isMultiPost = true;
                             group.groupCount = (group.groupCount || 1) + 1;
                             if (!group.groupIds) group.groupIds = [group.id];
                             group.groupIds.push(n.id);
-                            group.actorIds.add(n.actor_id);
-                            // If any unread in group, mark group as unread
+                            group.postIds.add(currentPostId);
                             if (!n.read) group.read = false;
                             return;
                         }
                     }
-                    // Reset or set the map pointer to the newest instance
-                    likeMap.set(key, grouped.length);
                 }
+
+                // Create new notification record and map it
+                const newIdx = grouped.length;
+                if (postKey) postLikeMap.set(postKey, newIdx);
+                actorLikeMap.set(actorKey, newIdx);
             }
             grouped.push({ ...n });
         });
@@ -103,88 +135,107 @@ export default function NotificationsPage() {
         switch (notification.type) {
             case "like":
                 if (notification.project_id) {
-                    return { icon: <HugeiconsIcon icon={ArrowUp01Icon} size={size} />, color: "var(--text-primary)" };
+                    return { icon: <HugeiconsIcon icon={ArrowUp01Icon} size={size} />, color: "#3b82f6" }; // Blue
                 }
-                return { icon: <HugeiconsIcon icon={FavouriteIcon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={FavouriteIcon} size={size} />, color: "#f43f5e" }; // Rose/Red
             case "comment":
             case "reply":
-                return { icon: <HugeiconsIcon icon={Comment01Icon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={Comment01Icon} size={size} />, color: "#1d9bf0" }; // Twitter Blue
             case "follow":
-                return { icon: <HugeiconsIcon icon={UserAdd01Icon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={UserAdd01Icon} size={size} />, color: "#10b981" }; // Emerald Green
             case "mention":
-                return { icon: <HugeiconsIcon icon={MailAtSign01Icon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={MailAtSign01Icon} size={size} />, color: "#8b5cf6" }; // Violet
             case "save":
-                return { icon: <HugeiconsIcon icon={Bookmark02Icon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={Bookmark02Icon} size={size} />, color: "#f59e0b" }; // Amber
             case "message":
-                return { icon: <HugeiconsIcon icon={Mail01Icon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={Mail01Icon} size={size} />, color: "#14b8a6" }; // Teal
             case "profile_view":
             case "project_view":
-                return { icon: <HugeiconsIcon icon={ViewIcon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={ViewIcon} size={size} />, color: "#64748b" }; // Slate
             case "cofounder_request":
-                return { icon: <HugeiconsIcon icon={UserGroupIcon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={UserGroupIcon} size={size} />, color: "#ec4899" }; // Pink
             case "streak_warning":
-                return { icon: <HugeiconsIcon icon={FireIcon} size={size} />, color: "#f97316" };
+                return { icon: <HugeiconsIcon icon={FireIcon} size={size} />, color: "#f97316" }; // Orange
             case "milestone":
-                return { icon: <HugeiconsIcon icon={MedalIcon} size={size} />, color: "#fff" };
+                return { icon: <HugeiconsIcon icon={StarIcon} size={size} />, color: "#fbbf24" }; // Gold
             case "startup_upvote":
-                return { icon: <HugeiconsIcon icon={ArrowUp01Icon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={ArrowUp01Icon} size={size} />, color: "#3b82f6" }; // Blue
             default:
-                return { icon: <HugeiconsIcon icon={Notification01Icon} size={size} />, color: "var(--text-primary)" };
+                return { icon: <HugeiconsIcon icon={Notification01Icon} size={size} />, color: "var(--text-secondary)" };
         }
     };
 
-    const getNotificationMessage = (notification: Notification & { groupCount?: number }) => {
+    const getNotificationMessage = (notification: Notification & {
+        groupCount?: number;
+        isMultiActor?: boolean;
+        isMultiPost?: boolean
+    }) => {
         const actorName = notification.actor?.name || "Someone";
         const username = notification.actor?.username;
 
         const nameWrapper = (
             <span
-                style={{ fontWeight: 700, color: "var(--text-primary)", cursor: "pointer" }}
+                style={{
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    verticalAlign: "top"
+                }}
                 onClick={(e) => {
                     e.stopPropagation();
                     navigate(username ? `/${username}` : `/user/${notification.actor_id}`);
                 }}
             >
                 {actorName}
-                <VerifiedBadge username={username} size="12px" />
+                <VerifiedBadge username={username} size="14px" />
             </span>
         );
 
         switch (notification.type) {
             case "like":
-                if (notification.groupCount && notification.groupCount > 1) {
+                if (notification.isMultiActor && notification.groupCount && notification.groupCount > 1) {
                     const othersCount = notification.groupCount - 1;
                     return (
                         <>
-                            {nameWrapper} and <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{othersCount} {othersCount === 1 ? "other" : "others"}</span> liked your {notification.project_id ? "project" : "post"}
+                            {nameWrapper}{" "}and <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{othersCount} {othersCount === 1 ? "other" : "others"}</span> liked your {notification.project_id ? "project" : "post"}
                         </>
                     );
                 }
-                return <>{nameWrapper} liked your {notification.project_id ? "project" : "post"}</>;
+                if (notification.isMultiPost && notification.groupCount && notification.groupCount > 1) {
+                    return (
+                        <>
+                            {nameWrapper}{" "}liked <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{notification.groupCount}</span> of your post
+                        </>
+                    );
+                }
+                return <>{nameWrapper}{" "}liked your {notification.project_id ? "project" : "post"}</>;
             case "comment":
-                return <>{nameWrapper} commented on your post</>;
+                return <>{nameWrapper}{" "}commented on your post</>;
             case "reply":
-                return <>{nameWrapper} replied to your comment</>;
+                return <>{nameWrapper}{" "}replied to your comment</>;
             case "follow":
-                return <>{nameWrapper} started following you</>;
+                return <>{nameWrapper}{" "}started following you</>;
             case "mention":
-                return <>{nameWrapper} mentioned you in a post</>;
+                return <>{nameWrapper}{" "}mentioned you in a post</>;
             case "save":
-                return <>{nameWrapper} saved your post</>;
+                return <>{nameWrapper}{" "}saved your post</>;
             case "message":
-                return <>{nameWrapper} sent you a message</>;
+                return <>{nameWrapper}{" "}sent you a message</>;
             case "profile_view":
-                return <>{nameWrapper} viewed your profile</>;
+                return <>{nameWrapper}{" "}viewed your profile</>;
             case "project_view":
-                return <>{nameWrapper} viewed your project</>;
+                return <>{nameWrapper}{" "}viewed your project</>;
             case "cofounder_request":
-                return <>{nameWrapper} requested to join your project as a co-founder</>;
+                return <>{nameWrapper}{" "}requested to join your project as a co-founder</>;
             case "streak_warning":
                 return <>Your streak is about to expire! Post something to keep it alive. <HugeiconsIcon icon={FireIcon} size={14} style={{ display: "inline", verticalAlign: "middle" }} /></>;
             case "milestone":
                 return <>Congratulations! You've reached a new milestone. <HugeiconsIcon icon={StarIcon} size={14} style={{ display: "inline", verticalAlign: "middle" }} /></>;
             case "startup_upvote":
-                return <>{nameWrapper} upvoted your startup</>;
+                return <>{nameWrapper}{" "}upvoted your startup</>;
             default:
                 return <>You have a new notification</>;
         }
