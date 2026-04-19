@@ -608,12 +608,24 @@ export default function PostDetail() {
             </header>
 
             {/* Post Content */}
-            <article style={{ padding: isMobile ? "20px 16px" : "32px 24px" }}>
-              <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
+            <article style={{ padding: isMobile ? "20px 16px" : "32px 24px", position: "relative" }}>
+              {/* Thread Line connecting down to comments */}
+              {!isMobile && (
+                <div style={{
+                  position: "absolute",
+                  left: "48px", // Matches avatar center (24px padding + 24px half avatar)
+                  top: "104px", // Matches avatar bottom + margin
+                  bottom: "-32px", // Extends into the comments area
+                  width: "2px",
+                  backgroundColor: "var(--border-hairline)",
+                  zIndex: 0
+                }} />
+              )}
+              <div style={{ display: "flex", gap: "16px", marginBottom: "24px", position: "relative", zIndex: 1 }}>
                 <img
                   src={avatarUrl}
                   alt={userName}
-                  style={{ width: "48px", height: "48px", borderRadius: "12px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+                  style={{ width: "48px", height: "48px", borderRadius: "12px", objectFit: "cover", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)" }}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>

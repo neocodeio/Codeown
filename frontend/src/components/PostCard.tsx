@@ -47,9 +47,11 @@ interface PostCardProps {
   post: Post;
   onUpdated?: () => void;
   isPinned?: boolean;
+  isThreadChild?: boolean;
+  isThreadParent?: boolean;
 }
 
-const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProps) => {
+const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp, isThreadChild, isThreadParent }: PostCardProps) => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const { user: currentUser } = useClerkUser();
@@ -269,19 +271,50 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       }}
     >
       {/* Avatar Col */}
-      <div style={{ flexShrink: 0 }}>
-        <UserHoverCard userId={post.user_id} user={post.user as any}>
-          <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
-            <AvailabilityBadge
-              avatarUrl={post.user?.avatar_url || null}
-              name={post.user?.name || "User"}
-              size={36}
-              isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
-              isOG={post.user?.is_og}
-              username={post.user?.username}
-            />
-          </div>
-        </UserHoverCard>
+      <div style={{
+        flexShrink: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        position: "relative",
+        minWidth: "36px"
+      }}>
+        {isThreadChild && (
+          <div style={{
+            position: "absolute",
+            top: "-20px",
+            height: "20px", // From top of card to top of avatar
+            width: "2px",
+            backgroundColor: "var(--border-hairline)",
+            zIndex: 0
+          }} />
+        )}
+
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <UserHoverCard userId={post.user_id} user={post.user as any}>
+            <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
+              <AvailabilityBadge
+                avatarUrl={post.user?.avatar_url || null}
+                name={post.user?.name || "User"}
+                size={36}
+                isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
+                isOG={post.user?.is_og}
+                username={post.user?.username}
+              />
+            </div>
+          </UserHoverCard>
+        </div>
+
+        {isThreadParent && (
+          <div style={{
+            position: "absolute",
+            top: "36px",
+            bottom: "-20px",
+            width: "2px",
+            backgroundColor: "var(--border-hairline)",
+            zIndex: 0
+          }} />
+        )}
       </div>
 
       {/* Content Col */}
@@ -294,6 +327,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
           marginBottom: "6px"
         }}>
           <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+            {isThreadChild && (
+              <div style={{ fontSize: "13px", color: "var(--text-tertiary)", marginBottom: "2px" }}>
+                Replying to <span style={{ color: "#1d9bf0" }}>@parent</span>
+              </div>
+            )}
             {/* Name + Badges Row */}
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>

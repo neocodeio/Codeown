@@ -94,6 +94,29 @@ interface UserProfile {
   level: number;
 }
 
+const AnimatedCounter = ({ end, duration = 1500 }: { end: number, duration?: number }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      // Ease out expo for a more premium "slow down" at the end
+      const easedProgress = 1 - Math.pow(2, -10 * progress);
+      setCount(Math.floor(easedProgress * end));
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        setCount(end); // Ensure we end exactly at the target
+      }
+    };
+    window.requestAnimationFrame(step);
+  }, [end, duration]);
+
+  return <>{count.toLocaleString()}</>;
+};
+
 export default function Profile() {
   const { user, isLoaded, isSignedIn } = useClerkUser();
   const { width } = useWindowSize();
@@ -452,13 +475,13 @@ export default function Profile() {
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "20px", marginBottom: "32px" }}>
                 <div style={{ display: "flex", gap: "24px" }}>
                   <button onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ border: "none", background: "none", cursor: "pointer", padding: 0, fontSize: "14px", color: "var(--text-primary)", fontWeight: 600 }} >
-                    {userProfile?.follower_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Followers</span>
+                    <AnimatedCounter end={userProfile?.follower_count ?? 0} /> <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Followers</span>
                   </button>
                   <button onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ border: "none", background: "none", cursor: "pointer", padding: 0, fontSize: "14px", color: "var(--text-primary)", fontWeight: 600 }} >
-                    {userProfile?.following_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Following</span>
+                    <AnimatedCounter end={userProfile?.following_count ?? 0} /> <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Following</span>
                   </button>
                   <div style={{ fontSize: "14px", color: "var(--text-primary)", fontWeight: 600 }}>
-                    {userProfile?.contribution_count ?? 0} <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Contributions</span>
+                    <AnimatedCounter end={userProfile?.contribution_count ?? 0} /> <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Contributions</span>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
@@ -507,7 +530,7 @@ export default function Profile() {
                               </div>
                               <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
                                 <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
-                                  {userProfile?.level || 1}
+                                  <AnimatedCounter end={userProfile?.level || 1} duration={1000} />
                                 </span>
                                 <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)" }}>
                                   / 100
@@ -517,7 +540,7 @@ export default function Profile() {
 
                             <div style={{ textAlign: "right" }}>
                               <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
-                                {userProfile?.xp?.toLocaleString() || 0} XP
+                                <AnimatedCounter end={userProfile?.xp || 0} duration={1200} /> XP
                               </div>
                               <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
                                 {Math.pow((userProfile?.level || 1), 2) * 50 - (userProfile?.xp || 0)} XP next
