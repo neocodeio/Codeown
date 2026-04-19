@@ -1451,9 +1451,9 @@ export async function getDashboardStats(req: Request, res: Response) {
             userStreak
         ] = await Promise.all([
             // 1. Posts count
-            supabase.from("posts").select("*", { count: "exact", head: true }).eq("user_id", userId),
+            supabase.from("posts").select("id", { count: "exact", head: true }).eq("user_id", userId),
             // 2. Projects count
-            supabase.from("projects").select("*", { count: "exact", head: true }).eq("user_id", userId),
+            supabase.from("projects").select("id", { count: "exact", head: true }).eq("user_id", userId),
             // 3. Post Likes (summing performance column for efficiency)
             supabase.from("posts").select("like_count").eq("user_id", userId),
             // 4. Project Upvotes

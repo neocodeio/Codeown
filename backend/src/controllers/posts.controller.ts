@@ -159,7 +159,7 @@ export async function getPostById(req: Request, res: Response) {
     // Fetch the post and user data in one join query
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .select("*, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
       .eq("id", id)
       .single();
 
@@ -496,7 +496,7 @@ export async function createPost(req: Request, res: Response) {
         code_snippet: code_snippet || null,
         project_id: project_id || null,
       })
-      .select("*, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)")
       .single();
 
     if (error) {
@@ -778,7 +778,7 @@ export async function votePost(req: Request, res: Response) {
       .from("posts")
       .update({ poll: updatedPoll })
       .eq("id", id)
-      .select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
       .single();
 
     if (updateError) {
