@@ -647,10 +647,10 @@ export default function Profile() {
                         if (userProfile?.pinned_post_id === a.id) return -1;
                         if (userProfile?.pinned_post_id === b.id) return 1;
                         return 0;
-                      }).map((p, idx) => (
+                      }).map((p) => (
                         <div key={p.id} style={{ position: "relative" }}>
                           {userProfile?.pinned_post_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-tertiary)", fontSize: "11px", fontWeight: 700 }}> <HugeiconsIcon icon={PinIcon} size={12} /> Pinned </div>)}
-                          <PostCard post={p} index={idx} onUpdated={fetchUserPosts} isPinned={userProfile?.pinned_post_id === p.id} />
+                          <PostCard post={p} onUpdated={fetchUserPosts} isPinned={userProfile?.pinned_post_id === p.id} />
                         </div>
                       ))
                     )}

@@ -613,7 +613,7 @@ export default function PostDetail() {
                 <img
                   src={avatarUrl}
                   alt={userName}
-                  style={{ width: "48px", height: "48px", borderRadius: "12px", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+                  style={{ width: "48px", height: "48px", borderRadius: "12px", objectFit: "cover", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)" }}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>

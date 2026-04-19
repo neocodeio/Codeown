@@ -47,12 +47,9 @@ interface PostCardProps {
   post: Post;
   onUpdated?: () => void;
   isPinned?: boolean;
-  isThreadChild?: boolean;
-  isThreadParent?: boolean;
-  index?: number;
 }
 
-const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp, isThreadChild, isThreadParent, index }: PostCardProps) => {
+const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProps) => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const { user: currentUser } = useClerkUser();
@@ -272,51 +269,19 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp, isThreadChild,
       }}
     >
       {/* Avatar Col */}
-      <div style={{
-        flexShrink: 0,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        position: "relative",
-        minWidth: "36px"
-      }}>
-        {isThreadChild && (
-          <div style={{
-            position: "absolute",
-            top: "-20px",
-            height: "20px", // From top of card to top of avatar
-            width: "2px",
-            backgroundColor: "var(--border-hairline)",
-            zIndex: 0
-          }} />
-        )}
-
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <UserHoverCard userId={post.user_id} user={post.user as any}>
-            <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
-              <AvailabilityBadge
-                avatarUrl={post.user?.avatar_url || null}
-                name={post.user?.name || "User"}
-                size={36}
-                isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
-                isOG={post.user?.is_og}
-                username={post.user?.username}
-              />
-            </div>
-          </UserHoverCard>
-        </div>
-
-        {/* Thread Parent Line */}
-        {(isThreadParent || (index !== undefined && index < 6 && post.top_comment)) && (
-          <div style={{
-            position: "absolute",
-            top: "36px",
-            bottom: "-20px", // Goes to the edge of the first row
-            width: "2px",
-            backgroundColor: "var(--border-hairline)",
-            zIndex: 0
-          }} />
-        )}
+      <div style={{ flexShrink: 0 }}>
+        <UserHoverCard userId={post.user_id} user={post.user as any}>
+          <div onClick={handleUserClick} style={{ cursor: "pointer" }}>
+            <AvailabilityBadge
+              avatarUrl={post.user?.avatar_url || null}
+              name={post.user?.name || "User"}
+              size={36}
+              isOpenToOpportunities={post.user?.is_pro === true && post.user?.is_hirable === true}
+              isOG={post.user?.is_og}
+              username={post.user?.username}
+            />
+          </div>
+        </UserHoverCard>
       </div>
 
       {/* Content Col */}
@@ -329,11 +294,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp, isThreadChild,
           marginBottom: "6px"
         }}>
           <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-            {isThreadChild && (
-              <div style={{ fontSize: "13px", color: "var(--text-tertiary)", marginBottom: "2px" }}>
-                Replying to <span style={{ color: "#1d9bf0" }}>@parent</span>
-              </div>
-            )}
             {/* Name + Badges Row */}
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
@@ -827,85 +787,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp, isThreadChild,
             );
           })}
         </div>
-
-        {/* Top Comment (Featured Thread) */}
-        {post.top_comment && index !== undefined && index < 6 && (
-          <div style={{
-            marginTop: "20px",
-            display: "flex",
-            gap: isMobile ? "12px" : "16px",
-            position: "relative",
-            animation: "reactionFadeUp 0.3s ease-out"
-          }}>
-            <div
-              onClick={(e) => { e.stopPropagation(); navigate(`/post/${post.id}`); }}
-              style={{
-                flex: 1,
-                display: "flex",
-                gap: isMobile ? "12px" : "16px",
-                padding: "4px 0",
-              }}
-            >
-              <div style={{
-                flexShrink: 0,
-                position: "relative",
-                zIndex: 1,
-                width: "36px",
-                display: "flex",
-                justifyContent: "center"
-              }}>
-                {/* Connecting line from above */}
-                <div style={{
-                  position: "absolute",
-                  top: "-20px",
-                  height: "20px",
-                  width: "2px",
-                  backgroundColor: "var(--border-hairline)",
-                  zIndex: 0
-                }} />
-
-                <img
-                  src={post.top_comment.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.top_comment.user.name)}&background=212121&color=ffffff&bold=true`}
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    border: "0.5px solid var(--border-hairline)",
-                    backgroundColor: "var(--bg-page)",
-                    position: "relative",
-                    zIndex: 2
-                  }}
-                  alt=""
-                />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px", flexWrap: "wrap" }}>
-                  <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>{post.top_comment.user.name}</span>
-                  <VerifiedBadge username={post.top_comment.user.username} isPro={post.top_comment.user.is_pro} size="12px" />
-                  <span style={{ fontSize: "12.5px", color: "var(--text-tertiary)", fontWeight: 500 }}>@{post.top_comment.user.username || "user"}</span>
-                  <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
-                  <span style={{ fontSize: "12.5px", color: "var(--text-tertiary)", fontWeight: 500 }}>{formatRelativeDate(post.top_comment.created_at)}</span>
-                </div>
-                <div style={{
-                  fontSize: "14px",
-                  color: "var(--text-secondary)",
-                  lineHeight: "1.5",
-                  wordBreak: "break-word",
-                  fontWeight: 400
-                }}>
-                  {post.top_comment.content}
-                </div>
-                {post.top_comment.like_count !== undefined && post.top_comment.like_count > 0 && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "4px", marginTop: "8px", color: "var(--text-tertiary)" }}>
-                    <HugeiconsIcon icon={FavouriteIcon} size={12} />
-                    <span style={{ fontSize: "11px", fontWeight: 700 }}>{post.top_comment.like_count}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

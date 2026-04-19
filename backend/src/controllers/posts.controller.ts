@@ -93,54 +93,8 @@ export async function getPosts(req: Request, res: Response) {
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
     let finalPosts = postsWithUsers;
 
-    // Fetch top comments for the first 6 posts (as requested for the thread UI)
-    const topCommentPostIds = postsWithUsers.slice(0, 6).map(p => p.id);
-    const postsWithTopComments = [...postsWithUsers];
-
-    if (topCommentPostIds.length > 0) {
-      await Promise.all(topCommentPostIds.map(async (postId, idx) => {
-        // Fetch comments for this post
-        const { data: comments } = await supabase
-          .from("comments")
-          .select("id, content, user_id, created_at, user:users!comments_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
-          .eq("post_id", postId)
-          .is("parent_id", null)
-          .limit(20);
-
-        if (comments && comments.length > 0) {
-          // Fetch likes for these comments to find the top one
-          const commentIds = comments.map(c => c.id);
-          const { data: likeRows } = await supabase
-            .from("likes")
-            .select("comment_id")
-            .in("comment_id", commentIds);
-
-          const likeCountMap = new Map();
-          (likeRows || []).forEach(r => {
-            likeCountMap.set(r.comment_id, (likeCountMap.get(r.comment_id) || 0) + 1);
-          });
-
-          const sortedComments = comments.map(c => ({
-            ...c,
-            like_count: likeCountMap.get(c.id) || 0
-          })).sort((a, b) => b.like_count - a.like_count);
-
-          const topComment = sortedComments[0];
-          if (topComment) {
-            postsWithTopComments[idx].top_comment = {
-              id: topComment.id,
-              content: topComment.content,
-              created_at: topComment.created_at,
-              like_count: topComment.like_count,
-              user: Array.isArray(topComment.user) ? topComment.user[0] : topComment.user
-            };
-          }
-        }
-      }));
-    }
-
-    if (currentUserId && postsWithTopComments.length > 0) {
-      const postIds = postsWithTopComments.map(p => p.id);
+    if (currentUserId && postsWithUsers.length > 0) {
+      const postIds = postsWithUsers.map(p => p.id);
 
       const [likesRes, savesRes] = await Promise.all([
         supabase.from("likes").select("post_id").eq("user_id", currentUserId).in("post_id", postIds),
@@ -150,7 +104,7 @@ export async function getPosts(req: Request, res: Response) {
       const likedPostIds = new Set((likesRes.data || []).map(l => l.post_id));
       const savedPostIds = new Set((savesRes.data || []).map(s => s.post_id));
 
-      finalPosts = postsWithTopComments.map(p => {
+      finalPosts = postsWithUsers.map(p => {
         const poll = p.poll as any;
         return {
           ...p,
@@ -163,12 +117,23 @@ export async function getPosts(req: Request, res: Response) {
           } : null
         };
       });
-    } else {
-      finalPosts = postsWithTopComments;
     }
 
+    // Final cleanup of polls and mapping stats
+    const finalFormattedPosts = finalPosts.map((p: any) => {
+      const poll = p.poll as any;
+      return {
+        ...p,
+        poll: poll ? {
+          options: poll.options,
+          votes: poll.votes,
+          userVoted: poll.userVoted ?? (currentUserId && poll.voters ? poll.voters[currentUserId] : undefined)
+        } : null
+      };
+    });
+
     return res.json({
-      posts: finalPosts,
+      posts: finalFormattedPosts,
       total: count || 0,
       page: pageNum,
       limit: limitNum,
