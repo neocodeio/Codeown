@@ -496,15 +496,11 @@ export default function Feed() {
                                 }
                                 <div ref={lastElementRef} style={{ height: "100px", width: "100%", visibility: "hidden" }} />
 
-                                {loading && (
-                                    <div style={{ padding: "60px", textAlign: "center", display: "flex", justifyContent: "center" }}>
-                                        <div style={{
-                                            width: "20px", height: "20px",
-                                            border: "2px solid var(--border-hairline)",
-                                            borderTopColor: "var(--text-primary)",
-                                            borderRadius: "50%",
-                                            animation: "spin 0.8s linear infinite"
-                                        }} />
+                                {loading && hasMore && (
+                                    <div style={{ display: "flex", flexDirection: "column" }}>
+                                        {[...Array(2)].map((_, i) => (
+                                            <PostCardSkeleton key={`loading-${i}`} />
+                                        ))}
                                     </div>
                                 )}
                             </>
