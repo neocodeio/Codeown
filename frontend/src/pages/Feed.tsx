@@ -477,12 +477,12 @@ export default function Feed() {
                         ) : (
                             <>
                                 {feedType === "posts"
-                                    ? (currentItems as any[]).map(p => (
+                                    ? (currentItems as any[]).map((p, idx) => (
                                         <div key={p.id} style={{
                                             borderBottom: "0.5px solid var(--border-hairline)",
                                             animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
                                         }}>
-                                            <PostCard post={p} onUpdated={handlePostCreated} />
+                                            <PostCard post={p} index={idx} onUpdated={handlePostCreated} />
                                         </div>
                                     ))
                                     : (currentItems as any[]).map(p => (

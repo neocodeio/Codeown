@@ -36,11 +36,22 @@ export interface Post {
   } | null;
   post_type?: string | null;
   code_snippet?: string | null;
-  project_id?: string | null;
   project?: {
     id: string;
     name: string;
     slug: string;
+  } | null;
+  top_comment?: {
+    id: number | string;
+    content: string;
+    user: {
+      name: string;
+      username: string | null;
+      avatar_url: string | null;
+      is_pro?: boolean;
+    };
+    created_at: string;
+    like_count?: number;
   } | null;
 }
 
