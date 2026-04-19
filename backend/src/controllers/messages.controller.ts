@@ -83,7 +83,7 @@ export async function getConversations(req: Request, res: Response) {
         const otherUserIds = participants.map(p => p.user_id);
         const { data: users, error: err3 } = await supabase
             .from("users")
-            .select("id, name, username, avatar_url, is_og")
+            .select("id, name, username, avatar_url, is_og, created_at")
             .in("id", otherUserIds);
 
         if (err3) throw err3;
@@ -206,7 +206,7 @@ export async function getMessages(req: Request, res: Response) {
                 `)
                 .eq("conversation_id", id)
                 .order("created_at", { ascending: true });
-            
+
             if (basicError) throw basicError;
             return res.json(basicMessages);
         }
@@ -347,7 +347,7 @@ export async function sendMessage(req: Request, res: Response) {
                     )
                 `)
                 .single();
-            
+
             if (basicErr) {
                 console.error("SendMessage FALLBACK also failed:", basicErr);
                 throw basicErr;
@@ -383,7 +383,7 @@ export async function sendMessage(req: Request, res: Response) {
                     // Emit real-time message to recipient
                     const { getIO } = await import("../lib/socket.js");
                     const io = getIO();
-                    
+
                     const { data: senderInfo } = await supabase
                         .from("users")
                         .select("name, username, avatar_url")
@@ -481,8 +481,8 @@ export async function toggleReaction(req: Request, res: Response) {
                 .single();
 
             if (otherParticipant) {
-                io.to(otherParticipant.user_id).emit("message_reaction", { 
-                    messageId, 
+                io.to(otherParticipant.user_id).emit("message_reaction", {
+                    messageId,
                     reactions,
                     userId // sender of reaction
                 });
@@ -537,7 +537,7 @@ export async function deleteMessage(req: Request, res: Response) {
         try {
             const { getIO, isUserOnline } = await import("../lib/socket.js");
             const io = getIO();
-            
+
             // Find other participant to notify
             const { data: otherParticipant } = await supabase
                 .from("conversation_participants")
@@ -547,9 +547,9 @@ export async function deleteMessage(req: Request, res: Response) {
                 .single();
 
             if (otherParticipant) {
-                io.to(otherParticipant.user_id).emit("message_deleted", { 
-                    messageId, 
-                    conversationId: message.conversation_id 
+                io.to(otherParticipant.user_id).emit("message_deleted", {
+                    messageId,
+                    conversationId: message.conversation_id
                 });
             }
         } catch (socketErr) {

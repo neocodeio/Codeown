@@ -140,7 +140,7 @@ export const formatMessageTimestamp = (dateString: string) => {
         date.getMonth() === now.getMonth() &&
         date.getFullYear() === now.getFullYear();
 
-    if (isToday) return "today";
+    if (isToday) return "Today";
 
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
     const diffInDays = Math.floor(diffInSeconds / 86400);
