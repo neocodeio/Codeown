@@ -10,6 +10,7 @@ import { useClerkUser } from '../hooks/useClerkUser.ts';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '../hooks/useDebounce';
 import { SEO } from '../components/SEO';
+import { StartupCardSkeleton } from '../components/LoadingSkeleton';
 
 export const StartupDirectory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -177,9 +178,14 @@ export const StartupDirectory: React.FC = () => {
 
       {/* Results Grid */}
       {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 0', gap: '20px' }}>
-          <div style={{ width: '32px', height: '32px', border: '2px solid var(--border-hairline)', borderTopColor: 'var(--text-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-          <p style={{ color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 600 }}>FETCHING STARTUPS...</p>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: '24px'
+        }}>
+          {[...Array(6)].map((_, i) => (
+            <StartupCardSkeleton key={i} />
+          ))}
         </div>
       ) : filteredStartups.length > 0 ? (
         <div style={{

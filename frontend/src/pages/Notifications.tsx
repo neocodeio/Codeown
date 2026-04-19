@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { NotificationSkeleton } from "../components/LoadingSkeleton";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
     ArrowLeft01Icon,
@@ -420,14 +421,10 @@ export default function NotificationsPage() {
                     {/* Notifications List */}
                     <div style={{ minHeight: "100vh" }}>
                         {loading && notifications.length === 0 && (
-                            <div style={{ padding: "60px", textAlign: "center", display: "flex", justifyContent: "center" }}>
-                                <div style={{
-                                    width: "20px", height: "20px",
-                                    border: "2px solid var(--border-hairline)",
-                                    borderTopColor: "var(--text-primary)",
-                                    borderRadius: "50%",
-                                    animation: "spin 0.8s linear infinite"
-                                }} />
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                {[...Array(8)].map((_, i) => (
+                                    <NotificationSkeleton key={i} />
+                                ))}
                             </div>
                         )}
 

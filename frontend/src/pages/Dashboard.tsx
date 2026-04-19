@@ -17,6 +17,7 @@ import {
 import { useWindowSize } from "../hooks/useWindowSize";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { SEO } from "../components/SEO";
+import { DashboardSkeleton } from "../components/LoadingSkeleton";
 
 interface DashboardStats {
     posts_count: number;
@@ -169,45 +170,51 @@ export default function Dashboard() {
                         )}
                     </header>
 
-                    {/* Section 1: Core Activity */}
-                    <section style={{ marginBottom: "64px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
-                            <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                Core Activity
-                            </h3>
-                            <div style={{ flex: 1, height: "1px", backgroundColor: "var(--border-hairline)" }}></div>
-                        </div>
-                        <div style={{
-                            display: "grid",
-                            gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(260px, 1fr))",
-                            gap: "24px"
-                        }}>
-                            <StatCard title="Total Posts" value={stats?.posts_count} icon={LicenseIcon} color="#6366f1" />
-                            <StatCard title="Projects Launched" value={stats?.projects_count} icon={Rocket01Icon} color="#8b5cf6" />
-                            <StatCard title="Consistency Streak" value={stats?.streak_count} icon={FlashIcon} color="#ef4444" spanFull={!isMobile} />
-                        </div>
-                    </section>
+                    {loading ? (
+                        <DashboardSkeleton />
+                    ) : (
+                        <>
+                            {/* Section 1: Core Activity */}
+                            <section style={{ marginBottom: "64px" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
+                                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                        Core Activity
+                                    </h3>
+                                    <div style={{ flex: 1, height: "1px", backgroundColor: "var(--border-hairline)" }}></div>
+                                </div>
+                                <div style={{
+                                    display: "grid",
+                                    gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(260px, 1fr))",
+                                    gap: "24px"
+                                }}>
+                                    <StatCard title="Total Posts" value={stats?.posts_count} icon={LicenseIcon} color="#6366f1" />
+                                    <StatCard title="Projects Launched" value={stats?.projects_count} icon={Rocket01Icon} color="#8b5cf6" />
+                                    <StatCard title="Consistency Streak" value={stats?.streak_count} icon={FlashIcon} color="#ef4444" spanFull={!isMobile} />
+                                </div>
+                            </section>
 
-                    {/* Section 2: Outreach & Engagement */}
-                    <section>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
-                            <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                Community Engagement
-                            </h3>
-                            <div style={{ flex: 1, height: "1px", backgroundColor: "var(--border-hairline)" }}></div>
-                        </div>
-                        <div style={{
-                            display: "grid",
-                            gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(260px, 1fr))",
-                            gap: "24px"
-                        }}>
-                            <StatCard title="Total Likes" value={stats?.total_post_likes} icon={FavouriteIcon} color="#ec4899" />
-                            <StatCard title="Project Upvotes" value={stats?.total_project_upvotes} icon={ArrowUp01Icon} color="#f59e0b" />
-                            <StatCard title="Followers" value={stats?.follower_count} icon={UserGroupIcon} color="#3b82f6" />
-                            <StatCard title="Profile Visitors" value={stats?.profile_views} icon={ViewIcon} color="#06b6d4" />
-                            <StatCard title="Total Comments" value={stats?.total_comments} icon={Chat01Icon} color="#10b981" spanFull={!isMobile} />
-                        </div>
-                    </section>
+                            {/* Section 2: Outreach & Engagement */}
+                            <section>
+                                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
+                                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                        Community Engagement
+                                    </h3>
+                                    <div style={{ flex: 1, height: "1px", backgroundColor: "var(--border-hairline)" }}></div>
+                                </div>
+                                <div style={{
+                                    display: "grid",
+                                    gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(260px, 1fr))",
+                                    gap: "24px"
+                                }}>
+                                    <StatCard title="Total Likes" value={stats?.total_post_likes} icon={FavouriteIcon} color="#ec4899" />
+                                    <StatCard title="Project Upvotes" value={stats?.total_project_upvotes} icon={ArrowUp01Icon} color="#f59e0b" />
+                                    <StatCard title="Followers" value={stats?.follower_count} icon={UserGroupIcon} color="#3b82f6" />
+                                    <StatCard title="Profile Visitors" value={stats?.profile_views} icon={ViewIcon} color="#06b6d4" />
+                                    <StatCard title="Total Comments" value={stats?.total_comments} icon={Chat01Icon} color="#10b981" spanFull={!isMobile} />
+                                </div>
+                            </section>
+                        </>
+                    )}
                 </div>
 
                 {/* ── Right Sidebar ── */}

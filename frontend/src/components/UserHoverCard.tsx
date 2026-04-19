@@ -8,6 +8,7 @@ import { useFollow } from "../hooks/useFollow";
 import VerifiedBadge from "./VerifiedBadge";
 import { Chat01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { UserHoverCardSkeleton } from "./LoadingSkeleton";
 
 interface UserProfile {
   id: string;
@@ -172,9 +173,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
         }
       `}</style>
       {loading ? (
-        <div style={{ padding: "32px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "13px" }}>
-          Loading...
-        </div>
+        <UserHoverCardSkeleton />
       ) : user ? (
         <>
           <div style={{ padding: "20px" }}>
