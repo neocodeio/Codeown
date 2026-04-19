@@ -149,6 +149,18 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isMobile]);
 
+  const handleSilentNavigate = (path: string) => {
+    const username = profile?.username || user?.username;
+    const isTargetProfile = path === "/profile" || (username && path === `/${username}`);
+    const isCurrentProfile = location.pathname === "/profile" || (username && location.pathname === `/${username}`);
+
+    if (location.pathname === path || (isTargetProfile && isCurrentProfile)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate(path);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (postSelectorRef.current && !postSelectorRef.current.contains(event.target as Node)) {
@@ -191,32 +203,32 @@ export default function Navbar() {
       overflowX: "hidden"
     }}>
       <div style={{ padding: window.innerHeight < 850 ? "16px 12px 12px" : "32px 12px 24px" }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
+        <div onClick={() => handleSilentNavigate("/")} style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", cursor: "pointer" }}>
           <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "32px", width: "auto" }} />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <span style={{ fontSize: "19px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>Codeown.space</span>
           </div>
-        </Link>
+        </div>
       </div>
 
       <nav style={{ flexShrink: 0, marginTop: window.innerHeight < 850 ? "4px" : "0px" }}>
-        <Link to="/" className="sidebar-nav-link" style={linkStyle("/")}><HugeiconsIcon icon={Home01Icon} size={20} /><span>Home</span></Link>
-        <Link to="/search" className="sidebar-nav-link" style={linkStyle("/search")}><HugeiconsIcon icon={Search01Icon} size={20} /><span>Search</span></Link>
-        <Link to="/leaderboard" className="sidebar-nav-link" style={linkStyle("/leaderboard")}><HugeiconsIcon icon={UserGroupIcon} size={20} /><span>Builders</span></Link>
-        <Link to="/ogs" className="sidebar-nav-link" style={linkStyle("/ogs")}><HugeiconsIcon icon={MedalIcon} size={20} /><span>Our OGs</span></Link>
-        <Link to="/dashboard" className="sidebar-nav-link" style={linkStyle("/dashboard")}><HugeiconsIcon icon={Chart01Icon} size={20} /><span>Analytics</span></Link>
-        <Link to="/startups" className="sidebar-nav-link" style={linkStyle("/startups")}><HugeiconsIcon icon={Building02Icon} size={20} /><span>Startups</span></Link>
-        <Link to="/changelog" className="sidebar-nav-link" style={linkStyle("/changelog")}><HugeiconsIcon icon={DocumentCodeIcon} size={20} /><span>Changelog</span></Link>
+        <div onClick={() => handleSilentNavigate("/")} className="sidebar-nav-link" style={{ ...linkStyle("/"), cursor: "pointer" }}><HugeiconsIcon icon={Home01Icon} size={20} /><span>Home</span></div>
+        <div onClick={() => handleSilentNavigate("/search")} className="sidebar-nav-link" style={{ ...linkStyle("/search"), cursor: "pointer" }}><HugeiconsIcon icon={Search01Icon} size={20} /><span>Search</span></div>
+        <div onClick={() => handleSilentNavigate("/leaderboard")} className="sidebar-nav-link" style={{ ...linkStyle("/leaderboard"), cursor: "pointer" }}><HugeiconsIcon icon={UserGroupIcon} size={20} /><span>Builders</span></div>
+        <div onClick={() => handleSilentNavigate("/ogs")} className="sidebar-nav-link" style={{ ...linkStyle("/ogs"), cursor: "pointer" }}><HugeiconsIcon icon={MedalIcon} size={20} /><span>Our OGs</span></div>
+        <div onClick={() => handleSilentNavigate("/dashboard")} className="sidebar-nav-link" style={{ ...linkStyle("/dashboard"), cursor: "pointer" }}><HugeiconsIcon icon={Chart01Icon} size={20} /><span>Analytics</span></div>
+        <div onClick={() => handleSilentNavigate("/startups")} className="sidebar-nav-link" style={{ ...linkStyle("/startups"), cursor: "pointer" }}><HugeiconsIcon icon={Building02Icon} size={20} /><span>Startups</span></div>
+        <div onClick={() => handleSilentNavigate("/changelog")} className="sidebar-nav-link" style={{ ...linkStyle("/changelog"), cursor: "pointer" }}><HugeiconsIcon icon={DocumentCodeIcon} size={20} /><span>Changelog</span></div>
 
         {isSignedIn && (
           <div style={{ marginTop: "4px" }}>
-            <Link to="/messages" className="sidebar-nav-link" style={linkStyle("/messages")}>
+            <div onClick={() => handleSilentNavigate("/messages")} className="sidebar-nav-link" style={{ ...linkStyle("/messages"), cursor: "pointer" }}>
               <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
                 <HugeiconsIcon icon={Chat01Icon} size={20} />
                 {messageUnreadCount > 0 && <span style={{ position: "absolute", top: -4, right: -4, minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", borderRadius: "50%", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
               </div>
               <span>Messages</span>
-            </Link>
+            </div>
             <div
               style={{ position: "relative", marginBottom: "4px" }}
               ref={postSelectorRef}
@@ -264,7 +276,11 @@ export default function Navbar() {
               )}
             </div>
             <div
-              onClick={() => { const username = profile?.username || user?.username; if (username) navigate(`/${username}`); }}
+              onClick={() => {
+                const username = profile?.username || user?.username;
+                const path = username ? `/${username}` : "/profile";
+                handleSilentNavigate(path);
+              }}
               className="sidebar-nav-link"
               style={{ ...linkStyle("/profile"), cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}
             >
@@ -423,8 +439,8 @@ export default function Navbar() {
         transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         transform: isVisible ? "translateY(0)" : "translateY(100%)"
       }}>
-        <Link to="/" style={{ flex: 1, display: "flex", justifyContent: "center", color: location.pathname === "/" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Home01Icon} size={22} /></Link>
-        <Link to="/search" style={{ flex: 1, display: "flex", justifyContent: "center", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Search01Icon} size={22} /></Link>
+        <div onClick={() => handleSilentNavigate("/")} style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer", color: location.pathname === "/" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Home01Icon} size={22} /></div>
+        <div onClick={() => handleSilentNavigate("/search")} style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Search01Icon} size={22} /></div>
 
         <div onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)} style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: isCreateMenuOpen ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={PlusSignIcon} size={26} style={{ transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
@@ -442,19 +458,26 @@ export default function Navbar() {
           )}
         </div>
 
-        <Link to="/messages" style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: location.pathname === "/messages" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
+        <div onClick={() => handleSilentNavigate("/messages")} style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", cursor: "pointer", color: location.pathname === "/messages" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={Chat01Icon} size={22} />
           {messageUnreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
-        </Link>
+        </div>
 
-        <Link to="/notifications" style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: location.pathname === "/notifications" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
+        <div onClick={() => handleSilentNavigate("/notifications")} style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", cursor: "pointer", color: location.pathname === "/notifications" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
           <HugeiconsIcon icon={Notification01Icon} size={22} />
           {unreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{unreadCount}</span>}
-        </Link>
+        </div>
 
-        <Link to={(profile?.username || user?.username) ? `/${profile?.username || user?.username}` : "/profile"} style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+        <div
+          onClick={() => {
+            const username = profile?.username || user?.username;
+            const path = username ? `/${username}` : "/profile";
+            handleSilentNavigate(path);
+          }}
+          style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer" }}
+        >
           {userAvatarUrl ? <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "1.5px solid var(--text-primary)" : "1px solid var(--border-hairline)", objectFit: "cover" }} /> : <HugeiconsIcon icon={UserIcon} size={22} />}
-        </Link>
+        </div>
       </div>
 
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />

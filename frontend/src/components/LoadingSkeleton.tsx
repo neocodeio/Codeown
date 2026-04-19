@@ -198,16 +198,141 @@ export function StartupCardSkeleton() {
 }
 
 export function ProfileSkeleton() {
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+
   return (
-    <div style={{ padding: "48px 24px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+    <div style={{ width: "100%", position: "relative", overflow: "hidden" }}>
       <ShimmerStyles />
-      <SkeletonCircle size="128px" style={{ margin: "0 auto 24px", borderRadius: "var(--radius-sm)" }} />
-      <SkeletonLine width="200px" height="32px" style={{ margin: "0 auto 16px" }} />
-      <SkeletonLine width="140px" height="18px" style={{ margin: "0 auto", opacity: 0.6 }} />
-      <div style={{ marginTop: "40px", display: "flex", justifyContent: "center", gap: "48px" }}>
-        <SkeletonLine width="60px" height="24px" />
-        <SkeletonLine width="60px" height="24px" />
-        <SkeletonLine width="60px" height="24px" />
+      {/* Banner */}
+      <div style={{ width: "100%", height: isMobile ? "200px" : "280px", backgroundColor: "var(--bg-hover)" }} className="skeleton-block">
+        <div className="skeleton-shimmer" />
+      </div>
+
+      {/* Profile Info Container */}
+      <div style={{ padding: isMobile ? "0 16px" : "0 24px", position: "relative", marginTop: isMobile ? "-40px" : "-60px" }}>
+        {/* Overlapping Avatar */}
+        <div className="skeleton-block" style={{
+          width: isMobile ? "80px" : "120px",
+          height: isMobile ? "80px" : "120px",
+          borderRadius: "var(--radius-sm)",
+          border: "4px solid var(--bg-page)",
+          marginBottom: "16px"
+        }}>
+          <div className="skeleton-shimmer" />
+        </div>
+
+        {/* Name and Actions Row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "12px", marginBottom: "8px" }}>
+          <div style={{ flex: 1 }}>
+            <SkeletonLine width={isMobile ? "160px" : "240px"} height="28px" style={{ marginBottom: "8px" }} />
+            <SkeletonLine width="100px" height="16px" style={{ opacity: 0.6 }} />
+          </div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <SkeletonLine width="100px" height="36px" style={{ borderRadius: "100px" }} />
+            <SkeletonLine width="36px" height="36px" style={{ borderRadius: "100px" }} />
+          </div>
+        </div>
+
+        {/* Bio */}
+        <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "8px", marginBottom: "32px" }}>
+          <SkeletonLine width="100%" height="14px" />
+          <SkeletonLine width="90%" height="14px" />
+          <SkeletonLine width="40%" height="14px" />
+        </div>
+
+        {/* Metadata Grid */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "24px", marginBottom: "32px" }}>
+          <SkeletonLine width="120px" height="16px" style={{ opacity: 0.5 }} />
+          <SkeletonLine width="140px" height="16px" style={{ opacity: 0.5 }} />
+          <SkeletonLine width="100px" height="16px" style={{ opacity: 0.5 }} />
+        </div>
+
+        {/* Tabs Bar */}
+        <div style={{ display: "flex", borderBottom: "0.5px solid var(--border-hairline)", gap: "32px" }}>
+          <SkeletonLine width="80px" height="40px" style={{ borderRadius: "0", borderBottom: "2px solid var(--text-primary)" }} />
+          <SkeletonLine width="80px" height="40px" style={{ borderRadius: "0", opacity: 0.3 }} />
+          <SkeletonLine width="80px" height="40px" style={{ borderRadius: "0", opacity: 0.3 }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PostDetailSkeleton() {
+  return (
+    <div style={{ width: "100%", position: "relative", overflow: "hidden" }}>
+      <ShimmerStyles />
+      <div style={{ padding: "24px" }}>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center", marginBottom: "20px" }}>
+          <SkeletonCircle size="48px" />
+          <div style={{ flex: 1 }}>
+            <SkeletonLine width="140px" height="16px" />
+            <SkeletonLine width="80px" height="12px" style={{ marginTop: "6px", opacity: 0.6 }} />
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px" }}>
+          <SkeletonLine width="100%" height="14px" />
+          <SkeletonLine width="100%" height="14px" />
+          <SkeletonLine width="90%" height="14px" />
+          <SkeletonLine width="40%" height="14px" />
+        </div>
+        <div style={{ width: "100%", height: "300px", borderRadius: "16px", backgroundColor: "var(--bg-hover)", marginBottom: "32px" }} className="skeleton-block">
+          <div className="skeleton-shimmer" />
+        </div>
+        <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", marginBottom: "24px" }} />
+        <div style={{ display: "flex", gap: "24px" }}>
+          <SkeletonLine width="60px" height="20px" />
+          <SkeletonLine width="60px" height="20px" />
+          <SkeletonLine width="60px" height="20px" />
+        </div>
+      </div>
+      <div style={{ padding: "16px 24px", borderTop: "0.5px solid var(--border-hairline)" }}>
+        {[...Array(3)].map((_, i) => (
+          <div key={i} style={{ display: "flex", gap: "12px", padding: "16px 0" }}>
+            <SkeletonCircle size="36px" />
+            <div style={{ flex: 1 }}>
+              <SkeletonLine width="100px" height="12px" />
+              <div style={{ height: "8px" }} />
+              <SkeletonLine width="80%" height="11px" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function ProjectDetailSkeleton() {
+  return (
+    <div style={{ width: "100%", position: "relative", overflow: "hidden" }}>
+      <ShimmerStyles />
+      <div style={{ padding: "16px 24px 0" }}>
+        <div style={{ width: "100%", height: "300px", borderRadius: "16px", backgroundColor: "var(--bg-hover)", marginBottom: "32px" }} className="skeleton-block">
+          <div className="skeleton-shimmer" />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px" }}>
+          <div style={{ flex: 1 }}>
+            <SkeletonLine width="70%" height="32px" style={{ marginBottom: "12px" }} />
+            <div style={{ display: "flex", gap: "12px" }}>
+              <SkeletonCircle size="40px" />
+              <div>
+                <SkeletonLine width="120px" height="14px" />
+                <SkeletonLine width="80px" height="12px" style={{ marginTop: "6px", opacity: 0.6 }} />
+              </div>
+            </div>
+          </div>
+          <SkeletonLine width="100px" height="40px" style={{ borderRadius: "100px" }} />
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "16px", marginBottom: "32px" }}>
+          <div style={{ height: "100px", borderRadius: "20px", backgroundColor: "var(--bg-hover)" }} className="skeleton-block"><div className="skeleton-shimmer" /></div>
+          <div style={{ height: "100px", borderRadius: "20px", backgroundColor: "var(--bg-hover)" }} className="skeleton-block"><div className="skeleton-shimmer" /></div>
+        </div>
+        <div style={{ marginBottom: "32px" }}>
+          <SkeletonLine width="100%" height="14px" />
+          <SkeletonLine width="100%" height="14px" />
+          <SkeletonLine width="80%" height="14px" />
+        </div>
       </div>
     </div>
   );

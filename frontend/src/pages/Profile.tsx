@@ -27,6 +27,7 @@ import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
 import XPInfo from "../components/XPInfo";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ProfileSkeleton } from "../components/LoadingSkeleton";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   PencilEdit02Icon,
@@ -274,36 +275,9 @@ export default function Profile() {
           borderRight: "0.5px solid var(--border-hairline)",
           minHeight: "100vh"
         }}>
-          <div className="skeleton-pulse" style={{ width: "100%", height: isMobile ? "120px" : "240px", backgroundColor: "var(--bg-hover)" }} />
-          <div style={{ padding: "0 24px", position: "relative", marginTop: "-50px" }}>
-            <div className="skeleton-pulse" style={{ width: "120px", height: "120px", borderRadius: "var(--radius-sm)", border: "4px solid var(--bg-page)" }} />
-            <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div className="skeleton-pulse" style={{ width: "240px", height: "32px", borderRadius: "16px" }} />
-              <div className="skeleton-pulse" style={{ width: "120px", height: "18px", borderRadius: "9px" }} />
-              <div className="skeleton-pulse" style={{ width: "100%", height: "60px", borderRadius: "12px", marginTop: "12px" }} />
-              <div style={{ display: "flex", gap: "16px", marginTop: "12px" }}>
-                <div className="skeleton-pulse" style={{ width: "80px", height: "20px", borderRadius: "10px" }} />
-                <div className="skeleton-pulse" style={{ width: "80px", height: "20px", borderRadius: "10px" }} />
-                <div className="skeleton-pulse" style={{ width: "80px", height: "20px", borderRadius: "10px" }} />
-              </div>
-            </div>
-          </div>
-          <div style={{ padding: "0 24px", marginTop: "40px" }}>
-            <div className="skeleton-pulse" style={{ width: "100%", height: "400px", borderRadius: "var(--radius-md)" }} />
-          </div>
+          <ProfileSkeleton />
         </div>
       </div>
-      <style>{`
-        .skeleton-pulse { 
-          background: linear-gradient(-90deg, var(--bg-hover) 0%, var(--border-light) 50%, var(--bg-hover) 100%);
-          background-size: 400% 400%;
-          animation: skeleton-shimmer 1.5s ease-in-out infinite;
-        }
-        @keyframes skeleton-shimmer {
-          0% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
     </main>
   );
 

@@ -80,6 +80,7 @@ interface Post {
 }
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { PostDetailSkeleton } from "../components/LoadingSkeleton";
 
 export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
@@ -382,8 +383,31 @@ export default function PostDetail() {
   const isMobile = width < 768;
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
-      <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "999px", animation: "spin 0.6s linear infinite" }} />
+    <div style={{
+      backgroundColor: "var(--bg-page)",
+      minHeight: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      width: "100%",
+    }}>
+      <div style={{
+        width: isDesktop ? "920px" : "100%",
+        maxWidth: "920px",
+        position: "relative",
+        paddingTop: isMobile ? "64px" : "0"
+      }}>
+        <div style={{
+          width: isDesktop ? "620px" : "100%",
+          maxWidth: isDesktop ? "620px" : "700px",
+          backgroundColor: "var(--bg-page)",
+          borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+          borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+          minHeight: "100vh",
+          margin: isDesktop ? "0" : "0 auto",
+        }}>
+          <PostDetailSkeleton />
+        </div>
+      </div>
     </div>
   );
 

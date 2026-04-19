@@ -35,6 +35,7 @@ import CoFounderRequestModal from "../components/CoFounderRequestModal";
 import ProjectAnalyticsDashboard from "../components/ProjectAnalyticsDashboard";
 import { toast } from "react-toastify";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import { ProjectDetailSkeleton } from "../components/LoadingSkeleton";
 
 
 
@@ -227,9 +228,30 @@ export default function ProjectDetail() {
   const isDesktop = width >= 1024;
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "var(--bg-page)" }}>
-      <div style={{ width: "20px", height: "20px", border: "0.5px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "999px", animation: "spin 0.6s linear infinite" }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    <div style={{
+      backgroundColor: "var(--bg-page)",
+      minHeight: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      width: "100%",
+    }}>
+      <div style={{
+        width: isDesktop ? "920px" : "100%",
+        maxWidth: "920px",
+        position: "relative",
+      }}>
+        <div style={{
+          width: isDesktop ? "620px" : "100%",
+          maxWidth: isDesktop ? "620px" : "700px",
+          backgroundColor: "var(--bg-page)",
+          borderLeft: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
+          borderRight: isDesktop ? "0.5px solid var(--border-hairline)" : "none",
+          minHeight: "100vh",
+          margin: isDesktop ? "0" : "0 auto",
+        }}>
+          <ProjectDetailSkeleton />
+        </div>
+      </div>
     </div>
   );
 

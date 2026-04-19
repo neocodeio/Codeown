@@ -61,7 +61,7 @@ export default function NotificationsPage() {
 
         notifications.forEach((n) => {
             if (n.type === "like") {
-                const postKey = n.post_id ? `post_${n.post_id}` : n.project_id ? `project_${n.project_id}` : null;
+                const postKey = n.comment_id ? `comment_${n.comment_id}` : n.post_id ? `post_${n.post_id}` : n.project_id ? `project_${n.project_id}` : null;
                 const actorKey = n.actor_id;
                 const notifTime = new Date(n.created_at).getTime();
 
@@ -97,8 +97,8 @@ export default function NotificationsPage() {
                     const groupTime = new Date(group.created_at).getTime();
 
                     if (Math.abs(groupTime - notifTime) < TIME_THRESHOLD && !group.isMultiActor) {
-                        const currentPostId = n.post_id || n.project_id;
-                        if (!group.postIds) group.postIds = new Set([group.post_id || group.project_id || 'unknown']);
+                        const currentPostId = n.comment_id || n.post_id || n.project_id;
+                        if (!group.postIds) group.postIds = new Set([group.comment_id || group.post_id || group.project_id || 'unknown']);
 
                         if (currentPostId && !group.postIds.has(currentPostId)) {
                             group.isMultiPost = true;
@@ -157,13 +157,13 @@ export default function NotificationsPage() {
     };
 
     const getNotificationIcon = (notification: Notification) => {
-        const size = 18;
+        const size = isMobile ? 22 : 26;
         switch (notification.type) {
             case "like":
                 if (notification.project_id) {
                     return { icon: <HugeiconsIcon icon={ArrowUp01Icon} size={size} />, color: "#3b82f6" }; // Blue
                 }
-                return { icon: <HugeiconsIcon icon={FavouriteIcon} size={size} />, color: "#f43f5e" }; // Rose/Red
+                return { icon: <HugeiconsIcon icon={FavouriteIcon} size={size} className="hugeicon-filled" />, color: "#f43f5e" }; // Rose/Red
             case "comment":
             case "reply":
                 return { icon: <HugeiconsIcon icon={Comment01Icon} size={size} />, color: "#1d9bf0" }; // Twitter Blue
@@ -220,34 +220,42 @@ export default function NotificationsPage() {
             </span>
         );
 
+        const getTargetLabel = (n: any) => {
+            if (n.project_id) return "project";
+            if (n.comment_id) return "comment";
+            if (n.startup_id) return "startup";
+            return "post";
+        };
+
         switch (notification.type) {
             case "like":
                 if (notification.isMultiActor && notification.groupCount && notification.groupCount > 1) {
                     const othersCount = notification.groupCount - 1;
                     return (
                         <>
-                            {nameWrapper}{" "}and <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{othersCount} {othersCount === 1 ? "other" : "others"}</span> liked your {notification.project_id ? "project" : "post"}
+                            {nameWrapper}{" "}and <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{othersCount} {othersCount === 1 ? "other" : "others"}</span> liked your {getTargetLabel(notification)}
                         </>
                     );
                 }
                 if (notification.isMultiPost && notification.groupCount && notification.groupCount > 1) {
+                    const label = getTargetLabel(notification);
                     return (
                         <>
-                            {nameWrapper}{" "}liked <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{notification.groupCount}</span> of your post
+                            {nameWrapper}{" "}liked <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{notification.groupCount}</span> of your {label}s
                         </>
                     );
                 }
-                return <>{nameWrapper}{" "}liked your {notification.project_id ? "project" : "post"}</>;
+                return <>{nameWrapper}{" "}liked your {getTargetLabel(notification)}</>;
             case "comment":
-                return <>{nameWrapper}{" "}commented on your post</>;
+                return <>{nameWrapper}{" "}commented on your {notification.project_id ? "project" : "post"}</>;
             case "reply":
                 return <>{nameWrapper}{" "}replied to your comment</>;
             case "follow":
                 return <>{nameWrapper}{" "}started following you</>;
             case "mention":
-                return <>{nameWrapper}{" "}mentioned you in a post</>;
+                return <>{nameWrapper}{" "}mentioned you in a {getTargetLabel(notification)}</>;
             case "save":
-                return <>{nameWrapper}{" "}saved your post</>;
+                return <>{nameWrapper}{" "}saved your {getTargetLabel(notification)}</>;
             case "message":
                 return <>{nameWrapper}{" "}sent you a message</>;
             case "profile_view":
@@ -372,7 +380,7 @@ export default function NotificationsPage() {
                         </div>
 
                         {/* Tabs */}
-                        <div style={{ display: "flex", marginTop: "12px", marginBottom: "-18px", width: "100%" }}>
+                        <div style={{ display: "flex", marginTop: "-14px", marginBottom: "-18px", width: "100%" }}>
                             {["All", "Mentions"].map(tab => (
                                 <button
                                     key={tab}
@@ -546,7 +554,7 @@ export default function NotificationsPage() {
                                         <>
                                             {/* Awareness/Interaction Style */}
                                             <div style={{
-                                                width: "40px",
+                                                width: isMobile ? "40px" : "48px",
                                                 display: "flex",
                                                 flexDirection: "column",
                                                 alignItems: "flex-end",

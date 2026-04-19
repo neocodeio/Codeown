@@ -41,6 +41,7 @@ import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
 import XPInfo from "../components/XPInfo";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ProfileSkeleton } from "../components/LoadingSkeleton";
 
 interface User {
   id: string;
@@ -97,8 +98,15 @@ export default function UserProfile() {
   const [lightboxImage, setLightboxImage] = useState("");
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
 
-  // 1. Core Profile Query
+  // 0. Immediate self-detection to avoid double-loading
   const param = userId || username;
+  const isMe = (userId && currentUser?.id === userId) || (username && currentUser?.username === username);
+
+  useEffect(() => {
+    if (isMe) {
+      navigate("/profile", { replace: true });
+    }
+  }, [isMe, navigate]);
   const { data: user, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useQuery({
     queryKey: ["userProfile", param],
     queryFn: async () => {
@@ -108,7 +116,7 @@ export default function UserProfile() {
       });
       return userRes.data as User;
     },
-    enabled: !!param,
+    enabled: !!param && !isMe,
   });
 
   // 1a. Real-time XP sync for visitors
@@ -195,7 +203,7 @@ export default function UserProfile() {
     }
   }, [user?.id, currentUser?.id, navigate]);
 
-  if (profileLoading) return (
+  if (isMe || profileLoading) return (
     <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh" }}>
       <div style={{
         maxWidth: "1020px",
@@ -210,35 +218,9 @@ export default function UserProfile() {
           borderRight: "0.5px solid var(--border-hairline)",
           minHeight: "100vh"
         }}>
-          <div className="skeleton-pulse" style={{ width: "100%", height: isMobile ? "120px" : "240px" }} />
-          <div style={{ padding: "0 24px", position: "relative", marginTop: "-50px" }}>
-            <div className="skeleton-pulse" style={{ width: "100px", height: "100px", borderRadius: "16px", border: "4px solid var(--bg-page)" }} />
-            <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div className="skeleton-pulse" style={{ width: "220px", height: "28px", borderRadius: "14px" }} />
-              <div className="skeleton-pulse" style={{ width: "100px", height: "16px", borderRadius: "8px" }} />
-              <div className="skeleton-pulse" style={{ width: "100%", height: "48px", borderRadius: "12px", marginTop: "10px" }} />
-              <div style={{ display: "flex", gap: "16px", marginTop: "12px" }}>
-                <div className="skeleton-pulse" style={{ width: "70px", height: "18px", borderRadius: "9px" }} />
-                <div className="skeleton-pulse" style={{ width: "70px", height: "18px", borderRadius: "9px" }} />
-              </div>
-            </div>
-          </div>
-          <div style={{ padding: "0 24px", marginTop: "40px" }}>
-            <div className="skeleton-pulse" style={{ width: "100%", height: "350px", borderRadius: "20px" }} />
-          </div>
+          <ProfileSkeleton />
         </div>
       </div>
-      <style>{`
-        .skeleton-pulse { 
-          background: linear-gradient(-90deg, var(--bg-hover) 0%, var(--border-light) 50%, var(--bg-hover) 100%);
-          background-size: 400% 400%;
-          animation: skeleton-shimmer 1.5s ease-in-out infinite;
-        }
-        @keyframes skeleton-shimmer {
-          0% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
     </main>
   );
 
