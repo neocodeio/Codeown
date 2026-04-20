@@ -464,11 +464,15 @@ export async function createPost(req: Request, res: Response) {
     // Validate input - Title is now optional
     const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
 
-    if (!content || content.trim().length === 0) {
+    // Validate input - Content is required UNLESS it's a Re-Ship
+    const safeContent = content ? content.trim() : "";
+    const isRepost = !!(reposted_post_id || reposted_project_id);
+
+    if (safeContent.length === 0 && !isRepost) {
       return res.status(400).json({ error: "Content is required" });
     }
 
-    if (content.trim().length > 2000) {
+    if (safeContent.length > 2000) {
       return res.status(400).json({ error: "Content must be 2000 characters or less" });
     }
 
@@ -543,7 +547,7 @@ export async function createPost(req: Request, res: Response) {
     const { data: createdPost, error } = await supabase.from("posts")
       .insert({
         title: finalTitle,
-        content: content.trim(),
+        content: safeContent,
         user_id: userId,
         images: imageUrls.length > 0 ? imageUrls : null,
         attachments: attachments || null,
