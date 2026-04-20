@@ -145,8 +145,8 @@ export default function NotificationsPage() {
                     </button>
                 </div>
                 {/* Toggles */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "32px", opacity: isFetchingSettings ? 0.6 : 1, transition: 'opacity 0.2s' }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "32px", width: "100%", opacity: isFetchingSettings ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
                         <div style={{ maxWidth: "70%" }}>
                             <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>Platform Notifications</div>
                             <div style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>Direct alerts inside Codeown</div>
@@ -157,8 +157,9 @@ export default function NotificationsPage() {
                             style={{
                                 width: "44px",
                                 height: "24px",
-                                borderRadius: "12px",
-                                backgroundColor: platformEnabled ? "var(--brand-primary)" : "var(--bg-tertiary)",
+                                minWidth: "44px",
+                                borderRadius: "100px",
+                                backgroundColor: platformEnabled ? "var(--text-primary)" : "var(--bg-hover)",
                                 border: "none",
                                 cursor: isFetchingSettings ? "not-allowed" : "pointer",
                                 position: "relative",
@@ -166,19 +167,19 @@ export default function NotificationsPage() {
                             }}
                         >
                             <div style={{
-                                width: "18px",
-                                height: "18px",
+                                width: "16px",
+                                height: "16px",
                                 borderRadius: "50%",
-                                backgroundColor: "#fff",
+                                backgroundColor: platformEnabled ? "var(--bg-page)" : "var(--text-tertiary)",
                                 position: "absolute",
-                                top: "3px",
-                                left: platformEnabled ? "23px" : "3px",
+                                top: "4px",
+                                left: platformEnabled ? "24px" : "4px",
                                 transition: "all 0.3s ease"
                             }} />
                         </button>
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
                         <div style={{ maxWidth: "70%" }}>
                             <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>Email Notifications</div>
                             <div style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>Get updates in your inbox</div>
@@ -189,8 +190,9 @@ export default function NotificationsPage() {
                             style={{
                                 width: "44px",
                                 height: "24px",
-                                borderRadius: "12px",
-                                backgroundColor: emailEnabled ? "var(--brand-primary)" : "var(--bg-tertiary)",
+                                minWidth: "44px",
+                                borderRadius: "100px",
+                                backgroundColor: emailEnabled ? "var(--text-primary)" : "var(--bg-hover)",
                                 border: "none",
                                 cursor: isFetchingSettings ? "not-allowed" : "pointer",
                                 position: "relative",
@@ -198,13 +200,13 @@ export default function NotificationsPage() {
                             }}
                         >
                             <div style={{
-                                width: "18px",
-                                height: "18px",
+                                width: "16px",
+                                height: "16px",
                                 borderRadius: "50%",
-                                backgroundColor: "#fff",
+                                backgroundColor: emailEnabled ? "var(--bg-page)" : "var(--text-tertiary)",
                                 position: "absolute",
-                                top: "3px",
-                                left: emailEnabled ? "23px" : "3px",
+                                top: "4px",
+                                left: emailEnabled ? "24px" : "4px",
                                 transition: "all 0.3s ease"
                             }} />
                         </button>
