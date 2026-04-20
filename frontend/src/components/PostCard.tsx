@@ -823,6 +823,12 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
         imageSrc={lightboxImage}
+        postUrl={shareUrl}
+        author={post.user ? {
+          name: post.user.name || "User",
+          username: post.user.username || "user",
+          avatar_url: post.user.avatar_url || null
+        } : undefined}
       />
       <QuickCommentModal
         isOpen={isQuickCommentOpen}

@@ -678,6 +678,12 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
         imageSrc={lightboxImage}
+        postUrl={shareUrl}
+        author={project.user ? {
+          name: project.user.name || "User",
+          username: project.user.username || "user",
+          avatar_url: project.user.avatar_url || null
+        } : undefined}
       />
     </article>
   );

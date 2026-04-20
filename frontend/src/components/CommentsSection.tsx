@@ -36,11 +36,12 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
   }, [newComment, announce]);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
-  
+
   const [commentToDelete, setCommentToDelete] = useState<number | string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
+  const [lightboxAuthor, setLightboxAuthor] = useState<any>(null);
 
   const { avatarUrl } = useAvatar(
     currentUser?.id,
@@ -48,8 +49,8 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     currentUser?.fullName || currentUser?.username || "User"
   );
 
-  const queryKey = resourceType === "project" 
-    ? ["project_comments", String(resourceId)] 
+  const queryKey = resourceType === "project"
+    ? ["project_comments", String(resourceId)]
     : ["comments", String(resourceId)];
 
   const { data: rawComments = [], isLoading: loading } = useQuery({
@@ -64,7 +65,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
 
   const buildCommentTree = (flatComments: CommentWithMeta[]): CommentWithMeta[] => {
     if (!flatComments || flatComments.length === 0) return [];
-    
+
     // Normalize and Index
     const nodeMap: Record<string, CommentWithMeta & { children: CommentWithMeta[] }> = {};
     const processed = flatComments.map(c => {
@@ -168,14 +169,14 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
       const token = await getToken();
       if (!token) return;
 
-      const endpoint = resourceType === "project" 
-        ? `/project-comments/${commentToDelete}` 
+      const endpoint = resourceType === "project"
+        ? `/project-comments/${commentToDelete}`
         : `/comments/${commentToDelete}`;
-        
+
       await api.delete(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       queryClient.invalidateQueries({ queryKey });
       onCommentAdded?.();
       setCommentToDelete(null);
@@ -194,7 +195,11 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
       depth={depth}
       onReply={handleReply}
       onDelete={(id) => setCommentToDelete(id)}
-      onImageClick={(url) => { setLightboxImage(url); setIsLightboxOpen(true); }}
+      onImageClick={(url) => {
+        setLightboxImage(url);
+        setLightboxAuthor(comment.user);
+        setIsLightboxOpen(true);
+      }}
       resourceType={resourceType}
     />
   );
@@ -240,19 +245,19 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
           />
           <div style={{ flex: 1 }}>
             {selectedGif && (
-              <div style={{ 
+              <div style={{
                 position: "relative", width: "fit-content", marginBottom: "12px",
                 borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)",
                 animation: "reactionFadeUp 0.15s ease-out"
               }}>
                 <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "150px", display: "block" }} />
-                <button 
+                <button
                   onClick={() => setSelectedGif(null)}
                   style={{
                     position: "absolute", top: "6px", right: "6px",
                     backgroundColor: "rgba(0,0,0,0.75)",
                     color: "#ffffff", border: "none", width: "26px", height: "26px", borderRadius: "50%",
-                    display: "flex", alignItems: "center", justifyContent: "center", 
+                    display: "flex", alignItems: "center", justifyContent: "center",
                     cursor: "pointer", transition: "all 0.15s ease",
                     boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                     backdropFilter: "blur(4px)",
@@ -291,45 +296,15 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               }}
             />
 
-              <div style={{ position: "relative", marginTop: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "6px", padding: "8px",
-                      backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent", 
-                      color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
-                      border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
-                      cursor: "pointer", fontSize: "11px", fontWeight: 700,
-                      textTransform: "uppercase", transition: "all 0.2s ease"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                      e.currentTarget.style.color = "var(--text-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isGifPickerOpen) {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-tertiary)";
-                      }
-                    }}
-                  >
-                    <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
-                  </button>
-
-                  {isGifPickerOpen && (
-                    <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
-                      <GifPicker 
-                        onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }}
-                        onClose={() => setIsGifPickerOpen(false)}
-                      />
-                    </div>
-                  )}
-
-                  <label style={{
+            <div style={{ position: "relative", marginTop: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  type="button"
+                  onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                  style={{
                     display: "flex", alignItems: "center", gap: "6px", padding: "8px",
-                    backgroundColor: "transparent", color: "var(--text-tertiary)",
+                    backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
+                    color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
                     border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
                     cursor: "pointer", fontSize: "11px", fontWeight: 700,
                     textTransform: "uppercase", transition: "all 0.2s ease"
@@ -339,45 +314,75 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                     e.currentTarget.style.color = "var(--text-primary)";
                   }}
                   onMouseLeave={(e) => {
+                    if (!isGifPickerOpen) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "var(--text-tertiary)";
+                    }
+                  }}
+                >
+                  <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
+                </button>
+
+                {isGifPickerOpen && (
+                  <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
+                    <GifPicker
+                      onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }}
+                      onClose={() => setIsGifPickerOpen(false)}
+                    />
+                  </div>
+                )}
+
+                <label style={{
+                  display: "flex", alignItems: "center", gap: "6px", padding: "8px",
+                  backgroundColor: "transparent", color: "var(--text-tertiary)",
+                  border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
+                  cursor: "pointer", fontSize: "11px", fontWeight: 700,
+                  textTransform: "uppercase", transition: "all 0.2s ease"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.color = "var(--text-primary)";
+                  }}
+                  onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = "transparent";
                     e.currentTarget.style.color = "var(--text-tertiary)";
                   }}
-                  >
-                    <ImageIcon size={18} weight={selectedImage ? "fill" : "bold"} />
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={handleImageUpload} 
-                      style={{ display: "none" }} 
-                      disabled={isUploading}
-                    />
-                  </label>
-                </div>
-
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <button
-                    onClick={() => { setIsFocused(false); setNewComment(""); setSelectedImage(null); setSelectedGif(null); }}
-                    style={{ padding: "6px 12px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "none", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSubmitComment}
-                    disabled={(!newComment.trim() && !selectedImage && !selectedGif) || submitting || isUploading}
-                    style={{
-                      padding: "8px 24px",
-                      backgroundColor: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "var(--text-primary)" : "transparent",
-                      color: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "var(--bg-page)" : "var(--text-tertiary)",
-                      border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
-                      cursor: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "pointer" : "not-allowed",
-                      fontWeight: 700, fontSize: "13px",
-                      transition: "all 0.2s ease"
-                    }}
-                  >
-                    {submitting ? "..." : isUploading ? "Wait" : "Post"}
-                  </button>
-                </div>
+                >
+                  <ImageIcon size={18} weight={selectedImage ? "fill" : "bold"} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    style={{ display: "none" }}
+                    disabled={isUploading}
+                  />
+                </label>
               </div>
+
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  onClick={() => { setIsFocused(false); setNewComment(""); setSelectedImage(null); setSelectedGif(null); }}
+                  style={{ padding: "6px 12px", backgroundColor: "transparent", color: "var(--text-tertiary)", border: "none", fontWeight: 600, cursor: "pointer", fontSize: "13px" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitComment}
+                  disabled={(!newComment.trim() && !selectedImage && !selectedGif) || submitting || isUploading}
+                  style={{
+                    padding: "8px 24px",
+                    backgroundColor: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "var(--text-primary)" : "transparent",
+                    color: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "var(--bg-page)" : "var(--text-tertiary)",
+                    border: "0.5px solid var(--border-hairline)", borderRadius: "100px",
+                    cursor: (newComment.trim() || selectedImage || selectedGif) && !submitting && !isUploading ? "pointer" : "not-allowed",
+                    fontWeight: 700, fontSize: "13px",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  {submitting ? "..." : isUploading ? "Wait" : "Post"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -422,10 +427,16 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
         isLoading={isDeleting}
       />
 
-      <Lightbox 
-        isOpen={isLightboxOpen} 
-        onClose={() => setIsLightboxOpen(false)} 
-        imageSrc={lightboxImage} 
+      <Lightbox
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        imageSrc={lightboxImage}
+        postUrl={`${window.location.origin}/${resourceType}/${resourceId}`}
+        author={lightboxAuthor ? {
+          name: lightboxAuthor.name || "User",
+          username: lightboxAuthor.username || "user",
+          avatar_url: lightboxAuthor.avatar_url || null
+        } : undefined}
       />
 
       <style>{`

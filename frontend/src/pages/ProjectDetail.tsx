@@ -750,6 +750,12 @@ export default function ProjectDetail() {
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
         imageSrc={lightboxImage}
+        postUrl={shareUrl}
+        author={project?.user ? {
+          name: project.user.name || "User",
+          username: project.user.username || "user",
+          avatar_url: project.user.avatar_url || null
+        } : undefined}
       />
     </div>
   );

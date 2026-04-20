@@ -468,7 +468,17 @@ export default function UserProfile() {
         </div>
 
         {user?.id && (<FollowersModal isOpen={followersModalOpen} onClose={() => setFollowersModalOpen(false)} userId={user.id} type={followersModalType} title={followersModalType === "followers" ? "Followers" : "Following"} />)}
-        <Lightbox isOpen={lightboxOpen} onClose={() => setLightboxOpen(false)} imageSrc={lightboxImage} />
+        <Lightbox
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          imageSrc={lightboxImage}
+          postUrl={user ? `${window.location.origin}/${user.username}` : undefined}
+          author={user ? {
+            name: user.name,
+            username: user.username,
+            avatar_url: user.avatar_url
+          } : undefined}
+        />
         <ToastContainer position="bottom-right" theme="dark" hideProgressBar />
 
         {user && (
