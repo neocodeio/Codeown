@@ -72,7 +72,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   // It is already formatted by the backend helper.
   const displayPost = post;
   const primaryUser = displayPost?.user || { id: "", name: "User", username: "user", avatar_url: null, email: null };
-  const reposterUser = post.reposter || null;
 
   useEffect(() => {
     if (isPinnedProp !== undefined || !isOwnPost || !currentUser?.id) return;
@@ -310,15 +309,18 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             gap: "8px",
             marginLeft: isMobile ? "36px" : "44px",
             marginBottom: "12px",
-            color: "var(--text-tertiary)",
-            fontSize: "12.5px",
-            fontWeight: 600
           }}>
-            <HugeiconsIcon icon={RepostIcon} size={14} />
-            <span>{reposterUser?.username === currentUser?.username ? "You" : (reposterUser?.name || "Someone")} Re-shipped</span>
+            <img
+              src={post.reposter?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.reposter?.name || "U")}&background=212121&color=fff&bold=true`}
+              style={{ width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+              alt=""
+            />
+            <div style={{ fontSize: "13px", color: "var(--text-primary)", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px" }}>
+              {post.reposter?.name || "Someone"}
+              <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>Re-Shipped</span>
+            </div>
           </div>
         )}
-
         <div style={{ display: "flex", gap: isMobile ? "8px" : "12px" }}>
           <div
             onClick={handleUserClick}

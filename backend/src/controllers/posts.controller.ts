@@ -119,8 +119,6 @@ export async function getPosts(req: Request, res: Response) {
     // FETCH BOTH POSTS AND REPOSTS IN PARALLEL
     const postsPromise = postsQuery.range(offset, offset + limitNum - 1);
 
-    // For now, we fetch recent reposts too. 
-    // In a production app, we might use a UNION view or a more complex query.
     const repostsPromise = supabase
       .from("reposts")
       .select(`
@@ -153,7 +151,6 @@ export async function getPosts(req: Request, res: Response) {
         is_activity_repost: true,
         reposter: Array.isArray(r.reposter) ? r.reposter[0] : r.reposter,
         reposted_at: r.created_at,
-        // Override created_at for sorting purposes in the merged list
         sort_date: r.created_at
       }));
 
