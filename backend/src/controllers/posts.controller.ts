@@ -17,7 +17,19 @@ export async function getPosts(req: Request, res: Response) {
     // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)", { count: "exact" })
+      .select(`
+        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
+        project:projects!project_id(id, name:title),
+        user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
+        reposted_post:posts!reposted_post_id(
+          id, title, content, created_at, images, post_type,
+          user:users!posts_user_id_fkey(id, name, avatar_url, username)
+        ),
+        reposted_project:projects!reposted_project_id(
+          id, title, description, cover_image, created_at,
+          user:users(id, name, avatar_url, username)
+        )
+      `, { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
       .order("created_at", { ascending: false });
 
@@ -159,7 +171,19 @@ export async function getPostById(req: Request, res: Response) {
     // Fetch the post and user data in one join query
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
+      .select(`
+        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
+        project:projects!project_id(id, name:title),
+        user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
+        reposted_post:posts!reposted_post_id(
+          id, title, content, created_at, images, post_type,
+          user:users!posts_user_id_fkey(id, name, avatar_url, username)
+        ),
+        reposted_project:projects!reposted_project_id(
+          id, title, description, cover_image, created_at,
+          user:users(id, name, avatar_url, username)
+        )
+      `)
       .eq("id", id)
       .single();
 
@@ -232,7 +256,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Fetch posts for the user with specific columns only
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects(id, name:title)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects!project_id(id, name:title)")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -402,7 +426,7 @@ export async function getPostsByUser(req: Request, res: Response) {
 export async function createPost(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { title, content, images, attachments, tags, poll, post_type, code_snippet, project_id } = req.body;
+    const { title, content, images, attachments, tags, poll, post_type, code_snippet, project_id, reposted_post_id, reposted_project_id } = req.body;
 
     // Validate input - Title is now optional
     const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
@@ -495,8 +519,22 @@ export async function createPost(req: Request, res: Response) {
         post_type: post_type || "Update",
         code_snippet: code_snippet || null,
         project_id: project_id || null,
+        reposted_post_id: reposted_post_id || null,
+        reposted_project_id: reposted_project_id || null,
       })
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects(id, name:title), user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)")
+      .select(`
+        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
+        project:projects!project_id(id, name:title),
+        user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
+        reposted_post:posts!reposted_post_id(
+          id, title, content, created_at, images, post_type,
+          user:users!posts_user_id_fkey(id, name, avatar_url, username)
+        ),
+        reposted_project:projects!reposted_project_id(
+          id, title, description, cover_image, created_at,
+          user:users(id, name, avatar_url, username)
+        )
+      `)
       .single();
 
     if (error) {
@@ -571,6 +609,35 @@ export async function createPost(req: Request, res: Response) {
       }
     } catch (mentionError) {
       console.error("Error processing post mentions:", mentionError);
+    }
+
+    // Create notification for original author if it's a Re-Ship
+    try {
+      if (reposted_post_id) {
+        const { data: originalPost } = await supabase.from("posts").select("user_id").eq("id", reposted_post_id).single();
+        if (originalPost && originalPost.user_id !== userId) {
+          await supabase.from("notifications").insert({
+            user_id: originalPost.user_id,
+            type: "reship",
+            actor_id: userId,
+            post_id: createdPost.id,
+            read: false
+          });
+        }
+      } else if (reposted_project_id) {
+        const { data: originalProject } = await supabase.from("projects").select("user_id").eq("id", reposted_project_id).single();
+        if (originalProject && originalProject.user_id !== userId) {
+          await supabase.from("notifications").insert({
+            user_id: originalProject.user_id,
+            type: "reship",
+            actor_id: userId,
+            post_id: createdPost.id,
+            read: false
+          });
+        }
+      }
+    } catch (reshipNotifError) {
+      console.error("Error creating Re-Ship notification:", reshipNotifError);
     }
 
     return res.status(201).json({ success: true, data: formattedPost });
@@ -778,7 +845,7 @@ export async function votePost(req: Request, res: Response) {
       .from("posts")
       .update({ poll: updatedPoll })
       .eq("id", id)
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og), project:projects!project_id(id, name:title)")
       .single();
 
     if (updateError) {

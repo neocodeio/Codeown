@@ -1,4 +1,4 @@
-export const formatRelativeDate = (dateString: string) => {
+export const formatRelativeDate = (dateString: string | null | undefined) => {
     if (!dateString) return "some time ago";
 
     // If the string doesn't have timezone info, it's likely UTC from the DB

@@ -23,10 +23,11 @@ import {
   Delete02Icon,
   ChartBarLineIcon,
   PinIcon,
-  ReloadIcon,
+  RepostIcon,
   CheckmarkCircle02Icon,
   Download01Icon,
-  AttachmentIcon
+  AttachmentIcon,
+  SparklesIcon
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -41,6 +42,7 @@ import Lightbox from "./Lightbox";
 import QuickCommentModal from "./QuickCommentModal";
 import InlineFollowButton from "./InlineFollowButton";
 import LikeButton from "./LikeButton";
+import ReShipModal from "./ReShipModal";
 
 interface PostCardProps {
   post: Post;
@@ -66,6 +68,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
   const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
+  const [isReShipModalOpen, setIsReShipModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
   const { width } = useWindowSize();
@@ -169,6 +172,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDeleteModalOpen(true);
+  };
+
+  const handleReShip = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsReShipModalOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
@@ -315,6 +323,23 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               </div>
             </div>
 
+            {(post.post_type === "Announcement" || post.post_type === "Re-Ship") && (
+              <div style={{
+                marginTop: "4px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                color: post.post_type === "Re-Ship" ? "#3b82f6" : "#f59e0b",
+                fontSize: "12px",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em"
+              }}>
+                <HugeiconsIcon icon={post.post_type === "Re-Ship" ? RepostIcon : SparklesIcon} size={14} />
+                <span>{post.post_type}</span>
+              </div>
+            )}
+
             {/* Handle + Metadata Row */}
             <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", marginTop: "1px" }}>
               <span style={{ fontSize: "12.5px", color: "var(--text-tertiary)", fontWeight: 500 }}>
@@ -387,7 +412,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       post.post_type === "Stuck" ? "#ff4d4f" :
                         "#a855f7"
                 }}>
-                  {post.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={11} />}
+                  {post.post_type === "Update" && <HugeiconsIcon icon={RepostIcon} size={11} />}
                   {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={11} />}
                   {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={11} />}
                   {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={11} />}
@@ -533,6 +558,84 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             )}
           </div>
         </div>
+
+        {/* Re-Ship (Quote) Preview */}
+        {(post.reposted_post || post.reposted_project) && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              if (post.reposted_post) navigate(`/post/${post.reposted_post.id}`);
+              else if (post.reposted_project) navigate(`/project/${post.reposted_project.id}`);
+            }}
+            style={{
+              marginBottom: "20px",
+              padding: "16px",
+              borderRadius: "16px",
+              border: "0.5px solid var(--border-hairline)",
+              backgroundColor: "var(--bg-hover)",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = "var(--text-tertiary)";
+              e.currentTarget.style.backgroundColor = "var(--bg-card)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = "var(--border-hairline)";
+              e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+            }}
+          >
+            {/* Header of quoted content */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <img
+                src={(post.reposted_post?.user?.avatar_url || post.reposted_project?.user?.avatar_url) || "https://images.clerk.dev/static/avatar.png"}
+                alt=""
+                style={{ width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover" }}
+              />
+              <span style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>
+                {post.reposted_post?.user?.name || post.reposted_project?.user?.name || "User"}
+              </span>
+              <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
+                • {formatRelativeDate(post.reposted_post?.created_at || post.reposted_project?.created_at)}
+              </span>
+            </div>
+
+            {/* Content of quoted content */}
+            <div style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+              {post.reposted_post ? (
+                <div style={{ display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  <ContentRenderer content={post.reposted_post.content} />
+                </div>
+              ) : (
+                <>
+                  <div style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>{post.reposted_project?.title}</div>
+                  <div style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {post.reposted_project?.description}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Quoted Image Preview */}
+            {(post.reposted_post?.images?.[0] || post.reposted_project?.cover_image) && (
+              <div style={{
+                borderRadius: "12px",
+                overflow: "hidden",
+                height: "160px",
+                border: "0.5px solid var(--border-hairline)"
+              }}>
+                <img
+                  src={(post.reposted_post?.images?.[0] || post.reposted_project?.cover_image) || undefined}
+                  alt=""
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         {post.images && post.images.length > 0 && (
           <div style={{ marginBottom: "16px" }}>
@@ -742,6 +845,22 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             onToggle={handleLike}
           />
 
+          {/* Re-Ship */}
+          <button
+            onClick={handleReShip}
+            style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              background: "none", border: "none", padding: "4px 0",
+              cursor: "pointer", color: "var(--text-tertiary)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = "#3b82f6"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+            title="Re-Ship"
+          >
+            <HugeiconsIcon icon={RepostIcon} size={20} />
+          </button>
+
           {/* Save */}
           <button
             onClick={handleSave}
@@ -818,6 +937,12 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         message="Are you sure you want to delete this post? This action cannot be undone."
         confirmLabel="Delete"
         isLoading={isDeleting}
+      />
+      <ReShipModal
+        isOpen={isReShipModalOpen}
+        onClose={() => setIsReShipModalOpen(false)}
+        originalPost={post}
+        onSuccess={onUpdated}
       />
       <Lightbox
         isOpen={isLightboxOpen}

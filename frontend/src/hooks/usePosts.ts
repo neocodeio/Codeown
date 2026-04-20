@@ -36,11 +36,36 @@ export interface Post {
   } | null;
   post_type?: string | null;
   code_snippet?: string | null;
-  project_id?: string | null;
   project?: {
     id: string;
     name: string;
     slug: string;
+  } | null;
+  reposted_post?: {
+    id: number;
+    title: string;
+    content: string;
+    created_at: string;
+    images?: string[] | null;
+    post_type?: string | null;
+    user?: {
+      name: string;
+      avatar_url?: string | null;
+      username?: string | null;
+    };
+  } | null;
+  reposted_project?: {
+    id: string;
+    title: string;
+    description: string;
+    cover_image?: string | null;
+    created_at: string;
+    user?: {
+      id: string;
+      name: string;
+      avatar_url?: string | null;
+      username?: string | null;
+    };
   } | null;
 }
 
