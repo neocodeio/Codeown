@@ -74,7 +74,7 @@ export async function getPosts(req: Request, res: Response) {
     let postsQuery = supabase
       .from("posts")
       .select(`
-        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
+        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!reposted_post_id(
@@ -202,7 +202,7 @@ export async function getPostById(req: Request, res: Response) {
     const { data: post, error: postError } = await supabase
       .from("posts")
       .select(`
-        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
+        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!reposted_post_id(
@@ -271,26 +271,7 @@ export async function getPostsByUser(req: Request, res: Response) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    // Fetch posts for the user with specific columns only
-    const { data: posts, error: postsError } = await supabase
-      .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, projects!posts_project_id_fkey(id, title)")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-
-    if (postsError) {
-      console.error("Supabase error in getPostsByUser:", postsError);
-      return res.status(500).json({
-        error: "Failed to fetch posts",
-        details: postsError.message
-      });
-    }
-
-    if (!posts || posts.length === 0) {
-      return res.json([]);
-    }
-
-    // Get user data for the post author (we already know it's the same user)
+    // 1. Get user data for the profile owner
     const { data: user, error: userError } = await supabase
       .from("users")
       .select("id, name, avatar_url, username, is_hirable, is_pro, is_og")
@@ -303,54 +284,65 @@ export async function getPostsByUser(req: Request, res: Response) {
       try {
         console.log(`User ${userId} not found in Supabase for getPostsByUser, fetching from Clerk`);
         const clerkUser = await clerkClient.users.getUser(userId);
-
-        // Extract user name with better fallback logic
-        let userName: string | null = null;
-        if (clerkUser.firstName && clerkUser.lastName) {
-          userName = `${clerkUser.firstName} ${clerkUser.lastName}`.trim();
-        } else if (clerkUser.firstName) {
-          userName = clerkUser.firstName;
-        } else if (clerkUser.lastName) {
-          userName = clerkUser.lastName;
-        } else if (clerkUser.username) {
-          userName = clerkUser.username;
-        } else if (clerkUser.emailAddresses && clerkUser.emailAddresses.length > 0) {
-          const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
-          if (emailAddress) {
-            userName = (emailAddress?.split("@")[0] as string) || null; // Use email username as fallback
-          }
-        }
-
-        // If still no name, use a default
-        if (!userName) {
-          userName = "User";
-        }
-
-        const emailAddress = clerkUser.emailAddresses?.[0]?.emailAddress || null;
+        let userName = clerkUser.firstName && clerkUser.lastName ? `${clerkUser.firstName} ${clerkUser.lastName}` : (clerkUser.username || "User");
 
         userData = {
           id: userId,
           name: userName,
           avatar_url: clerkUser.imageUrl || null,
           username: clerkUser.username || null,
-          is_hirable: false,
-          is_pro: false,
-          is_og: false
+          is_hirable: false, is_pro: false, is_og: false
         };
-
-        // Sync user to Supabase for future requests
-        try {
-          await ensureUserExists(userId, clerkUser);
-          console.log(`User ${userId} synced to Supabase from getPostsByUser`);
-        } catch (syncError: any) {
-          console.error(`Could not sync user ${userId} to Supabase:`, syncError?.message);
-          // Continue anyway - we have the data from Clerk
-        }
-      } catch (clerkError: any) {
-        console.error("Error fetching user from Clerk:", clerkError?.message || clerkError);
-        console.error("Full Clerk error:", clerkError);
+      } catch (clerkError) {
+        console.error("Error fetching user from Clerk:", clerkError);
       }
     }
+
+    // 2. Fetch original posts and repost activities for the user
+    const postsPromise = supabase
+      .from("posts")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id, projects!posts_project_id_fkey(id, title)")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    const repostsPromise = supabase
+      .from("reposts")
+      .select(`
+        *,
+        post:posts(
+          id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
+          user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)
+        )
+      `)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    const [postsRes, repostsRes] = await Promise.all([postsPromise, repostsPromise]);
+
+    if (postsRes.error) {
+      console.error("Supabase error in getPostsByUser:", postsRes.error);
+      return res.status(500).json({ error: "Failed to fetch posts", details: postsRes.error.message });
+    }
+
+    const rawPosts = postsRes.data || [];
+    const rawReposts = repostsRes.data || [];
+
+    const formattedPosts = rawPosts.map(p => ({ ...p, is_activity_repost: false }));
+    const formattedReposts = rawReposts
+      .filter((r: any) => r.post)
+      .map((r: any) => ({
+        ...formatPostData(r.post),
+        is_activity_repost: true,
+        reposter: userData, // Correctly attribute to profile owner
+        reposted_at: r.created_at,
+        sort_date: r.created_at
+      }));
+
+    // Merge and sort by activity date
+    let merged = [...formattedPosts.map(p => ({ ...p, sort_date: p.created_at })), ...formattedReposts]
+      .sort((a, b) => new Date(b.sort_date).getTime() - new Date(a.sort_date).getTime());
+
+    const posts = merged;
 
     // Combine posts with user data
     const postsWithUsers = posts.map((post: any) => {
@@ -545,7 +537,7 @@ export async function createPost(req: Request, res: Response) {
         reposted_project_id: reposted_project_id || null,
       })
       .select(`
-        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
+        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!reposted_post_id(
@@ -861,7 +853,7 @@ export async function votePost(req: Request, res: Response) {
       .from("posts")
       .update({ poll: updatedPoll })
       .eq("id", id)
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og), projects!posts_project_id_fkey(id, title)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og), projects!posts_project_id_fkey(id, title)")
       .single();
 
     if (updateError) {
