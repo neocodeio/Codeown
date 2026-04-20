@@ -307,18 +307,31 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            marginLeft: isMobile ? "36px" : "44px",
-            marginBottom: "12px",
+            // Align center of tiny avatar (20px) with center of large avatar (44px)
+            // Header container is inside card padding (16px/12px)
+            marginLeft: isMobile ? "8px" : "12px",
+            marginBottom: "8px",
+            position: "relative"
           }}>
             <img
               src={post.reposter?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.reposter?.name || "U")}&background=212121&color=fff&bold=true`}
-              style={{ width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover", border: "0.5px solid var(--border-hairline)" }}
+              style={{ width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover", border: "0.5px solid var(--border-hairline)", zIndex: 2 }}
               alt=""
             />
             <div style={{ fontSize: "13px", color: "var(--text-primary)", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px" }}>
               {post.reposter?.name || "Someone"}
               <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>Re-Shipped</span>
             </div>
+            {/* Subtle threaded line */}
+            <div style={{
+              position: "absolute",
+              top: "20px",
+              left: "10px",
+              width: "0.5px",
+              height: "12px",
+              backgroundColor: "var(--border-hairline)",
+              zIndex: 1
+            }} />
           </div>
         )}
         <div style={{ display: "flex", gap: isMobile ? "8px" : "12px" }}>
