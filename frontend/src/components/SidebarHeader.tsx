@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Notification01Icon, Search01Icon } from "@hugeicons/core-free-icons";
+import { Notification01Icon, Search01Icon, Login01Icon } from "@hugeicons/core-free-icons";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useNotifications } from "../hooks/useNotifications";
@@ -111,6 +111,37 @@ export default function SidebarHeader() {
                     }}
                 />
             </div>
+
+            {!isSignedIn && (
+                <button
+                    onClick={() => navigate("/sign-in")}
+                    style={{
+                        padding: "8px 16px",
+                        borderRadius: "100px",
+                        border: "0.5px solid var(--border-hairline)",
+                        backgroundColor: "var(--bg-page)",
+                        color: "var(--text-primary)",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        transition: "all 0.15s ease",
+                        marginLeft: "12px",
+                        whiteSpace: "nowrap"
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                    }}
+                >
+                    <HugeiconsIcon icon={Login01Icon} size={18} />
+                    Sign in
+                </button>
+            )}
 
             {isSignedIn && (
                 <div
