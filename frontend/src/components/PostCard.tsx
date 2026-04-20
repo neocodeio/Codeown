@@ -52,6 +52,9 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [isReShipping, setIsReShipping] = useState(false);
   const { isLiked, likeCount, toggleLike } = useLikes(post.id, post.isLiked, post.like_count || 0);
   const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
+  const [isRepostedLocal, setIsRepostedLocal] = useState(post.isReposted || false);
+  const [repostCountLocal, setRepostCountLocal] = useState(post.repost_count || 0);
+
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
   const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
@@ -64,15 +67,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const isPinned = isPinnedProp !== undefined ? isPinnedProp : isPinnedLocal;
   const isOwnPost = currentUser?.id === post.user_id;
 
-  // Safe Repost Logic
-  const isSimpleRepost = !!(post.reposted_post && !post.content?.trim());
-
-  // Important: Use explicit cast to any to bypass strict type mismatches in displayPost vs post
-  const displayPost: any = (isSimpleRepost && post.reposted_post) ? post.reposted_post : post;
-
-  // Safe user access
-  const primaryUser = displayPost?.user || { id: "", name: "User", username: "user", avatar_url: null };
-  const reposterUser = post.user;
+  // Simple and Clean: Display the post as provided. 
+  // It is already formatted by the backend helper.
+  const displayPost = post;
+  const primaryUser = displayPost?.user || { id: "", name: "User", username: "user", avatar_url: null, email: null };
+  const reposterUser = post.reposter || null;
 
   useEffect(() => {
     if (isPinnedProp !== undefined || !isOwnPost || !currentUser?.id) return;
@@ -150,19 +149,33 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       return;
     }
     if (isReShipping) return;
+
+    // Optimistic UI
+    const originalState = isRepostedLocal;
+    setIsRepostedLocal(!originalState);
+    setRepostCountLocal(prev => originalState ? prev - 1 : prev + 1);
+
     try {
       setIsReShipping(true);
       const token = await getToken();
-      await api.post('/posts', {
-        content: null,
-        reposted_post_id: post.id
+      const res = await api.post('/posts/repost', {
+        postId: post.id
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success("Shipped to your profile!");
+
+      if (res.data.action === "reposted") {
+        toast.success("Shipped to your profile!");
+      } else {
+        toast.info("Repost removed");
+      }
+
       onUpdated?.();
     } catch (error) {
       console.error("Error re-shipping:", error);
+      // Rollback on error
+      setIsRepostedLocal(originalState);
+      setRepostCountLocal(prev => originalState ? prev + 1 : prev - 1);
       toast.error("Failed to Re-Ship");
     } finally {
       setIsReShipping(false);
@@ -269,7 +282,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
           if (!isMobile) e.currentTarget.style.backgroundColor = "transparent";
         }}
       >
-        {isSimpleRepost && (
+        {post.is_activity_repost && (
           <div style={{
             display: "flex",
             alignItems: "center",
@@ -441,11 +454,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
               <button onClick={handleReShip} disabled={isReShipping} style={{
                 display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                cursor: isReShipping ? "default" : "pointer", color: isReShipping ? "var(--text-primary)" : "var(--text-tertiary)"
+                cursor: isReShipping ? "default" : "pointer", color: isRepostedLocal ? "var(--text-primary)" : "var(--text-tertiary)"
               }}>
                 <HugeiconsIcon icon={RepostIcon} size={20} />
-                {(displayPost as any)?.repost_count > 0 && (
-                  <span style={{ fontSize: "13px", fontWeight: 600 }}>{(displayPost as any).repost_count}</span>
+                {repostCountLocal > 0 && (
+                  <span style={{ fontSize: "13px", fontWeight: 600 }}>{repostCountLocal}</span>
                 )}
               </button>
 

@@ -18,6 +18,7 @@ export interface Post {
   like_count?: number;
   comment_count?: number;
   user?: {
+    id?: string;
     name: string;
     email: string | null;
     avatar_url?: string | null;
@@ -26,6 +27,16 @@ export interface Post {
     is_pro?: boolean;
     is_og?: boolean;
   };
+  is_activity_repost?: boolean;
+  reposter?: {
+    id: string;
+    name: string;
+    avatar_url?: string | null;
+    username?: string | null;
+  };
+  reposted_at?: string;
+  isReposted?: boolean;
+  repost_count?: number;
   isLiked?: boolean;
   isSaved?: boolean;
   view_count?: number;

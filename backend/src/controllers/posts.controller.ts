@@ -8,7 +8,7 @@ import { GamificationService } from "../services/gamification.service.js";
 /**
  * Utility to unpack nested PostgREST relationships and format post data consistently.
  */
-function formatPostData(post: any) {
+export function formatPostData(post: any) {
   if (!post) return null;
 
   // 1. Unpack top-level user
@@ -116,19 +116,57 @@ export async function getPosts(req: Request, res: Response) {
       postsQuery = postsQuery.in("user_id", followingIds);
     }
 
-    const { data: posts, error: postsError, count } = await postsQuery.range(offset, offset + limitNum - 1);
+    // FETCH BOTH POSTS AND REPOSTS IN PARALLEL
+    const postsPromise = postsQuery.range(offset, offset + limitNum - 1);
 
-    if (postsError) {
-      console.error("Supabase error in getPosts:", postsError);
-      return res.status(500).json({ error: "Failed to fetch posts", details: postsError.message });
+    // For now, we fetch recent reposts too. 
+    // In a production app, we might use a UNION view or a more complex query.
+    const repostsPromise = supabase
+      .from("reposts")
+      .select(`
+        *,
+        post:posts(
+          id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
+          user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)
+        ),
+        reposter:users!user_id(id, name, avatar_url, username)
+      `)
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limitNum - 1);
+
+    const [postsRes, repostsRes] = await Promise.all([postsPromise, repostsPromise]);
+
+    if (postsRes.error) {
+      console.error("Supabase error in getPosts:", postsRes.error);
+      return res.status(500).json({ error: "Failed to fetch posts", details: postsRes.error.message });
     }
 
-    if (!posts || posts.length === 0) {
-      return res.json({ posts: [], total: count || 0, page: pageNum, limit: limitNum, totalPages: Math.ceil((count || 0) / limitNum) });
+    // Merge and format
+    const rawPosts = postsRes.data || [];
+    const rawReposts = repostsRes.data || [];
+
+    const formattedPosts = rawPosts.map(p => ({ ...formatPostData(p), is_activity_repost: false }));
+    const formattedReposts = rawReposts
+      .filter((r: any) => r.post)
+      .map((r: any) => ({
+        ...formatPostData(r.post),
+        is_activity_repost: true,
+        reposter: Array.isArray(r.reposter) ? r.reposter[0] : r.reposter,
+        reposted_at: r.created_at,
+        // Override created_at for sorting purposes in the merged list
+        sort_date: r.created_at
+      }));
+
+    // Combine and sort by activity date
+    let merged = [...formattedPosts.map(p => ({ ...p, sort_date: p.created_at })), ...formattedReposts]
+      .sort((a, b) => new Date(b.sort_date).getTime() - new Date(a.sort_date).getTime())
+      .slice(0, limitNum);
+
+    if (merged.length === 0) {
+      return res.json({ posts: [], total: postsRes.count || 0, page: pageNum, limit: limitNum, totalPages: 0 });
     }
 
-    // Process posts and ensure user data exists
-    const processedPosts = posts.map(formatPostData).filter(Boolean);
+    const processedPosts = merged;
 
     // FETCH LIKE AND SAVE STATUS FOR CURRENT USER IN PARALLEL
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
@@ -175,10 +213,10 @@ export async function getPosts(req: Request, res: Response) {
 
     return res.json({
       posts: finalFormattedPosts,
-      total: count || 0,
+      total: postsRes.count || 0,
       page: pageNum,
       limit: limitNum,
-      totalPages: Math.ceil((count || 0) / limitNum),
+      totalPages: Math.ceil((postsRes.count || 0) / limitNum),
     });
   } catch (error: any) {
     console.error("Unexpected error in getPosts:", error);
