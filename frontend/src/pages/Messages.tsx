@@ -18,7 +18,7 @@ import {
   Delete02Icon,
   MoreHorizontalIcon,
   Mic01Icon,
-  Square01Icon,
+  StopCircleIcon,
   GifIcon,
   InformationCircleIcon,
   TickDouble02Icon,
@@ -2169,15 +2169,39 @@ export default function Messages() {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            gap: "8px",
+                            position: "relative",
                             color: "#ff4444",
                             fontFamily: "var(--font-mono)",
                             fontSize: "14px",
                             fontWeight: 600,
                           }}
                         >
-                          <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "currentColor", animation: "pulse 1.5s infinite" }} />
-                          Recording 0:0{recordingTime}
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "currentColor", animation: "pulse 1.5s infinite" }} />
+                            Recording 0:{(recordingTime % 60).toString().padStart(2, '0')}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={stopRecording}
+                            style={{
+                              position: "absolute",
+                              right: "-4px",
+                              background: "none",
+                              border: "none",
+                              color: "#ff4444",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              padding: "8px",
+                              transition: "transform 0.1s ease"
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.2)"}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                          >
+                            <HugeiconsIcon icon={StopCircleIcon} size={20} />
+                          </button>
                         </div>
                       ) : (
                         <>
@@ -2218,7 +2242,7 @@ export default function Messages() {
                               padding: "4px"
                             }}
                           >
-                            <HugeiconsIcon icon={isRecording ? Square01Icon : Mic01Icon} size={20} />
+                            <HugeiconsIcon icon={isRecording ? StopCircleIcon : Mic01Icon} size={20} />
                           </button>
                         </>
                       )}
