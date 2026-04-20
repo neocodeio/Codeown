@@ -32,6 +32,7 @@ import UserHoverCard from "./UserHoverCard";
 import Lightbox from "./Lightbox";
 import QuickCommentModal from "./QuickCommentModal";
 import LikeButton from "./LikeButton";
+import { socket } from "../lib/socket";
 
 interface PostCardProps {
   post: Post;
@@ -142,6 +143,25 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
     setIsDeleteModalOpen(true);
   };
 
+  useEffect(() => {
+    if (!post.id) return;
+
+    const handleRepostUpdate = (data: any) => {
+      // data: { id, content, ..., reposter_id }
+      if (data.id === post.id) {
+        setRepostCountLocal(prev => prev + 1);
+        if (data.reposter_id === currentUser?.id) {
+          setIsRepostedLocal(true);
+        }
+      }
+    };
+
+    socket.on("post_reposted", handleRepostUpdate);
+    return () => {
+      socket.off("post_reposted", handleRepostUpdate);
+    };
+  }, [post.id, currentUser?.id]);
+
   const handleReShip = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!currentUser) {
@@ -152,8 +172,9 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
     // Optimistic UI
     const originalState = isRepostedLocal;
-    setIsRepostedLocal(!originalState);
-    setRepostCountLocal(prev => originalState ? prev - 1 : prev + 1);
+    const newState = !originalState;
+    setIsRepostedLocal(newState);
+    setRepostCountLocal(prev => newState ? prev + 1 : prev - 1);
 
     try {
       setIsReShipping(true);
@@ -454,7 +475,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
               <button onClick={handleReShip} disabled={isReShipping} style={{
                 display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                cursor: isReShipping ? "default" : "pointer", color: isRepostedLocal ? "var(--text-primary)" : "var(--text-tertiary)"
+                cursor: isReShipping ? "default" : "pointer", color: isRepostedLocal ? "#10b981" : "var(--text-tertiary)"
               }}>
                 <HugeiconsIcon icon={RepostIcon} size={20} />
                 {repostCountLocal > 0 && (
