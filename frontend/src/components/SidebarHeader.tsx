@@ -188,7 +188,7 @@ export default function SidebarHeader() {
                                 fontWeight: 800,
                                 border: "2px solid var(--bg-page)"
                             }}>
-                                {unreadCount}
+                                {unreadCount > 9 ? "9+" : unreadCount}
                             </span>
                         )}
                     </Link>
