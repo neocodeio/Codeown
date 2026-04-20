@@ -73,23 +73,42 @@ export async function getPosts(req: Request, res: Response) {
 
     // Process posts and ensure user data exists (fallback to "User" if missing)
     const processedPosts = posts.map((post: any) => {
-      // Map the projects join back to the "project" property the frontend expects
-      const project = post.projects || null;
+      // 1. Map projects
+      const projectData = post.projects || null;
 
-      const userData = post.user || {
-        name: "User",
-        avatar_url: null,
-        username: null,
-        is_hirable: false,
-        is_pro: false,
-        is_og: false
-      };
+      // 2. Unpack top-level user
+      const rawUser = post.user || null;
+      const user = Array.isArray(rawUser) ? rawUser[0] : rawUser;
 
-      const user = Array.isArray(userData) ? userData[0] : userData;
+      // 3. Unpack reposted post
+      let rpRaw = post.reposted_post || null;
+      let repostedPost = Array.isArray(rpRaw) ? rpRaw[0] : rpRaw;
+      if (repostedPost) {
+        const rpUserRaw = repostedPost.user;
+        const rpUser = Array.isArray(rpUserRaw) ? rpUserRaw[0] : rpUserRaw;
+        repostedPost = {
+          ...repostedPost,
+          user: rpUser || { name: "User", avatar_url: null }
+        };
+      }
+
+      // 4. Unpack reposted project
+      let rpjRaw = post.reposted_project || null;
+      let repostedProject = Array.isArray(rpjRaw) ? rpjRaw[0] : rpjRaw;
+      if (repostedProject) {
+        const rpjUserRaw = repostedProject.user;
+        const rpjUser = Array.isArray(rpjUserRaw) ? rpjUserRaw[0] : rpjUserRaw;
+        repostedProject = {
+          ...repostedProject,
+          user: rpjUser || { name: "User", avatar_url: null }
+        };
+      }
 
       return {
         ...post,
-        project, // Ensure it's available under the "project" key
+        project: Array.isArray(projectData) ? projectData[0] : projectData,
+        reposted_post: repostedPost,
+        reposted_project: repostedProject,
         user: {
           name: user?.name || "User",
           avatar_url: user?.avatar_url || null,
@@ -188,17 +207,33 @@ export async function getPostById(req: Request, res: Response) {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    // Process user data fallback
-    const rawUser = Array.isArray(post.user) ? post.user[0] : post.user;
+    // Unpack top level user
+    const user = Array.isArray(post.user) ? post.user[0] : post.user;
     const userData = {
-      name: rawUser?.name || "User",
-      avatar_url: rawUser?.avatar_url || null,
-      username: rawUser?.username || null,
-      is_pro: rawUser?.is_pro ?? false,
-      is_og: rawUser?.is_og ?? false,
+      name: user?.name || "User",
+      avatar_url: user?.avatar_url || null,
+      username: user?.username || null,
+      is_pro: user?.is_pro ?? false,
+      is_og: user?.is_og ?? false,
+      is_hirable: user?.is_hirable ?? false
     };
 
-    // Parallelize non-blocking updates and additional data fetching
+    // Unpack nested reposted data
+    const rpRaw = (post as any).reposted_post || null;
+    let repostedPost = Array.isArray(rpRaw) ? rpRaw[0] : rpRaw;
+    if (repostedPost) {
+      const rpUser = Array.isArray((repostedPost as any).user) ? (repostedPost as any).user[0] : (repostedPost as any).user;
+      repostedPost = { ...repostedPost, user: rpUser };
+    }
+
+    const rpjRaw = (post as any).reposted_project || null;
+    let repostedProject = Array.isArray(rpjRaw) ? rpjRaw[0] : rpjRaw;
+    if (repostedProject) {
+      const rpjUser = Array.isArray((repostedProject as any).user) ? (repostedProject as any).user[0] : (repostedProject as any).user;
+      repostedProject = { ...repostedProject, user: rpjUser };
+    }
+
+    // Check if the post is already liked/saved by the current user
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
     const [viewResult, stats] = await Promise.all([
