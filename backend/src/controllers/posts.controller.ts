@@ -19,13 +19,13 @@ export async function getPosts(req: Request, res: Response) {
       .from("posts")
       .select(`
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
-        project:projects!project_id(id, name:title),
+        project:projects!posts_project_id_fkey(id, name:title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        reposted_post:posts!reposted_post_id(
+        reposted_post:posts!posts_reposted_post_id_fkey(
           id, title, content, created_at, images, post_type,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
         ),
-        reposted_project:projects!reposted_project_id(
+        reposted_project:projects!posts_reposted_project_id_fkey(
           id, title, description, cover_image, created_at,
           user:users(id, name, avatar_url, username)
         )
@@ -173,13 +173,13 @@ export async function getPostById(req: Request, res: Response) {
       .from("posts")
       .select(`
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
-        project:projects!project_id(id, name:title),
+        project:projects!posts_project_id_fkey(id, name:title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        reposted_post:posts!reposted_post_id(
+        reposted_post:posts!posts_reposted_post_id_fkey(
           id, title, content, created_at, images, post_type,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
         ),
-        reposted_project:projects!reposted_project_id(
+        reposted_project:projects!posts_reposted_project_id_fkey(
           id, title, description, cover_image, created_at,
           user:users(id, name, avatar_url, username)
         )
@@ -256,7 +256,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Fetch posts for the user with specific columns only
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects!project_id(id, name:title)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects!posts_project_id_fkey(id, name:title)")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -524,13 +524,13 @@ export async function createPost(req: Request, res: Response) {
       })
       .select(`
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
-        project:projects!project_id(id, name:title),
+        project:projects!posts_project_id_fkey(id, name:title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        reposted_post:posts!reposted_post_id(
+        reposted_post:posts!posts_reposted_post_id_fkey(
           id, title, content, created_at, images, post_type,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
         ),
-        reposted_project:projects!reposted_project_id(
+        reposted_project:projects!posts_reposted_project_id_fkey(
           id, title, description, cover_image, created_at,
           user:users(id, name, avatar_url, username)
         )
@@ -845,7 +845,7 @@ export async function votePost(req: Request, res: Response) {
       .from("posts")
       .update({ poll: updatedPoll })
       .eq("id", id)
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og), project:projects!project_id(id, name:title)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og), project:projects!posts_project_id_fkey(id, name:title)")
       .single();
 
     if (updateError) {
