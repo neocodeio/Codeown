@@ -21,14 +21,11 @@ export async function getPosts(req: Request, res: Response) {
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        reposted_post:posts!posts_reposted_post_id_fkey(
+        reposted_post:posts!reposted_post_id(
           id, title, content, created_at, images, post_type,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
         ),
-        reposted_project:projects!posts_reposted_project_id_fkey(
-          id, title, description, cover_image, created_at,
-          user:users!projects_user_id_fkey(id, name, avatar_url, username)
-        )
+        reposted_project:projects!posts_reposted_project_id_fkey(id, title, description, cover_image, created_at, user:users!user_id(id, name, avatar_url, username))
       `, { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
       .order("created_at", { ascending: false });
@@ -178,14 +175,11 @@ export async function getPostById(req: Request, res: Response) {
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        reposted_post:posts!posts_reposted_post_id_fkey(
+        reposted_post:posts!reposted_post_id(
           id, title, content, created_at, images, post_type,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
         ),
-        reposted_project:projects!posts_reposted_project_id_fkey(
-          id, title, description, cover_image, created_at,
-          user:users!projects_user_id_fkey(id, name, avatar_url, username)
-        )
+        reposted_project:projects!posts_reposted_project_id_fkey(id, title, description, cover_image, created_at, user:users!user_id(id, name, avatar_url, username))
       `)
       .eq("id", id)
       .single();
@@ -530,14 +524,11 @@ export async function createPost(req: Request, res: Response) {
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        reposted_post:posts!posts_reposted_post_id_fkey(
+        reposted_post:posts!reposted_post_id(
           id, title, content, created_at, images, post_type,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
         ),
-        reposted_project:projects!posts_reposted_project_id_fkey(
-          id, title, description, cover_image, created_at,
-          user:users!projects_user_id_fkey(id, name, avatar_url, username)
-        )
+        reposted_project:projects!posts_reposted_project_id_fkey(id, title, description, cover_image, created_at, user:users!user_id(id, name, avatar_url, username))
       `)
       .single();
 
