@@ -116,54 +116,20 @@ export async function getPosts(req: Request, res: Response) {
       postsQuery = postsQuery.in("user_id", followingIds);
     }
 
-    // FETCH BOTH POSTS AND REPOSTS IN PARALLEL
-    const postsPromise = postsQuery.range(offset, offset + limitNum - 1);
-
-    const repostsPromise = supabase
-      .from("reposts")
-      .select(`
-        *,
-        post:posts(
-          id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
-          user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)
-        ),
-        reposter:users!user_id(id, name, avatar_url, username)
-      `)
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limitNum - 1);
-
-    const [postsRes, repostsRes] = await Promise.all([postsPromise, repostsPromise]);
+    // FETCH POSTS ONLY (Stealth Reposts for Clean Feed)
+    const postsRes = await postsQuery.range(offset, offset + limitNum - 1);
 
     if (postsRes.error) {
       console.error("Supabase error in getPosts:", postsRes.error);
       return res.status(500).json({ error: "Failed to fetch posts", details: postsRes.error.message });
     }
 
-    // Merge and format
     const rawPosts = postsRes.data || [];
-    const rawReposts = repostsRes.data || [];
+    const processedPosts = rawPosts.map(p => ({ ...formatPostData(p), is_activity_repost: false }));
 
-    const formattedPosts = rawPosts.map(p => ({ ...formatPostData(p), is_activity_repost: false }));
-    const formattedReposts = rawReposts
-      .filter((r: any) => r.post)
-      .map((r: any) => ({
-        ...formatPostData(r.post),
-        is_activity_repost: true,
-        reposter: Array.isArray(r.reposter) ? r.reposter[0] : r.reposter,
-        reposted_at: r.created_at,
-        sort_date: r.created_at
-      }));
-
-    // Combine and sort by activity date
-    let merged = [...formattedPosts.map(p => ({ ...p, sort_date: p.created_at })), ...formattedReposts]
-      .sort((a, b) => new Date(b.sort_date).getTime() - new Date(a.sort_date).getTime())
-      .slice(0, limitNum);
-
-    if (merged.length === 0) {
+    if (processedPosts.length === 0) {
       return res.json({ posts: [], total: postsRes.count || 0, page: pageNum, limit: limitNum, totalPages: 0 });
     }
-
-    const processedPosts = merged;
 
     // FETCH LIKE AND SAVE STATUS FOR CURRENT USER IN PARALLEL
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
