@@ -5,6 +5,62 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import { emitUpdate } from "../lib/socket.js";
 import { GamificationService } from "../services/gamification.service.js";
 
+/**
+ * Utility to unpack nested PostgREST relationships and format post data consistently.
+ */
+function formatPostData(post: any) {
+  if (!post) return null;
+
+  // 1. Unpack top-level user
+  const rawUser = post.user || null;
+  const user = Array.isArray(rawUser) ? rawUser[0] : rawUser;
+
+  // 2. Unpack project
+  const projectData = post.projects || post.project || null;
+  const project = Array.isArray(projectData) ? projectData[0] : projectData;
+
+  // 3. Unpack reposted post
+  let rpRaw = post.reposted_post || null;
+  let repostedPost = Array.isArray(rpRaw) ? rpRaw[0] : rpRaw;
+  if (repostedPost) {
+    const rpUserRaw = repostedPost.user;
+    const rpUser = Array.isArray(rpUserRaw) ? rpUserRaw[0] : rpUserRaw;
+    repostedPost = {
+      ...repostedPost,
+      user: rpUser || { name: "User", avatar_url: null, username: "user" }
+    };
+  }
+
+  // 4. Unpack reposted project
+  let rpjRaw = post.reposted_project || null;
+  let repostedProject = Array.isArray(rpjRaw) ? rpjRaw[0] : rpjRaw;
+  if (repostedProject) {
+    const rpjUserRaw = repostedProject.user;
+    const rpjUser = Array.isArray(rpjUserRaw) ? rpjUserRaw[0] : rpjUserRaw;
+    repostedProject = {
+      ...repostedProject,
+      user: rpjUser || { name: "User", avatar_url: null, username: "user" }
+    };
+  }
+
+  return {
+    ...post,
+    projects: undefined, // cleanup
+    project: project || null,
+    reposted_post: repostedPost,
+    reposted_project: repostedProject,
+    user: {
+      id: user?.id || post.user_id,
+      name: user?.name || "User",
+      avatar_url: user?.avatar_url || null,
+      username: user?.username || null,
+      is_hirable: user?.is_hirable || false,
+      is_pro: user?.is_pro ?? false,
+      is_og: user?.is_og ?? false
+    }
+  };
+}
+
 export async function getPosts(req: Request, res: Response) {
   try {
     const { page = "1", limit = "10", filter = "all", tag, projectId } = req.query;
@@ -71,54 +127,8 @@ export async function getPosts(req: Request, res: Response) {
       return res.json({ posts: [], total: count || 0, page: pageNum, limit: limitNum, totalPages: Math.ceil((count || 0) / limitNum) });
     }
 
-    // Process posts and ensure user data exists (fallback to "User" if missing)
-    const processedPosts = posts.map((post: any) => {
-      // 1. Map projects
-      const projectData = post.projects || null;
-
-      // 2. Unpack top-level user
-      const rawUser = post.user || null;
-      const user = Array.isArray(rawUser) ? rawUser[0] : rawUser;
-
-      // 3. Unpack reposted post
-      let rpRaw = post.reposted_post || null;
-      let repostedPost = Array.isArray(rpRaw) ? rpRaw[0] : rpRaw;
-      if (repostedPost) {
-        const rpUserRaw = repostedPost.user;
-        const rpUser = Array.isArray(rpUserRaw) ? rpUserRaw[0] : rpUserRaw;
-        repostedPost = {
-          ...repostedPost,
-          user: rpUser || { name: "User", avatar_url: null }
-        };
-      }
-
-      // 4. Unpack reposted project
-      let rpjRaw = post.reposted_project || null;
-      let repostedProject = Array.isArray(rpjRaw) ? rpjRaw[0] : rpjRaw;
-      if (repostedProject) {
-        const rpjUserRaw = repostedProject.user;
-        const rpjUser = Array.isArray(rpjUserRaw) ? rpjUserRaw[0] : rpjUserRaw;
-        repostedProject = {
-          ...repostedProject,
-          user: rpjUser || { name: "User", avatar_url: null }
-        };
-      }
-
-      return {
-        ...post,
-        project: Array.isArray(projectData) ? projectData[0] : projectData,
-        reposted_post: repostedPost,
-        reposted_project: repostedProject,
-        user: {
-          name: user?.name || "User",
-          avatar_url: user?.avatar_url || null,
-          username: user?.username || null,
-          is_hirable: user?.is_hirable || false,
-          is_pro: user?.is_pro ?? false,
-          is_og: user?.is_og ?? false
-        }
-      };
-    });
+    // Process posts and ensure user data exists
+    const processedPosts = posts.map(formatPostData).filter(Boolean);
 
     // FETCH LIKE AND SAVE STATUS FOR CURRENT USER IN PARALLEL
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
@@ -207,31 +217,7 @@ export async function getPostById(req: Request, res: Response) {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    // Unpack top level user
-    const user = Array.isArray(post.user) ? post.user[0] : post.user;
-    const userData = {
-      name: user?.name || "User",
-      avatar_url: user?.avatar_url || null,
-      username: user?.username || null,
-      is_pro: user?.is_pro ?? false,
-      is_og: user?.is_og ?? false,
-      is_hirable: user?.is_hirable ?? false
-    };
-
-    // Unpack nested reposted data
-    const rpRaw = (post as any).reposted_post || null;
-    let repostedPost = Array.isArray(rpRaw) ? rpRaw[0] : rpRaw;
-    if (repostedPost) {
-      const rpUser = Array.isArray((repostedPost as any).user) ? (repostedPost as any).user[0] : (repostedPost as any).user;
-      repostedPost = { ...repostedPost, user: rpUser };
-    }
-
-    const rpjRaw = (post as any).reposted_project || null;
-    let repostedProject = Array.isArray(rpjRaw) ? rpjRaw[0] : rpjRaw;
-    if (repostedProject) {
-      const rpjUser = Array.isArray((repostedProject as any).user) ? (repostedProject as any).user[0] : (repostedProject as any).user;
-      repostedProject = { ...repostedProject, user: rpjUser };
-    }
+    const formattedPostSync = formatPostData(post);
 
     // Check if the post is already liked/saved by the current user
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
@@ -254,13 +240,11 @@ export async function getPostById(req: Request, res: Response) {
       ]) : Promise.resolve([null, null])
     ]);
 
-    const [likeRes, saveRes] = stats as any;
-    const poll = post.poll as any;
+    const [likeRes, saveRes] = (stats || [null, null]) as any;
+    const poll = formattedPostSync?.poll as any;
 
     return res.json({
-      ...post,
-      project: post.projects || null, // Map back for frontend
-      user: userData,
+      ...formattedPostSync,
       isLiked: !!(likeRes?.data),
       isSaved: !!(saveRes?.data),
       poll: poll ? {
@@ -583,10 +567,7 @@ export async function createPost(req: Request, res: Response) {
 
     console.log("Post created successfully:", createdPost);
 
-    const formattedPost = {
-      ...createdPost,
-      user: Array.isArray(createdPost.user) ? createdPost.user[0] : createdPost.user,
-    };
+    const formattedPost = formatPostData(createdPost);
 
     // Emit real-time update
     emitUpdate("post_created", formattedPost);
