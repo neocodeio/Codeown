@@ -24,10 +24,64 @@ import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "../components/VerifiedBadge";
 import { SEO } from "../components/SEO";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
-import { Delete02Icon } from "@hugeicons/core-free-icons";
+import {
+    Delete02Icon,
+    NotificationOff01Icon,
+    Tick02Icon,
+    Cancel01Icon
+} from "@hugeicons/core-free-icons";
 import { useState } from "react";
+import api from "../api/axios";
+import { toast } from "sonner";
 
 export default function NotificationsPage() {
+    const { getToken, isSignedIn } = useClerkAuth();
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+    const [platformEnabled, setPlatformEnabled] = useState(true);
+    const [emailEnabled, setEmailEnabled] = useState(true);
+    const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+    const fetchUserSettings = async () => {
+        try {
+            const token = await getToken();
+            const { data: user } = await api.get(`/users/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (user) {
+                setPlatformEnabled(user.notifications_enabled !== false);
+                setEmailEnabled(user.email_notifications_enabled !== false);
+            }
+        } catch (error) {
+            console.error("Failed to fetch notification settings:", error);
+        }
+    };
+
+    const handleSaveSettings = async () => {
+        setIsSavingSettings(true);
+        try {
+            const token = await getToken();
+            await api.post(`/users/notifications/settings`, {
+                notifications_enabled: platformEnabled,
+                email_notifications_enabled: emailEnabled
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            toast.success("Notification settings updated", {
+                style: {
+                    borderRadius: '12px',
+                    background: '#000',
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontWeight: 600
+                }
+            });
+            setIsSettingsModalOpen(false);
+        } catch (error) {
+            toast.error("Failed to update settings");
+        } finally {
+            setIsSavingSettings(false);
+        }
+    };
     const {
         notifications,
         unreadCount,
@@ -38,12 +92,150 @@ export default function NotificationsPage() {
         fetchNextPage,
         isFetchingNextPage
     } = useNotifications();
-    const { isSignedIn } = useClerkAuth();
+
+    // Fixed duplicate isSignedIn
     const navigate = useNavigate();
     const { width } = useWindowSize();
     const isMobile = width < 768;
     const isDesktop = width >= 1200;
     const [activeTab, setActiveTab] = useState<"All" | "Mentions">("All");
+
+    useEffect(() => {
+        if (isSettingsModalOpen) {
+            fetchUserSettings();
+        }
+    }, [isSettingsModalOpen]);
+
+    const NotificationSettingsModal = () => (
+        <div style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            backdropFilter: "blur(8px)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px"
+        }} onClick={() => setIsSettingsModalOpen(false)}>
+            <div style={{
+                width: "100%",
+                maxWidth: "400px",
+                backgroundColor: "var(--bg-page)",
+                borderRadius: "24px",
+                border: "0.5px solid var(--border-hairline)",
+                padding: "24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "24px",
+                boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)"
+            }} onClick={e => e.stopPropagation()}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>Notification Settings</h2>
+                    <button onClick={() => setIsSettingsModalOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)" }}>
+                        <HugeiconsIcon icon={Cancel01Icon} size={20} />
+                    </button>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                            <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Platform Notifications</p>
+                            <p style={{ margin: 0, fontSize: "12px", color: "var(--text-tertiary)" }}>Direct alerts inside Codeown</p>
+                        </div>
+                        <button
+                            onClick={() => setPlatformEnabled(!platformEnabled)}
+                            style={{
+                                width: "44px",
+                                height: "24px",
+                                borderRadius: "100px",
+                                backgroundColor: platformEnabled ? "var(--text-primary)" : "var(--bg-hover)",
+                                border: "none",
+                                cursor: "pointer",
+                                position: "relative",
+                                transition: "all 0.2s"
+                            }}
+                        >
+                            <div style={{
+                                width: "18px",
+                                height: "18px",
+                                borderRadius: "50%",
+                                backgroundColor: platformEnabled ? "var(--bg-page)" : "var(--text-tertiary)",
+                                position: "absolute",
+                                top: "3px",
+                                left: platformEnabled ? "23px" : "3px",
+                                transition: "all 0.2s"
+                            }} />
+                        </button>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                            <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Email Notifications</p>
+                            <p style={{ margin: 0, fontSize: "12px", color: "var(--text-tertiary)" }}>Get updates in your inbox</p>
+                        </div>
+                        <button
+                            onClick={() => setEmailEnabled(!emailEnabled)}
+                            style={{
+                                width: "44px",
+                                height: "24px",
+                                borderRadius: "100px",
+                                backgroundColor: emailEnabled ? "var(--text-primary)" : "var(--bg-hover)",
+                                border: "none",
+                                cursor: "pointer",
+                                position: "relative",
+                                transition: "all 0.2s"
+                            }}
+                        >
+                            <div style={{
+                                width: "18px",
+                                height: "18px",
+                                borderRadius: "50%",
+                                backgroundColor: emailEnabled ? "var(--bg-page)" : "var(--text-tertiary)",
+                                position: "absolute",
+                                top: "3px",
+                                left: emailEnabled ? "23px" : "3px",
+                                transition: "all 0.2s"
+                            }} />
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
+                    <button
+                        onClick={handleSaveSettings}
+                        disabled={isSavingSettings}
+                        style={{
+                            flex: 1,
+                            padding: "12px",
+                            borderRadius: "12px",
+                            backgroundColor: "var(--text-primary)",
+                            color: "var(--bg-page)",
+                            border: "none",
+                            fontWeight: 700,
+                            fontSize: "14px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "8px",
+                            opacity: isSavingSettings ? 0.7 : 1
+                        }}
+                    >
+                        {isSavingSettings ? "Saving..." : (
+                            <>
+                                <HugeiconsIcon icon={Tick02Icon} size={18} />
+                                Save Preferences
+                            </>
+                        )}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 
     // Grouping logic for "like" notifications
     const [initialPulseActive, setInitialPulseActive] = useState(true);
@@ -344,62 +536,87 @@ export default function NotificationsPage() {
                         flexDirection: "column",
                         alignItems: "flex-start"
                     }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-                            <button
-                                onClick={() => navigate("/")}
-                                style={{
-                                    background: "none",
-                                    border: "none",
-                                    cursor: "pointer",
-                                    padding: "4px",
-                                    borderRadius: "var(--radius-sm)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    transition: "all 0.15s ease",
-                                }}
-                            >
-                                <HugeiconsIcon icon={ArrowLeft01Icon} size={20} color="var(--text-primary)" />
-                            </button>
+                        <div style={{ display: "flex", alignItems: "center", gap: "16px", width: "100%" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1 }}>
+                                <button
+                                    onClick={() => navigate("/")}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        padding: "4px",
+                                        borderRadius: "var(--radius-sm)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        transition: "all 0.15s ease",
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                                >
+                                    <HugeiconsIcon icon={ArrowLeft01Icon} size={20} color="var(--text-primary)" />
+                                </button>
 
-                            <div style={{ flex: 1 }}>
-                                <h1 style={{
-                                    fontSize: "16px",
-                                    fontWeight: 700,
-                                    color: "var(--text-primary)",
-                                    margin: 0
-                                }}>
-                                    Notifications
-                                </h1>
-                                {unreadCount > 0 && <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>{unreadCount} unread</span>}
+                                <div style={{ minWidth: 0 }}>
+                                    <h1 style={{
+                                        fontSize: "16px",
+                                        fontWeight: 700,
+                                        color: "var(--text-primary)",
+                                        margin: 0
+                                    }}>
+                                        Notifications
+                                    </h1>
+                                    {unreadCount > 0 && <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>{unreadCount} unread</span>}
+                                </div>
                             </div>
 
-                            {unreadCount > 0 && (
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                {unreadCount > 0 && (
+                                    <button
+                                        onClick={() => markAsRead("all")}
+                                        style={{
+                                            background: "transparent",
+                                            border: "0.5px solid var(--border-hairline)",
+                                            color: "var(--text-secondary)",
+                                            padding: "6px 14px",
+                                            borderRadius: "var(--radius-sm)",
+                                            fontSize: "12px",
+                                            fontWeight: 600,
+                                            cursor: "pointer",
+                                            transition: "all 0.2s"
+                                        }}
+                                        onMouseEnter={e => {
+                                            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                            e.currentTarget.style.color = "var(--text-primary)";
+                                        }}
+                                        onMouseLeave={e => {
+                                            e.currentTarget.style.backgroundColor = "transparent";
+                                            e.currentTarget.style.color = "var(--text-secondary)";
+                                        }}
+                                    >
+                                        Mark all as read
+                                    </button>
+                                )}
+
                                 <button
-                                    onClick={() => markAsRead("all")}
+                                    onClick={() => setIsSettingsModalOpen(true)}
                                     style={{
-                                        background: "transparent",
-                                        border: "0.5px solid var(--border-hairline)",
-                                        color: "var(--text-secondary)",
-                                        padding: "6px 14px",
-                                        borderRadius: "var(--radius-sm)",
-                                        fontSize: "12px",
-                                        fontWeight: 600,
+                                        background: "none",
+                                        border: "none",
                                         cursor: "pointer",
-                                        transition: "all 0.2s"
+                                        padding: "8px",
+                                        borderRadius: "var(--radius-sm)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        transition: "all 0.15s ease",
                                     }}
-                                    onMouseEnter={e => {
-                                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                                        e.currentTarget.style.color = "var(--text-primary)";
-                                    }}
-                                    onMouseLeave={e => {
-                                        e.currentTarget.style.backgroundColor = "transparent";
-                                        e.currentTarget.style.color = "var(--text-secondary)";
-                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
                                 >
-                                    Mark all as read
+                                    <HugeiconsIcon icon={NotificationOff01Icon} size={20} color="var(--text-primary)" />
                                 </button>
-                            )}
+                            </div>
                         </div>
 
                         {/* Tabs */}
@@ -747,6 +964,9 @@ export default function NotificationsPage() {
                     </aside>
                 )}
             </div>
+
+            {isSettingsModalOpen && <NotificationSettingsModal />}
+
             <style>{`
                 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 @keyframes pulse-bg {

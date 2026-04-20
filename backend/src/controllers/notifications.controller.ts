@@ -241,3 +241,45 @@ export async function deleteNotification(req: Request, res: Response) {
     return res.status(500).json({ error: "Internal server error", details: error?.message });
   }
 }
+
+/**
+ * Centralized dispatcher to handle notification creation with preference checks.
+ */
+export async function createNotification(
+  targetUserId: string,
+  notifData: {
+    type: 'like' | 'comment' | 'follow' | 'mention' | 'message' | 'project_like' | 'repost';
+    actor_id: string;
+    post_id?: number | string;
+    project_id?: number | string;
+    comment_id?: number | string;
+  },
+  emailCallback?: () => Promise<void>
+) {
+  try {
+    const { data: user } = await supabase
+      .from("users")
+      .select("notifications_enabled, email_notifications_enabled")
+      .eq("id", targetUserId)
+      .single();
+
+    const prefs = user || { notifications_enabled: true, email_notifications_enabled: true };
+
+    if (prefs.notifications_enabled !== false) {
+      await supabase.from("notifications").insert({
+        user_id: targetUserId,
+        ...notifData,
+        read: false
+      });
+    }
+
+    if (emailCallback && prefs.email_notifications_enabled !== false) {
+      await emailCallback();
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("[Notification Dispatcher] Error:", err);
+    return { success: false };
+  }
+}

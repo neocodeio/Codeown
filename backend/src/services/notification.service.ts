@@ -61,58 +61,68 @@ export async function notify(params: SendNotificationParams) {
 
     console.log(`[NotificationService] Processing ${type} notification for user ${userId} from ${actorId}`);
 
-    // 1. Always create the notification in the DB
-    const insertData: any = {
-        user_id: userId,
-        type,
-        actor_id: actorId,
-        read: false,
-        metadata: data || {}
-    };
+    // High Level Preference Check
+    const { data: recipient, error: userError } = await supabase
+        .from("users")
+        .select("id, name, email, username, notifications_enabled, email_notifications_enabled")
+        .eq("id", userId)
+        .single();
 
-    if (postId) insertData.post_id = postId;
-    if (projectId) insertData.project_id = projectId;
-    if (commentId) insertData.comment_id = commentId;
-    if (startupId) insertData.startup_id = startupId;
-
-    let { error: notifError } = await supabase.from("notifications").insert(insertData);
-
-    // If it fails with 'startup_upvote' (likely due to missing enum value), retry with a fallback type
-    if (notifError && type === 'startup_upvote') {
-        const fallbackData = { ...insertData, type: 'like' as any };
-        const { error: retryError } = await supabase.from("notifications").insert(fallbackData);
-        notifError = retryError;
-    }
-
-    if (notifError) {
-        console.error(`[NotificationService] DB Insert Error:`, notifError);
-    }
-
-    // 1.5 Emit socket event for the specific user so the UI updates instantly
-    try {
-        const { getIO } = await import("../lib/socket.js");
-        const io = getIO();
-        io.to(userId).emit("new_notification", { type, actorId, data });
-    } catch (sErr) {
-        // Socket initialization may not be ready
-    }
-
-    // 2. Check if user is active on the platform
-    const active = await isUserActive(userId);
-    if (active) {
-        console.log(`[NotificationService] User ${userId} is active (Socket or recent DB ping). Skipping email.`);
+    if (userError || !recipient) {
+        console.error(`[NotificationService] Recipient not found: ${userId}`);
         return;
     }
 
-    // 3. If not active, dispatch the appropriate email
-    try {
-        // More robust actor/recipient lookup
-        const [{ data: actor }, { data: recipient }] = await Promise.all([
-            supabase.from("users").select("name, username").eq("id", actorId).single(),
-            supabase.from("users").select("name, email, username").eq("id", userId).single()
-        ]);
+    const prefs = {
+        notifications: recipient.notifications_enabled !== false,
+        email: recipient.email_notifications_enabled !== false
+    };
 
-        if (!recipient?.email) {
+    // 1. Create In-Platform Notification (If enabled)
+    if (prefs.notifications) {
+        const insertData: any = {
+            user_id: userId,
+            type,
+            actor_id: actorId,
+            read: false,
+            metadata: data || {}
+        };
+
+        if (postId) insertData.post_id = postId;
+        if (projectId) insertData.project_id = projectId;
+        if (commentId) insertData.comment_id = commentId;
+        if (startupId) insertData.startup_id = startupId;
+
+        const { error: notifError } = await supabase.from("notifications").insert(insertData);
+        if (notifError) console.error(`[NotificationService] DB Insert Error:`, notifError);
+
+        // 1.5 Emit socket event for the specific user
+        try {
+            const { getIO } = await import("../lib/socket.js");
+            const io = getIO();
+            io.to(userId).emit("new_notification", { type, actorId, data });
+        } catch (sErr) { }
+    } else {
+        console.log(`[NotificationService] Skipping DB notification for ${userId} (Platform alerts disabled)`);
+    }
+
+    // 2. Check if user is active (to avoid spamming emails if they are online)
+    const active = await isUserActive(userId);
+    if (active) {
+        console.log(`[NotificationService] User ${userId} is active. Skipping email.`);
+        return;
+    }
+
+    // 3. Dispatch Email (If enabled)
+    if (!prefs.email) {
+        console.log(`[NotificationService] Skipping email for ${userId} (Email alerts disabled)`);
+        return;
+    }
+
+    try {
+        const { data: actor } = await supabase.from("users").select("name, username").eq("id", actorId).single();
+
+        if (!recipient.email) {
             console.warn(`[NotificationService] Missing recipient email for ${userId}. Skipping email.`);
             return;
         }
@@ -216,26 +226,30 @@ export async function notify(params: SendNotificationParams) {
 export async function broadcastShipWeek(adminId: string, competitionName: string, deadline: string) {
     console.log(`[NotificationService] Broadcasting competition launch: ${competitionName}`);
 
-    // 1. Get all users
+    // 1. Get all users with their preferences
     const { data: users } = await supabase
         .from("users")
-        .select("id, email, name, last_active_at");
+        .select("id, email, name, last_active_at, notifications_enabled, email_notifications_enabled");
 
     if (!users) return;
 
-    // 2. Insert notifications in bulk for efficiency
-    const notifs = users.map(u => ({
-        user_id: u.id,
-        type: 'ship_week_launch' as any,
-        actor_id: adminId,
-        metadata: { competitionName, deadline }
-    }));
+    // 2. Insert notifications in bulk for users who have them enabled
+    const notifs = users
+        .filter(u => u.notifications_enabled !== false)
+        .map(u => ({
+            user_id: u.id,
+            type: 'ship_week_launch' as any,
+            actor_id: adminId,
+            metadata: { competitionName, deadline }
+        }));
 
-    await supabase.from("notifications").insert(notifs);
+    if (notifs.length > 0) {
+        await supabase.from("notifications").insert(notifs);
+    }
 
-    // 3. Send emails in batch
+    // 3. Send emails in batch to users who have them enabled
     const validRecipients = users
-        .filter(u => u.email)
+        .filter(u => u.email && u.email_notifications_enabled !== false)
         .map(u => ({ email: u.email!, name: u.name || "Builder" }));
 
     sendShipWeekBatchEmail(validRecipients, competitionName, deadline).catch(e => console.error("Batch fail", e));

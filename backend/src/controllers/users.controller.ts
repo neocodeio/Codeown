@@ -5,6 +5,7 @@ import { sendWelcomeEmail } from "../lib/email.js";
 import { getOrCreateConversation } from "./messages.controller.js";
 import { GamificationService } from "../services/gamification.service.js";
 import { isUserOnline } from "../lib/socket.js";
+import { notify } from "../services/notification.service.js";
 
 // --- ACTIVE SESSION TRACKER (REAL-TIME) ---
 const activeSessions = new Map<string, number>();
@@ -112,6 +113,35 @@ export async function updateStreak(req: Request, res: Response) {
         return res.json({ streak_count: newStreak });
     } catch (error: any) {
         console.error("Unexpected error in updateStreak:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function updateNotificationSettings(req: Request, res: Response) {
+    try {
+        const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+        const { notifications_enabled, email_notifications_enabled } = req.body;
+
+        const { data: updatedUser, error } = await supabase
+            .from("users")
+            .update({
+                notifications_enabled,
+                email_notifications_enabled
+            })
+            .eq("id", userId)
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Error updating notification settings:", error);
+            return res.status(500).json({ error: "Failed to update notification settings" });
+        }
+
+        return res.json(updatedUser);
+    } catch (error: any) {
+        console.error("Unexpected error in updateNotificationSettings:", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
@@ -260,20 +290,12 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
 
         // Create a notification so the new user clearly sees the welcome
         console.log(`[Welcome Message] Creating notification for new user`);
-        const { error: notifError } = await supabase
-            .from("notifications")
-            .insert({
-                user_id: newUserId,
-                type: "message",
-                actor_id: ceoId,
-                read: false,
-            });
-
-        if (notifError) {
-            console.error(`[Welcome Message] Error creating CEO welcome notification:`, notifError);
-        } else {
-            console.log(`[Welcome Message] Notification created successfully`);
-        }
+        await notify({
+            userId: newUserId,
+            actorId: ceoId,
+            type: "message",
+            data: { isWelcome: true }
+        });
 
         // Auto-follow CEO to populate the user's feed initially
         console.log(`[Welcome Message] Auto-following CEO for new user to prepopulate feed`);
@@ -287,12 +309,11 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
         if (followError) {
             console.error(`[Welcome Message] Error auto-following CEO:`, followError);
         } else {
-            // Give the new user a welcome notification that they are following someone!
-            await supabase.from("notifications").insert({
-                user_id: ceoId,
-                type: "follow",
-                actor_id: newUserId,
-                read: false,
+            // Notify CEO (using preference-aware notify)
+            await notify({
+                userId: ceoId,
+                actorId: newUserId,
+                type: "follow"
             });
             console.log(`[Welcome Message] Auto-followed CEO successfully`);
         }
