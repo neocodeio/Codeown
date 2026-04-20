@@ -497,7 +497,7 @@ export async function createPost(req: Request, res: Response) {
 
     // Also extract hashtags from content
     const hashtagRegex = /#(\w+)/g;
-    const contentHashtags = content.match(hashtagRegex) || [];
+    const contentHashtags = safeContent.match(hashtagRegex) || [];
     const extractedTags = contentHashtags.map((tag: string) => tag.substring(1).toLowerCase());
 
     // Merge tags from both sources, remove duplicates
