@@ -41,7 +41,10 @@ export default function NotificationsPage() {
     const [emailEnabled, setEmailEnabled] = useState(true);
     const [isSavingSettings, setIsSavingSettings] = useState(false);
 
+    const [isFetchingSettings, setIsFetchingSettings] = useState(false);
+
     const fetchUserSettings = async () => {
+        setIsFetchingSettings(true);
         try {
             const token = await getToken();
             const { data: user } = await api.get(`/users/me`, {
@@ -53,6 +56,8 @@ export default function NotificationsPage() {
             }
         } catch (error) {
             console.error("Failed to fetch notification settings:", error);
+        } finally {
+            setIsFetchingSettings(false);
         }
     };
 
@@ -139,66 +144,68 @@ export default function NotificationsPage() {
                         <HugeiconsIcon icon={Cancel01Icon} size={20} />
                     </button>
                 </div>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Platform Notifications</p>
-                            <p style={{ margin: 0, fontSize: "12px", color: "var(--text-tertiary)" }}>Direct alerts inside Codeown</p>
+                {/* Toggles */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "32px", opacity: isFetchingSettings ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ maxWidth: "70%" }}>
+                            <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>Platform Notifications</div>
+                            <div style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>Direct alerts inside Codeown</div>
                         </div>
                         <button
                             onClick={() => setPlatformEnabled(!platformEnabled)}
+                            disabled={isFetchingSettings}
                             style={{
                                 width: "44px",
                                 height: "24px",
-                                borderRadius: "100px",
-                                backgroundColor: platformEnabled ? "var(--text-primary)" : "var(--bg-hover)",
+                                borderRadius: "12px",
+                                backgroundColor: platformEnabled ? "var(--brand-primary)" : "var(--bg-tertiary)",
                                 border: "none",
-                                cursor: "pointer",
+                                cursor: isFetchingSettings ? "not-allowed" : "pointer",
                                 position: "relative",
-                                transition: "all 0.2s"
+                                transition: "all 0.3s ease"
                             }}
                         >
                             <div style={{
                                 width: "18px",
                                 height: "18px",
                                 borderRadius: "50%",
-                                backgroundColor: platformEnabled ? "var(--bg-page)" : "var(--text-tertiary)",
+                                backgroundColor: "#fff",
                                 position: "absolute",
                                 top: "3px",
                                 left: platformEnabled ? "23px" : "3px",
-                                transition: "all 0.2s"
+                                transition: "all 0.3s ease"
                             }} />
                         </button>
                     </div>
 
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Email Notifications</p>
-                            <p style={{ margin: 0, fontSize: "12px", color: "var(--text-tertiary)" }}>Get updates in your inbox</p>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ maxWidth: "70%" }}>
+                            <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px" }}>Email Notifications</div>
+                            <div style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>Get updates in your inbox</div>
                         </div>
                         <button
                             onClick={() => setEmailEnabled(!emailEnabled)}
+                            disabled={isFetchingSettings}
                             style={{
                                 width: "44px",
                                 height: "24px",
-                                borderRadius: "100px",
-                                backgroundColor: emailEnabled ? "var(--text-primary)" : "var(--bg-hover)",
+                                borderRadius: "12px",
+                                backgroundColor: emailEnabled ? "var(--brand-primary)" : "var(--bg-tertiary)",
                                 border: "none",
-                                cursor: "pointer",
+                                cursor: isFetchingSettings ? "not-allowed" : "pointer",
                                 position: "relative",
-                                transition: "all 0.2s"
+                                transition: "all 0.3s ease"
                             }}
                         >
                             <div style={{
                                 width: "18px",
                                 height: "18px",
                                 borderRadius: "50%",
-                                backgroundColor: emailEnabled ? "var(--bg-page)" : "var(--text-tertiary)",
+                                backgroundColor: "#fff",
                                 position: "absolute",
                                 top: "3px",
                                 left: emailEnabled ? "23px" : "3px",
-                                transition: "all 0.2s"
+                                transition: "all 0.3s ease"
                             }} />
                         </button>
                     </div>

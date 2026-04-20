@@ -574,12 +574,16 @@ export async function completeOnboarding(req: Request, res: Response) {
 // Get user profile
 export async function getUserProfile(req: Request, res: Response) {
     try {
-        const { userId } = req.params;
-        const currentUser = req.user;
-        const currentUserId = currentUser?.sub || currentUser?.id || currentUser?.userId;
+        let { userId } = req.params;
+        if (!userId) return res.status(400).json({ error: "User ID is required" });
 
-        if (!userId) {
-            return res.status(400).json({ error: "User ID is required" });
+        const currentUser = req.user;
+        const currentUserId = (currentUser?.sub || currentUser?.id || currentUser?.userId) as string | undefined;
+
+        // Handle "me" keyword
+        if (userId === "me") {
+            if (!currentUserId) return res.status(401).json({ error: "Unauthorized" });
+            userId = currentUserId;
         }
 
         // Determine query field
@@ -591,8 +595,8 @@ export async function getUserProfile(req: Request, res: Response) {
         let user: any = null;
         let userError: any = null;
 
-        const fullSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status, xp, level";
-        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, github_url, twitter_url, linkedin_url, website_url, xp, level";
+        const fullSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status, xp, level, notifications_enabled, email_notifications_enabled";
+        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, github_url, twitter_url, linkedin_url, website_url, xp, level, notifications_enabled, email_notifications_enabled";
 
         const fullRes = await supabase
             .from("users")
