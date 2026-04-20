@@ -2066,98 +2066,100 @@ export default function Messages() {
                       <HugeiconsIcon icon={Add01Icon} size={28} />
                     </button>
 
-                    {/* Gif Button */}
-                    <div style={{ position: "relative" }}>
-                      <button
-                        type="button"
-                        onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
-                        style={{
-                          width: "48px",
-                          height: "48px",
-                          borderRadius: "50%",
-                          border: "none",
-                          backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "var(--bg-hover)",
-                          color: "var(--text-primary)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          transition: "all 0.15s ease",
-                          flexShrink: 0
-                        }}
-                      >
-                        <HugeiconsIcon icon={GifIcon} size={28} />
-                      </button>
+                    {!isMobile && (
+                      <div style={{ position: "relative" }}>
+                        <button
+                          type="button"
+                          onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                          style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            border: "none",
+                            backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "var(--bg-hover)",
+                            color: "var(--text-primary)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                            flexShrink: 0
+                          }}
+                        >
+                          <HugeiconsIcon icon={GifIcon} size={28} />
+                        </button>
 
-                      {isGifPickerOpen && (
-                        <div style={{
-                          position: "absolute",
-                          bottom: "100%",
-                          left: 0,
-                          marginBottom: "12px",
-                          zIndex: 2000
-                        }}>
-                          <GifPicker
-                            onSelect={(gifUrl) => {
-                              // Direct send GIF
-                              handleSendMessage(undefined, gifUrl);
-                              setIsGifPickerOpen(false);
-                            }}
-                            onClose={() => setIsGifPickerOpen(false)}
-                          />
-                        </div>
-                      )}
-                    </div>
+                        {isGifPickerOpen && (
+                          <div style={{
+                            position: "absolute",
+                            bottom: "100%",
+                            left: 0,
+                            marginBottom: "12px",
+                            zIndex: 2000
+                          }}>
+                            <GifPicker
+                              onSelect={(gifUrl) => {
+                                // Direct send GIF
+                                handleSendMessage(undefined, gifUrl);
+                                setIsGifPickerOpen(false);
+                              }}
+                              onClose={() => setIsGifPickerOpen(false)}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                    {/* Emoji Button */}
-                    <div style={{ position: "relative" }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsEmojiPickerOpen(!isEmojiPickerOpen);
-                          setIsGifPickerOpen(false); // Close gif picker if open
-                        }}
-                        style={{
-                          width: "48px",
-                          height: "48px",
-                          borderRadius: "50%",
-                          border: "none",
-                          backgroundColor: isEmojiPickerOpen ? "var(--bg-hover)" : "var(--bg-hover)",
-                          color: "var(--text-primary)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          transition: "all 0.15s ease",
-                          flexShrink: 0
-                        }}
-                      >
-                        <HugeiconsIcon icon={SmileIcon} size={28} />
-                      </button>
+                    {!isMobile && (
+                      <div style={{ position: "relative" }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsEmojiPickerOpen(!isEmojiPickerOpen);
+                            setIsGifPickerOpen(false); // Close gif picker if open
+                          }}
+                          style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            border: "none",
+                            backgroundColor: isEmojiPickerOpen ? "var(--bg-hover)" : "var(--bg-hover)",
+                            color: "var(--text-primary)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                            flexShrink: 0
+                          }}
+                        >
+                          <HugeiconsIcon icon={SmileIcon} size={28} />
+                        </button>
 
-                      {isEmojiPickerOpen && (
-                        <div style={{
-                          position: "absolute",
-                          bottom: "100%",
-                          left: 0,
-                          marginBottom: "12px",
-                          zIndex: 2000
-                        }}>
-                          <EmojiPicker
-                            onEmojiSelect={(emoji) => {
-                              setNewMessage(prev => prev + emoji);
-                              // Keep picker open or close? 
-                              // User usually wants to pick multiple or close. 
-                              // I'll close it to follow the "make no mistake" instruction 
-                              // often imply following standard behavior. Standard is often close on select 
-                              // but for emojis sometimes keep open. I'll close for now.
-                              setIsEmojiPickerOpen(false);
-                            }}
-                            onClose={() => setIsEmojiPickerOpen(false)}
-                          />
-                        </div>
-                      )}
-                    </div>
+                        {isEmojiPickerOpen && (
+                          <div style={{
+                            position: "absolute",
+                            bottom: "100%",
+                            left: 0,
+                            marginBottom: "12px",
+                            zIndex: 2000
+                          }}>
+                            <EmojiPicker
+                              onEmojiSelect={(emoji) => {
+                                setNewMessage(prev => prev + emoji);
+                                // Keep picker open or close? 
+                                // User usually wants to pick multiple or close. 
+                                // I'll close it to follow the "make no mistake" instruction 
+                                // often imply following standard behavior. Standard is often close on select 
+                                // but for emojis sometimes keep open. I'll close for now.
+                                setIsEmojiPickerOpen(false);
+                              }}
+                              onClose={() => setIsEmojiPickerOpen(false)}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
 
 
                     <div style={{ flex: 1, position: "relative", display: "flex", alignItems: "center", backgroundColor: audioBlob ? "var(--bg-hover)" : "#EFF3F4", borderRadius: "24px", padding: "4px 16px" }}>
