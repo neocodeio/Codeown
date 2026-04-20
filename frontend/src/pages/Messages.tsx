@@ -559,44 +559,47 @@ const MessageBubble = memo(({
               </div>
             )}
 
-            {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-              <div style={{
-                position: "absolute",
-                bottom: "-14px",
-                [isMine ? "left" : "right"]: "8px",
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "2px",
-                zIndex: 2
-              }}>
-                {Object.entries(msg.reactions).map(([emoji, userIds]) => {
-                  const hasReacted = currentUser?.id && userIds.includes(currentUser.id);
-                  return (
-                    <div
-                      key={emoji}
-                      onClick={() => onReaction(msg.id, emoji)}
-                      style={{
-                        padding: "2px 6px",
-                        backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-page)",
-                        color: hasReacted ? "var(--bg-page)" : "var(--text-primary)",
-                        borderRadius: "10px",
-                        fontSize: "11px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "3px",
-                        cursor: "pointer",
-                        border: "1px solid var(--border-hairline)",
-                        boxShadow: "0 2px 5px rgba(0,0,0,0.05)"
-                      }}
-                    >
-                      <span>{emoji}</span>
-                      <span style={{ fontSize: "10px", fontWeight: 800 }}>{userIds.length}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </motion.div>
+          {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+            <div style={{
+              position: "absolute",
+              bottom: "-10px",
+              [isMine ? "left" : "right"]: "12px",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "3px",
+              zIndex: 10,
+            }}>
+              {Object.entries(msg.reactions).map(([emoji, userIds]) => {
+                const hasReacted = currentUser?.id && userIds.includes(currentUser.id);
+                return (
+                  <div
+                    key={emoji}
+                    onClick={(e) => { e.stopPropagation(); onReaction(msg.id, emoji); }}
+                    style={{
+                      padding: "2px 6px",
+                      backgroundColor: hasReacted ? "var(--text-primary)" : "var(--bg-page)",
+                      color: hasReacted ? "var(--bg-page)" : "var(--text-primary)",
+                      borderRadius: "12px",
+                      fontSize: "11px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "3px",
+                      cursor: "pointer",
+                      border: "1px solid var(--border-hairline)",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                      transition: "all 0.15s ease"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                  >
+                    <span>{emoji}</span>
+                    <span style={{ fontSize: "10px", fontWeight: 800 }}>{userIds.length}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className="msg-actions" style={{
@@ -1717,7 +1720,7 @@ export default function Messages() {
                   style={{
                     flex: 1,
                     overflowY: "auto",
-                    padding: isMobile ? "20px 16px" : "24px",
+                    padding: isMobile ? "20px 16px 80px" : "24px 24px 100px",
                     display: "flex",
                     flexDirection: "column",
                   }}
