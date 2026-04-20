@@ -122,23 +122,25 @@ export async function updateNotificationSettings(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
+        console.log("[DEBUG] Updating notification settings for user:", userId, req.body);
         const { notifications_enabled, email_notifications_enabled } = req.body;
 
         const { data: updatedUser, error } = await supabase
             .from("users")
             .update({
-                notifications_enabled,
-                email_notifications_enabled
+                notifications_enabled: !!notifications_enabled,
+                email_notifications_enabled: !!email_notifications_enabled
             })
             .eq("id", userId)
             .select()
             .single();
 
         if (error) {
-            console.error("Error updating notification settings:", error);
-            return res.status(500).json({ error: "Failed to update notification settings" });
+            console.error("[DEBUG] Supabase Update Error:", error);
+            return res.status(500).json({ error: "Failed to update notification settings", details: error.message });
         }
 
+        console.log("[DEBUG] Successfully updated user settings in DB:", updatedUser.id);
         return res.json(updatedUser);
     } catch (error: any) {
         console.error("Unexpected error in updateNotificationSettings:", error);

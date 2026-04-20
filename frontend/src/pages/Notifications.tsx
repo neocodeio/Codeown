@@ -50,7 +50,9 @@ export default function NotificationsPage() {
             const { data: user } = await api.get(`/users/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            console.log("[DEBUG] Fetched user from /users/me:", user);
             if (user) {
+                console.log("[DEBUG] Setting platform from:", user.notifications_enabled);
                 setPlatformEnabled(user.notifications_enabled !== false);
                 setEmailEnabled(user.email_notifications_enabled !== false);
             }
@@ -65,6 +67,7 @@ export default function NotificationsPage() {
         setIsSavingSettings(true);
         try {
             const token = await getToken();
+            console.log("[DEBUG] Saving settings:", { notifications_enabled: platformEnabled, email_notifications_enabled: emailEnabled });
             await api.post(`/users/notifications/settings`, {
                 notifications_enabled: platformEnabled,
                 email_notifications_enabled: emailEnabled
