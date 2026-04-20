@@ -19,7 +19,7 @@ export async function getPosts(req: Request, res: Response) {
       .from("posts")
       .select(`
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
-        project:projects!posts_project_id_fkey(id, name:title),
+        projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!posts_reposted_post_id_fkey(
           id, title, content, created_at, images, post_type,
@@ -27,7 +27,7 @@ export async function getPosts(req: Request, res: Response) {
         ),
         reposted_project:projects!posts_reposted_project_id_fkey(
           id, title, description, cover_image, created_at,
-          user:users(id, name, avatar_url, username)
+          user:users!projects_user_id_fkey(id, name, avatar_url, username)
         )
       `, { count: "exact" })
       .order("is_pro", { foreignTable: "user", ascending: false })
@@ -75,7 +75,10 @@ export async function getPosts(req: Request, res: Response) {
     }
 
     // Process posts and ensure user data exists (fallback to "User" if missing)
-    const postsWithUsers = posts.map((post: any) => {
+    const processedPosts = posts.map((post: any) => {
+      // Map the projects join back to the "project" property the frontend expects
+      const project = post.projects || null;
+
       const userData = post.user || {
         name: "User",
         avatar_url: null,
@@ -85,11 +88,11 @@ export async function getPosts(req: Request, res: Response) {
         is_og: false
       };
 
-      // Remove the original user object if it was returned as an array (sometimes happens with Supabase joins depending on schema)
       const user = Array.isArray(userData) ? userData[0] : userData;
 
       return {
         ...post,
+        project, // Ensure it's available under the "project" key
         user: {
           name: user?.name || "User",
           avatar_url: user?.avatar_url || null,
@@ -103,10 +106,10 @@ export async function getPosts(req: Request, res: Response) {
 
     // FETCH LIKE AND SAVE STATUS FOR CURRENT USER IN PARALLEL
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
-    let finalPosts = postsWithUsers;
+    let finalPosts = processedPosts;
 
-    if (currentUserId && postsWithUsers.length > 0) {
-      const postIds = postsWithUsers.map(p => p.id);
+    if (currentUserId && processedPosts.length > 0) {
+      const postIds = processedPosts.map(p => p.id);
 
       const [likesRes, savesRes] = await Promise.all([
         supabase.from("likes").select("post_id").eq("user_id", currentUserId).in("post_id", postIds),
@@ -116,7 +119,7 @@ export async function getPosts(req: Request, res: Response) {
       const likedPostIds = new Set((likesRes.data || []).map(l => l.post_id));
       const savedPostIds = new Set((savesRes.data || []).map(s => s.post_id));
 
-      finalPosts = postsWithUsers.map(p => {
+      finalPosts = processedPosts.map(p => {
         const poll = p.poll as any;
         return {
           ...p,
@@ -139,7 +142,7 @@ export async function getPosts(req: Request, res: Response) {
         poll: poll ? {
           options: poll.options,
           votes: poll.votes,
-          userVoted: poll.userVoted ?? (currentUserId && poll.voters ? poll.voters[currentUserId] : undefined)
+          userVoted: p.userVoted ?? (currentUserId && poll.voters ? poll.voters[currentUserId] : undefined)
         } : null
       };
     });
@@ -173,7 +176,7 @@ export async function getPostById(req: Request, res: Response) {
       .from("posts")
       .select(`
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
-        project:projects!posts_project_id_fkey(id, name:title),
+        projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!posts_reposted_post_id_fkey(
           id, title, content, created_at, images, post_type,
@@ -181,7 +184,7 @@ export async function getPostById(req: Request, res: Response) {
         ),
         reposted_project:projects!posts_reposted_project_id_fkey(
           id, title, description, cover_image, created_at,
-          user:users(id, name, avatar_url, username)
+          user:users!projects_user_id_fkey(id, name, avatar_url, username)
         )
       `)
       .eq("id", id)
@@ -227,6 +230,7 @@ export async function getPostById(req: Request, res: Response) {
 
     return res.json({
       ...post,
+      project: post.projects || null, // Map back for frontend
       user: userData,
       isLiked: !!(likeRes?.data),
       isSaved: !!(saveRes?.data),
@@ -256,7 +260,7 @@ export async function getPostsByUser(req: Request, res: Response) {
     // Fetch posts for the user with specific columns only
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, project:projects!posts_project_id_fkey(id, name:title)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, projects!posts_project_id_fkey(id, title)")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -524,7 +528,7 @@ export async function createPost(req: Request, res: Response) {
       })
       .select(`
         id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id,
-        project:projects!posts_project_id_fkey(id, name:title),
+        projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!posts_reposted_post_id_fkey(
           id, title, content, created_at, images, post_type,
@@ -532,7 +536,7 @@ export async function createPost(req: Request, res: Response) {
         ),
         reposted_project:projects!posts_reposted_project_id_fkey(
           id, title, description, cover_image, created_at,
-          user:users(id, name, avatar_url, username)
+          user:users!projects_user_id_fkey(id, name, avatar_url, username)
         )
       `)
       .single();
@@ -845,7 +849,7 @@ export async function votePost(req: Request, res: Response) {
       .from("posts")
       .update({ poll: updatedPoll })
       .eq("id", id)
-      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og), project:projects!posts_project_id_fkey(id, name:title)")
+      .select("id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, view_count, poll, post_type, code_snippet, project_id, user:users!posts_user_id_fkey(id, name, avatar_url, username, is_pro, is_og), projects!posts_project_id_fkey(id, title)")
       .single();
 
     if (updateError) {

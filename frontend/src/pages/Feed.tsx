@@ -10,7 +10,9 @@ import {
     ArrowDown01Icon,
     Rocket01Icon,
     LicenseIcon,
-    ArrowUp01Icon
+    ArrowUp01Icon,
+    Cancel01Icon,
+    AlertCircleIcon
 } from "@hugeicons/core-free-icons";
 
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
@@ -33,6 +35,7 @@ export default function Feed() {
     const [scrolledDown, setScrolledDown] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const lastScrollY = useRef(0);
+    const [showErrorBanner, setShowErrorBanner] = useState(true);
 
     // Track scroll position for the pill
     useEffect(() => {
@@ -193,6 +196,44 @@ export default function Feed() {
                     position: "relative",
                     backgroundColor: "var(--bg-page)",
                 }}>
+                    {showErrorBanner && (
+                        <div style={{
+                            backgroundColor: "rgba(59, 130, 246, 0.08)",
+                            borderBottom: "0.5px solid var(--border-hairline)",
+                            padding: "10px 16px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: "10px",
+                            animation: "slideDown 0.3s ease-out",
+                        }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                <HugeiconsIcon icon={AlertCircleIcon} size={16} style={{ color: "#3b82f6" }} />
+                                <p style={{
+                                    margin: 0, fontSize: "13px", color: "var(--text-secondary)", fontWeight: 600,
+                                    lineHeight: "1.4"
+                                }}>
+                                    We're working on improving the feed. Thanks for your patience!
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setShowErrorBanner(false)}
+                                style={{
+                                    background: "none", border: "none", color: "var(--text-tertiary)",
+                                    cursor: "pointer", padding: "4px", display: "flex", alignItems: "center"
+                                }}
+                            >
+                                <HugeiconsIcon icon={Cancel01Icon} size={16} />
+                            </button>
+                        </div>
+                    )}
+
+                    <style>{`
+                        @keyframes slideDown {
+                            from { transform: translateY(-100%); opacity: 0; }
+                            to { transform: translateY(0); opacity: 1; }
+                        }
+                    `}</style>
                     {/* ── New Posts Pill ── */}
                     {newPostActors.length > 0 && scrolledDown && (
                         <div style={{
