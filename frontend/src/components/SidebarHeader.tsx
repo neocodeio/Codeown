@@ -176,17 +176,19 @@ export default function SidebarHeader() {
                                 position: "absolute",
                                 top: "-2px",
                                 right: "-2px",
-                                minWidth: "16px",
-                                height: "16px",
+                                minWidth: "18px",
+                                height: "18px",
                                 backgroundColor: "#ef4444",
                                 color: "#fff",
-                                borderRadius: "50%",
-                                fontSize: "9px",
+                                borderRadius: "20px",
+                                padding: unreadCount > 9 ? "0 6px" : "0",
+                                fontSize: "10px",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                fontWeight: 800,
-                                border: "2px solid var(--bg-page)"
+                                fontWeight: 900,
+                                border: "2px solid var(--bg-page)",
+                                lineHeight: 1
                             }}>
                                 {unreadCount > 9 ? "9+" : unreadCount}
                             </span>
