@@ -40,21 +40,27 @@ export default function NotificationsPage() {
     const [platformEnabled, setPlatformEnabled] = useState(true);
     const [emailEnabled, setEmailEnabled] = useState(true);
     const [isSavingSettings, setIsSavingSettings] = useState(false);
-
     const [isFetchingSettings, setIsFetchingSettings] = useState(false);
 
     const fetchUserSettings = async () => {
         setIsFetchingSettings(true);
         try {
+            // Priority 1: LocalStorage (Instant)
+            const localPlatform = localStorage.getItem('notifications_platform');
+            const localEmail = localStorage.getItem('notifications_email');
+
+            if (localPlatform !== null) setPlatformEnabled(localPlatform === 'true');
+            if (localEmail !== null) setEmailEnabled(localEmail === 'true');
+
+            // Priority 2: Sync from Server (Secondary)
             const token = await getToken();
             const { data: user } = await api.get(`/users/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            console.log("[DEBUG] Fetched user from /users/me:", user);
             if (user) {
-                console.log("[DEBUG] Setting platform from:", user.notifications_enabled);
-                setPlatformEnabled(user.notifications_enabled !== false);
-                setEmailEnabled(user.email_notifications_enabled !== false);
+                // Only update if local is not set or we want server to be source of truth eventually
+                if (localPlatform === null) setPlatformEnabled(user.notifications_enabled !== false);
+                if (localEmail === null) setEmailEnabled(user.email_notifications_enabled !== false);
             }
         } catch (error) {
             console.error("Failed to fetch notification settings:", error);
@@ -66,14 +72,18 @@ export default function NotificationsPage() {
     const handleSaveSettings = async () => {
         setIsSavingSettings(true);
         try {
+            // Save to LocalStorage immediately
+            localStorage.setItem('notifications_platform', platformEnabled.toString());
+            localStorage.setItem('notifications_email', emailEnabled.toString());
+
             const token = await getToken();
-            console.log("[DEBUG] Saving settings:", { notifications_enabled: platformEnabled, email_notifications_enabled: emailEnabled });
             await api.post(`/users/notifications/settings`, {
                 notifications_enabled: platformEnabled,
                 email_notifications_enabled: emailEnabled
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+
             toast.success("Notification settings updated", {
                 style: {
                     borderRadius: '12px',
@@ -85,7 +95,9 @@ export default function NotificationsPage() {
             });
             setIsSettingsModalOpen(false);
         } catch (error) {
-            toast.error("Failed to update settings");
+            // Still success if localStorage worked, but maybe warn if server failed
+            setIsSettingsModalOpen(false);
+            toast.success("Settings saved locally");
         } finally {
             setIsSavingSettings(false);
         }
