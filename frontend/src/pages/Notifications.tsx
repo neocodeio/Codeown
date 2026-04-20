@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -28,7 +28,16 @@ import { Delete02Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 
 export default function NotificationsPage() {
-    const { notifications, unreadCount, markAsRead, loading, deleteNotification } = useNotifications();
+    const {
+        notifications,
+        unreadCount,
+        markAsRead,
+        loading,
+        deleteNotification,
+        hasNextPage,
+        fetchNextPage,
+        isFetchingNextPage
+    } = useNotifications();
     const { isSignedIn } = useClerkAuth();
     const navigate = useNavigate();
     const { width } = useWindowSize();
@@ -131,6 +140,20 @@ export default function NotificationsPage() {
             markAsRead("all");
         }
     }, [loading, unreadCount, markAsRead]);
+
+    const observerTarget = useRef<IntersectionObserver | null>(null);
+    const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
+        if (loading || isFetchingNextPage) return;
+        if (observerTarget.current) observerTarget.current.disconnect();
+
+        observerTarget.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasNextPage) {
+                fetchNextPage();
+            }
+        });
+
+        if (node) observerTarget.current.observe(node);
+    }, [loading, isFetchingNextPage, hasNextPage, fetchNextPage]);
 
     const handleNotificationClick = (notification: Notification & { groupIds?: number[] }) => {
         if (!notification.read) {
@@ -682,6 +705,29 @@ export default function NotificationsPage() {
                             );
                         })}
                     </div>
+
+                    {/* Infinite Scroll Trigger */}
+                    {hasNextPage && (
+                        <div
+                            ref={loadMoreRef}
+                            style={{
+                                padding: "40px 0",
+                                display: "flex",
+                                justifyContent: "center",
+                                opacity: isFetchingNextPage ? 1 : 0,
+                                transition: "opacity 0.2s"
+                            }}
+                        >
+                            <div style={{
+                                width: "24px",
+                                height: "24px",
+                                border: "2px solid var(--border-light)",
+                                borderTopColor: "var(--text-primary)",
+                                borderRadius: "50%",
+                                animation: "spin 0.8s linear infinite"
+                            }} />
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Sidebar - Desktop Only */}

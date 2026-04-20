@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "./useClerkAuth";
@@ -35,30 +35,62 @@ export interface Notification {
   actors?: any[]; // for grouped notifications
 }
 
+interface NotificationsResponse {
+  notifications: Notification[];
+  total: number;
+  unreadCount: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export function useNotifications() {
   const { getToken, isSignedIn } = useClerkAuth();
   const queryClient = useQueryClient();
 
-  // Fetch full notifications list
+  // Infinite Scroll Notifications
   const {
-    data: allNotifications = [],
+    data,
     isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     refetch: fetchNotifications
-  } = useQuery({
+  } = useInfiniteQuery<NotificationsResponse>({
     queryKey: ["notifications"],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 1 }) => {
       const token = await getToken();
-      if (!token) return [];
-      const res = await api.get("/notifications?limit=20", {
+      if (!token) throw new Error("No token");
+      const res = await api.get(`/notifications?page=${pageParam}&limit=20`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return res.data.notifications || [];
+      return res.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.page < lastPage.totalPages) {
+        return lastPage.page + 1;
+      }
+      return undefined;
     },
     enabled: isSignedIn,
-    staleTime: 30 * 1000,           // consider data fresh for 30s
-    refetchInterval: 10 * 1000,     // poll every 10s for near‑realtime updates
-    refetchIntervalInBackground: true,
-    refetchOnWindowFocus: true,
+    staleTime: 30 * 1000,
+    refetchInterval: 60 * 1000, // Reduced polling for infinite queries to save battery/bandwidth
+  });
+
+  // Separate query for unread count to keep it accurate and fast
+  const { data: unreadData } = useQuery({
+    queryKey: ["notifications-unread-count"],
+    queryFn: async () => {
+      const token = await getToken();
+      if (!token) return { count: 0 };
+      const res = await api.get("/notifications/unread/count", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data;
+    },
+    enabled: isSignedIn,
+    refetchInterval: 10 * 1000, // Poll count more frequently
   });
 
   // Mark as read mutation
@@ -72,36 +104,48 @@ export function useNotifications() {
       return notificationId;
     },
     onSuccess: (_notificationId) => {
-      // Optimistically update local cache so badges drop immediately
-      queryClient.setQueryData<Notification[]>(["notifications"], (old = []) => {
-        if (_notificationId === "all") {
-          // Only mark non-message notifications as read in cache
-          return old.map((n) => (n.type !== "message" ? { ...n, read: true } : n));
-        }
-        return old.map((n) =>
-          n.id === _notificationId ? { ...n, read: true } : n
-        );
+      // Update infinite query pages
+      queryClient.setQueryData<any>(["notifications"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            notifications: page.notifications.map((n: any) => {
+              if (_notificationId === "all") {
+                return n.type !== "message" ? { ...n, read: true } : n;
+              }
+              return n.id === _notificationId ? { ...n, read: true } : n;
+            })
+          }))
+        };
       });
+      // Also update standalone unread count
+      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
     },
   });
 
-  // Filter out message notifications for the general UI
+  // Flatten notifications for existing UI compatibility
+  const allNotificationsFlattened = useMemo(() => {
+    return data?.pages.flatMap(page => page.notifications) || [];
+  }, [data]);
+
   const notifications = useMemo(
-    () => allNotifications.filter((n: Notification) => n.type !== "message"),
-    [allNotifications]
+    () => allNotificationsFlattened.filter((n: Notification) => n.type !== "message"),
+    [allNotificationsFlattened]
   );
 
-  const unreadCount = useMemo(
-    () => notifications.filter((n: Notification) => !n.read).length,
-    [notifications]
-  );
+  // Use the accurate unread count from its own query
+  const unreadCount = unreadData?.count || 0;
 
+  // For message unread count, we still look at the loaded notifications or we could have another query
+  // Since messages aren't grouped/paginated as heavily here, we'll keep this logic
   const messageUnreadCount = useMemo(
     () =>
-      allNotifications.filter(
+      allNotificationsFlattened.filter(
         (n: Notification) => !n.read && n.type === "message"
       ).length,
-    [allNotifications]
+    [allNotificationsFlattened]
   );
 
   // Delete notification mutation
@@ -115,26 +159,45 @@ export function useNotifications() {
       return notificationId;
     },
     onSuccess: (deletedId) => {
-      queryClient.setQueryData<Notification[]>(["notifications"], (old = []) => {
-        return old.filter((n) => n.id !== deletedId);
+      queryClient.setQueryData<any>(["notifications"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            notifications: page.notifications.filter((n: any) => n.id !== deletedId)
+          }))
+        };
       });
     },
   });
 
-  // Memoize return object to prevent unnecessary re-renders
   return useMemo(() => ({
     notifications,
     unreadCount,
     messageUnreadCount,
     loading: isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
     fetchNotifications,
     markAsRead: markReadMutation.mutate,
     deleteNotification: deleteMutation.mutate,
     clearMessageNotifications: (actorId: string) => {
-      queryClient.setQueryData<Notification[]>(["notifications"], (old = []) => {
-        return old.map(n => (n.type === "message" && n.actor_id === actorId) ? { ...n, read: true } : n);
+      queryClient.setQueryData<any>(["notifications"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            notifications: page.notifications.map((n: any) => (n.type === "message" && n.actor_id === actorId) ? { ...n, read: true } : n)
+          }))
+        };
       });
+      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
     },
-    refreshUnreadCount: () => { },
-  }), [notifications, unreadCount, messageUnreadCount, isLoading, fetchNotifications, markReadMutation.mutate, deleteMutation.mutate, queryClient]);
+    refreshUnreadCount: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
+    },
+  }), [notifications, unreadCount, messageUnreadCount, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, fetchNotifications, markReadMutation.mutate, deleteMutation.mutate, queryClient]);
 }
