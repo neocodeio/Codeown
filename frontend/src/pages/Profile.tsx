@@ -379,28 +379,28 @@ export default function Profile() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "0px" : "16px", marginBottom: "4px", width: "100%", }}>
-                <div style={{ display: "flex", justifyContent: isMobile ? "space-between" : "flex-start", alignItems: isMobile ? "flex-start" : "flex-start", width: "100%", gap: "12px", flexDirection: isMobile ? "row" : "column" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%", gap: "12px", flexDirection: "row" }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <h1 style={{ fontSize: isMobile ? "22px" : "28px", fontWeight: 700, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.02em", display: "flex", alignItems: "center", gap: "6px", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.12, }}>
                       <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: isMobile ? "nowrap" : "normal", display: "block" }}>
                         {userProfile?.name || user?.fullName || ""}
                       </span>
                       <VerifiedBadge username={userProfile?.username || user?.username} size={isMobile ? "18px" : "22px"} />
-                      {userProfile?.is_pro === true && !isMobile && <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, padding: "4px 8px", borderRadius: "var(--radius-xs)", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", flexShrink: 0 }}>PRO</span>}
+                      {userProfile?.is_pro === true && <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, padding: "4px 8px", borderRadius: "var(--radius-xs)", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", flexShrink: 0, marginLeft: "4px" }}>PRO</span>}
                     </h1>
                     <span style={{ fontSize: "14.5px", color: "var(--text-tertiary)", display: "block", marginTop: "4px", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       @{userProfile?.username || user?.username}
                     </span>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "6px" : "8px", flexWrap: "wrap", justifyContent: "flex-end", flexShrink: 0, marginTop: isMobile ? "2px" : "0" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end", flexShrink: 0, marginTop: "4px" }}>
                     {!isMobile && (
                       <button onClick={() => { const u = userProfile?.username || user?.username; if (u) navigate(`/portfolio/${u}`); }} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "none", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"} onMouseLeave={(e) => e.currentTarget.style.opacity = "1"} >
                         Portfolio
                       </button>
                     )}
-                    <button onClick={() => setIsEditModalOpen(true)} style={{ padding: isMobile ? "7px" : "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} >
-                      <HugeiconsIcon icon={PencilEdit02Icon} size={isMobile ? 16 : 18} />
+                    <button onClick={() => setIsEditModalOpen(true)} style={{ padding: "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} >
+                      <HugeiconsIcon icon={PencilEdit02Icon} size={18} />
                     </button>
                     {userProfile?.is_pro && !isMobile && (
                       <button onClick={() => navigate("/analytics")} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "0.5px solid var(--border-hairline)", backgroundColor: "transparent", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} >
@@ -409,15 +409,15 @@ export default function Profile() {
                         <span style={{ fontSize: '9px', backgroundColor: 'var(--text-primary)', color: 'var(--bg-page)', padding: '2px 4px', borderRadius: 'var(--radius-xs)', fontWeight: 700 }}>PRO</span>
                       </button>
                     )}
-                    <button onClick={() => setIsIDCardModalOpen(true)} style={{ padding: isMobile ? "7px" : "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="View ID card" >
-                      <HugeiconsIcon icon={IdentityCardIcon} size={isMobile ? 16 : 18} />
+                    <button onClick={() => setIsIDCardModalOpen(true)} style={{ padding: "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="View ID card" >
+                      <HugeiconsIcon icon={IdentityCardIcon} size={18} />
                     </button>
-                    <button onClick={() => { const u = userProfile?.username || user?.username; const shareUrl = u ? `${window.location.origin}/${u}` : `${window.location.origin}/user/${user?.id}`; navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!")); }} style={{ padding: isMobile ? "7px" : "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="Share profile" >
-                      <HugeiconsIcon icon={Share01Icon} size={isMobile ? 16 : 18} />
+                    <button onClick={() => { const u = userProfile?.username || user?.username; const shareUrl = u ? `${window.location.origin}/${u}` : `${window.location.origin}/user/${user?.id}`; navigator.clipboard.writeText(shareUrl).then(() => toast.success("Copied!")); }} style={{ padding: "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="Share profile" >
+                      <HugeiconsIcon icon={Share01Icon} size={18} />
                     </button>
                     <div style={{ position: "relative" }}>
-                      <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }} style={{ padding: isMobile ? "7px" : "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="More options" >
-                        <HugeiconsIcon icon={MoreVerticalIcon} size={isMobile ? 16 : 18} />
+                      <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }} style={{ padding: "8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s ease", }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"} title="More options" >
+                        <HugeiconsIcon icon={MoreVerticalIcon} size={18} />
                       </button>
                       {isMenuOpen && (
                         <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", width: "200px", zIndex: 100, backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)", overflow: "hidden", animation: "tabContentEnter 0.2s ease-out" }}>
