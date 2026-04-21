@@ -54,8 +54,6 @@ import {
   WorkIcon,
   Note01Icon,
   InstagramIcon,
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
   Settings01Icon
 } from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
@@ -144,12 +142,6 @@ export default function Profile() {
   const [isNotificationSettingsOpen, setIsNotificationSettingsOpen] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const handleTabsScroll = (direction: "left" | "right") => {
-    if (tabsRef.current) {
-      const scrollAmount = 300;
-      tabsRef.current.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
-    }
-  };
 
 
   // 1. Optimized Combined Hook Data (React Query handles caching)
@@ -366,7 +358,7 @@ export default function Profile() {
             </div>
 
             <div style={{
-              padding: isMobile ? "0 16px" : "0 24px", position: "relative", marginTop: isMobile ? "-48px" : "-56px", marginBottom: "32px",
+              padding: isMobile ? "0 16px" : "0 24px", position: "relative", marginTop: isMobile ? "-48px" : "-56px", marginBottom: "16px",
             }}>
               <div
                 onClick={() => setIsEditModalOpen(true)}
@@ -378,7 +370,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "0px" : "16px", marginBottom: "4px", width: "100%", }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "0px" : "8px", marginBottom: "4px", width: "100%", }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%", gap: "12px", flexDirection: "row" }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <h1 style={{ fontSize: isMobile ? "22px" : "28px", fontWeight: 700, color: "var(--text-primary)", margin: 0, letterSpacing: "-0.02em", display: "flex", alignItems: "center", gap: "6px", maxWidth: "100%", overflowWrap: "anywhere", lineHeight: 1.12, }}>
@@ -439,11 +431,11 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <div style={{ marginTop: "12px" }}>
-                  {userProfile?.bio && <p style={{ fontSize: "15px", lineHeight: 1.6, color: "var(--text-secondary)", margin: "0 0 24px 0" }}> <BioRenderer bio={userProfile.bio} /> </p>}
+                <div style={{ marginTop: "4px" }}>
+                  {userProfile?.bio && <p style={{ fontSize: "15px", lineHeight: 1.6, color: "var(--text-secondary)", margin: "0 0 8px 0" }}> <BioRenderer bio={userProfile.bio} /> </p>}
                 </div>
 
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", alignItems: "center", color: "var(--text-tertiary)", fontSize: "13px", marginBottom: "20px", fontWeight: 500 }}>
+                <div style={{ display: "flex", gap: "16px", color: "var(--text-tertiary)", fontSize: "13px", flexWrap: "wrap", marginBottom: "8px", alignItems: "center" }}>
                   {userProfile?.location && <span style={{ display: "flex", alignItems: "center", gap: "6px" }}> <HugeiconsIcon icon={Location01Icon} size={14} /> {userProfile.location} </span>}
                   {userProfile?.website_url && (
                     <a
@@ -460,7 +452,7 @@ export default function Profile() {
                 </div>
 
                 {userProfile?.skills && userProfile.skills.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "32px", }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px", }}>
                     {userProfile.skills.map((skill, index) => (
                       <span key={index} style={{ fontSize: "12px", fontWeight: 600, padding: "6px 14px", backgroundColor: "var(--bg-hover)", color: "var(--text-primary)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} >
                         {skill}
@@ -469,7 +461,7 @@ export default function Profile() {
                   </div>
                 )}
 
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: isMobile ? "12px" : "20px", marginBottom: "32px", width: "100%" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: isMobile ? "12px" : "20px", marginBottom: "12px", width: "100%" }}>
                   <div style={{ display: "flex", gap: isMobile ? "16px" : "24px", alignItems: "center", flexWrap: "wrap" }}>
                     <button onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ border: "none", background: "none", cursor: "pointer", padding: 0, fontSize: isMobile ? "13px" : "14px", color: "var(--text-primary)", fontWeight: 600, whiteSpace: "nowrap" }} >
                       <AnimatedCounter end={userProfile?.follower_count ?? 0} /> <span style={{ color: "var(--text-tertiary)", fontWeight: 500 }}>Followers</span>
@@ -489,59 +481,40 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Performance Section */}
                 {!profileLoading && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "32px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "0px" }}>
                     {/* Profile Strength - Kept here as requested */}
-                    <div style={{ marginTop: "24px", padding: "20px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "rgba(255,255,255,0.01)" }}>
+                    <div style={{ marginTop: "0px", padding: "16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "rgba(255,255,255,0.01)" }}>
                       <ProfileStrength user={userProfile} projectsCount={projects?.length || 0} standalone />
                     </div>
                   </div>
                 )}
               </div>
 
-              <div style={{ padding: isMobile ? "0 16px" : "0 24px", }}>
-                <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "32px" }}>
-                  {!isMobile && (
-                    <button
-                      onClick={() => handleTabsScroll("left")}
-                      style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: isMobile ? "0" : "0 8px 0 0", display: "flex", alignItems: "center", transition: "color 0.2s" }}
-                      onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
-                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
-                    >
-                      <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-                    </button>
-                  )}
-                  <div ref={tabsRef} className="tabs-row" style={{ display: "flex", overflowX: "auto", flex: 1, gap: "24px", padding: 0, msOverflowStyle: "none", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-                    <style>{`
-                    .tabs-row::-webkit-scrollbar {
-                      display: none;
-                    }
-                  `}</style>
-                    {[
-                      { id: "posts", icon: LicenseIcon, label: "Posts" },
-                      { id: "projects", icon: Rocket01Icon, label: "Projects" },
-                      { id: "analytics", icon: Chart01Icon, label: "Analytics" },
-                      { id: "startups", icon: Building02Icon, label: "Startups" },
-                      { id: "applications", icon: WorkIcon, label: "Applications" },
-                      { id: "saved", icon: Bookmark02Icon, label: "Saved" }
-                    ].map((tab) => (
-                      <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
-                        <HugeiconsIcon icon={tab.icon} size={18} />
-                        {tab.label}
-                      </button>
-                    ))}
+              <div style={{ width: "100%" }}>
+                <div style={{ padding: isMobile ? "0 16px" : "0 24px" }}>
+                  <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "12px" }}>
+                    <div ref={tabsRef} className="tabs-row" style={{ display: "flex", overflowX: "auto", flex: 1, gap: "24px", padding: 0, msOverflowStyle: "none", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+                      <style>{`
+                      .tabs-row::-webkit-scrollbar {
+                        display: none;
+                      }
+                    `}</style>
+                      {[
+                        { id: "posts", icon: LicenseIcon, label: "Posts" },
+                        { id: "projects", icon: Rocket01Icon, label: "Projects" },
+                        { id: "analytics", icon: Chart01Icon, label: "Analytics" },
+                        { id: "startups", icon: Building02Icon, label: "Startups" },
+                        { id: "applications", icon: WorkIcon, label: "Applications" },
+                        { id: "saved", icon: Bookmark02Icon, label: "Saved" }
+                      ].map((tab) => (
+                        <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
+                          <HugeiconsIcon icon={tab.icon} size={18} />
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  {!isMobile && (
-                    <button
-                      onClick={() => handleTabsScroll("right")}
-                      style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "0 0 0 8px", display: "flex", alignItems: "center", transition: "color 0.2s" }}
-                      onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
-                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
-                    >
-                      <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
-                    </button>
-                  )}
                 </div>
 
                 <div className="tab-content" style={{ marginTop: "20px" }}>

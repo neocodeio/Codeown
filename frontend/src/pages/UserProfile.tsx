@@ -26,9 +26,7 @@ import {
   Linkedin01Icon,
   InstagramIcon,
   Chat01Icon,
-  Chart01Icon,
-  ArrowLeft01Icon,
-  ArrowRight01Icon
+  Chart01Icon
 } from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
 import { ToastContainer } from "react-toastify";
@@ -46,6 +44,7 @@ import { getStartups } from "../api/startups";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileSkeleton } from "../components/LoadingSkeleton";
 import ProfileStrength from "../components/ProfileStrength";
+import BioRenderer from "../components/BioRenderer";
 
 const AnimatedCounter = ({ end, duration = 1500 }: { end: number, duration?: number }) => {
   const [count, setCount] = useState(0);
@@ -126,12 +125,6 @@ export default function UserProfile() {
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const handleTabsScroll = (direction: "left" | "right") => {
-    if (tabsRef.current) {
-      const scrollAmount = 300;
-      tabsRef.current.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
-    }
-  };
 
   // 0. Immediate self-detection to avoid double-loading
   const param = userId || username;
@@ -299,7 +292,9 @@ export default function UserProfile() {
               {user.banner_url ? <img src={user.banner_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : <div style={{ width: "100%", height: "100%", backgroundColor: "var(--bg-hover)" }} />}
             </div>
 
-            <div style={{ padding: isMobile ? "0 16px" : "0 24px", position: "relative", marginTop: isMobile ? "-40px" : "-50px", marginBottom: "24px", }}>
+            <div style={{
+              padding: isMobile ? "0 16px" : "0 24px", position: "relative", marginTop: isMobile ? "-40px" : "-60px", marginBottom: "8px",
+            }}>
               <div onClick={() => { setLightboxImage(avatarUrl); setLightboxOpen(true); }} style={{ width: isMobile ? "80px" : "100px", height: isMobile ? "80px" : "100px", borderRadius: "var(--radius-sm)", cursor: "pointer", marginBottom: "16px", position: "relative", }} >
                 <AvailabilityBadge avatarUrl={avatarUrl} name={user.name} size={isMobile ? 80 : 100} isOpenToOpportunities={user.is_pro === true && user.is_hirable === true} isOG={user.is_og} isOnline={user.is_online} />
               </div>
@@ -341,10 +336,12 @@ export default function UserProfile() {
                   {user.name}
                   <VerifiedBadge username={user.username} isPro={user.is_pro} size="18px" />
                 </h1>
-                <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginBottom: "12px" }}>@{user.username}</p>
-                {user.bio && <p style={{ fontSize: "15px", lineHeight: 1.5, marginBottom: "16px" }}>{user.bio}</p>}
+                <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginBottom: "0" }}>@{user.username}</p>
+                <div style={{ marginTop: "4px" }}>
+                  {user.bio && <p style={{ fontSize: "15px", lineHeight: 1.6, color: "var(--text-secondary)", margin: "0 0 8px 0" }}><BioRenderer bio={user.bio} /></p>}
+                </div>
 
-                <div style={{ display: "flex", gap: "16px", color: "var(--text-tertiary)", fontSize: "13px", flexWrap: "wrap", marginBottom: "20px", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: "16px", color: "var(--text-tertiary)", fontSize: "14px", flexWrap: "wrap", marginBottom: "8px" }}>
                   {user.location && <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><HugeiconsIcon icon={Location01Icon} size={16} /> {user.location}</span>}
                   {user.website_url && (
                     <a
@@ -360,7 +357,7 @@ export default function UserProfile() {
                   <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><HugeiconsIcon icon={Calendar03Icon} size={16} /> Joined {formatProfileJoinDate(user.created_at || "")}</span>
                 </div>
 
-                <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "24px" }}>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "8px" }}>
                   {user.github_url && <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="GitHub"> <HugeiconsIcon icon={GithubIcon} size={20} /> </a>}
                   {user.linkedin_url && <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="LinkedIn"> <HugeiconsIcon icon={Linkedin01Icon} size={20} /> </a>}
                   {user.twitter_url && <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"} onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"} aria-label="Twitter"> <HugeiconsIcon icon={NewTwitterIcon} size={20} /> </a>}
@@ -368,7 +365,7 @@ export default function UserProfile() {
                 </div>
 
                 {user.skills && user.skills.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "24px", }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px", }}>
                     {user.skills.map((skill, index) => (
                       <span key={index} style={{ fontSize: "12px", fontWeight: 600, padding: "6px 14px", backgroundColor: "var(--bg-hover)", color: "var(--text-primary)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)" }} >
                         {skill}
@@ -377,7 +374,7 @@ export default function UserProfile() {
                   </div>
                 )}
 
-                <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "center", marginBottom: "12px" }}>
                   <button onClick={() => { setFollowersModalType("followers"); setFollowersModalOpen(true); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.follower_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Followers</span> </button>
                   <button onClick={() => { setFollowersModalType("following"); setFollowersModalOpen(true); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.following_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Following</span> </button>
                   <div style={{ fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.contribution_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Contributions</span> </div>
@@ -385,9 +382,9 @@ export default function UserProfile() {
 
                 {/* Performance Section */}
                 {!profileLoading && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0", marginTop: "32px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0", marginTop: "0px" }}>
                     {/* Identity strength - Kept here as requested */}
-                    <div style={{ marginTop: "24px", padding: "20px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "rgba(255,255,255,0.01)" }}>
+                    <div style={{ marginTop: "0px", padding: "16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "rgba(255,255,255,0.01)" }}>
                       <ProfileStrength user={user} projectsCount={projects?.length || 0} standalone />
                     </div>
                   </div>
@@ -396,97 +393,79 @@ export default function UserProfile() {
             </div>
 
 
-            <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "32px", padding: isMobile ? "0 16px" : "0 24px" }}>
-              {!isMobile && (
-                <button
-                  onClick={() => handleTabsScroll("left")}
-                  style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "0 8px 0 0", display: "flex", alignItems: "center", transition: "color 0.2s" }}
-                  onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
-                  onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
-                >
-                  <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-                </button>
-              )}
-              <div ref={tabsRef} className="tabs-row" style={{ display: "flex", overflowX: "auto", flex: 1, gap: "24px", padding: 0, msOverflowStyle: "none", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-                <style>{`
-                  .tabs-row::-webkit-scrollbar {
-                    display: none;
-                  }
-                `}</style>
-                {[{ id: "posts", icon: LicenseIcon, label: "Posts" }, { id: "projects", icon: Rocket01Icon, label: "Projects" }, { id: "dashboard", icon: Chart01Icon, label: "Dashboard" }, { id: "startups", icon: Building02Icon, label: "Startups" }].map(tab => (
-                  <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
-                    <HugeiconsIcon icon={tab.icon} size={18} />
-                    {tab.label}
-                  </button>
-                ))}
+            <div style={{ width: "100%", marginTop: "0px" }}>
+              <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "12px", padding: isMobile ? "0 16px" : "0 24px" }}>
+                <div ref={tabsRef} className="tabs-row" style={{ display: "flex", overflowX: "auto", flex: 1, gap: "24px", padding: 0, msOverflowStyle: "none", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+                  <style>{`
+                    .tabs-row::-webkit-scrollbar {
+                      display: none;
+                    }
+                  `}</style>
+                  {[{ id: "posts", icon: LicenseIcon, label: "Posts" }, { id: "projects", icon: Rocket01Icon, label: "Projects" }, { id: "dashboard", icon: Chart01Icon, label: "Dashboard" }, { id: "startups", icon: Building02Icon, label: "Startups" }].map(tab => (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
+                      <HugeiconsIcon icon={tab.icon} size={18} />
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              {!isMobile && (
-                <button
-                  onClick={() => handleTabsScroll("right")}
-                  style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "0 0 0 8px", display: "flex", alignItems: "center", transition: "color 0.2s" }}
-                  onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
-                  onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
-                >
-                  <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
-                </button>
-              )}
-            </div>
 
-            <div style={{ minHeight: "400px" }}>
-              {activeTab === "posts" ? (
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  {postsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : posts.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No posts yet</p> </div>) : ([...posts].sort((a, b) => { if (user.pinned_post_id === a.id) return -1; if (user.pinned_post_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_post_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <HugeiconsIcon icon={PinIcon} size={14} /> Pinned post </div>)} <PostCard post={p} onUpdated={fetchUserPosts} /> </div>)))}
-                </div>
-              ) : activeTab === "startups" ? (
-                <div className="tab-content-enter">
-                  {loadingStartups ? <div className="skeleton-pulse" style={{ height: "140px", borderRadius: "var(--radius-sm)" }} /> : startups.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Building02Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No startups yet</p> </div>) : (<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}> {startups.map((s) => (<StartupCard key={s.id} startup={s} />))} </div>)}
-                </div>
-              ) : activeTab === "dashboard" ? (
-                <div className="tab-content-enter">
-                  <div style={{ display: "flex", flexDirection: "column", gap: "32px", padding: isMobile ? "0" : "12px" }}>
-                    {/* Stats Grid */}
-                    <div style={{
-                      display: "grid",
-                      gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-                      gap: "1px",
-                      backgroundColor: "#E5E7EB",
-                      border: "0.5px solid #E5E7EB",
-                      borderRadius: "12px",
-                      overflow: "hidden",
-                    }}>
-                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
-                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Level</span>
-                        <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={user.level || 1} duration={1000} /></span>
+              <div style={{ minHeight: "400px" }}>
+                {activeTab === "posts" ? (
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {postsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : posts.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No posts yet</p> </div>) : ([...posts].sort((a, b) => { if (user.pinned_post_id === a.id) return -1; if (user.pinned_post_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_post_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <HugeiconsIcon icon={PinIcon} size={14} /> Pinned post </div>)} <PostCard post={p} onUpdated={fetchUserPosts} /> </div>)))}
+                  </div>
+                ) : activeTab === "startups" ? (
+                  <div className="tab-content-enter">
+                    {loadingStartups ? <div className="skeleton-pulse" style={{ height: "140px", borderRadius: "var(--radius-sm)" }} /> : startups.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Building02Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No startups yet</p> </div>) : (<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}> {startups.map((s) => (<StartupCard key={s.id} startup={s} />))} </div>)}
+                  </div>
+                ) : activeTab === "dashboard" ? (
+                  <div className="tab-content-enter">
+                    <div style={{ display: "flex", flexDirection: "column", gap: "32px", padding: isMobile ? "0" : "12px" }}>
+                      {/* Stats Grid */}
+                      <div style={{
+                        display: "grid",
+                        gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+                        gap: "1px",
+                        backgroundColor: "#E5E7EB",
+                        border: "0.5px solid #E5E7EB",
+                        borderRadius: "12px",
+                        overflow: "hidden",
+                      }}>
+                        <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Level</span>
+                          <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={user.level || 1} duration={1000} /></span>
+                        </div>
+                        <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Total XP</span>
+                          <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={user.xp || 0} duration={1200} /></span>
+                        </div>
+                        <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Rank</span>
+                          <span style={{ fontSize: "14px", fontWeight: 800, color: "#111", lineHeight: 1.3 }}>{(user.level || 1) > 10 ? "Senior" : "Associate"}</span>
+                        </div>
+                        <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Streak</span>
+                          <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1, display: "flex", alignItems: "center", gap: "4px" }}>{user.streak_count || 0}<img src={flameGif} alt="streak" style={{ width: "18px", height: "18px", objectFit: "contain" }} /></span>
+                        </div>
                       </div>
-                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
-                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Total XP</span>
-                        <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={user.xp || 0} duration={1200} /></span>
-                      </div>
-                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
-                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Rank</span>
-                        <span style={{ fontSize: "14px", fontWeight: 800, color: "#111", lineHeight: 1.3 }}>{(user.level || 1) > 10 ? "Senior" : "Associate"}</span>
-                      </div>
-                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
-                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Streak</span>
-                        <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1, display: "flex", alignItems: "center", gap: "4px" }}>{user.streak_count || 0}<img src={flameGif} alt="streak" style={{ width: "18px", height: "18px", objectFit: "contain" }} /></span>
-                      </div>
-                    </div>
 
-                    {/* HeatMap */}
-                    <div style={{ backgroundColor: "var(--bg-page)", borderRadius: "12px", border: "0.5px solid var(--border-hairline)", padding: "24px" }}>
-                      <div style={{ marginBottom: "16px", borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "16px" }}>
-                        <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Activity Insight</h3>
-                        <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-tertiary)" }}>Track consistency and contributions.</p>
+                      {/* HeatMap */}
+                      <div style={{ backgroundColor: "var(--bg-page)", borderRadius: "12px", border: "0.5px solid var(--border-hairline)", padding: "24px" }}>
+                        <div style={{ marginBottom: "16px", borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "16px" }}>
+                          <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Activity Insight</h3>
+                          <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-tertiary)" }}>Track consistency and contributions.</p>
+                        </div>
+                        <HeatMap userId={user.id} githubUrl={user.github_url} standalone />
                       </div>
-                      <HeatMap userId={user.id} githubUrl={user.github_url} standalone />
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  {projectsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : projects.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Grid02Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No projects yet</p> </div>) : ([...projects].sort((a, b) => { if (user.pinned_project_id === a.id) return -1; if (user.pinned_project_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_project_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <HugeiconsIcon icon={PinIcon} size={14} /> Pinned project </div>)} <ProjectCard project={p} onUpdated={fetchUserProjects} isPinned={user.pinned_project_id === p.id} /> </div>)))}
-                </div>
-              )}
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {projectsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : projects.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Grid02Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No projects yet</p> </div>) : ([...projects].sort((a, b) => { if (user.pinned_project_id === a.id) return -1; if (user.pinned_project_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_project_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <HugeiconsIcon icon={PinIcon} size={14} /> Pinned project </div>)} <ProjectCard project={p} onUpdated={fetchUserProjects} isPinned={user.pinned_project_id === p.id} /> </div>)))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
