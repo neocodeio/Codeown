@@ -138,13 +138,15 @@ export async function getPosts(req: Request, res: Response) {
     if (currentUserId && processedPosts.length > 0) {
       const postIds = processedPosts.map(p => p.id);
 
-      const [likesRes, savesRes] = await Promise.all([
+      const [likesRes, savesRes, repostsRes] = await Promise.all([
         supabase.from("likes").select("post_id").eq("user_id", currentUserId).in("post_id", postIds),
-        supabase.from("saved_posts").select("post_id").eq("user_id", currentUserId).in("post_id", postIds)
+        supabase.from("saved_posts").select("post_id").eq("user_id", currentUserId).in("post_id", postIds),
+        supabase.from("reposts").select("post_id").eq("user_id", currentUserId).in("post_id", postIds)
       ]);
 
       const likedPostIds = new Set((likesRes.data || []).map(l => l.post_id));
       const savedPostIds = new Set((savesRes.data || []).map(s => s.post_id));
+      const repostedPostIds = new Set((repostsRes.data || []).map(r => r.post_id));
 
       finalPosts = processedPosts.map(p => {
         const poll = p.poll as any;
@@ -152,6 +154,7 @@ export async function getPosts(req: Request, res: Response) {
           ...p,
           isLiked: likedPostIds.has(p.id),
           isSaved: savedPostIds.has(p.id),
+          isReposted: repostedPostIds.has(p.id),
           poll: poll ? {
             options: poll.options,
             votes: poll.votes,
@@ -237,17 +240,19 @@ export async function getPostById(req: Request, res: Response) {
       // Fetch stats if user is logged in
       currentUserId ? Promise.all([
         supabase.from("likes").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle(),
-        supabase.from("saved_posts").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle()
-      ]) : Promise.resolve([null, null])
+        supabase.from("saved_posts").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle(),
+        supabase.from("reposts").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle()
+      ]) : Promise.resolve([null, null, null])
     ]);
 
-    const [likeRes, saveRes] = (stats || [null, null]) as any;
+    const [likeRes, saveRes, repostRes] = (stats || [null, null, null]) as any;
     const poll = formattedPostSync?.poll as any;
 
     return res.json({
       ...formattedPostSync,
       isLiked: !!(likeRes?.data),
       isSaved: !!(saveRes?.data),
+      isReposted: !!(repostRes?.data),
       poll: poll ? {
         options: poll.options,
         votes: poll.votes,
@@ -380,13 +385,15 @@ export async function getPostsByUser(req: Request, res: Response) {
     if (currentUserId && postsWithUsers.length > 0) {
       const postIds = postsWithUsers.map(p => p.id);
 
-      const [likesRes, savesRes] = await Promise.all([
+      const [likesRes, savesRes, repostsRes] = await Promise.all([
         supabase.from("likes").select("post_id").eq("user_id", currentUserId).in("post_id", postIds),
-        supabase.from("saved_posts").select("post_id").eq("user_id", currentUserId).in("post_id", postIds)
+        supabase.from("saved_posts").select("post_id").eq("user_id", currentUserId).in("post_id", postIds),
+        supabase.from("reposts").select("post_id").eq("user_id", currentUserId).in("post_id", postIds)
       ]);
 
       const likedPostIds = new Set((likesRes.data || []).map(l => l.post_id));
       const savedPostIds = new Set((savesRes.data || []).map(s => s.post_id));
+      const repostedPostIds = new Set((repostsRes.data || []).map(r => r.post_id));
 
       postsWithStats = postsWithUsers.map(p => {
         const poll = p.poll as any;
@@ -394,6 +401,7 @@ export async function getPostsByUser(req: Request, res: Response) {
           ...p,
           isLiked: likedPostIds.has(p.id),
           isSaved: savedPostIds.has(p.id),
+          isReposted: repostedPostIds.has(p.id),
           poll: poll ? {
             options: poll.options,
             votes: poll.votes,
