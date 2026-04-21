@@ -22,6 +22,7 @@ import { Gif } from "phosphor-react";
 import { HugeiconsIcon as HIcon } from "@hugeicons/react";
 import { Image01Icon } from "@hugeicons/core-free-icons";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 
 export default function CommentDetail() {
     const { commentId } = useParams<{ commentId: string }>();
@@ -141,12 +142,76 @@ export default function CommentDetail() {
 
     if (isLoading) return (
         <div style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", display: "flex", justifyContent: "center" }}>
-            <div style={{ width: "100%", maxWidth: "620px", padding: "20px" }}>
-                <PostDetailSkeleton />
+            <div style={{ display: "flex", width: isDesktop ? "920px" : "100%", maxWidth: "920px", position: "relative" }}>
+                <div style={{
+                    width: isDesktop ? "620px" : "100%",
+                    maxWidth: isDesktop ? "620px" : "700px",
+                    backgroundColor: "var(--bg-page)",
+                    borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+                    borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+                    minHeight: "100vh",
+                    margin: isDesktop ? "0" : "0 auto",
+                    padding: "20px"
+                }}>
+                    <PostDetailSkeleton />
+                </div>
+                {isDesktop && (
+                    <aside style={{ width: "300px", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}>
+                        <RecommendedUsersSidebar />
+                    </aside>
+                )}
             </div>
         </div>
     );
-    if (isError || !comment) return <div style={{ textAlign: "center", padding: "100px", color: "var(--text-tertiary)" }}>Comment not found</div>;
+
+    if (isError || !comment) return (
+        <div style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", display: "flex", justifyContent: "center" }}>
+            <div style={{ display: "flex", width: isDesktop ? "920px" : "100%", maxWidth: "920px", position: "relative" }}>
+                <div style={{
+                    width: isDesktop ? "620px" : "100%",
+                    maxWidth: isDesktop ? "620px" : "700px",
+                    backgroundColor: "var(--bg-page)",
+                    borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+                    borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+                    minHeight: "100vh",
+                    margin: isDesktop ? "0" : "0 auto",
+                    padding: "100px 24px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "24px",
+                    textAlign: "center",
+                    color: "var(--text-tertiary)"
+                }}>
+                    <p style={{ margin: 0, fontSize: "16px" }}>Comment not found</p>
+                    <button
+                        onClick={() => navigate(-1)}
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            padding: "10px 20px",
+                            borderRadius: "var(--radius-sm)",
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            backgroundColor: "var(--text-primary)",
+                            color: "var(--bg-page)",
+                            border: "none",
+                            cursor: "pointer",
+                        }}
+                    >
+                        <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
+                        Go Back
+                    </button>
+                </div>
+                {isDesktop && (
+                    <aside style={{ width: "300px", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}>
+                        <RecommendedUsersSidebar />
+                    </aside>
+                )}
+            </div>
+        </div>
+    );
 
     const userName = comment.user?.name || "User";
     const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=212121&color=ffffff&bold=true`;
@@ -261,7 +326,7 @@ export default function CommentDetail() {
                                                     <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
                                                 </button>
                                                 {isGifPickerOpen && (
-                                                    <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
+                                                    <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 1001 }}>
                                                         <GifPicker onSelect={(gif) => { setSelectedGif(gif); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
                                                     </div>
                                                 )}
@@ -316,6 +381,20 @@ export default function CommentDetail() {
                             )}
                         </div>
                     </div>
+
+                    {/* Right Sidebar */}
+                    {isDesktop && (
+                        <aside style={{
+                            width: "300px",
+                            padding: "0",
+                            position: "sticky",
+                            top: 0,
+                            alignSelf: "flex-start",
+                            flexShrink: 0,
+                        }}>
+                            <RecommendedUsersSidebar />
+                        </aside>
+                    )}
                 </div>
             </main>
 
