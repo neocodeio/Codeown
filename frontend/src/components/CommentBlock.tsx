@@ -232,7 +232,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
               border: "0.5px solid var(--border-hairline)",
               position: "relative",
               animation: "replySlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-              zIndex: 10
+              zIndex: isGifPickerOpen ? 1002 : 10
             }}>
               <style>{`
                 @keyframes replySlideIn {

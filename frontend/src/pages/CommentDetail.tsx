@@ -261,6 +261,8 @@ export default function CommentDetail() {
                                 borderBottom: "0.5px solid var(--border-hairline)",
                                 display: "flex",
                                 gap: "16px",
+                                position: "relative",
+                                zIndex: isGifPickerOpen ? 1002 : 1
                             }}>
                                 <img
                                     src={currentUserAvatarUrl}
