@@ -54,6 +54,41 @@ export default function NotificationSettingsModal({ isOpen, onClose }: Notificat
             <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .notification-modal {
+          width: 100%;
+          max-width: 440px;
+          background-color: var(--bg-page);
+          border-radius: 24px;
+          border: 1px solid var(--border-hairline);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          overflow: hidden;
+          animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          max-height: 90vh;
+          display: flex;
+          flex-direction: column;
+        }
+        .modal-header {
+          padding: 24px 32px;
+          border-bottom: 1px solid var(--border-hairline);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .modal-body {
+          padding: 32px;
+          overflow-y: auto;
+          flex: 1;
+        }
+        .modal-footer {
+          padding: 0 32px 32px;
+        }
+        @media (max-width: 480px) {
+          .notification-modal { border-radius: 32px 32px 0 0; position: fixed; bottom: 0; max-height: 80vh; }
+          .modal-header { padding: 20px 24px; }
+          .modal-body { padding: 24px; }
+          .modal-footer { padding: 0 24px 24px; }
+          h2 { fontSize: 18px !important; }
+        }
         .toggle-switch {
           position: relative;
           display: inline-block;
@@ -85,24 +120,9 @@ export default function NotificationSettingsModal({ isOpen, onClose }: Notificat
         input:checked + .slider:before { transform: translateX(20px); background-color: var(--bg-page); }
       `}</style>
 
-            <div style={{
-                width: "100%",
-                maxWidth: "440px",
-                backgroundColor: "var(--bg-page)",
-                borderRadius: "24px",
-                border: "1px solid var(--border-hairline)",
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                overflow: "hidden",
-                animation: "slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}>
+            <div className="notification-modal">
                 {/* Header */}
-                <div style={{
-                    padding: "24px 32px",
-                    borderBottom: "1px solid var(--border-hairline)",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                }}>
+                <div className="modal-header">
                     <div>
                         <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>Notification Settings</h2>
                     </div>
@@ -117,13 +137,13 @@ export default function NotificationSettingsModal({ isOpen, onClose }: Notificat
                 </div>
 
                 {/* Body */}
-                <div style={{ padding: "32px" }}>
+                <div className="modal-body">
                     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
 
                         {/* Platform Notifications */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-                                <div style={{ marginTop: "2px", width: "40px", height: "40px", borderRadius: "12px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-hairline)" }}>
+                            <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flex: 1 }}>
+                                <div style={{ marginTop: "2px", width: "40px", height: "40px", borderRadius: "12px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-hairline)", flexShrink: 0 }}>
                                     <HugeiconsIcon icon={Notification01Icon} size={20} color="var(--text-primary)" />
                                 </div>
                                 <div>
@@ -131,7 +151,7 @@ export default function NotificationSettingsModal({ isOpen, onClose }: Notificat
                                     <p style={{ margin: "4px 0 0", fontSize: "13px", color: "var(--text-tertiary)", lineHeight: 1.5 }}>Direct alerts inside Codeown</p>
                                 </div>
                             </div>
-                            <label className="toggle-switch">
+                            <label className="toggle-switch" style={{ flexShrink: 0, marginLeft: "12px" }}>
                                 <input type="checkbox" checked={platformEnabled} onChange={() => setPlatformEnabled(!platformEnabled)} />
                                 <span className="slider"></span>
                             </label>
@@ -139,8 +159,8 @@ export default function NotificationSettingsModal({ isOpen, onClose }: Notificat
 
                         {/* Email Notifications */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-                                <div style={{ marginTop: "2px", width: "40px", height: "40px", borderRadius: "12px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-hairline)" }}>
+                            <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flex: 1 }}>
+                                <div style={{ marginTop: "2px", width: "40px", height: "40px", borderRadius: "12px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-hairline)", flexShrink: 0 }}>
                                     <HugeiconsIcon icon={Mail01Icon} size={20} color="var(--text-primary)" />
                                 </div>
                                 <div>
@@ -148,7 +168,7 @@ export default function NotificationSettingsModal({ isOpen, onClose }: Notificat
                                     <p style={{ margin: "4px 0 0", fontSize: "13px", color: "var(--text-tertiary)", lineHeight: 1.5 }}>Get updates in your inbox</p>
                                 </div>
                             </div>
-                            <label className="toggle-switch">
+                            <label className="toggle-switch" style={{ flexShrink: 0, marginLeft: "12px" }}>
                                 <input type="checkbox" checked={emailEnabled} onChange={() => setEmailEnabled(!emailEnabled)} />
                                 <span className="slider"></span>
                             </label>
@@ -158,7 +178,7 @@ export default function NotificationSettingsModal({ isOpen, onClose }: Notificat
                 </div>
 
                 {/* Footer */}
-                <div style={{ padding: "0 32px 32px" }}>
+                <div className="modal-footer">
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
