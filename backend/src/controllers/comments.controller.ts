@@ -42,6 +42,18 @@ export async function getComments(req: Request, res: Response) {
       like_count: likeCountMap.get(c.id) || 0,
     }));
 
+    // Compute reply counts (how many children each comment has)
+    const replyCountMap = new Map<number, number>();
+    for (const c of withLikes) {
+      if (c.parent_id != null) {
+        replyCountMap.set(c.parent_id, (replyCountMap.get(c.parent_id) || 0) + 1);
+      }
+    }
+    for (const c of withLikes) {
+      (c as any).reply_count = replyCountMap.get(c.id) || 0;
+    }
+
+
     if (sort === "top") {
       withLikes.sort((a: any, b: any) => {
         if (b.like_count !== a.like_count) return b.like_count - a.like_count;
@@ -362,6 +374,151 @@ export async function createComment(req: Request, res: Response) {
       error: "Internal server error",
       details: error?.message
     });
+  }
+}
+
+export async function getCommentDetail(req: Request, res: Response) {
+  try {
+    const { commentId } = req.params;
+
+    // 1. Fetch the parent comment
+    const { data: comment, error: commentError } = await supabase
+      .from("comments")
+      .select("*")
+      .eq("id", commentId)
+      .single();
+
+    if (commentError || !comment) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    // 2. Fetch direct replies (parent_id === commentId)
+    const { data: replies, error: repliesError } = await supabase
+      .from("comments")
+      .select("*")
+      .eq("parent_id", commentId)
+      .order("created_at", { ascending: true });
+
+    if (repliesError) {
+      console.error("Error fetching replies:", repliesError);
+    }
+
+    const allComments = [comment, ...(replies || [])];
+    const commentIds = allComments.map((c: any) => c.id);
+
+    // 3. Fetch like counts for all
+    const { data: likeRows } = await supabase
+      .from("likes")
+      .select("comment_id")
+      .in("comment_id", commentIds)
+      .not("comment_id", "is", null);
+
+    const likeCountMap = new Map<number, number>();
+    for (const r of likeRows || []) {
+      const id = (r as any).comment_id;
+      if (id != null) likeCountMap.set(id, (likeCountMap.get(id) || 0) + 1);
+    }
+
+    // 4. Fetch reply counts for each reply (how many children each reply has)
+    const replyIds = (replies || []).map((r: any) => r.id);
+    let replyCountMap = new Map<number, number>();
+    if (replyIds.length > 0) {
+      const { data: grandchildren } = await supabase
+        .from("comments")
+        .select("parent_id")
+        .in("parent_id", replyIds);
+
+      for (const gc of grandchildren || []) {
+        const pid = (gc as any).parent_id;
+        if (pid != null) replyCountMap.set(pid, (replyCountMap.get(pid) || 0) + 1);
+      }
+    }
+
+    // Also get reply count for the parent comment itself
+    const parentReplyCount = (replies || []).length;
+
+    // 5. Collect user IDs
+    const userIds = new Set<string>(allComments.map((c: any) => c.user_id));
+
+    // Also get parent author name if the parent comment itself has a parent_id
+    if (comment.parent_id) {
+      const { data: grandparent } = await supabase
+        .from("comments")
+        .select("user_id")
+        .eq("id", comment.parent_id)
+        .single();
+      if (grandparent) userIds.add(grandparent.user_id);
+    }
+
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, name, email, avatar_url, username, is_pro, is_og")
+      .in("id", [...userIds]);
+
+    const userMap = new Map((users || []).map((u: any) => [u.id, u]));
+
+    // Fallback: fetch missing users from Clerk
+    const missingUserIds = [...userIds].filter((id: string) => !userMap.has(id));
+    const clerkUserMap = new Map();
+    if (missingUserIds.length > 0 && process.env.CLERK_SECRET_KEY) {
+      for (const userId of missingUserIds) {
+        try {
+          const clerkUser = await clerkClient.users.getUser(userId);
+          let userName = clerkUser.firstName && clerkUser.lastName
+            ? `${clerkUser.firstName} ${clerkUser.lastName}`.trim()
+            : clerkUser.firstName || clerkUser.lastName || clerkUser.username || "User";
+          clerkUserMap.set(userId, {
+            name: userName,
+            email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
+            avatar_url: clerkUser.imageUrl || null,
+            username: clerkUser.username || null,
+            is_pro: false,
+            is_og: false,
+          });
+        } catch (e: any) { }
+      }
+    }
+
+    // 6. Enrich comments with user data
+    const enrichComment = (c: any, includeReplyCount?: boolean) => {
+      const u = userMap.get(c.user_id) || clerkUserMap.get(c.user_id);
+      const userData = u
+        ? {
+          name: u.name || "User",
+          email: u.email || null,
+          avatar_url: u.avatar_url || null,
+          username: u.username || null,
+          is_pro: u.is_pro ?? false,
+          is_og: u.is_og ?? false,
+        }
+        : { name: "User", email: null, avatar_url: null, username: null, is_pro: false, is_og: false };
+
+      let parent_author_name: string | null = null;
+      if (c.parent_id) {
+        // For the parent comment, look at grandparent; for replies, look at parent comment
+        const parentUser = c.parent_id === comment.parent_id
+          ? null // grandparent - skip for now
+          : userMap.get(comment.user_id) || clerkUserMap.get(comment.user_id);
+        parent_author_name = parentUser?.name ?? null;
+      }
+
+      return {
+        ...c,
+        like_count: likeCountMap.get(c.id) || 0,
+        reply_count: includeReplyCount ? (replyCountMap.get(c.id) || 0) : undefined,
+        user: userData,
+        parent_author_name,
+      };
+    };
+
+    const enrichedComment = enrichComment(comment);
+    enrichedComment.reply_count = parentReplyCount;
+    const enrichedReplies = (replies || []).map((r: any) => enrichComment(r, true));
+
+    return res.json({ comment: enrichedComment, replies: enrichedReplies });
+  } catch (error: any) {
+    console.error("Unexpected error in getCommentDetail:", error);
+    return res.status(500).json({ error: "Internal server error", details: error?.message });
   }
 }
 

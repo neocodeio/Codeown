@@ -364,19 +364,8 @@ export default function PostDetail() {
     document.body.removeChild(link);
   };
 
-  function buildTree(list: CommentWithMeta[]): CommentWithMeta[] {
-    const map = new Map<number | string, CommentWithMeta & { children: CommentWithMeta[] }>();
-    list.forEach(c => map.set(c.id, { ...c, children: [] }));
-    const roots: (CommentWithMeta & { children: CommentWithMeta[] })[] = [];
-    list.forEach(c => {
-      if (c.parent_id) {
-        map.get(c.parent_id)?.children.push(map.get(c.id)!);
-      } else {
-        roots.push(map.get(c.id)!);
-      }
-    });
-    return roots;
-  }
+  // Only show top-level comments (no parent_id) — replies are accessed via drill-down
+  const topLevelComments = comments.filter(c => !c.parent_id);
 
   const { width } = useWindowSize();
   const isDesktop = width >= 1200;
@@ -1049,14 +1038,14 @@ export default function PostDetail() {
               </div>
             )}
 
-            {/* Comments Section */}
+            {/* Comments Section — flat list, only top-level. Replies via drill-down. */}
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {comments.length === 0 ? (
+              {topLevelComments.length === 0 ? (
                 <div style={{ padding: "64px 24px", textAlign: "center", color: "var(--text-tertiary)", fontSize: "14px" }}>
                   No replies yet.
                 </div>
               ) : (
-                buildTree(comments).map(c => (
+                topLevelComments.map(c => (
                   <div key={c.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                     <CommentBlock
                       comment={c}

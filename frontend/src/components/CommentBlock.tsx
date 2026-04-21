@@ -11,7 +11,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
-import { Gif } from "phosphor-react";
+import { Gif, ChatCircle } from "phosphor-react";
 import GifPicker from "./GifPicker";
 import RollingNumber from "./RollingNumber";
 
@@ -24,6 +24,7 @@ export interface CommentWithMeta {
   parent_id?: number | string | null;
   parent_author_name?: string | null;
   like_count?: number;
+  reply_count?: number;
   image_url?: string | null;
   user?: { name: string; username?: string | null; email: string | null; avatar_url?: string | null; is_pro?: boolean };
   children?: CommentWithMeta[];
@@ -36,9 +37,10 @@ interface CommentBlockProps {
   onDelete?: (commentId: number | string) => void | Promise<void>;
   onImageClick?: (url: string) => void;
   resourceType: "post" | "project";
+  isDetailView?: boolean;
 }
 
-export default function CommentBlock({ comment, depth, onReply, onDelete, onImageClick, resourceType }: CommentBlockProps) {
+export default function CommentBlock({ comment, depth, onReply, onDelete, onImageClick, resourceType, isDetailView }: CommentBlockProps) {
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -52,10 +54,12 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
-  const hasChildren = comment.children && comment.children.length > 0;
   const avatarSize = isMobile ? 32 : 44;
   const gap = isMobile ? 12 : 16;
   const horizontalPadding = isMobile ? 16 : 24;
+
+  // Reply count: from API (reply_count) or from children array length
+  const replyCount = comment.reply_count ?? (comment.children?.length || 0);
 
   const name = comment.user?.name || "User";
   const avatarUrl = comment.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=212121&color=ffffff&bold=true`;
@@ -84,32 +88,25 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
     reader.readAsDataURL(file);
   };
 
+  // Navigate to comment detail (drill-down) when clicking the comment body
+  const handleDrillDown = () => {
+    navigate(`/comment/${comment.id}`);
+  };
+
   return (
     <div style={{
-      paddingTop: depth === 0 ? "24px" : "12px",
+      paddingTop: depth === 0 ? (isDetailView ? "32px" : "24px") : "12px",
       paddingBottom: "12px",
       paddingLeft: depth === 0 ? horizontalPadding : 0,
       paddingRight: depth === 0 ? horizontalPadding : 0,
       position: "relative"
     }}>
-      {/* Thread Line for children */}
-      {hasChildren && (
-        <div style={{
-          position: "absolute",
-          left: depth === 0 ? (horizontalPadding + avatarSize / 2) : (avatarSize / 2),
-          top: depth === 0 ? (24 + avatarSize + 8) : (12 + avatarSize + 8),
-          bottom: 0,
-          width: "2px",
-          backgroundColor: "var(--border-hairline)",
-          zIndex: 1
-        }} />
-      )}
-
       {/* Main Comment Row */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: `${gap}px`, position: "relative", zIndex: 2 }}>
         {/* Avatar */}
         <div
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             if (comment.user?.username) navigate(`/${comment.user.username}`);
             else if (comment.user_id) navigate(`/user/${comment.user_id}`);
           }}
@@ -129,7 +126,8 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
             <span
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 if (comment.user?.username) navigate(`/${comment.user.username}`);
                 else if (comment.user_id) navigate(`/user/${comment.user_id}`);
               }}
@@ -146,13 +144,34 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
             </span>
           </div>
 
-          <div style={{ fontSize: "15px", lineHeight: "1.5", color: "var(--text-primary)", wordBreak: "break-word", marginBottom: "10px", fontWeight: 400 }}>
-            <ContentRenderer content={comment.content} />
-            {comment.image_url && (
-              <div style={{ marginTop: "10px", borderRadius: "12px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", width: "fit-content", maxWidth: "100%" }}>
-                <img src={comment.image_url} alt="" style={{ maxWidth: "100%", maxHeight: "400px", display: "block", cursor: "zoom-in" }} onClick={() => onImageClick ? onImageClick(comment.image_url!) : window.open(comment.image_url!, '_blank')} />
-              </div>
-            )}
+          {/* Replying-to indicator */}
+          {comment.parent_author_name && !isDetailView && (
+            <div style={{ fontSize: "12.5px", color: "var(--text-tertiary)", marginBottom: "4px", fontWeight: 500 }}>
+              Replying to <span style={{ color: "var(--text-secondary)", fontWeight: 600 }}>@{comment.parent_author_name}</span>
+            </div>
+          )}
+
+          {/* Clickable content area for drill-down */}
+          <div
+            onClick={handleDrillDown}
+            style={{ cursor: "pointer" }}
+          >
+            <div style={{ fontSize: "15px", lineHeight: "1.5", color: "var(--text-primary)", wordBreak: "break-word", marginBottom: "10px", fontWeight: 400 }}>
+              <ContentRenderer content={comment.content} />
+              {comment.image_url && (
+                <div style={{ marginTop: "10px", borderRadius: "12px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", width: "fit-content", maxWidth: "100%" }}>
+                  <img
+                    src={comment.image_url}
+                    alt=""
+                    style={{ maxWidth: "100%", maxHeight: "400px", display: "block", cursor: "zoom-in" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onImageClick ? onImageClick(comment.image_url!) : window.open(comment.image_url!, '_blank');
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Actions */}
@@ -165,6 +184,20 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
               <FontAwesomeIcon icon={isLiked ? faHeartSolid : faHeartRegular} style={{ fontSize: "15px" }} />
               <RollingNumber value={likeCount || 0} fontWeight={500} fontSize="13px" color="inherit" />
               {likeCount === 0 && <span style={{ marginLeft: "-2px" }}>Like</span>}
+            </button>
+
+            {/* Reply count indicator — clicking drills down */}
+            <button
+              onClick={handleDrillDown}
+              style={{
+                display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none", padding: 0,
+                color: "var(--text-tertiary)", fontSize: "13px", fontWeight: 500, cursor: "pointer", transition: "all 0.15s ease"
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+              onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+            >
+              <ChatCircle size={16} weight="bold" />
+              {replyCount > 0 && <span>{replyCount}</span>}
             </button>
 
             {isSignedIn && (
@@ -191,11 +224,11 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
           </div>
 
           {showReply && (
-            <div style={{ 
-              marginTop: "16px", 
-              padding: "16px", 
-              backgroundColor: "var(--bg-hover)", 
-              borderRadius: "16px", 
+            <div style={{
+              marginTop: "16px",
+              padding: "16px",
+              backgroundColor: "var(--bg-hover)",
+              borderRadius: "16px",
               border: "0.5px solid var(--border-hairline)",
               position: "relative",
               animation: "replySlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -207,17 +240,17 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                   to { opacity: 1; transform: translateY(0); }
                 }
               `}</style>
-              
+
               {selectedGif && (
                 <div style={{ position: "relative", width: "fit-content", marginBottom: "12px", borderRadius: "12px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                   <img src={selectedGif} alt="Selected GIF" style={{ maxHeight: "160px", display: "block", borderRadius: "8px" }} />
-                  <button 
-                    onClick={() => setSelectedGif(null)} 
-                    style={{ 
-                      position: "absolute", top: "8px", right: "8px", 
-                      backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", border: "none", 
-                      width: "28px", height: "28px", borderRadius: "50%", 
-                      display: "flex", alignItems: "center", justifyContent: "center", 
+                  <button
+                    onClick={() => setSelectedGif(null)}
+                    style={{
+                      position: "absolute", top: "8px", right: "8px",
+                      backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", border: "none",
+                      width: "28px", height: "28px", borderRadius: "50%",
+                      display: "flex", alignItems: "center", justifyContent: "center",
                       cursor: "pointer", transition: "all 0.2s ease",
                       backdropFilter: "blur(4px)",
                     }}
@@ -238,50 +271,50 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                 </div>
               )}
 
-              <div style={{ 
-                backgroundColor: "var(--bg-page)", 
-                borderRadius: "12px", 
+              <div style={{
+                backgroundColor: "var(--bg-page)",
+                borderRadius: "12px",
                 border: "0.5px solid var(--border-hairline)",
                 transition: "all 0.2s ease",
                 position: "relative",
               }}>
-                <MentionInput 
-                  value={replyContent} 
-                  onChange={setReplyContent} 
-                  placeholder="Write a reply..." 
+                <MentionInput
+                  value={replyContent}
+                  onChange={setReplyContent}
+                  placeholder="Write a reply..."
                   minHeight="100px"
-                  style={{ 
-                    fontSize: "14px", 
+                  style={{
+                    fontSize: "14px",
                     backgroundColor: "transparent",
                     border: "none",
-                  }} 
+                  }}
                 />
-                
-                <div style={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  justifyContent: "space-between", 
+
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                   padding: "8px 12px",
                   borderTop: "0.5px solid var(--border-hairline)",
                   backgroundColor: "rgba(0,0,0,0.02)"
                 }}>
                   <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                     <div style={{ position: "relative" }}>
-                      <button 
-                        type="button" 
-                        onClick={() => setIsGifPickerOpen(!isGifPickerOpen)} 
-                        style={{ 
+                      <button
+                        type="button"
+                        onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                        style={{
                           height: "32px",
                           padding: "0 10px",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           gap: "4px",
-                          backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent", 
-                          color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)", 
-                          border: "0.5px solid var(--border-hairline)", 
-                          borderRadius: "100px", 
-                          cursor: "pointer", 
+                          backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
+                          color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
+                          border: "0.5px solid var(--border-hairline)",
+                          borderRadius: "100px",
+                          cursor: "pointer",
                           transition: "all 0.2s ease",
                           fontSize: "11px",
                           fontWeight: 800,
@@ -310,18 +343,18 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                       )}
                     </div>
 
-                    <label style={{ 
+                    <label style={{
                       height: "32px",
                       padding: "0 10px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       gap: "4px",
-                      backgroundColor: "transparent", 
-                      color: "var(--text-tertiary)", 
-                      border: "0.5px solid var(--border-hairline)", 
-                      borderRadius: "100px", 
-                      cursor: "pointer", 
+                      backgroundColor: "transparent",
+                      color: "var(--text-tertiary)",
+                      border: "0.5px solid var(--border-hairline)",
+                      borderRadius: "100px",
+                      cursor: "pointer",
                       transition: "all 0.2s ease",
                       fontSize: "10px",
                       fontWeight: 800,
@@ -333,15 +366,15 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                   </div>
 
                   <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                    <button 
-                      onClick={() => { setShowReply(false); setReplyContent(""); setSelectedGif(null); }} 
-                      style={{ 
-                        padding: "8px 16px", 
-                        backgroundColor: "transparent", 
-                        color: "var(--text-tertiary)", 
-                        border: "none", 
-                        fontWeight: 600, 
-                        cursor: "pointer", 
+                    <button
+                      onClick={() => { setShowReply(false); setReplyContent(""); setSelectedGif(null); }}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: "transparent",
+                        color: "var(--text-tertiary)",
+                        border: "none",
+                        fontWeight: 600,
+                        cursor: "pointer",
                         fontSize: "13px",
                         borderRadius: "100px",
                         transition: "all 0.2s ease"
@@ -351,17 +384,17 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                     >
                       Cancel
                     </button>
-                    <button 
-                      onClick={handleReplySubmit} 
-                      disabled={(!replyContent.trim() && !selectedGif && !selectedImage) || submitting || isUploading} 
-                      style={{ 
-                        padding: "8px 24px", 
+                    <button
+                      onClick={handleReplySubmit}
+                      disabled={(!replyContent.trim() && !selectedGif && !selectedImage) || submitting || isUploading}
+                      style={{
+                        padding: "8px 24px",
                         backgroundColor: (replyContent.trim() || selectedGif || selectedImage) && !submitting && !isUploading ? "var(--text-primary)" : "transparent",
                         color: (replyContent.trim() || selectedGif || selectedImage) && !submitting && !isUploading ? "var(--bg-page)" : "var(--text-tertiary)",
-                        border: "none", 
-                        borderRadius: "100px", 
-                        fontWeight: 700, 
-                        cursor: (replyContent.trim() || selectedGif || selectedImage) && !submitting && !isUploading ? "pointer" : "not-allowed", 
+                        border: "none",
+                        borderRadius: "100px",
+                        fontWeight: 700,
+                        cursor: (replyContent.trim() || selectedGif || selectedImage) && !submitting && !isUploading ? "pointer" : "not-allowed",
                         fontSize: "13px",
                         transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                         opacity: (replyContent.trim() || selectedGif || selectedImage) ? 1 : 0.5,
@@ -389,35 +422,8 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
         </div>
       </div>
 
-      {/* Nested Replies with horizontal connector */}
-      <div style={{ 
-        marginTop: "16px", 
-        marginLeft: `${avatarSize / 2}px`,
-        display: (comment.children && comment.children.length > 0) ? "block" : "none"
-      }}>
-        {comment.children?.map((c) => (
-          <div key={c.id} style={{ position: "relative", paddingLeft: `${avatarSize / 2 + gap}px` }}>
-            {/* Horizontal Tick connecting vertical line to child avatar */}
-            <div style={{
-              position: "absolute",
-              left: 0,
-              top: `${avatarSize / 2 + 12}px`, // Alignment with child avatar center
-              width: `${avatarSize / 2 + gap}px`,
-              height: "2px",
-              backgroundColor: "var(--border-hairline)",
-              zIndex: 1
-            }} />
-            <CommentBlock 
-              comment={c} 
-              depth={depth + 1} 
-              onReply={onReply} 
-              onDelete={onDelete}
-              onImageClick={onImageClick}
-              resourceType={resourceType} 
-            />
-          </div>
-        ))}
-      </div>
+      {/* NO nested replies rendered inline — drill-down only. 
+          The reply count badge in the action bar serves as the cue. */}
     </div>
   );
 }

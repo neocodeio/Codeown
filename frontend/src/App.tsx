@@ -27,6 +27,7 @@ const Feed = lazy(() => import("./pages/Feed"));
 const Profile = lazy(() => import("./pages/Profile"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const PostDetail = lazy(() => import("./pages/PostDetail"));
+const CommentDetail = lazy(() => import("./pages/CommentDetail"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const Search = lazy(() => import("./pages/Search"));
 const SignInPage = lazy(() => import("./pages/SignIn"));
@@ -508,6 +509,7 @@ export default function App() {
   const isStandardPage =
     ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups", "/search"].includes(location.pathname) ||
     location.pathname.startsWith("/post/") ||
+    location.pathname.startsWith("/comment/") ||
     location.pathname.startsWith("/project/") ||
     location.pathname.startsWith("/user/") ||
     (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup", "forgot-password", "sign-in", "sign-up"].includes(location.pathname.split("/")[1]));
@@ -550,6 +552,7 @@ export default function App() {
                 <Route path="/" element={<Feed />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostDetail />} />
+                <Route path="/comment/:commentId" element={<CommentDetail />} />
                 <Route path="/project/:id" element={<ProjectDetail />} />
                 <Route path="/user/:userId" element={<UserProfile />} />
                 <Route path="/sign-in/*" element={<SignInPage />} />

@@ -63,44 +63,9 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     enabled: !!resourceId
   });
 
-  const buildCommentTree = (flatComments: CommentWithMeta[]): CommentWithMeta[] => {
-    if (!flatComments || flatComments.length === 0) return [];
-
-    // Normalize and Index
-    const nodeMap: Record<string, CommentWithMeta & { children: CommentWithMeta[] }> = {};
-    const processed = flatComments.map(c => {
-      const node = { ...c, children: [] as CommentWithMeta[] };
-      nodeMap[String(c.id)] = node;
-      return node;
-    });
-
-    const roots: CommentWithMeta[] = [];
-
-    // Link
-    processed.forEach(node => {
-      const pId = node.parent_id != null ? String(node.parent_id) : null;
-      if (pId && nodeMap[pId] && pId !== String(node.id)) {
-        nodeMap[pId].children!.push(node);
-      } else {
-        roots.push(node);
-      }
-    });
-
-    // Sort threads (Oldest first) and roots (Newest first)
-    roots.forEach(root => {
-      const sortChildren = (node: any) => {
-        if (node.children) {
-          node.children.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-          node.children.forEach(sortChildren);
-        }
-      };
-      sortChildren(root);
-    });
-
-    return roots.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  };
-
-  const comments = buildCommentTree(rawComments);
+  // Flat list: only show top-level comments (replies accessed via drill-down)
+  const comments = (rawComments as CommentWithMeta[]).filter(c => !c.parent_id)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   const handleSubmitComment = async () => {
     if (!currentUser) return;
