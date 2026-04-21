@@ -22,6 +22,7 @@ import { SEO } from "../components/SEO";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import InviteModal from "../components/InviteModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import NotificationSettingsModal from "../components/NotificationSettingsModal";
 import ProfileStrength from "../components/ProfileStrength";
 import { HeatMap } from "../components/HeatMap";
 import { StartupCard } from "../components/StartupCard";
@@ -54,7 +55,8 @@ import {
   Note01Icon,
   InstagramIcon,
   ArrowLeft01Icon,
-  ArrowRight01Icon
+  ArrowRight01Icon,
+  Settings01Icon
 } from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
 import { toast, ToastContainer } from "react-toastify";
@@ -139,6 +141,7 @@ export default function Profile() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isNotificationSettingsOpen, setIsNotificationSettingsOpen] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const handleTabsScroll = (direction: "left" | "right") => {
@@ -410,6 +413,10 @@ export default function Profile() {
                     </button>
                     {isMenuOpen && (
                       <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", width: "200px", zIndex: 100, backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)", overflow: "hidden", animation: "tabContentEnter 0.2s ease-out" }}>
+                        <button style={{ width: "100%", padding: "12px 16px", border: "none", background: "none", textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", fontWeight: 600, fontSize: "13px", color: "var(--text-primary)", transition: "background-color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} onClick={() => { setIsMenuOpen(false); setIsNotificationSettingsOpen(true); }} >
+                          <HugeiconsIcon icon={Settings01Icon} size={18} />
+                          Notification Settings
+                        </button>
                         <button style={{ width: "100%", padding: "12px 16px", border: "none", background: "none", textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", fontWeight: 600, fontSize: "13px", color: "var(--text-primary)", transition: "background-color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} onClick={() => { setIsMenuOpen(false); navigate("/forgot-password"); }} >
                           <HugeiconsIcon icon={Key01Icon} size={18} />
                           Reset Password
@@ -700,6 +707,7 @@ export default function Profile() {
             <DeveloperIDCardModal isOpen={isIDCardModalOpen} onClose={() => setIsIDCardModalOpen(false)} user={{ name: userProfile.name, username: userProfile.username, avatar_url: userProfile.avatar_url, created_at: userProfile.created_at, skills: userProfile.skills || [], is_pro: userProfile.is_pro || false, bio: userProfile.bio || "" }} projectsCount={projects.length} />
           )}
           <InviteModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} username={userProfile?.username || user?.username || null} />
+          <NotificationSettingsModal isOpen={isNotificationSettingsOpen} onClose={() => setIsNotificationSettingsOpen(false)} />
           {isDesktop && (<aside style={{ width: "300px", padding: "0 0 24px 0", position: "sticky", top: 0, alignSelf: "flex-start", flexShrink: 0 }}> <RecommendedUsersSidebar /> </aside>)}
         </div>
         <style>{`
