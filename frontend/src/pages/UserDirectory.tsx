@@ -181,7 +181,7 @@ export default function UserDirectory() {
                     {loading ? (
                         <div style={{ padding: "100px 40px", textAlign: "center", color: "var(--text-tertiary)" }}>
                             <div className="spin" style={{ width: "24px", height: "24px", border: "2px solid var(--border-hairline)", borderTopColor: "var(--text-primary)", borderRadius: "50%", margin: "0 auto 16px" }} />
-                            <span style={{ fontSize: "14px", fontWeight: "600" }}>Retrieving platform members...</span>
+                            <span style={{ fontSize: "14px", fontWeight: "600" }}>Retrieving platform creators...</span>
                         </div>
                     ) : (
                         <div style={{ display: "flex", flexDirection: "column" }}>
