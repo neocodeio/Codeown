@@ -100,7 +100,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const handleUserClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (primaryUser?.username) {
-      navigate(`/profile/${primaryUser.username}`);
+      navigate(`/${primaryUser.username}`);
     }
   }, [navigate, primaryUser?.username]);
 
