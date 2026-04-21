@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import flameGif from "../assets/flame.gif";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -25,7 +26,6 @@ import ProfileStrength from "../components/ProfileStrength";
 import { HeatMap } from "../components/HeatMap";
 import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
-import XPInfo from "../components/XPInfo";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileSkeleton } from "../components/LoadingSkeleton";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -466,130 +466,89 @@ export default function Profile() {
                 </div>
               </div>
 
-              {/* Unified Performance Dashboard */}
-              <div style={{
-                marginBottom: "40px",
-                padding: "24px",
-                background: "linear-gradient(135deg, var(--bg-hover) 0%, var(--bg-page) 100%)",
-                borderRadius: "var(--radius-md)",
-                border: "1px solid var(--border-hairline)",
-                position: "relative",
-                overflow: "hidden"
-              }}>
-                {/* Subtle background glow */}
-                <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "150px", height: "150px", background: "radial-gradient(circle, var(--text-primary) 0%, transparent 70%)", opacity: 0.03, pointerEvents: "none" }} />
-
-                <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
-                  {/* Top Row: Level HUD & Identity Strength */}
-                  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "32px", borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "32px" }}>
-                    {/* Level HUD (60%) */}
-                    <div style={{ flex: isMobile ? "none" : 1.6, position: "relative" }}>
-                      <div style={{ position: "absolute", top: "0", right: "0" }}>
-                        <XPInfo />
-                      </div>
-                      {profileLoading ? (
-                        <div className="skeleton-pulse" style={{ height: "60px", width: "100%", borderRadius: "var(--radius-sm)" }} />
-                      ) : (
-                        <>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px" }}>
-                            <div>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                                <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)" }}>
-                                  Experience Level
-                                </span>
-                                <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)" }} />
-                                <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-primary)" }}>
-                                  Rank: {userProfile?.level && userProfile.level > 10 ? "Senior" : "Associate"}
-                                </span>
-                              </div>
-                              <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-                                <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
-                                  <AnimatedCounter end={userProfile?.level || 1} duration={1000} />
-                                </span>
-                                <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)" }}>
-                                  / 100
-                                </span>
-                              </div>
-                            </div>
-
-                            <div style={{ textAlign: "right" }}>
-                              <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
-                                <AnimatedCounter end={userProfile?.xp || 0} duration={1200} /> XP
-                              </div>
-                              <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
-                                {Math.pow((userProfile?.level || 1), 2) * 50 - (userProfile?.xp || 0)} XP next
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Minimalist Multi-segment Bar */}
-                          <div style={{ position: "relative", height: "6px", width: "100%", backgroundColor: "var(--border-hairline)", borderRadius: "100px", overflow: "hidden" }}>
-                            <div style={{
-                              width: `${Math.min(100, Math.max(0, ((userProfile?.xp || 0) - Math.pow((userProfile?.level || 1) - 1, 2) * 50) / (Math.pow(userProfile?.level || 1, 2) * 50 - Math.pow((userProfile?.level || 1) - 1, 2) * 50) * 100))}%`,
-                              height: "100%",
-                              background: "var(--text-primary)",
-                              borderRadius: "100px",
-                              transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                              boxShadow: "0 0 12px rgba(255, 255, 255, 0.1)"
-                            }} />
-                          </div>
-
-                          {/* New: Integrated Invite CTA inside the HUD */}
-                          <div
-                            onClick={() => setIsInviteModalOpen(true)}
-                            onMouseEnter={e => e.currentTarget.style.borderColor = "var(--text-primary)"}
-                            onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border-hairline)"}
-                            style={{
-                              marginTop: "24px",
-                              padding: "14px 18px",
-                              borderRadius: "var(--radius-sm)",
-                              background: "rgba(255, 255, 255, 0.02)",
-                              border: "1px dashed var(--border-hairline)",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              cursor: "pointer",
-                              transition: "all 0.2s ease"
-                            }}
-                          >
-                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                              <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <HugeiconsIcon icon={GiftIcon} size={18} />
-                              </div>
-                              <div>
-                                <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>Grow the community</div>
-                                <div style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>Refer builders & give 200XP</div>
-                              </div>
-                            </div>
-                            <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>→</span>
-                          </div>
-
-                          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px" }}>
-                            <div style={{ display: "flex", gap: "4px" }}>
-                              {[1, 2, 3, 4, 5].map((i) => (
-                                <div key={i} style={{ width: "12px", height: "2px", borderRadius: "1px", backgroundColor: i <= ((userProfile?.level || 1) % 5) ? "var(--text-primary)" : "var(--border-hairline)" }} />
-                              ))}
-                            </div>
-                            <span style={{ fontSize: "9px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                              System Efficiency: {Math.min(100, Math.round(((userProfile?.xp || 0) / (Math.pow(userProfile?.level || 1, 2) * 50)) * 100))}%
-                            </span>
-                          </div>
-                        </>
-                      )}
+              {/* Performance Section */}
+              {!profileLoading && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "32px" }}>
+                  {/* Stats Grid */}
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+                    gap: "1px",
+                    backgroundColor: "var(--border-hairline)",
+                    border: "0.5px solid var(--border-hairline)",
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                  }}>
+                    <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
+                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Level</span>
+                      <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={userProfile?.level || 1} duration={1000} /></span>
                     </div>
-
-                    {/* Profile Strength (40%) */}
-                    <div style={{ flex: isMobile ? "none" : 1, display: "flex", borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)", paddingLeft: isMobile ? 0 : "32px", paddingTop: isMobile ? "32px" : 0, borderTop: isMobile ? "0.5px solid var(--border-hairline)" : "none" }}>
-                      <ProfileStrength user={userProfile} projectsCount={projects?.length || 0} standalone />
+                    <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
+                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Total XP</span>
+                      <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={userProfile?.xp || 0} duration={1200} /></span>
+                    </div>
+                    <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
+                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Rank</span>
+                      <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1.3 }}>{(userProfile?.level || 1) > 10 ? "Senior" : "Associate"}</span>
+                    </div>
+                    <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
+                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Streak</span>
+                      <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1, display: "flex", alignItems: "center", gap: "4px" }}>{userProfile?.streak_count || 0}<img src={flameGif} alt="streak" style={{ width: "18px", height: "18px", objectFit: "contain" }} /></span>
                     </div>
                   </div>
 
-                  {/* Bottom Row: Contributions Heatmap */}
-                  <div>
+                  {/* XP Progress */}
+                  <div style={{ padding: "16px 0 0" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-secondary)" }}>
+                        Level {userProfile?.level || 1} → {(userProfile?.level || 1) + 1}
+                      </span>
+                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", padding: "3px 8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)" }}>
+                        {Math.max(0, Math.pow((userProfile?.level || 1), 2) * 50 - (userProfile?.xp || 0))} XP to go
+                      </span>
+                    </div>
+                    <div style={{ height: "6px", width: "100%", backgroundColor: "var(--bg-hover)", borderRadius: "100px", overflow: "hidden" }}>
+                      <div style={{
+                        width: `${Math.min(100, Math.max(0, ((userProfile?.xp || 0) - Math.pow((userProfile?.level || 1) - 1, 2) * 50) / (Math.pow(userProfile?.level || 1, 2) * 50 - Math.pow((userProfile?.level || 1) - 1, 2) * 50) * 100))}%`,
+                        height: "100%",
+                        background: "linear-gradient(90deg, var(--text-primary) 0%, var(--text-secondary) 100%)",
+                        borderRadius: "100px",
+                        transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                        boxShadow: "0 0 8px rgba(255, 255, 255, 0.08)",
+                      }} />
+                    </div>
+                  </div>
+
+                  {/* Invite CTA */}
+                  <div
+                    onClick={() => setIsInviteModalOpen(true)}
+                    style={{ marginTop: "16px", padding: "12px 16px", borderRadius: "10px", backgroundColor: "var(--bg-hover)", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)" }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--text-tertiary)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-hairline)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <HugeiconsIcon icon={GiftIcon} size={14} style={{ color: "var(--text-secondary)" }} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>Invite builders</div>
+                        <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 500 }}>Earn 200 XP per referral</div>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: "16px", color: "var(--text-tertiary)" }}>›</span>
+                  </div>
+
+                  {/* Profile Strength */}
+                  <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "0.5px solid var(--border-hairline)" }}>
+                    <ProfileStrength user={userProfile} projectsCount={projects?.length || 0} standalone />
+                  </div>
+
+                  {/* HeatMap */}
+                  <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "0.5px solid var(--border-hairline)" }}>
                     <HeatMap userId={userId!} githubUrl={userProfile?.github_url} standalone />
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div style={{ padding: isMobile ? "0 16px" : "0 24px", }}>

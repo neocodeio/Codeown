@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import flameGif from "../assets/flame.gif";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useUserPosts } from "../hooks/useUserPosts";
@@ -39,7 +40,6 @@ import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { HeatMap } from "../components/HeatMap";
 import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
-import XPInfo from "../components/XPInfo";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileSkeleton } from "../components/LoadingSkeleton";
 
@@ -348,92 +348,65 @@ export default function UserProfile() {
                   <div style={{ fontSize: "14px", color: "var(--text-primary)" }}> <span style={{ fontWeight: 700 }}>{user.contribution_count || 0}</span> <span style={{ color: "var(--text-tertiary)" }}>Contributions</span> </div>
                 </div>
 
-                {/* Unified Performance Dashboard */}
-                <div style={{
-                  marginTop: "32px",
-                  padding: "24px",
-                  background: "linear-gradient(135deg, var(--bg-hover) 0%, var(--bg-page) 100%)",
-                  borderRadius: "var(--radius-md)",
-                  border: "1px solid var(--border-hairline)",
-                  position: "relative",
-                  overflow: "hidden"
-                }}>
-                  {/* Subtle background glow */}
-                  <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "150px", height: "150px", background: "radial-gradient(circle, var(--text-primary) 0%, transparent 70%)", opacity: 0.03, pointerEvents: "none" }} />
-
-                  <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: "32px" }}>
-                    {/* Top Section: XP HUD */}
-                    <div style={{ borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "32px", position: "relative" }}>
-                      <div style={{ position: "absolute", top: "0", right: "0" }}>
-                        <XPInfo />
+                {/* Performance Section */}
+                {!profileLoading && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0", marginTop: "32px" }}>
+                    {/* Stats Grid */}
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+                      gap: "1px",
+                      backgroundColor: "var(--border-hairline)",
+                      border: "0.5px solid var(--border-hairline)",
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                    }}>
+                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Level</span>
+                        <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1 }}>{user.level || 1}</span>
                       </div>
-                      {profileLoading ? (
-                        <div className="skeleton-pulse" style={{ height: "60px", width: "100%", borderRadius: "var(--radius-sm)" }} />
-                      ) : (
-                        <>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "16px" }}>
-                            <div>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                                <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)" }}>
-                                  Experience Level
-                                </span>
-                                <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)" }} />
-                                <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-primary)" }}>
-                                  Rank: {user.level && user.level > 10 ? "Senior" : "Associate"}
-                                </span>
-                              </div>
-                              <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-                                <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.04em" }}>
-                                  {user.level || 1}
-                                </span>
-                                <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-tertiary)" }}>
-                                  / 100
-                                </span>
-                              </div>
-                            </div>
-
-                            <div style={{ textAlign: "right" }}>
-                              <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "2px" }}>
-                                {user.xp?.toLocaleString() || 0} XP
-                              </div>
-                              <div style={{ fontSize: "11px", color: "var(--text-tertiary)", fontWeight: 500 }}>
-                                {Math.pow((user.level || 1), 2) * 50 - (user.xp || 0)} XP next
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Minimalist Multi-segment Bar */}
-                          <div style={{ position: "relative", height: "6px", width: "100%", backgroundColor: "var(--border-hairline)", borderRadius: "100px", overflow: "hidden" }}>
-                            <div style={{
-                              width: `${Math.min(100, Math.max(0, ((user.xp || 0) - Math.pow((user.level || 1) - 1, 2) * 50) / (Math.pow(user.level || 1, 2) * 50 - Math.pow((user.level || 1) - 1, 2) * 50) * 100))}%`,
-                              height: "100%",
-                              background: "var(--text-primary)",
-                              borderRadius: "100px",
-                              transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                              boxShadow: "0 0 12px rgba(255, 255, 255, 0.1)"
-                            }} />
-                          </div>
-
-                          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
-                            <div style={{ display: "flex", gap: "4px" }}>
-                              {[1, 2, 3, 4, 5].map((i) => (
-                                <div key={i} style={{ width: "12px", height: "2px", borderRadius: "1px", backgroundColor: i <= ((user.level || 1) % 5) ? "var(--text-primary)" : "var(--border-hairline)" }} />
-                              ))}
-                            </div>
-                            <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                              System Efficiency: {Math.min(100, Math.round(((user.xp || 0) / (Math.pow(user.level || 1, 2) * 50)) * 100))}%
-                            </span>
-                          </div>
-                        </>
-                      )}
+                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Total XP</span>
+                        <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1 }}>{(user.xp || 0).toLocaleString()}</span>
+                      </div>
+                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Rank</span>
+                        <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1.3 }}>{(user.level || 1) > 10 ? "Senior" : "Associate"}</span>
+                      </div>
+                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Streak</span>
+                        <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1, display: "flex", alignItems: "center", gap: "4px" }}>{user.streak_count || 0}<img src={flameGif} alt="streak" style={{ width: "18px", height: "18px", objectFit: "contain" }} /></span>
+                      </div>
                     </div>
 
-                    {/* Bottom Section: HeatMap */}
-                    <div style={{ width: "100%" }}>
+                    {/* XP Progress */}
+                    <div style={{ padding: "16px 0 0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                        <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-secondary)" }}>
+                          Level {user.level || 1} → {(user.level || 1) + 1}
+                        </span>
+                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", padding: "3px 8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)" }}>
+                          {Math.max(0, Math.pow((user.level || 1), 2) * 50 - (user.xp || 0))} XP to go
+                        </span>
+                      </div>
+                      <div style={{ height: "6px", width: "100%", backgroundColor: "var(--bg-hover)", borderRadius: "100px", overflow: "hidden" }}>
+                        <div style={{
+                          width: `${Math.min(100, Math.max(0, ((user.xp || 0) - Math.pow((user.level || 1) - 1, 2) * 50) / (Math.pow(user.level || 1, 2) * 50 - Math.pow((user.level || 1) - 1, 2) * 50) * 100))}%`,
+                          height: "100%",
+                          background: "linear-gradient(90deg, var(--text-primary) 0%, var(--text-secondary) 100%)",
+                          borderRadius: "100px",
+                          transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                          boxShadow: "0 0 8px rgba(255, 255, 255, 0.08)",
+                        }} />
+                      </div>
+                    </div>
+
+                    {/* HeatMap */}
+                    <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "0.5px solid var(--border-hairline)" }}>
                       <HeatMap userId={user.id} githubUrl={user.github_url} standalone />
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
