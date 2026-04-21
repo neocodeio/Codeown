@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import flameGif from "../assets/flame.gif";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
@@ -25,7 +25,10 @@ import {
   NewTwitterIcon,
   Linkedin01Icon,
   InstagramIcon,
-  Chat01Icon
+  Chat01Icon,
+  Chart01Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon
 } from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
 import { ToastContainer } from "react-toastify";
@@ -42,6 +45,30 @@ import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileSkeleton } from "../components/LoadingSkeleton";
+import ProfileStrength from "../components/ProfileStrength";
+
+const AnimatedCounter = ({ end, duration = 1500 }: { end: number, duration?: number }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTime: number | null = null;
+    let animationFrame: number;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration]);
+
+  return <span>{count.toLocaleString()}</span>;
+};
 
 interface User {
   id: string;
@@ -91,12 +118,20 @@ export default function UserProfile() {
 
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
-  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "startups">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "startups" | "dashboard">("posts");
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const handleTabsScroll = (direction: "left" | "right") => {
+    if (tabsRef.current) {
+      const scrollAmount = 300;
+      tabsRef.current.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+    }
+  };
 
   // 0. Immediate self-detection to avoid double-loading
   const param = userId || username;
@@ -351,59 +386,9 @@ export default function UserProfile() {
                 {/* Performance Section */}
                 {!profileLoading && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0", marginTop: "32px" }}>
-                    {/* Stats Grid */}
-                    <div style={{
-                      display: "grid",
-                      gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-                      gap: "1px",
-                      backgroundColor: "var(--border-hairline)",
-                      border: "0.5px solid var(--border-hairline)",
-                      borderRadius: "12px",
-                      overflow: "hidden",
-                    }}>
-                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
-                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Level</span>
-                        <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1 }}>{user.level || 1}</span>
-                      </div>
-                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
-                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Total XP</span>
-                        <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1 }}>{(user.xp || 0).toLocaleString()}</span>
-                      </div>
-                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
-                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Rank</span>
-                        <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1.3 }}>{(user.level || 1) > 10 ? "Senior" : "Associate"}</span>
-                      </div>
-                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
-                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Streak</span>
-                        <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1, display: "flex", alignItems: "center", gap: "4px" }}>{user.streak_count || 0}<img src={flameGif} alt="streak" style={{ width: "18px", height: "18px", objectFit: "contain" }} /></span>
-                      </div>
-                    </div>
-
-                    {/* XP Progress */}
-                    <div style={{ padding: "16px 0 0" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                        <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-secondary)" }}>
-                          Level {user.level || 1} → {(user.level || 1) + 1}
-                        </span>
-                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", padding: "3px 8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)" }}>
-                          {Math.max(0, Math.pow((user.level || 1), 2) * 50 - (user.xp || 0))} XP to go
-                        </span>
-                      </div>
-                      <div style={{ height: "6px", width: "100%", backgroundColor: "var(--bg-hover)", borderRadius: "100px", overflow: "hidden" }}>
-                        <div style={{
-                          width: `${Math.min(100, Math.max(0, ((user.xp || 0) - Math.pow((user.level || 1) - 1, 2) * 50) / (Math.pow(user.level || 1, 2) * 50 - Math.pow((user.level || 1) - 1, 2) * 50) * 100))}%`,
-                          height: "100%",
-                          background: "linear-gradient(90deg, var(--text-primary) 0%, var(--text-secondary) 100%)",
-                          borderRadius: "100px",
-                          transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                          boxShadow: "0 0 8px rgba(255, 255, 255, 0.08)",
-                        }} />
-                      </div>
-                    </div>
-
-                    {/* HeatMap */}
-                    <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "0.5px solid var(--border-hairline)" }}>
-                      <HeatMap userId={user.id} githubUrl={user.github_url} standalone />
+                    {/* Identity strength - Kept here as requested */}
+                    <div style={{ marginTop: "24px", padding: "20px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "rgba(255,255,255,0.01)" }}>
+                      <ProfileStrength user={user} projectsCount={projects?.length || 0} standalone />
                     </div>
                   </div>
                 )}
@@ -411,13 +396,40 @@ export default function UserProfile() {
             </div>
 
 
-            <div className="tabs-row" style={{ display: "flex", overflowX: "auto", borderBottom: "0.5px solid var(--border-hairline)", marginBottom: "32px", gap: "24px", padding: isMobile ? "0 16px" : "0 24px", msOverflowStyle: "none", scrollbarWidth: "none" }}>
-              {[{ id: "posts", icon: LicenseIcon, label: "Posts" }, { id: "projects", icon: Rocket01Icon, label: "Projects" }, { id: "startups", icon: Building02Icon, label: "Startups" }].map(tab => (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
-                  <HugeiconsIcon icon={tab.icon} size={18} />
-                  {tab.label}
+            <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "32px", padding: isMobile ? "0 16px" : "0 24px" }}>
+              {!isMobile && (
+                <button
+                  onClick={() => handleTabsScroll("left")}
+                  style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "0 8px 0 0", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+                  onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
+                  onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
+                >
+                  <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
                 </button>
-              ))}
+              )}
+              <div ref={tabsRef} className="tabs-row" style={{ display: "flex", overflowX: "auto", flex: 1, gap: "24px", padding: 0, msOverflowStyle: "none", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+                <style>{`
+                  .tabs-row::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                {[{ id: "posts", icon: LicenseIcon, label: "Posts" }, { id: "projects", icon: Rocket01Icon, label: "Projects" }, { id: "dashboard", icon: Chart01Icon, label: "Dashboard" }, { id: "startups", icon: Building02Icon, label: "Startups" }].map(tab => (
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
+                    <HugeiconsIcon icon={tab.icon} size={18} />
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              {!isMobile && (
+                <button
+                  onClick={() => handleTabsScroll("right")}
+                  style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "0 0 0 8px", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+                  onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
+                  onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
+                >
+                  <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
+                </button>
+              )}
             </div>
 
             <div style={{ minHeight: "400px" }}>
@@ -428,6 +440,47 @@ export default function UserProfile() {
               ) : activeTab === "startups" ? (
                 <div className="tab-content-enter">
                   {loadingStartups ? <div className="skeleton-pulse" style={{ height: "140px", borderRadius: "var(--radius-sm)" }} /> : startups.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Building02Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No startups yet</p> </div>) : (<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}> {startups.map((s) => (<StartupCard key={s.id} startup={s} />))} </div>)}
+                </div>
+              ) : activeTab === "dashboard" ? (
+                <div className="tab-content-enter">
+                  <div style={{ display: "flex", flexDirection: "column", gap: "32px", padding: isMobile ? "0" : "12px" }}>
+                    {/* Stats Grid */}
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+                      gap: "1px",
+                      backgroundColor: "#E5E7EB",
+                      border: "0.5px solid #E5E7EB",
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                    }}>
+                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Level</span>
+                        <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={user.level || 1} duration={1000} /></span>
+                      </div>
+                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Total XP</span>
+                        <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={user.xp || 0} duration={1200} /></span>
+                      </div>
+                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Rank</span>
+                        <span style={{ fontSize: "14px", fontWeight: 800, color: "#111", lineHeight: 1.3 }}>{(user.level || 1) > 10 ? "Senior" : "Associate"}</span>
+                      </div>
+                      <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Streak</span>
+                        <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1, display: "flex", alignItems: "center", gap: "4px" }}>{user.streak_count || 0}<img src={flameGif} alt="streak" style={{ width: "18px", height: "18px", objectFit: "contain" }} /></span>
+                      </div>
+                    </div>
+
+                    {/* HeatMap */}
+                    <div style={{ backgroundColor: "var(--bg-page)", borderRadius: "12px", border: "0.5px solid var(--border-hairline)", padding: "24px" }}>
+                      <div style={{ marginBottom: "16px", borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "16px" }}>
+                        <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Activity Insight</h3>
+                        <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-tertiary)" }}>Track consistency and contributions.</p>
+                      </div>
+                      <HeatMap userId={user.id} githubUrl={user.github_url} standalone />
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column" }}>

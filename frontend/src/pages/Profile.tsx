@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import flameGif from "../assets/flame.gif";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -53,7 +53,8 @@ import {
   WorkIcon,
   Note01Icon,
   InstagramIcon,
-  GiftIcon
+  ArrowLeft01Icon,
+  ArrowRight01Icon
 } from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
 import { toast, ToastContainer } from "react-toastify";
@@ -128,7 +129,7 @@ export default function Profile() {
   const userId = user?.id || null;
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "startups" | "saved" | "applications">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "analytics" | "startups" | "saved" | "applications">("posts");
   const [savedSubTab, setSavedSubTab] = useState<"posts" | "projects">("posts");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -138,6 +139,15 @@ export default function Profile() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const handleTabsScroll = (direction: "left" | "right") => {
+    if (tabsRef.current) {
+      const scrollAmount = 300;
+      tabsRef.current.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+    }
+  };
+
 
   // 1. Optimized Combined Hook Data (React Query handles caching)
   const { data: userProfile, isLoading: profileLoading } = useQuery({
@@ -469,102 +479,56 @@ export default function Profile() {
               {/* Performance Section */}
               {!profileLoading && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "32px" }}>
-                  {/* Stats Grid */}
-                  <div style={{
-                    display: "grid",
-                    gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-                    gap: "1px",
-                    backgroundColor: "var(--border-hairline)",
-                    border: "0.5px solid var(--border-hairline)",
-                    borderRadius: "12px",
-                    overflow: "hidden",
-                  }}>
-                    <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
-                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Level</span>
-                      <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={userProfile?.level || 1} duration={1000} /></span>
-                    </div>
-                    <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
-                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Total XP</span>
-                      <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={userProfile?.xp || 0} duration={1200} /></span>
-                    </div>
-                    <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
-                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Rank</span>
-                      <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1.3 }}>{(userProfile?.level || 1) > 10 ? "Senior" : "Associate"}</span>
-                    </div>
-                    <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "var(--bg-page)", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "var(--bg-page)"}>
-                      <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>Streak</span>
-                      <span style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em", lineHeight: 1, display: "flex", alignItems: "center", gap: "4px" }}>{userProfile?.streak_count || 0}<img src={flameGif} alt="streak" style={{ width: "18px", height: "18px", objectFit: "contain" }} /></span>
-                    </div>
-                  </div>
-
-                  {/* XP Progress */}
-                  <div style={{ padding: "16px 0 0" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                      <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-secondary)" }}>
-                        Level {userProfile?.level || 1} → {(userProfile?.level || 1) + 1}
-                      </span>
-                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", padding: "3px 8px", borderRadius: "100px", border: "0.5px solid var(--border-hairline)" }}>
-                        {Math.max(0, Math.pow((userProfile?.level || 1), 2) * 50 - (userProfile?.xp || 0))} XP to go
-                      </span>
-                    </div>
-                    <div style={{ height: "6px", width: "100%", backgroundColor: "var(--bg-hover)", borderRadius: "100px", overflow: "hidden" }}>
-                      <div style={{
-                        width: `${Math.min(100, Math.max(0, ((userProfile?.xp || 0) - Math.pow((userProfile?.level || 1) - 1, 2) * 50) / (Math.pow(userProfile?.level || 1, 2) * 50 - Math.pow((userProfile?.level || 1) - 1, 2) * 50) * 100))}%`,
-                        height: "100%",
-                        background: "linear-gradient(90deg, var(--text-primary) 0%, var(--text-secondary) 100%)",
-                        borderRadius: "100px",
-                        transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                        boxShadow: "0 0 8px rgba(255, 255, 255, 0.08)",
-                      }} />
-                    </div>
-                  </div>
-
-                  {/* Invite CTA */}
-                  <div
-                    onClick={() => setIsInviteModalOpen(true)}
-                    style={{ marginTop: "16px", padding: "12px 16px", borderRadius: "10px", backgroundColor: "var(--bg-hover)", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)" }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--text-tertiary)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-hairline)"; e.currentTarget.style.transform = "translateY(0)"; }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)", border: "0.5px solid var(--border-hairline)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <HugeiconsIcon icon={GiftIcon} size={14} style={{ color: "var(--text-secondary)" }} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>Invite builders</div>
-                        <div style={{ fontSize: "10px", color: "var(--text-tertiary)", fontWeight: 500 }}>Earn 200 XP per referral</div>
-                      </div>
-                    </div>
-                    <span style={{ fontSize: "16px", color: "var(--text-tertiary)" }}>›</span>
-                  </div>
-
-                  {/* Profile Strength */}
-                  <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "0.5px solid var(--border-hairline)" }}>
+                  {/* Profile Strength - Kept here as requested */}
+                  <div style={{ marginTop: "24px", padding: "20px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "rgba(255,255,255,0.01)" }}>
                     <ProfileStrength user={userProfile} projectsCount={projects?.length || 0} standalone />
-                  </div>
-
-                  {/* HeatMap */}
-                  <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "0.5px solid var(--border-hairline)" }}>
-                    <HeatMap userId={userId!} githubUrl={userProfile?.github_url} standalone />
                   </div>
                 </div>
               )}
             </div>
 
             <div style={{ padding: isMobile ? "0 16px" : "0 24px", }}>
-              <div className="tabs-row" style={{ display: "flex", overflowX: "auto", borderBottom: "0.5px solid var(--border-hairline)", marginBottom: "32px", gap: "24px", padding: isMobile ? "0 16px" : "0" }}>
-                {[
-                  { id: "posts", icon: LicenseIcon, label: "Posts" },
-                  { id: "projects", icon: Rocket01Icon, label: "Projects" },
-                  { id: "startups", icon: Building02Icon, label: "Startups" },
-                  { id: "applications", icon: WorkIcon, label: "Applications" },
-                  { id: "saved", icon: Bookmark02Icon, label: "Saved" }
-                ].map((tab) => (
-                  <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
-                    <HugeiconsIcon icon={tab.icon} size={18} />
-                    {tab.label}
+              <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "32px" }}>
+                {!isMobile && (
+                  <button
+                    onClick={() => handleTabsScroll("left")}
+                    style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: isMobile ? "0" : "0 8px 0 0", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+                    onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
+                    onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
+                  >
+                    <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
                   </button>
-                ))}
+                )}
+                <div ref={tabsRef} className="tabs-row" style={{ display: "flex", overflowX: "auto", flex: 1, gap: "24px", padding: 0, msOverflowStyle: "none", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+                  <style>{`
+                    .tabs-row::-webkit-scrollbar {
+                      display: none;
+                    }
+                  `}</style>
+                  {[
+                    { id: "posts", icon: LicenseIcon, label: "Posts" },
+                    { id: "projects", icon: Rocket01Icon, label: "Projects" },
+                    { id: "analytics", icon: Chart01Icon, label: "Analytics" },
+                    { id: "startups", icon: Building02Icon, label: "Startups" },
+                    { id: "applications", icon: WorkIcon, label: "Applications" },
+                    { id: "saved", icon: Bookmark02Icon, label: "Saved" }
+                  ].map((tab) => (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
+                      <HugeiconsIcon icon={tab.icon} size={18} />
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+                {!isMobile && (
+                  <button
+                    onClick={() => handleTabsScroll("right")}
+                    style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "0 0 0 8px", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+                    onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
+                    onMouseLeave={e => e.currentTarget.style.color = "var(--text-tertiary)"}
+                  >
+                    <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
+                  </button>
+                )}
               </div>
 
               <div className="tab-content" style={{ marginTop: "20px" }}>
@@ -612,6 +576,49 @@ export default function Profile() {
                         ))}
                       </div>
                     )}
+                  </div>
+                )}
+
+                {activeTab === "analytics" && (
+                  <div className="tab-content-enter">
+                    <div style={{ display: "flex", flexDirection: "column", gap: "32px", padding: isMobile ? "0" : "12px" }}>
+                      {/* Stats Grid */}
+                      <div style={{
+                        display: "grid",
+                        gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+                        gap: "1px",
+                        backgroundColor: "#E5E7EB",
+                        border: "0.5px solid #E5E7EB",
+                        borderRadius: "12px",
+                        overflow: "hidden",
+                      }}>
+                        <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Level</span>
+                          <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={userProfile?.level || 1} duration={1000} /></span>
+                        </div>
+                        <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Total XP</span>
+                          <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1 }}><AnimatedCounter end={userProfile?.xp || 0} duration={1200} /></span>
+                        </div>
+                        <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Rank</span>
+                          <span style={{ fontSize: "14px", fontWeight: 800, color: "#111", lineHeight: 1.3 }}>{(userProfile?.level || 1) > 10 ? "Senior" : "Associate"}</span>
+                        </div>
+                        <div style={{ padding: isMobile ? "14px 16px" : "16px 20px", backgroundColor: "#F6F8F8", display: "flex", flexDirection: "column", gap: "4px", transition: "background-color 0.15s ease" }} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#EDEFF0"} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#F6F8F8"}>
+                          <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280" }}>Streak</span>
+                          <span style={{ fontSize: "18px", fontWeight: 800, color: "#111", letterSpacing: "-0.03em", lineHeight: 1, display: "flex", alignItems: "center", gap: "4px" }}>{userProfile?.streak_count || 0}<img src={flameGif} alt="streak" style={{ width: "18px", height: "18px", objectFit: "contain" }} /></span>
+                        </div>
+                      </div>
+
+                      {/* HeatMap */}
+                      <div style={{ backgroundColor: "var(--bg-page)", borderRadius: "12px", border: "0.5px solid var(--border-hairline)", padding: "24px" }}>
+                        <div style={{ marginBottom: "16px", borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "16px" }}>
+                          <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>Activity Insight</h3>
+                          <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-tertiary)" }}>Track your consistency and contributions across the platform.</p>
+                        </div>
+                        <HeatMap userId={userId!} githubUrl={userProfile?.github_url} standalone />
+                      </div>
+                    </div>
                   </div>
                 )}
 
