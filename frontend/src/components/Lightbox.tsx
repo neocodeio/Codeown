@@ -23,15 +23,25 @@ interface LightboxProps {
 
 const Lightbox: React.FC<LightboxProps> = ({ isOpen, onClose, imageSrc, postUrl, author, altText }) => {
     useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+        };
+
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            window.addEventListener('keydown', handleKeyDown);
         } else {
             document.body.style.overflow = 'unset';
+            window.removeEventListener('keydown', handleKeyDown);
         }
+
         return () => {
             document.body.style.overflow = 'unset';
+            window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isOpen]);
+    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 

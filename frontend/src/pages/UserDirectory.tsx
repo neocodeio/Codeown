@@ -190,7 +190,7 @@ export default function UserDirectory() {
                             ))}
                             {users.length === 0 && (
                                 <div style={{ padding: "60px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
-                                    No members found yet.
+                                    No creators found yet.
                                 </div>
                             )}
                         </div>
