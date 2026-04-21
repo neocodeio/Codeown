@@ -18,7 +18,7 @@ import {
   Bookmark02Icon,
   SentIcon,
   FavouriteIcon,
-  ReloadIcon
+  RepostIcon
 } from "@hugeicons/core-free-icons";
 import GifPicker from "./GifPicker";
 import RollingNumber from "./RollingNumber";
@@ -184,7 +184,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
 
           <div style={{ display: "flex", gap: "16px" }}>
             <button style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
-              <HugeiconsIcon icon={ReloadIcon} size={20} />
+              <HugeiconsIcon icon={RepostIcon} size={20} />
             </button>
             <button style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
               <HugeiconsIcon icon={SentIcon} size={20} />
