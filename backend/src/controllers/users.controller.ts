@@ -1526,3 +1526,34 @@ export async function getDashboardStats(req: Request, res: Response) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
+export async function getAllUsers(req: Request, res: Response) {
+    try {
+        const { page = "1", limit = "100" } = req.query;
+        const pageNum = parseInt(page as string, 10) || 1;
+        const limitNum = parseInt(limit as string, 10) || 100;
+        const offset = (pageNum - 1) * limitNum;
+
+        const { data: users, error, count } = await supabase
+            .from("users")
+            .select("id, name, username, avatar_url, bio, is_og, is_pro, created_at", { count: "exact" })
+            .order("created_at", { ascending: true }) // ASC so Amin and early users are at top
+            .range(offset, offset + limitNum - 1);
+
+        if (error) {
+            console.error("Error fetching all users:", error);
+            return res.status(500).json({ error: "Failed to fetch users" });
+        }
+
+        return res.json({
+            users: users || [],
+            total: count || 0,
+            page: pageNum,
+            limit: limitNum,
+            totalPages: Math.ceil((count || 0) / limitNum)
+        });
+    } catch (error: any) {
+        console.error("Unexpected error in getAllUsers:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}

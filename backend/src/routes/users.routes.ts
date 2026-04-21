@@ -13,7 +13,8 @@ import {
     getOGUsers,
     getDashboardStats,
     getInviteStats,
-    updateNotificationSettings
+    updateNotificationSettings,
+    getAllUsers
 } from "../controllers/users.controller.js";
 import { recordProfileView } from "../controllers/profileViews.controller.js";
 import { getUserProjects } from "../controllers/projects.controller.js";
@@ -21,6 +22,7 @@ import { getUserSavedProjects } from "../controllers/userSavedProjects.controlle
 import { requireAuth, optionalAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
+router.get("/", getAllUsers);
 
 // Static/specific routes MUST come before /:userId to avoid being swallowed by the wildcard
 router.get("/recommended", optionalAuth, getRecommendedUsers);

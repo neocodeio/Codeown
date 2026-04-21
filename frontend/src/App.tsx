@@ -50,6 +50,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const StartupDirectory = lazy(() => import("./pages/StartupDirectory").then(m => ({ default: m.StartupDirectory })));
 const StartupProfile = lazy(() => import("./pages/StartupProfile").then(m => ({ default: m.StartupProfile })));
 const StartupForm = lazy(() => import("./components/StartupForm").then(m => ({ default: m.StartupForm })));
+const UserDirectory = lazy(() => import("./pages/UserDirectory"));
 // const ShipWeek = lazy(() => import("./pages/ShipWeek"));
 
 // Basic loading fallback
@@ -507,7 +508,7 @@ export default function App() {
   const isAuthRoute = ["/sign-in", "/sign-up", "/forgot-password", "/onboarding"].includes(location.pathname);
 
   const isStandardPage =
-    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups", "/search"].includes(location.pathname) ||
+    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups", "/search", "/directory"].includes(location.pathname) ||
     location.pathname.startsWith("/post/") ||
     location.pathname.startsWith("/comment/") ||
     location.pathname.startsWith("/project/") ||
@@ -573,6 +574,7 @@ export default function App() {
                 <Route path="/changelog" element={<Changelog />} />
                 <Route path="/portfolio/:username" element={<Portfolio />} />
                 <Route path="/ogs" element={<OurOGs />} />
+                <Route path="/directory" element={<UserDirectory />} />
                 <Route path="/startups" element={<StartupDirectory />} />
                 <Route path="/startup/new" element={<StartupForm />} />
                 <Route path="/startup/:id" element={<StartupProfile />} />
