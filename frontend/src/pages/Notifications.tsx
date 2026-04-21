@@ -26,7 +26,6 @@ import { SEO } from "../components/SEO";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import {
     Delete02Icon,
-    NotificationOff01Icon,
     Tick02Icon,
     Cancel01Icon
 } from "@hugeicons/core-free-icons";
@@ -622,24 +621,6 @@ export default function NotificationsPage() {
                                     </button>
                                 )}
 
-                                <button
-                                    onClick={() => setIsSettingsModalOpen(true)}
-                                    style={{
-                                        background: "none",
-                                        border: "none",
-                                        cursor: "pointer",
-                                        padding: "8px",
-                                        borderRadius: "var(--radius-sm)",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        transition: "all 0.15s ease",
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
-                                >
-                                    <HugeiconsIcon icon={NotificationOff01Icon} size={20} color="var(--text-primary)" />
-                                </button>
                             </div>
                         </div>
 
