@@ -87,7 +87,7 @@ function UserItem({ user }: { user: DirectoryUser }) {
                     onClick={handleFollowClick}
                     disabled={loading}
                     style={{
-                        padding: "0 24px",
+                        padding: "0 14px",
                         height: "36px",
                         borderRadius: "100px",
                         backgroundColor: isFollowing ? "transparent" : "var(--text-primary)",
@@ -100,7 +100,7 @@ function UserItem({ user }: { user: DirectoryUser }) {
                         flexShrink: 0
                     }}
                 >
-                    {isFollowing ? "Following" : "Subscribe"}
+                    {isFollowing ? "Following" : "Follow"}
                 </button>
             )}
         </div>
