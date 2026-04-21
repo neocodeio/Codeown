@@ -243,16 +243,14 @@ export default function CommentDetail() {
                         </header>
 
                         {/* Parent Comment — rendered as detail (isDetailView) */}
-                        <div style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
-                            <CommentBlock
-                                comment={comment}
-                                depth={0}
-                                onReply={handleReply}
-                                onDelete={(id) => setCommentToDelete(id)}
-                                resourceType="post"
-                                isDetailView={true}
-                            />
-                        </div>
+                        <CommentBlock
+                            comment={comment}
+                            depth={0}
+                            onReply={handleReply}
+                            onDelete={(id) => setCommentToDelete(id)}
+                            resourceType="post"
+                            isDetailView={true}
+                        />
 
                         {/* Reply Composer — directly under parent */}
                         {isSignedIn && (

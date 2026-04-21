@@ -8,10 +8,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as faHeartSolid, faHeart as faHeartRegular, faXmark, faImage } from "@fortawesome/free-solid-svg-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
-import { formatRelativeDate } from "../utils/date";
+import { formatRelativeDate, formatFullTwitterDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import { Gif, ChatCircle } from "phosphor-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Comment01Icon,
+  Bookmark02Icon,
+  SentIcon,
+  FavouriteIcon,
+  ReloadIcon
+} from "@hugeicons/core-free-icons";
 import GifPicker from "./GifPicker";
 import RollingNumber from "./RollingNumber";
 
@@ -93,9 +101,106 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
     navigate(`/comment/${comment.id}`);
   };
 
+  if (isDetailView) {
+    return (
+      <div style={{
+        paddingTop: "32px",
+        paddingBottom: "0px",
+        paddingLeft: horizontalPadding,
+        paddingRight: horizontalPadding,
+        position: "relative"
+      }}>
+        {/* Large Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              if (comment.user?.username) navigate(`/${comment.user.username}`);
+              else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+            }}
+            style={{ cursor: "pointer", flexShrink: 0 }}
+          >
+            <AvailabilityBadge
+              avatarUrl={avatarUrl}
+              name={name}
+              size={48}
+              isOpenToOpportunities={comment.user?.is_pro}
+              username={comment.user?.username}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "4px" }}>
+              {name}
+              <VerifiedBadge username={comment.user?.username} size="16px" />
+            </span>
+            <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
+              @{comment.user?.username || "user"}
+            </span>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div style={{ fontSize: "18px", lineHeight: "1.4", color: "var(--text-primary)", wordBreak: "break-word", marginBottom: "16px" }}>
+          <ContentRenderer content={comment.content} />
+          {comment.image_url && (
+            <div style={{ marginTop: "12px", borderRadius: "16px", overflow: "hidden", border: "0.5px solid var(--border-hairline)", width: "fit-content", maxWidth: "100%" }}>
+              <img
+                src={comment.image_url}
+                alt=""
+                style={{ maxWidth: "100%", maxHeight: "500px", display: "block", cursor: "zoom-in" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onImageClick ? onImageClick(comment.image_url!) : window.open(comment.image_url!, '_blank');
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Date */}
+        <div style={{ padding: "16px 0", color: "var(--text-tertiary)", fontSize: "15px", fontWeight: 500, marginTop: "8px" }}>
+          {formatFullTwitterDate(comment.created_at)}
+        </div>
+
+        {/* Actions Bar */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderTop: "0.5px solid var(--border-hairline)", borderBottom: "0.5px solid var(--border-hairline)" }}>
+          <div style={{ display: "flex", gap: "24px" }}>
+            <button
+              onClick={() => document.querySelector('textarea')?.focus()}
+              style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", padding: 0 }}
+            >
+              <HugeiconsIcon icon={Comment01Icon} size={20} />
+              <span style={{ fontSize: "13px", fontWeight: 600 }}>{replyCount}</span>
+            </button>
+            <button
+              onClick={toggleLike}
+              disabled={likeLoading}
+              style={{ background: "none", border: "none", color: isLiked ? "#f91880" : "var(--text-secondary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", padding: 0 }}
+            >
+              <HugeiconsIcon icon={FavouriteIcon} size={20} className={isLiked ? "hugeicon-filled" : ""} />
+              <span style={{ fontSize: "13px", fontWeight: 600 }}>{likeCount}</span>
+            </button>
+          </div>
+
+          <div style={{ display: "flex", gap: "16px" }}>
+            <button style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
+              <HugeiconsIcon icon={ReloadIcon} size={20} />
+            </button>
+            <button style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
+              <HugeiconsIcon icon={SentIcon} size={20} />
+            </button>
+            <button style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
+              <HugeiconsIcon icon={Bookmark02Icon} size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{
-      paddingTop: depth === 0 ? (isDetailView ? "32px" : "24px") : "12px",
+      paddingTop: depth === 0 ? "24px" : "12px",
       paddingBottom: "12px",
       paddingLeft: depth === 0 ? horizontalPadding : 0,
       paddingRight: depth === 0 ? horizontalPadding : 0,
