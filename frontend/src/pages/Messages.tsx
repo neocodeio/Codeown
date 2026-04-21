@@ -2073,7 +2073,10 @@ export default function Messages() {
                       <div style={{ position: "relative" }}>
                         <button
                           type="button"
-                          onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsGifPickerOpen(!isGifPickerOpen);
+                          }}
                           style={{
                             width: "48px",
                             height: "48px",
@@ -2117,7 +2120,8 @@ export default function Messages() {
                       <div style={{ position: "relative" }}>
                         <button
                           type="button"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setIsEmojiPickerOpen(!isEmojiPickerOpen);
                             setIsGifPickerOpen(false); // Close gif picker if open
                           }}

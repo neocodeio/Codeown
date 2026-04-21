@@ -994,7 +994,10 @@ export default function PostDetail() {
                       <div style={{ position: "relative" }}>
                         <button
                           type="button"
-                          onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsGifPickerOpen(!isGifPickerOpen);
+                          }}
                           style={{
                             display: "flex", alignItems: "center", gap: "6px", padding: "8px",
                             backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent", color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
@@ -1004,7 +1007,7 @@ export default function PostDetail() {
                           <HugeiconsIcon icon={GifIcon} size={18} />
                         </button>
                         {isGifPickerOpen && (
-                          <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
+                          <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "12px", zIndex: 100 }}>
                             <GifPicker onSelect={(gif) => { setSelectedGif(gif); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
                           </div>
                         )}

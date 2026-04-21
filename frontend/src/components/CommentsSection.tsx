@@ -265,7 +265,10 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
                   type="button"
-                  onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsGifPickerOpen(!isGifPickerOpen);
+                  }}
                   style={{
                     display: "flex", alignItems: "center", gap: "6px", padding: "8px",
                     backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent",
@@ -289,7 +292,7 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
                 </button>
 
                 {isGifPickerOpen && (
-                  <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 100 }}>
+                  <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "12px", zIndex: 100 }}>
                     <GifPicker
                       onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }}
                       onClose={() => setIsGifPickerOpen(false)}

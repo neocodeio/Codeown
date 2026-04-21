@@ -318,7 +318,10 @@ export default function CommentDetail() {
                                             <div style={{ position: "relative" }}>
                                                 <button
                                                     type="button"
-                                                    onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setIsGifPickerOpen(!isGifPickerOpen);
+                                                    }}
                                                     style={{
                                                         display: "flex", alignItems: "center", gap: "6px", padding: "8px",
                                                         backgroundColor: isGifPickerOpen ? "var(--bg-hover)" : "transparent", color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
@@ -328,7 +331,7 @@ export default function CommentDetail() {
                                                     <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
                                                 </button>
                                                 {isGifPickerOpen && (
-                                                    <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 1001 }}>
+                                                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "12px", zIndex: 1001 }}>
                                                         <GifPicker onSelect={(gif) => { setSelectedGif(gif); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
                                                     </div>
                                                 )}

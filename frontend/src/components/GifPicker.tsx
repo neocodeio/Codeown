@@ -15,24 +15,38 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
   const [offset, setOffset] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [onClose]);
 
   const fetchGifs = async (searchQuery = "", currentOffset = 0) => {
     setLoading(true);
     try {
-      const endpoint = searchQuery 
+      const endpoint = searchQuery
         ? `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(searchQuery)}&limit=20&offset=${currentOffset}&rating=g`
         : `https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=20&offset=${currentOffset}&rating=g`;
-      
+
       const response = await fetch(endpoint);
       const data = await response.json();
-      
+
       const results = data.data || [];
       if (currentOffset === 0) {
         setGifs(results);
       } else {
         setGifs(prev => [...prev, ...results]);
       }
-      
+
       setOffset(currentOffset + results.length);
       setTotalCount(data.pagination?.total_count || 0);
     } catch (error) {
@@ -64,7 +78,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
   };
 
   return (
-    <div style={{
+    <div ref={containerRef} style={{
       width: "320px",
       maxWidth: "90vw",
       height: "400px",
@@ -115,7 +129,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
             }}
           />
         </div>
-        <button 
+        <button
           onClick={onClose}
           style={{
             background: "none",
@@ -135,7 +149,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
       </div>
 
       {/* Grid */}
-      <div 
+      <div
         ref={scrollRef}
         onScroll={handleScroll}
         style={{
@@ -165,12 +179,12 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
             onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
             onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
-            <img 
-              src={gif.images.preview_gif.url} 
-              alt={gif.title} 
-              style={{ 
-                width: "100%", 
-                height: "100%", 
+            <img
+              src={gif.images.preview_gif.url}
+              alt={gif.title}
+              style={{
+                width: "100%",
+                height: "100%",
                 objectFit: "cover",
                 display: "block"
               }}
@@ -202,10 +216,10 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
         backgroundColor: "var(--bg-hover)",
         alignItems: "center"
       }}>
-        <span style={{ 
-          fontSize: "10px", 
-          color: "var(--text-tertiary)", 
-          fontWeight: 600, 
+        <span style={{
+          fontSize: "10px",
+          color: "var(--text-tertiary)",
+          fontWeight: 600,
         }}>
           Powered by Giphy
         </span>

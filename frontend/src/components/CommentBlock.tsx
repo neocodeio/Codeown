@@ -302,7 +302,10 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                     <div style={{ position: "relative" }}>
                       <button
                         type="button"
-                        onClick={() => setIsGifPickerOpen(!isGifPickerOpen)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsGifPickerOpen(!isGifPickerOpen);
+                        }}
                         style={{
                           height: "32px",
                           padding: "0 10px",
@@ -337,7 +340,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                         <Gif size={20} weight={isGifPickerOpen ? "fill" : "bold"} />
                       </button>
                       {isGifPickerOpen && (
-                        <div style={{ position: "absolute", bottom: "100%", left: 0, marginBottom: "12px", zIndex: 1000 }}>
+                        <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "12px", zIndex: 1000 }}>
                           <GifPicker onSelect={(gifUrl) => { setSelectedGif(gifUrl); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
                         </div>
                       )}
