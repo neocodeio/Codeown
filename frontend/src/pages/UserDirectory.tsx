@@ -130,7 +130,7 @@ export default function UserDirectory() {
 
     return (
         <main style={{ backgroundColor: "var(--bg-page)", minHeight: "100vh", display: "flex", justifyContent: "center" }}>
-            <SEO title="Creators" description="Explore all users on the platform." />
+            <SEO title="Creators" description="Explore all creators on the platform." />
 
             <div style={{
                 display: "flex",
