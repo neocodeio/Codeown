@@ -21,7 +21,7 @@ import {
   RepostIcon,
   ReloadIcon,
   WorkIcon,
-  HourglassIcon,
+  UserQuestion01Icon,
   ConfusedIcon
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
@@ -421,7 +421,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     whiteSpace: "nowrap"
                   }}>
                     {displayPost.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
-                    {displayPost.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={12} />}
+                    {displayPost.post_type === "Stuck" && <HugeiconsIcon icon={UserQuestion01Icon} size={12} />}
                     {displayPost.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
                     {displayPost.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={12} />}
                     {displayPost.post_type}

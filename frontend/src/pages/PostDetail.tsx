@@ -36,7 +36,7 @@ import {
   Image01Icon,
   ReloadIcon,
   WorkIcon,
-  HourglassIcon,
+  UserQuestion01Icon,
   ConfusedIcon
 } from "@hugeicons/core-free-icons";
 import { toast } from "react-toastify";
@@ -680,7 +680,7 @@ export default function PostDetail() {
                                 "rgba(168, 85, 247, 0.12)",
                         }}>
                           {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={11} />}
-                          {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={11} />}
+                          {post.post_type === "Stuck" && <HugeiconsIcon icon={UserQuestion01Icon} size={11} />}
                           {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={11} />}
                           {post.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={11} />}
                           <span>{post.post_type}</span>

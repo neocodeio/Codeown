@@ -12,7 +12,7 @@ import {
     FileAddIcon,
     Cancel01Icon,
     WorkIcon,
-    HourglassIcon,
+    UserQuestion01Icon,
     ConfusedIcon,
     AddCircleIcon,
     MinusPlusCircle01Icon,
@@ -805,7 +805,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     }}>
                                         {postType === "Update" && <HugeiconsIcon icon={ReloadIcon} size={13} />}
                                         {postType === "WIP" && <HugeiconsIcon icon={WorkIcon} size={13} />}
-                                        {postType === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={13} />}
+                                        {postType === "Stuck" && <HugeiconsIcon icon={UserQuestion01Icon} size={13} />}
                                         {postType === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={13} />}
                                     </span>
                                     <span style={{ opacity: 0.9 }}>{postType}</span>
@@ -836,7 +836,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         {[
                                             { label: "Update", icon: <HugeiconsIcon icon={ReloadIcon} size={16} />, color: "var(--text-tertiary)" },
                                             { label: "WIP", icon: <HugeiconsIcon icon={WorkIcon} size={16} />, color: "#ffaa00" },
-                                            { label: "Stuck", icon: <HugeiconsIcon icon={HourglassIcon} size={16} />, color: "#ff4d4f" },
+                                            { label: "Stuck", icon: <HugeiconsIcon icon={UserQuestion01Icon} size={16} />, color: "#ff4d4f" },
                                             { label: "Advice", icon: <HugeiconsIcon icon={ConfusedIcon} size={16} />, color: "#a855f7" }
                                         ].map((type) => (
                                             <button
