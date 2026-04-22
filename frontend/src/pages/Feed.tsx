@@ -171,7 +171,6 @@ export default function Feed() {
                     maxWidth: isDesktop ? "var(--feed-width)" : "600px",
                     margin: isDesktop ? "0" : "0 auto",
                     flexShrink: 0,
-                    borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
                     borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
                     minHeight: "100vh",
                     position: "relative",
@@ -470,7 +469,7 @@ export default function Feed() {
                 {/* ── Right Sidebar ── */}
                 {isDesktop && (
                     <aside style={{
-                        width: "300px",
+                        width: "335px",
                         position: "sticky",
                         top: 0,
                         alignSelf: "flex-start",
@@ -478,7 +477,8 @@ export default function Feed() {
                         zIndex: 1,
                         display: "flex",
                         flexDirection: "column",
-                        height: "100vh"
+                        height: "100vh",
+                        borderRight: "0.5px solid var(--border-hairline)"
                     }}>
                         <RecommendedUsersSidebar />
                     </aside>

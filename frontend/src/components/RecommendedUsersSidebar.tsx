@@ -100,12 +100,50 @@ function RecentLaunchItem({ project }: { project: any }) {
                 <span style={{
                     fontSize: "12px",
                     fontWeight: 800,
-                    color: isLiked ? "#3b82f6" : "var(--text-secondary)"
+                    color: isLiked ? "#1a1a1a" : "var(--text-secondary)"
                 }}>
                     {likeCount}
                 </span>
             </button>
         </div>
+    );
+}
+
+function ProjectVoteButton({ project }: { project: any }) {
+    const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id, project.isLiked, project.likes_count || project.like_count || 0);
+
+    return (
+        <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLike(); }}
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "56px",
+                height: "76px",
+                borderRadius: "22px",
+                border: isLiked ? "none" : "1.5px solid #edf2f7",
+                backgroundColor: isLiked ? "rgba(59, 130, 246, 0.1)" : "#ffffff",
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                flexShrink: 0,
+                position: "relative",
+                zIndex: 10,
+                boxShadow: isLiked ? "none" : "0 4px 12px rgba(0,0,0,0.03)"
+            }}
+            onMouseEnter={(e) => { if (!isLiked) { e.currentTarget.style.borderColor = "#cbd5e1"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
+            onMouseLeave={(e) => { if (!isLiked) { e.currentTarget.style.borderColor = "#edf2f7"; e.currentTarget.style.transform = "translateY(0)"; } }}
+        >
+            <HugeiconsIcon icon={ArrowUp02Icon} size={20} style={{ color: isLiked ? "#1a1a1a" : "#1a1a1a", marginBottom: "4px" }} />
+            <span style={{
+                fontSize: "16px",
+                fontWeight: 800,
+                color: isLiked ? "#1a1a1a" : "#1a1a1a"
+            }}>
+                {likeCount}
+            </span>
+        </button>
     );
 }
 
@@ -209,6 +247,7 @@ export default function RecommendedUsersSidebar() {
             `}</style>
 
             <SidebarHeader />
+
 
             {/* Section 1: Who to follow */}
             <div className="sidebar-section">
@@ -316,6 +355,90 @@ export default function RecommendedUsersSidebar() {
                     )}
                 </div>
             </div>
+
+            {/* Project of the Week Spotlight */}
+            {!projectsLoading && projects.length > 0 && (
+                <div className="sidebar-section" style={{ borderBottom: "0.5px solid var(--border-hairline)", paddingBottom: "24px" }}>
+                    <h3 style={{
+                        fontFamily: "'Instrument Serif', serif",
+                        fontSize: "24px",
+                        fontStyle: "italic",
+                        color: "var(--text-primary)",
+                        marginBottom: "16px",
+                        fontWeight: 400,
+                        letterSpacing: "-0.01em"
+                    }}>
+                        Project of the Week 🚀
+                    </h3>
+                    <div style={{
+                        backgroundColor: "#ffffff",
+                        borderRadius: "25px",
+                        border: "1.5px solid #edf2f7",
+                        padding: "15px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "15px",
+                        background: "linear-gradient(135deg, #ffffff 0%, #fffef0 100%)",
+                        position: "relative",
+                        overflow: "hidden",
+                        // boxShadow: "0 8px 24px rgba(0,0,0,0.04)"
+                    }}>
+                        <Link to={`/project/${projects[0].id}`} style={{ position: "absolute", inset: 0, zIndex: 1 }} />
+
+                        <div style={{
+                            width: "52px",
+                            height: "52px",
+                            borderRadius: "24px",
+                            backgroundColor: "var(--bg-page)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                            overflow: "hidden",
+                            background: "linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%)",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            position: "relative",
+                            zIndex: 2,
+                            boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)"
+                        }}>
+                            {projects[0].cover_image ? (
+                                <img src={projects[0].cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
+                            ) : (
+                                <span style={{ fontSize: "24px", fontWeight: 800, color: "#0369a1" }}>{getInitials(projects[0].title)}</span>
+                            )}
+                        </div>
+
+                        <div style={{ flex: 1, minWidth: 0, position: "relative", zIndex: 2 }}>
+                            <h4 style={{
+                                fontSize: "19px",
+                                fontWeight: 800,
+                                color: "#1a1a1a",
+                                marginBottom: "4px",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                letterSpacing: "-0.02em"
+                            }}>
+                                {projects[0].title}
+                            </h4>
+                            <p style={{
+                                fontSize: "15px",
+                                color: "#4b5563",
+                                lineHeight: "1.4",
+                                fontWeight: 500,
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden"
+                            }}>
+                                {projects[0].description || "Explore this amazing project built on Codeown."}
+                            </p>
+                        </div>
+
+                        <ProjectVoteButton project={projects[0]} />
+                    </div>
+                </div>
+            )}
 
             {/* Section 4: Trending */}
             {!trendingLoading && Array.isArray(trendingTags) && (
