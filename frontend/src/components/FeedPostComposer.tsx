@@ -884,8 +884,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 )}
                             </div>
 
-                            {/* Project Selector */}
-                            <div style={{ position: "relative" }} ref={projectMenuRef}>
+                            {/* Project Selector (Hidden for now) */}
+                            <div style={{ position: "relative", display: "none" }} ref={projectMenuRef}>
                                 <button
                                     onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
                                     style={{
