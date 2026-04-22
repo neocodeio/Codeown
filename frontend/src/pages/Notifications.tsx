@@ -379,7 +379,9 @@ export default function NotificationsPage() {
             }
         }
 
-        if (notification.post_id) {
+        if (notification.comment_id) {
+            navigate(`/comment/${notification.comment_id}`);
+        } else if (notification.post_id) {
             navigate(`/post/${notification.post_id}`);
         } else if (notification.project_id) {
             navigate(`/project/${notification.project_id}`);
@@ -767,7 +769,25 @@ export default function NotificationsPage() {
                                                     {getNotificationMessage(notification)}
                                                 </p>
 
-                                                {(notification.post || notification.project) && (
+                                                {notification.comment?.content && (
+                                                    <div style={{
+                                                        marginTop: "12px",
+                                                        padding: "12px",
+                                                        borderRadius: "16px",
+                                                        border: "0.5px solid var(--border-hairline)",
+                                                        backgroundColor: "rgba(var(--text-primary-rgb), 0.03)",
+                                                        display: "flex",
+                                                        gap: "12px"
+                                                    }}>
+                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <p style={{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, fontStyle: "italic", borderLeft: "2px solid var(--border-light)", paddingLeft: "8px" }}>
+                                                                "{notification.comment.content}"
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {(notification.post || notification.project) && !notification.comment?.content && (
                                                     <div style={{
                                                         marginTop: "12px",
                                                         padding: "12px",
@@ -869,12 +889,28 @@ export default function NotificationsPage() {
                                                         fontWeight: 400,
                                                         wordBreak: "break-word"
                                                     }}>
-                                                        <span style={{ fontWeight: 700 }}>{notification.actor?.name || "User"}</span>
-                                                        {notification.groupCount && notification.groupCount > 1 ? ` and ${notification.groupCount - 1} others` : ""}
-                                                        {" "}{notification.type === "like" ? "liked your post" : notification.type === "follow" ? "followed you" : "interacted with you"}
+                                                        {getNotificationMessage(notification)}
                                                     </p>
 
-                                                    {notification.post && (
+                                                    {notification.comment?.content && (
+                                                        <div style={{
+                                                            marginTop: "8px",
+                                                            padding: "12px",
+                                                            borderRadius: "16px",
+                                                            border: "0.5px solid var(--border-hairline)",
+                                                            backgroundColor: "rgba(var(--text-primary-rgb), 0.03)",
+                                                            display: "flex",
+                                                            gap: "12px"
+                                                        }}>
+                                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                                <p style={{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, fontStyle: "italic", borderLeft: "2px solid var(--border-light)", paddingLeft: "8px" }}>
+                                                                    "{notification.comment.content}"
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {notification.post && !notification.comment?.content && (
                                                         <p style={{
                                                             margin: 0,
                                                             fontSize: "15px",

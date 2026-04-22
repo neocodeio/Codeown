@@ -33,7 +33,11 @@ import {
   PencilEdit01Icon,
   Delete02Icon,
   GifIcon,
-  Image01Icon
+  Image01Icon,
+  ReloadIcon,
+  WorkIcon,
+  HourglassIcon,
+  ConfusedIcon
 } from "@hugeicons/core-free-icons";
 import { toast } from "react-toastify";
 import Lightbox from "../components/Lightbox";
@@ -77,6 +81,7 @@ interface Post {
     name: string;
     slug: string;
   } | null;
+  post_type?: string | null;
 }
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -640,6 +645,34 @@ export default function PostDetail() {
                   </div>
                   <div style={{ fontSize: "12.5px", color: "var(--text-tertiary)", marginTop: "1px", fontWeight: 500, display: "flex", alignItems: "center", gap: "6px" }}>
                     @{post.user?.username || 'user'}
+                    {post.post_type && (
+                      <>
+                        <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          fontSize: "12px",
+                          fontWeight: 700,
+                          color: post.post_type === "WIP" ? "#ffaa00" :
+                            post.post_type === "Stuck" ? "#ff4d4f" :
+                              post.post_type === "Advice" ? "#a855f7" :
+                                "var(--text-tertiary)",
+                          padding: post.post_type === "Update" ? "0" : "1px 6px",
+                          borderRadius: "6px",
+                          backgroundColor: post.post_type === "Update" ? "transparent" :
+                            post.post_type === "WIP" ? "rgba(255, 170, 0, 0.1)" :
+                              post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.1)" :
+                                "rgba(168, 85, 247, 0.12)",
+                        }}>
+                          {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={11} />}
+                          {post.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={11} />}
+                          {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={11} />}
+                          {post.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={11} />}
+                          <span>{post.post_type}</span>
+                        </div>
+                      </>
+                    )}
                     {post.project && (
                       <>
                         <span style={{ color: "var(--border-hairline)", fontSize: "10px" }}>•</span>

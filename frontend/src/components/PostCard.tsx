@@ -18,7 +18,11 @@ import {
   PencilEdit02Icon,
   Delete02Icon,
   SparklesIcon,
-  RepostIcon
+  RepostIcon,
+  ReloadIcon,
+  WorkIcon,
+  HourglassIcon,
+  ConfusedIcon
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -392,6 +396,35 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   @{primaryUser?.username || 'user'}
                 </span>
                 <span style={{ color: "var(--text-tertiary)", fontSize: "14px" }}>•</span>
+                {displayPost?.post_type && (
+                  <>
+                    <span style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      color: displayPost.post_type === "WIP" ? "#ffaa00" :
+                        displayPost.post_type === "Stuck" ? "#ff4d4f" :
+                          displayPost.post_type === "Advice" ? "#a855f7" :
+                            "var(--text-tertiary)",
+                      backgroundColor: displayPost.post_type === "Update" ? "transparent" :
+                        displayPost.post_type === "WIP" ? "rgba(255, 170, 0, 0.1)" :
+                          displayPost.post_type === "Stuck" ? "rgba(255, 77, 79, 0.1)" :
+                            "rgba(168, 85, 247, 0.12)",
+                      padding: displayPost.post_type === "Update" ? "0" : "2px 8px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap"
+                    }}>
+                      {displayPost.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
+                      {displayPost.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={12} />}
+                      {displayPost.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
+                      {displayPost.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={12} />}
+                      {displayPost.post_type}
+                    </span>
+                    <span style={{ color: "var(--text-tertiary)", fontSize: "14px" }}>•</span>
+                  </>
+                )}
                 <span style={{ color: "var(--text-tertiary)", fontSize: "14px", whiteSpace: "nowrap" }}>
                   {formatRelativeDate(displayPost?.created_at)}
                 </span>

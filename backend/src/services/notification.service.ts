@@ -141,7 +141,7 @@ export async function notify(params: SendNotificationParams) {
                     rName,
                     aName,
                     commentId ? 'comment' : postId ? 'post' : projectId ? 'project' : 'post',
-                    postId || projectId || commentId || 0
+                    commentId || postId || projectId || 0
                 );
                 break;
             case 'follow':
@@ -168,7 +168,7 @@ export async function notify(params: SendNotificationParams) {
                     recipient.email,
                     rName,
                     aName,
-                    postId || projectId || commentId || 0,
+                    commentId || postId || projectId || 0,
                     projectId ? 'project' : commentId ? 'comment' : 'post'
                 );
                 break;

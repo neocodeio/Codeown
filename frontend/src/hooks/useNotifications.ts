@@ -32,6 +32,9 @@ export interface Notification {
     name: string | null;
     image: string | null;
   } | null;
+  comment?: {
+    content: string | null;
+  } | null;
   actors?: any[]; // for grouped notifications
 }
 

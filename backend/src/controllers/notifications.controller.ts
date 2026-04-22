@@ -73,9 +73,9 @@ export async function getNotifications(req: Request, res: Response) {
       }
     }
 
-    // Get post/project details for previews
     const postIds = [...new Set(notifications.filter((n: any) => n.post_id).map((n: any) => n.post_id))];
     const projectIds = [...new Set(notifications.filter((n: any) => n.project_id).map((n: any) => n.project_id))];
+    const commentIds = [...new Set(notifications.filter((n: any) => n.comment_id).map((n: any) => n.comment_id))];
 
     const { data: posts } = postIds.length > 0 ? await supabase
       .from("posts")
@@ -87,13 +87,20 @@ export async function getNotifications(req: Request, res: Response) {
       .select("id, name, description, cover_url")
       .in("id", projectIds) : { data: [] };
 
+    const { data: comments } = commentIds.length > 0 ? await supabase
+      .from("comments")
+      .select("id, content")
+      .in("id", commentIds) : { data: [] };
+
     const postMap = new Map((posts || []).map((p: any) => [p.id, p]));
     const projectMap = new Map((projects || []).map((p: any) => [p.id, p]));
+    const commentMap = new Map((comments || []).map((c: any) => [c.id, c]));
 
     const notificationsWithActors = notifications.map((notif: any) => {
       const actor = userMap.get(notif.actor_id);
       const post = notif.post_id ? postMap.get(notif.post_id) : null;
       const project = notif.project_id ? projectMap.get(notif.project_id) : null;
+      const commentReq = notif.comment_id ? commentMap.get(notif.comment_id) : null;
 
       return {
         ...notif,
@@ -116,6 +123,9 @@ export async function getNotifications(req: Request, res: Response) {
         project: project ? {
           name: project.name,
           image: project.cover_url || null
+        } : null,
+        comment: commentReq ? {
+          content: commentReq.content
         } : null
       };
     });

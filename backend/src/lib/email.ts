@@ -416,7 +416,7 @@ export async function sendNewCommentEmail(
     return;
   }
   try {
-    const url = contentType === 'project' ? `/project/${contentId}` : `/`;
+    const url = contentType === 'project' ? `/project/${contentId}` : `/post/${contentId}`;
     const typeLabel = contentType === 'project' ? 'project' : 'post';
     const actionLabel = isReply ? 'replied to you' : `commented on your ${typeLabel}`;
 
