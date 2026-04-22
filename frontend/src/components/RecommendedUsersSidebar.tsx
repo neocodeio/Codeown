@@ -374,7 +374,7 @@ export default function RecommendedUsersSidebar() {
                         backgroundColor: "#ffffff",
                         borderRadius: "25px",
                         border: "1.5px solid #edf2f7",
-                        padding: "15px",
+                        padding: "10px",
                         display: "flex",
                         alignItems: "center",
                         gap: "15px",
@@ -422,7 +422,7 @@ export default function RecommendedUsersSidebar() {
                                 {projects[0].title}
                             </h4>
                             <p style={{
-                                fontSize: "15px",
+                                fontSize: "11px",
                                 color: "#4b5563",
                                 lineHeight: "1.4",
                                 fontWeight: 500,
