@@ -36,6 +36,7 @@ import UserHoverCard from "./UserHoverCard";
 import Lightbox from "./Lightbox";
 import QuickCommentModal from "./QuickCommentModal";
 import LikeButton from "./LikeButton";
+import InlineFollowButton from "./InlineFollowButton";
 import { socket } from "../lib/socket";
 
 interface PostCardProps {
@@ -440,30 +441,36 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               justifyContent: "space-between",
               marginBottom: "2px"
             }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0, overflow: "hidden" }}>
-                <UserHoverCard userId={primaryUser?.id || ""} user={primaryUser as any}>
-                  <span
-                    onClick={handleUserClick}
-                    style={{
-                      fontWeight: 700,
-                      fontSize: "15px",
-                      color: "var(--text-primary)",
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis"
-                    }}
-                  >
-                    {userName}
+              <div style={{ display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
+                  <UserHoverCard userId={primaryUser?.id || ""} user={primaryUser as any}>
+                    <span
+                      onClick={handleUserClick}
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "15px",
+                        color: "var(--text-primary)",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                      }}
+                    >
+                      {userName}
+                    </span>
+                  </UserHoverCard>
+                  <VerifiedBadge username={primaryUser?.username} />
+                  <InlineFollowButton userId={primaryUser?.id || ""} />
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "4px", marginTop: "-2px" }}>
+                  <span style={{ color: "var(--text-tertiary)", fontSize: "13px", whiteSpace: "nowrap" }}>
+                    @{primaryUser?.username || 'user'}
                   </span>
-                </UserHoverCard>
-                <VerifiedBadge username={primaryUser?.username} />
-                <span style={{ color: "var(--text-tertiary)", fontSize: "14px", whiteSpace: "nowrap" }}>
-                  @{primaryUser?.username || 'user'}
-                </span>
-                <span style={{ color: "var(--text-tertiary)", fontSize: "14px", whiteSpace: "nowrap" }}>
-                  {formatRelativeDate(displayPost?.created_at)}
-                </span>
+                  <span style={{ color: "var(--text-tertiary)", fontSize: "13px", opacity: 0.5 }}>•</span>
+                  <span style={{ color: "var(--text-tertiary)", fontSize: "13px", whiteSpace: "nowrap" }}>
+                    {formatRelativeDate(displayPost?.created_at)}
+                  </span>
+                </div>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
