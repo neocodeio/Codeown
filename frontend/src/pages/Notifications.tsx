@@ -68,6 +68,34 @@ export default function NotificationsPage() {
         }
     };
 
+    const renderCommentPreview = (content: string) => {
+        const parts = content.split('\n');
+        const textParts: string[] = [];
+        const imageParts: string[] = [];
+
+        parts.forEach(p => {
+            const trimmed = p.trim();
+            if (trimmed.startsWith('http') && (trimmed.includes('giphy.com') || trimmed.includes('tenor.com') || /\.(gif|jpe?g|png|webp|bmp)$/i.test(trimmed))) {
+                imageParts.push(trimmed);
+            } else if (trimmed) {
+                textParts.push(trimmed);
+            }
+        });
+
+        return (
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {textParts.length > 0 && <span>"{textParts.join('\n')}"</span>}
+                {imageParts.length > 0 && (
+                    <div>
+                        {imageParts.map((url, i) => (
+                            <img key={i} src={url} alt="Media" style={{ maxWidth: "200px", borderRadius: "12px", border: "0.5px solid var(--border-hairline)", objectFit: "cover" }} />
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     const handleSaveSettings = async () => {
         setIsSavingSettings(true);
         try {
@@ -903,9 +931,9 @@ export default function NotificationsPage() {
                                                             gap: "12px"
                                                         }}>
                                                             <div style={{ flex: 1, minWidth: 0 }}>
-                                                                <p style={{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, fontStyle: "italic", borderLeft: "2px solid var(--border-light)", paddingLeft: "8px" }}>
-                                                                    "{notification.comment.content}"
-                                                                </p>
+                                                                <div style={{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, fontStyle: "italic", borderLeft: "2px solid var(--border-light)", paddingLeft: "8px" }}>
+                                                                    {renderCommentPreview(notification.comment.content)}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
