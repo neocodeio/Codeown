@@ -369,8 +369,22 @@ export default function PostDetail() {
     document.body.removeChild(link);
   };
 
-  // Only show top-level comments (no parent_id) — replies are accessed via drill-down
-  const topLevelComments = comments.filter(c => !c.parent_id);
+  // Build comment tree for threaded views
+  const commentMap = new Map<number | string, CommentWithMeta>();
+  comments.forEach(c => {
+    // Make sure we clone and define a children array (if not already there)
+    commentMap.set(c.id, { ...c, children: [] });
+  });
+
+  const topLevelComments: CommentWithMeta[] = [];
+  comments.forEach(c => {
+    const parentId = c.parent_id;
+    if (parentId && commentMap.has(parentId)) {
+      commentMap.get(parentId)!.children!.push(commentMap.get(c.id)!);
+    } else {
+      topLevelComments.push(commentMap.get(c.id)!);
+    }
+  });
 
   const { width } = useWindowSize();
   const isDesktop = width >= 1200;

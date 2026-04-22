@@ -392,18 +392,19 @@ export async function getCommentDetail(req: Request, res: Response) {
       return res.status(404).json({ error: "Comment not found" });
     }
 
-    // 2. Fetch direct replies (parent_id === commentId)
-    const { data: replies, error: repliesError } = await supabase
+    // 2. Fetch all comments for the whole post rather than just direct replies
+    const { data: allPostComments, error: allError } = await supabase
       .from("comments")
       .select("*")
-      .eq("parent_id", commentId)
+      .eq("post_id", comment.post_id)
       .order("created_at", { ascending: true });
 
-    if (repliesError) {
-      console.error("Error fetching replies:", repliesError);
+    if (allError) {
+      console.error("Error fetching all post comments:", allError);
     }
 
-    const allComments = [comment, ...(replies || [])];
+    // We already have `comment`. we need everything under `commentId`.
+    const allComments = allPostComments || [comment];
     const commentIds = allComments.map((c: any) => c.id);
 
     // 3. Fetch like counts for all
@@ -419,23 +420,16 @@ export async function getCommentDetail(req: Request, res: Response) {
       if (id != null) likeCountMap.set(id, (likeCountMap.get(id) || 0) + 1);
     }
 
-    // 4. Fetch reply counts for each reply (how many children each reply has)
-    const replyIds = (replies || []).map((r: any) => r.id);
+    // 4. Compute reply counts locally using the full tree we just fetched
     let replyCountMap = new Map<number, number>();
-    if (replyIds.length > 0) {
-      const { data: grandchildren } = await supabase
-        .from("comments")
-        .select("parent_id")
-        .in("parent_id", replyIds);
-
-      for (const gc of grandchildren || []) {
-        const pid = (gc as any).parent_id;
-        if (pid != null) replyCountMap.set(pid, (replyCountMap.get(pid) || 0) + 1);
+    for (const c of allComments) {
+      if (c.parent_id != null) {
+        replyCountMap.set(c.parent_id, (replyCountMap.get(c.parent_id) || 0) + 1);
       }
     }
 
     // Also get reply count for the parent comment itself
-    const parentReplyCount = (replies || []).length;
+    const parentReplyCount = allComments.filter(c => c.parent_id == commentId).length;
 
     // 5. Collect user IDs
     const userIds = new Set<string>(allComments.map((c: any) => c.user_id));
@@ -513,7 +507,24 @@ export async function getCommentDetail(req: Request, res: Response) {
 
     const enrichedComment = enrichComment(comment);
     enrichedComment.reply_count = parentReplyCount;
-    const enrichedReplies = (replies || []).map((r: any) => enrichComment(r, true));
+
+    // Build tree
+    const allEnrichedComments = allComments.map(c => enrichComment(c, true));
+    const treeMap = new Map();
+
+    allEnrichedComments.forEach(c => {
+      treeMap.set(c.id, { ...c, children: [] });
+    });
+
+    allEnrichedComments.forEach(c => {
+      const parentId = c.parent_id;
+      if (parentId && treeMap.has(parentId)) {
+        treeMap.get(parentId).children.push(treeMap.get(c.id));
+      }
+    });
+
+    const mainNode = treeMap.get(Number(commentId)) || treeMap.get(String(commentId));
+    const enrichedReplies = mainNode?.children || [];
 
     return res.json({ comment: enrichedComment, replies: enrichedReplies });
   } catch (error: any) {
