@@ -11,6 +11,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { formatRelativeDate, formatFullTwitterDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
+import UserHoverCard from "./UserHoverCard";
 import { Gif, ChatCircle } from "phosphor-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -46,9 +47,10 @@ interface CommentBlockProps {
   onImageClick?: (url: string) => void;
   resourceType: "post" | "project";
   isDetailView?: boolean;
+  showThreadLine?: boolean;
 }
 
-export default function CommentBlock({ comment, depth, onReply, onDelete, onImageClick, resourceType, isDetailView }: CommentBlockProps) {
+export default function CommentBlock({ comment, depth, onReply, onDelete, onImageClick, resourceType, isDetailView, showThreadLine = false }: CommentBlockProps) {
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -110,29 +112,66 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
         paddingRight: horizontalPadding,
         position: "relative"
       }}>
+        {/* Thread Line */}
+        {showThreadLine && (
+          <div style={{
+            position: "absolute",
+            top: "92px", // Start below large avatar (48px) + paddingTop (32px) + some gap
+            left: `calc(${horizontalPadding}px + 24px)`,
+            bottom: 0,
+            width: "2px",
+            backgroundColor: "var(--border-hairline)",
+            zIndex: 1
+          }} />
+        )}
+
+        {/* Thread Line */}
+        {showThreadLine && (
+          <div style={{
+            position: "absolute",
+            top: "92px", // Start below large avatar (48px) + paddingTop (32px) + some gap
+            left: `48px`,
+            bottom: 0,
+            width: "2px",
+            backgroundColor: "var(--border-hairline)",
+            zIndex: 1
+          }} />
+        )}
+
         {/* Large Header */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              if (comment.user?.username) navigate(`/${comment.user.username}`);
-              else if (comment.user_id) navigate(`/user/${comment.user_id}`);
-            }}
-            style={{ cursor: "pointer", flexShrink: 0 }}
-          >
-            <AvailabilityBadge
-              avatarUrl={avatarUrl}
-              name={name}
-              size={48}
-              isOpenToOpportunities={comment.user?.is_pro}
-              username={comment.user?.username}
-            />
-          </div>
+          <UserHoverCard userId={comment.user_id} user={comment.user as any}>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                if (comment.user?.username) navigate(`/${comment.user.username}`);
+                else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+              }}
+              style={{ cursor: "pointer", flexShrink: 0, marginLeft: "0px" }}
+            >
+              <AvailabilityBadge
+                avatarUrl={avatarUrl}
+                name={name}
+                size={48}
+                isOpenToOpportunities={comment.user?.is_pro}
+                username={comment.user?.username}
+              />
+            </div>
+          </UserHoverCard>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "4px" }}>
-              {name}
-              <VerifiedBadge username={comment.user?.username} size="16px" />
-            </span>
+            <UserHoverCard userId={comment.user_id} user={comment.user as any}>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (comment.user?.username) navigate(`/${comment.user.username}`);
+                  else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+                }}
+                style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "4px", cursor: "pointer" }}
+              >
+                {name}
+                <VerifiedBadge username={comment.user?.username} size="16px" />
+              </span>
+            </UserHoverCard>
             <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
               @{comment.user?.username || "user"}
             </span>
@@ -206,44 +245,61 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
       paddingRight: depth === 0 ? horizontalPadding : 0,
       position: "relative"
     }}>
+      {/* Thread Line segment */}
+      {showThreadLine && (
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: `48px`,
+          bottom: 0,
+          width: "2px",
+          backgroundColor: "var(--border-hairline)",
+          zIndex: 1
+        }} />
+      )}
+
       {/* Main Comment Row */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: `${gap}px`, position: "relative", zIndex: 2 }}>
         {/* Avatar */}
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            if (comment.user?.username) navigate(`/${comment.user.username}`);
-            else if (comment.user_id) navigate(`/user/${comment.user_id}`);
-          }}
-          style={{ cursor: "pointer", flexShrink: 0 }}
-        >
-          <AvailabilityBadge
-            avatarUrl={avatarUrl}
-            name={name}
-            size={avatarSize}
-            isOpenToOpportunities={comment.user?.is_pro}
-            username={comment.user?.username}
-          />
-        </div>
+        <UserHoverCard userId={comment.user_id} user={comment.user as any}>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              if (comment.user?.username) navigate(`/${comment.user.username}`);
+              else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+            }}
+            style={{ cursor: "pointer", flexShrink: 0, marginLeft: "4px" }} // Offset 40px avatar to center on 48px axis (24+24 vs 24+20)
+          >
+            <AvailabilityBadge
+              avatarUrl={avatarUrl}
+              name={name}
+              size={avatarSize}
+              isOpenToOpportunities={comment.user?.is_pro}
+              username={comment.user?.username}
+            />
+          </div>
+        </UserHoverCard>
 
         {/* Content Area */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
-            <span
-              onClick={(e) => {
-                e.stopPropagation();
-                if (comment.user?.username) navigate(`/${comment.user.username}`);
-                else if (comment.user_id) navigate(`/user/${comment.user_id}`);
-              }}
-              style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
-            >
-              {name}
-              <VerifiedBadge username={comment.user?.username} size="14px" />
-              {comment.user?.is_pro && (
-                <span style={{ fontSize: "10px", fontWeight: 600, padding: "1px 8px", borderRadius: "100px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", marginLeft: "4px" }}>Pro</span>
-              )}
-            </span>
+            <UserHoverCard userId={comment.user_id} user={comment.user as any}>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (comment.user?.username) navigate(`/${comment.user.username}`);
+                  else if (comment.user_id) navigate(`/user/${comment.user_id}`);
+                }}
+                style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
+              >
+                {name}
+                <VerifiedBadge username={comment.user?.username} size="14px" />
+                {comment.user?.is_pro && (
+                  <span style={{ fontSize: "10px", fontWeight: 600, padding: "1px 8px", borderRadius: "100px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", marginLeft: "4px" }}>Pro</span>
+                )}
+              </span>
+            </UserHoverCard>
             <span style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 400 }}>
               • {formatRelativeDate(comment.created_at)}
             </span>
