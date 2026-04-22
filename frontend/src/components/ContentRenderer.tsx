@@ -328,15 +328,20 @@ export default function ContentRenderer({ content, fontSize = "16px", hidePrevie
       // Bare URLs (https?://...)
       parts = parts.flatMap(p => {
         if (typeof p !== 'string') return p;
-        const regex = /(https?:\/\/[^\s]+)/g;
+        // Stop before trailing punctuation often found at the end of sentences/quotes
+        const regex = /(https?:\/\/[^\s]+?)(?=[.,;:"']?(\s|$))/g;
         const res: (string | React.JSX.Element)[] = [];
         let lastIdx = 0;
         let match;
         while ((match = regex.exec(p)) !== null) {
           if (match.index > lastIdx) res.push(p.slice(lastIdx, match.index));
           const url = match[1];
-          // Check if it's an image/GIF
-          const isImage = /\.(gif|jpe?g|png|webp|bmp)$/i.test(url) || url.includes("tenor.com") || url.includes("giphy.com");
+          // Check if it's an image/GIF - broader checks for Giphy/Tenor
+          const isImage = /\.(gif|jpe?g|png|webp|bmp)$/i.test(url) ||
+            /giphy\.com\/media/i.test(url) ||
+            /tenor\.com\/view/i.test(url) ||
+            url.includes("giphy.com") ||
+            url.includes("tenor.com");
 
           if (!firstUrl && !isImage) firstUrl = url;
 

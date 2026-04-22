@@ -790,9 +790,9 @@ export default function NotificationsPage() {
                                                         gap: "12px"
                                                     }}>
                                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                                            <p style={{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, fontStyle: "italic", borderLeft: "2px solid var(--border-light)", paddingLeft: "8px" }}>
-                                                                "{notification.comment.content}"
-                                                            </p>
+                                                            <div style={{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, fontStyle: "italic", borderLeft: "2px solid var(--border-light)", paddingLeft: "8px" }}>
+                                                                {renderCommentPreview(notification.comment.content)}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 )}
@@ -817,9 +817,9 @@ export default function NotificationsPage() {
                                                             <p style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
                                                                 {notification.post?.title || notification.project?.name}
                                                             </p>
-                                                            <p style={{ fontSize: "13px", color: "var(--text-tertiary)", margin: "4px 0 0", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                                                                {notification.post?.content || "View full discussion"}
-                                                            </p>
+                                                            <div style={{ fontSize: "13px", color: "var(--text-tertiary)", margin: "4px 0 0" }}>
+                                                                <ContentRenderer content={notification.post?.content || "View full discussion"} fontSize="13px" hidePreview={true} />
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 )}
@@ -921,17 +921,9 @@ export default function NotificationsPage() {
                                                     )}
 
                                                     {notification.post && !notification.comment?.content && (
-                                                        <p style={{
-                                                            margin: 0,
-                                                            fontSize: "15px",
-                                                            color: "var(--text-tertiary)",
-                                                            display: "-webkit-box",
-                                                            WebkitLineClamp: 2,
-                                                            WebkitBoxOrient: "vertical",
-                                                            overflow: "hidden"
-                                                        }}>
-                                                            {notification.post.title || notification.post.content}
-                                                        </p>
+                                                        <div style={{ margin: 0, fontSize: "15px", color: "var(--text-tertiary)" }}>
+                                                            <ContentRenderer content={(notification.post.title || notification.post.content) ?? ""} fontSize="15px" hidePreview={true} />
+                                                        </div>
                                                     )}
 
                                                     <p style={{
