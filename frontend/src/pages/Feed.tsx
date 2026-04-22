@@ -11,6 +11,7 @@ import {
     Rocket01Icon,
     LicenseIcon,
     ArrowUp01Icon,
+    SpamIcon
     // Cancel01Icon,
     // AlertCircleIcon
 } from "@hugeicons/core-free-icons";
@@ -473,9 +474,9 @@ export default function Feed() {
                             </div>
                         ) : currentItems.length === 0 && !loading ? (
                             <div style={{ padding: "120px 24px", textAlign: "center" }}>
-                                <div style={{ marginBottom: "20px", fontSize: "32px", opacity: 0.2 }}>🧊</div>
-                                <h3 style={{ fontSize: "16px", fontWeight: "600", color: "var(--text-primary)", marginBottom: "8px" }}>Quiet in here</h3>
-                                <p style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>Be the first to share something amazing.</p>
+                                <div style={{ marginBottom: "10px", fontSize: "32px", opacity: 0.2 }}><HugeiconsIcon icon={SpamIcon} size={32} /></div>
+                                <h3 style={{ fontSize: "16px", fontWeight: "600", color: "var(--text-primary)", marginBottom: "8px" }}>Something went wrong</h3>
+                                <p style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>Try refreshing the page, or check your internet connection.</p>
                             </div>
                         ) : (
                             <>
