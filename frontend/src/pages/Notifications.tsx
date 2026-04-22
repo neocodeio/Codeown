@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import ContentRenderer from "../components/ContentRenderer";
 import { useNotifications, type Notification } from "../hooks/useNotifications";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -70,42 +71,9 @@ export default function NotificationsPage() {
 
     const renderCommentPreview = (content: string) => {
         if (!content) return null;
-
-        const mediaRegex = /(https?:\/\/[^\s]+(?:\.gif|\.jpe?g|\.png|\.webp|\.bmp)|https?:\/\/media[0-9]*\.giphy\.com\/[^\s]+|https?:\/\/tenor\.com\/[^\s]+)/gi;
-
-        const imageParts: string[] = [];
-        let textDisplay = content;
-
-        const matches = content.match(mediaRegex);
-        if (matches) {
-            matches.forEach(url => {
-                imageParts.push(url);
-                textDisplay = textDisplay.replace(url, '').trim();
-            });
-        }
-
         return (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                {textDisplay && <span style={{ display: "block", marginBottom: imageParts.length > 0 ? "4px" : 0 }}>"{textDisplay}"</span>}
-                {imageParts.length > 0 && (
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
-                        {imageParts.map((url, i) => (
-                            <img
-                                key={i}
-                                src={url}
-                                alt="Media"
-                                style={{
-                                    maxWidth: "100%",
-                                    maxHeight: "180px",
-                                    borderRadius: "12px",
-                                    border: "0.5px solid var(--border-hairline)",
-                                    objectFit: "cover",
-                                    display: "block"
-                                }}
-                            />
-                        ))}
-                    </div>
-                )}
+            <div style={{ color: "var(--text-secondary)", fontStyle: "italic" }}>
+                <ContentRenderer content={content} fontSize="14px" hidePreview={true} />
             </div>
         );
     };
