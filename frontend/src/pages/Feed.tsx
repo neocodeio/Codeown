@@ -7,13 +7,8 @@ import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import BackToTop from "../components/BackToTop";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-    ArrowDown01Icon,
-    Rocket01Icon,
-    LicenseIcon,
     ArrowUp01Icon,
     SpamIcon
-    // Cancel01Icon,
-    // AlertCircleIcon
 } from "@hugeicons/core-free-icons";
 
 import { usePosts, type FeedFilter } from "../hooks/usePosts";
@@ -30,8 +25,6 @@ export default function Feed() {
     const isMobile = width < 768;
     const isDesktop = width >= 1200;
     const [searchParams, setSearchParams] = useSearchParams();
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
     const [newPostActors, setNewPostActors] = useState<any[]>([]);
     const [scrolledDown, setScrolledDown] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
@@ -59,20 +52,7 @@ export default function Feed() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsDropdownOpen(false);
-            }
-        };
 
-        if (isDropdownOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isDropdownOpen]);
 
 
     // Sync state with URL params
@@ -94,7 +74,7 @@ export default function Feed() {
         }, { replace: true });
     };
 
-    const handleFilterChange = (filter: FeedFilter) => updateParams({ filter });
+
     const { getToken } = useClerkAuth();
 
 
@@ -280,41 +260,31 @@ export default function Feed() {
                         }}>
                             <ActivityIndicator />
 
-                            {/* "For You" Tab with Dropdown */}
-                            <div style={{ position: "relative", height: "100%" }} ref={dropdownRef}>
+                            {/* "Posts" Tab */}
+                            <div style={{ position: "relative", flex: 1, height: "100%" }}>
                                 <button
-                                    onClick={() => {
-                                        if (feedFilter === "all") setIsDropdownOpen(!isDropdownOpen);
-                                        else handleFilterChange("all");
-                                    }}
+                                    onClick={() => updateParams({ type: "posts", filter: "all" })}
                                     style={{
                                         background: "none",
                                         border: "none",
-                                        padding: "0 28px",
+                                        width: "100%",
                                         height: "100%",
                                         cursor: "pointer",
                                         display: "flex",
                                         alignItems: "center",
-                                        gap: "8px",
+                                        justifyContent: "center",
                                         fontSize: "14.5px",
-                                        fontWeight: feedFilter === "all" ? 800 : 500,
-                                        color: feedFilter === "all" ? "var(--text-primary)" : "var(--text-tertiary)",
+                                        fontWeight: (feedType === "posts" && feedFilter === "all") ? 800 : 500,
+                                        color: (feedType === "posts" && feedFilter === "all") ? "var(--text-primary)" : "var(--text-tertiary)",
                                         transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                                        textTransform: "capitalize",
                                         letterSpacing: "-0.01em",
-                                        position: "relative",
-                                        opacity: feedFilter === "all" ? 1 : 0.6
+                                        opacity: (feedType === "posts" && feedFilter === "all") ? 1 : 0.6
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.opacity = "1"}
-                                    onMouseLeave={e => { if (feedFilter !== "all") e.currentTarget.style.opacity = "0.6"; }}
+                                    onMouseLeave={e => { if (feedType !== "posts" || feedFilter !== "all") e.currentTarget.style.opacity = "0.6"; }}
                                 >
-                                    {feedType === "posts" ? "Posts" : "Projects"}
-                                    <HugeiconsIcon icon={ArrowDown01Icon} size={14} style={{
-                                        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                                        transform: isDropdownOpen ? "rotate(-180deg)" : "none",
-                                        opacity: 0.7
-                                    }} />
-                                    {feedFilter === "all" && (
+                                    Posts
+                                    {(feedType === "posts" && feedFilter === "all") && (
                                         <div style={{
                                             position: "absolute", bottom: "-0.5px", left: "20%", right: "20%",
                                             height: "3px", backgroundColor: "var(--text-primary)",
@@ -323,80 +293,65 @@ export default function Feed() {
                                         }} />
                                     )}
                                 </button>
-
-                                {isDropdownOpen && (
-                                    <div style={{
-                                        position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)",
-                                        marginTop: "12px",
-                                        backgroundColor: "var(--bg-page)",
-                                        border: "1px solid var(--border-hairline)",
-                                        borderRadius: "20px",
-                                        zIndex: 100,
-                                        width: "160px",
-                                        padding: "8px",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: "4px",
-                                        animation: "reactionFadeUp 0.15s ease-out"
-                                    }}>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); updateParams({ type: "posts" }); setIsDropdownOpen(false); }}
-                                            style={{
-                                                textAlign: "left", padding: "12px 16px", borderRadius: "14px",
-                                                background: "none", border: "none", cursor: "pointer",
-                                                color: "var(--text-primary)",
-                                                fontSize: "14px", fontWeight: feedType === "posts" ? 800 : 500,
-                                                transition: "all 0.2s ease",
-                                                display: "flex", alignItems: "center", gap: "10px"
-                                            }}
-                                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                        >
-                                            <HugeiconsIcon icon={LicenseIcon} size={16} />
-                                            Posts
-                                        </button>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); updateParams({ type: "projects" }); setIsDropdownOpen(false); }}
-                                            style={{
-                                                textAlign: "left", padding: "12px 16px", borderRadius: "14px",
-                                                background: "none", border: "none", cursor: "pointer",
-                                                color: "var(--text-primary)",
-                                                fontSize: "14px", fontWeight: feedType === "projects" ? 800 : 500,
-                                                transition: "all 0.2s ease",
-                                                display: "flex", alignItems: "center", gap: "10px"
-                                            }}
-                                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                                        >
-                                            <HugeiconsIcon icon={Rocket01Icon} size={16} />
-                                            Projects
-                                        </button>
-                                    </div>
-                                )}
                             </div>
 
-                            {/* "Following" Tab */}
-                            <div style={{ position: "relative", height: "100%" }}>
+                            {/* "Projects" Tab */}
+                            <div style={{ position: "relative", flex: 1, height: "100%" }}>
                                 <button
-                                    onClick={() => handleFilterChange("following")}
+                                    onClick={() => updateParams({ type: "projects", filter: "all" })}
                                     style={{
                                         background: "none",
                                         border: "none",
-                                        padding: "0 28px",
+                                        width: "100%",
                                         height: "100%",
                                         cursor: "pointer",
                                         display: "flex",
                                         alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "14.5px",
+                                        fontWeight: (feedType === "projects" && feedFilter !== "following") ? 800 : 500,
+                                        color: (feedType === "projects" && feedFilter !== "following") ? "var(--text-primary)" : "var(--text-tertiary)",
+                                        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                                        letterSpacing: "-0.01em",
+                                        opacity: (feedType === "projects" && feedFilter !== "following") ? 1 : 0.6
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+                                    onMouseLeave={e => { if (feedType !== "projects" || feedFilter === "following") e.currentTarget.style.opacity = "0.6"; }}
+                                >
+                                    Projects
+                                    {(feedType === "projects" && feedFilter !== "following") && (
+                                        <div style={{
+                                            position: "absolute", bottom: "-0.5px", left: "20%", right: "20%",
+                                            height: "3px", backgroundColor: "var(--text-primary)",
+                                            borderRadius: "100px 100px 0 0",
+                                            boxShadow: "0 -2px 10px rgba(var(--text-primary-rgb), 0.2)"
+                                        }} />
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* "Following" Tab */}
+                            <div style={{ position: "relative", flex: 1, height: "100%" }}>
+                                <button
+                                    onClick={() => updateParams({ type: "posts", filter: "following" })}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        width: "100%",
+                                        height: "100%",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
                                         fontSize: "14.5px",
                                         fontWeight: feedFilter === "following" ? 800 : 500,
                                         color: feedFilter === "following" ? "var(--text-primary)" : "var(--text-tertiary)",
                                         transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                                         letterSpacing: "-0.01em",
-                                        position: "relative",
-                                        opacity: feedFilter === "following" ? 1 : 0.8
+                                        opacity: feedFilter === "following" ? 1 : 0.6
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.opacity = "1"}
-                                    onMouseLeave={e => { if (feedFilter !== "following") e.currentTarget.style.opacity = "0.8"; }}
+                                    onMouseLeave={e => { if (feedFilter !== "following") e.currentTarget.style.opacity = "0.6"; }}
                                 >
                                     Following
                                     {feedFilter === "following" && (
