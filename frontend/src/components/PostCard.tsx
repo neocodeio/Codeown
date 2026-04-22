@@ -395,78 +395,77 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 <span style={{ color: "var(--text-tertiary)", fontSize: "14px", whiteSpace: "nowrap" }}>
                   @{primaryUser?.username || 'user'}
                 </span>
-                <span style={{ color: "var(--text-tertiary)", fontSize: "14px" }}>•</span>
-                {displayPost?.post_type && (
-                  <>
-                    <span style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      color: displayPost.post_type === "WIP" ? "#ffaa00" :
-                        displayPost.post_type === "Stuck" ? "#ff4d4f" :
-                          displayPost.post_type === "Advice" ? "#a855f7" :
-                            "var(--text-tertiary)",
-                      backgroundColor: displayPost.post_type === "Update" ? "transparent" :
-                        displayPost.post_type === "WIP" ? "rgba(255, 170, 0, 0.1)" :
-                          displayPost.post_type === "Stuck" ? "rgba(255, 77, 79, 0.1)" :
-                            "rgba(168, 85, 247, 0.12)",
-                      padding: displayPost.post_type === "Update" ? "0" : "2px 8px",
-                      borderRadius: "6px",
-                      whiteSpace: "nowrap"
-                    }}>
-                      {displayPost.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
-                      {displayPost.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={12} />}
-                      {displayPost.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
-                      {displayPost.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={12} />}
-                      {displayPost.post_type}
-                    </span>
-                    <span style={{ color: "var(--text-tertiary)", fontSize: "14px" }}>•</span>
-                  </>
-                )}
                 <span style={{ color: "var(--text-tertiary)", fontSize: "14px", whiteSpace: "nowrap" }}>
                   {formatRelativeDate(displayPost?.created_at)}
                 </span>
               </div>
 
-              {isOwnPost && (
-                <div style={{ position: "relative" }} ref={menuRef}>
-                  <button
-                    onClick={toggleMenu}
-                    style={{
-                      background: "none", border: "none", color: "var(--text-tertiary)",
-                      cursor: "pointer", padding: "4px", borderRadius: "var(--radius-md)",
-                      transition: "all 0.15s ease", display: "flex", alignItems: "center"
-                    }}
-                  >
-                    <HugeiconsIcon icon={MoreHorizontalIcon} size={22} />
-                  </button>
-                  {isMenuOpen && (
-                    <div style={{
-                      position: "absolute", top: "100%", right: "0",
-                      marginTop: "8px", backgroundColor: "var(--bg-card)",
-                      borderRadius: "12px", border: "1px solid var(--border-hairline)",
-                      boxShadow: "var(--shadow-lg)", zIndex: 10, width: "160px", overflow: "hidden"
-                    }}>
-                      <button onClick={handleEdit} style={{
-                        width: "100%", padding: "12px 14px", display: "flex", alignItems: "center", gap: "10px",
-                        background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer",
-                        fontSize: "14px", fontWeight: 600, textAlign: "left"
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                {displayPost?.post_type && (
+                  <span style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    color: displayPost.post_type === "WIP" ? "#ffaa00" :
+                      displayPost.post_type === "Stuck" ? "#ff4d4f" :
+                        displayPost.post_type === "Advice" ? "#a855f7" :
+                          "var(--text-tertiary)",
+                    backgroundColor: displayPost.post_type === "Update" ? "transparent" :
+                      displayPost.post_type === "WIP" ? "rgba(255, 170, 0, 0.1)" :
+                        displayPost.post_type === "Stuck" ? "rgba(255, 77, 79, 0.1)" :
+                          "rgba(168, 85, 247, 0.12)",
+                    padding: displayPost.post_type === "Update" ? "0" : "2px 8px",
+                    borderRadius: "6px",
+                    whiteSpace: "nowrap"
+                  }}>
+                    {displayPost.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
+                    {displayPost.post_type === "Stuck" && <HugeiconsIcon icon={HourglassIcon} size={12} />}
+                    {displayPost.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
+                    {displayPost.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={12} />}
+                    {displayPost.post_type}
+                  </span>
+                )}
+
+                {isOwnPost && (
+                  <div style={{ position: "relative" }} ref={menuRef}>
+                    <button
+                      onClick={toggleMenu}
+                      style={{
+                        background: "none", border: "none", color: "var(--text-tertiary)",
+                        cursor: "pointer", padding: "4px", borderRadius: "var(--radius-md)",
+                        transition: "all 0.15s ease", display: "flex", alignItems: "center"
+                      }}
+                    >
+                      <HugeiconsIcon icon={MoreHorizontalIcon} size={22} />
+                    </button>
+                    {isMenuOpen && (
+                      <div style={{
+                        position: "absolute", top: "100%", right: "0",
+                        marginTop: "8px", backgroundColor: "var(--bg-card)",
+                        borderRadius: "12px", border: "1px solid var(--border-hairline)",
+                        boxShadow: "var(--shadow-lg)", zIndex: 10, width: "160px", overflow: "hidden"
                       }}>
-                        <HugeiconsIcon icon={PencilEdit02Icon} size={18} /> Edit
-                      </button>
-                      <button onClick={handleDeleteClick} style={{
-                        width: "100%", padding: "12px 14px", display: "flex", alignItems: "center", gap: "10px",
-                        background: "none", border: "none", color: "#ff4d4f", cursor: "pointer",
-                        fontSize: "14px", fontWeight: 600, textAlign: "left"
-                      }}>
-                        <HugeiconsIcon icon={Delete02Icon} size={18} /> Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+                        <button onClick={handleEdit} style={{
+                          width: "100%", padding: "12px 14px", display: "flex", alignItems: "center", gap: "10px",
+                          background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer",
+                          fontSize: "14px", fontWeight: 600, textAlign: "left"
+                        }}>
+                          <HugeiconsIcon icon={PencilEdit02Icon} size={18} /> Edit
+                        </button>
+                        <button onClick={handleDeleteClick} style={{
+                          width: "100%", padding: "12px 14px", display: "flex", alignItems: "center", gap: "10px",
+                          background: "none", border: "none", color: "#ff4d4f", cursor: "pointer",
+                          fontSize: "14px", fontWeight: 600, textAlign: "left"
+                        }}>
+                          <HugeiconsIcon icon={Delete02Icon} size={18} /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div style={{
