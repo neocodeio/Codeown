@@ -25,7 +25,7 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
             backgroundColor: "rgba(0, 0, 0, 0.4)",
             backdropFilter: "blur(4px)",
         }} onClick={closeModal}>
-            <div 
+            <div
                 style={{
                     width: "90%",
                     maxWidth: "400px",
@@ -36,7 +36,7 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
                     padding: "32px",
                     position: "relative",
                     animation: "tabContentEnter 0.2s ease-out"
-                }} 
+                }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
@@ -56,10 +56,10 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
                 </button>
 
                 <div style={{ textAlign: "center", marginBottom: "32px" }}>
-                    <div style={{ 
-                        width: "80px", 
-                        height: "80px", 
-                        margin: "0 auto 20px", 
+                    <div style={{
+                        width: "80px",
+                        height: "80px",
+                        margin: "0 auto 20px",
                         backgroundColor: isActive ? "rgba(255, 153, 0, 0.08)" : "var(--bg-hover)",
                         borderRadius: "24px",
                         display: "flex",
@@ -74,7 +74,15 @@ export default function StreakBadge({ count, mini }: StreakBadgeProps) {
                             <Fire size={40} weight="thin" color="var(--text-tertiary)" />
                         )}
                     </div>
-                    <h2 style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-primary)", margin: "0 0 8px", letterSpacing: "-0.03em" }}>
+                    <h2 style={{
+                        fontFamily: "'Instrument Serif', serif",
+                        fontSize: "32px",
+                        fontStyle: "italic",
+                        fontWeight: 400,
+                        color: "var(--text-primary)",
+                        margin: "0 0 8px",
+                        letterSpacing: "-0.01em"
+                    }}>
                         {count} Day Streak
                     </h2>
                     <p style={{ fontSize: "14px", color: "var(--text-tertiary)", margin: 0, fontWeight: 500 }}>
