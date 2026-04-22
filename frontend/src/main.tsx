@@ -19,11 +19,11 @@ import * as Sentry from "@sentry/react";
 window.addEventListener('error', (event) => {
   const errorMsg = event.message || "";
   const target = event.target as any;
-  const isChunkError = errorMsg.includes('Loading chunk') || 
-                      errorMsg.includes('Failed to fetch dynamically imported module') ||
-                      (event.error?.name === 'ChunkLoadError') ||
-                      (target?.tagName === 'SCRIPT' && (target?.src?.includes('clerk') || target?.src?.includes('chunk')));
-                      
+  const isChunkError = errorMsg.includes('Loading chunk') ||
+    errorMsg.includes('Failed to fetch dynamically imported module') ||
+    (event.error?.name === 'ChunkLoadError') ||
+    (target?.tagName === 'SCRIPT' && (target?.src?.includes('clerk') || target?.src?.includes('chunk')));
+
   if (isChunkError) {
     const lastReload = sessionStorage.getItem('last-chunk-reload');
     const now = Date.now();
@@ -45,12 +45,12 @@ Sentry.init({
 });
 // Unregister any existing service workers to prevent errors
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for(let registration of registrations) {
+  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+    for (let registration of registrations) {
       console.log('Unregistering existing service worker:', registration);
       registration.unregister();
     }
-  }).catch(function(error) {
+  }).catch(function (error) {
     console.log('Service worker unregistration failed:', error);
   });
 }
@@ -71,7 +71,7 @@ const root = createRoot(container!);
 
 const AppWrapper = () => {
   const { theme } = useTheme();
-  
+
   return (
     <>
       <App />
@@ -86,17 +86,7 @@ const AppWrapper = () => {
         draggable
         pauseOnHover
         theme={theme}
-        toastStyle={{
-          borderRadius: 'var(--radius-sm)',
-          fontSize: '13px',
-          fontWeight: 800,
-          fontFamily: 'var(--font-mono)',
-          boxShadow: 'none',
-          border: '0.5px solid var(--border-hairline)',
-          backgroundColor: 'var(--bg-page)',
-          color: 'var(--text-primary)',
-          textTransform: 'uppercase'
-        }}
+        toastClassName="modern-toast"
       />
       <SonnerToaster position="bottom-right" theme={theme === 'dark' ? 'dark' : 'light'} />
       <SpeedInsights />
