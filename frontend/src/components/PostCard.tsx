@@ -238,6 +238,53 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const postType = displayPost?.post_type;
+  const getPostTypeTheme = () => {
+    switch (postType) {
+      case "WIP":
+        return {
+          glow: "rgba(255, 170, 0, 0.02)",
+          accent: "#ffaa00",
+          border: "rgba(255, 170, 0, 0.15)",
+          icon: WorkIcon,
+          mesh: "radial-gradient(circle at 100% 0%, rgba(255, 170, 0, 0.05) 0%, transparent 40%)"
+        };
+      case "Stuck":
+        return {
+          glow: "rgba(255, 77, 79, 0.02)",
+          accent: "#ff4d4f",
+          border: "rgba(255, 77, 79, 0.15)",
+          icon: UserQuestion01Icon,
+          mesh: "radial-gradient(circle at 100% 0%, rgba(255, 77, 79, 0.05) 0%, transparent 40%)"
+        };
+      case "Advice":
+        return {
+          glow: "rgba(168, 85, 247, 0.02)",
+          accent: "#a855f7",
+          border: "rgba(168, 85, 247, 0.15)",
+          icon: ConfusedIcon,
+          mesh: "radial-gradient(circle at 100% 0%, rgba(168, 85, 247, 0.05) 0%, transparent 40%)"
+        };
+      case "Update":
+        return {
+          glow: "transparent",
+          accent: "var(--text-tertiary)",
+          border: "var(--border-hairline)",
+          icon: ReloadIcon,
+          mesh: "none"
+        };
+      default:
+        return {
+          glow: "transparent",
+          accent: "var(--text-tertiary)",
+          border: "var(--border-hairline)",
+          icon: null,
+          mesh: "none"
+        };
+    }
+  };
+
+  const theme = getPostTypeTheme();
   const shareUrl = `${window.location.origin}/post/${post.id}`;
   const userName = primaryUser?.name || "User";
 
@@ -294,25 +341,45 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         style={{
           padding: isMobile ? "16px 12px" : "20px 16px 16px",
           borderBottom: "0.5px solid var(--border-hairline)",
-          backgroundColor: "var(--bg-page)",
+          backgroundColor: theme.glow !== "transparent" ? theme.glow : "var(--bg-page)",
+          backgroundImage: theme.mesh,
           cursor: "pointer",
-          transition: "background-color 0.15s ease",
+          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
           position: "relative",
+          overflow: "hidden"
         }}
         onMouseEnter={(e) => {
-          if (!isMobile) e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.01)";
+          if (!isMobile) {
+            e.currentTarget.style.backgroundColor = theme.glow !== "transparent"
+              ? theme.glow.replace("0.02", "0.04")
+              : "rgba(var(--text-primary-rgb), 0.01)";
+          }
         }}
         onMouseLeave={(e) => {
-          if (!isMobile) e.currentTarget.style.backgroundColor = "transparent";
+          if (!isMobile) {
+            e.currentTarget.style.backgroundColor = theme.glow !== "transparent" ? theme.glow : "transparent";
+          }
         }}
       >
+        {/* Subtle Side Indicator */}
+        {postType && postType !== "Update" && (
+          <div style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            // width: "3px",
+            backgroundColor: theme.accent,
+            opacity: 0.5,
+            zIndex: 1
+          }} />
+        )}
+
         {post.is_activity_repost && (
           <div style={{
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            // Align center of tiny avatar (20px) with center of large avatar (44px)
-            // Header container is inside card padding (16px/12px)
             marginLeft: isMobile ? "8px" : "12px",
             marginBottom: "8px",
             position: "relative"
@@ -326,7 +393,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               {post.reposter?.name || "Someone"}
               <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>Re-Shipped</span>
             </div>
-            {/* Subtle threaded line */}
             <div style={{
               position: "absolute",
               top: "20px",
@@ -401,30 +467,24 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                {displayPost?.post_type && (
+                {postType && (
                   <span style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
-                    fontSize: "12px",
-                    fontWeight: 700,
-                    color: displayPost.post_type === "WIP" ? "#ffaa00" :
-                      displayPost.post_type === "Stuck" ? "#ff4d4f" :
-                        displayPost.post_type === "Advice" ? "#a855f7" :
-                          "var(--text-tertiary)",
-                    backgroundColor: displayPost.post_type === "Update" ? "transparent" :
-                      displayPost.post_type === "WIP" ? "rgba(255, 170, 0, 0.1)" :
-                        displayPost.post_type === "Stuck" ? "rgba(255, 77, 79, 0.1)" :
-                          "rgba(168, 85, 247, 0.12)",
-                    padding: displayPost.post_type === "Update" ? "0" : "2px 8px",
-                    borderRadius: "6px",
-                    whiteSpace: "nowrap"
+                    fontSize: "11px",
+                    fontWeight: 800,
+                    color: theme.accent,
+                    backgroundColor: postType === "Update" ? "transparent" : theme.glow.replace("0.02", "0.1"),
+                    padding: postType === "Update" ? "0" : "2px 8px",
+                    borderRadius: "20px",
+                    whiteSpace: "nowrap",
+                    border: postType === "Update" ? "none" : `0.5px solid ${theme.border}`,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.02em"
                   }}>
-                    {displayPost.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
-                    {displayPost.post_type === "Stuck" && <HugeiconsIcon icon={UserQuestion01Icon} size={12} />}
-                    {displayPost.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
-                    {displayPost.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={12} />}
-                    {displayPost.post_type}
+                    {theme.icon && <HugeiconsIcon icon={theme.icon} size={12} />}
+                    {postType}
                   </span>
                 )}
 

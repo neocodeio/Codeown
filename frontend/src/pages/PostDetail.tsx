@@ -665,24 +665,30 @@ export default function PostDetail() {
                         <div style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "4px",
-                          fontSize: "12px",
-                          fontWeight: 700,
+                          gap: "5px",
+                          fontSize: "11px",
+                          fontWeight: 800,
                           color: post.post_type === "WIP" ? "#ffaa00" :
                             post.post_type === "Stuck" ? "#ff4d4f" :
                               post.post_type === "Advice" ? "#a855f7" :
                                 "var(--text-tertiary)",
-                          padding: post.post_type === "Update" ? "0" : "1px 6px",
-                          borderRadius: "6px",
+                          padding: post.post_type === "Update" ? "0" : "2px 10px",
+                          borderRadius: "20px",
                           backgroundColor: post.post_type === "Update" ? "transparent" :
-                            post.post_type === "WIP" ? "rgba(255, 170, 0, 0.1)" :
-                              post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.1)" :
-                                "rgba(168, 85, 247, 0.12)",
+                            post.post_type === "WIP" ? "rgba(255, 170, 0, 0.08)" :
+                              post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.08)" :
+                                "rgba(168, 85, 247, 0.1)",
+                          border: post.post_type === "Update" ? "none" : `0.5px solid ${post.post_type === "WIP" ? "rgba(255, 170, 0, 0.15)" :
+                              post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.15)" :
+                                "rgba(168, 85, 247, 0.15)"
+                            }`,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.03em"
                         }}>
-                          {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={11} />}
-                          {post.post_type === "Stuck" && <HugeiconsIcon icon={UserQuestion01Icon} size={11} />}
-                          {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={11} />}
-                          {post.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={11} />}
+                          {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
+                          {post.post_type === "Stuck" && <HugeiconsIcon icon={UserQuestion01Icon} size={12} />}
+                          {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
+                          {post.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={12} />}
                           <span>{post.post_type}</span>
                         </div>
                       </>

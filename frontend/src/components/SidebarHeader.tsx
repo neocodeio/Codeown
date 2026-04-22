@@ -257,7 +257,7 @@ export default function SidebarHeader() {
                         pointerEvents: "none",
                         boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
                     }}>
-                        Activity Streak
+                        Streak
                         <div style={{
                             position: "absolute",
                             top: "-4px",
