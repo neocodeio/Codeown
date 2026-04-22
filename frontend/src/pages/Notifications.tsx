@@ -459,8 +459,8 @@ export default function NotificationsPage() {
         );
 
         const getTargetLabel = (n: any) => {
-            if (n.project_id) return "project";
             if (n.comment_id) return "comment";
+            if (n.project_id) return "project";
             if (n.startup_id) return "startup";
             return "post";
         };

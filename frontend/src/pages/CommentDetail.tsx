@@ -250,7 +250,6 @@ export default function CommentDetail() {
                             onDelete={(id) => setCommentToDelete(id)}
                             resourceType="post"
                             isDetailView={true}
-                            showThreadLine={true}
                         />
 
                         {/* Reply Composer — directly under parent */}
@@ -263,22 +262,12 @@ export default function CommentDetail() {
                                 position: "relative",
                                 zIndex: isGifPickerOpen ? 1002 : 1
                             }}>
-                                {/* Thread Line Segment for Composer */}
-                                <div style={{
-                                    position: "absolute",
-                                    top: 0,
-                                    left: "48px",
-                                    bottom: 0,
-                                    width: "2px",
-                                    backgroundColor: "var(--border-hairline)",
-                                    zIndex: 1
-                                }} />
                                 <img
                                     src={currentUserAvatarUrl}
                                     alt=""
-                                    style={{ width: "40px", height: "40px", borderRadius: "10px", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0, marginLeft: "4px", position: "relative", zIndex: 2 }}
+                                    style={{ width: "40px", height: "40px", borderRadius: "10px", objectFit: "cover", border: "1px solid var(--border-hairline)", flexShrink: 0 }}
                                 />
-                                <div style={{ flex: 1, position: "relative", zIndex: 2 }}>
+                                <div style={{ flex: 1 }}>
                                     {selectedGif && (
                                         <div style={{
                                             position: "relative", width: "fit-content", marginBottom: "12px",
@@ -377,7 +366,7 @@ export default function CommentDetail() {
                         {/* Replies List — flat, each is clickable for further drill-down */}
                         <div style={{ padding: "0 0 100px 0" }}>
                             {replies && replies.length > 0 ? (
-                                replies.map((reply, idx) => (
+                                replies.map((reply) => (
                                     <div key={reply.id} style={{ borderBottom: "0.5px solid var(--border-hairline)" }}>
                                         <CommentBlock
                                             comment={reply}
@@ -385,7 +374,6 @@ export default function CommentDetail() {
                                             onReply={handleReply}
                                             onDelete={(id) => setCommentToDelete(id)}
                                             resourceType="post"
-                                            showThreadLine={idx < replies.length - 1}
                                         />
                                     </div>
                                 ))

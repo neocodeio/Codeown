@@ -140,7 +140,7 @@ export async function notify(params: SendNotificationParams) {
                     recipient.email,
                     rName,
                     aName,
-                    postId ? 'post' : projectId ? 'project' : 'comment',
+                    commentId ? 'comment' : postId ? 'post' : projectId ? 'project' : 'post',
                     postId || projectId || commentId || 0
                 );
                 break;

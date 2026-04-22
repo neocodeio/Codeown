@@ -47,10 +47,9 @@ interface CommentBlockProps {
   onImageClick?: (url: string) => void;
   resourceType: "post" | "project";
   isDetailView?: boolean;
-  showThreadLine?: boolean;
 }
 
-export default function CommentBlock({ comment, depth, onReply, onDelete, onImageClick, resourceType, isDetailView, showThreadLine = false }: CommentBlockProps) {
+export default function CommentBlock({ comment, depth, onReply, onDelete, onImageClick, resourceType, isDetailView }: CommentBlockProps) {
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -112,32 +111,6 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
         paddingRight: horizontalPadding,
         position: "relative"
       }}>
-        {/* Thread Line */}
-        {showThreadLine && (
-          <div style={{
-            position: "absolute",
-            top: "92px", // Start below large avatar (48px) + paddingTop (32px) + some gap
-            left: `calc(${horizontalPadding}px + 24px)`,
-            bottom: 0,
-            width: "2px",
-            backgroundColor: "var(--border-hairline)",
-            zIndex: 1
-          }} />
-        )}
-
-        {/* Thread Line */}
-        {showThreadLine && (
-          <div style={{
-            position: "absolute",
-            top: "92px", // Start below large avatar (48px) + paddingTop (32px) + some gap
-            left: `48px`,
-            bottom: 0,
-            width: "2px",
-            backgroundColor: "var(--border-hairline)",
-            zIndex: 1
-          }} />
-        )}
-
         {/* Large Header */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
           <UserHoverCard userId={comment.user_id} user={comment.user as any}>
@@ -147,7 +120,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                 if (comment.user?.username) navigate(`/${comment.user.username}`);
                 else if (comment.user_id) navigate(`/user/${comment.user_id}`);
               }}
-              style={{ cursor: "pointer", flexShrink: 0, marginLeft: "0px" }}
+              style={{ cursor: "pointer", flexShrink: 0 }}
             >
               <AvailabilityBadge
                 avatarUrl={avatarUrl}
@@ -245,19 +218,6 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
       paddingRight: depth === 0 ? horizontalPadding : 0,
       position: "relative"
     }}>
-      {/* Thread Line segment */}
-      {showThreadLine && (
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: `48px`,
-          bottom: 0,
-          width: "2px",
-          backgroundColor: "var(--border-hairline)",
-          zIndex: 1
-        }} />
-      )}
-
       {/* Main Comment Row */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: `${gap}px`, position: "relative", zIndex: 2 }}>
         {/* Avatar */}
@@ -268,7 +228,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
               if (comment.user?.username) navigate(`/${comment.user.username}`);
               else if (comment.user_id) navigate(`/user/${comment.user_id}`);
             }}
-            style={{ cursor: "pointer", flexShrink: 0, marginLeft: "4px" }} // Offset 40px avatar to center on 48px axis (24+24 vs 24+20)
+            style={{ cursor: "pointer", flexShrink: 0 }}
           >
             <AvailabilityBadge
               avatarUrl={avatarUrl}
