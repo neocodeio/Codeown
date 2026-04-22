@@ -333,28 +333,21 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
 
               {/* Reply count indicator — clicking drills down */}
               <button
-                onClick={handleDrillDown}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isSignedIn) setShowReply(!showReply);
+                  else handleDrillDown();
+                }}
                 style={{
                   display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none", padding: 0,
-                  color: "var(--text-tertiary)", fontSize: "13px", fontWeight: 500, cursor: "pointer", transition: "all 0.15s ease"
+                  color: showReply ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: 500, cursor: "pointer", transition: "all 0.15s ease"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-                onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                onMouseLeave={(e) => e.currentTarget.style.color = showReply ? "var(--text-primary)" : "var(--text-tertiary)"}
               >
                 <ChatCircle size={16} weight="bold" />
                 {replyCount > 0 && <span>{replyCount}</span>}
               </button>
-
-              {isSignedIn && (
-                <button
-                  onClick={() => setShowReply((s) => !s)}
-                  style={{ background: "none", border: "none", padding: 0, color: "var(--text-tertiary)", fontSize: "13px", fontWeight: 500, cursor: "pointer", transition: "color 0.15s ease" }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
-                >
-                  Reply
-                </button>
-              )}
 
               {isSignedIn && (comment.user_id === user?.id) && (
                 <button
