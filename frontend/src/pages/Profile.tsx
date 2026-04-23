@@ -23,7 +23,6 @@ import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import InviteModal from "../components/InviteModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import NotificationSettingsModal from "../components/NotificationSettingsModal";
-import ProfileStrength from "../components/ProfileStrength";
 import { HeatMap } from "../components/HeatMap";
 import { GitHubContributions } from "../components/GitHubContributions";
 import { StartupCard } from "../components/StartupCard";
@@ -488,10 +487,6 @@ export default function Profile() {
 
                 {!profileLoading && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "0px" }}>
-                    {/* Profile Strength - Kept here as requested */}
-                    <div style={{ marginTop: "0px", padding: "16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "rgba(255,255,255,0.01)" }}>
-                      <ProfileStrength user={userProfile} projectsCount={projects?.length || 0} standalone />
-                    </div>
 
                     {/* GitHub Contributions Graph */}
                     {userProfile?.github_url && (
