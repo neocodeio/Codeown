@@ -357,14 +357,15 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       <div
         onClick={handleCardClick}
         style={{
-          padding: isMobile ? "16px 12px" : "20px 16px 16px",
+          padding: isMobile ? "12px 10px 14px" : "20px 16px 16px",
           borderBottom: "0.5px solid var(--border-hairline)",
           backgroundColor: theme.glow !== "transparent" ? theme.glow : "var(--bg-page)",
           backgroundImage: theme.mesh,
           cursor: "pointer",
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
           position: "relative",
-          overflow: "hidden"
+          overflow: "hidden",
+          width: "100%"
         }}
         onMouseEnter={(e) => {
           if (!isMobile) {
@@ -386,9 +387,9 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             left: 0,
             top: 0,
             bottom: 0,
-            // width: "3px",
+            width: isMobile ? "0px" : "0px",
             backgroundColor: theme.accent,
-            opacity: 0.5,
+            opacity: 0.3,
             zIndex: 1
           }} />
         )}
@@ -398,31 +399,22 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            marginLeft: isMobile ? "8px" : "12px",
-            marginBottom: "8px",
+            marginLeft: isMobile ? "32px" : "44px", // Align with content, not avatar
+            marginBottom: "6px",
             position: "relative"
           }}>
             <img
               src={post.reposter?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.reposter?.name || "U")}&background=212121&color=fff&bold=true`}
-              style={{ width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover", border: "0.5px solid var(--border-hairline)", zIndex: 2 }}
+              style={{ width: "18px", height: "18px", borderRadius: "50%", objectFit: "cover", border: "0.5px solid var(--border-hairline)", zIndex: 2 }}
               alt=""
             />
-            <div style={{ fontSize: "13px", color: "var(--text-primary)", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px" }}>
+            <div style={{ fontSize: "12px", color: "var(--text-primary)", fontWeight: 700, display: "flex", alignItems: "center", gap: "4px" }}>
               {post.reposter?.name || "Someone"}
               <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>Re-Shipped</span>
             </div>
-            <div style={{
-              position: "absolute",
-              top: "20px",
-              left: "10px",
-              width: "0.5px",
-              height: "12px",
-              backgroundColor: "var(--border-hairline)",
-              zIndex: 1
-            }} />
           </div>
         )}
-        <div style={{ display: "flex", gap: isMobile ? "8px" : "12px" }}>
+        <div style={{ display: "flex", gap: isMobile ? "10px" : "12px" }}>
           <div
             onClick={handleUserClick}
             style={{ position: "relative", cursor: "pointer", flexShrink: 0 }}
@@ -431,7 +423,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               <AvailabilityBadge
                 avatarUrl={primaryUser?.avatar_url || null}
                 name={primaryUser?.name || "User"}
-                size={isMobile ? 40 : 48}
+                size={isMobile ? 38 : 48}
                 isOpenToOpportunities={!!(primaryUser && (primaryUser as any).is_pro && (primaryUser as any).is_hirable)}
                 isOG={(primaryUser as any)?.is_og}
                 username={primaryUser?.username || "user"}
@@ -440,13 +432,14 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             {(primaryUser as any)?.is_pro && (
               <div style={{
                 position: "absolute",
-                bottom: "-2px",
-                right: "-2px",
+                bottom: "-1px",
+                right: "-1px",
                 backgroundColor: "var(--bg-page)",
                 borderRadius: "50%",
-                padding: "2px"
+                padding: "1px",
+                display: "flex"
               }}>
-                <HugeiconsIcon icon={SparklesIcon} size={12} style={{ color: "#3b82f6" }} />
+                <HugeiconsIcon icon={SparklesIcon} size={isMobile ? 10 : 12} style={{ color: "#3b82f6" }} />
               </div>
             )}
           </div>
@@ -454,60 +447,63 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
               display: "flex",
-              alignItems: "center",
+              alignItems: "flex-start",
               justifyContent: "space-between",
-              marginBottom: "2px"
+              marginBottom: "4px",
+              gap: "4px"
             }}>
-              <div style={{ display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
-                  <UserHoverCard userId={primaryUser?.id || ""} user={primaryUser as any}>
-                    <span
-                      onClick={handleUserClick}
-                      style={{
-                        fontWeight: 700,
-                        fontSize: "15px",
-                        color: "var(--text-primary)",
-                        cursor: "pointer",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis"
-                      }}
-                    >
-                      {userName}
-                    </span>
-                  </UserHoverCard>
-                  <VerifiedBadge username={primaryUser?.username} />
-                  <InlineFollowButton userId={primaryUser?.id || ""} />
+              <div style={{ display: "flex", flexDirection: "column", minWidth: 0, flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: isMobile ? "wrap" : "nowrap" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "4px", minWidth: 0 }}>
+                    <UserHoverCard userId={primaryUser?.id || ""} user={primaryUser as any}>
+                      <span
+                        onClick={handleUserClick}
+                        style={{
+                          fontWeight: 700,
+                          fontSize: isMobile ? "14px" : "15px",
+                          color: "var(--text-primary)",
+                          cursor: "pointer",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis"
+                        }}
+                      >
+                        {userName}
+                      </span>
+                    </UserHoverCard>
+                    <VerifiedBadge username={primaryUser?.username} />
+                  </div>
+                  {!isMobile && <InlineFollowButton userId={primaryUser?.id || ""} />}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "4px", marginTop: "-2px" }}>
-                  <span style={{ color: "var(--text-tertiary)", fontSize: "13px", whiteSpace: "nowrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "4px", marginTop: isMobile ? "0px" : "-2px" }}>
+                  <span style={{ color: "var(--text-tertiary)", fontSize: isMobile ? "12px" : "13px", whiteSpace: "nowrap" }}>
                     @{primaryUser?.username || 'user'}
                   </span>
-                  <span style={{ color: "var(--text-tertiary)", fontSize: "13px", opacity: 0.5 }}>•</span>
-                  <span style={{ color: "var(--text-tertiary)", fontSize: "13px", whiteSpace: "nowrap" }}>
+                  <span style={{ color: "var(--text-tertiary)", fontSize: "12px", opacity: 0.5 }}>•</span>
+                  <span style={{ color: "var(--text-tertiary)", fontSize: isMobile ? "12px" : "13px", whiteSpace: "nowrap" }}>
                     {formatRelativeDate(displayPost?.created_at)}
                   </span>
                 </div>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
                 {postType && (
                   <span style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "4px",
-                    fontSize: "11px",
+                    gap: "3px",
+                    fontSize: isMobile ? "9px" : "10px",
                     fontWeight: 800,
                     color: theme.accent,
                     backgroundColor: postType === "Update" ? "transparent" : theme.glow.replace("0.02", "0.1"),
-                    padding: postType === "Update" ? "0" : "2px 8px",
+                    padding: postType === "Update" ? "0" : "2px 6px",
                     borderRadius: "20px",
                     whiteSpace: "nowrap",
                     border: postType === "Update" ? "none" : `0.5px solid ${theme.border}`,
                     textTransform: "uppercase",
-                    letterSpacing: "0.02em"
+                    letterSpacing: "0.03em"
                   }}>
-                    {theme.icon && <HugeiconsIcon icon={theme.icon} size={12} />}
+                    {theme.icon && <HugeiconsIcon icon={theme.icon} size={isMobile ? 10 : 12} />}
                     {postType}
                   </span>
                 )}
@@ -518,11 +514,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       onClick={toggleMenu}
                       style={{
                         background: "none", border: "none", color: "var(--text-tertiary)",
-                        cursor: "pointer", padding: "4px", borderRadius: "var(--radius-md)",
+                        cursor: "pointer", padding: "4px", borderRadius: "100px",
                         transition: "all 0.15s ease", display: "flex", alignItems: "center"
                       }}
                     >
-                      <HugeiconsIcon icon={MoreHorizontalIcon} size={22} />
+                      <HugeiconsIcon icon={MoreHorizontalIcon} size={isMobile ? 18 : 20} />
                     </button>
                     {isMenuOpen && (
                       <div style={{
@@ -553,10 +549,14 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             </div>
 
             <div style={{
-              fontSize: "15px", lineHeight: "1.6", color: "var(--text-primary)",
-              marginBottom: "12px", position: "relative", wordBreak: "break-word"
+              fontSize: isMobile ? "14px" : "15px", 
+              lineHeight: "1.5", 
+              color: "var(--text-primary)",
+              marginBottom: "12px", 
+              position: "relative", 
+              wordBreak: "break-word"
             }}>
-              {displayPost?.title && <h2 style={{ fontSize: "16px", fontWeight: 700, margin: "0 0 8px" }}>{displayPost.title}</h2>}
+              {displayPost?.title && <h2 style={{ fontSize: isMobile ? "15px" : "16px", fontWeight: 700, margin: "0 0 6px" }}>{displayPost.title}</h2>}
               {displayPost?.content && (
                 <ContentRenderer
                   content={!isExpanded && displayPost.content.length > 300
@@ -580,7 +580,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             </div>
 
             {displayPost?.images && displayPost.images.length > 0 && (
-              <div style={{ marginBottom: "16px" }}>
+              <div style={{ marginBottom: isMobile ? "10px" : "16px" }}>
                 <ImageGrid images={displayPost.images} onImageClick={(idx) => {
                   if (displayPost.images?.[idx]) {
                     setLightboxImage(displayPost.images[idx]);
@@ -591,15 +591,20 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
             )}
 
             <div style={{
-              display: "flex", marginTop: "16px", alignItems: "center",
-              justifyContent: "space-between", maxWidth: "480px"
+              display: "flex", 
+              marginTop: isMobile ? "12px" : "16px", 
+              alignItems: "center",
+              justifyContent: "space-between", 
+              maxWidth: isMobile ? "100%" : "480px",
+              paddingRight: isMobile ? "8px" : "0"
             }}>
               <button onClick={handleComment} style={{
                 display: "flex", alignItems: "center", gap: "6px",
-                background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)"
+                background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)",
+                padding: "6px 4px"
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <HugeiconsIcon icon={Comment01Icon} size={20} />
+                  <HugeiconsIcon icon={Comment01Icon} size={isMobile ? 18 : 20} />
                   {localCommentCount > 0 && <span style={{ fontSize: "13px", fontWeight: 600 }}>{localCommentCount}</span>}
                 </div>
               </button>
@@ -608,9 +613,10 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
               <button onClick={handleReShip} disabled={isReShipping} style={{
                 display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                cursor: isReShipping ? "default" : "pointer", color: isRepostedLocal ? "#10b981" : "var(--text-tertiary)"
+                cursor: isReShipping ? "default" : "pointer", color: isRepostedLocal ? "#10b981" : "var(--text-tertiary)",
+                padding: "6px 4px"
               }}>
-                <HugeiconsIcon icon={RepostIcon} size={20} />
+                <HugeiconsIcon icon={RepostIcon} size={isMobile ? 18 : 20} />
                 {repostCountLocal > 0 && (
                   <span style={{ fontSize: "13px", fontWeight: 600 }}>{repostCountLocal}</span>
                 )}
@@ -618,16 +624,18 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
               <button onClick={handleSave} style={{
                 display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                cursor: "pointer", color: isSaved ? "var(--text-primary)" : "var(--text-tertiary)"
+                cursor: "pointer", color: isSaved ? "var(--text-primary)" : "var(--text-tertiary)",
+                padding: "6px 4px"
               }}>
-                <HugeiconsIcon icon={Bookmark02Icon} size={20} className={isSaved ? "hugeicon-filled" : ""} />
+                <HugeiconsIcon icon={Bookmark02Icon} size={isMobile ? 18 : 20} className={isSaved ? "hugeicon-filled" : ""} />
               </button>
 
               <button onClick={handleShare} style={{
                 display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                cursor: "pointer", color: "var(--text-tertiary)"
+                cursor: "pointer", color: "var(--text-tertiary)",
+                padding: "6px 4px"
               }}>
-                <HugeiconsIcon icon={Share01Icon} size={20} />
+                <HugeiconsIcon icon={Share01Icon} size={isMobile ? 18 : 20} />
               </button>
             </div>
           </div>
