@@ -11,7 +11,7 @@ interface VerifiedBadgeProps {
 export default function VerifiedBadge({ username, size = "14px", color }: VerifiedBadgeProps) {
     const [showTooltip, setShowTooltip] = useState(false);
 
-    const isVerified = username?.toLowerCase() === "amin.ceo" || username?.toLowerCase() === "joethefounder" || username?.toLowerCase() === "waterskiermo";
+    const isVerified = username?.toLowerCase() === "amin.ceo" || username?.toLowerCase() === "joethefounder" || username?.toLowerCase() === "waterskiermo" || username?.toLowerCase() === "andreascy";
 
     if (isVerified) {
         return (
