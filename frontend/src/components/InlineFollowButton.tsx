@@ -70,7 +70,6 @@ export default function InlineFollowButton({ userId, onFollowChange }: InlineFol
                         <span style={{
                             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                             opacity: isHovered ? 0 : 1,
-                            transform: isHovered ? "translateY(-4px)" : "translateY(0)",
                             whiteSpace: "nowrap"
                         }}>
                             Following
@@ -80,7 +79,6 @@ export default function InlineFollowButton({ userId, onFollowChange }: InlineFol
                             left: 0,
                             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                             opacity: isHovered ? 1 : 0,
-                            transform: isHovered ? "translateY(0)" : "translateY(4px)",
                             whiteSpace: "nowrap",
                             color: "#ef4444"
                         }}>

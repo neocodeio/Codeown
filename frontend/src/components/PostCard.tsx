@@ -486,14 +486,15 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       {formatRelativeDate(displayPost?.created_at)}
                     </span>
                     {(displayPost as any)?.is_mobile && (
-                      <span title="Posted via mobile app" style={{ display: "flex", alignItems: "center", cursor: "help" }}>
+                      <div className="mobile-tooltip-wrapper" style={{ position: "relative", display: "flex", alignItems: "center" }}>
                       <HugeiconsIcon 
                         icon={SmartPhone02Icon} 
                         size={13} 
                         strokeWidth={2.5}
-                        style={{ color: "var(--text-tertiary)", opacity: 0.9 }}
+                        style={{ color: "var(--text-tertiary)", opacity: 0.9, cursor: "help" }}
                       />
-                    </span>
+                      <div className="mobile-tooltip">Posted via mobile app</div>
+                    </div>
                     )}
                   </div>
                 </div>
@@ -692,6 +693,30 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               </button>
 
               <style>{`
+                .mobile-tooltip {
+                  position: absolute;
+                  bottom: 100%;
+                  left: 50%;
+                  transform: translateX(-50%) translateY(-10px);
+                  background-color: #000;
+                  color: #fff;
+                  padding: 6px 12px;
+                  border-radius: 10px;
+                  font-size: 11px;
+                  font-weight: 700;
+                  white-space: nowrap;
+                  opacity: 0;
+                  visibility: hidden;
+                  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                  z-index: 1001;
+                  pointer-events: none;
+                  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                }
+                .mobile-tooltip-wrapper:hover .mobile-tooltip {
+                  opacity: 1;
+                  visibility: visible;
+                  transform: translateX(-50%) translateY(-6px);
+                }
                 .post-action-btn:hover .icon-wrapper { background-color: rgba(var(--text-primary-rgb), 0.05); } 
                 .post-action-btn.comment:hover { color: #6366f1 !important; }
                 .post-action-btn.comment:hover .icon-wrapper { background-color: rgba(99, 102, 241, 0.1) !important; }
