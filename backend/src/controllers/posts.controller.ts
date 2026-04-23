@@ -449,11 +449,17 @@ export async function createPost(req: Request, res: Response) {
     // Validate input - Title is now optional
     const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
 
-    // Validate input - Content is required UNLESS it's a Re-Ship
+    // Validate input - Content is required UNLESS it's a Re-Ship or has images/GIFs
     const safeContent = content ? content.trim() : "";
     const isRepost = !!(reposted_post_id || reposted_project_id);
 
-    if (safeContent.length === 0 && !isRepost) {
+    // Parse images early for validation
+    let imageUrls: string[] = [];
+    if (images && Array.isArray(images)) {
+      imageUrls = images.filter((img: any) => typeof img === "string" && img.trim().length > 0);
+    }
+
+    if (safeContent.length === 0 && !isRepost && imageUrls.length === 0) {
       return res.status(400).json({ error: "Content is required" });
     }
 
@@ -461,11 +467,6 @@ export async function createPost(req: Request, res: Response) {
       return res.status(400).json({ error: "Content must be 2000 characters or less" });
     }
 
-    // Validate images array if provided
-    let imageUrls: string[] = [];
-    if (images && Array.isArray(images)) {
-      imageUrls = images.filter((img: any) => typeof img === "string" && img.trim().length > 0);
-    }
 
     // Extract and validate tags/hashtags
     let postTags: string[] = [];
@@ -678,10 +679,6 @@ export async function updatePost(req: Request, res: Response) {
       return res.status(401).json({ error: "User ID not found" });
     }
 
-    // Validate input - Title is now optional
-    if (content !== undefined && (!content || content.trim().length === 0)) {
-      return res.status(400).json({ error: "Content cannot be empty" });
-    }
 
     if (content !== undefined && content.trim().length > 2000) {
       return res.status(400).json({ error: "Content must be 2000 characters or less" });
@@ -690,7 +687,7 @@ export async function updatePost(req: Request, res: Response) {
     // Check if post exists and belongs to user
     const { data: existingPost, error: fetchError } = await supabase
       .from("posts")
-      .select("user_id")
+      .select("user_id, images")
       .eq("id", id)
       .single();
 
@@ -700,6 +697,12 @@ export async function updatePost(req: Request, res: Response) {
 
     if (existingPost.user_id !== userId) {
       return res.status(403).json({ error: "You can only edit your own posts" });
+    }
+
+    // Validate input - Content can be empty if images exist
+    const hasImages = (images && Array.isArray(images) && images.length > 0) || (existingPost.images && (existingPost.images as string[]).length > 0);
+    if (content !== undefined && content.trim().length === 0 && !hasImages) {
+      return res.status(400).json({ error: "Content cannot be empty" });
     }
 
     // Update post
