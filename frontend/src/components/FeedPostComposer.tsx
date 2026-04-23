@@ -262,7 +262,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     };
 
     const handleSubmit = async () => {
-        if ((!content.trim() && images.length === 0 && !isPoll && !codeSnippet.trim()) || isSubmitting || !isLoaded) return;
+        if ((!content.trim() && images.length === 0 && !selectedGif && !isPoll && !codeSnippet.trim()) || isSubmitting || !isLoaded) return;
 
         if (isPoll) {
             if (!content.trim()) {
