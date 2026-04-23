@@ -12,6 +12,8 @@ export interface Post {
   content: string;
   user_id: string;
   created_at: string;
+  is_mobile?: boolean;
+
   images?: string[] | null;
   attachments?: { name: string; url?: string; data?: string; size: number }[] | null;
   tags?: string[] | null;

@@ -74,7 +74,7 @@ export async function getPosts(req: Request, res: Response) {
     let postsQuery = supabase
       .from("posts")
       .select(`
-        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
+        id, title, content, user_id, created_at, is_mobile, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!reposted_post_id(
@@ -205,7 +205,7 @@ export async function getPostById(req: Request, res: Response) {
     const { data: post, error: postError } = await supabase
       .from("posts")
       .select(`
-        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
+        id, title, content, user_id, created_at, is_mobile, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!reposted_post_id(
@@ -444,7 +444,7 @@ export async function getPostsByUser(req: Request, res: Response) {
 export async function createPost(req: Request, res: Response) {
   try {
     const user = req.user;
-    const { title, content, images, attachments, tags, poll, post_type, code_snippet, project_id, reposted_post_id, reposted_project_id } = req.body;
+    const { title, content, images, attachments, tags, poll, post_type, code_snippet, project_id, reposted_post_id, reposted_project_id, is_mobile } = req.body;
 
     // Validate input - Title is now optional
     const finalTitle = (title && title.trim().length > 0) ? title.trim() : "";
@@ -544,9 +544,10 @@ export async function createPost(req: Request, res: Response) {
         project_id: project_id || null,
         reposted_post_id: reposted_post_id || null,
         reposted_project_id: reposted_project_id || null,
+        is_mobile: !!is_mobile
       })
       .select(`
-        id, title, content, user_id, created_at, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
+        id, title, content, user_id, created_at, is_mobile, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
         projects!posts_project_id_fkey(id, title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!reposted_post_id(

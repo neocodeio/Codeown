@@ -243,6 +243,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
         attachments: attachments.length > 0 ? attachments : null,
         tags: allTags.length > 0 ? allTags : null,
         project_id: selectedProjectId || null,
+        is_mobile: window.innerWidth < 768
       };
       const res = await api.post("/posts", payload, {
         headers: { Authorization: `Bearer ${token}` },

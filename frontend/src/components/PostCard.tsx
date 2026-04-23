@@ -22,7 +22,8 @@ import {
   ReloadIcon,
   WorkIcon,
   UserQuestion01Icon,
-  ConfusedIcon
+  ConfusedIcon,
+  SmartPhone02Icon
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -480,9 +481,20 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     @{primaryUser?.username || 'user'}
                   </span>
                   <span style={{ color: "var(--text-tertiary)", fontSize: "12px", opacity: 0.5 }}>•</span>
-                  <span style={{ color: "var(--text-tertiary)", fontSize: isMobile ? "12px" : "13px", whiteSpace: "nowrap" }}>
-                    {formatRelativeDate(displayPost?.created_at)}
-                  </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <span style={{ color: "var(--text-tertiary)", fontSize: isMobile ? "12px" : "13px", whiteSpace: "nowrap" }}>
+                      {formatRelativeDate(displayPost?.created_at)}
+                    </span>
+                    {(displayPost as any)?.is_mobile && (
+                      <span title="Posted from mobile" style={{ display: "flex", alignItems: "center" }}>
+                      <HugeiconsIcon 
+                        icon={SmartPhone02Icon} 
+                        size={12} 
+                        style={{ color: "var(--text-tertiary)", opacity: 0.7 }}
+                      />
+                    </span>
+                    )}
+                  </div>
                 </div>
               </div>
 

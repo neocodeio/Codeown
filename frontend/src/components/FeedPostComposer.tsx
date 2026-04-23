@@ -287,7 +287,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 post_type: postType,
                 code_snippet: codeSnippet.trim() || null,
                 poll: isPoll ? { options: pollOptions.filter(o => o.trim()) } : null,
-                project_id: selectedProjectId
+                project_id: selectedProjectId,
+                is_mobile: false
             };
 
             const res = await api.post("/posts", postData, {
