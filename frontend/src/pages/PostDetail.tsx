@@ -82,6 +82,8 @@ interface Post {
     slug: string;
   } | null;
   post_type?: string | null;
+  isReposted?: boolean;
+  repost_count?: number;
 }
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -172,11 +174,21 @@ export default function PostDetail() {
   const { isLiked, likeCount, toggleLike, fetchLikeStatus, loading: likeLoading } = useLikes(Number(id), post?.isLiked, post?.like_count);
   const { isSaved, toggleSave, fetchSavedStatus } = useSaved(Number(id), post?.isSaved);
 
+  const [repostCountLocal, setRepostCountLocal] = useState(post?.repost_count || 0);
+  const [isRepostedLocal, setIsRepostedLocal] = useState(post?.isReposted || false);
+  const [isReShipping, setIsReShipping] = useState(false);
+
   useEffect(() => {
-    if (id) {
-      fetchLikeStatus();
-      fetchSavedStatus();
+    if (post) {
+      setRepostCountLocal(post.repost_count || 0);
+      setIsRepostedLocal(post.isReposted || false);
     }
+  }, [post]);
+
+  useEffect(() => {
+    if (!id) return;
+    fetchLikeStatus();
+    fetchSavedStatus();
 
     // Real-time view updates
     const handleViewUpdate = (data: { postId: number | string, viewCount: number }) => {
@@ -188,11 +200,40 @@ export default function PostDetail() {
       }
     };
 
+    const handleCommentUpdate = (data: any) => {
+      if (String(data.postId) === String(id)) {
+        queryClient.invalidateQueries({ queryKey: ["postComments", id] });
+        // Also refresh post data to get updated comment count
+        queryClient.invalidateQueries({ queryKey: ["post", id] });
+      }
+    };
+
+    const handleRepostUpdate = (data: any) => {
+      if (String(data.id) === String(id)) {
+        if (data.removed) {
+          setRepostCountLocal(prev => Math.max(0, prev - 1));
+          if (data.reposter_id === user?.id) {
+            setIsRepostedLocal(false);
+          }
+        } else {
+          setRepostCountLocal(prev => prev + 1);
+          if (data.reposter_id === user?.id) {
+            setIsRepostedLocal(true);
+          }
+        }
+      }
+    };
+
     socket.on("post_view_update", handleViewUpdate);
+    socket.on("post_commented", handleCommentUpdate);
+    socket.on("post_reposted", handleRepostUpdate);
+
     return () => {
       socket.off("post_view_update", handleViewUpdate);
+      socket.off("post_commented", handleCommentUpdate);
+      socket.off("post_reposted", handleRepostUpdate);
     };
-  }, [id, fetchLikeStatus, fetchSavedStatus, queryClient]);
+  }, [id, fetchLikeStatus, fetchSavedStatus, queryClient, user?.id]);
 
   const isOwnPost = user?.id === post?.user_id;
   const isPinned = isPinnedLocal;
@@ -211,6 +252,44 @@ export default function PostDetail() {
     } catch (error) {
       console.error("Error toggling pin:", error);
       toast.error("Failed to update pin");
+    }
+  };
+
+  const handleRepost = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isSignedIn) {
+      navigate('/sign-in');
+      return;
+    }
+
+    const originalState = isRepostedLocal;
+    const originalCount = repostCountLocal;
+
+    // Optimistic Update
+    setIsRepostedLocal(!originalState);
+    setRepostCountLocal(prev => !originalState ? prev + 1 : Math.max(0, prev - 1));
+
+    try {
+      setIsReShipping(true);
+      const token = await getToken();
+      const res = await api.post('/posts/repost', {
+        postId: id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.data.action === "reposted") {
+        toast.success("Shipped to your profile!");
+      } else {
+        toast.info("Repost removed");
+      }
+    } catch (error) {
+      console.error("Error re-shipping:", error);
+      setIsRepostedLocal(originalState);
+      setRepostCountLocal(originalCount);
+      toast.error("Failed to Re-Ship");
+    } finally {
+      setIsReShipping(false);
     }
   };
 
@@ -679,8 +758,8 @@ export default function PostDetail() {
                               post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.08)" :
                                 "rgba(168, 85, 247, 0.1)",
                           border: post.post_type === "Update" ? "none" : `0.5px solid ${post.post_type === "WIP" ? "rgba(255, 170, 0, 0.15)" :
-                              post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.15)" :
-                                "rgba(168, 85, 247, 0.15)"
+                            post.post_type === "Stuck" ? "rgba(255, 77, 79, 0.15)" :
+                              "rgba(168, 85, 247, 0.15)"
                             }`,
                           textTransform: "uppercase",
                           letterSpacing: "0.03em"
@@ -968,6 +1047,31 @@ export default function PostDetail() {
                       className={isLiked ? "hugeicon-filled" : ""}
                     />
                     <span style={{ fontSize: "13px", fontWeight: 600 }}>{likeCount}</span>
+                  </button>
+
+                  <button
+                    onClick={handleRepost}
+                    disabled={isReShipping}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      background: "none",
+                      border: "none",
+                      color: isRepostedLocal ? "#00ba7c" : "var(--text-secondary)",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <HugeiconsIcon
+                      icon={ReloadIcon}
+                      size={20}
+                      style={{
+                        transform: isReShipping ? "rotate(180deg)" : "none",
+                        transition: "transform 0.3s ease"
+                      }}
+                    />
+                    <span style={{ fontSize: "13px", fontWeight: 600 }}>{repostCountLocal}</span>
                   </button>
                 </div>
 

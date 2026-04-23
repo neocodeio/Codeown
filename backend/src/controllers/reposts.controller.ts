@@ -30,6 +30,24 @@ export async function toggleRepost(req: Request, res: Response) {
 
             if (deleteError) throw deleteError;
 
+            // Fetch the original post to emit an update after removal
+            const { data: rawPost } = await supabase
+                .from("posts")
+                .select(`
+                  *,
+                  user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og)
+                `)
+                .eq("id", postId)
+                .single();
+
+            if (rawPost) {
+                emitUpdate("post_reposted", {
+                    ...formatPostData(rawPost),
+                    reposter_id: userId,
+                    removed: true
+                });
+            }
+
             return res.json({ message: "Repost removed", action: "removed" });
         } else {
             // Create repost

@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -14,7 +15,6 @@ import { PostDetailSkeleton } from "../components/LoadingSkeleton";
 import { toast } from "react-toastify";
 import MentionInput from "../components/MentionInput";
 import { useAvatar } from "../hooks/useAvatar";
-import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import GifPicker from "../components/GifPicker";
@@ -23,6 +23,7 @@ import { HugeiconsIcon as HIcon } from "@hugeicons/react";
 import { Image01Icon } from "@hugeicons/core-free-icons";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import { socket } from "../lib/socket";
 
 export default function CommentDetail() {
     const { commentId } = useParams<{ commentId: string }>();
@@ -61,6 +62,21 @@ export default function CommentDetail() {
 
     const comment = data?.comment as CommentWithMeta;
     const replies = data?.replies as CommentWithMeta[];
+
+    useEffect(() => {
+        if (!commentId) return;
+
+        const handleCommentUpdate = (data: any) => {
+            if (String(data.postId) === String(comment?.post_id)) {
+                queryClient.invalidateQueries({ queryKey: ["commentDetail", commentId] });
+            }
+        };
+
+        socket.on("post_commented", handleCommentUpdate);
+        return () => {
+            socket.off("post_commented", handleCommentUpdate);
+        };
+    }, [commentId, comment?.post_id, queryClient]);
 
     const handleSubmitReply = async () => {
         if (!isSignedIn) return;

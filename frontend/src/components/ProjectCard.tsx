@@ -6,6 +6,7 @@ import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useProjectLikes } from "../hooks/useProjectLikes";
 import { useProjectSaved } from "../hooks/useProjectSaved";
 import api from "../api/axios";
+import { socket } from "../lib/socket";
 import type { Project } from "../types/project";
 import ProjectModal from "./ProjectModal";
 import {
@@ -150,14 +151,32 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
 
   const isOwnProject = currentUser?.id === project.user_id;
 
+  const [localCommentCount, setLocalCommentCount] = useState(project.comment_count || 0);
+
+  useEffect(() => {
+    if (!project.id) return;
+
+    const handleCommentUpdate = (data: any) => {
+      if (String(data.projectId) === String(project.id)) {
+        setLocalCommentCount(data.commentCount);
+      }
+    };
+
+    socket.on("project_commented", handleCommentUpdate);
+    return () => {
+      socket.off("project_commented", handleCommentUpdate);
+    };
+  }, [project.id]);
+
   // Fetch pinned state on mount only if prop is not provided
   useEffect(() => {
     if (isPinnedProp !== undefined || !isOwnProject || !currentUser?.id) return;
     const fetchPinnedState = async () => {
       try {
         const token = await getToken();
+        if (!token) return;
         const res = await api.get(`/users/${currentUser.id}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: `Bearer ${token}` }
         });
         setIsPinnedLocal(res.data?.pinned_project_id === project.id);
       } catch { /* ignore */ }
@@ -568,7 +587,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
           {[
             {
               icon: Comment01Icon,
-              count: project.comment_count,
+              count: localCommentCount,
               onClick: (e: any) => { e.stopPropagation(); setIsQuickCommentOpen(true); },
               hoverColor: "var(--text-primary)",
             },

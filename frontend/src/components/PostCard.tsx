@@ -60,6 +60,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
   const [isRepostedLocal, setIsRepostedLocal] = useState(post.isReposted || false);
   const [repostCountLocal, setRepostCountLocal] = useState(post.repost_count || 0);
+  const [localCommentCount, setLocalCommentCount] = useState(post.comment_count || 0);
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
@@ -151,18 +152,34 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
     if (!post.id) return;
 
     const handleRepostUpdate = (data: any) => {
-      // data: { id, content, ..., reposter_id }
-      if (data.id === post.id) {
-        setRepostCountLocal(prev => prev + 1);
-        if (data.reposter_id === currentUser?.id) {
-          setIsRepostedLocal(true);
+      // data: { id, content, ..., reposter_id, removed }
+      if (String(data.id) === String(post.id)) {
+        if (data.removed) {
+          setRepostCountLocal(prev => Math.max(0, prev - 1));
+          if (data.reposter_id === currentUser?.id) {
+            setIsRepostedLocal(false);
+          }
+        } else {
+          setRepostCountLocal(prev => prev + 1);
+          if (data.reposter_id === currentUser?.id) {
+            setIsRepostedLocal(true);
+          }
         }
       }
     };
 
+    const handleCommentUpdate = (data: any) => {
+      if (String(data.postId) === String(post.id)) {
+        setLocalCommentCount(data.commentCount);
+      }
+    };
+
     socket.on("post_reposted", handleRepostUpdate);
+    socket.on("post_commented", handleCommentUpdate);
+
     return () => {
       socket.off("post_reposted", handleRepostUpdate);
+      socket.off("post_commented", handleCommentUpdate);
     };
   }, [post.id, currentUser?.id]);
 
@@ -581,8 +598,10 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 display: "flex", alignItems: "center", gap: "6px",
                 background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)"
               }}>
-                <HugeiconsIcon icon={Comment01Icon} size={20} />
-                {(displayPost?.comment_count ?? 0) > 0 && <span style={{ fontSize: "13px", fontWeight: 600 }}>{displayPost?.comment_count}</span>}
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <HugeiconsIcon icon={Comment01Icon} size={20} />
+                  {localCommentCount > 0 && <span style={{ fontSize: "13px", fontWeight: 600 }}>{localCommentCount}</span>}
+                </div>
               </button>
 
               <LikeButton isLiked={isLiked} likeCount={likeCount} onToggle={handleLike} />

@@ -12,6 +12,7 @@ import GifPicker from "./GifPicker";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 import { useEffect } from "react";
+import { socket } from "../lib/socket";
 import Lightbox from "./Lightbox";
 
 interface CommentsSectionProps {
@@ -62,6 +63,26 @@ export default function CommentsSection({ resourceId, resourceType, onCommentAdd
     },
     enabled: !!resourceId
   });
+
+  useEffect(() => {
+    if (!resourceId) return;
+
+    const handleCommentUpdate = (data: any) => {
+      const match = resourceType === "project"
+        ? String(data.projectId) === String(resourceId)
+        : String(data.postId) === String(resourceId);
+
+      if (match) {
+        queryClient.invalidateQueries({ queryKey });
+      }
+    };
+
+    const eventName = resourceType === "project" ? "project_commented" : "post_commented";
+    socket.on(eventName, handleCommentUpdate);
+    return () => {
+      socket.off(eventName, handleCommentUpdate);
+    };
+  }, [resourceId, resourceType, queryClient, queryKey]);
 
   // Flat list: only show top-level comments (replies accessed via drill-down)
   const comments = (rawComments as CommentWithMeta[]).filter(c => !c.parent_id)
