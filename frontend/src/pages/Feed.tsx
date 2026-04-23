@@ -4,6 +4,7 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import CreatorsForYou from "../components/CreatorsForYou";
 import BackToTop from "../components/BackToTop";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -435,20 +436,26 @@ export default function Feed() {
                         ) : (
                             <>
                                 {feedType === "posts"
-                                    ? (currentItems as any[]).map(p => (
-                                        <div key={p.id} style={{
-                                            borderBottom: "0.5px solid var(--border-hairline)",
-                                            animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
-                                        }}>
-                                            <PostCard post={p} onUpdated={handlePostCreated} />
+                                    ? (currentItems as any[]).map((p, i) => (
+                                        <div key={p.id}>
+                                            <div style={{
+                                                borderBottom: "0.5px solid var(--border-hairline)",
+                                                animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
+                                            }}>
+                                                <PostCard post={p} onUpdated={handlePostCreated} />
+                                            </div>
+                                            {(i + 1) % 20 === 0 && <CreatorsForYou />}
                                         </div>
                                     ))
-                                    : (currentItems as any[]).map(p => (
-                                        <div key={p.id} style={{
-                                            borderBottom: "0.5px solid var(--border-hairline)",
-                                            animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
-                                        }}>
-                                            <ProjectCard project={p} onUpdated={handleProjectCreated} />
+                                    : (currentItems as any[]).map((p, i) => (
+                                        <div key={p.id}>
+                                            <div style={{
+                                                borderBottom: "0.5px solid var(--border-hairline)",
+                                                animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
+                                            }}>
+                                                <ProjectCard project={p} onUpdated={handleProjectCreated} />
+                                            </div>
+                                            {(i + 1) % 20 === 0 && <CreatorsForYou />}
                                         </div>
                                     ))
                                 }

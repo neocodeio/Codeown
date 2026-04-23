@@ -8,12 +8,13 @@ interface VerifiedBadgeProps {
     color?: string;
 }
 
-export default function VerifiedBadge({ username, size = "14px", color }: VerifiedBadgeProps) {
+export default function VerifiedBadge({ username, isPro, size = "14px", color }: VerifiedBadgeProps) {
     const [showTooltip, setShowTooltip] = useState(false);
 
-    const isVerified = username?.toLowerCase() === "amin.ceo" || username?.toLowerCase() === "joethefounder" || username?.toLowerCase() === "waterskiermo" || username?.toLowerCase() === "andreascy";
+    const isOfficial = username?.toLowerCase() === "amin.ceo" || username?.toLowerCase() === "joethefounder" || username?.toLowerCase() === "waterskiermo" || username?.toLowerCase() === "andreascy";
+    const shouldShow = isOfficial || isPro;
 
-    if (isVerified) {
+    if (shouldShow) {
         return (
             <div
                 style={{
@@ -65,7 +66,7 @@ export default function VerifiedBadge({ username, size = "14px", color }: Verifi
                                 to { opacity: 1; transform: translateX(-50%) translateY(-8px); }
                             }
                         `}</style>
-                        Verified Official Account
+                        {isOfficial ? "Verified Official Account" : "Pro Builder"}
                         {/* Tooltip Arrow */}
                         <div style={{
                             position: "absolute",
