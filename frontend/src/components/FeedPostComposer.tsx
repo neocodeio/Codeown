@@ -772,7 +772,10 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                         <GifPicker
                                             onSelect={(url) => {
                                                 setSelectedGif(url);
-                                                setIsGifPickerOpen(false);
+                                                // Small delay to allow analytics to track the click before unmounting
+                                                setTimeout(() => {
+                                                    setIsGifPickerOpen(false);
+                                                }, 100);
                                             }}
                                             onClose={() => setIsGifPickerOpen(false)}
                                         />
