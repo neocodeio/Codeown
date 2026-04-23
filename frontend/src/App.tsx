@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { toast as sonnerToast } from "sonner";
 import { X } from "phosphor-react";
 import "react-toastify/dist/ReactToastify.css";
+import { initFavicon, setFaviconDot } from "./utils/favicon";
 
 
 
@@ -142,6 +143,16 @@ export default function App() {
     socket.on("connect", onConnect);
     socket.connect();
 
+    // ── Favicon Management ──
+    initFavicon();
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        setFaviconDot(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     // ── Referral Detection ──
     const params = new URLSearchParams(location.search);
     const ref = params.get("ref");
@@ -203,6 +214,9 @@ export default function App() {
     const handleNewNotification = (notif: { type: string, actorId: string, data?: any }) => {
       queryClient.invalidateQueries({ queryKey: ["unread_count"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+
+      // Show red dot on favicon
+      setFaviconDot(true);
 
       if (notif.type === 'startup_upvote') {
         toast(`🚀 Someone upvoted your startup!`, {
@@ -369,6 +383,7 @@ export default function App() {
     socket.on("level_up", handleLevelUp);
 
     return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       socket.off("connect", onConnect);
       socket.off("content_update", handleUpdate);
       socket.off("new_notification", handleNewNotification);
