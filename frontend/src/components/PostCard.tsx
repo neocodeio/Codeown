@@ -486,11 +486,12 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       {formatRelativeDate(displayPost?.created_at)}
                     </span>
                     {(displayPost as any)?.is_mobile && (
-                      <span title="Posted from mobile" style={{ display: "flex", alignItems: "center" }}>
+                      <span title="Posted via mobile app" style={{ display: "flex", alignItems: "center", cursor: "help" }}>
                       <HugeiconsIcon 
                         icon={SmartPhone02Icon} 
-                        size={12} 
-                        style={{ color: "var(--text-tertiary)", opacity: 0.7 }}
+                        size={13} 
+                        strokeWidth={2.5}
+                        style={{ color: "var(--text-tertiary)", opacity: 0.9 }}
                       />
                     </span>
                     )}
