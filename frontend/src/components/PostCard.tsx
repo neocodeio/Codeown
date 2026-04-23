@@ -601,7 +601,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
                 cursor: "pointer", color: isSaved ? "var(--text-primary)" : "var(--text-tertiary)"
               }}>
-                <HugeiconsIcon icon={Bookmark02Icon} size={20} />
+                <HugeiconsIcon icon={Bookmark02Icon} size={20} className={isSaved ? "hugeicon-filled" : ""} />
               </button>
 
               <button onClick={handleShare} style={{
