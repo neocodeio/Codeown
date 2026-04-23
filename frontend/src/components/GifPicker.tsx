@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { MagnifyingGlass, X } from "phosphor-react";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 interface GifPickerProps {
   onSelect: (url: string) => void;
@@ -9,6 +10,8 @@ interface GifPickerProps {
 const GIPHY_API_KEY = "0nC72fAImJhQSw0M6PQ7rxlplj9yKQqA";
 
 export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
   const [query, setQuery] = useState("");
   const [gifs, setGifs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -79,39 +82,40 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
 
   return (
     <div ref={containerRef} style={{
-      width: "320px",
-      maxWidth: "90vw",
-      height: "400px",
-      maxHeight: "60vh",
+      width: isMobile ? "100vw" : "400px",
+      maxWidth: isMobile ? "100vw" : "calc(100vw - 40px)",
+      height: isMobile ? "100vh" : "500px",
+      maxHeight: isMobile ? "100vh" : "70vh",
       backgroundColor: "var(--bg-page)",
-      border: "0.5px solid var(--border-hairline)",
-      borderRadius: "var(--radius-lg)",
+      border: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+      borderRadius: isMobile ? "0px" : "20px",
       display: "flex",
       flexDirection: "column",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+      boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
       overflow: "hidden",
-      animation: "reactionFadeUp 0.15s ease-out",
+      animation: isMobile ? "mobileSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)" : "reactionFadeUp 0.15s ease-out",
       zIndex: 2000
     }}>
       {/* Header */}
       <div style={{
-        padding: "12px",
+        padding: "16px",
         borderBottom: "0.5px solid var(--border-hairline)",
         display: "flex",
         alignItems: "center",
-        gap: "8px"
+        gap: "12px",
+        paddingTop: isMobile ? "env(safe-area-inset-top, 20px)" : "16px"
       }}>
         <div style={{
           flex: 1,
           display: "flex",
           alignItems: "center",
           backgroundColor: "var(--bg-hover)",
-          padding: "8px 12px",
-          borderRadius: "var(--radius-sm)",
-          gap: "8px",
+          padding: "10px 14px",
+          borderRadius: "14px",
+          gap: "10px",
           border: "0.5px solid var(--border-hairline)"
         }}>
-          <MagnifyingGlass size={16} color="var(--text-tertiary)" />
+          <MagnifyingGlass size={18} color="var(--text-tertiary)" />
           <input
             type="text"
             placeholder="Search GIFs..."
@@ -123,7 +127,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
               background: "none",
               border: "none",
               outline: "none",
-              fontSize: "13px",
+              fontSize: "14px",
               color: "var(--text-primary)",
               fontWeight: 500,
             }}
@@ -138,13 +142,20 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
             color: "var(--text-tertiary)",
             display: "flex",
             alignItems: "center",
-            padding: "4px",
-            transition: "all 0.15s ease"
+            padding: "6px",
+            transition: "all 0.15s ease",
+            borderRadius: "50%"
           }}
-          onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
-          onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--text-primary)";
+            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--text-tertiary)";
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
         >
-          <X size={20} weight="bold" />
+          <X size={24} weight="bold" />
         </button>
       </div>
 
@@ -152,14 +163,15 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
+        className="gif-grid"
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: "8px",
+          padding: "12px",
           display: "grid",
           gridTemplateColumns: "repeat(2, 1fr)",
           gridAutoRows: "min-content",
-          gap: "8px"
+          gap: "12px"
         }}
       >
         {gifs.map((gif, idx) => (
@@ -168,16 +180,22 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
             onClick={() => onSelect(gif.images.fixed_height.url)}
             style={{
               backgroundColor: "var(--bg-hover)",
-              borderRadius: "var(--radius-sm)",
+              borderRadius: "12px",
               cursor: "pointer",
               overflow: "hidden",
-              transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
               border: "0.5px solid var(--border-hairline)",
               position: "relative",
-              height: "100px" // Fixed height for commonality, but can be improved
+              height: "120px"
             }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-            onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.02)";
+              e.currentTarget.style.filter = "brightness(1.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+              e.currentTarget.style.filter = "brightness(1)";
+            }}
           >
             <img
               src={gif.images.preview_gif.url}
@@ -193,10 +211,10 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
           </div>
         ))}
         {loading && (
-          <div style={{ gridColumn: "span 2", textAlign: "center", padding: "16px" }}>
+          <div style={{ gridColumn: "span 2", textAlign: "center", padding: "20px" }}>
             <div style={{
-              width: "18px",
-              height: "18px",
+              width: "24px",
+              height: "24px",
               border: "2px solid var(--border-hairline)",
               borderTopColor: "var(--text-primary)",
               borderRadius: "50%",
@@ -209,7 +227,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
 
       {/* Footer */}
       <div style={{
-        padding: "8px 12px",
+        padding: "10px 16px",
         borderTop: "0.5px solid var(--border-hairline)",
         display: "flex",
         justifyContent: "flex-end",
@@ -217,7 +235,7 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
         alignItems: "center"
       }}>
         <span style={{
-          fontSize: "10px",
+          fontSize: "11px",
           color: "var(--text-tertiary)",
           fontWeight: 600,
         }}>
@@ -230,8 +248,25 @@ export default function GifPicker({ onSelect, onClose }: GifPickerProps) {
           from { opacity: 0; transform: translateY(12px) scale(0.95); }
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
+        @keyframes mobileSlideIn {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+        .gif-grid::-webkit-scrollbar {
+          width: 6px;
+        }
+        .gif-grid::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .gif-grid::-webkit-scrollbar-thumb {
+          background: var(--border-hairline);
+          borderRadius: 10px;
+        }
+        .gif-grid::-webkit-scrollbar-thumb:hover {
+          background: var(--text-tertiary);
         }
       `}</style>
     </div>

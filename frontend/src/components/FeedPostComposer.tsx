@@ -1,4 +1,6 @@
 import { useState, useRef, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
+
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -19,9 +21,11 @@ import {
     ArrowDown01Icon,
     ReloadIcon,
     Attachment01Icon,
-    Rocket01Icon
+    Rocket01Icon,
+    GifIcon
 } from "@hugeicons/core-free-icons";
 import MentionInput from "./MentionInput";
+import GifPicker from "./GifPicker";
 import LinkPreview from "./LinkPreview";
 import { validateImageSize, validateFileSize } from "../constants/upload";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -48,6 +52,8 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedGif, setSelectedGif] = useState<string | null>(null);
+    const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const attachmentInputRef = useRef<HTMLInputElement>(null);
     const typeMenuRef = useRef<HTMLDivElement>(null);
@@ -276,7 +282,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
             const postData = {
                 content: content.trim(),
-                images: images,
+                images: selectedGif ? [...images, selectedGif] : images,
                 attachments: attachments,
                 post_type: postType,
                 code_snippet: codeSnippet.trim() || null,
@@ -290,6 +296,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
             setContent("");
             setImages([]);
+            setSelectedGif(null);
             setAttachments([]);
             setCodeSnippet("");
             setIsCodeExpanded(false);
@@ -306,7 +313,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         }
     };
 
-    if (!isSignedIn || isMobile) return null;
+    if (!isSignedIn) return null;
 
     return (
         <div
@@ -452,16 +459,16 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                 {(() => {
                     const urlRegex = /(https?:\/\/[^\s]+)/g;
                     const match = content.match(urlRegex);
-                    if (match && images.length === 0) {
+                    if (match && images.length === 0 && !selectedGif) {
                         return <div style={{ marginBottom: "12px" }}><LinkPreview url={match[0]} /></div>;
                     }
                     return null;
                 })()}
 
-                {images.length > 0 && (
+                {(images.length > 0 || selectedGif) && (
                     <div style={{
                         display: "grid",
-                        gridTemplateColumns: images.length === 1 ? "1fr" : "1fr 1fr",
+                        gridTemplateColumns: (images.length + (selectedGif ? 1 : 0)) === 1 ? "1fr" : "1fr 1fr",
                         gap: "10px",
                         marginBottom: "16px",
                         borderRadius: "var(--radius-md)",
@@ -469,7 +476,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         border: "0.5px solid var(--border-hairline)"
                     }}>
                         {images.map((img, index) => (
-                            <div key={index} style={{ position: "relative", aspectRatio: images.length === 1 ? "16/9" : "1/1" }}>
+                            <div key={index} style={{ position: "relative", aspectRatio: (images.length + (selectedGif ? 1 : 0)) === 1 ? "16/9" : "1/1" }}>
                                 <img
                                     src={img}
                                     alt={`Upload ${index}`}
@@ -507,6 +514,45 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 </button>
                             </div>
                         ))}
+                        {selectedGif && (
+                            <div style={{ position: "relative", aspectRatio: (images.length + 1) === 1 ? "16/9" : "1/1" }}>
+                                <img
+                                    src={selectedGif}
+                                    alt="Selected GIF"
+                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                />
+                                <button
+                                    onClick={() => setSelectedGif(null)}
+                                    style={{
+                                        position: "absolute",
+                                        top: "8px",
+                                        right: "8px",
+                                        backgroundColor: "rgba(0,0,0,0.6)",
+                                        backdropFilter: "blur(4px)",
+                                        border: "none",
+                                        borderRadius: "100px",
+                                        width: "28px",
+                                        height: "28px",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        zIndex: 100,
+                                        color: "#fff",
+                                        padding: 0,
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.8)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.6)";
+                                    }}
+                                >
+                                    <HugeiconsIcon icon={Cancel01Icon} size={14} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -669,6 +715,82 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                         >
                             <HugeiconsIcon icon={ImageAdd01Icon} size={20} />
                         </button>
+                        <div style={{ position: "relative" }}>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setIsGifPickerOpen(!isGifPickerOpen); }}
+                                style={{
+                                    background: isGifPickerOpen ? "var(--bg-hover)" : "none",
+                                    border: "none",
+                                    color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
+                                    cursor: "pointer",
+                                    padding: "8px",
+                                    borderRadius: "8px",
+                                    transition: "all 0.15s var(--ease-smooth)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.color = "var(--text-primary)";
+                                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                }}
+                                onMouseLeave={e => {
+                                    if (!isGifPickerOpen) {
+                                        e.currentTarget.style.color = "var(--text-tertiary)";
+                                        e.currentTarget.style.backgroundColor = "transparent";
+                                    }
+                                }}
+                                title="Add GIF"
+                            >
+                                <HugeiconsIcon icon={GifIcon} size={20} />
+                            </button>
+
+                            {isGifPickerOpen && createPortal(
+                                <div
+                                    style={{
+                                        position: "fixed",
+                                        top: 0,
+                                        left: 0,
+                                        width: "100.1vw", // Fix for potential white line
+                                        height: "100.1vh",
+                                        backgroundColor: "rgba(0,0,0,0.6)",
+                                        backdropFilter: "blur(12px)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        zIndex: 999999,
+                                        cursor: "default"
+                                    }}
+                                    onClick={() => setIsGifPickerOpen(false)}
+                                >
+                                    <div
+                                        style={{
+                                            animation: "modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+                                        }}
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        <GifPicker
+                                            onSelect={(url) => {
+                                                setSelectedGif(url);
+                                                setIsGifPickerOpen(false);
+                                            }}
+                                            onClose={() => setIsGifPickerOpen(false)}
+                                        />
+                                    </div>
+                                    <style>{`
+                                        @keyframes modalFadeIn {
+                                            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+                                            to { opacity: 1; transform: scale(1) translateY(0); }
+                                        }
+                                      @keyframes mobileSlideIn {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+      `}</style>
+                                </div>,
+                                document.body
+                            )}
+                        </div>
                         <button
                             onClick={() => setIsPoll(!isPoll)}
                             style={{
@@ -1036,22 +1158,22 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
 
                         <button
                             onClick={handleSubmit}
-                            disabled={(!content.trim() && images.length === 0 && attachments.length === 0 && !isPoll && !codeSnippet.trim()) || isSubmitting || content.length > charLimit || codeSnippet.length > 2000}
+                            disabled={(!content.trim() && images.length === 0 && !selectedGif && attachments.length === 0 && !isPoll && !codeSnippet.trim()) || isSubmitting || content.length > charLimit || codeSnippet.length > 2000}
                             style={{
                                 padding: isMobile ? "8px 16px" : "8px 20px",
-                                backgroundColor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--text-primary)" : "var(--bg-hover)",
-                                color: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--bg-page)" : "var(--text-tertiary)",
+                                backgroundColor: (content.trim() || images.length > 0 || selectedGif || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--text-primary)" : "var(--bg-hover)",
+                                color: (content.trim() || images.length > 0 || selectedGif || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "var(--bg-page)" : "var(--text-tertiary)",
                                 border: "none",
                                 borderRadius: "100px",
                                 fontWeight: "800",
                                 fontSize: "14px",
-                                cursor: (content.trim() || images.length > 0 || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "pointer" : "not-allowed",
+                                cursor: (content.trim() || images.length > 0 || selectedGif || attachments.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && content.length <= charLimit && codeSnippet.length <= 2000 ? "pointer" : "not-allowed",
                                 transition: "all 0.15s cubic-bezier(0.16, 1, 0.3, 1)",
                                 transform: isSubmitting ? "scale(0.98)" : "scale(1)",
                                 opacity: isSubmitting ? 0.8 : 1,
                             }}
                             onMouseEnter={(e) => {
-                                if ((content.trim() || images.length > 0 || isPoll || codeSnippet.trim()) && !isSubmitting && codeSnippet.length <= 2000 && content.length <= charLimit) {
+                                if ((content.trim() || images.length > 0 || selectedGif || isPoll || codeSnippet.trim()) && !isSubmitting && codeSnippet.length <= 2000 && content.length <= charLimit) {
                                     e.currentTarget.style.filter = "brightness(0.9)";
                                 }
                             }}
@@ -1064,6 +1186,6 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
