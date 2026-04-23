@@ -594,49 +594,101 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               display: "flex", 
               marginTop: isMobile ? "12px" : "16px", 
               alignItems: "center",
-              justifyContent: "space-between", 
-              maxWidth: isMobile ? "100%" : "480px",
-              paddingRight: isMobile ? "8px" : "0"
+              gap: isMobile ? "24px" : "36px",
+              justifyContent: "flex-start"
             }}>
-              <button onClick={handleComment} style={{
-                display: "flex", alignItems: "center", gap: "6px",
-                background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)",
-                padding: "6px 4px"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <button 
+                onClick={handleComment} 
+                className="post-action-btn comment"
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px",
+                  background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)",
+                  padding: "0", transition: "all 0.2s ease"
+                }}
+              >
+                <div className="icon-wrapper" style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  width: "34px", height: "34px", borderRadius: "50%",
+                  transition: "all 0.2s ease", margin: "0 -7px"
+                }}>
                   <HugeiconsIcon icon={Comment01Icon} size={isMobile ? 18 : 20} />
-                  {localCommentCount > 0 && <span style={{ fontSize: "13px", fontWeight: 600 }}>{localCommentCount}</span>}
                 </div>
+                {localCommentCount > 0 && <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>{localCommentCount}</span>}
               </button>
 
               <LikeButton isLiked={isLiked} likeCount={likeCount} onToggle={handleLike} />
 
-              <button onClick={handleReShip} disabled={isReShipping} style={{
-                display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                cursor: isReShipping ? "default" : "pointer", color: isRepostedLocal ? "#10b981" : "var(--text-tertiary)",
-                padding: "6px 4px"
-              }}>
-                <HugeiconsIcon icon={RepostIcon} size={isMobile ? 18 : 20} />
+              <button 
+                onClick={handleReShip} 
+                disabled={isReShipping} 
+                className="post-action-btn reship"
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
+                  cursor: isReShipping ? "default" : "pointer", 
+                  color: isRepostedLocal ? "#10b981" : "var(--text-tertiary)",
+                  padding: "0", transition: "all 0.2s ease"
+                }}
+              >
+                <div className="icon-wrapper" style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  width: "34px", height: "34px", borderRadius: "50%",
+                  transition: "all 0.2s ease", margin: "0 -7px"
+                }}>
+                  <HugeiconsIcon icon={RepostIcon} size={isMobile ? 18 : 20} />
+                </div>
                 {repostCountLocal > 0 && (
-                  <span style={{ fontSize: "13px", fontWeight: 600 }}>{repostCountLocal}</span>
+                  <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>{repostCountLocal}</span>
                 )}
               </button>
 
-              <button onClick={handleSave} style={{
-                display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                cursor: "pointer", color: isSaved ? "var(--text-primary)" : "var(--text-tertiary)",
-                padding: "6px 4px"
-              }}>
-                <HugeiconsIcon icon={Bookmark02Icon} size={isMobile ? 18 : 20} className={isSaved ? "hugeicon-filled" : ""} />
+              <button 
+                onClick={handleSave} 
+                className="post-action-btn save"
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
+                  cursor: "pointer", 
+                  color: isSaved ? "#3b82f6" : "var(--text-tertiary)",
+                  padding: "0", transition: "all 0.2s ease"
+                }}
+              >
+                <div className="icon-wrapper" style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  width: "34px", height: "34px", borderRadius: "50%",
+                  transition: "all 0.2s ease", margin: "0 -7px"
+                }}>
+                  <HugeiconsIcon icon={Bookmark02Icon} size={isMobile ? 18 : 20} className={isSaved ? "hugeicon-filled" : ""} />
+                </div>
               </button>
 
-              <button onClick={handleShare} style={{
-                display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                cursor: "pointer", color: "var(--text-tertiary)",
-                padding: "6px 4px"
-              }}>
-                <HugeiconsIcon icon={Share01Icon} size={isMobile ? 18 : 20} />
+              <button 
+                onClick={handleShare} 
+                className="post-action-btn share"
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
+                  cursor: "pointer", color: "var(--text-tertiary)",
+                  padding: "0", transition: "all 0.2s ease"
+                }}
+              >
+                <div className="icon-wrapper" style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  width: "34px", height: "34px", borderRadius: "50%",
+                  transition: "all 0.2s ease", margin: "0 -7px"
+                }}>
+                  <HugeiconsIcon icon={Share01Icon} size={isMobile ? 18 : 20} />
+                </div>
               </button>
+
+              <style>{`
+                .post-action-btn:hover .icon-wrapper { background-color: rgba(var(--text-primary-rgb), 0.05); } 
+                .post-action-btn.comment:hover { color: #6366f1 !important; }
+                .post-action-btn.comment:hover .icon-wrapper { background-color: rgba(99, 102, 241, 0.1) !important; }
+                .post-action-btn.reship:hover { color: #10b981 !important; }
+                .post-action-btn.reship:hover .icon-wrapper { background-color: rgba(16, 185, 129, 0.1) !important; }
+                .post-action-btn.save:hover { color: #3b82f6 !important; }
+                .post-action-btn.save:hover .icon-wrapper { background-color: rgba(59, 130, 246, 0.1) !important; }
+                .post-action-btn.share:hover { color: #3b82f6 !important; }
+                .post-action-btn.share:hover .icon-wrapper { background-color: rgba(59, 130, 246, 0.1) !important; }
+              `}</style>
             </div>
           </div>
         </div>

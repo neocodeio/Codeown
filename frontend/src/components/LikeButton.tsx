@@ -22,7 +22,7 @@ export default function LikeButton({ isLiked, likeCount, onToggle, disabled }: L
     }, [isLiked]);
 
     return (
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", position: "relative" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "4px", position: "relative" }}>
             <style>{`
         @keyframes heartPop {
           0% { transform: scale(1); }
@@ -110,7 +110,7 @@ export default function LikeButton({ isLiked, likeCount, onToggle, disabled }: L
                 )}
             </button>
 
-            <RollingNumber value={likeCount} color={isLiked ? "#ef4444" : "var(--text-tertiary)"} fontWeight={600} fontSize="13.5px" />
+            <RollingNumber value={likeCount} color={isLiked ? "#ef4444" : "var(--text-tertiary)"} fontWeight={700} fontSize="12px" />
         </div>
     );
 }
