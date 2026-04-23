@@ -60,7 +60,7 @@ export async function getComments(req: Request, res: Response) {
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
     } else {
-      withLikes.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      withLikes.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
 
     const userIds = new Set<string>(withLikes.map((c: any) => c.user_id));

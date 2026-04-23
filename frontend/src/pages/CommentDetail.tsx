@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
@@ -9,6 +9,8 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
     ArrowLeft01Icon,
+    ArrowDown01Icon,
+    CheckmarkCircle01Icon,
 } from "@hugeicons/core-free-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostDetailSkeleton } from "../components/LoadingSkeleton";
@@ -43,6 +45,19 @@ export default function CommentDetail() {
     const [isUploading, setIsUploading] = useState(false);
     const [commentToDelete, setCommentToDelete] = useState<number | string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [commentSort, setCommentSort] = useState<"newest" | "top">("newest");
+    const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+    const sortMenuRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (sortMenuRef.current && !sortMenuRef.current.contains(event.target as Node)) {
+                setIsSortMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const { avatarUrl: currentUserAvatarUrl } = useAvatar(
         user?.id,
@@ -61,7 +76,17 @@ export default function CommentDetail() {
     });
 
     const comment = data?.comment as CommentWithMeta;
-    const replies = data?.replies as CommentWithMeta[];
+    const rawReplies = (data?.replies || []) as CommentWithMeta[];
+
+    // Frontend sorting for replies
+    const replies = [...rawReplies].sort((a, b) => {
+        if (commentSort === "top") {
+            if (b.like_count !== a.like_count) return (b.like_count || 0) - (a.like_count || 0);
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+        // Newest
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
     useEffect(() => {
         if (!commentId) return;
@@ -378,6 +403,115 @@ export default function CommentDetail() {
                                 </div>
                             </div>
                         )}
+
+                        {/* Sorting Header — Twitter Style */}
+                        <div style={{
+                            padding: "16px 24px",
+                            borderBottom: "0.5px solid var(--border-hairline)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            backgroundColor: "var(--bg-page)",
+                            position: "relative",
+                            zIndex: 90
+                        }}>
+                            <div style={{ position: "relative" }} ref={sortMenuRef}>
+                                <button
+                                    onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "4px",
+                                        background: "none",
+                                        border: "none",
+                                        color: "var(--text-primary)",
+                                        fontSize: "14px",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                        padding: "4px 8px",
+                                        borderRadius: "8px",
+                                        transition: "background-color 0.2s"
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                                >
+                                    <span style={{ color: "#0096ff", fontWeight: 700 }}>
+                                        {commentSort === "newest" ? "Recent" : "Likes"}
+                                    </span>
+                                    <HugeiconsIcon icon={ArrowDown01Icon} size={14} style={{ color: "#0096ff" }} />
+                                </button>
+
+                                {isSortMenuOpen && (
+                                    <div style={{
+                                        position: "absolute",
+                                        top: "100%",
+                                        left: 0,
+                                        marginTop: "4px",
+                                        backgroundColor: "var(--bg-card)",
+                                        borderRadius: "12px",
+                                        border: "0.5px solid var(--border-hairline)",
+                                        boxShadow: "0 10px 30px -10px rgba(0,0,0,0.3)",
+                                        padding: "4px",
+                                        zIndex: 1000,
+                                        minWidth: "160px",
+                                        animation: "dropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)"
+                                    }}>
+                                        <button
+                                            onClick={() => { setCommentSort("newest"); setIsSortMenuOpen(false); }}
+                                            style={{
+                                                width: "100%",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "space-between",
+                                                padding: "10px 12px",
+                                                borderRadius: "8px",
+                                                border: "none",
+                                                backgroundColor: "transparent",
+                                                color: "var(--text-primary)",
+                                                fontSize: "14px",
+                                                fontWeight: 600,
+                                                cursor: "pointer",
+                                                transition: "background-color 0.1s"
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                                        >
+                                            Recent
+                                            {commentSort === "newest" && <HugeiconsIcon icon={CheckmarkCircle01Icon} size={16} style={{ color: "#1d9bf0" }} />}
+                                        </button>
+                                        <button
+                                            onClick={() => { setCommentSort("top"); setIsSortMenuOpen(false); }}
+                                            style={{
+                                                width: "100%",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "space-between",
+                                                padding: "10px 12px",
+                                                borderRadius: "8px",
+                                                border: "none",
+                                                backgroundColor: "transparent",
+                                                color: "var(--text-primary)",
+                                                fontSize: "14px",
+                                                fontWeight: 600,
+                                                cursor: "pointer",
+                                                transition: "background-color 0.1s"
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                                        >
+                                            Likes
+                                            {commentSort === "top" && <HugeiconsIcon icon={CheckmarkCircle01Icon} size={16} style={{ color: "#1d9bf0" }} />}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span style={{ fontSize: "14px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                                    {replies.length} replies
+                                </span>
+                            </div>
+                        </div>
 
                         {/* Replies List — flat, each is clickable for further drill-down */}
                         <div style={{ padding: "0 0 100px 0" }}>
