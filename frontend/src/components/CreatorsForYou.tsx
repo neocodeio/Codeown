@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import VerifiedBadge from "./VerifiedBadge";
+import FollowButton from "./FollowButton";
 
 interface User {
     id: string;
@@ -121,34 +122,10 @@ export default function CreatorsForYou() {
                                     </div>
                                 </div>
                                 
-                                <button
+                                <FollowButton 
+                                    isFollowing={user.isFollowing} 
                                     onClick={() => handleFollow(user.id)}
-                                    disabled={user.isFollowing}
-                                    style={{
-                                        padding: "8px 16px",
-                                        borderRadius: "100px",
-                                        backgroundColor: user.isFollowing ? "transparent" : "var(--text-primary)",
-                                        color: user.isFollowing ? "var(--text-primary)" : "var(--bg-page)",
-                                        border: user.isFollowing ? "1px solid var(--border-hairline)" : "none",
-                                        fontSize: "14px",
-                                        fontWeight: 700,
-                                        cursor: user.isFollowing ? "default" : "pointer",
-                                        transition: "all 0.2s ease",
-                                        flexShrink: 0
-                                    }}
-                                    onMouseEnter={e => {
-                                        if (!user.isFollowing) {
-                                            e.currentTarget.style.opacity = "0.9";
-                                        }
-                                    }}
-                                    onMouseLeave={e => {
-                                        if (!user.isFollowing) {
-                                            e.currentTarget.style.opacity = "1";
-                                        }
-                                    }}
-                                >
-                                    {user.isFollowing ? "Following" : "Follow"}
-                                </button>
+                                />
                             </div>
                             
                             {user.bio && (

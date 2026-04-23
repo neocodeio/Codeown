@@ -19,6 +19,7 @@ import { useProjectLikes } from "../hooks/useProjectLikes";
 
 import AvailabilityBadge from "./AvailabilityBadge";
 import SidebarHeader from "./SidebarHeader";
+import FollowButton from "./FollowButton";
 
 const getInitials = (title: string) => {
     const parts = title.trim().split(/\s+/);
@@ -332,24 +333,11 @@ export default function RecommendedUsersSidebar() {
                                         </div>
                                     </Link>
                                 </UserHoverCard>
-                                <button
+                                <FollowButton 
+                                    isFollowing={user.isFollowing} 
+                                    size="sm"
                                     onClick={() => handleFollow(user.id, user.isFollowing)}
-                                    style={{
-                                        padding: "0 14px",
-                                        height: "32px",
-                                        borderRadius: "100px",
-                                        backgroundColor: user.isFollowing ? "rgba(var(--text-primary-rgb), 0.05)" : "var(--text-primary)",
-                                        color: user.isFollowing ? "var(--text-primary)" : "var(--bg-page)",
-                                        border: user.isFollowing ? "1px solid var(--border-hairline)" : "none",
-                                        fontSize: "12px",
-                                        fontWeight: 800,
-                                        cursor: "pointer",
-                                        flexShrink: 0,
-                                        transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)"
-                                    }}
-                                >
-                                    {user.isFollowing ? "Unfollow" : "Follow"}
-                                </button>
+                                />
                             </div>
                         ))
                     )}
