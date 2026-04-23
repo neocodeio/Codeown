@@ -414,6 +414,10 @@ export default function Profile() {
                       </button>
                       {isMenuOpen && (
                         <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", width: "200px", zIndex: 100, backgroundColor: "var(--bg-page)", borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)", overflow: "hidden", animation: "tabContentEnter 0.2s ease-out" }}>
+                          <button style={{ width: "100%", padding: "12px 16px", border: "none", background: "none", textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", fontWeight: 600, fontSize: "13px", color: "var(--text-primary)", transition: "background-color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} onClick={() => { setIsMenuOpen(false); setIsInviteModalOpen(true); }} >
+                            <HugeiconsIcon icon={PlusSignIcon} size={18} />
+                            Invite Friend
+                          </button>
                           <button style={{ width: "100%", padding: "12px 16px", border: "none", background: "none", textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px", fontWeight: 600, fontSize: "13px", color: "var(--text-primary)", transition: "background-color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"} onClick={() => { setIsMenuOpen(false); setIsNotificationSettingsOpen(true); }} >
                             <HugeiconsIcon icon={Settings01Icon} size={18} />
                             Notification Settings
