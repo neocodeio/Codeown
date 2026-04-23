@@ -491,7 +491,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                         icon={SmartPhone02Icon} 
                         size={13} 
                         strokeWidth={2.5}
-                        style={{ color: "var(--text-tertiary)", opacity: 0.9, cursor: "help" }}
+                        style={{ color: "var(--text-tertiary)", opacity: 0.9, cursor: "pointer" }}
                       />
                       <div className="mobile-tooltip">Posted via mobile app</div>
                     </div>
@@ -710,7 +710,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
                   z-index: 1001;
                   pointer-events: none;
-                  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                 }
                 .mobile-tooltip-wrapper:hover .mobile-tooltip {
                   opacity: 1;
