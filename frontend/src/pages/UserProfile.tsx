@@ -39,11 +39,11 @@ import Lightbox from "../components/Lightbox";
 import DeveloperIDCardModal from "../components/DeveloperIDCardModal";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { HeatMap } from "../components/HeatMap";
+import { GitHubContributions } from "../components/GitHubContributions";
 import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileSkeleton } from "../components/LoadingSkeleton";
-import ProfileStrength from "../components/ProfileStrength";
 import BioRenderer from "../components/BioRenderer";
 
 const AnimatedCounter = ({ end, duration = 1500 }: { end: number, duration?: number }) => {
@@ -299,7 +299,7 @@ export default function UserProfile() {
                 <AvailabilityBadge avatarUrl={avatarUrl} name={user.name} size={isMobile ? 80 : 100} isOpenToOpportunities={user.is_pro === true && user.is_hirable === true} isOG={user.is_og} isOnline={user.is_online} />
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: isMobile ? "-48px" : "-56px", marginBottom: isMobile ? "24px" : "16px", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: isMobile ? "-48px" : "-45px", marginBottom: isMobile ? "24px" : "16px", flexWrap: "wrap" }}>
                 {isSignedIn && (
                   <button onClick={handleFollow} disabled={followLoading} style={{ padding: "8px 24px", borderRadius: "var(--radius-sm)", fontSize: "13px", fontWeight: 600, border: isFollowing ? "1px solid var(--border-hairline)" : "none", backgroundColor: isFollowing ? "var(--bg-page)" : "var(--text-primary)", color: isFollowing ? "var(--text-primary)" : "var(--bg-page)", cursor: "pointer", transition: "all 0.15s ease" }} onMouseEnter={(e) => { if (isFollowing) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; else e.currentTarget.style.opacity = "0.9"; }} onMouseLeave={(e) => { if (isFollowing) e.currentTarget.style.backgroundColor = "var(--bg-page)"; else e.currentTarget.style.opacity = "1"; }} >
                     {isFollowing ? "Following" : "Follow"}
@@ -383,10 +383,12 @@ export default function UserProfile() {
                 {/* Performance Section */}
                 {!profileLoading && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0", marginTop: "0px" }}>
-                    {/* Identity strength - Kept here as requested */}
-                    <div style={{ marginTop: "0px", padding: "16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "rgba(255,255,255,0.01)" }}>
-                      <ProfileStrength user={user} projectsCount={projects?.length || 0} standalone />
-                    </div>
+                    {/* GitHub Contributions Graph */}
+                    {user?.github_url && (
+                        <div style={{ marginTop: "16px" }}>
+                            <GitHubContributions githubUrl={user.github_url} />
+                        </div>
+                    )}
                   </div>
                 )}
               </div>
