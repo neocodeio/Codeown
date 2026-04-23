@@ -313,7 +313,7 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
         }
     };
 
-    if (!isSignedIn) return null;
+    if (!isSignedIn || isMobile) return null;
 
     return (
         <div

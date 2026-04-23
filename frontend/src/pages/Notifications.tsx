@@ -128,6 +128,25 @@ export default function NotificationsPage() {
     const isMobile = width < 768;
     const isDesktop = width >= 1200;
     const [activeTab, setActiveTab] = useState<"All" | "Mentions">("All");
+    const [isVisible, setIsVisible] = useState(true);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const lastScrollY = useRef(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            setIsScrolled(currentScrollY > 0);
+            // Mobile header visibility logic
+            if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+                setIsVisible(false);
+            } else {
+                setIsVisible(true);
+            }
+            lastScrollY.current = currentScrollY;
+        };
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         if (isSettingsModalOpen) {
@@ -560,7 +579,7 @@ export default function NotificationsPage() {
                     {/* Header */}
                     <header style={{
                         position: "sticky",
-                        top: isMobile ? "64px" : "0",
+                        top: isMobile ? (isVisible ? "64px" : "0") : "0",
                         backgroundColor: "var(--bg-header)",
                         backdropFilter: "blur(24px)",
                         zIndex: 100,
@@ -569,7 +588,9 @@ export default function NotificationsPage() {
                         gap: "24px",
                         borderBottom: "0.5px solid var(--border-hairline)",
                         flexDirection: "column",
-                        alignItems: "flex-start"
+                        alignItems: "flex-start",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        boxShadow: isScrolled ? "0 4px 12px rgba(0,0,0,0.05)" : "none"
                     }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "16px", width: "100%" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1 }}>
