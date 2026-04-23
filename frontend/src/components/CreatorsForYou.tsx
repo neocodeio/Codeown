@@ -23,7 +23,7 @@ export default function CreatorsForYou() {
         const fetchUsers = async () => {
             try {
                 const token = await getToken();
-                const res = await api.get("/users/recommended?limit=3", {
+                const res = await api.get("/users/recommended?limit=3&shuffle=true", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUsers(res.data);

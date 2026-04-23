@@ -1319,46 +1319,75 @@ export async function getUserTotalLikes(req: Request, res: Response) {
 
 export async function getRecommendedUsers(req: Request, res: Response) {
     try {
-        const { limit = 8 } = req.query;
+        const { limit = 8, shuffle = "false" } = req.query;
         const currentUserId = (req as any).user?.sub || (req as any).user?.id;
+        const isShuffle = shuffle === "true";
 
-        let excludeIds: string[] = [];
-        if (currentUserId) {
-            // Get already followed IDs
-            const { data: followRows } = await supabase
-                .from("follows")
-                .select("following_id")
-                .eq("follower_id", currentUserId);
+        if (isShuffle) {
+            let excludeIds: string[] = [];
+            if (currentUserId) {
+                const { data: followRows } = await supabase
+                    .from("follows")
+                    .select("following_id")
+                    .eq("follower_id", currentUserId);
+                excludeIds = (followRows || []).map(r => r.following_id);
+                excludeIds.push(currentUserId);
+            }
+
+            let query = supabase
+                .from("users")
+                .select("id, name, username, avatar_url, streak_count, is_pro, skills, bio");
             
-            excludeIds = (followRows || []).map(r => r.following_id);
+            if (excludeIds.length > 0) {
+                query = query.not("id", "in", `(${excludeIds.join(",")})`);
+            }
+
+            const { data: users, error: fetchError } = await query
+                .order("streak_count", { ascending: false })
+                .limit(25);
+
+            if (fetchError) {
+                console.error("Error fetching recommended users (shuffle):", fetchError);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+
+            const shuffledSize = (users || []).sort(() => 0.5 - Math.random());
+            const finalUsers = shuffledSize.slice(0, Number(limit)).map(u => ({ ...u, isFollowing: false }));
+            return res.json(finalUsers);
+        } else {
+            // Original deterministic behavior for Sidebar
+            let usersQuery = supabase
+                .from("users")
+                .select("id, name, username, avatar_url, streak_count, is_pro, skills, bio")
+                .order("streak_count", { ascending: false })
+                .limit(Number(limit));
+
+            const { data: users, error: fetchError } = await usersQuery;
+
+            if (fetchError) {
+                console.error("Error fetching recommended users (deterministic):", fetchError);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+
+            let usersWithFollowStatus = (users || []).map((u: any) => ({ ...u, isFollowing: false }));
+
+            if (currentUserId && users && users.length > 0) {
+                const userIds = users.map((u: any) => u.id);
+                const { data: followRows } = await supabase
+                    .from("follows")
+                    .select("following_id")
+                    .eq("follower_id", currentUserId)
+                    .in("following_id", userIds);
+
+                const followingIds = new Set((followRows || []).map((r: any) => r.following_id));
+                usersWithFollowStatus = usersWithFollowStatus.map((u: any) => ({
+                    ...u,
+                    isFollowing: followingIds.has(u.id)
+                }));
+            }
+
+            return res.json(usersWithFollowStatus);
         }
-        
-        // Exclude self if present
-        if (currentUserId) excludeIds.push(currentUserId);
-
-        // Fetch a larger pool to randomize
-        let query = supabase
-            .from("users")
-            .select("id, name, username, avatar_url, streak_count, is_pro, skills, bio");
-        
-        if (excludeIds.length > 0) {
-            query = query.not("id", "in", `(${excludeIds.join(",")})`);
-        }
-
-        const { data: users, error: fetchError } = await query
-            .order("streak_count", { ascending: false })
-            .limit(25);
-
-        if (fetchError) {
-            console.error("Error fetching recommended users:", fetchError);
-            return res.status(500).json({ error: "Internal server error" });
-        }
-
-        // Shuffle in memory for variety
-        const shuffled = (users || []).sort(() => 0.5 - Math.random());
-        const finalUsers = shuffled.slice(0, Number(limit)).map(u => ({ ...u, isFollowing: false }));
-
-        return res.json(finalUsers);
     } catch (error: any) {
         console.error("Unexpected error in getRecommendedUsers:", error);
         return res.status(500).json({ error: "Internal server error" });
