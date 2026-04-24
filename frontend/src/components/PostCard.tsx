@@ -655,8 +655,10 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               display: "flex", 
               marginTop: isMobile ? "12px" : "16px", 
               alignItems: "center",
-              gap: isMobile ? "24px" : "36px",
-              justifyContent: "flex-start"
+              gap: isMobile ? "0px" : "36px",
+              justifyContent: isMobile ? "space-between" : "flex-start",
+              width: isMobile ? "100%" : "auto",
+              paddingRight: isMobile ? "8px" : "0px"
             }}>
               <button 
                 onClick={handleComment} 
