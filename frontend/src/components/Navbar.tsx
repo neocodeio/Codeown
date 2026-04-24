@@ -311,7 +311,58 @@ export default function Navbar() {
         )}
       </nav>
 
-      <div style={{ flex: 1 }}></div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "16px 4px" }}>
+        {/* Sponsor Placement */}
+        <div 
+          onClick={() => navigate("/sponsorship")}
+          style={{
+            height: "180px",
+            width: "100%",
+            borderRadius: "var(--radius-lg)",
+            border: "2px dashed var(--border-hairline)",
+            backgroundColor: "rgba(var(--text-primary-rgb), 0.02)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            gap: "10px",
+            marginTop: "12px"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(var(--text-primary-rgb), 0.05)";
+            e.currentTarget.style.borderColor = "var(--text-tertiary)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(var(--text-primary-rgb), 0.02)";
+            e.currentTarget.style.borderColor = "var(--border-hairline)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <span style={{ 
+              display: "block", 
+              fontSize: "13px", 
+              fontWeight: 800, 
+              color: "var(--text-primary)",
+              letterSpacing: "0.02em"
+            }}>
+              SPONSOR PLACE
+            </span>
+            <span style={{ 
+              display: "block", 
+              fontSize: "11px", 
+              fontWeight: 500, 
+              color: "var(--text-tertiary)",
+              marginTop: "2px"
+            }}>
+              Click to learn more
+            </span>
+          </div>
+        </div>
+      </div>
 
       <div style={{ padding: window.innerHeight < 850 ? "12px 0" : "24px 0" }}>
         {/* System Status */}
