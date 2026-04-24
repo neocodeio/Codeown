@@ -34,7 +34,7 @@ import {
   Delete02Icon,
   GifIcon,
   Image01Icon,
-  ReloadIcon,
+  RepostIcon,
   WorkIcon,
   UserQuestion01Icon,
   ConfusedIcon,
@@ -48,7 +48,6 @@ import EditPostModal from "../components/EditPostModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import GifPicker from "../components/GifPicker";
-import RollingNumber from "../components/RollingNumber";
 import { socket } from "../lib/socket";
 
 interface Post {
@@ -546,10 +545,10 @@ export default function PostDetail() {
             width: isDesktop ? "620px" : "100%",
             maxWidth: isDesktop ? "620px" : "700px",
             backgroundColor: "var(--bg-page)",
-            borderLeft: isMobile ? "none" : "0.5px solid var(--border-hairline)",
-            borderRight: isMobile ? "none" : "0.5px solid var(--border-hairline)",
+            borderLeft: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)",
+            borderRight: (isMobile || !isDesktop) ? "none" : "0.5px solid var(--border-hairline)",
             minHeight: "100vh",
-            margin: isDesktop ? "0" : "0 auto",
+            margin: "0 auto",
             position: "relative",
             flexShrink: 0
           }}>
@@ -560,7 +559,7 @@ export default function PostDetail() {
               backgroundColor: "var(--bg-header)",
               backdropFilter: "blur(24px)",
               zIndex: 100,
-              padding: "16px 24px",
+              padding: isMobile ? "12px 16px" : "16px 24px",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
@@ -778,7 +777,7 @@ export default function PostDetail() {
                           {post.post_type === "WIP" && <HugeiconsIcon icon={WorkIcon} size={12} />}
                           {post.post_type === "Stuck" && <HugeiconsIcon icon={UserQuestion01Icon} size={12} />}
                           {post.post_type === "Advice" && <HugeiconsIcon icon={ConfusedIcon} size={12} />}
-                          {post.post_type === "Update" && <HugeiconsIcon icon={ReloadIcon} size={12} />}
+                          {post.post_type === "Update" && <HugeiconsIcon icon={RepostIcon} size={12} />}
                           <span>{post.post_type}</span>
                         </div>
                       </>
@@ -1008,11 +1007,12 @@ export default function PostDetail() {
               <div style={{
                 padding: "16px 0",
                 color: "var(--text-tertiary)",
-                fontSize: "15px",
+                fontSize: isMobile ? "14px" : "15px",
                 fontWeight: 600,
                 letterSpacing: "-0.01em",
                 display: "flex",
                 alignItems: "center",
+                flexWrap: "wrap",
                 gap: "4px"
               }}>
                 <span>{formatFullTwitterDate(post.created_at)}</span>
@@ -1020,7 +1020,7 @@ export default function PostDetail() {
                   <>
                     <span style={{ margin: "0 2px" }}>·</span>
                     <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>
-                      <RollingNumber value={post.view_count} fontWeight={700} fontSize="15px" color="var(--text-primary)" />
+                      {post.view_count.toLocaleString()}
                     </span>
                     <span>{post.view_count === 1 ? "View" : "Views"}</span>
                   </>
@@ -1036,12 +1036,27 @@ export default function PostDetail() {
                 marginTop: "32px",
                 borderTop: "0.5px solid var(--border-hairline)",
                 borderBottom: "0.5px solid var(--border-hairline)",
-                padding: "16px 0"
+                padding: "16px 0",
+                gap: isMobile ? "0px" : "16px"
               }}>
-                <div style={{ display: "flex", gap: "24px" }}>
+                <div style={{ 
+                  display: "flex", 
+                  gap: isMobile ? "0px" : "24px", 
+                  justifyContent: isMobile ? "space-between" : "flex-start",
+                  flex: isMobile ? 1 : "initial"
+                }}>
                   <button
                     onClick={() => document.querySelector('textarea')?.focus()}
-                    style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }}
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "8px", 
+                      background: "none", 
+                      border: "none", 
+                      color: "var(--text-secondary)", 
+                      cursor: "pointer",
+                      padding: isMobile ? "0 10px" : "0"
+                    }}
                   >
                     <HugeiconsIcon icon={Comment01Icon} size={20} />
                     <span style={{ fontSize: "13px", fontWeight: 600 }}>{comments.length}</span>
@@ -1050,7 +1065,16 @@ export default function PostDetail() {
                   <button
                     onClick={toggleLike}
                     disabled={likeLoading}
-                    style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: isLiked ? "#f91880" : "var(--text-secondary)", cursor: "pointer" }}
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "8px", 
+                      background: "none", 
+                      border: "none", 
+                      color: isLiked ? "#f91880" : "var(--text-secondary)", 
+                      cursor: "pointer",
+                      padding: isMobile ? "0 10px" : "0"
+                    }}
                   >
                     <HugeiconsIcon
                       icon={FavouriteIcon}
@@ -1071,11 +1095,12 @@ export default function PostDetail() {
                       border: "none",
                       color: isRepostedLocal ? "#00ba7c" : "var(--text-secondary)",
                       cursor: "pointer",
-                      transition: "all 0.15s ease"
+                      transition: "all 0.15s ease",
+                      padding: isMobile ? "0 10px" : "0"
                     }}
                   >
                     <HugeiconsIcon
-                      icon={ReloadIcon}
+                      icon={RepostIcon}
                       size={20}
                       style={{
                         transform: isReShipping ? "rotate(180deg)" : "none",
@@ -1086,7 +1111,11 @@ export default function PostDetail() {
                   </button>
                 </div>
 
-                <div style={{ display: "flex", gap: "16px" }}>
+                <div style={{ 
+                  display: "flex", 
+                  gap: isMobile ? "8px" : "16px",
+                  marginLeft: isMobile ? "8px" : "0"
+                }}>
                   <button onClick={handleShare} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "4px" }}>
                     <HugeiconsIcon icon={Share01Icon} size={20} />
                   </button>

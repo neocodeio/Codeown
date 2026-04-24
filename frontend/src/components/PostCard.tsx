@@ -412,8 +412,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
           cursor: "pointer",
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
           position: "relative",
-          overflow: "hidden",
-          width: "100%"
+          width: "100%",
+          zIndex: 1
         }}
         onMouseEnter={(e) => {
           if (!isMobile) {
@@ -421,11 +421,13 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               ? theme.glow.replace("0.02", "0.04")
               : "rgba(var(--text-primary-rgb), 0.01)";
           }
+          e.currentTarget.style.zIndex = "10";
         }}
         onMouseLeave={(e) => {
           if (!isMobile) {
             e.currentTarget.style.backgroundColor = theme.glow !== "transparent" ? theme.glow : "transparent";
           }
+          e.currentTarget.style.zIndex = "1";
         }}
       >
         {/* Subtle Side Indicator */}
