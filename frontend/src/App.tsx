@@ -25,7 +25,6 @@ import { initFavicon, setFaviconDot } from "./utils/favicon";
 
 // Lazy load pages
 const Feed = lazy(() => import("./pages/Feed"));
-const Landing = lazy(() => import("./pages/Landing"));
 const Profile = lazy(() => import("./pages/Profile"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const PostDetail = lazy(() => import("./pages/PostDetail"));
@@ -523,7 +522,7 @@ export default function App() {
   }, [userLoaded, isSignedIn, user?.id, navigate]);
 
   const isAuthRoute = ["/sign-in", "/sign-up", "/forgot-password", "/onboarding"].includes(location.pathname);
-  const isLandingPage = (location.pathname === "/" || location.pathname === "" || location.pathname === "/index.html") && !isSignedIn;
+  const isLandingPage = false;
 
   const isStandardPage =
     ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups", "/search", "/directory"].includes(location.pathname) ||
@@ -571,7 +570,7 @@ export default function App() {
                 {/* ── Home Route ── */}
                 <Route
                   path="/"
-                  element={isSignedIn ? <Feed /> : <Landing />}
+                  element={<Feed />}
                 />
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostDetail />} />
