@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { toast, ToastContainer } from "react-toastify";
-
+ 
 interface ChangelogEntry {
     id: number;
     version: string;
