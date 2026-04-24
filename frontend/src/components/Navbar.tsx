@@ -321,7 +321,7 @@ export default function Navbar() {
             borderRadius: "var(--radius-lg)",
             border: "2px dashed var(--border-hairline)",
             backgroundColor: "rgba(var(--text-primary-rgb), 0.02)",
-            display: "flex",
+            display: "none",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",

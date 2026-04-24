@@ -227,16 +227,34 @@ export async function getPostById(req: Request, res: Response) {
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
     const [viewResult, stats] = await Promise.all([
-      // Increment view count (non-blocking)
+      // Increment unique view count (non-blocking)
       (async () => {
+        if (!currentUserId) return;
         try {
-          const { error } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
-          if (error) throw error;
+          // 1. Check if user already viewed
+          const { data: existing } = await supabase
+            .from("post_views")
+            .select("id")
+            .eq("post_id", id)
+            .eq("user_id", currentUserId)
+            .maybeSingle();
+
+          if (existing) return;
+
+          // 2. Record view
+          await supabase.from("post_views").insert({ post_id: id, user_id: currentUserId });
+
+          // 3. Increment total count
+          try {
+            await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+          } catch (rpcErr) {
+            const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
+            await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
+          }
+          
           emitUpdate("post_viewed", { postId: id, viewCount: (post.view_count || 0) + 1 });
         } catch (e) {
-          const newCount = (post.view_count || 0) + 1;
-          await supabase.from("posts").update({ view_count: newCount }).eq("id", id);
-          emitUpdate("post_viewed", { postId: id, viewCount: newCount });
+          console.error("View tracking error:", e);
         }
       })(),
 
@@ -946,22 +964,54 @@ export async function getTrendingTags(req: Request, res: Response) {
 export async function addImpression(req: Request, res: Response) {
   try {
     const { id } = req.params;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
     if (!id) return res.status(400).json({ error: "Post ID is required" });
 
-    // Increment count using RPC or manual update
-    const { data: updatedPost, error } = await supabase
-      .rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+    // If guest, we don't track uniqueness yet (can be added with IP/Session later)
+    if (!userId) {
+       return res.json({ success: true, message: "Guest view" });
+    }
 
-    // Fetch new count to broadcast (Supabase rpc doesn't always return the updated row easily depending on definition)
-    const { data: post } = await supabase
+    // 1. Check if view already exists
+    const { data: existingView } = await supabase
+      .from("post_views")
+      .select("id")
+      .eq("post_id", id)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (existingView) {
+      return res.json({ success: true, message: "Already viewed" });
+    }
+
+    // 2. Insert new unique view record
+    const { error: insertError } = await supabase
+      .from("post_views")
+      .insert({ post_id: id, user_id: userId });
+      
+    if (insertError) {
+      // Handle race condition if two requests hit at same time
+      if (insertError.code === '23505') return res.json({ success: true, message: "Already viewed" });
+      throw insertError;
+    }
+
+    // 3. Increment count on post
+    try {
+      await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+    } catch (rpcErr) {
+       const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
+       await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
+    }
+
+    // 4. Fetch the new count to broadcast
+    const { data: postData } = await supabase
       .from("posts")
       .select("view_count")
       .eq("id", id)
       .single();
 
-    const newCount = post?.view_count || 0;
-
-    // Broadcast to all connected clients
+    const newCount = postData?.view_count || 0;
     emitUpdate("post_viewed", { postId: parseInt(id), viewCount: newCount });
 
     return res.json({ success: true, view_count: newCount });

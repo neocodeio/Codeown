@@ -18,19 +18,29 @@ import * as Sentry from "@sentry/react";
 // and triggering a controlled reload to pull the latest consistent state.
 window.addEventListener('error', (event) => {
   const errorMsg = event.message || "";
+  const errorName = event.error?.name || "";
+  const errorStack = event.error?.stack || "";
   const target = event.target as any;
+  
+  const isClerkError = errorMsg.includes('Failed to load Clerk') || 
+                       errorMsg.includes('clerk_js_timeout') || 
+                       errorStack.includes('clerk_js_timeout') ||
+                       errorName.includes('ClerkRuntimeError') ||
+                       (target?.tagName === 'SCRIPT' && target?.src?.includes('clerk'));
+
   const isChunkError = errorMsg.includes('Loading chunk') ||
     errorMsg.includes('Failed to fetch dynamically imported module') ||
-    errorMsg.includes('Failed to load Clerk') ||
-    errorMsg.includes('clerk_js_timeout') ||
     (event.error?.name === 'ChunkLoadError') ||
-    (target?.tagName === 'SCRIPT' && (target?.src?.includes('clerk') || target?.src?.includes('chunk')));
+    (target?.tagName === 'SCRIPT' && target?.src?.includes('chunk'));
 
-  if (isChunkError) {
-    const lastReload = sessionStorage.getItem('last-chunk-reload');
+  if (isClerkError || isChunkError) {
+    console.warn("[Stability] Detected failure, attempting recovery...", { isClerkError, isChunkError });
+    const lastReload = sessionStorage.getItem('last-stability-reload');
     const now = Date.now();
-    if (!lastReload || now - parseInt(lastReload) > 5000) {
-      sessionStorage.setItem('last-chunk-reload', now.toString());
+    
+    // Prevent infinite reload loops (wait 3s before allowing another reload)
+    if (!lastReload || now - parseInt(lastReload) > 3000) {
+      sessionStorage.setItem('last-stability-reload', now.toString());
       window.location.reload();
     }
   }

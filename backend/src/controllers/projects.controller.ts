@@ -269,15 +269,34 @@ export async function getProject(req: Request, res: Response) {
       }
     }
 
-    // 3. ASYNC VIEW INCREMENT
-    // Using simple .then() for compatibility
-    supabase.rpc('increment_view_count', { row_id: project.id, table_name: 'projects' })
-      .then(
-        () => { },
-        () => {
-          supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id).then(() => { });
-        }
-      );
+    // 3. ASYNC UNIQUE VIEW INCREMENT
+    if (userId && project.id) {
+        (async () => {
+            try {
+                // Check if user already viewed
+                const { data: existing } = await supabase
+                    .from("project_views")
+                    .select("id")
+                    .eq("project_id", project.id)
+                    .eq("user_id", userId)
+                    .maybeSingle();
+
+                if (existing) return;
+
+                // Record view
+                await supabase.from("project_views").insert({ project_id: project.id, user_id: userId });
+
+                // Increment total count
+                try {
+                    await supabase.rpc('increment_view_count', { row_id: project.id, table_name: 'projects' });
+                } catch (rpcErr) {
+                    await supabase.from("projects").update({ view_count: (project.view_count || 0) + 1 }).eq("id", project.id);
+                }
+            } catch (e) {
+                console.error("Project view tracking error:", e);
+            }
+        })();
+    }
 
     // 4. PROCESS RATINGS
     const ratings = (ratingsRes && ratingsRes.data) ? (ratingsRes.data as any[]) : [];

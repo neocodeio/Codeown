@@ -22,6 +22,7 @@ import SidebarHeader from "./SidebarHeader";
 import FollowButton from "./FollowButton";
 
 const getInitials = (title: string) => {
+    if (!title) return "??";
     const parts = title.trim().split(/\s+/);
     if (parts.length >= 2) {
         return (parts[0][0] + parts[1][0]).toUpperCase();

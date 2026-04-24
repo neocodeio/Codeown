@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, memo, useCallback } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useNavigate } from "react-router-dom";
-import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
+import { useClerkUser } from "../hooks/useClerkUser";
 import api from "../api/axios";
 import type { Post } from "../hooks/usePosts";
 import EditPostModal from "./EditPostModal";
@@ -50,8 +50,8 @@ interface PostCardProps {
 const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProps) => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
-  const { user: currentUser } = useClerkUser();
   const { getToken } = useClerkAuth();
+  const { user: currentUser } = useClerkUser();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -86,10 +86,16 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        entries.forEach(async (entry) => {
           if (entry.isIntersecting && !impressionTracked.current) {
             impressionTracked.current = true;
-            api.post(`/posts/${post.id}/impression`).catch(() => {});
+            try {
+              const token = await getToken();
+              const headers = token ? { Authorization: `Bearer ${token}` } : {};
+              api.post(`/posts/${post.id}/impression`, {}, { headers }).catch(() => {});
+            } catch (e) {
+              api.post(`/posts/${post.id}/impression`).catch(() => {});
+            }
             observer.disconnect();
           }
         });

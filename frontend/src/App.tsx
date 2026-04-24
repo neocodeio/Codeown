@@ -25,6 +25,7 @@ import { initFavicon, setFaviconDot } from "./utils/favicon";
 
 // Lazy load pages
 const Feed = lazy(() => import("./pages/Feed"));
+const Landing = lazy(() => import("./pages/Landing"));
 const Profile = lazy(() => import("./pages/Profile"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const PostDetail = lazy(() => import("./pages/PostDetail"));
@@ -522,6 +523,7 @@ export default function App() {
   }, [userLoaded, isSignedIn, user?.id, navigate]);
 
   const isAuthRoute = ["/sign-in", "/sign-up", "/forgot-password", "/onboarding"].includes(location.pathname);
+  const isLandingPage = (location.pathname === "/" || location.pathname === "" || location.pathname === "/index.html") && !isSignedIn;
 
   const isStandardPage =
     ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups", "/search", "/directory"].includes(location.pathname) ||
@@ -531,7 +533,7 @@ export default function App() {
     location.pathname.startsWith("/user/") ||
     (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup", "forgot-password", "sign-in", "sign-up"].includes(location.pathname.split("/")[1]));
 
-  const shouldShowNavbar = !isAuthRoute || (isMobile && (location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up")));
+  const shouldShowNavbar = (!isAuthRoute && !isLandingPage) || (isMobile && (location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up")));
 
   if (!userLoaded) return <PageLoader />;
 
@@ -566,7 +568,11 @@ export default function App() {
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<Feed />} />
+                {/* ── Home Route ── */}
+                <Route
+                  path="/"
+                  element={(isSignedIn && user) ? <Feed /> : <Landing />}
+                />
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostDetail />} />
                 <Route path="/comment/:commentId" element={<CommentDetail />} />

@@ -206,7 +206,7 @@ export default function Search() {
 
   // Derived, display-ready collections
   const peopleResults = [...usersData]
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
   const postsSorted =
     sortOption === "newest"
@@ -234,8 +234,9 @@ export default function Search() {
     const tagsMap = new Map<string, number>();
     postsData.forEach((p: any) => {
       p.tags?.forEach((t: string) => {
+        if (!t) return;
         const tag = t.toLowerCase().replace(/^#/, "");
-        if (!query || tag.includes(query.toLowerCase().replace(/^#/, ""))) {
+        if (!query || tag.includes((query || "").toLowerCase().replace(/^#/, ""))) {
           tagsMap.set(tag, (tagsMap.get(tag) || 0) + 1);
         }
       });

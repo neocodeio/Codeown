@@ -42,6 +42,8 @@
 
   --max-width: 1260px;
   --feed-width: 620px;
+  --sidebar-width: 335px;
+  --main-container-width: 955px; /* 620 + 335 */
 
   --skeleton-bg: #f0f2f5;
   --skeleton-shimmer: rgba(255, 255, 255, 0.6);
