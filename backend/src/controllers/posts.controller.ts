@@ -232,8 +232,11 @@ export async function getPostById(req: Request, res: Response) {
         try {
           const { error } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
           if (error) throw error;
+          emitUpdate("post_viewed", { postId: id, viewCount: (post.view_count || 0) + 1 });
         } catch (e) {
-          await supabase.from("posts").update({ view_count: (post.view_count || 0) + 1 }).eq("id", id);
+          const newCount = (post.view_count || 0) + 1;
+          await supabase.from("posts").update({ view_count: newCount }).eq("id", id);
+          emitUpdate("post_viewed", { postId: id, viewCount: newCount });
         }
       })(),
 
@@ -934,5 +937,36 @@ export async function getTrendingTags(req: Request, res: Response) {
   } catch (error: any) {
     console.error("Error in getTrendingTags:", error);
     return res.status(500).json({ error: "Failed to fetch trending tags" });
+  }
+}
+
+/**
+ * Record a post impression (view) and broadcast it via socket.
+ */
+export async function addImpression(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ error: "Post ID is required" });
+
+    // Increment count using RPC or manual update
+    const { data: updatedPost, error } = await supabase
+      .rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+
+    // Fetch new count to broadcast (Supabase rpc doesn't always return the updated row easily depending on definition)
+    const { data: post } = await supabase
+      .from("posts")
+      .select("view_count")
+      .eq("id", id)
+      .single();
+
+    const newCount = post?.view_count || 0;
+
+    // Broadcast to all connected clients
+    emitUpdate("post_viewed", { postId: parseInt(id), viewCount: newCount });
+
+    return res.json({ success: true, view_count: newCount });
+  } catch (err: any) {
+    console.error("Error in addImpression:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }

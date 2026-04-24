@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getPosts, getPostById, getPostsByUser, createPost, updatePost, deletePost, votePost, getTrendingTags } from "../controllers/posts.controller.js";
+import { getPosts, getPostById, getPostsByUser, createPost, updatePost, deletePost, votePost, getTrendingTags, addImpression } from "../controllers/posts.controller.js";
 import { toggleRepost } from "../controllers/reposts.controller.js";
 import { requireAuth, optionalAuth } from "../middlewares/auth.middleware.js";
 
@@ -12,6 +12,7 @@ router.get("/:id", optionalAuth, getPostById); // Get single post by ID - must b
 router.get("/user/:userId", optionalAuth, getPostsByUser); // Get posts by user ID
 router.post("/", requireAuth, createPost);
 router.post("/:id/vote", requireAuth, votePost);
+router.post("/:id/impression", optionalAuth, addImpression);
 router.put("/:id", requireAuth, updatePost);
 router.delete("/:id", requireAuth, deletePost);
 

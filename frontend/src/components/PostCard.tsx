@@ -23,7 +23,8 @@ import {
   WorkIcon,
   UserQuestion01Icon,
   ConfusedIcon,
-  SmartPhone02Icon
+  SmartPhone02Icon,
+  Analytics03Icon
 } from "@hugeicons/core-free-icons";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
@@ -57,8 +58,51 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [isSendToChatModalOpen, setIsSendToChatModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isReShipping, setIsReShipping] = useState(false);
+  const [viewCountLocal, setViewCountLocal] = useState(post.view_count || 0);
   const { isLiked, likeCount, toggleLike } = useLikes(post.id, post.isLiked, post.like_count || 0);
   const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
+
+  // Sync with prop changes
+  useEffect(() => {
+    setViewCountLocal(post.view_count || 0);
+  }, [post.view_count]);
+
+  // Realtime view count updates
+  useEffect(() => {
+    const handleUpdate = ({ type, data }: any) => {
+      if (type === "post_viewed" && data.postId === post.id) {
+        setViewCountLocal(data.viewCount);
+      }
+    };
+    socket.on("content_update", handleUpdate);
+    return () => {
+      socket.off("content_update", handleUpdate);
+    };
+  }, [post.id]);
+
+  // Track impressions on scroll
+  useEffect(() => {
+    if (impressionTracked.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !impressionTracked.current) {
+            impressionTracked.current = true;
+            api.post(`/posts/${post.id}/impression`).catch(() => {});
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.5 } // 50% visibility
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [post.id]);
   const [isRepostedLocal, setIsRepostedLocal] = useState(post.isReposted || false);
   const [repostCountLocal, setRepostCountLocal] = useState(post.repost_count || 0);
   const [localCommentCount, setLocalCommentCount] = useState(post.comment_count || 0);
@@ -68,6 +112,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const impressionTracked = useRef(false);
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -356,6 +402,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
       />
 
       <div
+        ref={cardRef}
         onClick={handleCardClick}
         style={{
           padding: isMobile ? "12px 10px 14px" : "20px 16px 16px",
@@ -487,14 +534,14 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                     </span>
                     {(displayPost as any)?.is_mobile && (
                       <div className="mobile-tooltip-wrapper" style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                      <HugeiconsIcon 
-                        icon={SmartPhone02Icon} 
-                        size={13} 
-                        strokeWidth={2.5}
-                        style={{ color: "var(--text-tertiary)", opacity: 0.9, cursor: "pointer" }}
-                      />
-                      <div className="mobile-tooltip">Posted via mobile app</div>
-                    </div>
+                        <HugeiconsIcon 
+                          icon={SmartPhone02Icon} 
+                          size={13} 
+                          strokeWidth={2.5}
+                          style={{ color: "var(--text-tertiary)", opacity: 0.9, cursor: "pointer" }}
+                        />
+                        <div className="mobile-tooltip">Posted via mobile app</div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -655,6 +702,31 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 )}
               </button>
 
+              <div 
+                className="post-action-btn views"
+                style={{
+                  display: "flex", alignItems: "center", gap: "6px",
+                  color: "var(--text-tertiary)",
+                  cursor: "default", transition: "all 0.2s ease"
+                }}
+              >
+                <div className="icon-wrapper" style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  width: "34px", height: "34px", borderRadius: "50%",
+                  transition: "all 0.2s ease", margin: "0 -7px"
+                }}>
+                  <HugeiconsIcon icon={Analytics03Icon} size={isMobile ? 18 : 20} />
+                </div>
+                <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>
+                  {(() => {
+                    const count = viewCountLocal;
+                    if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
+                    if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
+                    return count.toString();
+                  })()}
+                </span>
+              </div>
+
               <button 
                 onClick={handleSave} 
                 className="post-action-btn save"
@@ -725,6 +797,8 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                 .post-action-btn.save:hover .icon-wrapper { background-color: rgba(59, 130, 246, 0.1) !important; }
                 .post-action-btn.share:hover { color: #3b82f6 !important; }
                 .post-action-btn.share:hover .icon-wrapper { background-color: rgba(59, 130, 246, 0.1) !important; }
+                .post-action-btn.views:hover { color: #3b82f6 !important; }
+                .post-action-btn.views:hover .icon-wrapper { background-color: rgba(59, 130, 246, 0.1) !important; }
               `}</style>
             </div>
           </div>
