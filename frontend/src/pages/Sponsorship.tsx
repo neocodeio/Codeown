@@ -178,7 +178,7 @@ export default function Sponsorship() {
                 Send us an inquiry and let's discuss how we can bring your brand to life on Codeown.
               </p>
               <a
-                href="mailto:ameen65022@gmail.com"
+                href="mailto:ameen65022@gmail.com?subject=Codeown Sponsorship"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
