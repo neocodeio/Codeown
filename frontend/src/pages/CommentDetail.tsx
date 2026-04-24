@@ -76,6 +76,8 @@ export default function CommentDetail() {
     });
 
     const comment = data?.comment as CommentWithMeta;
+    const parentComment = data?.parent as CommentWithMeta | null;
+    const parentPost = data?.post as any;
     const rawReplies = (data?.replies || []) as CommentWithMeta[];
 
     // Frontend sorting for replies
@@ -280,18 +282,88 @@ export default function CommentDetail() {
                             <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center" }}>
                                 <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
                             </button>
-                            <h1 style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Thread</h1>
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                <h1 style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Thread</h1>
+                                {parentPost && (
+                                    <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+                                        Post by {parentPost.user?.name || "User"}
+                                    </span>
+                                )}
+                            </div>
                         </header>
 
-                        {/* Parent Comment — rendered as detail (isDetailView) */}
-                        <CommentBlock
-                            comment={comment}
-                            depth={0}
-                            onReply={handleReply}
-                            onDelete={(id) => setCommentToDelete(id)}
-                            resourceType="post"
-                            isDetailView={true}
-                        />
+                        {/* Thread Context: Show Parent Comment or Original Post */}
+                        {parentComment ? (
+                            <div style={{ borderBottom: "none", position: "relative" }}>
+                                <CommentBlock
+                                    comment={parentComment}
+                                    depth={0}
+                                    onReply={handleReply}
+                                    onDelete={(id) => setCommentToDelete(id)}
+                                    resourceType="post"
+                                />
+                                {/* Thread line connector */}
+                                <div style={{
+                                    position: "absolute",
+                                    left: isMobile ? "36px" : "44px",
+                                    top: "60px",
+                                    bottom: "-10px",
+                                    width: "2px",
+                                    backgroundColor: "var(--border-hairline)",
+                                    zIndex: 0
+                                }} />
+                            </div>
+                        ) : parentPost ? (
+                            <div 
+                                onClick={() => navigate(`/post/${parentPost.id}`)}
+                                style={{ 
+                                    padding: isMobile ? "16px" : "20px 24px", 
+                                    borderBottom: "0.5px solid var(--border-hairline)",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    gap: "12px",
+                                    backgroundColor: "rgba(var(--text-primary-rgb), 0.01)"
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(var(--text-primary-rgb), 0.02)"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(var(--text-primary-rgb), 0.01)"}
+                            >
+                                <img 
+                                    src={parentPost.user?.avatar_url || "https://images.clerk.dev/static/avatar.png"} 
+                                    alt="" 
+                                    style={{ width: "32px", height: "32px", borderRadius: "8px", objectFit: "cover" }} 
+                                />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+                                        <span style={{ fontWeight: 700, fontSize: "14px", color: "var(--text-primary)" }}>{parentPost.user?.name}</span>
+                                        <span style={{ fontSize: "13px", color: "var(--text-tertiary)" }}>@{parentPost.user?.username}</span>
+                                    </div>
+                                    <p style={{ margin: 0, fontSize: "14.5px", color: "var(--text-secondary)", lineHeight: "1.5", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                        {parentPost.content}
+                                    </p>
+                                </div>
+                                <div style={{
+                                    position: "absolute",
+                                    left: isMobile ? "32px" : "40px",
+                                    top: "48px",
+                                    bottom: "-10px",
+                                    width: "2px",
+                                    backgroundColor: "var(--border-hairline)",
+                                    zIndex: 0
+                                }} />
+                            </div>
+                        ) : null}
+
+                        {/* Main Comment being viewed */}
+                        <div style={{ position: "relative", zIndex: 1, backgroundColor: "var(--bg-page)" }}>
+                            <CommentBlock
+                                comment={comment}
+                                depth={0}
+                                onReply={handleReply}
+                                onDelete={(id) => setCommentToDelete(id)}
+                                resourceType="post"
+                                isDetailView={true}
+                            />
+                        </div>
 
                         {/* Reply Composer — directly under parent */}
                         {isSignedIn && (

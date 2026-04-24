@@ -487,28 +487,35 @@ export async function getCommentDetail(req: Request, res: Response) {
         }
         : { name: "User", email: null, avatar_url: null, username: null, is_pro: false, is_og: false };
 
-      let parent_author_name: string | null = null;
-      if (c.parent_id) {
-        // For the parent comment, look at grandparent; for replies, look at parent comment
-        const parentUser = c.parent_id === comment.parent_id
-          ? null // grandparent - skip for now
-          : userMap.get(comment.user_id) || clerkUserMap.get(comment.user_id);
-        parent_author_name = parentUser?.name ?? null;
-      }
-
       return {
         ...c,
         like_count: likeCountMap.get(c.id) || 0,
         reply_count: includeReplyCount ? (replyCountMap.get(c.id) || 0) : undefined,
         user: userData,
-        parent_author_name,
       };
     };
 
     const enrichedComment = enrichComment(comment);
     enrichedComment.reply_count = parentReplyCount;
 
-    // Build tree
+    // Fetch parent if exists
+    let enrichedParentComment = null;
+    if (comment.parent_id) {
+      const parentRow = allComments.find(xc => xc.id === comment.parent_id);
+      if (parentRow) {
+        enrichedParentComment = enrichComment(parentRow, true);
+      }
+    }
+
+    // Fetch the Post details as well for broader context
+    const { data: post } = await supabase.from("posts").select("*").eq("id", comment.post_id).single();
+    let enrichedPost = null;
+    if (post) {
+      const pu = await supabase.from("users").select("name, avatar_url, username, is_pro, is_og").eq("id", post.user_id).single();
+      enrichedPost = { ...post, user: pu.data || { name: "User" } };
+    }
+
+    // Build tree for replies
     const allEnrichedComments = allComments.map(c => enrichComment(c, true));
     const treeMap = new Map();
 
@@ -526,7 +533,12 @@ export async function getCommentDetail(req: Request, res: Response) {
     const mainNode = treeMap.get(Number(commentId)) || treeMap.get(String(commentId));
     const enrichedReplies = mainNode?.children || [];
 
-    return res.json({ comment: enrichedComment, replies: enrichedReplies });
+    return res.json({ 
+      comment: enrichedComment, 
+      replies: enrichedReplies, 
+      parent: enrichedParentComment,
+      post: enrichedPost 
+    });
   } catch (error: any) {
     console.error("Unexpected error in getCommentDetail:", error);
     return res.status(500).json({ error: "Internal server error", details: error?.message });
