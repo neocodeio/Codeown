@@ -571,7 +571,7 @@ export default function App() {
                 {/* ── Home Route ── */}
                 <Route
                   path="/"
-                  element={(isSignedIn && user) ? <Feed /> : <Landing />}
+                  element={isSignedIn ? <Feed /> : <Landing />}
                 />
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostDetail />} />

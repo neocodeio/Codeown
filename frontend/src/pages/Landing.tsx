@@ -33,6 +33,8 @@ export default function Landing() {
     }
   }, [isLoaded, isSignedIn, navigate]);
 
+  if (isLoaded && isSignedIn) return null;
+
   const primaryLogo = theme === "dark" ? logoWhite : logo;
 
   return (
