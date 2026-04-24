@@ -21,6 +21,8 @@ window.addEventListener('error', (event) => {
   const target = event.target as any;
   const isChunkError = errorMsg.includes('Loading chunk') ||
     errorMsg.includes('Failed to fetch dynamically imported module') ||
+    errorMsg.includes('Failed to load Clerk') ||
+    errorMsg.includes('clerk_js_timeout') ||
     (event.error?.name === 'ChunkLoadError') ||
     (target?.tagName === 'SCRIPT' && (target?.src?.includes('clerk') || target?.src?.includes('chunk')));
 
