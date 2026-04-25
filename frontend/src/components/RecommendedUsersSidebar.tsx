@@ -9,7 +9,7 @@ import {
     Rocket01Icon,
     UserGroupIcon,
     ArrowUp02Icon,
-    ArrowRight01Icon
+    ArrowRight02Icon
 } from "@hugeicons/core-free-icons";
 
 import UserHoverCard from "./UserHoverCard";
@@ -258,6 +258,24 @@ export default function RecommendedUsersSidebar() {
                         <HugeiconsIcon icon={UserGroupIcon} size={16} />
                         Who to Follow
                     </h3>
+                    <Link
+                        to="/directory"
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            textDecoration: "none",
+                            color: "var(--text-tertiary)",
+                            fontSize: "12px",
+                            fontWeight: 700,
+                            opacity: 0.7,
+                            transition: "all 0.2s ease"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                        onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                    >
+                    <HugeiconsIcon icon={ArrowRight02Icon} size={14} />
+                    </Link>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                     {followersLoading ? (
@@ -532,8 +550,10 @@ export default function RecommendedUsersSidebar() {
                                 gap: "4px",
                                 opacity: 0.7
                             }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                            onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
                         >
-                            View all <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+                            View all <HugeiconsIcon icon={ArrowRight02Icon} size={14} />
                         </Link>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import VerifiedBadge from "./VerifiedBadge";
@@ -19,13 +19,14 @@ export default function CreatorsForYou() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const { getToken } = useClerkAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
                 const token = await getToken();
                 const res = await api.get("/users/recommended?limit=3&shuffle=true", {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: token ? { Authorization: `Bearer ${token}` } : {}
                 });
                 setUsers(res.data);
             } catch (error) {
@@ -38,20 +39,34 @@ export default function CreatorsForYou() {
         fetchUsers();
     }, [getToken]);
 
-    const handleFollow = async (userId: string) => {
+    const handleFollow = async (userId: string, currentStatus: boolean) => {
+        // Optimistic update
+        setUsers(prev => prev.map(u => 
+            u.id === userId ? { ...u, isFollowing: !currentStatus } : u
+        ));
+
         try {
             const token = await getToken();
+            if (!token) {
+                navigate("/sign-in");
+                return;
+            }
+            
             const res = await api.post(`/follows/${userId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
-            if (res.data.success) {
+            if (res.data && typeof res.data.following === 'boolean') {
                 setUsers(prev => prev.map(u => 
-                    u.id === userId ? { ...u, isFollowing: true } : u
+                    u.id === userId ? { ...u, isFollowing: res.data.following } : u
                 ));
             }
         } catch (error) {
             console.error("Error following user:", error);
+            // Rollback on error
+            setUsers(prev => prev.map(u => 
+                u.id === userId ? { ...u, isFollowing: currentStatus } : u
+            ));
         }
     };
 
@@ -124,7 +139,7 @@ export default function CreatorsForYou() {
                                 
                                 <FollowButton 
                                     isFollowing={user.isFollowing} 
-                                    onClick={() => handleFollow(user.id)}
+                                    onClick={() => handleFollow(user.id, !!user.isFollowing)}
                                 />
                             </div>
                             
