@@ -226,53 +226,6 @@ export async function getPostById(req: Request, res: Response) {
     // Check if the post is already liked/saved by the current user
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
-    // Track view (Non-blocking)
-    (async () => {
-      try {
-        let shouldIncrement = false;
-
-        if (currentUserId) {
-          // 1. Check unique view for logged in users
-          const { data: existing } = await supabase
-            .from("post_views")
-            .select("id")
-            .eq("post_id", id)
-            .eq("user_id", currentUserId)
-            .maybeSingle();
-
-          if (!existing) {
-            // Record unique view
-            await supabase.from("post_views").insert({ post_id: id, user_id: currentUserId });
-            shouldIncrement = true;
-          }
-        } else {
-          // 2. Guest views always increment (but not recorded in post_views for uniqueness)
-          shouldIncrement = true;
-        }
-
-        if (shouldIncrement) {
-          // 3. Increment total count
-          const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
-          
-          if (rpcError) {
-            console.warn("RPC increment failed, falling back to manual update:", rpcError.message);
-            const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
-            await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
-          }
-          
-          // Fetch final count for broadcast
-          const { data: latestPost } = await supabase.from("posts").select("view_count").eq("id", id).single();
-          const finalCount = latestPost?.view_count || (post.view_count || 0) + 1;
-          
-          emitUpdate("post_viewed", { 
-            postId: !isNaN(Number(id)) ? Number(id) : id, 
-            viewCount: finalCount 
-          });
-        }
-      } catch (e) {
-        console.error("View tracking error:", e);
-      }
-    })();
 
     // Fetch stats if user is logged in
     const stats = currentUserId ? await Promise.all([

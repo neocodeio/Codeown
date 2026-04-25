@@ -117,6 +117,7 @@ export default function PostDetail() {
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
   const menuRef = React.useRef<HTMLDivElement>(null);
   const sortMenuRef = React.useRef<HTMLDivElement>(null);
+  const impressionTracked = React.useRef(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
 
   const { avatarUrl: currentUserAvatarUrl } = useAvatar(
@@ -191,6 +192,28 @@ export default function PostDetail() {
     if (!id) return;
     fetchLikeStatus();
     fetchSavedStatus();
+  }, [id]); // Only fetch status when ID changes
+
+  // Add impression once on mount
+  useEffect(() => {
+    if (!id || impressionTracked.current) return;
+    
+    const trackImpression = async () => {
+      impressionTracked.current = true;
+      try {
+        const token = await getToken();
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        api.post(`/posts/${id}/impression`, {}, { headers }).catch(() => {});
+      } catch (e) {
+        api.post(`/posts/${id}/impression`).catch(() => {});
+      }
+    };
+
+    trackImpression();
+  }, [id, getToken]);
+
+  useEffect(() => {
+    if (!id) return;
 
     // Real-time updates via content_update
     const handleContentUpdate = ({ type, data }: any) => {
@@ -239,7 +262,7 @@ export default function PostDetail() {
       socket.off("content_update", handleContentUpdate);
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [id, fetchLikeStatus, fetchSavedStatus, queryClient, user?.id]);
+  }, [id, queryClient, user?.id]);
 
   const isOwnPost = user?.id === post?.user_id;
   const isPinned = isPinnedLocal;
