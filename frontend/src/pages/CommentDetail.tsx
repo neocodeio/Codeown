@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -441,10 +442,41 @@ export default function CommentDetail() {
                                                 >
                                                     <Gif size={18} weight={isGifPickerOpen ? "fill" : "bold"} />
                                                 </button>
-                                                {isGifPickerOpen && (
-                                                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "12px", zIndex: 1001 }}>
-                                                        <GifPicker onSelect={(gif) => { setSelectedGif(gif); setIsGifPickerOpen(false); }} onClose={() => setIsGifPickerOpen(false)} />
-                                                    </div>
+                                                {isGifPickerOpen && createPortal(
+                                                    <div
+                                                        style={{
+                                                            position: "fixed",
+                                                            top: 0,
+                                                            left: 0,
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            backgroundColor: "rgba(0,0,0,0.6)",
+                                                            backdropFilter: "blur(12px)",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center",
+                                                            zIndex: 999999,
+                                                            cursor: "default"
+                                                        }}
+                                                        onClick={() => setIsGifPickerOpen(false)}
+                                                    >
+                                                        <div
+                                                            style={{ animation: "modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }}
+                                                            onClick={e => e.stopPropagation()}
+                                                        >
+                                                            <GifPicker 
+                                                                onSelect={(gif) => { setSelectedGif(gif); setIsGifPickerOpen(false); }} 
+                                                                onClose={() => setIsGifPickerOpen(false)} 
+                                                            />
+                                                        </div>
+                                                        <style>{`
+                                                            @keyframes modalFadeIn {
+                                                                from { opacity: 0; transform: scale(0.9) translateY(20px); }
+                                                                to { opacity: 1; transform: scale(1) translateY(0); }
+                                                            }
+                                                        `}</style>
+                                                    </div>,
+                                                    document.body
                                                 )}
                                             </div>
 
