@@ -226,12 +226,13 @@ export async function getPostById(req: Request, res: Response) {
     // Check if the post is already liked/saved by the current user
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
 
-    const [viewResult, stats] = await Promise.all([
-      // Increment unique view count (non-blocking)
-      (async () => {
-        if (!currentUserId) return;
-        try {
-          // 1. Check if user already viewed
+    // Track view (Non-blocking)
+    (async () => {
+      try {
+        let shouldIncrement = false;
+
+        if (currentUserId) {
+          // 1. Check unique view for logged in users
           const { data: existing } = await supabase
             .from("post_views")
             .select("id")
@@ -239,32 +240,46 @@ export async function getPostById(req: Request, res: Response) {
             .eq("user_id", currentUserId)
             .maybeSingle();
 
-          if (existing) return;
+          if (!existing) {
+            // Record unique view
+            await supabase.from("post_views").insert({ post_id: id, user_id: currentUserId });
+            shouldIncrement = true;
+          }
+        } else {
+          // 2. Guest views always increment (but not recorded in post_views for uniqueness)
+          shouldIncrement = true;
+        }
 
-          // 2. Record view
-          await supabase.from("post_views").insert({ post_id: id, user_id: currentUserId });
-
+        if (shouldIncrement) {
           // 3. Increment total count
-          try {
-            await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
-          } catch (rpcErr) {
+          const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+          
+          if (rpcError) {
+            console.warn("RPC increment failed, falling back to manual update:", rpcError.message);
             const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
             await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
           }
           
-          emitUpdate("post_viewed", { postId: id, viewCount: (post.view_count || 0) + 1 });
-        } catch (e) {
-          console.error("View tracking error:", e);
+          // Fetch final count for broadcast
+          const { data: latestPost } = await supabase.from("posts").select("view_count").eq("id", id).single();
+          const finalCount = latestPost?.view_count || (post.view_count || 0) + 1;
+          
+          emitUpdate("post_viewed", { 
+            postId: !isNaN(Number(id)) ? Number(id) : id, 
+            viewCount: finalCount 
+          });
         }
-      })(),
+      } catch (e) {
+        console.error("View tracking error:", e);
+      }
+    })();
 
-      // Fetch stats if user is logged in
-      currentUserId ? Promise.all([
-        supabase.from("likes").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle(),
-        supabase.from("saved_posts").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle(),
-        supabase.from("reposts").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle()
-      ]) : Promise.resolve([null, null, null])
-    ]);
+    // Fetch stats if user is logged in
+    const stats = currentUserId ? await Promise.all([
+      supabase.from("likes").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle(),
+      supabase.from("saved_posts").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle(),
+      supabase.from("reposts").select("id").eq("user_id", currentUserId).eq("post_id", id).maybeSingle()
+    ]) : [null, null, null];
 
     const [likeRes, saveRes, repostRes] = (stats || [null, null, null]) as any;
     const poll = formattedPostSync?.poll as any;
@@ -968,43 +983,47 @@ export async function addImpression(req: Request, res: Response) {
 
     if (!id) return res.status(400).json({ error: "Post ID is required" });
 
-    // If guest, we don't track uniqueness yet (can be added with IP/Session later)
-    if (!userId) {
-       return res.json({ success: true, message: "Guest view" });
+    let shouldIncrement = false;
+
+    if (userId) {
+      // 1. Check if view already exists for logged in user
+      const { data: existingView } = await supabase
+        .from("post_views")
+        .select("id")
+        .eq("post_id", id)
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (!existingView) {
+        // 2. Insert new unique view record
+        const { error: insertError } = await supabase
+          .from("post_views")
+          .insert({ post_id: id, user_id: userId });
+          
+        if (insertError) {
+          // Handle race condition
+          if (insertError.code !== '23505') throw insertError;
+        } else {
+          shouldIncrement = true;
+        }
+      }
+    } else {
+      // 3. Guest views always increment
+      shouldIncrement = true;
     }
 
-    // 1. Check if view already exists
-    const { data: existingView } = await supabase
-      .from("post_views")
-      .select("id")
-      .eq("post_id", id)
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (existingView) {
-      return res.json({ success: true, message: "Already viewed" });
-    }
-
-    // 2. Insert new unique view record
-    const { error: insertError } = await supabase
-      .from("post_views")
-      .insert({ post_id: id, user_id: userId });
+    if (shouldIncrement) {
+      // 4. Increment count on post
+      const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
       
-    if (insertError) {
-      // Handle race condition if two requests hit at same time
-      if (insertError.code === '23505') return res.json({ success: true, message: "Already viewed" });
-      throw insertError;
+      if (rpcError) {
+        console.warn("RPC increment failed, falling back to manual update:", rpcError.message);
+        const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
+        await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
+      }
     }
 
-    // 3. Increment count on post
-    try {
-      await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
-    } catch (rpcErr) {
-       const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
-       await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
-    }
-
-    // 4. Fetch the new count to broadcast
+    // 5. Fetch the latest count for broadcast
     const { data: postData } = await supabase
       .from("posts")
       .select("view_count")
@@ -1012,7 +1031,10 @@ export async function addImpression(req: Request, res: Response) {
       .single();
 
     const newCount = postData?.view_count || 0;
-    emitUpdate("post_viewed", { postId: parseInt(id), viewCount: newCount });
+    
+    // Use consistent ID format (number if possible)
+    const numericId = !isNaN(Number(id)) ? Number(id) : id;
+    emitUpdate("post_viewed", { postId: numericId, viewCount: newCount });
 
     return res.json({ success: true, view_count: newCount });
   } catch (err: any) {

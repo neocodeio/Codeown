@@ -192,26 +192,26 @@ export default function PostDetail() {
     fetchLikeStatus();
     fetchSavedStatus();
 
-    // Real-time view updates
-    const handleViewUpdate = (data: { postId: number | string, viewCount: number }) => {
-      if (String(data.postId) === String(id)) {
+    // Real-time updates via content_update
+    const handleContentUpdate = ({ type, data }: any) => {
+      if (!type || !data) return;
+
+      // 1. Handle view updates
+      if (type === "post_viewed" && String(data.postId) === String(id)) {
         queryClient.setQueryData(["post", id], (old: any) => {
           if (!old) return old;
           return { ...old, view_count: data.viewCount };
         });
       }
-    };
 
-    const handleCommentUpdate = (data: any) => {
-      if (String(data.postId) === String(id)) {
+      // 2. Handle comment updates
+      if (type === "post_commented" && String(data.postId) === String(id)) {
         queryClient.invalidateQueries({ queryKey: ["postComments", id] });
-        // Also refresh post data to get updated comment count
         queryClient.invalidateQueries({ queryKey: ["post", id] });
       }
-    };
 
-    const handleRepostUpdate = (data: any) => {
-      if (String(data.id) === String(id)) {
+      // 3. Handle repost updates
+      if (type === "post_reposted" && String(data.id) === String(id)) {
         if (data.removed) {
           setRepostCountLocal(prev => Math.max(0, prev - 1));
           if (data.reposter_id === user?.id) {
@@ -226,9 +226,7 @@ export default function PostDetail() {
       }
     };
 
-    socket.on("post_view_update", handleViewUpdate);
-    socket.on("post_commented", handleCommentUpdate);
-    socket.on("post_reposted", handleRepostUpdate);
+    socket.on("content_update", handleContentUpdate);
  
     const handleClickOutside = (event: MouseEvent) => {
       if (sortMenuRef.current && !sortMenuRef.current.contains(event.target as Node)) {
@@ -238,9 +236,7 @@ export default function PostDetail() {
     document.addEventListener("mousedown", handleClickOutside);
  
     return () => {
-      socket.off("post_view_update", handleViewUpdate);
-      socket.off("post_commented", handleCommentUpdate);
-      socket.off("post_reposted", handleRepostUpdate);
+      socket.off("content_update", handleContentUpdate);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [id, fetchLikeStatus, fetchSavedStatus, queryClient, user?.id]);

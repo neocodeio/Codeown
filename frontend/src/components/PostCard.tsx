@@ -62,24 +62,68 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [viewCountLocal, setViewCountLocal] = useState(post.view_count || 0);
   const { isLiked, likeCount, toggleLike } = useLikes(post.id, post.isLiked, post.like_count || 0);
   const { isSaved, toggleSave } = useSaved(post.id, post.isSaved);
+  const [isRepostedLocal, setIsRepostedLocal] = useState(post.isReposted || false);
+  const [repostCountLocal, setRepostCountLocal] = useState(post.repost_count || 0);
+  const [localCommentCount, setLocalCommentCount] = useState(post.comment_count || 0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const impressionTracked = useRef(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
+  const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [isPinnedLocal, setIsPinnedLocal] = useState(false);
 
   // Sync with prop changes
   useEffect(() => {
     setViewCountLocal(post.view_count || 0);
   }, [post.view_count]);
 
-  // Realtime view count updates
+  // Real-time updates via content_update
   useEffect(() => {
-    const handleUpdate = ({ type, data }: any) => {
+    const handleContentUpdate = ({ type, data }: any) => {
+      if (!type || !data) return;
+
+      // 1. Handle view updates
       if (type === "post_viewed" && data.postId === post.id) {
         setViewCountLocal(data.viewCount);
       }
+
+      // 2. Handle comment updates
+      if (type === "post_commented" && String(data.postId) === String(post.id)) {
+        if (data.deleted) {
+          // If total count is provided, use it
+          if (data.commentCount !== undefined) {
+             setLocalCommentCount(data.commentCount);
+          } else {
+             setLocalCommentCount(prev => Math.max(0, prev - 1));
+          }
+        } else {
+          setLocalCommentCount(data.commentCount || (localCommentCount + 1));
+        }
+      }
+
+      // 3. Handle repost updates
+      if (type === "post_reposted" && String(data.id) === String(post.id)) {
+        if (data.removed) {
+          setRepostCountLocal(prev => Math.max(0, prev - 1));
+          if (data.reposter_id === currentUser?.id) {
+            setIsRepostedLocal(false);
+          }
+        } else {
+          setRepostCountLocal(prev => prev + 1);
+          if (data.reposter_id === currentUser?.id) {
+            setIsRepostedLocal(true);
+          }
+        }
+      }
     };
-    socket.on("content_update", handleUpdate);
+
+    socket.on("content_update", handleContentUpdate);
     return () => {
-      socket.off("content_update", handleUpdate);
+      socket.off("content_update", handleContentUpdate);
     };
-  }, [post.id]);
+  }, [post.id, currentUser?.id, localCommentCount]);
 
   // Track impressions on scroll
   useEffect(() => {
@@ -110,18 +154,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
 
     return () => observer.disconnect();
   }, [post.id]);
-  const [isRepostedLocal, setIsRepostedLocal] = useState(post.isReposted || false);
-  const [repostCountLocal, setRepostCountLocal] = useState(post.repost_count || 0);
-  const [localCommentCount, setLocalCommentCount] = useState(post.comment_count || 0);
-
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState("");
-  const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const impressionTracked = useRef(false);
-  const [isPinnedLocal, setIsPinnedLocal] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
@@ -202,40 +234,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
     setIsDeleteModalOpen(true);
   };
 
-  useEffect(() => {
-    if (!post.id) return;
-
-    const handleRepostUpdate = (data: any) => {
-      // data: { id, content, ..., reposter_id, removed }
-      if (String(data.id) === String(post.id)) {
-        if (data.removed) {
-          setRepostCountLocal(prev => Math.max(0, prev - 1));
-          if (data.reposter_id === currentUser?.id) {
-            setIsRepostedLocal(false);
-          }
-        } else {
-          setRepostCountLocal(prev => prev + 1);
-          if (data.reposter_id === currentUser?.id) {
-            setIsRepostedLocal(true);
-          }
-        }
-      }
-    };
-
-    const handleCommentUpdate = (data: any) => {
-      if (String(data.postId) === String(post.id)) {
-        setLocalCommentCount(data.commentCount);
-      }
-    };
-
-    socket.on("post_reposted", handleRepostUpdate);
-    socket.on("post_commented", handleCommentUpdate);
-
-    return () => {
-      socket.off("post_reposted", handleRepostUpdate);
-      socket.off("post_commented", handleCommentUpdate);
-    };
-  }, [post.id, currentUser?.id]);
+    // Socket listeners moved to consolidated useEffect above
 
   const handleReShip = async (e: React.MouseEvent) => {
     e.stopPropagation();
