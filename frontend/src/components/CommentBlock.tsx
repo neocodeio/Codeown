@@ -10,6 +10,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 
 import { formatRelativeDate, formatFullTwitterDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
+import OfficialAccountBadge from "./OfficialAccountBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
 import UserHoverCard from "./UserHoverCard";
 import { Gif, ChatCircle } from "phosphor-react";
@@ -143,6 +144,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
               >
                 {name}
                 <VerifiedBadge username={comment.user?.username} size="16px" />
+                <OfficialAccountBadge username={comment.user?.username} size="16px" />
               </span>
             </UserHoverCard>
             <span style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
@@ -279,6 +281,7 @@ export default function CommentBlock({ comment, depth, onReply, onDelete, onImag
                 >
                   {name}
                   <VerifiedBadge username={comment.user?.username} size="14px" />
+                  <OfficialAccountBadge username={comment.user?.username} size="14px" />
                   {comment.user?.is_pro && (
                     <span style={{ fontSize: "10px", fontWeight: 600, padding: "1px 8px", borderRadius: "100px", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", marginLeft: "4px" }}>Pro</span>
                   )}

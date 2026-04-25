@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import { useClerkUser } from "../hooks/useClerkUser";
 import api from "../api/axios";
+import OfficialAccountBadge from "./OfficialAccountBadge";
 import type { Post } from "../hooks/usePosts";
 import EditPostModal from "./EditPostModal";
 import ImageGrid from "./ImageGrid";
@@ -528,6 +529,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       </span>
                     </UserHoverCard>
                     <VerifiedBadge username={primaryUser?.username} />
+                    <OfficialAccountBadge username={primaryUser?.username} />
                   </div>
                   {!isMobile && <InlineFollowButton userId={primaryUser?.id || ""} />}
                 </div>

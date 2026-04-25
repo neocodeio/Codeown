@@ -9,6 +9,7 @@ import VerifiedBadge from "./VerifiedBadge";
 import { Chat01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { UserHoverCardSkeleton } from "./LoadingSkeleton";
+import OfficialAccountBadge from "./OfficialAccountBadge";
 
 interface UserProfile {
   id: string;
@@ -272,6 +273,7 @@ export default function UserHoverCard({ userId, children, user: initialUser }: U
                   {user.name}
                 </h3>
                 <VerifiedBadge username={user.username} isPro={user.is_pro} size="14px" />
+                <OfficialAccountBadge username={user.username} size="14px" />
               </div>
 
               <div style={{

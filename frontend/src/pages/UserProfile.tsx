@@ -44,6 +44,7 @@ import { StartupCard } from "../components/StartupCard";
 import { getStartups } from "../api/startups";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProfileSkeleton } from "../components/LoadingSkeleton";
+import OfficialAccountBadge from "../components/OfficialAccountBadge";
 import BioRenderer from "../components/BioRenderer";
 
 const AnimatedCounter = ({ end, duration = 1500 }: { end: number, duration?: number }) => {
@@ -335,6 +336,7 @@ export default function UserProfile() {
                 <h1 style={{ fontSize: "20px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
                   {user.name}
                   <VerifiedBadge username={user.username} isPro={user.is_pro} size="18px" />
+                  <OfficialAccountBadge username={user.username} size="18px" />
                 </h1>
                 <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginBottom: "0" }}>@{user.username}</p>
                 <div style={{ marginTop: "4px" }}>
