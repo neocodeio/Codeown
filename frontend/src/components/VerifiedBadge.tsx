@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import Tooltip from './Tooltip';
 import { CircleWavyCheck } from "phosphor-react";
 
 interface VerifiedBadgeProps {
@@ -9,79 +9,35 @@ interface VerifiedBadgeProps {
 }
 
 export default function VerifiedBadge({ username, isPro, size = "14px", color }: VerifiedBadgeProps) {
-    const [showTooltip, setShowTooltip] = useState(false);
-
     const isOfficial = username?.toLowerCase() === "amin.ceo" || username?.toLowerCase() === "joethefounder" || username?.toLowerCase() === "waterskiermo" || username?.toLowerCase() === "andreascy";
     const shouldShow = isOfficial || isPro;
 
     if (shouldShow) {
         return (
-            <div
-                style={{
-                    position: "relative",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    cursor: "pointer"
-                }}
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
-            >
-                <CircleWavyCheck
-                    size={size}
-                    weight="fill"
-                    color={color || "#00A2FF"}
-                    aria-label="Verified Official Account"
+            <Tooltip text={isOfficial ? "Verified Official Account" : "Pro Builder"} position="top">
+                <div
                     style={{
-                        color: (color || "#00A2FF") + " !important",
-                        marginLeft: "2px",
-                        marginRight: "2px",
-                        verticalAlign: "middle",
-                        flexShrink: 0,
+                        position: "relative",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        cursor: "pointer"
                     }}
-                />
-
-                {showTooltip && (
-                    <div
+                >
+                    <CircleWavyCheck
+                        size={size}
+                        weight="fill"
+                        color={color || "#00A2FF"}
+                        aria-label="Verified Official Account"
                         style={{
-                            position: "absolute",
-                            bottom: "100%",
-                            left: "50%",
-                            transform: "translateX(-50%) translateY(-12px)",
-                            backgroundColor: "var(--bg-page)",
-                            color: "var(--text-primary)",
-                            padding: "6px 10px",
-                            border: "0.5px solid var(--border-hairline)",
-                            borderRadius: "var(--radius-sm)",
-                            fontSize: "11px",
-                            fontWeight: 600,
-                            whiteSpace: "nowrap",
-                            zIndex: 1000,
-                            pointerEvents: "none",
-                            animation: "tooltipFadeIn 0.15s ease",
+                            color: (color || "#00A2FF") + " !important",
+                            marginLeft: "2px",
+                            marginRight: "2px",
+                            verticalAlign: "middle",
+                            flexShrink: 0,
                         }}
-                    >
-                        <style>{`
-                            @keyframes tooltipFadeIn {
-                                from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
-                                to { opacity: 1; transform: translateX(-50%) translateY(-8px); }
-                            }
-                        `}</style>
-                        {isOfficial ? "Verified Official Account" : "Pro Builder"}
-                        {/* Tooltip Arrow */}
-                        <div style={{
-                            position: "absolute",
-                            top: "100%",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            width: "0",
-                            height: "0",
-                            borderLeft: "4px solid transparent",
-                            borderRight: "4px solid transparent",
-                            borderTop: "4px solid var(--border-hairline)",
-                        }} />
-                    </div>
-                )}
-            </div>
+                    />
+                </div>
+            </Tooltip>
         );
     }
     return null;
