@@ -8,6 +8,7 @@ import { useNotifications } from "../hooks/useNotifications";
 import { useQuery } from "@tanstack/react-query";
 import api from "../api/axios";
 import StreakBadge from "./StreakBadge";
+import Tooltip from "./Tooltip";
 
 export default function SidebarHeader() {
     const navigate = useNavigate();
@@ -15,8 +16,6 @@ export default function SidebarHeader() {
     const { isSignedIn } = useClerkUser();
     const { unreadCount } = useNotifications();
     const [searchQuery, setSearchQuery] = useState("");
-    const [showNotificationTooltip, setShowNotificationTooltip] = useState(false);
-    const [showStreakTooltip, setShowStreakTooltip] = useState(false);
 
     // Streak count fetch
     const { data: streakData } = useQuery({
@@ -92,63 +91,61 @@ export default function SidebarHeader() {
                     style={{
                         width: "100%",
                         height: "36px",
-                        backgroundColor: "var(--bg-page)",
-                        borderRadius: "14px",
-                        padding: "0 12px 0 36px",
-                        fontSize: "12px",
+                        backgroundColor: "var(--bg-hover)",
+                        borderRadius: "9999px",
+                        padding: "0 12px 0 40px",
+                        fontSize: "13px",
                         color: "var(--text-primary)",
                         outline: "none",
-                        transition: "all 0.2s ease",
-                        border: "0.5px solid var(--border-hairline)"
+                        transition: "all 0.1s ease",
+                        border: "1px solid transparent"
                     }}
                     onFocus={(e) => {
-                        e.currentTarget.style.borderColor = "var(--text-tertiary)";
-                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                        e.currentTarget.style.borderColor = "#1d9bf0"; // Twitter Blue
+                        e.currentTarget.style.backgroundColor = "var(--bg-page)";
                     }}
                     onBlur={(e) => {
-                        e.currentTarget.style.borderColor = "var(--border-hairline)";
-                        e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                        e.currentTarget.style.borderColor = "transparent";
+                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                     }}
                 />
             </div>
 
             {!isSignedIn && (
-                <button
-                    onClick={() => navigate("/sign-in")}
-                    style={{
-                        padding: "8px 16px",
-                        borderRadius: "100px",
-                        border: "0.5px solid var(--border-hairline)",
-                        backgroundColor: "var(--bg-page)",
-                        color: "var(--text-primary)",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        transition: "all 0.15s ease",
-                        marginLeft: "12px",
-                        whiteSpace: "nowrap"
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--bg-page)";
-                    }}
-                >
-                    <HugeiconsIcon icon={Login01Icon} size={18} />
-                    Sign in
-                </button>
+                <Tooltip text="Access your account">
+                    <button
+                        onClick={() => navigate("/sign-in")}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "100px",
+                            border: "0.5px solid var(--border-hairline)",
+                            backgroundColor: "var(--bg-page)",
+                            color: "var(--text-primary)",
+                            fontSize: "12px",
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            transition: "all 0.15s ease",
+                            marginLeft: "12px",
+                            whiteSpace: "nowrap"
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "var(--bg-page)";
+                        }}
+                    >
+                        <HugeiconsIcon icon={Login01Icon} size={18} />
+                        Sign in
+                    </button>
+                </Tooltip>
             )}
 
             {isSignedIn && (
-                <div
-                    style={{ position: "relative" }}
-                    onMouseEnter={() => setShowNotificationTooltip(true)}
-                    onMouseLeave={() => setShowNotificationTooltip(false)}
-                >
+                <Tooltip text="Notifications" position="bottom">
                     <Link
                         to="/notifications"
                         style={{
@@ -193,83 +190,13 @@ export default function SidebarHeader() {
                             </span>
                         )}
                     </Link>
-
-                    {/* Tooltip */}
-                    <div style={{
-                        position: "absolute",
-                        top: "calc(100% + 10px)",
-                        left: "50%",
-                        transform: showNotificationTooltip ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(-5px)",
-                        opacity: showNotificationTooltip ? 1 : 0,
-                        visibility: showNotificationTooltip ? "visible" : "hidden",
-                        backgroundColor: "#000",
-                        color: "#fff",
-                        padding: "5px 12px",
-                        borderRadius: "50px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        whiteSpace: "nowrap",
-                        zIndex: 1000,
-                        transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-                        pointerEvents: "none",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                    }}>
-                        Notifications
-                        <div style={{
-                            position: "absolute",
-                            top: "-4px",
-                            left: "50%",
-                            transform: "translateX(-50%) rotate(45deg)",
-                            width: "8px",
-                            height: "8px",
-                            backgroundColor: "#000",
-                            zIndex: -1
-                        }} />
-                    </div>
-                </div>
+                </Tooltip>
             )}
 
             {streakCount > 0 && (
-                <div
-                    style={{ position: "relative" }}
-                    onMouseEnter={() => setShowStreakTooltip(true)}
-                    onMouseLeave={() => setShowStreakTooltip(false)}
-                >
+                <Tooltip text="Streak" position="bottom">
                     <StreakBadge count={streakCount} />
-
-                    {/* Tooltip */}
-                    <div style={{
-                        position: "absolute",
-                        top: "calc(100% + 10px)",
-                        left: "50%",
-                        transform: showStreakTooltip ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(-5px)",
-                        opacity: showStreakTooltip ? 1 : 0,
-                        visibility: showStreakTooltip ? "visible" : "hidden",
-                        backgroundColor: "#000",
-                        color: "#fff",
-                        padding: "5px 12px",
-                        borderRadius: "50px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        whiteSpace: "nowrap",
-                        zIndex: 1000,
-                        transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-                        pointerEvents: "none",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                    }}>
-                        Streak
-                        <div style={{
-                            position: "absolute",
-                            top: "-4px",
-                            left: "50%",
-                            transform: "translateX(-50%) rotate(45deg)",
-                            width: "8px",
-                            height: "8px",
-                            backgroundColor: "#000",
-                            zIndex: -1
-                        }} />
-                    </div>
-                </div>
+                </Tooltip>
             )}
         </div>
     );

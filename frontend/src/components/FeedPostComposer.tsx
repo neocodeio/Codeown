@@ -32,6 +32,7 @@ import AvailabilityBadge from "./AvailabilityBadge";
 import { compressImage } from "../utils/image";
 import { useActivityBroadcast } from "../hooks/useActivityBroadcast";
 import { useUserProjects } from "../hooks/useUserProjects";
+import Tooltip from "./Tooltip";
 
 interface FeedPostComposerProps {
     onCreated: () => void;
@@ -691,38 +692,13 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                             style={{ display: "none" }}
                             onChange={handleImageUpload}
                         />
-                        <button
-                            onClick={handleImageClick}
-                            style={{
-                                background: "none",
-                                border: "none",
-                                color: "var(--text-tertiary)",
-                                cursor: "pointer",
-                                padding: "8px",
-                                borderRadius: "8px",
-                                transition: "all 0.15s var(--ease-smooth)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center"
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.color = "var(--text-primary)";
-                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.color = "var(--text-tertiary)";
-                                e.currentTarget.style.backgroundColor = "transparent";
-                            }}
-                        >
-                            <HugeiconsIcon icon={ImageAdd01Icon} size={20} />
-                        </button>
-                        <div style={{ position: "relative" }}>
+                        <Tooltip text="Add images">
                             <button
-                                onClick={(e) => { e.stopPropagation(); setIsGifPickerOpen(!isGifPickerOpen); }}
+                                onClick={handleImageClick}
                                 style={{
-                                    background: isGifPickerOpen ? "var(--bg-hover)" : "none",
+                                    background: "none",
                                     border: "none",
-                                    color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
+                                    color: "var(--text-tertiary)",
                                     cursor: "pointer",
                                     padding: "8px",
                                     borderRadius: "8px",
@@ -736,15 +712,43 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                                 }}
                                 onMouseLeave={e => {
-                                    if (!isGifPickerOpen) {
-                                        e.currentTarget.style.color = "var(--text-tertiary)";
-                                        e.currentTarget.style.backgroundColor = "transparent";
-                                    }
+                                    e.currentTarget.style.color = "var(--text-tertiary)";
+                                    e.currentTarget.style.backgroundColor = "transparent";
                                 }}
-                                title="Add GIF"
                             >
-                                <HugeiconsIcon icon={GifIcon} size={20} />
+                                <HugeiconsIcon icon={ImageAdd01Icon} size={20} />
                             </button>
+                        </Tooltip>
+                        <div style={{ position: "relative" }}>
+                            <Tooltip text="Add GIF">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setIsGifPickerOpen(!isGifPickerOpen); }}
+                                    style={{
+                                        background: isGifPickerOpen ? "var(--bg-hover)" : "none",
+                                        border: "none",
+                                        color: isGifPickerOpen ? "var(--text-primary)" : "var(--text-tertiary)",
+                                        cursor: "pointer",
+                                        padding: "8px",
+                                        borderRadius: "8px",
+                                        transition: "all 0.15s var(--ease-smooth)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center"
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.color = "var(--text-primary)";
+                                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                    }}
+                                    onMouseLeave={e => {
+                                        if (!isGifPickerOpen) {
+                                            e.currentTarget.style.color = "var(--text-tertiary)";
+                                            e.currentTarget.style.backgroundColor = "transparent";
+                                        }
+                                    }}
+                                >
+                                    <HugeiconsIcon icon={GifIcon} size={20} />
+                                </button>
+                            </Tooltip>
 
                             {isGifPickerOpen && createPortal(
                                 <div
@@ -795,78 +799,13 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                 document.body
                             )}
                         </div>
-                        <button
-                            onClick={() => setIsPoll(!isPoll)}
-                            style={{
-                                background: isPoll ? "var(--bg-hover)" : "none",
-                                border: "none",
-                                color: isPoll ? "var(--text-primary)" : "var(--text-tertiary)",
-                                cursor: "pointer",
-                                padding: "8px",
-                                borderRadius: "8px",
-                                transition: "all 0.15s var(--ease-smooth)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center"
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.color = "var(--text-primary)";
-                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                            }}
-                            onMouseLeave={e => {
-                                if (!isPoll) {
-                                    e.currentTarget.style.color = "var(--text-tertiary)";
-                                    e.currentTarget.style.backgroundColor = "transparent";
-                                }
-                            }}
-                            title="Add Poll"
-                        >
-                            <HugeiconsIcon icon={AppleReminderIcon} size={20} />
-                        </button>
-
-                        <button
-                            onClick={() => setIsCodeExpanded(!isCodeExpanded)}
-                            style={{
-                                background: isCodeExpanded ? "var(--bg-hover)" : "none",
-                                border: "none",
-                                color: isCodeExpanded ? "var(--text-primary)" : "var(--text-tertiary)",
-                                cursor: "pointer",
-                                padding: "8px",
-                                borderRadius: "8px",
-                                transition: "all 0.15s var(--ease-smooth)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center"
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.color = "var(--text-primary)";
-                                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                            }}
-                            onMouseLeave={e => {
-                                if (!isCodeExpanded) {
-                                    e.currentTarget.style.color = "var(--text-tertiary)";
-                                    e.currentTarget.style.backgroundColor = "transparent";
-                                }
-                            }}
-                            title="Add Code Snippet"
-                        >
-                            <HugeiconsIcon icon={SourceCodeIcon} size={20} />
-                        </button>
-
-                        <input
-                            type="file"
-                            multiple
-                            ref={attachmentInputRef}
-                            style={{ display: "none" }}
-                            onChange={handleFileUpload}
-                        />
-                        {attachments.length === 0 && (
+                        <Tooltip text="Create poll">
                             <button
-                                onClick={() => attachmentInputRef.current?.click()}
+                                onClick={() => setIsPoll(!isPoll)}
                                 style={{
-                                    background: "none",
+                                    background: isPoll ? "var(--bg-hover)" : "none",
                                     border: "none",
-                                    color: "var(--text-tertiary)",
+                                    color: isPoll ? "var(--text-primary)" : "var(--text-tertiary)",
                                     cursor: "pointer",
                                     padding: "8px",
                                     borderRadius: "8px",
@@ -880,13 +819,81 @@ export default function FeedPostComposer({ onCreated }: FeedPostComposerProps) {
                                     e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                                 }}
                                 onMouseLeave={e => {
-                                    e.currentTarget.style.color = "var(--text-tertiary)";
-                                    e.currentTarget.style.backgroundColor = "transparent";
+                                    if (!isPoll) {
+                                        e.currentTarget.style.color = "var(--text-tertiary)";
+                                        e.currentTarget.style.backgroundColor = "transparent";
+                                    }
                                 }}
-                                title="Attach File"
                             >
-                                <HugeiconsIcon icon={FileAddIcon} size={20} />
+                                <HugeiconsIcon icon={AppleReminderIcon} size={20} />
                             </button>
+                        </Tooltip>
+
+                        <Tooltip text="Add code snippet">
+                            <button
+                                onClick={() => setIsCodeExpanded(!isCodeExpanded)}
+                                style={{
+                                    background: isCodeExpanded ? "var(--bg-hover)" : "none",
+                                    border: "none",
+                                    color: isCodeExpanded ? "var(--text-primary)" : "var(--text-tertiary)",
+                                    cursor: "pointer",
+                                    padding: "8px",
+                                    borderRadius: "8px",
+                                    transition: "all 0.15s var(--ease-smooth)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.color = "var(--text-primary)";
+                                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                }}
+                                onMouseLeave={e => {
+                                    if (!isCodeExpanded) {
+                                        e.currentTarget.style.color = "var(--text-tertiary)";
+                                        e.currentTarget.style.backgroundColor = "transparent";
+                                    }
+                                }}
+                            >
+                                <HugeiconsIcon icon={SourceCodeIcon} size={20} />
+                            </button>
+                        </Tooltip>
+
+                        <input
+                            type="file"
+                            multiple
+                            ref={attachmentInputRef}
+                            style={{ display: "none" }}
+                            onChange={handleFileUpload}
+                        />
+                        {attachments.length === 0 && (
+                            <Tooltip text="Attach file">
+                                <button
+                                    onClick={() => attachmentInputRef.current?.click()}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        color: "var(--text-tertiary)",
+                                        cursor: "pointer",
+                                        padding: "8px",
+                                        borderRadius: "8px",
+                                        transition: "all 0.15s var(--ease-smooth)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center"
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.color = "var(--text-primary)";
+                                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.color = "var(--text-tertiary)";
+                                        e.currentTarget.style.backgroundColor = "transparent";
+                                    }}
+                                >
+                                    <HugeiconsIcon icon={FileAddIcon} size={20} />
+                                </button>
+                            </Tooltip>
                         )}
 
 

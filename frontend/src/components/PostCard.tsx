@@ -27,6 +27,7 @@ import {
   SmartPhone02Icon,
   Analytics03Icon
 } from "@hugeicons/core-free-icons";
+import Tooltip from "./Tooltip";
 import { formatRelativeDate } from "../utils/date";
 import VerifiedBadge from "./VerifiedBadge";
 import AvailabilityBadge from "./AvailabilityBadge";
@@ -542,15 +543,14 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                       {formatRelativeDate(displayPost?.created_at)}
                     </span>
                     {(displayPost as any)?.is_mobile && (
-                      <div className="mobile-tooltip-wrapper" style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                      <Tooltip text="Posted via mobile">
                         <HugeiconsIcon 
                           icon={SmartPhone02Icon} 
                           size={13} 
                           strokeWidth={2.5}
                           style={{ color: "var(--text-tertiary)", opacity: 0.9, cursor: "pointer" }}
                         />
-                        <div className="mobile-tooltip">Posted via mobile app</div>
-                      </div>
+                      </Tooltip>
                     )}
                   </div>
                 </div>
@@ -669,111 +669,121 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
               width: isMobile ? "100%" : "auto",
               paddingRight: isMobile ? "8px" : "0px"
             }}>
-              <button 
-                onClick={handleComment} 
-                className="post-action-btn comment"
-                style={{
-                  display: "flex", alignItems: "center", gap: "6px",
-                  background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)",
-                  padding: "0", transition: "all 0.2s ease"
-                }}
-              >
-                <div className="icon-wrapper" style={{
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  width: "34px", height: "34px", borderRadius: "50%",
-                  transition: "all 0.2s ease", margin: "0 -7px"
-                }}>
-                  <HugeiconsIcon icon={Comment01Icon} size={isMobile ? 18 : 20} />
-                </div>
-                {localCommentCount > 0 && <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>{localCommentCount}</span>}
-              </button>
+              <Tooltip text="Reply">
+                <button 
+                  onClick={handleComment} 
+                  className="post-action-btn comment"
+                  style={{
+                    display: "flex", alignItems: "center", gap: "6px",
+                    background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)",
+                    padding: "0", transition: "all 0.2s ease"
+                  }}
+                >
+                  <div className="icon-wrapper" style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "34px", height: "34px", borderRadius: "50%",
+                    transition: "all 0.2s ease", margin: "0 -7px"
+                  }}>
+                    <HugeiconsIcon icon={Comment01Icon} size={isMobile ? 18 : 20} />
+                  </div>
+                  {localCommentCount > 0 && <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>{localCommentCount}</span>}
+                </button>
+              </Tooltip>
 
               <LikeButton isLiked={isLiked} likeCount={likeCount} onToggle={handleLike} />
 
-              <button 
-                onClick={handleReShip} 
-                disabled={isReShipping} 
-                className="post-action-btn reship"
-                style={{
-                  display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                  cursor: isReShipping ? "default" : "pointer", 
-                  color: isRepostedLocal ? "#10b981" : "var(--text-tertiary)",
-                  padding: "0", transition: "all 0.2s ease"
-                }}
-              >
-                <div className="icon-wrapper" style={{
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  width: "34px", height: "34px", borderRadius: "50%",
-                  transition: "all 0.2s ease", margin: "0 -7px"
-                }}>
-                  <HugeiconsIcon icon={RepostIcon} size={isMobile ? 18 : 20} />
-                </div>
-                {repostCountLocal > 0 && (
-                  <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>{repostCountLocal}</span>
-                )}
-              </button>
+              <Tooltip text="Repost">
+                <button 
+                  onClick={handleReShip} 
+                  disabled={isReShipping} 
+                  className="post-action-btn reship"
+                  style={{
+                    display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
+                    cursor: isReShipping ? "default" : "pointer", 
+                    color: isRepostedLocal ? "#10b981" : "var(--text-tertiary)",
+                    padding: "0", transition: "all 0.2s ease"
+                  }}
+                >
+                  <div className="icon-wrapper" style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "34px", height: "34px", borderRadius: "50%",
+                    transition: "all 0.2s ease", margin: "0 -7px"
+                  }}>
+                    <HugeiconsIcon icon={RepostIcon} size={isMobile ? 18 : 20} />
+                  </div>
+                  {repostCountLocal > 0 && (
+                    <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>{repostCountLocal}</span>
+                  )}
+                </button>
+              </Tooltip>
 
-              <div 
-                className="post-action-btn views"
-                style={{
-                  display: "flex", alignItems: "center", gap: "6px",
-                  color: "var(--text-tertiary)",
-                  cursor: "default", transition: "all 0.2s ease"
-                }}
-              >
-                <div className="icon-wrapper" style={{
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  width: "34px", height: "34px", borderRadius: "50%",
-                  transition: "all 0.2s ease", margin: "0 -7px"
-                }}>
-                  <HugeiconsIcon icon={Analytics03Icon} size={isMobile ? 18 : 20} />
+              <Tooltip text="Views">
+                <div 
+                  className="post-action-btn views"
+                  style={{
+                    display: "flex", alignItems: "center", gap: "6px",
+                    color: "var(--text-tertiary)",
+                    cursor: "default", transition: "all 0.2s ease"
+                  }}
+                >
+                  <div className="icon-wrapper" style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "34px", height: "34px", borderRadius: "50%",
+                    transition: "all 0.2s ease", margin: "0 -7px"
+                  }}>
+                    <HugeiconsIcon icon={Analytics03Icon} size={isMobile ? 18 : 20} />
+                  </div>
+                  <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>
+                    {(() => {
+                      const count = viewCountLocal;
+                      if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
+                      if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
+                      return count.toString();
+                    })()}
+                  </span>
                 </div>
-                <span className="count-text" style={{ fontSize: "12px", fontWeight: 700 }}>
-                  {(() => {
-                    const count = viewCountLocal;
-                    if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
-                    if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
-                    return count.toString();
-                  })()}
-                </span>
-              </div>
+              </Tooltip>
 
-              <button 
-                onClick={handleSave} 
-                className="post-action-btn save"
-                style={{
-                  display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                  cursor: "pointer", 
-                  color: isSaved ? "#3b82f6" : "var(--text-tertiary)",
-                  padding: "0", transition: "all 0.2s ease"
-                }}
-              >
-                <div className="icon-wrapper" style={{
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  width: "34px", height: "34px", borderRadius: "50%",
-                  transition: "all 0.2s ease", margin: "0 -7px"
-                }}>
-                  <HugeiconsIcon icon={Bookmark02Icon} size={isMobile ? 18 : 20} className={isSaved ? "hugeicon-filled" : ""} />
-                </div>
-              </button>
+              <Tooltip text={isSaved ? "Unsave" : "Save"}>
+                <button 
+                  onClick={handleSave} 
+                  className="post-action-btn save"
+                  style={{
+                    display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
+                    cursor: "pointer", 
+                    color: isSaved ? "#3b82f6" : "var(--text-tertiary)",
+                    padding: "0", transition: "all 0.2s ease"
+                  }}
+                >
+                  <div className="icon-wrapper" style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "34px", height: "34px", borderRadius: "50%",
+                    transition: "all 0.2s ease", margin: "0 -7px"
+                  }}>
+                    <HugeiconsIcon icon={Bookmark02Icon} size={isMobile ? 18 : 20} className={isSaved ? "hugeicon-filled" : ""} />
+                  </div>
+                </button>
+              </Tooltip>
 
-              <button 
-                onClick={handleShare} 
-                className="post-action-btn share"
-                style={{
-                  display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
-                  cursor: "pointer", color: "var(--text-tertiary)",
-                  padding: "0", transition: "all 0.2s ease"
-                }}
-              >
-                <div className="icon-wrapper" style={{
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  width: "34px", height: "34px", borderRadius: "50%",
-                  transition: "all 0.2s ease", margin: "0 -7px"
-                }}>
-                  <HugeiconsIcon icon={Share01Icon} size={isMobile ? 18 : 20} />
-                </div>
-              </button>
+              <Tooltip text="Share">
+                <button 
+                  onClick={handleShare} 
+                  className="post-action-btn share"
+                  style={{
+                    display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none",
+                    cursor: "pointer", color: "var(--text-tertiary)",
+                    padding: "0", transition: "all 0.2s ease"
+                  }}
+                >
+                  <div className="icon-wrapper" style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "34px", height: "34px", borderRadius: "50%",
+                    transition: "all 0.2s ease", margin: "0 -7px"
+                  }}>
+                    <HugeiconsIcon icon={Share01Icon} size={isMobile ? 18 : 20} />
+                  </div>
+                </button>
+              </Tooltip>
 
               <style>{`
                 .mobile-tooltip {

@@ -109,6 +109,7 @@ const TechIcon = ({ name, size = 12 }: { name: string, size?: number }) => {
   return null;
 }
 import AvailabilityBadge from "./AvailabilityBadge";
+import Tooltip from "./Tooltip";
 import { getOptimizedImageUrl } from "../utils/image";
 import ShareModal from "./ShareModal";
 import SendToChatModal from "./SendToChatModal";
@@ -390,37 +391,41 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             {project.looking_for_contributors && (
               <>
                 <span style={{ color: "var(--border-hairline)" }}>•</span>
-                <div style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  backgroundColor: "rgba(34, 197, 94, 0.08)",
-                  border: "0.5px solid rgba(34, 197, 94, 0.2)",
-                  padding: "2px 10px",
-                  borderRadius: "var(--radius-pill)",
-                }}>
-                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#16a34a" }}>Seeking Co-founder</span>
-                </div>
+                  <Tooltip text="Owner is looking for co-founders to collaborate on this project">
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      backgroundColor: "rgba(34, 197, 94, 0.08)",
+                      border: "0.5px solid rgba(34, 197, 94, 0.2)",
+                      padding: "2px 10px",
+                      borderRadius: "var(--radius-pill)",
+                    }}>
+                      <span style={{ fontSize: "11px", fontWeight: 600, color: "#16a34a" }}>Seeking Co-founder</span>
+                    </div>
+                  </Tooltip>
               </>
             )}
 
             {project.tech_match !== undefined && project.tech_match > 0 && (
               <>
                 <span style={{ color: "var(--border-hairline)" }}>•</span>
-                <div style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  backgroundColor: project.tech_match >= 80 ? "rgba(74, 222, 128, 0.08)" : "rgba(56, 189, 248, 0.08)",
-                  border: project.tech_match >= 80 ? "0.5px solid rgba(74, 222, 128, 0.2)" : "0.5px solid rgba(56, 189, 248, 0.2)",
-                  padding: "2px 10px",
-                  borderRadius: "var(--radius-pill)",
-                }}>
-                  <HugeiconsIcon icon={SparklesIcon} size={12} style={{ color: project.tech_match >= 80 ? "#16a34a" : "#0284c7" }} />
-                  <span style={{ fontSize: "11px", fontWeight: 600, color: project.tech_match >= 80 ? "#16a34a" : "#0284c7" }}>
-                    {project.tech_match}% Match
-                  </span>
-                </div>
+                  <Tooltip text={`You have a ${project.tech_match}% tech stack match with this project based on your profile skills`}>
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      backgroundColor: project.tech_match >= 80 ? "rgba(74, 222, 128, 0.08)" : "rgba(56, 189, 248, 0.08)",
+                      border: project.tech_match >= 80 ? "0.5px solid rgba(74, 222, 128, 0.2)" : "0.5px solid rgba(56, 189, 248, 0.2)",
+                      padding: "2px 10px",
+                      borderRadius: "var(--radius-pill)",
+                    }}>
+                      <HugeiconsIcon icon={SparklesIcon} size={12} style={{ color: project.tech_match >= 80 ? "#16a34a" : "#0284c7" }} />
+                      <span style={{ fontSize: "11px", fontWeight: 600, color: project.tech_match >= 80 ? "#16a34a" : "#0284c7" }}>
+                        {project.tech_match}% Match
+                      </span>
+                    </div>
+                  </Tooltip>
               </>
             )}
 
@@ -617,37 +622,39 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
           ].map((action, i) => {
             const Icon = action.icon;
             return (
-              <button
-                key={i}
-                onClick={action.onClick}
-                style={{
-                  display: "flex", alignItems: "center", gap: "6px",
-                  background: "none", border: "none", padding: "4px 0",
-                  cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
-                  transition: "all var(--transition-normal)",
-                  fontSize: "13px",
-                  fontWeight: 600
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === TriangleIcon ? "#3b82f6" : "var(--text-primary)");
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
-                }}
-              >
-                <HugeiconsIcon
-                  icon={Icon}
-                  size={20}
-                  className={action.active && (Icon === TriangleIcon || Icon === Bookmark02Icon) ? "hugeicon-filled" : ""}
-                />
-                {Icon === TriangleIcon ? (
-                  <RollingNumber value={action.count || 0} fontWeight={600} fontSize="13px" color="inherit" />
-                ) : (
-                  action.count !== undefined && action.count > 0 && (
-                    <span>{action.count}</span>
-                  )
-                )}
-              </button>
+              <Tooltip text={Icon === Comment01Icon ? "Quick comment" : Icon === TriangleIcon ? "Upvote" : Icon === Bookmark02Icon ? (action.active ? "Unsave" : "Save") : Icon === Share01Icon ? "Share" : "Send to chat"}>
+                <button
+                  key={i}
+                  onClick={action.onClick}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "6px",
+                    background: "none", border: "none", padding: "4px 0",
+                    cursor: "pointer", color: action.active ? action.activeColor : "var(--text-tertiary)",
+                    transition: "all var(--transition-normal)",
+                    fontSize: "13px",
+                    fontWeight: 600
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = action.hoverColor || action.activeColor || (Icon === TriangleIcon ? "#3b82f6" : "var(--text-primary)");
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = action.active ? action.activeColor : "var(--text-tertiary)";
+                  }}
+                >
+                  <HugeiconsIcon
+                    icon={Icon}
+                    size={20}
+                    className={action.active && (Icon === TriangleIcon || Icon === Bookmark02Icon) ? "hugeicon-filled" : ""}
+                  />
+                  {Icon === TriangleIcon ? (
+                    <RollingNumber value={action.count || 0} fontWeight={600} fontSize="13px" color="inherit" />
+                  ) : (
+                    action.count !== undefined && action.count > 0 && (
+                      <span>{action.count}</span>
+                    )
+                  )}
+                </button>
+              </Tooltip>
             );
           })}
         </div>

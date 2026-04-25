@@ -162,6 +162,33 @@ export default function CreatorsForYou() {
                 ))}
             </div>
 
+            <div style={{ marginTop: "24px", display: "flex", justifyContent: "center" }}>
+                <Link
+                    to="/directory"
+                    style={{
+                        fontSize: "13px",
+                        fontWeight: 700,
+                        color: "var(--text-tertiary)",
+                        textDecoration: "none",
+                        padding: "8px 16px",
+                        borderRadius: "12px",
+                        transition: "all 0.2s ease",
+                        backgroundColor: "var(--bg-hover)",
+                        opacity: 1
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)";
+                        e.currentTarget.style.color = "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                        e.currentTarget.style.color = "var(--text-tertiary)";
+                    }}
+                >
+                    See more creators
+                </Link>
+            </div>
+
             <style>{`
                 @keyframes fadeIn {
                     from { opacity: 0; }

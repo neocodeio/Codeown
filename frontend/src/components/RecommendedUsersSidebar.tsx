@@ -116,7 +116,11 @@ function ProjectVoteButton({ project }: { project: any }) {
 
     return (
         <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLike(); }}
+            onClick={(e) => { 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                toggleLike(); 
+            }}
             style={{
                 display: "flex",
                 flexDirection: "column",
@@ -131,7 +135,7 @@ function ProjectVoteButton({ project }: { project: any }) {
                 transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 flexShrink: 0,
                 position: "relative",
-                zIndex: 10,
+                zIndex: 10, // Ensure it's above the parent link
                 boxShadow: isLiked ? "none" : "0 4px 12px rgba(0,0,0,0.03)"
             }}
             onMouseEnter={(e) => { if (!isLiked) { e.currentTarget.style.borderColor = "#cbd5e1"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
@@ -377,20 +381,40 @@ export default function RecommendedUsersSidebar() {
                     }}>
                         Project of the Week 🚀
                     </h3>
-                    <div style={{
-                        backgroundColor: "#ffffff",
-                        borderRadius: "25px",
-                        border: "1.5px solid #edf2f7",
-                        padding: "10px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "15px",
-                        background: "linear-gradient(135deg, #ffffff 0%, #fffef0 100%)",
-                        position: "relative",
-                        overflow: "hidden",
-                        // boxShadow: "0 8px 24px rgba(0,0,0,0.04)"
-                    }}>
-                        <Link to={`/project/${projects[0].id}`} style={{ position: "absolute", inset: 0, zIndex: 1 }} />
+                    <div 
+                        onClick={() => navigate(`/project/${projects[0].id}`)}
+                        style={{
+                            backgroundColor: "#ffffff",
+                            borderRadius: "25px",
+                            border: "1.5px solid #edf2f7",
+                            padding: "10px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "15px",
+                            background: "linear-gradient(135deg, #ffffff 0%, #fffef0 100%)",
+                            position: "relative",
+                            overflow: "hidden",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                            // boxShadow: "0 8px 24px rgba(0,0,0,0.04)"
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "translateY(-2px)";
+                            e.currentTarget.style.borderColor = "#cbd5e1";
+                            e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.06)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "translateY(0)";
+                            e.currentTarget.style.borderColor = "#edf2f7";
+                            e.currentTarget.style.boxShadow = "none";
+                        }}
+                    >
+                        {/* The onClick on the parent handles most cases, but we keep the Link helper for SEO/Middle-click */}
+                        <Link 
+                            to={`/project/${projects[0].id}`} 
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ position: "absolute", inset: 0, zIndex: 1 }} 
+                        />
 
                         <div style={{
                             width: "52px",
