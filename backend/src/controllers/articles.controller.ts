@@ -38,9 +38,33 @@ export async function getArticles(req: Request, res: Response) {
       savedIds = new Set((saves.data || []).map(s => s.article_id));
     }
     
+    const [likesRes, savesRes, commentsRes] = await Promise.all([
+      supabase.from("article_likes").select("article_id").in("article_id", articles.map(a => a.id)),
+      supabase.from("article_saves").select("article_id").in("article_id", articles.map(a => a.id)),
+      supabase.from("article_comments").select("article_id").in("article_id", articles.map(a => a.id))
+    ]);
+
+    const likesCountMap = new Map<number, number>();
+    (likesRes.data || []).forEach(l => {
+      likesCountMap.set(l.article_id, (likesCountMap.get(l.article_id) || 0) + 1);
+    });
+
+    const savesCountMap = new Map<number, number>();
+    (savesRes.data || []).forEach(s => {
+      savesCountMap.set(s.article_id, (savesCountMap.get(s.article_id) || 0) + 1);
+    });
+
+    const commentsCountMap = new Map<number, number>();
+    (commentsRes.data || []).forEach(c => {
+      commentsCountMap.set(c.article_id, (commentsCountMap.get(c.article_id) || 0) + 1);
+    });
+    
     const articlesWithUsers = articles.map(article => ({
       ...article,
       users: userMap.get(article.user_id) || { name: "User", avatar_url: null, username: "user" },
+      likes_count: likesCountMap.get(article.id) || 0,
+      saves_count: savesCountMap.get(article.id) || 0,
+      comments_count: commentsCountMap.get(article.id) || 0,
       liked: likedIds.has(article.id),
       saved: savedIds.has(article.id)
     }));
@@ -71,26 +95,31 @@ export async function getArticle(req: Request, res: Response) {
       .eq("id", article.user_id)
       .single();
 
-    // Check status
+    // Fetch counts and status
     const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
-    let liked = false;
-    let saved = false;
-
-    if (currentUserId) {
-      const [like, save] = await Promise.all([
+    
+    const [likesRes, savesRes, commentsRes, statusRes] = await Promise.all([
+      supabase.from("article_likes").select("*", { count: "exact", head: true }).eq("article_id", id),
+      supabase.from("article_saves").select("*", { count: "exact", head: true }).eq("article_id", id),
+      supabase.from("article_comments").select("*", { count: "exact", head: true }).eq("article_id", id),
+      currentUserId ? Promise.all([
         supabase.from("article_likes").select("*").eq("user_id", currentUserId).eq("article_id", id).maybeSingle(),
         supabase.from("article_saves").select("*").eq("user_id", currentUserId).eq("article_id", id).maybeSingle()
-      ]);
-      liked = !!like.data;
-      saved = !!save.data;
-    }
+      ]) : Promise.resolve([null, null])
+    ]);
+
+    const likes_count = likesRes.count || 0;
+    const saves_count = savesRes.count || 0;
+    const comments_count = commentsRes.count || 0;
+    const liked = !!(statusRes as any)[0]?.data;
+    const saved = !!(statusRes as any)[1]?.data;
 
     return res.json({
       ...article,
       users: user || { name: "User", avatar_url: null, username: "user" },
-      likes_count: likesCount.count || 0,
-      saves_count: savesCount.count || 0,
-      comments_count: commentsCount.count || 0,
+      likes_count,
+      saves_count,
+      comments_count,
       liked,
       saved
     });
