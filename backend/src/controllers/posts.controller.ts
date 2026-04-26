@@ -63,33 +63,34 @@ export function formatPostData(post: any) {
 
 export async function getPosts(req: Request, res: Response) {
   try {
-    const { page = "1", limit = "10", filter = "all", tag, projectId } = req.query;
-    console.log("getPosts query params:", { page, limit, filter, tag, projectId });
+    const { page = "1", limit = "30", filter = "all", tag, projectId, authorId } = req.query;
+    console.log("getPosts query params:", { page, limit, filter, tag, projectId, authorId });
 
     const pageNum = parseInt(page as string, 10) || 1;
-    const limitNum = parseInt(limit as string, 10) || 10;
+    const limitNum = parseInt(limit as string, 10) || 30;
     const offset = (pageNum - 1) * limitNum;
 
-    let postsQuery = supabase
-      .from("posts")
-      .select(`*`, { count: "exact" })
-      .order("created_at", { ascending: false });
-
-
+    let countQuery = supabase.from("posts").select("*", { count: "exact" });
+    let postsQuery = supabase.from("posts").select("*").order("created_at", { ascending: false }).order("id", { ascending: false });
 
     if (tag) {
       postsQuery = postsQuery.contains("tags", [tag]);
+      countQuery = countQuery.contains("tags", [tag]);
     }
 
     if (projectId) {
       const numProjectId = parseInt(projectId as string, 10);
       if (!isNaN(numProjectId)) {
         postsQuery = postsQuery.eq("project_id", numProjectId);
+        countQuery = countQuery.eq("project_id", numProjectId);
       } else {
-        // If projectId is provided but is not a number (e.g. a slug passed by mistake),
-        // we return 0 results to avoid showing a generic feed on a specific project page.
         return res.json({ posts: [], total: 0, page: pageNum, limit: limitNum, totalPages: 0 });
       }
+    }
+
+    if (authorId) {
+      postsQuery = postsQuery.eq("user_id", authorId);
+      countQuery = countQuery.eq("user_id", authorId);
     }
 
     if (String(filter).toLowerCase() === "following") {
@@ -97,22 +98,20 @@ export async function getPosts(req: Request, res: Response) {
       if (!userId) {
         return res.status(401).json({ error: "Sign in to view the Following feed." });
       }
-      const { data: followingRows } = await supabase.from("follows").select("following_id").eq("follower_id", userId);
-      const followingIds = (followingRows || []).map((r: any) => r.following_id);
-      if (followingIds.length === 0) {
-        return res.json({ posts: [], total: 0, page: pageNum, limit: limitNum, totalPages: 0 });
-      }
+      const { data: followingRows } = await supabase.from("follows").select("following_id").eq("follower_id", userId).limit(10000);
+      const followingIds = [userId, ...(followingRows?.map((r: any) => r.following_id) || [])];
       postsQuery = postsQuery.in("user_id", followingIds);
+      countQuery = countQuery.in("user_id", followingIds);
     }
+    
+    const [postsRes, countRes] = await Promise.all([
+      postsQuery.range(offset, offset + limitNum - 1),
+      countQuery // Removed .limit(1) to ensure .count property is always populated by PostgREST
+    ]);
 
-    // FETCH POSTS ONLY (Stealth Reposts for Clean Feed)
-    const postsRes = await postsQuery.range(offset, offset + limitNum - 1);
-
-    if (postsRes.error) {
-      console.error("Supabase error in getPosts:", postsRes.error);
-      return res.status(500).json({ error: "Failed to fetch posts", details: postsRes.error.message });
-    }
-
+    if (postsRes.error) throw postsRes.error;
+    
+    const totalCount = countRes.count || 0;
     const rawPosts = postsRes.data || [];
     
     // MANUAL DATA STITCHING (Robust Join)
@@ -121,23 +120,34 @@ export async function getPosts(req: Request, res: Response) {
     const rpPostIds = [...new Set(rawPosts.filter(p => p.reposted_post_id).map(p => p.reposted_post_id))];
     const rpProjIds = [...new Set(rawPosts.filter(p => p.reposted_project_id).map(p => p.reposted_project_id))];
 
-    const [usersRes, projectsRes, rpPostsRes, rpProjsRes] = await Promise.all([
+    const [usersRes, projectsRes, rpPostsRawRes, rpProjsRawRes] = await Promise.all([
       supabase.from("users").select("id, name, avatar_url, username, is_pro, is_og, email").in("id", userIds),
       supabase.from("projects").select("id, name, slug").in("id", projectIds),
-      supabase.from("posts").select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username)").in("id", rpPostIds),
-      supabase.from("projects").select("*, user:users!user_id(id, name, avatar_url, username)").in("id", rpProjIds)
+      supabase.from("posts").select("*").in("id", rpPostIds),
+      supabase.from("projects").select("*").in("id", rpProjIds)
     ]);
+
+    // Stitch nested users for reposts too
+    const nestedUserIds = [
+      ...new Set([
+        ...(rpPostsRawRes.data?.map(p => p.user_id) || []),
+        ...(rpProjsRawRes.data?.map(p => p.user_id) || [])
+      ])
+    ];
+    const { data: nestedUsers } = await supabase.from("users").select("id, name, avatar_url, username").in("id", nestedUserIds);
+    const nestedUserMap = new Map(nestedUsers?.map(u => [u.id, u]) || []);
+
+    const rpPostMap = new Map((rpPostsRawRes.data || []).map(p => [p.id, { ...p, user: nestedUserMap.get(p.user_id) }]));
+    const rpProjMap = new Map((rpProjsRawRes.data || []).map(p => [p.id, { ...p, user: nestedUserMap.get(p.user_id) }]));
 
     const userMap = new Map(usersRes.data?.map(u => [u.id, u]) || []);
     const projMap = new Map(projectsRes.data?.map(p => [p.id, p]) || []);
-    const rpPostMap = new Map(rpPostsRes.data?.map(p => [p.id, p]) || []);
-    const rpProjMap = new Map(rpProjsRes.data?.map(p => [p.id, p]) || []);
 
     const processedPosts = rawPosts.map(p => {
       const userData = userMap.get(p.user_id) || { name: "User", avatar_url: null, username: "user" };
-      const projectData = projMap.get(p.project_id);
-      const rpPostData = rpPostMap.get(p.reposted_post_id);
-      const rpProjData = rpProjMap.get(p.reposted_project_id);
+      const projectData = p.project_id ? projMap.get(p.project_id) : null;
+      const rpPostData = p.reposted_post_id ? rpPostMap.get(p.reposted_post_id) : null;
+      const rpProjData = p.reposted_project_id ? rpProjMap.get(p.reposted_project_id) : null;
 
       return {
         ...p,
@@ -145,18 +155,32 @@ export async function getPosts(req: Request, res: Response) {
         project: projectData || null,
         reposted_post: rpPostData || null,
         reposted_project: rpProjData || null,
-        is_activity_repost: false
+        is_activity_repost: !!(p.reposted_post_id || p.reposted_project_id || p.post_type === 'repost' || p.post_type === 'project_shared')
       };
     });
 
-    // Re-apply sorting by is_pro (which we couldn't do in SQL manually as easily)
+    // Final sorting for deterministic paging results
     processedPosts.sort((a, b) => {
-      if (a.user.is_pro === b.user.is_pro) return 0;
-      return a.user.is_pro ? -1 : 1;
+      // 1. Pro members top
+      if (a.user.is_pro !== b.user.is_pro) {
+        return a.user.is_pro ? -1 : 1;
+      }
+      // 2. Then created_at
+      const timeA = new Date(a.created_at).getTime();
+      const timeB = new Date(b.created_at).getTime();
+      if (timeB !== timeA) return timeB - timeA;
+      // 3. Then ID (the ultimate tie-breaker)
+      return b.id - a.id;
     });
 
     if (processedPosts.length === 0) {
-      return res.json({ posts: [], total: postsRes.count || 0, page: pageNum, limit: limitNum, totalPages: 0 });
+      return res.json({ 
+        posts: [], 
+        total: totalCount, 
+        page: pageNum, 
+        limit: limitNum, 
+        totalPages: Math.ceil((totalCount || 0) / limitNum) 
+      });
     }
 
     // FETCH LIKE AND SAVE STATUS FOR CURRENT USER IN PARALLEL
@@ -207,10 +231,10 @@ export async function getPosts(req: Request, res: Response) {
 
     return res.json({
       posts: finalFormattedPosts,
-      total: postsRes.count || 0,
+      total: totalCount,
       page: pageNum,
       limit: limitNum,
-      totalPages: Math.ceil((postsRes.count || 0) / limitNum),
+      totalPages: Math.ceil((totalCount || 0) / limitNum),
     });
   } catch (error: any) {
     console.error("Unexpected error in getPosts:", error);

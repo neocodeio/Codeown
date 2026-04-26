@@ -374,11 +374,13 @@ export async function sendMessage(req: Request, res: Response) {
 
             if (finalRecipientId) {
                 try {
+/* 
                     await notify({
                         userId: finalRecipientId,
                         actorId: userId,
                         type: "message"
                     });
+                    */
 
                     // Emit real-time message to recipient
                     const { getIO } = await import("../lib/socket.js");

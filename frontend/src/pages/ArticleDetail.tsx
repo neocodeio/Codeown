@@ -384,37 +384,37 @@ export default function ArticleDetail() {
       </div>
     </div>
 
-      {/* Right Sidebar */}
-      {isDesktop && (
-        <aside style={{
-          width: "var(--sidebar-width)",
-          position: "sticky",
-          top: 0,
-          alignSelf: "flex-start",
-          flexShrink: 0,
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          borderRight: "0.5px solid var(--border-hairline)",
-        }}>
-          <RecommendedUsersSidebar />
-        </aside>
-      )}
-      <style>{`
-        .article-content a {
-          color: #3b82f6;
-          text-decoration: underline;
-        }
-      `}</style>
-      <ConfirmDeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDelete}
-        title="Delete Article"
-        message="Are you sure you want to delete this article? This action cannot be undone."
-        isLoading={isDeleting}
-      />
-    </div>
+    {/* Right Sidebar */}
+    {isDesktop && (
+      <aside style={{
+        width: "var(--sidebar-width)",
+        position: "sticky",
+        top: 0,
+        alignSelf: "flex-start",
+        flexShrink: 0,
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        borderRight: "0.5px solid var(--border-hairline)",
+      }}>
+        <RecommendedUsersSidebar />
+      </aside>
+    )}
+    <style>{`
+      .article-content a {
+        color: #3b82f6;
+        text-decoration: underline;
+      }
+    `}</style>
+    <ConfirmDeleteModal
+      isOpen={isDeleteModalOpen}
+      onClose={() => setIsDeleteModalOpen(false)}
+      onConfirm={handleDelete}
+      title="Delete Article"
+      message="Are you sure you want to delete this article? This action cannot be undone."
+      isLoading={isDeleting}
+    />
+  </div>
   );
 }
 

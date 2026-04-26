@@ -4,7 +4,7 @@ import PostCard from "../components/PostCard";
 import ProjectCard from "../components/ProjectCard";
 import FeedPostComposer from "../components/FeedPostComposer";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
-import CreatorsForYou from "../components/CreatorsForYou";
+// import CreatorsForYou from "../components/CreatorsForYou";
 import BackToTop from "../components/BackToTop";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -84,7 +84,7 @@ export default function Feed() {
         loading: postsLoading,
         fetchPosts,
         hasMore: postsHasMore
-    } = usePosts(20, feedFilter, getToken, selectedTag, feedType === "posts");
+    } = usePosts(30, feedFilter, getToken, selectedTag, feedType === "posts");
 
     const {
         projects,
@@ -97,21 +97,29 @@ export default function Feed() {
     const hasMore = feedType === "posts" ? postsHasMore : projectsHasMore;
 
     const observer = useRef<IntersectionObserver | null>(null);
+    const isFetchingRef = useRef(false);
+
     const lastElementRef = useCallback((node: HTMLDivElement | null) => {
-        if (loading) return;
+        if (!node || !hasMore) return;
         if (observer.current) observer.current.disconnect();
 
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && hasMore) {
-                if (feedType === "posts") fetchPosts(undefined, true);
-                else fetchProjects(undefined, true);
+            if (entries[0].isIntersecting && hasMore && !loading && !isFetchingRef.current) {
+                isFetchingRef.current = true;
+                const fetchFn = feedType === "posts" ? fetchPosts : fetchProjects;
+                fetchFn(undefined, true);
             }
         }, {
-            rootMargin: "0px 0px 1000px 0px"
+            rootMargin: "0px 0px 800px 0px"
         });
 
-        if (node) observer.current.observe(node);
-    }, [loading, hasMore, fetchPosts, fetchProjects, feedType]);
+        observer.current.observe(node);
+    }, [hasMore, fetchPosts, fetchProjects, feedType, loading]);
+
+    // Reset lock when loading state changes
+    useEffect(() => {
+        if (!loading) isFetchingRef.current = false;
+    }, [loading]);
 
     const currentItems = feedType === "posts" ? posts : projects;
 
@@ -436,18 +444,17 @@ export default function Feed() {
                         ) : (
                             <>
                                 {feedType === "posts"
-                                    ? (currentItems as any[]).map((p, i) => (
-                                        <div key={p.id}>
+                                    ? (currentItems as any[]).filter(p => !!p).map((p) => (
+                                        <div key={p?.id || `fallback`}>
                                             <div style={{
                                                 borderBottom: "0.5px solid var(--border-hairline)",
                                                 animation: "slideDownFadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards"
                                             }}>
                                                 <PostCard post={p} onUpdated={handlePostCreated} />
                                             </div>
-                                            {(i + 1) % 20 === 0 && <CreatorsForYou />}
                                         </div>
                                     ))
-                                    : (currentItems as any[]).map((p, i) => (
+                                    : (currentItems as any[]).filter(p => !!p).map((p) => (
                                         <div key={p.id}>
                                             <div style={{
                                                 borderBottom: "0.5px solid var(--border-hairline)",
@@ -455,14 +462,49 @@ export default function Feed() {
                                             }}>
                                                 <ProjectCard project={p} onUpdated={handleProjectCreated} />
                                             </div>
-                                            {(i + 1) % 20 === 0 && <CreatorsForYou />}
                                         </div>
                                     ))
                                 }
-                                <div ref={lastElementRef} style={{ height: "100px", width: "100%", visibility: "hidden" }} />
+                                <div ref={lastElementRef} style={{ height: "40px", width: "100%", opacity: 0 }} />
+                                
+                                {hasMore && (
+                                    <div style={{ display: "flex", justifyContent: "center", padding: "40px 24px 80px" }}>
+                                        <button 
+                                            onClick={() => {
+                                                if (loading || isFetchingRef.current) return;
+                                                isFetchingRef.current = true;
+                                                const fetchFn = feedType === "posts" ? fetchPosts : fetchProjects;
+                                                fetchFn(undefined, true);
+                                            }}
+                                            disabled={loading}
+                                            style={{
+                                                padding: "12px 28px",
+                                                borderRadius: "13px",
+                                                backgroundColor: loading ? "var(--bg-tertiary)" : "var(--bg-secondary)",
+                                                border: "1px solid var(--border-hairline)",
+                                                color: loading ? "var(--text-tertiary)" : "var(--text-primary)",
+                                                fontSize: "14px",
+                                                fontWeight: "600",
+                                                cursor: loading ? "default" : "pointer",
+                                                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "8px",
+                                                opacity: loading && !currentItems.length ? 0 : 1 // Hide button only if initial load
+                                            }}
+                                        >
+                                            {loading ? (
+                                                <>
+                                                    <div className="button-spinner" />
+                                                    Loading...
+                                                </>
+                                            ) : "Load more"}
+                                        </button>
+                                    </div>
+                                )}
 
                                 {loading && hasMore && (
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <div style={{ display: "flex", flexDirection: "column", paddingBottom: "100px" }}>
                                         {[...Array(2)].map((_, i) => (
                                             <PostCardSkeleton key={`loading-${i}`} />
                                         ))}
@@ -493,6 +535,17 @@ export default function Feed() {
             </div>
 
             <style>{`
+                .button-spinner {
+                    width: 14px;
+                    height: 14px;
+                    border: 2px solid rgba(128,128,128,0.2);
+                    border-left-color: var(--text-primary);
+                    border-radius: 50%;
+                    animation: btn-spin 0.8s linear infinite;
+                }
+                @keyframes btn-spin {
+                    to { transform: rotate(360deg); }
+                }
                 .header-search-input::placeholder {
                     font-size: 12px;
                     opacity: 0.6;

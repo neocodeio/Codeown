@@ -84,7 +84,7 @@ export interface Post {
 
 export type FeedFilter = "all" | "following" | "contributors";
 
-export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string, enabled: boolean = true) {
+export function usePosts(limit: number = 30, filter: FeedFilter = "all", getToken?: () => Promise<string | null>, tag?: string, enabled: boolean = true) {
   const {
     data,
     fetchNextPage,
@@ -93,7 +93,7 @@ export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToke
     isLoading,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["posts", filter, tag ?? ""],
+    queryKey: ["posts", limit, filter, tag ?? "", enabled],
     enabled,
     queryFn: async ({ pageParam = 1 }) => {
       const token = getToken ? await getToken() : null;
@@ -127,8 +127,9 @@ export function usePosts(limit: number = 10, filter: FeedFilter = "all", getToke
     initialPageParam: 1,
     staleTime: FEED_STALE_TIME_MS,
     gcTime: FEED_GC_TIME_MS,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    placeholderData: (prev: any) => prev, 
   });
 
   const posts = data?.pages.flatMap((page) => page.posts) || [];

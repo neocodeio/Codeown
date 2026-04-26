@@ -7,7 +7,7 @@ import FeedbackButton from "./components/FeedbackButton";
 import { useTheme } from "./context/ThemeContext";
 import logo from "./assets/icon-removebg.png";
 import logoWhite from "./assets/logo-white.png";
-import MessageNotificationToast from "./components/MessageNotificationToast";
+// MessageNotificationToast removed as per user request to keep notifications in messages only
 import { ScrollToTop } from "./components/ScrollToTop";
 import { useWindowSize } from "./hooks/useWindowSize";
 import { useClerkUser } from "./hooks/useClerkUser";
@@ -620,7 +620,7 @@ export default function App() {
           !location.pathname.startsWith("/post/") &&
           !location.pathname.startsWith("/project/") &&
           <FeedbackButton />}
-        {!isAuthRoute && <MessageNotificationToast />}
+        {/* MessageNotificationToast removed as per user request to keep notifications in messages only */}
       </div>
     </div>
   );
