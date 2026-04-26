@@ -7,7 +7,7 @@ export async function getArticles(req: Request, res: Response) {
   try {
     const { data: articles, error } = await supabase
       .from("articles")
-      .select("*, users!inner(name, username, avatar_url, is_pro, is_og)")
+      .select("*, users:users(name, username, avatar_url, is_pro, is_og)")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -23,7 +23,7 @@ export async function getArticle(req: Request, res: Response) {
     const { id } = req.params;
     const { data: article, error } = await supabase
       .from("articles")
-      .select("*, users!inner(name, username, avatar_url, is_pro, is_og)")
+      .select("*, users:users(name, username, avatar_url, is_pro, is_og)")
       .eq("id", id)
       .single();
 
