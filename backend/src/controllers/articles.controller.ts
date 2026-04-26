@@ -7,11 +7,27 @@ export async function getArticles(req: Request, res: Response) {
   try {
     const { data: articles, error } = await supabase
       .from("articles")
-      .select("*, users:user_id(name, username, avatar_url, is_pro, is_og)")
+      .select("*")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return res.json(articles || []);
+    if (!articles || articles.length === 0) return res.json([]);
+
+    // Manual join: Fetch users for these articles
+    const userIds = [...new Set(articles.map(a => a.user_id))];
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, name, username, avatar_url, is_pro, is_og")
+      .in("id", userIds);
+
+    const userMap = new Map(users?.map(u => [u.id, u]) || []);
+    
+    const articlesWithUsers = articles.map(article => ({
+      ...article,
+      users: userMap.get(article.user_id) || { name: "User", avatar_url: null, username: "user" }
+    }));
+
+    return res.json(articlesWithUsers);
   } catch (error: any) {
     console.error("Error fetching articles:", error);
     return res.status(500).json({ error: error.message });
@@ -23,33 +39,33 @@ export async function getArticle(req: Request, res: Response) {
     const { id } = req.params;
     const { data: article, error } = await supabase
       .from("articles")
-      .select("*, users:user_id(name, username, avatar_url, is_pro, is_og)")
+      .select("*")
       .eq("id", id)
       .single();
 
     if (error) throw error;
+    if (!article) return res.status(404).json({ error: "Article not found" });
+
+    // Manual join: Fetch user
+    const { data: user } = await supabase
+      .from("users")
+      .select("id, name, username, avatar_url, is_pro, is_og")
+      .eq("id", article.user_id)
+      .single();
 
     // Get counts
-    const { count: likesCount } = await supabase
-      .from("article_likes")
-      .select("*", { count: "exact", head: true })
-      .eq("article_id", id);
-
-    const { count: savesCount } = await supabase
-      .from("article_saves")
-      .select("*", { count: "exact", head: true })
-      .eq("article_id", id);
-
-    const { count: commentsCount } = await supabase
-      .from("article_comments")
-      .select("*", { count: "exact", head: true })
-      .eq("article_id", id);
+    const [likesCount, savesCount, commentsCount] = await Promise.all([
+      supabase.from("article_likes").select("*", { count: "exact", head: true }).eq("article_id", id),
+      supabase.from("article_saves").select("*", { count: "exact", head: true }).eq("article_id", id),
+      supabase.from("article_comments").select("*", { count: "exact", head: true }).eq("article_id", id)
+    ]);
 
     return res.json({
       ...article,
-      likes_count: likesCount || 0,
-      saves_count: savesCount || 0,
-      comments_count: commentsCount || 0
+      users: user || { name: "User", avatar_url: null, username: "user" },
+      likes_count: likesCount.count || 0,
+      saves_count: savesCount.count || 0,
+      comments_count: commentsCount.count || 0
     });
   } catch (error: any) {
     console.error("Error fetching article:", error);
@@ -159,18 +175,33 @@ export async function toggleArticleSave(req: Request, res: Response) {
   }
 }
 
-// Comments for Articles
 export async function getArticleComments(req: Request, res: Response) {
   try {
     const { id } = req.params;
     const { data: comments, error } = await supabase
       .from("article_comments")
-      .select("*, users:user_id(name, username, avatar_url, is_pro, is_og)")
+      .select("*")
       .eq("article_id", id)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return res.json(comments || []);
+    if (!comments || comments.length === 0) return res.json([]);
+
+    // Manual join for comments
+    const userIds = [...new Set(comments.map(c => c.user_id))];
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, name, username, avatar_url, is_pro, is_og")
+      .in("id", userIds);
+
+    const userMap = new Map(users?.map(u => [u.id, u]) || []);
+    
+    const commentsWithUsers = comments.map(comment => ({
+      ...comment,
+      users: userMap.get(comment.user_id) || { name: "User", avatar_url: null, username: "user" }
+    }));
+
+    return res.json(commentsWithUsers);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
@@ -195,11 +226,22 @@ export async function createArticleComment(req: Request, res: Response) {
         content,
         parent_id
       })
-      .select("*, users:user_id(name, username, avatar_url, is_pro, is_og)")
+      .select()
       .single();
 
     if (error) throw error;
-    return res.status(201).json(comment);
+
+    // Manual join for the new comment
+    const { data: userData } = await supabase
+      .from("users")
+      .select("id, name, username, avatar_url, is_pro, is_og")
+      .eq("id", userId)
+      .single();
+
+    return res.status(201).json({
+      ...comment,
+      users: userData || { name: "User", avatar_url: null, username: "user" }
+    });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
