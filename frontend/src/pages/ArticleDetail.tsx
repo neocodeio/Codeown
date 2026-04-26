@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { useWindowSize } from "../hooks/useWindowSize";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { SEO } from "../components/SEO";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 interface Article {
   id: number;
@@ -45,6 +46,8 @@ export default function ArticleDetail() {
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { getToken } = useClerkAuth();
   const { user: currentUser } = useClerkUser();
   const navigate = useNavigate();
@@ -113,8 +116,7 @@ export default function ArticleDetail() {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this article? This action cannot be undone.")) return;
-    
+    setIsDeleting(true);
     try {
       const token = await getToken();
       await api.delete(`/articles/${id}`, {
@@ -125,6 +127,9 @@ export default function ArticleDetail() {
     } catch (error) {
       console.error("Delete failed:", error);
       toast.error("Failed to delete article");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -210,7 +215,7 @@ export default function ArticleDetail() {
         
         {currentUser && currentUser.id === article.user_id && (
           <button
-            onClick={handleDelete}
+            onClick={() => setIsDeleteModalOpen(true)}
             style={{
               display: "flex",
               alignItems: "center",
@@ -376,6 +381,14 @@ export default function ArticleDetail() {
           text-decoration: underline;
         }
       `}</style>
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Article"
+        message="Are you sure you want to delete this article? This action cannot be undone."
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

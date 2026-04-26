@@ -11,6 +11,9 @@ import {
 import { formatRelativeDate } from "../utils/date";
 import { useWindowSize } from "../hooks/useWindowSize";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
+import { useClerkAuth } from "../hooks/useClerkAuth";
+import { socket } from "../lib/socket";
+import { toast } from "react-toastify";
 
 interface Article {
   id: number;
@@ -20,7 +23,13 @@ interface Article {
   cover_image: string;
   created_at: string;
   user_id: string;
+  likes_count: number;
+  saves_count: number;
+  comments_count: number;
+  liked?: boolean;
+  saved?: boolean;
   users: {
+    id: string;
     name: string;
     username: string;
     avatar_url: string;
@@ -34,10 +43,33 @@ export default function Articles() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { width } = useWindowSize();
+  const { getToken } = useClerkAuth();
   const isDesktop = width >= 1200;
 
   useEffect(() => {
     fetchArticles();
+
+    // Listen for real-time updates
+    socket.on("content_update", (update: { type: string; data: any }) => {
+      if (update.type === "article_like") {
+        setArticles(prev => prev.map(a => 
+          a.id === update.data.id ? { ...a, likes_count: update.data.likes_count } : a
+        ));
+      } else if (update.type === "article_deleted") {
+        setArticles(prev => prev.filter(a => String(a.id) !== String(update.data.id)));
+      } else if (update.type === "article_created") {
+        // Optionally fetch articles again or prepend if not found
+        fetchArticles();
+      } else if (update.type === "article_comment") {
+        setArticles(prev => prev.map(a => 
+          a.id === update.data.article_id ? { ...a, comments_count: (a.comments_count || 0) + 1 } : a
+        ));
+      }
+    });
+
+    return () => {
+      socket.off("content_update");
+    };
   }, []);
 
   const fetchArticles = async () => {
@@ -48,6 +80,50 @@ export default function Articles() {
       console.error("Error fetching articles:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLike = async (e: React.MouseEvent, articleId: number) => {
+    e.stopPropagation();
+    try {
+      const token = await getToken();
+      if (!token) return navigate("/sign-in");
+      
+      const { data } = await api.post(`/articles/${articleId}/like`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setArticles(prev => prev.map(a => 
+        a.id === articleId ? { 
+          ...a, 
+          liked: data.liked,
+          likes_count: data.likes_count 
+        } : a
+      ));
+    } catch (error) {
+      toast.error("Action failed");
+    }
+  };
+
+  const handleSave = async (e: React.MouseEvent, articleId: number) => {
+    e.stopPropagation();
+    try {
+      const token = await getToken();
+      if (!token) return navigate("/sign-in");
+      
+      const { data } = await api.post(`/articles/${articleId}/save`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setArticles(prev => prev.map(a => 
+        a.id === articleId ? { 
+          ...a, 
+          saved: data.saved
+        } : a
+      ));
+      toast.success(data.saved ? "Article saved" : "Removed from saves");
+    } catch (error) {
+      toast.error("Action failed");
     }
   };
 
@@ -173,15 +249,33 @@ export default function Articles() {
                 <div style={{ display: "flex", gap: "20px", color: "var(--text-tertiary)" }}>
                    <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "13px" }}>
                      <HugeiconsIcon icon={Chat01Icon} size={16} />
-                     <span>0</span>
+                     <span>{article.comments_count || 0}</span>
                    </div>
-                   <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "13px" }}>
-                     <HugeiconsIcon icon={FavouriteIcon} size={16} />
-                     <span>0</span>
+                   <div 
+                    onClick={(e) => handleLike(e, article.id)}
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "4px", 
+                      fontSize: "13px",
+                      color: article.liked ? "#ef4444" : "var(--text-tertiary)",
+                      cursor: "pointer"
+                    }}>
+                     <HugeiconsIcon icon={FavouriteIcon} size={16} className={article.liked ? "hugeicon-filled" : ""} />
+                     <span>{article.likes_count || 0}</span>
                    </div>
-                   <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "13px" }}>
-                     <HugeiconsIcon icon={Bookmark02Icon} size={16} />
-                     <span>0</span>
+                   <div 
+                    onClick={(e) => handleSave(e, article.id)}
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "4px", 
+                      fontSize: "13px",
+                      color: article.saved ? "var(--text-primary)" : "var(--text-tertiary)",
+                      cursor: "pointer"
+                    }}>
+                     <HugeiconsIcon icon={Bookmark02Icon} size={16} className={article.saved ? "hugeicon-filled" : ""} />
+                     <span>{article.saves_count || 0}</span>
                    </div>
                 </div>
               </div>

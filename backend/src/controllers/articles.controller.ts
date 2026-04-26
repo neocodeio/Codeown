@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { emitUpdate } from "../lib/socket.js";
 
 export async function getArticles(req: Request, res: Response) {
   try {
@@ -104,6 +105,8 @@ export async function createArticle(req: Request, res: Response) {
       .single();
 
     if (error) throw error;
+
+    emitUpdate("article_created", article);
     return res.status(201).json(article);
   } catch (error: any) {
     console.error("Error creating article:", error);
@@ -136,8 +139,18 @@ export async function toggleArticleLike(req: Request, res: Response) {
       await supabase
         .from("article_likes")
         .insert({ user_id: userId, article_id: id });
-      return res.json({ liked: true });
     }
+
+    // Get fresh count
+    const { count } = await supabase
+      .from("article_likes")
+      .select("*", { count: "exact", head: true })
+      .eq("article_id", id);
+    
+    const liked = !existing;
+    emitUpdate("article_like", { id, likes_count: count || 0, liked, userId });
+
+    return res.json({ liked, likes_count: count || 0 });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
@@ -238,10 +251,14 @@ export async function createArticleComment(req: Request, res: Response) {
       .eq("id", userId)
       .single();
 
-    return res.status(201).json({
+    const response = {
       ...comment,
       users: userData || { name: "User", avatar_url: null, username: "user" }
-    });
+    };
+
+    emitUpdate("article_comment", { article_id: id, comment: response });
+
+    return res.status(201).json(response);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
@@ -283,9 +300,86 @@ export async function deleteArticle(req: Request, res: Response) {
 
     if (deleteError) throw deleteError;
 
+    emitUpdate("article_deleted", { id });
+
     return res.json({ message: "Article deleted successfully" });
   } catch (error: any) {
     console.error("Error deleting article:", error);
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+export async function deleteArticleComment(req: Request, res: Response) {
+  try {
+    const user = (req as any).user;
+    const userId = user?.sub || user?.id || user?.userId;
+    const { id, commentId } = req.params;
+
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const { data: comment, error: fetchError } = await supabase
+      .from("article_comments")
+      .select("user_id")
+      .eq("id", commentId)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+    if (!comment) return res.status(404).json({ error: "Comment not found" });
+
+    if (comment.user_id !== userId) {
+      return res.status(403).json({ error: "Unauthorized to delete this comment" });
+    }
+
+    const { error: deleteError } = await supabase
+      .from("article_comments")
+      .delete()
+      .eq("id", commentId);
+
+    if (deleteError) throw deleteError;
+
+    emitUpdate("article_comment_deleted", { article_id: id, commentId });
+
+    return res.json({ message: "Comment deleted successfully" });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+export async function toggleArticleCommentLike(req: Request, res: Response) {
+  try {
+    const user = (req as any).user;
+    const userId = user?.sub || user?.id || user?.userId;
+    const { commentId } = req.params;
+
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const { data: existing } = await supabase
+      .from("article_comment_likes")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("comment_id", commentId)
+      .maybeSingle();
+
+    if (existing) {
+      await supabase
+        .from("article_comment_likes")
+        .delete()
+        .eq("id", existing.id);
+    } else {
+      await supabase
+        .from("article_comment_likes")
+        .insert({ user_id: userId, comment_id: commentId });
+    }
+
+    const { count } = await supabase
+      .from("article_comment_likes")
+      .select("*", { count: "exact", head: true })
+      .eq("comment_id", commentId);
+
+    emitUpdate("article_comment_like", { commentId, likes_count: count || 0 });
+
+    return res.json({ liked: !existing, likes_count: count || 0 });
+  } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
 }
