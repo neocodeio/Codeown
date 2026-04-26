@@ -11,16 +11,16 @@ import {
   deleteArticleComment,
   toggleArticleCommentLike
 } from "../controllers/articles.controller.js";
-import { requireAuth } from "../middlewares/auth.middleware.js";
+import { requireAuth, optionalAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.get("/articles", getArticles);
-router.get("/articles/:id", getArticle);
+router.get("/articles", optionalAuth, getArticles);
+router.get("/articles/:id", optionalAuth, getArticle);
 router.post("/articles", requireAuth, createArticle);
 router.post("/articles/:id/like", requireAuth, toggleArticleLike);
 router.post("/articles/:id/save", requireAuth, toggleArticleSave);
-router.get("/articles/:id/comments", getArticleComments);
+router.get("/articles/:id/comments", optionalAuth, getArticleComments);
 router.post("/articles/:id/comments", requireAuth, createArticleComment);
 router.delete("/articles/:id/comments/:commentId", requireAuth, deleteArticleComment);
 router.post("/comments/:commentId/like", requireAuth, toggleArticleCommentLike);

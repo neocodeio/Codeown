@@ -23,7 +23,7 @@ import { requireAuth, optionalAuth } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 // Public routes
-router.get("/", getProjects);
+router.get("/", optionalAuth, getProjects);
 router.get("/user/:userId", optionalAuth, getUserProjects);
 router.get("/my/cofounder-applications", requireAuth, getMyCofounderApplications);
 router.get("/:id", optionalAuth, getProject);
