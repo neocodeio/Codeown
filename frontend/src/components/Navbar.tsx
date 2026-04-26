@@ -501,7 +501,7 @@ export default function Navbar() {
             <div style={{ position: "absolute", bottom: "80px", left: "50%", transform: "translateX(-50%)", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "var(--radius-md)", padding: "10px", minWidth: "220px", zIndex: 2001, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}>
               <style>{`.mobile-menu-item { padding: 12px 16px; display: flex; alignItems: center; gap: 12px; cursor: pointer; color: var(--text-primary); font-weight: 700; font-size: 15px; border-radius: 16px; transition: all 0.2s; } .mobile-menu-item:active { background: var(--bg-hover); transform: scale(0.98); }`}</style>
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}><HugeiconsIcon icon={PlusSignIcon} size={18} /> Add post</div>
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/write-article"); }}><HugeiconsIcon icon={PencilIcon} size={18} /> Write article</div>
+              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/article"); }}><HugeiconsIcon icon={PencilIcon} size={18} />Articles</div>
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}><HugeiconsIcon icon={Rocket01Icon} size={18} /> Launch project</div>
               <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", margin: "8px 0" }} />
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Building02Icon} size={18} /> Startups Hub</div>
