@@ -53,16 +53,19 @@ export default function Articles() {
     socket.on("content_update", (update: { type: string; data: any }) => {
       if (update.type === "article_like") {
         setArticles(prev => prev.map(a => 
-          a.id === update.data.id ? { ...a, likes_count: update.data.likes_count } : a
+          Number(a.id) === Number(update.data.id) ? { ...a, likes_count: update.data.likes_count } : a
         ));
       } else if (update.type === "article_deleted") {
-        setArticles(prev => prev.filter(a => String(a.id) !== String(update.data.id)));
+        setArticles(prev => prev.filter(a => Number(a.id) !== Number(update.data.id)));
       } else if (update.type === "article_created") {
-        // Optionally fetch articles again or prepend if not found
         fetchArticles();
       } else if (update.type === "article_comment") {
         setArticles(prev => prev.map(a => 
-          a.id === update.data.article_id ? { ...a, comments_count: (a.comments_count || 0) + 1 } : a
+          Number(a.id) === Number(update.data.article_id) ? { ...a, comments_count: (a.comments_count || 0) + 1 } : a
+        ));
+      } else if (update.type === "article_comment_deleted") {
+        setArticles(prev => prev.map(a => 
+          Number(a.id) === Number(update.data.article_id) ? { ...a, comments_count: Math.max(0, (a.comments_count || 0) - 1) } : a
         ));
       }
     });
@@ -74,7 +77,9 @@ export default function Articles() {
 
   const fetchArticles = async () => {
     try {
-      const { data } = await api.get("/articles");
+      const token = await getToken();
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const { data } = await api.get("/articles", { headers });
       setArticles(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching articles:", error);

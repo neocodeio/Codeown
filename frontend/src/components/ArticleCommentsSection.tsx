@@ -52,15 +52,19 @@ const ArticleCommentsSection = ({ articleId }: { articleId: number }) => {
     fetchComments();
 
     socket.on("content_update", (update: { type: string; data: any }) => {
-      if (update.data.article_id !== articleId) return;
+      if (Number(update.data.article_id) !== Number(articleId)) return;
 
       if (update.type === "article_comment") {
-        setComments(prev => [update.data.comment, ...prev]);
+        setComments(prev => {
+          // Prevent duplicates from multiple renders/reconnects
+          if (prev.some(c => Number(c.id) === Number(update.data.comment.id))) return prev;
+          return [update.data.comment, ...prev];
+        });
       } else if (update.type === "article_comment_deleted") {
-        setComments(prev => prev.filter(c => c.id !== update.data.commentId));
+        setComments(prev => prev.filter(c => Number(c.id) !== Number(update.data.commentId)));
       } else if (update.type === "article_comment_like") {
         setComments(prev => prev.map(c => 
-          c.id === update.data.commentId ? { ...c, likes_count: update.data.likes_count } : c
+          Number(c.id) === Number(update.data.commentId) ? { ...c, likes_count: update.data.likes_count } : c
         ));
       }
     });

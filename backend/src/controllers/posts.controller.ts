@@ -70,20 +70,9 @@ export async function getPosts(req: Request, res: Response) {
     const limitNum = parseInt(limit as string, 10) || 10;
     const offset = (pageNum - 1) * limitNum;
 
-    // Use join to fetch user data in the same query
     let postsQuery = supabase
       .from("posts")
-      .select(`
-        id, title, content, user_id, created_at, is_mobile, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
-        projects!posts_project_id_fkey(id, title),
-        user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        reposted_post:posts!reposted_post_id(
-          id, title, content, created_at, images, post_type,
-          user:users!posts_user_id_fkey(id, name, avatar_url, username)
-        ),
-        reposted_project:projects!posts_reposted_project_id_fkey(id, title, description, cover_image, created_at, user:users!user_id(id, name, avatar_url, username))
-      `, { count: "exact" })
-      .order("is_pro", { foreignTable: "user", ascending: false })
+      .select(`*`, { count: "exact" })
       .order("created_at", { ascending: false });
 
 
@@ -125,7 +114,46 @@ export async function getPosts(req: Request, res: Response) {
     }
 
     const rawPosts = postsRes.data || [];
-    const processedPosts = rawPosts.map(p => ({ ...formatPostData(p), is_activity_repost: false }));
+    
+    // MANUAL DATA STITCHING (Robust Join)
+    const userIds = [...new Set(rawPosts.map(p => p.user_id))];
+    const projectIds = [...new Set(rawPosts.filter(p => p.project_id).map(p => p.project_id))];
+    const rpPostIds = [...new Set(rawPosts.filter(p => p.reposted_post_id).map(p => p.reposted_post_id))];
+    const rpProjIds = [...new Set(rawPosts.filter(p => p.reposted_project_id).map(p => p.reposted_project_id))];
+
+    const [usersRes, projectsRes, rpPostsRes, rpProjsRes] = await Promise.all([
+      supabase.from("users").select("id, name, avatar_url, username, is_pro, is_og, email").in("id", userIds),
+      supabase.from("projects").select("id, name, slug").in("id", projectIds),
+      supabase.from("posts").select("*, user:users!posts_user_id_fkey(id, name, avatar_url, username)").in("id", rpPostIds),
+      supabase.from("projects").select("*, user:users!user_id(id, name, avatar_url, username)").in("id", rpProjIds)
+    ]);
+
+    const userMap = new Map(usersRes.data?.map(u => [u.id, u]) || []);
+    const projMap = new Map(projectsRes.data?.map(p => [p.id, p]) || []);
+    const rpPostMap = new Map(rpPostsRes.data?.map(p => [p.id, p]) || []);
+    const rpProjMap = new Map(rpProjsRes.data?.map(p => [p.id, p]) || []);
+
+    const processedPosts = rawPosts.map(p => {
+      const userData = userMap.get(p.user_id) || { name: "User", avatar_url: null, username: "user" };
+      const projectData = projMap.get(p.project_id);
+      const rpPostData = rpPostMap.get(p.reposted_post_id);
+      const rpProjData = rpProjMap.get(p.reposted_project_id);
+
+      return {
+        ...p,
+        user: userData,
+        project: projectData || null,
+        reposted_post: rpPostData || null,
+        reposted_project: rpProjData || null,
+        is_activity_repost: false
+      };
+    });
+
+    // Re-apply sorting by is_pro (which we couldn't do in SQL manually as easily)
+    processedPosts.sort((a, b) => {
+      if (a.user.is_pro === b.user.is_pro) return 0;
+      return a.user.is_pro ? -1 : 1;
+    });
 
     if (processedPosts.length === 0) {
       return res.json({ posts: [], total: postsRes.count || 0, page: pageNum, limit: limitNum, totalPages: 0 });

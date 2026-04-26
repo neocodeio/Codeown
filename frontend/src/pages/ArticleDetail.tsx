@@ -19,6 +19,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import RecommendedUsersSidebar from "../components/RecommendedUsersSidebar";
 import { SEO } from "../components/SEO";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import { socket } from "../lib/socket";
 
 interface Article {
   id: number;
@@ -57,13 +58,37 @@ export default function ArticleDetail() {
 
   useEffect(() => {
     fetchArticle();
+
+    const handleUpdate = (update: { type: string; data: any }) => {
+      if (update.type === "article_like" && Number(update.data.id) === Number(id)) {
+        setArticle(prev => prev ? { ...prev, likes_count: update.data.likes_count } : null);
+      } else if (update.type === "article_comment" && Number(update.data.article_id) === Number(id)) {
+        setArticle(prev => prev ? { ...prev, comments_count: (prev.comments_count || 0) + 1 } : null);
+      } else if (update.type === "article_comment_deleted" && Number(update.data.article_id) === Number(id)) {
+        setArticle(prev => prev ? { ...prev, comments_count: Math.max(0, (prev.comments_count || 0) - 1) } : null);
+      } else if (update.type === "article_deleted" && Number(update.data.id) === Number(id)) {
+        toast.info("This article has been deleted");
+        navigate("/articles");
+      }
+    };
+
+    socket.on("content_update", handleUpdate);
+
+    return () => {
+      socket.off("content_update", handleUpdate);
+    };
   }, [id]);
 
   const fetchArticle = async () => {
     try {
-      const { data } = await api.get(`/articles/${id}`);
+      const token = await getToken();
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const { data } = await api.get(`/articles/${id}`, { headers });
+      
       if (data && !data.error) {
         setArticle(data);
+        setIsLiked(data.liked);
+        setIsSaved(data.saved);
       } else {
         throw new Error(data?.error || "Article not found");
       }

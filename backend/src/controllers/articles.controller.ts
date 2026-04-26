@@ -23,9 +23,26 @@ export async function getArticles(req: Request, res: Response) {
 
     const userMap = new Map(users?.map(u => [u.id, u]) || []);
     
+    // Check like/save status if user is logged in
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    let likedIds = new Set<number>();
+    let savedIds = new Set<number>();
+
+    if (currentUserId && articles.length > 0) {
+      const articleIds = articles.map(a => a.id);
+      const [likes, saves] = await Promise.all([
+        supabase.from("article_likes").select("article_id").eq("user_id", currentUserId).in("article_id", articleIds),
+        supabase.from("article_saves").select("article_id").eq("user_id", currentUserId).in("article_id", articleIds)
+      ]);
+      likedIds = new Set((likes.data || []).map(l => l.article_id));
+      savedIds = new Set((saves.data || []).map(s => s.article_id));
+    }
+    
     const articlesWithUsers = articles.map(article => ({
       ...article,
-      users: userMap.get(article.user_id) || { name: "User", avatar_url: null, username: "user" }
+      users: userMap.get(article.user_id) || { name: "User", avatar_url: null, username: "user" },
+      liked: likedIds.has(article.id),
+      saved: savedIds.has(article.id)
     }));
 
     return res.json(articlesWithUsers);
@@ -54,19 +71,28 @@ export async function getArticle(req: Request, res: Response) {
       .eq("id", article.user_id)
       .single();
 
-    // Get counts
-    const [likesCount, savesCount, commentsCount] = await Promise.all([
-      supabase.from("article_likes").select("*", { count: "exact", head: true }).eq("article_id", id),
-      supabase.from("article_saves").select("*", { count: "exact", head: true }).eq("article_id", id),
-      supabase.from("article_comments").select("*", { count: "exact", head: true }).eq("article_id", id)
-    ]);
+    // Check status
+    const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+    let liked = false;
+    let saved = false;
+
+    if (currentUserId) {
+      const [like, save] = await Promise.all([
+        supabase.from("article_likes").select("*").eq("user_id", currentUserId).eq("article_id", id).maybeSingle(),
+        supabase.from("article_saves").select("*").eq("user_id", currentUserId).eq("article_id", id).maybeSingle()
+      ]);
+      liked = !!like.data;
+      saved = !!save.data;
+    }
 
     return res.json({
       ...article,
       users: user || { name: "User", avatar_url: null, username: "user" },
       likes_count: likesCount.count || 0,
       saves_count: savesCount.count || 0,
-      comments_count: commentsCount.count || 0
+      comments_count: commentsCount.count || 0,
+      liked,
+      saved
     });
   } catch (error: any) {
     console.error("Error fetching article:", error);
@@ -202,16 +228,33 @@ export async function getArticleComments(req: Request, res: Response) {
 
     // Manual join for comments
     const userIds = [...new Set(comments.map(c => c.user_id))];
-    const { data: users } = await supabase
-      .from("users")
-      .select("id, name, username, avatar_url, is_pro, is_og")
-      .in("id", userIds);
+    const commentIds = comments.map(c => c.id);
+    
+    const [usersRes, likesRes, userLikesRes] = await Promise.all([
+      supabase.from("users").select("id, name, username, avatar_url, is_pro, is_og").in("id", userIds),
+      supabase.from("article_comment_likes").select("comment_id").in("comment_id", commentIds),
+      (async () => {
+        const currentUserId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+        if (!currentUserId) return { data: [] };
+        return supabase.from("article_comment_likes").select("comment_id").eq("user_id", currentUserId).in("comment_id", commentIds);
+      })()
+    ]);
 
-    const userMap = new Map(users?.map(u => [u.id, u]) || []);
+    const userMap = new Map((usersRes.data || []).map(u => [u.id, u]) || []);
+    
+    // Count likes per comment
+    const likeCounts: Record<number, number> = {};
+    (likesRes.data || []).forEach(l => {
+      likeCounts[l.comment_id] = (likeCounts[l.comment_id] || 0) + 1;
+    });
+
+    const userLikedIds = new Set((userLikesRes.data || []).map(l => l.comment_id));
     
     const commentsWithUsers = comments.map(comment => ({
       ...comment,
-      users: userMap.get(comment.user_id) || { name: "User", avatar_url: null, username: "user" }
+      users: userMap.get(comment.user_id) || { name: "User", avatar_url: null, username: "user" },
+      likes_count: likeCounts[comment.id] || 0,
+      liked: userLikedIds.has(comment.id)
     }));
 
     return res.json(commentsWithUsers);
