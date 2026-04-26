@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import ArticleLinkPreview from "./ArticleLinkPreview";
 
 interface Metadata {
     title: string;
@@ -11,6 +12,12 @@ interface Metadata {
 }
 
 export default function LinkPreview({ url }: { url: string }) {
+    // Check if it's an internal article
+    const articleIdMatch = url.match(/codeown\.space\/articles\/(\d+)/);
+    if (articleIdMatch) {
+      return <ArticleLinkPreview articleId={parseInt(articleIdMatch[1])} />;
+    }
+
     const [metadata, setMetadata] = useState<Metadata | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);

@@ -41,7 +41,6 @@ import Lightbox from "./Lightbox";
 import QuickCommentModal from "./QuickCommentModal";
 import LikeButton from "./LikeButton";
 import InlineFollowButton from "./InlineFollowButton";
-import ArticleLinkPreview from "./ArticleLinkPreview";
 import { socket } from "../lib/socket";
 
 interface PostCardProps {
@@ -648,16 +647,6 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
                   {isExpanded ? "Show less" : "Show more"}
                 </button>
               )}
-              
-              {/* Internal Article Link Preview */}
-              {(() => {
-                const articleLinkRegex = /codeown\.space\/articles\/(\d+)/;
-                const match = displayPost.content?.match(articleLinkRegex);
-                if (match) {
-                  return <ArticleLinkPreview articleId={parseInt(match[1])} />;
-                }
-                return null;
-              })()}
             </div>
 
             {displayPost?.images && displayPost.images.length > 0 && (
