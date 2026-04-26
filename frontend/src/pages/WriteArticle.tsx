@@ -84,18 +84,18 @@ export default function WriteArticle() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
+    if (file.size > 1024 * 1024) {
+      toast.error("Image size must be less than 1MB");
       return;
     }
 
     setIsUploading(true);
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("image", file);
       
       const token = await getToken();
-      const { data } = await api.post("/upload", formData, {
+      const { data } = await api.post("/upload/image", formData, {
         headers: { 
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}` 
@@ -134,18 +134,18 @@ export default function WriteArticle() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
+    if (file.size > 1024 * 1024) {
+      toast.error("Image size must be less than 1MB");
       return;
     }
 
     setIsUploadingInline(true);
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("image", file);
       
       const token = await getToken();
-      const { data } = await api.post("/upload", formData, {
+      const { data } = await api.post("/upload/image", formData, {
         headers: { 
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}` 
