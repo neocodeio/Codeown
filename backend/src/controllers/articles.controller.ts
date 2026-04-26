@@ -59,7 +59,8 @@ export async function getArticle(req: Request, res: Response) {
 
 export async function createArticle(req: Request, res: Response) {
   try {
-    const userId = (req as any).auth?.userId;
+    const user = (req as any).user;
+    const userId = user?.sub || user?.id || user?.userId;
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
     const { title, subtitle, content, cover_image } = req.body;
@@ -96,7 +97,8 @@ export async function createArticle(req: Request, res: Response) {
 
 export async function toggleArticleLike(req: Request, res: Response) {
   try {
-    const userId = (req as any).auth?.userId;
+    const user = (req as any).user;
+    const userId = user?.sub || user?.id || user?.userId;
     const { id } = req.params;
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
@@ -127,7 +129,8 @@ export async function toggleArticleLike(req: Request, res: Response) {
 
 export async function toggleArticleSave(req: Request, res: Response) {
   try {
-    const userId = (req as any).auth?.userId;
+    const user = (req as any).user;
+    const userId = user?.sub || user?.id || user?.userId;
     const { id } = req.params;
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
@@ -175,7 +178,8 @@ export async function getArticleComments(req: Request, res: Response) {
 
 export async function createArticleComment(req: Request, res: Response) {
   try {
-    const userId = (req as any).auth?.userId;
+    const user = (req as any).user;
+    const userId = user?.sub || user?.id || user?.userId;
     const { id } = req.params;
     const { content, parent_id } = req.body;
 
