@@ -356,8 +356,8 @@ export default function ArticleDetail() {
       {/* Comments Section */}
       <div id="comments" style={{ marginTop: "40px" }}>
         <ArticleCommentsSection articleId={article.id} />
-        </div>
       </div>
+    </div>
 
       {/* Right Sidebar */}
       {isDesktop && (
