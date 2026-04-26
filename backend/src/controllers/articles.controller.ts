@@ -246,3 +246,46 @@ export async function createArticleComment(req: Request, res: Response) {
     return res.status(500).json({ error: error.message });
   }
 }
+
+export async function deleteArticle(req: Request, res: Response) {
+  try {
+    const user = (req as any).user;
+    const userId = user?.sub || user?.id || user?.userId;
+    const { id } = req.params;
+
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Verify ownership
+    const { data: article, error: fetchError } = await supabase
+      .from("articles")
+      .select("user_id")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+    if (!article) return res.status(404).json({ error: "Article not found" });
+
+    if (article.user_id !== userId) {
+      return res.status(403).json({ error: "Unauthorized to delete this article" });
+    }
+
+    // Delete related items first (optional if cascade is on, but safe)
+    await Promise.all([
+      supabase.from("article_likes").delete().eq("article_id", id),
+      supabase.from("article_saves").delete().eq("article_id", id),
+      supabase.from("article_comments").delete().eq("article_id", id)
+    ]);
+
+    const { error: deleteError } = await supabase
+      .from("articles")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) throw deleteError;
+
+    return res.json({ message: "Article deleted successfully" });
+  } catch (error: any) {
+    console.error("Error deleting article:", error);
+    return res.status(500).json({ error: error.message });
+  }
+}

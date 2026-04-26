@@ -9,7 +9,8 @@ import {
   FavouriteIcon,
   Bookmark02Icon,
   Chat01Icon,
-  Link01Icon
+  Link01Icon,
+  Delete02Icon
 } from "@hugeicons/core-free-icons";
 import VerifiedBadge from "../components/VerifiedBadge";
 import ArticleCommentsSection from "../components/ArticleCommentsSection";
@@ -111,6 +112,22 @@ export default function ArticleDetail() {
     toast.success("Link copied to clipboard!");
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this article? This action cannot be undone.")) return;
+    
+    try {
+      const token = await getToken();
+      await api.delete(`/articles/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Article deleted successfully");
+      navigate("/articles");
+    } catch (error) {
+      console.error("Delete failed:", error);
+      toast.error("Failed to delete article");
+    }
+  };
+
   if (loading) return (
     <div style={{ display: "flex", width: "100%", minHeight: "100vh" }}>
       <div style={{
@@ -190,6 +207,31 @@ export default function ArticleDetail() {
             {new Date(article.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} • 5 min read
           </div>
         </div>
+        
+        {currentUser && currentUser.id === article.user_id && (
+          <button
+            onClick={handleDelete}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              border: "1px solid #fee2e2",
+              background: "#fef2f2",
+              color: "#ef4444",
+              fontSize: "13px",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.background = "#fee2e2"; }}
+            onMouseOut={(e) => { e.currentTarget.style.background = "#fef2f2"; }}
+          >
+            <HugeiconsIcon icon={Delete02Icon} size={16} />
+            Delete
+          </button>
+        )}
       </div>
 
       {/* Content */}

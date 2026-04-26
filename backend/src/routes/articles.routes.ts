@@ -6,7 +6,8 @@ import {
   toggleArticleLike,
   toggleArticleSave,
   getArticleComments,
-  createArticleComment
+  createArticleComment,
+  deleteArticle
 } from "../controllers/articles.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
@@ -19,5 +20,6 @@ router.post("/articles/:id/like", requireAuth, toggleArticleLike);
 router.post("/articles/:id/save", requireAuth, toggleArticleSave);
 router.get("/articles/:id/comments", getArticleComments);
 router.post("/articles/:id/comments", requireAuth, createArticleComment);
+router.delete("/articles/:id", requireAuth, deleteArticle);
 
 export default router;
