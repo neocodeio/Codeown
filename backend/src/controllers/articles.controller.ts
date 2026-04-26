@@ -7,7 +7,7 @@ export async function getArticles(req: Request, res: Response) {
   try {
     const { data: articles, error } = await supabase
       .from("articles")
-      .select("*, users:users(name, username, avatar_url, is_pro, is_og)")
+      .select("*, users:user_id(name, username, avatar_url, is_pro, is_og)")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -23,7 +23,7 @@ export async function getArticle(req: Request, res: Response) {
     const { id } = req.params;
     const { data: article, error } = await supabase
       .from("articles")
-      .select("*, users:users(name, username, avatar_url, is_pro, is_og)")
+      .select("*, users:user_id(name, username, avatar_url, is_pro, is_og)")
       .eq("id", id)
       .single();
 
@@ -165,7 +165,7 @@ export async function getArticleComments(req: Request, res: Response) {
     const { id } = req.params;
     const { data: comments, error } = await supabase
       .from("article_comments")
-      .select("*, users(name, username, avatar_url, is_pro, is_og)")
+      .select("*, users:user_id(name, username, avatar_url, is_pro, is_og)")
       .eq("article_id", id)
       .order("created_at", { ascending: false });
 
@@ -195,7 +195,7 @@ export async function createArticleComment(req: Request, res: Response) {
         content,
         parent_id
       })
-      .select("*, users(name, username, avatar_url, is_pro, is_og)")
+      .select("*, users:user_id(name, username, avatar_url, is_pro, is_og)")
       .single();
 
     if (error) throw error;
