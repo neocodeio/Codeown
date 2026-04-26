@@ -474,7 +474,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
         <div style={{ display: "flex", gap: isMobile ? "10px" : "12px" }}>
           <div
             onClick={handleUserClick}
-            style={{ position: "relative", cursor: "pointer", flexShrink: 0 }}
+            style={{ position: "relative", cursor: "pointer", flexShrink: 0, alignSelf: "flex-start" }}
           >
             <UserHoverCard userId={primaryUser?.id || ""} user={primaryUser as any}>
               <AvailabilityBadge

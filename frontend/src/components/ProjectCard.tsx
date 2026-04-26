@@ -326,6 +326,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         padding: "var(--post-padding, 20px 16px)",
         backgroundColor: "transparent",
         display: "flex",
+        alignItems: "flex-start",
         gap: isMobile ? "12px" : "16px",
         transition: "background-color 0.15s linear",
         width: "100%",
