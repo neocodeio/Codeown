@@ -25,7 +25,8 @@ import {
   Building02Icon,
   MedalIcon,
   Chart01Icon,
-  ArrowRight02Icon
+  ArrowRight02Icon,
+  PencilIcon
 } from "@hugeicons/core-free-icons";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -214,6 +215,7 @@ export default function Navbar() {
       <nav style={{ flexShrink: 0, marginTop: window.innerHeight < 850 ? "4px" : "0px" }}>
         <div onClick={() => handleSilentNavigate("/")} className="sidebar-nav-link" style={{ ...linkStyle("/"), cursor: "pointer" }}><HugeiconsIcon icon={Home01Icon} size={20} /><span>Home</span></div>
         <div onClick={() => handleSilentNavigate("/search")} className="sidebar-nav-link" style={{ ...linkStyle("/search"), cursor: "pointer" }}><HugeiconsIcon icon={Search01Icon} size={20} /><span>Search</span></div>
+        <div onClick={() => handleSilentNavigate("/articles")} className="sidebar-nav-link" style={{ ...linkStyle("/articles"), cursor: "pointer" }}><HugeiconsIcon icon={PencilIcon} size={20} /><span>Mini-Articles <span style={{ fontSize: "10px", color: "var(--text-secondary)" }}>Beta</span></span></div>
         <div onClick={() => handleSilentNavigate("/leaderboard")} className="sidebar-nav-link" style={{ ...linkStyle("/leaderboard"), cursor: "pointer" }}><HugeiconsIcon icon={UserGroupIcon} size={20} /><span>Builders</span></div>
         <div onClick={() => handleSilentNavigate("/ogs")} className="sidebar-nav-link" style={{ ...linkStyle("/ogs"), cursor: "pointer" }}><HugeiconsIcon icon={MedalIcon} size={20} /><span>Our OGs</span></div>
         <div onClick={() => handleSilentNavigate("/dashboard")} className="sidebar-nav-link" style={{ ...linkStyle("/dashboard"), cursor: "pointer" }}><HugeiconsIcon icon={Chart01Icon} size={20} /><span>Analytics</span></div>
@@ -499,6 +501,7 @@ export default function Navbar() {
             <div style={{ position: "absolute", bottom: "80px", left: "50%", transform: "translateX(-50%)", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "var(--radius-md)", padding: "10px", minWidth: "220px", zIndex: 2001, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}>
               <style>{`.mobile-menu-item { padding: 12px 16px; display: flex; alignItems: center; gap: 12px; cursor: pointer; color: var(--text-primary); font-weight: 700; font-size: 15px; border-radius: 16px; transition: all 0.2s; } .mobile-menu-item:active { background: var(--bg-hover); transform: scale(0.98); }`}</style>
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}><HugeiconsIcon icon={PlusSignIcon} size={18} /> Add post</div>
+              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/write-article"); }}><HugeiconsIcon icon={PencilIcon} size={18} /> Write article</div>
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}><HugeiconsIcon icon={Rocket01Icon} size={18} /> Launch project</div>
               <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", margin: "8px 0" }} />
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Building02Icon} size={18} /> Startups Hub</div>

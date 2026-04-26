@@ -53,6 +53,9 @@ const StartupProfile = lazy(() => import("./pages/StartupProfile").then(m => ({ 
 const StartupForm = lazy(() => import("./components/StartupForm").then(m => ({ default: m.StartupForm })));
 const UserDirectory = lazy(() => import("./pages/UserDirectory"));
 const Sponsorship = lazy(() => import("./pages/Sponsorship"));
+const Articles = lazy(() => import("./pages/Articles"));
+const ArticleDetail = lazy(() => import("./pages/ArticleDetail"));
+const WriteArticle = lazy(() => import("./pages/WriteArticle"));
 // const ShipWeek = lazy(() => import("./pages/ShipWeek"));
 
 // Basic loading fallback
@@ -525,11 +528,12 @@ export default function App() {
   const isLandingPage = false;
 
   const isStandardPage =
-    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups", "/search", "/directory"].includes(location.pathname) ||
+    ["/", "/profile", "/dashboard", "/notifications", "/changelog", "/ogs", "/startups", "/search", "/directory", "/articles"].includes(location.pathname) ||
     location.pathname.startsWith("/post/") ||
     location.pathname.startsWith("/comment/") ||
     location.pathname.startsWith("/project/") ||
     location.pathname.startsWith("/user/") ||
+    location.pathname.startsWith("/articles/") ||
     (location.pathname !== "/" && !isAuthRoute && location.pathname.split("/").length === 2 && !["search", "billing", "analytics", "leaderboard", "notifications", "messages", "privacy", "terms", "about", "founder-story", "changelog", "startups", "startup", "forgot-password", "sign-in", "sign-up"].includes(location.pathname.split("/")[1]));
 
   const shouldShowNavbar = (!isAuthRoute && !isLandingPage) || (isMobile && (location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up")));
@@ -601,6 +605,9 @@ export default function App() {
                 <Route path="/startup/:id" element={<StartupProfile />} />
                 <Route path="/startup/:id/edit" element={<StartupForm isEditing={true} />} />
                 <Route path="/sponsorship" element={<Sponsorship />} />
+                <Route path="/articles" element={<Articles />} />
+                <Route path="/articles/:id" element={<ArticleDetail />} />
+                <Route path="/write-article" element={<WriteArticle />} />
                 <Route path="/ship" element={<Navigate to="/" replace />} />
                 <Route path="/:username" element={<UserProfile />} />
                 <Route path="*" element={<NotFound />} />

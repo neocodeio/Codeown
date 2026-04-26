@@ -1,0 +1,23 @@
+import { Router } from "express";
+import {
+  getArticles,
+  getArticle,
+  createArticle,
+  toggleArticleLike,
+  toggleArticleSave,
+  getArticleComments,
+  createArticleComment
+} from "../controllers/articles.controller.js";
+import { requireAuth } from "../middlewares/auth.middleware.js";
+
+const router = Router();
+
+router.get("/articles", getArticles);
+router.get("/articles/:id", getArticle);
+router.post("/articles", requireAuth, createArticle);
+router.post("/articles/:id/like", requireAuth, toggleArticleLike);
+router.post("/articles/:id/save", requireAuth, toggleArticleSave);
+router.get("/articles/:id/comments", getArticleComments);
+router.post("/articles/:id/comments", requireAuth, createArticleComment);
+
+export default router;
