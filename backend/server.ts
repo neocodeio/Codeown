@@ -15,6 +15,16 @@ app.get("/", (req, res) => {
   res.send("Backend is running");
 });
 
+app.get("/health", async (req, res) => {
+  try {
+    const { data, error } = await (await import("./src/lib/supabase.js")).supabase.from("users").select("count").limit(1);
+    if (error) throw error;
+    res.json({ status: "healthy", database: "connected" });
+  } catch (error: any) {
+    res.status(500).json({ status: "error", database: "disconnected", error: error.message });
+  }
+});
+
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend running on port ${PORT}`);
   console.log("FRONTEND_URL:", process.env.FRONTEND_URL);

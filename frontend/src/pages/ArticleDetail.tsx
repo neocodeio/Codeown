@@ -218,20 +218,20 @@ export default function ArticleDetail() {
       {/* Author Header */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
         <img
-          src={article.users.avatar_url || "/default-avatar.png"}
-          style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover", border: "1px solid var(--border-hairline)" }}
+          src={article.users?.avatar_url || "/default-avatar.png"}
+          style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover", border: "1px solid var(--border-hairline)", cursor: "pointer" }}
           alt=""
-          onClick={() => navigate(`/${article.users.username}`)}
+          onClick={() => navigate(`/${article.users?.username || ""}`)}
         />
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <span 
-              onClick={() => navigate(`/${article.users.username}`)}
+              onClick={() => navigate(`/${article.users?.username || ""}`)}
               style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", cursor: "pointer" }}
             >
-              {article.users.name}
+              {article.users?.name || "User"}
             </span>
-            <VerifiedBadge username={article.users.username} size="14px" />
+            {article.users?.username && <VerifiedBadge username={article.users.username} size="14px" />}
           </div>
           <div style={{ fontSize: "14px", color: "var(--text-tertiary)" }}>
             {new Date(article.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} • 5 min read
