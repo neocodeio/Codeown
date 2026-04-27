@@ -12,6 +12,7 @@ interface ArticlePreview {
   id: number;
   title: string;
   subtitle: string;
+  content: string;
   cover_image: string;
   created_at: string;
   likes_count: number;
@@ -58,7 +59,8 @@ export default function ArticleLinkPreview({ articleId }: { articleId: number })
 
   if (!article) return null;
 
-  const readTime = Math.max(1, Math.ceil(((article.subtitle?.length || 0) + (article.title?.length || 0) + 1500) / 1000));
+  const totalLength = (article.title?.length || 0) + (article.subtitle?.length || 0) + (article.content?.length || 0);
+  const readTime = Math.max(1, Math.ceil(totalLength / 1200)); // ~200-250 words per min, roughly 1200 chars per min
 
   return (
     <div 
