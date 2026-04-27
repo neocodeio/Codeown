@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { 
-  Chat01Icon, 
-  FavouriteIcon
-} from "@hugeicons/core-free-icons";
 import { useWindowSize } from "../hooks/useWindowSize";
 
 interface ArticlePreview {
@@ -29,7 +24,6 @@ export default function ArticleLinkPreview({ articleId }: { articleId: number })
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { width } = useWindowSize();
-  const isMobile = width < 768;
   const isSmallMobile = width < 480;
 
   useEffect(() => {
@@ -71,118 +65,99 @@ export default function ArticleLinkPreview({ articleId }: { articleId: number })
       style={{
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "var(--bg-page)",
+        backgroundColor: "var(--bg-card)",
         border: "1px solid var(--border-hairline)",
-        borderRadius: "20px",
-        margin: "16px 0",
+        borderRadius: "16px",
+        margin: "12px 0",
         overflow: "hidden",
         cursor: "pointer",
-        transition: "all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
+        transition: "all 0.2s ease-out",
         position: "relative",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
-        maxWidth: "600px" // Keep it focused
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "rgba(var(--text-primary-rgb), 0.2)";
-        e.currentTarget.style.transform = "translateY(-1px)";
-        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.04)";
+        e.currentTarget.style.borderColor = "var(--text-primary)";
+        e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.borderColor = "var(--border-hairline)";
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.02)";
+        e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)";
       }}
     >
-      {/* Top Meta Hub */}
+      {/* Header Info */}
       <div style={{ 
         display: "flex", 
         alignItems: "center", 
         justifyContent: "space-between", 
-        padding: isMobile ? "14px 14px 10px" : "18px 20px 12px",
-        background: "linear-gradient(to bottom, rgba(var(--text-primary-rgb), 0.01), transparent)"
+        padding: "16px 16px 12px",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ position: "relative", display: "flex" }}>
-            <img 
-              src={article?.users?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(article?.users?.name || "U")}&background=212121&color=fff&bold=true`} 
-              style={{ 
-                width: "28px", 
-                height: "28px", 
-                borderRadius: "50%", 
-                border: "1px solid var(--border-hairline)", 
-                objectFit: "cover",
-                backgroundColor: "var(--bg-hover)"
-              }} 
-              alt="" 
-            />
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ 
-                fontSize: "13.5px", 
-                fontWeight: 700, 
-                color: "var(--text-primary)",
-                letterSpacing: "-0.01em"
-              }}>
-                {article?.users?.name || "User"}
-              </span>
-              <span style={{ color: "var(--text-tertiary)", opacity: 0.4, fontSize: "10px" }}>•</span>
-              <span style={{ 
-                fontSize: "12px", 
-                color: "var(--text-tertiary)", 
-                fontWeight: 500 
-              }}>
-                {readTime} min read
-              </span>
-            </div>
-          </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <img 
+            src={article?.users?.avatar_url || "/default-avatar.png"} 
+            style={{ 
+              width: "20px", 
+              height: "20px", 
+              borderRadius: "50%", 
+              objectFit: "cover"
+            }} 
+            alt="" 
+          />
+          <span style={{ 
+            fontSize: "13px", 
+            fontWeight: 600, 
+            color: "var(--text-primary)",
+            opacity: 0.9
+          }}>
+            {article?.users?.name}
+          </span>
+          <span style={{ color: "var(--text-tertiary)", fontSize: "12px" }}>•</span>
+          <span style={{ 
+            fontSize: "12px", 
+            color: "var(--text-tertiary)",
+            fontWeight: 500
+          }}>
+            {readTime} min read
+          </span>
         </div>
         
         <div style={{ 
-          backgroundColor: "rgba(3, 3, 3, 0.8)", 
-          padding: "4px 10px", 
-          borderRadius: "8px", 
-          display: "flex", 
-          alignItems: "center", 
-          gap: "6px"
+          backgroundColor: "var(--bg-tertiary)", 
+          padding: "3px 8px", 
+          borderRadius: "6px", 
+          fontSize: "10px",
+          fontWeight: 700,
+          color: "var(--text-secondary)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em"
         }}>
-           <div style={{ width: "6px", height: "6px", backgroundColor: "#10b981", borderRadius: "50%" }} />
-           <span style={{ 
-             fontSize: "10.5px", 
-             fontWeight: 800, 
-             color: "#fff", 
-             textTransform: "uppercase",
-             letterSpacing: "0.06em" 
-           }}>
-             Articles
-           </span>
+          Article
         </div>
       </div>
 
-      {/* Main Feature Container */}
+      {/* Main Content */}
       <div style={{ 
         display: "flex", 
-        gap: isMobile ? "12px" : "24px", 
-        padding: isMobile ? "0 14px 14px" : "0 20px 18px",
+        gap: "16px", 
+        padding: "0 16px 16px",
         alignItems: "flex-start" 
       }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h3 style={{ 
-            fontSize: isMobile ? "16px" : "18px", 
-            fontWeight: 800, 
+            fontSize: "17px", 
+            fontWeight: 700, 
             color: "var(--text-primary)", 
-            marginBottom: "8px", 
-            lineHeight: "1.35",
-            letterSpacing: "-0.02em"
+            marginBottom: "6px", 
+            lineHeight: "1.3",
+            letterSpacing: "-0.01em"
           }}>
             {article.title}
           </h3>
           <p style={{ 
             fontSize: "14px", 
             color: "var(--text-secondary)", 
-            lineHeight: "1.6",
+            lineHeight: "1.5",
             display: "-webkit-box",
-            WebkitLineClamp: isSmallMobile ? 2 : 3,
+            WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
             opacity: 0.8
@@ -193,15 +168,12 @@ export default function ArticleLinkPreview({ articleId }: { articleId: number })
         
         {article.cover_image && !isSmallMobile && (
           <div style={{ 
-            width: isMobile ? "100px" : "140px", 
-            height: isMobile ? "64px" : "88px", 
-            borderRadius: "14px", 
+            width: "90px", 
+            height: "60px", 
+            borderRadius: "10px", 
             overflow: "hidden", 
             flexShrink: 0,
-            border: "1px solid var(--border-hairline)",
-            backgroundColor: "var(--bg-hover)",
-            transform: "rotate(1deg)",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
+            border: "1px solid var(--border-hairline)"
           }}>
             <img 
               src={article.cover_image} 
@@ -211,30 +183,8 @@ export default function ArticleLinkPreview({ articleId }: { articleId: number })
           </div>
         )}
       </div>
-
-      {/* Subtle Engagement Row */}
-      <div style={{ 
-        padding: isMobile ? "10px 14px 14px" : "12px 20px 18px", 
-        display: "flex", 
-        gap: "20px", 
-        color: "var(--text-tertiary)",
-        alignItems: "center",
-        borderTop: "0.5px solid var(--border-hairline)",
-        backgroundColor: "rgba(var(--text-primary-rgb), 0.005)"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12.5px", fontWeight: 600 }}>
-          <HugeiconsIcon icon={FavouriteIcon} size={15} style={{ color: "var(--text-tertiary)", opacity: 0.7 }} />
-          <span>{article.likes_count || 0}</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12.5px", fontWeight: 600 }}>
-          <HugeiconsIcon icon={Chat01Icon} size={15} style={{ color: "var(--text-tertiary)", opacity: 0.7 }} />
-          <span>{article.comments_count || 0}</span>
-        </div>
-        
-        <div style={{ marginLeft: "auto", fontSize: "11px", fontWeight: 700, color: "var(--text-tertiary)", opacity: 0.5, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-          Read Full →
-        </div>
-      </div>
     </div>
+
+
   );
 }

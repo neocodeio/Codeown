@@ -178,21 +178,25 @@ export default function App() {
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
         if (type === "post_created") {
           window.dispatchEvent(new CustomEvent("postCreated", { detail: data }));
-          queryClient.setQueriesData({ queryKey: ["posts"] }, (oldData: any) => {
+          
+          // Prepend to current cache for instant UI feedback
+          queryClient.setQueriesData({ queryKey: ["posts"], exact: false }, (oldData: any) => {
             if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
-            const firstPage = oldData.pages[0];
-            const exists = firstPage.posts.some((p: any) => p.id === data.id);
-            if (exists) return oldData;
+            
             return {
               ...oldData,
-              pages: [
-                { ...firstPage, posts: [data, ...firstPage.posts] },
-                ...oldData.pages.slice(1)
-              ]
+              pages: oldData.pages.map((page: any, i: number) => {
+                if (i === 0) {
+                  const exists = page.posts.some((p: any) => p.id === data.id);
+                  if (exists) return page;
+                  return { ...page, posts: [data, ...page.posts] };
+                }
+                return page;
+              })
             };
           });
         } else {
-          queryClient.invalidateQueries({ queryKey: ["posts"] });
+          queryClient.invalidateQueries({ queryKey: ["posts"], exact: false });
           if (data.id || data.postId) {
             queryClient.invalidateQueries({ queryKey: ["post", String(data.id || data.postId)] });
             queryClient.invalidateQueries({ queryKey: ["comments", String(data.id || data.postId)] });
