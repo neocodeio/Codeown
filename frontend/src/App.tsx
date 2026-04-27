@@ -413,7 +413,7 @@ export default function App() {
 
     if (isSignedIn && user?.id) {
       pingActivity();
-      interval = setInterval(pingActivity, 45000);
+      interval = setInterval(pingActivity, 600000); // 10 minutes instead of 30s
     }
     return () => { if (interval) clearInterval(interval); };
   }, [isSignedIn, user?.id]);

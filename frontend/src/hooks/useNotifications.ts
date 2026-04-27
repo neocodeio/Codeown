@@ -77,8 +77,9 @@ export function useNotifications() {
       return undefined;
     },
     enabled: isSignedIn,
-    staleTime: 30 * 1000,
-    refetchInterval: 60 * 1000, // Reduced polling for infinite queries to save battery/bandwidth
+    staleTime: 5 * 60 * 1000, // Increase staleTime to 5 minutes
+    // Removed periodic polling to save database budget. 
+    // Updates are now managed reactively via Socket.io in App.tsx
   });
 
   // Separate query for unread count to keep it accurate and fast
@@ -93,7 +94,8 @@ export function useNotifications() {
       return res.data;
     },
     enabled: isSignedIn,
-    refetchInterval: 10 * 1000, // Poll count more frequently
+    staleTime: 30 * 1000,
+    // Polling removed. Invalidations triggered via sockets.
   });
 
   // Mark as read mutation

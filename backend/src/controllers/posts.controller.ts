@@ -70,94 +70,58 @@ export async function getPosts(req: Request, res: Response) {
     const limitNum = parseInt(limit as string, 10) || 30;
     const offset = (pageNum - 1) * limitNum;
 
-    let countQuery = supabase.from("posts").select("*", { count: "exact" });
-    let postsQuery = supabase.from("posts").select("*").order("created_at", { ascending: false }).order("id", { ascending: false });
+    const query = supabase
+      .from("posts")
+      .select(`
+        *,
+        user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
+        project:projects!posts_project_id_fkey(id, name, slug),
+        reposted_post:posts!reposted_post_id(
+          *,
+          user:users!posts_user_id_fkey(id, name, avatar_url, username)
+        ),
+        reposted_project:projects!posts_reposted_project_id_fkey(
+          *,
+          user:users!user_id(id, name, avatar_url, username)
+        )
+      `, { count: "exact" })
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false });
 
-    if (tag) {
-      postsQuery = postsQuery.contains("tags", [tag]);
-      countQuery = countQuery.contains("tags", [tag]);
-    }
-
-    if (projectId) {
-      const numProjectId = parseInt(projectId as string, 10);
-      if (!isNaN(numProjectId)) {
-        postsQuery = postsQuery.eq("project_id", numProjectId);
-        countQuery = countQuery.eq("project_id", numProjectId);
-      } else {
-        return res.json({ posts: [], total: 0, page: pageNum, limit: limitNum, totalPages: 0 });
-      }
-    }
-
-    if (authorId) {
-      postsQuery = postsQuery.eq("user_id", authorId);
-      countQuery = countQuery.eq("user_id", authorId);
-    }
+    if (tag) query.contains("tags", [tag]);
+    if (projectId) query.eq("project_id", parseInt(projectId as string, 10));
+    if (authorId) query.eq("user_id", authorId);
 
     if (String(filter).toLowerCase() === "following") {
       const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
-      if (!userId) {
-        return res.status(401).json({ error: "Sign in to view the Following feed." });
-      }
-      const { data: followingRows } = await supabase.from("follows").select("following_id").eq("follower_id", userId).limit(10000);
+      if (!userId) return res.status(401).json({ error: "Sign in to view the Following feed." });
+      const { data: followingRows } = await supabase.from("follows").select("following_id").eq("follower_id", userId).limit(1000);
       const followingIds = [userId, ...(followingRows?.map((r: any) => r.following_id) || [])];
-      postsQuery = postsQuery.in("user_id", followingIds);
-      countQuery = countQuery.in("user_id", followingIds);
+      query.in("user_id", followingIds);
     }
+
+    const { data: rawPosts, count: totalCount, error } = await query.range(offset, offset + limitNum - 1);
     
-    const [postsRes, countRes] = await Promise.all([
-      postsQuery.range(offset, offset + limitNum - 1),
-      countQuery // Removed .limit(1) to ensure .count property is always populated by PostgREST
-    ]);
+    if (error) throw error;
 
-    if (postsRes.error) throw postsRes.error;
-    
-    const totalCount = countRes.count || 0;
-    const rawPosts = postsRes.data || [];
-    
-    // MANUAL DATA STITCHING (Robust Join)
-    const userIds = [...new Set(rawPosts.map(p => p.user_id))];
-    const projectIds = [...new Set(rawPosts.filter(p => p.project_id).map(p => p.project_id))];
-    const rpPostIds = [...new Set(rawPosts.filter(p => p.reposted_post_id).map(p => p.reposted_post_id))];
-    const rpProjIds = [...new Set(rawPosts.filter(p => p.reposted_project_id).map(p => p.reposted_project_id))];
-
-    const [usersRes, projectsRes, rpPostsRawRes, rpProjsRawRes] = await Promise.all([
-      supabase.from("users").select("id, name, avatar_url, username, is_pro, is_og, email").in("id", userIds),
-      supabase.from("projects").select("id, name, slug").in("id", projectIds),
-      supabase.from("posts").select("*").in("id", rpPostIds),
-      supabase.from("projects").select("*").in("id", rpProjIds)
-    ]);
-
-    // Stitch nested users for reposts too
-    const nestedUserIds = [
-      ...new Set([
-        ...(rpPostsRawRes.data?.map(p => p.user_id) || []),
-        ...(rpProjsRawRes.data?.map(p => p.user_id) || [])
-      ])
-    ];
-    const { data: nestedUsers } = await supabase.from("users").select("id, name, avatar_url, username").in("id", nestedUserIds);
-    const nestedUserMap = new Map(nestedUsers?.map(u => [u.id, u]) || []);
-
-    const rpPostMap = new Map((rpPostsRawRes.data || []).map(p => [p.id, { ...p, user: nestedUserMap.get(p.user_id) }]));
-    const rpProjMap = new Map((rpProjsRawRes.data || []).map(p => [p.id, { ...p, user: nestedUserMap.get(p.user_id) }]));
-
-    const userMap = new Map(usersRes.data?.map(u => [u.id, u]) || []);
-    const projMap = new Map(projectsRes.data?.map(p => [p.id, p]) || []);
-
-    const processedPosts = rawPosts.map(p => {
-      const userData = userMap.get(p.user_id) || { name: "User", avatar_url: null, username: "user" };
-      const projectData = p.project_id ? projMap.get(p.project_id) : null;
-      const rpPostData = p.reposted_post_id ? rpPostMap.get(p.reposted_post_id) : null;
-      const rpProjData = p.reposted_project_id ? rpProjMap.get(p.reposted_project_id) : null;
+    const processedPosts = (rawPosts || []).map(p => {
+      const user = Array.isArray(p.user) ? p.user[0] : p.user;
+      const project = Array.isArray(p.project) ? p.project[0] : p.project;
+      const rpPostRaw = p.reposted_post;
+      const rpPost = Array.isArray(rpPostRaw) ? rpPostRaw[0] : rpPostRaw;
+      const rpProjRaw = p.reposted_project;
+      const rpProj = Array.isArray(rpProjRaw) ? rpProjRaw[0] : rpProjRaw;
 
       return {
         ...p,
-        user: userData,
-        project: projectData || null,
-        reposted_post: rpPostData || null,
-        reposted_project: rpProjData || null,
+        user: user || { name: "User", avatar_url: null, username: "user" },
+        project: project || null,
+        reposted_post: rpPost || null,
+        reposted_project: rpProj || null,
         is_activity_repost: !!(p.reposted_post_id || p.reposted_project_id || p.post_type === 'repost' || p.post_type === 'project_shared')
       };
     });
+
 
     // Final sorting for deterministic paging results
     processedPosts.sort((a, b) => {
@@ -1044,6 +1008,41 @@ export async function addImpression(req: Request, res: Response) {
     return res.json({ success: true, view_count: newCount });
   } catch (err: any) {
     console.error("Error in addImpression:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+/**
+ * Batch version of addImpression to reduce network overhead.
+ */
+export async function batchImpressions(req: Request, res: Response) {
+  try {
+    const { ids } = req.body;
+    const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.json({ success: true, count: 0 });
+    }
+
+    // Process up to 20 impressions at once to prevent timeouts
+    const batch = ids.slice(0, 20);
+    
+    // We run these in sequence to avoid hitting Supabase rate limits on parallel unique inserts,
+    // but they are now localized to the server-supabase network leg instead of client-server.
+    for (const id of batch) {
+       // Minimal logic to increment count
+       try {
+         await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+       } catch (e) {
+         // Fallback increment
+         const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
+         await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
+       }
+    }
+
+    return res.json({ success: true, count: batch.length });
+  } catch (err: any) {
+    console.error("Error in batchImpressions:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 }

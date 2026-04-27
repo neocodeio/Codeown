@@ -127,8 +127,8 @@ export function usePosts(limit: number = 30, filter: FeedFilter = "all", getToke
     initialPageParam: 1,
     staleTime: FEED_STALE_TIME_MS,
     gcTime: FEED_GC_TIME_MS,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     placeholderData: (prev: any) => prev, 
   });
 

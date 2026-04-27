@@ -1405,19 +1405,25 @@ export function trackActiveSession(req: Request, res: Response) {
     try {
         const userId = (req as any).user?.sub || (req as any).user?.id;
         const ip = req.ip || req.headers["x-forwarded-for"] || "unknown";
-
-        // Create a unique key: use userId if logged in, otherwise use IP
         const sessionKey = userId ? `u:${userId}` : `g:${ip}`;
+        const now = Date.now();
+        const lastSession = activeSessions.get(sessionKey);
 
         // Update or set last seen timestamp
-        activeSessions.set(sessionKey, Date.now());
+        activeSessions.set(sessionKey, now);
 
-        // IF LOGGED IN: Update streak logic automatically on ping
+        // IF LOGGED IN: Update streak logic with THROTTLING
+        // Only hit the database to update streak if they haven't been synced in the last 1 HOUR
+        // This saves enormous DB budget for users who keep the tab open.
         if (userId) {
-            // We don't await this to keep the ping response fast
-            internalUpdateStreak(userId).catch(err => {
-                console.error("[trackActiveSession] Streak update background error:", err);
-            });
+            const ONE_HOUR = 60 * 60 * 1000;
+
+            // We use the same map but check if the previous timestamp was > 1hr ago
+            if (!lastSession || (now - lastSession > ONE_HOUR)) {
+                internalUpdateStreak(userId).catch(err => {
+                    console.error("[trackActiveSession] Streak update background error:", err);
+                });
+            }
         }
 
         // Periodically prune stale sessions (older than 60s)

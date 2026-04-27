@@ -53,7 +53,7 @@ const StatusBadge = () => {
     };
 
     fetchActiveCount();
-    const countInterval = setInterval(fetchActiveCount, 30000);
+    const countInterval = setInterval(fetchActiveCount, 600000);
 
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString([], {

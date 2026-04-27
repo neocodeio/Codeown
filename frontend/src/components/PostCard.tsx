@@ -49,7 +49,26 @@ interface PostCardProps {
   isPinned?: boolean;
 }
 
-const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProps) => {
+// Impression Batching System for Codeown Performance
+// We use a global buffer to gather multiple post views before sending ONE request
+let impressionBuffer: number[] = [];
+let impressionTimeout: any = null;
+
+const flushImpressions = async (getToken: any) => {
+  if (impressionBuffer.length === 0) return;
+  const ids = [...new Set(impressionBuffer)]; // Deduplicate
+  impressionBuffer = [];
+  try {
+    const token = await getToken();
+    await api.post('/posts/batch-impressions', { ids }, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+  } catch (err) {
+    console.error("Batch impression error:", err);
+  }
+};
+
+const PostCard = memo(({ post, onUpdated }: PostCardProps) => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const { getToken } = useClerkAuth();
@@ -68,12 +87,10 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const [localCommentCount, setLocalCommentCount] = useState(post.comment_count || 0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const impressionTracked = useRef(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
   const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [isPinnedLocal, setIsPinnedLocal] = useState(false);
 
   // Sync with prop changes
   useEffect(() => {
@@ -126,27 +143,25 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
     };
   }, [post.id, currentUser?.id, localCommentCount]);
 
-  // Track impressions on scroll
   useEffect(() => {
-    if (impressionTracked.current) return;
+    if (!post.id) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(async (entry) => {
-          if (entry.isIntersecting && !impressionTracked.current) {
-            impressionTracked.current = true;
-            try {
-              const token = await getToken();
-              const headers = token ? { Authorization: `Bearer ${token}` } : {};
-              api.post(`/posts/${post.id}/impression`, {}, { headers }).catch(() => {});
-            } catch (e) {
-              api.post(`/posts/${post.id}/impression`).catch(() => {});
-            }
-            observer.disconnect();
+        if (entries[0].isIntersecting) {
+          impressionBuffer.push(post.id);
+          
+          if (!impressionTimeout) {
+            impressionTimeout = setTimeout(() => {
+              flushImpressions(getToken);
+              impressionTimeout = null;
+            }, 5000); // Wait 5 seconds
           }
-        });
+          
+          observer.unobserve(entries[0].target);
+        }
       },
-      { threshold: 0.5 } // 50% visibility
+      { threshold: 0.1 }
     );
 
     if (cardRef.current) {
@@ -154,11 +169,11 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
     }
 
     return () => observer.disconnect();
-  }, [post.id]);
+  }, [post.id, getToken]);
+
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
-  const isPinned = isPinnedProp !== undefined ? isPinnedProp : isPinnedLocal;
   const isOwnPost = currentUser?.id === post.user_id;
 
   // Simple and Clean: Display the post as provided. 
@@ -166,19 +181,7 @@ const PostCard = memo(({ post, onUpdated, isPinned: isPinnedProp }: PostCardProp
   const displayPost = post;
   const primaryUser = displayPost?.user || { id: "", name: "User", username: "user", avatar_url: null, email: null };
 
-  useEffect(() => {
-    if (isPinnedProp !== undefined || !isOwnPost || !currentUser?.id) return;
-    const fetchPinnedState = async () => {
-      try {
-        const token = await getToken();
-        const res = await api.get(`/users/${currentUser.id}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        setIsPinnedLocal(res.data?.pinned_post_id === post.id);
-      } catch { /* ignore */ }
-    };
-    fetchPinnedState();
-  }, [isPinnedProp, isOwnPost, currentUser?.id, post.id, getToken, isPinned]);
+  // Removed O(N) pinned fetch loop. Relying on isPinnedProp or backend state.
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
