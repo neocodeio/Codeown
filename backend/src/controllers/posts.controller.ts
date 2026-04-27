@@ -75,7 +75,7 @@ export async function getPosts(req: Request, res: Response) {
       .select(`
         *,
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        project:projects!posts_project_id_fkey(id, name, slug),
+        project:projects!posts_project_id_fkey(id, name:title, slug),
         reposted_post:posts!reposted_post_id(
           *,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
@@ -222,13 +222,13 @@ export async function getPostById(req: Request, res: Response) {
       .from("posts")
       .select(`
         id, title, content, user_id, created_at, is_mobile, images, attachments, tags, like_count, comment_count, repost_count, view_count, poll, post_type, code_snippet, project_id,
-        projects!posts_project_id_fkey(id, title),
+        projects!posts_project_id_fkey(id, name:title),
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
         reposted_post:posts!reposted_post_id(
           id, title, content, created_at, images, post_type,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
         ),
-        reposted_project:projects!posts_reposted_project_id_fkey(id, title, description, cover_image, created_at, user:users!user_id(id, name, avatar_url, username))
+        reposted_project:projects!posts_reposted_project_id_fkey(id, name:title, description, cover_image, created_at, user:users!user_id(id, name, avatar_url, username))
       `)
       .eq("id", id)
       .single();
