@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase.js";
 import { ensureUserExists } from "./users.controller.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { emitUpdate } from "../lib/socket.js";
+import { notify } from "../services/notification.service.js";
 
 export async function getArticles(req: Request, res: Response) {
   try {
@@ -194,6 +195,21 @@ export async function toggleArticleLike(req: Request, res: Response) {
       await supabase
         .from("article_likes")
         .insert({ user_id: userId, article_id: id });
+
+      // Notify author
+      try {
+        const { data: article } = await supabase.from("articles").select("user_id").eq("id", id).single();
+        if (article && article.user_id !== userId) {
+          await notify({
+            userId: article.user_id,
+            actorId: userId,
+            type: "like",
+            articleId: parseInt(id as string)
+          });
+        }
+      } catch (e) {
+        console.error("Error in article like notification:", e);
+      }
     }
 
     // Get fresh count
@@ -330,6 +346,22 @@ export async function createArticleComment(req: Request, res: Response) {
 
     emitUpdate("article_comment", { article_id: id, comment: response });
 
+    // Notify author
+    try {
+      const { data: article } = await supabase.from("articles").select("user_id").eq("id", id).single();
+      if (article && article.user_id !== userId) {
+        await notify({
+          userId: article.user_id,
+          actorId: userId,
+          type: parent_id ? "reply" : "comment",
+          articleId: parseInt(id as string),
+          commentId: comment.id
+        });
+      }
+    } catch (e) {
+      console.error("Error in article comment notification:", e);
+    }
+
     return res.status(201).json(response);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
@@ -441,6 +473,22 @@ export async function toggleArticleCommentLike(req: Request, res: Response) {
       await supabase
         .from("article_comment_likes")
         .insert({ user_id: userId, comment_id: commentId });
+      
+      // Notify comment author
+      try {
+        const { data: comm } = await supabase.from("article_comments").select("user_id, article_id").eq("id", commentId).single();
+        if (comm && comm.user_id !== userId) {
+          await notify({
+            userId: comm.user_id,
+            actorId: userId,
+            type: "like",
+            articleId: comm.article_id,
+            commentId: parseInt(commentId as string)
+          });
+        }
+      } catch (e) {
+        console.error("Error in article comment like notification:", e);
+      }
     }
 
     const { count } = await supabase

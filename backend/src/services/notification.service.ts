@@ -51,13 +51,14 @@ interface SendNotificationParams {
     type: NotificationType;
     postId?: number | undefined;
     projectId?: number | undefined;
+    articleId?: number | undefined;
     commentId?: number | undefined;
     startupId?: string | undefined;
     data?: any; // Extra info for email
 }
 
 export async function notify(params: SendNotificationParams) {
-    const { userId, actorId, type, postId, projectId, commentId, startupId, data } = params;
+    const { userId, actorId, type, postId, projectId, articleId, commentId, startupId, data } = params;
 
     console.log(`[NotificationService] Processing ${type} notification for user ${userId} from ${actorId}`);
 
@@ -90,6 +91,7 @@ export async function notify(params: SendNotificationParams) {
 
         if (postId) insertData.post_id = postId;
         if (projectId) insertData.project_id = projectId;
+        if (articleId) insertData.article_id = articleId;
         if (commentId) insertData.comment_id = commentId;
         if (startupId) insertData.startup_id = startupId;
 
@@ -140,8 +142,8 @@ export async function notify(params: SendNotificationParams) {
                     recipient.email,
                     rName,
                     aName,
-                    commentId ? 'comment' : postId ? 'post' : projectId ? 'project' : 'post',
-                    commentId || postId || projectId || 0
+                    commentId ? 'comment' : postId ? 'post' : projectId ? 'project' : articleId ? 'article' : 'post',
+                    commentId || postId || projectId || articleId || 0
                 );
                 break;
             case 'follow':
@@ -158,8 +160,8 @@ export async function notify(params: SendNotificationParams) {
                     recipient.email,
                     rName,
                     aName,
-                    postId || projectId || 0,
-                    projectId ? 'project' : 'post',
+                    postId || projectId || articleId || 0,
+                    projectId ? 'project' : articleId ? 'article' : 'post',
                     type === 'reply'
                 );
                 break;

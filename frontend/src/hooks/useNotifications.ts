@@ -10,6 +10,7 @@ export interface Notification {
   post_id?: number | null;
   comment_id?: number | null;
   project_id?: number | null;
+  article_id?: number | null;
   startup_id?: string | null;
 
   content?: string | null;

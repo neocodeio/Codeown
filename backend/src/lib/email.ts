@@ -369,7 +369,7 @@ export async function sendNewLikeEmail(
   email: string,
   userName: string,
   likerName: string,
-  contentType: 'post' | 'project' | 'comment',
+  contentType: 'post' | 'project' | 'comment' | 'article',
   contentId: number,
   isSave: boolean = false
 ) {
@@ -378,9 +378,11 @@ export async function sendNewLikeEmail(
     const url =
       contentType === 'project'
         ? `/project/${contentId}`
-        : contentType === 'comment'
-          ? `/comment/${contentId}`
-          : `/`;
+        : contentType === 'article'
+          ? `/articles/${contentId}`
+          : contentType === 'comment'
+            ? `/comment/${contentId}`
+            : `/`;
 
     const actionLabel = isSave ? 'saved' : 'liked';
     const subjectEmoji = isSave ? '🔖' : '❤️';
@@ -408,7 +410,7 @@ export async function sendNewCommentEmail(
   userName: string,
   commenterName: string,
   contentId: number,
-  contentType: 'post' | 'project' = 'post',
+  contentType: 'post' | 'project' | 'article' = 'post',
   isReply: boolean = false
 ) {
   if (!resend) {
@@ -416,8 +418,8 @@ export async function sendNewCommentEmail(
     return;
   }
   try {
-    const url = contentType === 'project' ? `/project/${contentId}` : `/post/${contentId}`;
-    const typeLabel = contentType === 'project' ? 'project' : 'post';
+    const url = contentType === 'project' ? `/project/${contentId}` : contentType === 'article' ? `/articles/${contentId}` : `/post/${contentId}`;
+    const typeLabel = contentType === 'project' ? 'project' : contentType === 'article' ? 'article' : 'post';
     const actionLabel = isReply ? 'replied to you' : `commented on your ${typeLabel}`;
 
     await resend.emails.send({
