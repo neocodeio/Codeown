@@ -75,7 +75,7 @@ export async function getPosts(req: Request, res: Response) {
       .select(`
         *,
         user:users!posts_user_id_fkey(id, name, avatar_url, username, is_hirable, is_pro, is_og),
-        project:projects!posts_project_id_fkey(id, name:title, slug),
+        project:projects!posts_project_id_fkey(id, name:title),
         reposted_post:posts!reposted_post_id(
           *,
           user:users!posts_user_id_fkey(id, name, avatar_url, username)
