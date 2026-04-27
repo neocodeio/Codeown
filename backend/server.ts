@@ -34,3 +34,5 @@ server.listen(PORT, "0.0.0.0", () => {
   // Start scheduled jobs
   initializeCronJobs();
 });
+
+// Deployment sync bump - articles fix v1.0.4

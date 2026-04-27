@@ -75,6 +75,7 @@ export async function getNotifications(req: Request, res: Response) {
 
     const postIds = [...new Set(notifications.filter((n: any) => n.post_id).map((n: any) => n.post_id))];
     const projectIds = [...new Set(notifications.filter((n: any) => n.project_id).map((n: any) => n.project_id))];
+    const articleIds = [...new Set(notifications.filter((n: any) => n.article_id).map((n: any) => n.article_id))];
     const commentIds = [...new Set(notifications.filter((n: any) => n.comment_id).map((n: any) => n.comment_id))];
 
     const { data: posts } = postIds.length > 0 ? await supabase
@@ -92,14 +93,21 @@ export async function getNotifications(req: Request, res: Response) {
       .select("id, content")
       .in("id", commentIds) : { data: [] };
 
+    const { data: articles } = articleIds.length > 0 ? await supabase
+      .from("articles")
+      .select("id, title")
+      .in("id", articleIds) : { data: [] };
+
     const postMap = new Map((posts || []).map((p: any) => [p.id, p]));
     const projectMap = new Map((projects || []).map((p: any) => [p.id, p]));
     const commentMap = new Map((comments || []).map((c: any) => [c.id, c]));
+    const articleMap = new Map((articles || []).map((a: any) => [a.id, a]));
 
     const notificationsWithActors = notifications.map((notif: any) => {
       const actor = userMap.get(notif.actor_id);
       const post = notif.post_id ? postMap.get(notif.post_id) : null;
       const project = notif.project_id ? projectMap.get(notif.project_id) : null;
+      const article = notif.article_id ? articleMap.get(notif.article_id) : null;
       const commentReq = notif.comment_id ? commentMap.get(notif.comment_id) : null;
 
       return {
@@ -126,6 +134,9 @@ export async function getNotifications(req: Request, res: Response) {
         } : null,
         comment: commentReq ? {
           content: commentReq.content
+        } : null,
+        article: article ? {
+          title: article.title
         } : null
       };
     });

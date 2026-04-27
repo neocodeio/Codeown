@@ -215,6 +215,12 @@ export default function App() {
           queryClient.invalidateQueries({ queryKey: ["startup", String(data.id)] });
         }
       }
+      else if (type.startsWith("article_")) {
+        queryClient.invalidateQueries({ queryKey: ["articles"] });
+        if (data.id || data.article_id) {
+          queryClient.invalidateQueries({ queryKey: ["article", String(data.id || data.article_id)] });
+        }
+      }
     };
 
     socket.on("content_update", handleUpdate);
