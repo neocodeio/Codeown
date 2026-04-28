@@ -450,7 +450,7 @@ export default function Navbar() {
         <nav style={{ width: width < 1024 ? "240px" : "280px", height: "100vh", position: "sticky", top: 0, borderRight: "0.5px solid var(--border-hairline)", backgroundColor: "var(--bg-page)", zIndex: 1000 }}>
           <SidebarContent />
         </nav>
-        <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
+        <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => {}} />
         <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
       </>
     );
@@ -542,7 +542,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => window.dispatchEvent(new CustomEvent("postCreated"))} />
+      <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => {}} />
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
     </>
   );

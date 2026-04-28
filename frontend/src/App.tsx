@@ -175,7 +175,7 @@ export default function App() {
 
     // ── Unified Cache Update Logic ──
     const updatePostCache = (data: any) => {
-      if (!data) return;
+      if (!data || !data.id) return;
 
       // 1. Update main feed (infinite query)
       queryClient.setQueriesData({ queryKey: ["posts"], exact: false }, (oldData: any) => {
@@ -214,7 +214,9 @@ export default function App() {
     const handleUpdate = ({ type, data }: { type: string, data: any }) => {
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
         if (type === "post_created") {
-          window.dispatchEvent(new CustomEvent("postCreated", { detail: data }));
+          window.dispatchEvent(new CustomEvent("postCreated", { 
+            detail: { ...data, _isFromSocket: true } 
+          }));
           updatePostCache(data);
         } else {
           queryClient.invalidateQueries({ queryKey: ["posts"], exact: false });
@@ -267,7 +269,11 @@ export default function App() {
     socket.on("content_update", handleUpdate);
     
     // Listen for local post creation events to update cache instantly
-    const handleLocalPostCreated = (e: any) => updatePostCache(e.detail);
+    const handleLocalPostCreated = (e: any) => {
+      // If it's from the socket, handleUpdate already called updatePostCache
+      if (e.detail?._isFromSocket) return;
+      updatePostCache(e.detail);
+    };
     window.addEventListener("postCreated", handleLocalPostCreated);
 
     const handleNewNotification = (notif: { type: string, actorId: string, data?: any }) => {
