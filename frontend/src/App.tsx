@@ -173,27 +173,49 @@ export default function App() {
       socket.emit("join", user.id);
     }
 
+    // ── Unified Cache Update Logic ──
+    const updatePostCache = (data: any) => {
+      if (!data) return;
+
+      // 1. Update main feed (infinite query)
+      queryClient.setQueriesData({ queryKey: ["posts"], exact: false }, (oldData: any) => {
+        if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
+        
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any, i: number) => {
+            if (i === 0) {
+              const exists = page.posts.some((p: any) => p.id === data.id);
+              if (exists) return page;
+              return { ...page, posts: [data, ...page.posts] };
+            }
+            return page;
+          })
+        };
+      });
+      
+      // 2. Update user's profile posts
+      const userId = data.user_id || data.user?.id;
+      if (userId) {
+        queryClient.setQueriesData({ queryKey: ["userPosts", userId] }, (oldData: any) => {
+          if (!oldData) return [data];
+          if (!Array.isArray(oldData)) return oldData;
+          const exists = oldData.some((p: any) => p.id === data.id);
+          if (exists) return oldData;
+          return [data, ...oldData];
+        });
+      }
+
+      // 3. Invalidate related caches
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    };
+
     const handleUpdate = ({ type, data }: { type: string, data: any }) => {
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
         if (type === "post_created") {
           window.dispatchEvent(new CustomEvent("postCreated", { detail: data }));
-          
-          // Prepend to current cache for instant UI feedback
-          queryClient.setQueriesData({ queryKey: ["posts"], exact: false }, (oldData: any) => {
-            if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
-            
-            return {
-              ...oldData,
-              pages: oldData.pages.map((page: any, i: number) => {
-                if (i === 0) {
-                  const exists = page.posts.some((p: any) => p.id === data.id);
-                  if (exists) return page;
-                  return { ...page, posts: [data, ...page.posts] };
-                }
-                return page;
-              })
-            };
-          });
+          updatePostCache(data);
         } else {
           queryClient.invalidateQueries({ queryKey: ["posts"], exact: false });
           if (data.id || data.postId) {
@@ -203,6 +225,26 @@ export default function App() {
         }
       }
       else if (type.startsWith("project_") || (type === "comment_liked" && data.type === "project")) {
+        if (type === "project_created") {
+          window.dispatchEvent(new CustomEvent("projectCreated", { detail: data }));
+          
+          // Prepend to current cache for instant UI feedback
+          queryClient.setQueriesData({ queryKey: ["projects"], exact: false }, (oldData: any) => {
+            if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any, i: number) => {
+                if (i === 0) {
+                  const exists = page.projects?.some((p: any) => p.id === data.id);
+                  if (exists) return page;
+                  return { ...page, projects: [data, ...(page.projects || [])] };
+                }
+                return page;
+              })
+            };
+          });
+        }
+
         queryClient.invalidateQueries({ queryKey: ["projects"] });
         if (data.id || data.projectId) {
           queryClient.invalidateQueries({ queryKey: ["project", String(data.id || data.projectId)] });
@@ -223,6 +265,10 @@ export default function App() {
     };
 
     socket.on("content_update", handleUpdate);
+    
+    // Listen for local post creation events to update cache instantly
+    const handleLocalPostCreated = (e: any) => updatePostCache(e.detail);
+    window.addEventListener("postCreated", handleLocalPostCreated);
 
     const handleNewNotification = (notif: { type: string, actorId: string, data?: any }) => {
       // FIX: Use correctly matching query keys from useNotifications.ts
@@ -413,6 +459,7 @@ export default function App() {
       socket.off("connect", onConnect);
       socket.off("content_update", handleUpdate);
       socket.off("new_notification", handleNewNotification);
+      window.removeEventListener("postCreated", handleLocalPostCreated);
       socket.off("xp_gain", handleXPGain);
       socket.off("level_up", handleLevelUp);
     };

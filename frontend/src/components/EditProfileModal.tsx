@@ -33,6 +33,20 @@ interface EditProfileModalProps {
     instagram_url?: string | null;
     website_url?: string | null;
     banner_url?: string | null;
+    work_experience?: Array<{
+      company: string;
+      role: string;
+      start_date: string;
+      end_date: string;
+      description: string;
+    }> | null;
+    education?: Array<{
+      school: string;
+      degree: string;
+      start_date: string;
+      end_date: string;
+      description?: string;
+    }> | null;
   };
   projectCount?: number;
 }
@@ -58,6 +72,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [isHirable, setIsHirable] = useState(false);
+  const [workExperience, setWorkExperience] = useState<any[]>([]);
+  const [education, setEducation] = useState<any[]>([]);
   const { getToken, isLoaded } = useClerkAuth();
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -86,6 +102,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
       setBannerPreview(currentUser.banner_url || null);
       setUsernameError(null);
       setIsHirable(currentUser.is_hirable ?? false);
+      setWorkExperience(currentUser.work_experience || []);
+      setEducation(currentUser.education || []);
     }
   }, [isOpen, currentUser]);
 
@@ -190,6 +208,34 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
   const handleRemoveSkill = (skillToRemove: string) => {
     setSkills(skills.filter(s => s !== skillToRemove));
   };
+  
+  const handleAddWork = () => {
+    setWorkExperience([...workExperience, { company: "", role: "", start_date: "", end_date: "", description: "" }]);
+  };
+
+  const handleUpdateWork = (index: number, field: string, value: string) => {
+    const updated = [...workExperience];
+    updated[index] = { ...updated[index], [field]: value };
+    setWorkExperience(updated);
+  };
+
+  const handleRemoveWork = (index: number) => {
+    setWorkExperience(workExperience.filter((_, i) => i !== index));
+  };
+
+  const handleAddEducation = () => {
+    setEducation([...education, { school: "", degree: "", start_date: "", end_date: "" }]);
+  };
+
+  const handleUpdateEducation = (index: number, field: string, value: string) => {
+    const updated = [...education];
+    updated[index] = { ...updated[index], [field]: value };
+    setEducation(updated);
+  };
+
+  const handleRemoveEducation = (index: number) => {
+    setEducation(education.filter((_, i) => i !== index));
+  };
 
   const submit = async () => {
     if (!isLoaded) {
@@ -261,6 +307,8 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
           location: location.trim() || null,
           skills: skills.length > 0 ? skills : null,
           is_hirable: isHirable,
+          work_experience: workExperience.filter(w => w.company.trim() || w.role.trim()),
+          education: education.filter(e => e.school.trim() || e.degree.trim()),
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -538,6 +586,94 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                     <Link size={14} weight="bold" /> Personal website
                   </label>
                   <input style={{ width: "100%", padding: "12px 16px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", transition: "all 0.15s ease", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://..." />
+                </div>
+              </div>
+            </div>
+
+            {/* Career & Education Timeline */}
+            <div style={{ borderTop: "0.5px solid var(--border-hairline)", paddingTop: "32px" }}>
+              <span style={{ display: "block", fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "20px" }}>Professional Timeline</span>
+              
+              {/* Work Experience Editor */}
+              <div style={{ marginBottom: "32px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                  <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)" }}>Work Experience</label>
+                  <button type="button" onClick={handleAddWork} style={{ background: "none", border: "none", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", padding: "4px 8px" }}>+ Add work</button>
+                </div>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                  {workExperience.map((work, index) => (
+                    <div key={index} style={{ padding: "20px", background: "rgba(255,255,255,0.02)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", display: "flex", flexDirection: "column", gap: "16px", position: "relative" }}>
+                      <button onClick={() => handleRemoveWork(index)} style={{ position: "absolute", top: "12px", right: "12px", background: "none", border: "none", color: "#ef4444", fontSize: "18px", cursor: "pointer", padding: "4px" }}>&times;</button>
+                      
+                      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px" }}>
+                        <div>
+                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>Company</label>
+                          <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={work.company} onChange={(e) => handleUpdateWork(index, "company", e.target.value)} placeholder="e.g. Google" />
+                        </div>
+                        <div>
+                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>Role</label>
+                          <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={work.role} onChange={(e) => handleUpdateWork(index, "role", e.target.value)} placeholder="e.g. Senior Frontend Dev" />
+                        </div>
+                      </div>
+                      
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                        <div>
+                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>Start Year</label>
+                          <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={work.start_date} onChange={(e) => handleUpdateWork(index, "start_date", e.target.value)} placeholder="e.g. 2021" />
+                        </div>
+                        <div>
+                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>End Year</label>
+                          <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={work.end_date} onChange={(e) => handleUpdateWork(index, "end_date", e.target.value)} placeholder="e.g. Present" />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>Description</label>
+                        <textarea style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box", resize: "none" }} rows={2} value={work.description} onChange={(e) => handleUpdateWork(index, "description", e.target.value)} placeholder="Short summary of your impact" />
+                      </div>
+                    </div>
+                  ))}
+                  {workExperience.length === 0 && <p style={{ fontSize: "12px", color: "var(--text-tertiary)", fontStyle: "italic" }}>No work history added.</p>}
+                </div>
+              </div>
+
+              {/* Education Editor */}
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                  <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)" }}>Education</label>
+                  <button type="button" onClick={handleAddEducation} style={{ background: "none", border: "none", color: "var(--text-primary)", fontSize: "12px", fontWeight: 700, cursor: "pointer", padding: "4px 8px" }}>+ Add education</button>
+                </div>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                  {education.map((edu, index) => (
+                    <div key={index} style={{ padding: "20px", background: "rgba(255,255,255,0.02)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", display: "flex", flexDirection: "column", gap: "16px", position: "relative" }}>
+                      <button onClick={() => handleRemoveEducation(index)} style={{ position: "absolute", top: "12px", right: "12px", background: "none", border: "none", color: "#ef4444", fontSize: "18px", cursor: "pointer", padding: "4px" }}>&times;</button>
+                      
+                      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px" }}>
+                        <div>
+                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>Institution</label>
+                          <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={edu.school} onChange={(e) => handleUpdateEducation(index, "school", e.target.value)} placeholder="e.g. Stanford University" />
+                        </div>
+                        <div>
+                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>Degree</label>
+                          <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={edu.degree} onChange={(e) => handleUpdateEducation(index, "degree", e.target.value)} placeholder="e.g. B.S. Computer Science" />
+                        </div>
+                      </div>
+                      
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                        <div>
+                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>Start Year</label>
+                          <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={edu.start_date} onChange={(e) => handleUpdateEducation(index, "start_date", e.target.value)} placeholder="e.g. 2017" />
+                        </div>
+                        <div>
+                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>End Year</label>
+                          <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={edu.end_date} onChange={(e) => handleUpdateEducation(index, "end_date", e.target.value)} placeholder="e.g. 2021" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {education.length === 0 && <p style={{ fontSize: "12px", color: "var(--text-tertiary)", fontStyle: "italic" }}>No education history added.</p>}
                 </div>
               </div>
             </div>
