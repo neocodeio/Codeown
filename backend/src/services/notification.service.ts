@@ -100,9 +100,11 @@ export async function notify(params: SendNotificationParams) {
 
         // 1.5 Emit socket event for the specific user
         try {
-            const { getIO } = await import("../lib/socket.js");
+            const { getIO, emitToUser } = await import("../lib/socket.js");
             const io = getIO();
             io.to(userId).emit("new_notification", { type, actorId, data });
+            // Added explicit update signal for counter invalidation
+            emitToUser(userId, "notif_update", { type });
         } catch (sErr) { }
     } else {
         console.log(`[NotificationService] Skipping DB notification for ${userId} (Platform alerts disabled)`);

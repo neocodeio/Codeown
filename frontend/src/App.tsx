@@ -15,7 +15,6 @@ import { useClerkAuth } from "./hooks/useClerkAuth";
 import api from "./api/axios";
 import { socket } from "./lib/socket";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 import { toast as sonnerToast } from "sonner";
 import { X } from "phosphor-react";
 import "react-toastify/dist/ReactToastify.css";
@@ -226,25 +225,30 @@ export default function App() {
     socket.on("content_update", handleUpdate);
 
     const handleNewNotification = (notif: { type: string, actorId: string, data?: any }) => {
-      queryClient.invalidateQueries({ queryKey: ["unread_count"] });
+      // FIX: Use correctly matching query keys from useNotifications.ts
+      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
 
       // Show red dot on favicon
       setFaviconDot(true);
 
+      // Toast for specific high-priority notifications
       if (notif.type === 'startup_upvote') {
-        toast(`🚀 Someone upvoted your startup!`, {
-          position: "bottom-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          theme: "dark"
+        sonnerToast.success(`🚀 Someone upvoted your startup!`, {
+          description: "Check your notifications for details.",
         });
+      } else if (notif.type === 'message') {
+        // Handled by message listeners generally, but good to have sync
       }
     };
 
     socket.on("new_notification", handleNewNotification);
+
+    // Add explicit listeners for likes and follows to ensure immediate counter updates
+    socket.on("notif_update", () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    });
 
     const handleXPGain = (data: { amount: number, reason: string, newXP: number, newLevel: number }) => {
 

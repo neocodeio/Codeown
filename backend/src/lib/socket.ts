@@ -67,6 +67,12 @@ export const emitUpdate = (type: string, data: any) => {
   }
 };
 
+export const emitToUser = (userId: string, type: string, data: any) => {
+  if (io) {
+    io.to(userId).emit(type, data);
+  }
+};
+
 export const isUserOnline = (userId: string) => {
   if (!io) return false;
   const room = io.sockets.adapter.rooms.get(userId);
