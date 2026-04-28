@@ -490,10 +490,19 @@ export default function NotificationsPage() {
         );
 
         const getTargetLabel = (n: any) => {
+            if (n.article_id) return "article";
             if (n.comment_id) return "comment";
             if (n.project_id) return "project";
             if (n.startup_id) return "startup";
             return "post";
+        };
+
+        const getPlural = (label: string) => {
+            if (label === "article") return "articles";
+            if (label === "comment") return "comments";
+            if (label === "project") return "projects";
+            if (label === "startup") return "startups";
+            return "posts";
         };
 
         switch (notification.type) {
@@ -510,13 +519,15 @@ export default function NotificationsPage() {
                     const label = getTargetLabel(notification);
                     return (
                         <>
-                            {nameWrapper}{" "}liked <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{notification.groupCount}</span> of your {label}s
+                            {nameWrapper}{" "}liked <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{notification.groupCount}</span> of your {getPlural(label)}
                         </>
                     );
                 }
                 return <>{nameWrapper}{" "}liked your {getTargetLabel(notification)}</>;
-            case "comment":
-                return <>{nameWrapper}{" "}commented on your {notification.project_id ? "project" : "post"}</>;
+            case "comment": {
+                const label = notification.article_id ? "article" : notification.project_id ? "project" : "post";
+                return <>{nameWrapper}{" "}commented on your {label}</>;
+            }
             case "reply":
                 return <>{nameWrapper}{" "}replied to your comment</>;
             case "follow":

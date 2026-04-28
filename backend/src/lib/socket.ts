@@ -11,11 +11,25 @@ export const initSocket = (server: any) => {
     }
   });
 
+  const broadcastActiveCount = () => {
+    if (!io) return;
+    // Count unique user rooms (userId rooms)
+    let count = 0;
+    // io.sockets.adapter.rooms is a Map where key is room name
+    // We want to count rooms that are actually user IDs, 
+    // but just counting connected sockets is a good proxy for "active now".
+    // Alternatively, we can count unique user IDs in our joined rooms.
+    const socketCount = io.engine.clientsCount;
+    io.emit("active_builders_count", { count: socketCount || 1 });
+  };
+
   io.on("connection", (socket) => {
     console.log("Socket connected:", socket.id);
+    broadcastActiveCount();
 
     socket.on("join", (userId: string) => {
       socket.join(userId);
+      // Optional: more granular tracking if needed
     });
 
     socket.on("typing", ({ senderId, receiverId }: { senderId: string, receiverId: string }) => {
@@ -48,6 +62,7 @@ export const initSocket = (server: any) => {
 
     socket.on("disconnect", () => {
       console.log("Socket disconnected:", socket.id);
+      setTimeout(broadcastActiveCount, 1000); // Small delay to let adapter update
     });
   });
 

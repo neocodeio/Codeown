@@ -8,6 +8,7 @@ import CreatePostModal from "./CreatePostModal";
 import ProjectModal from "./ProjectModal";
 import { useNotifications } from "../hooks/useNotifications";
 import { useFaviconNotification } from "../hooks/useFaviconNotification";
+import { useMessages } from "../hooks/useMessages";
 import api from "../api/axios";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -32,6 +33,7 @@ import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
 import logoWhite from "../assets/logo-white.png";
 import StreakBadge from "./StreakBadge";
+import { socket } from "../lib/socket";
 
 const StatusBadge = () => {
   const [activeCount, setActiveCount] = useState(1);
@@ -53,7 +55,12 @@ const StatusBadge = () => {
     };
 
     fetchActiveCount();
-    const countInterval = setInterval(fetchActiveCount, 600000);
+    
+    const handleCountUpdate = (data: { count: number }) => {
+      setActiveCount(data.count || 1);
+    };
+
+    socket.on("active_builders_count", handleCountUpdate);
 
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString([], {
@@ -65,7 +72,7 @@ const StatusBadge = () => {
     }, 1000);
 
     return () => {
-      clearInterval(countInterval);
+      socket.off("active_builders_count", handleCountUpdate);
       clearInterval(timeInterval);
     };
   }, []);
@@ -98,7 +105,8 @@ export default function Navbar() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
   const [isPostSelectorOpen, setIsPostSelectorOpen] = useState(false);
-  const { unreadCount, messageUnreadCount } = useNotifications();
+  const { unreadCount } = useNotifications();
+  const { unreadCount: messageUnreadCount } = useMessages();
   const [profile, setProfile] = useState<any>(null);
   const { getToken } = useClerkAuth();
 

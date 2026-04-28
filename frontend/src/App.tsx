@@ -250,6 +250,14 @@ export default function App() {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     });
 
+    socket.on("new_message", () => {
+      queryClient.invalidateQueries({ queryKey: ["messages-unread-count"] });
+    });
+
+    socket.on("messages_read", () => {
+      queryClient.invalidateQueries({ queryKey: ["messages-unread-count"] });
+    });
+
     const handleXPGain = (data: { amount: number, reason: string, newXP: number, newLevel: number }) => {
 
       // Descriptive minimalist XP toast

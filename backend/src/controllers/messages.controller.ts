@@ -597,3 +597,22 @@ export async function deleteConversation(req: Request, res: Response) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+export async function getUnreadMessagesCount(req: Request, res: Response) {
+    try {
+        const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+        const { count, error } = await supabase
+            .from("messages")
+            .select("id", { count: 'exact' })
+            .neq("sender_id", userId)
+            .eq("is_read", false);
+
+        if (error) throw error;
+
+        return res.json({ count: count || 0 });
+    } catch (error: any) {
+        console.error("Error getting unread messages count:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
