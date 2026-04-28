@@ -848,10 +848,13 @@ export default function Messages() {
         setMessages([]);
       }
       setTimeout(() => scrollToBottom(true), 150);
+
+      // Reset total unread count badge in Navbar
+      queryClient.invalidateQueries({ queryKey: ["messages-unread-count"] });
     } else {
       setMessages([]);
     }
-  }, [activeConvo?.id]);
+  }, [activeConvo?.id, queryClient]);
 
   useEffect(() => {
     // Update local messages when the background query finishes

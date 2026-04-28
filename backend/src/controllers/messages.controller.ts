@@ -236,6 +236,15 @@ export async function getMessages(req: Request, res: Response) {
                 .eq("actor_id", otherParticipant.user_id)
                 .eq("type", "message")
                 .eq("read", false);
+
+            // Signal self to update unread count UI instantly
+            try {
+                const { getIO } = await import("../lib/socket.js");
+                const io = getIO();
+                io.to(userId).emit("messages_read", { conversationId: id });
+                // Also notify the sender that their message was read
+                io.to(otherParticipant.user_id).emit("messages_read", { conversationId: id, readerId: userId });
+            } catch (sErr) {}
         }
 
         return res.json(messages);
