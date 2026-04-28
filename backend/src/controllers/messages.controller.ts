@@ -625,3 +625,38 @@ export async function getUnreadMessagesCount(req: Request, res: Response) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
+export async function markAllMessagesAsRead(req: Request, res: Response) {
+    try {
+        const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
+        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+        const { error } = await supabase
+            .from("messages")
+            .update({ is_read: true })
+            .neq("sender_id", userId)
+            .eq("is_read", false);
+
+        if (error) throw error;
+        
+        // Also mark related notifications as read
+        await supabase
+            .from("notifications")
+            .update({ read: true })
+            .eq("user_id", userId)
+            .eq("type", "message")
+            .eq("read", false);
+
+        // Signal self to update unread count UI instantly
+        try {
+            const { getIO } = await import("../lib/socket.js");
+            const io = getIO();
+            io.to(userId).emit("messages_read", { all: true });
+        } catch (sErr) {}
+
+        return res.json({ success: true });
+    } catch (error: any) {
+        console.error("Error marking all messages as read:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}

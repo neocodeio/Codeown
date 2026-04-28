@@ -7,13 +7,15 @@ import {
     toggleReaction, 
     deleteMessage, 
     deleteConversation,
-    getUnreadMessagesCount 
+    getUnreadMessagesCount,
+    markAllMessagesAsRead 
 } from "../controllers/messages.controller.js";
 
 const router = Router();
 
 router.get("/", requireAuth, getConversations);
 router.get("/unread-count", requireAuth, getUnreadMessagesCount);
+router.put("/mark-all-read", requireAuth, markAllMessagesAsRead);
 router.get("/:id/messages", requireAuth, getMessages);
 router.post("/", requireAuth, sendMessage);
 router.patch("/message/:messageId/reaction", requireAuth, toggleReaction);

@@ -835,7 +835,24 @@ export default function Messages() {
         }
       }
     }
-  }, [qConversations, targetUserId, activeConvo, startPlaceholderConvo]);
+    
+    // If we land on Messages page and there's a global unread count but no visible unread convos,
+    // or just to be safe and synced, mark all as read.
+    const markAllRead = async () => {
+      try {
+        const token = await getToken();
+        await api.put("/messages/mark-all-read", {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        queryClient.invalidateQueries({ queryKey: ["messages-unread-count"] });
+      } catch (err) {}
+    };
+
+    // Only run if we are signed in and on the messages page
+    if (currentUser?.id) {
+       markAllRead();
+    }
+  }, [qConversations, targetUserId, activeConvo, startPlaceholderConvo, getToken, currentUser?.id, queryClient]);
 
   useEffect(() => {
     // When switching conversations, we should clear the current messages
