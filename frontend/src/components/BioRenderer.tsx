@@ -31,7 +31,7 @@ export default function BioRenderer({ bio }: BioRendererProps) {
             if (match[1]) {
                 // Mention - match[1] might start with a space
                 const fullMatch = match[1];
-                const spacePrefix = fullMatch.startsWith(' ') ? ' ' : '';
+                const spacePrefix = fullMatch && fullMatch.startsWith(' ') ? ' ' : '';
                 const username = fullMatch.trim().slice(1); // Remove space and @
 
                 if (spacePrefix) {

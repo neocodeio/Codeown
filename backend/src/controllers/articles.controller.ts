@@ -7,10 +7,17 @@ import { notify } from "../services/notification.service.js";
 
 export async function getArticles(req: Request, res: Response) {
   try {
-    const { data: articles, error } = await supabase
+    const { userId } = req.query;
+    let query = supabase
       .from("articles")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (userId) {
+      query = query.eq("user_id", userId);
+    }
+
+    const { data: articles, error } = await query;
 
     if (error) throw error;
     if (!articles || articles.length === 0) return res.json([]);

@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useUserPosts } from "../hooks/useUserPosts";
 import { useUserProjects } from "../hooks/useUserProjects";
+import { useUserArticles } from "../hooks/useUserArticles";
 import { useClerkUser } from "../hooks/useClerkUser";
 import { useClerkAuth } from "../hooks/useClerkAuth";
 import PostCard from "../components/PostCard";
@@ -27,7 +28,8 @@ import {
   InstagramIcon,
   Chat01Icon,
   Chart01Icon,
-  WorkIcon
+  WorkIcon,
+  PencilIcon
 } from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
 import { ToastContainer } from "react-toastify";
@@ -133,7 +135,7 @@ export default function UserProfile() {
 
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
   const [followersModalType, setFollowersModalType] = useState<"followers" | "following">("followers");
-  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "startups" | "dashboard">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "articles" | "startups" | "dashboard">("posts");
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -209,6 +211,7 @@ export default function UserProfile() {
   // 3. Tab Data Hooks
   const { posts, fetchUserPosts, loading: postsLoading } = useUserPosts(user?.id || null);
   const { projects, fetchUserProjects, loading: projectsLoading } = useUserProjects(user?.id || null);
+  const { articles, loading: articlesLoading } = useUserArticles(user?.id || null, activeTab === "articles");
 
   const { data: startups = [], isLoading: loadingStartups } = useQuery({
     queryKey: ["userStartups", user?.id],
@@ -478,7 +481,7 @@ export default function UserProfile() {
                       display: none;
                     }
                   `}</style>
-                  {[{ id: "posts", icon: LicenseIcon, label: "Posts" }, { id: "projects", icon: Rocket01Icon, label: "Projects" }, { id: "dashboard", icon: Chart01Icon, label: "Dashboard" }, { id: "startups", icon: Building02Icon, label: "Startups" }].map(tab => (
+                  {[{ id: "posts", icon: LicenseIcon, label: "Posts" }, { id: "projects", icon: Rocket01Icon, label: "Projects" }, { id: "articles", icon: PencilIcon, label: "Articles" }, { id: "dashboard", icon: Chart01Icon, label: "Dashboard" }, { id: "startups", icon: Building02Icon, label: "Startups" }].map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
                       <HugeiconsIcon icon={tab.icon} size={18} />
                       {tab.label}
@@ -491,6 +494,70 @@ export default function UserProfile() {
                 {activeTab === "posts" ? (
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     {postsLoading ? <div className="skeleton-pulse" style={{ height: "100px", borderRadius: "var(--radius-sm)" }} /> : posts.length === 0 ? (<div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}> <HugeiconsIcon icon={Rocket01Icon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} /> <p style={{ fontWeight: 500, fontSize: "14px" }}>No posts yet</p> </div>) : ([...posts].sort((a, b) => { if (user.pinned_post_id === a.id) return -1; if (user.pinned_post_id === b.id) return 1; return 0; }).map(p => (<div key={p.id} style={{ position: "relative" }}> {user.pinned_post_id === p.id && (<div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)", fontSize: "12px", fontWeight: 600 }}> <HugeiconsIcon icon={PinIcon} size={14} /> Pinned post </div>)} <PostCard post={p} onUpdated={fetchUserPosts} /> </div>)))}
+                  </div>
+                ) : activeTab === "articles" ? (
+                  <div className="tab-content-enter">
+                    {articlesLoading ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "16px" }}>
+                        {[1, 2].map(i => (
+                          <div key={i} className="skeleton-pulse" style={{ height: "120px", borderRadius: "var(--radius-sm)" }} />
+                        ))}
+                      </div>
+                    ) : articles.length === 0 ? (
+                      <div style={{ padding: "80px 20px", textAlign: "center", color: "var(--text-tertiary)" }}>
+                        <HugeiconsIcon icon={PencilIcon} size={40} style={{ opacity: 0.1, marginBottom: "16px", display: "block", margin: "0 auto" }} />
+                        <p style={{ fontWeight: 500, fontSize: "14px" }}>No articles yet</p>
+                      </div>
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1px", backgroundColor: "var(--border-hairline)" }}>
+                        {articles.map(article => (
+                          <div
+                            key={article.id}
+                            onClick={() => navigate(`/articles/${article.id}`)}
+                            style={{
+                              display: "flex",
+                              gap: "20px",
+                              padding: "20px 16px",
+                              backgroundColor: "var(--bg-page)",
+                              cursor: "pointer",
+                              borderBottom: "0.5px solid var(--border-hairline)",
+                              transition: "background-color 0.15s ease"
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-page)"}
+                          >
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <h3 style={{
+                                fontSize: "16px",
+                                fontWeight: 800,
+                                color: "var(--text-primary)",
+                                marginBottom: "4px",
+                                lineHeight: "1.4"
+                              }}>{article.title}</h3>
+                              <p style={{
+                                fontSize: "13px",
+                                color: "var(--text-secondary)",
+                                lineHeight: "1.5",
+                                marginBottom: "12px",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden"
+                              }}>{article.subtitle}</p>
+                              <div style={{ display: "flex", gap: "12px", color: "var(--text-tertiary)", fontSize: "11px" }}>
+                                <span>{new Date(article.created_at).toLocaleDateString()}</span>
+                                <span style={{ display: "none" }}>{article.likes_count || 0} likes</span>
+                              </div>
+                            </div>
+                            {article.cover_image && (
+                              <div style={{ width: "100px", height: "64px", flexShrink: 0, borderRadius: "6px", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}>
+                                <img src={article.cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : activeTab === "startups" ? (
                   <div className="tab-content-enter">

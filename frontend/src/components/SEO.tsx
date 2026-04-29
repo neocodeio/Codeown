@@ -31,7 +31,7 @@ export const SEO = ({
 }: SEOProps) => {
     const siteTitle = 'Codeown';
     const fullTitle = `${title} | ${siteTitle}`;
-    const fullImage = image.startsWith('http') ? image : `${window.location.origin}${image}`;
+    const fullImage = image && image.startsWith('http') ? image : `${window.location.origin}${image || '/meta-tag.png?v=4'}`;
 
     return (
         <Helmet>
