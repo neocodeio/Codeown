@@ -94,20 +94,6 @@ interface UserProfile {
   contribution_count: number;
   xp: number;
   level: number;
-  work_experience: Array<{
-    company: string;
-    role: string;
-    start_date: string;
-    end_date: string;
-    description: string;
-  }> | null;
-  education: Array<{
-    school: string;
-    degree: string;
-    start_date: string;
-    end_date: string;
-    description?: string;
-  }> | null;
 }
 
 const AnimatedCounter = ({ end, duration = 1500 }: { end: number, duration?: number }) => {
@@ -502,63 +488,6 @@ export default function Profile() {
                 {!profileLoading && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "0px" }}>
 
-                    {/* Timeline Section */}
-                    {( (userProfile?.work_experience && userProfile.work_experience.length > 0) || (userProfile?.education && userProfile.education.length > 0) ) && (
-                      <div style={{ marginTop: "16px", borderTop: "0.5px solid var(--border-hairline)", paddingTop: "24px" }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-                          
-                          {/* Work Experience */}
-                          {userProfile?.work_experience && userProfile.work_experience.length > 0 && (
-                            <div>
-                              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                                <HugeiconsIcon icon={WorkIcon} size={20} style={{ color: "var(--text-primary)" }} />
-                                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "var(--text-primary)" }}>Professional Experience</h3>
-                              </div>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-                                {userProfile.work_experience.map((work, idx) => (
-                                  <div key={idx} style={{ position: "relative", paddingLeft: "24px", borderLeft: "2px solid var(--bg-hover)" }}>
-                                    <div style={{ position: "absolute", left: "-6px", top: "4px", width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "var(--text-primary)", border: "2px solid var(--bg-page)" }} />
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
-                                      <h4 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>{work.role}</h4>
-                                      <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", padding: "4px 8px", borderRadius: "var(--radius-xs)" }}>
-                                        {work.start_date} — {work.end_date}
-                                      </span>
-                                    </div>
-                                    <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>{work.company}</div>
-                                    {work.description && <p style={{ margin: 0, fontSize: "13px", color: "var(--text-tertiary)", lineHeight: 1.6 }}>{work.description}</p>}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Education */}
-                          {userProfile?.education && userProfile.education.length > 0 && (
-                            <div>
-                              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                                <HugeiconsIcon icon={LicenseIcon} size={20} style={{ color: "var(--text-primary)" }} />
-                                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "var(--text-primary)" }}>Education</h3>
-                              </div>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-                                {userProfile.education.map((edu, idx) => (
-                                  <div key={idx} style={{ position: "relative", paddingLeft: "24px", borderLeft: "2px solid var(--bg-hover)" }}>
-                                    <div style={{ position: "absolute", left: "-6px", top: "4px", width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "var(--text-tertiary)", border: "2px solid var(--bg-page)" }} />
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
-                                      <h4 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>{edu.degree}</h4>
-                                      <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-tertiary)", backgroundColor: "var(--bg-hover)", padding: "4px 8px", borderRadius: "var(--radius-xs)" }}>
-                                        {edu.start_date} — {edu.end_date}
-                                      </span>
-                                    </div>
-                                    <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-secondary)" }}>{edu.school}</div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                        </div>
-                      </div>
-                    )}
 
                     {/* GitHub Contributions Graph */}
                     {userProfile?.github_url && (

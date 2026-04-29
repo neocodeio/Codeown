@@ -594,8 +594,8 @@ export async function getUserProfile(req: Request, res: Response) {
         let user: any = null;
         let userError: any = null;
 
-        const fullSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status, xp, level, notifications_enabled, email_notifications_enabled, work_experience, education";
-        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, github_url, twitter_url, linkedin_url, website_url, xp, level, notifications_enabled, email_notifications_enabled, work_experience, education";
+        const fullSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, is_organization, github_url, twitter_url, linkedin_url, instagram_url, website_url, lemon_customer_id, lemon_subscription_id, lemon_subscription_status, xp, level, notifications_enabled, email_notifications_enabled";
+        const safeSelect = "id, name, email, username, avatar_url, banner_url, bio, location, job_title, skills, experience_level, is_hirable, is_pro, is_og, created_at, pinned_post_id, streak_count, updated_at, username_changed_at, onboarding_completed, github_url, twitter_url, linkedin_url, website_url, xp, level, notifications_enabled, email_notifications_enabled";
 
         const fullRes = await supabase
             .from("users")
@@ -971,8 +971,6 @@ export async function updateUserProfile(req: Request, res: Response) {
             linkedin_url,
             instagram_url,
             website_url,
-            work_experience,
-            education
         } = req.body;
 
         // Get current user data - select only core columns first to avoid schema issues
@@ -1067,8 +1065,6 @@ export async function updateUserProfile(req: Request, res: Response) {
         if (linkedin_url !== undefined) updateData.linkedin_url = linkedin_url;
         if (instagram_url !== undefined) updateData.instagram_url = instagram_url;
         if (website_url !== undefined) updateData.website_url = website_url;
-        if (work_experience !== undefined) updateData.work_experience = work_experience;
-        if (education !== undefined) updateData.education = education;
 
         if (username && username !== currentUser?.username) {
             updateData.username = username;
