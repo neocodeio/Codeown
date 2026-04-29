@@ -149,8 +149,15 @@ export async function createArticle(req: Request, res: Response) {
       return res.status(400).json({ error: "Title and content are required" });
     }
 
-    if (content.length > 5000) {
-      return res.status(400).json({ error: "Content must be less than 5000 characters" });
+    // Validate raw HTML length (to prevent massive payloads)
+    if (content.length > 50000) {
+      return res.status(400).json({ error: "Article content is too large (max 50,000 characters including formatting)" });
+    }
+
+    // Validate plain text length (the actual content limit)
+    const plainText = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    if (plainText.length > 5000) {
+      return res.status(400).json({ error: "Article text must be less than 5000 characters" });
     }
 
     await ensureUserExists(userId);

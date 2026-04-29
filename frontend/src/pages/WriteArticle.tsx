@@ -183,7 +183,7 @@ export default function WriteArticle() {
 
   const handlePublish = async () => {
     // Get plain text length for validation
-    const plainText = contentRef.current?.innerText || "";
+    const plainText = contentRef.current?.innerText.trim() || "";
     
     if (!title.trim() || !plainText.trim()) {
       toast.error("Title and content are required");
@@ -504,10 +504,10 @@ export default function WriteArticle() {
              <div style={{ 
                fontSize: "12px", 
                fontWeight: 700, 
-               color: (contentRef.current?.innerText.length || 0) > 4800 ? "#ef4444" : "var(--text-tertiary)",
+               color: (contentRef.current?.innerText.trim().length || 0) >= 5000 ? "#ef4444" : "var(--text-tertiary)",
                letterSpacing: "0.02em"
              }}>
-               {contentRef.current?.innerText.length || 0} <span style={{ opacity: 0.5 }}>/ 5000</span>
+               {contentRef.current?.innerText.trim().length || 0} <span style={{ opacity: 0.5 }}>/ 5000</span>
              </div>
           </div>
 
