@@ -329,7 +329,6 @@ async function createWelcomeExperienceForNewUser(newUserId: string) {
 export async function ensureUserExists(userId: string, userData?: any) {
     // Helper function to extract user info from different Clerk data formats
     const getUserInfo = (data: any) => {
-        console.log("Extracting user info from:", JSON.stringify(data, null, 2));
 
         // Handle Clerk API format (from clerkClient.users.getUser)
         if (data?.firstName || data?.lastName || data?.emailAddresses) {
@@ -392,8 +391,6 @@ export async function ensureUserExists(userId: string, userData?: any) {
     };
 
     const userInfo = userData ? getUserInfo(userData) : { email: null, name: "User", avatar_url: null, username: null };
-
-    console.log("User info extracted:", userInfo);
 
     // Check if user exists - try full columns, fallback to safe set
     let existingUser: any = null;

@@ -48,8 +48,8 @@ window.addEventListener('error', (event) => {
 
 Sentry.init({
   dsn: "https://err_eb74f2b31931879fd2d80af35c4d347b5fc1d43c388b2e8490@ingest.errgent.com/15",
-  tracesSampleRate: 1.0,
-  sendDefaultPii: true,
+  tracesSampleRate: 0.1, // Sample 10% of traces to reduce costs
+  sendDefaultPii: false,
   ignoreErrors: [
     "You've added multiple <ClerkProvider> components",
     /ClerkProvider/i,

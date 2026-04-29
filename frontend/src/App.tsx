@@ -509,7 +509,11 @@ export default function App() {
       socket.off("connect", onConnect);
       socket.off("content_update", handleUpdate);
       socket.off("new_notification", handleNewNotification);
+      socket.off("notif_update");
+      socket.off("new_message");
+      socket.off("messages_read");
       window.removeEventListener("postCreated", handleLocalPostCreated);
+      window.removeEventListener("postDeleted", handleLocalPostDeleted);
       socket.off("xp_gain", handleXPGain);
       socket.off("level_up", handleLevelUp);
     };

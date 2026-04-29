@@ -94,7 +94,7 @@ export class GamificationService {
                         user_id: userId,
                         type: "system",
                         actor_id: userId,
-                        data: {
+                        metadata: {
                             title: "Level Up!",
                             message: `Congratulations! You've reached Level ${newLevel}.`,
                             new_level: newLevel

@@ -22,13 +22,11 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
   try {
     const user = await clerkClient.verifyToken(token);
-    console.log("Token verified successfully. User object:", JSON.stringify(user, null, 2));
     (req as any).user = user;
     next();
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Token verification error:", errorMessage);
-    console.error("Full error:", error);
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 }

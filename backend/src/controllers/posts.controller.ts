@@ -494,8 +494,7 @@ export async function createPost(req: Request, res: Response) {
     // Merge tags from both sources, remove duplicates
     const allTags = [...new Set([...postTags, ...extractedTags])].slice(0, 10);
 
-    // Log user object to debug
-    console.log("User object from Clerk:", JSON.stringify(user, null, 2));
+
 
     // Get user ID - Clerk uses 'sub' for the user ID
     const userId = user?.sub || user?.id || user?.userId;
@@ -526,7 +525,7 @@ export async function createPost(req: Request, res: Response) {
 
     try {
       const syncedUser = await ensureUserExists(userId as string, userDataForSync);
-      console.log("User synced to Supabase:", syncedUser?.id || userId);
+      console.log("User synced to Supabase:", userId);
     } catch (error: any) {
       console.error("Error ensuring user exists:", error?.message || error);
       console.error("Full error:", error);
@@ -573,7 +572,7 @@ export async function createPost(req: Request, res: Response) {
       });
     }
 
-    console.log("Post created successfully:", createdPost);
+    console.log("Post created successfully, ID:", createdPost.id);
 
     const formattedPost = formatPostData(createdPost);
 
@@ -1043,27 +1042,30 @@ export async function batchImpressions(req: Request, res: Response) {
         const inserts = newIdsToRecord.map(id => ({ post_id: id, user_id: userId }));
         await supabase.from("post_views").insert(inserts);
         
-        // 3. Increment counts
-        for (const id of newIdsToRecord) {
-           const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
-           if (rpcError) {
-             // Fallback
-             const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
-             await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
-           }
-           incrementedIds.push(id);
-        }
+        // 3. Increment counts in parallel (not sequential)
+        await Promise.allSettled(
+          newIdsToRecord.map(async (id) => {
+            const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+            if (rpcError) {
+              const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
+              await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
+            }
+            incrementedIds.push(id);
+          })
+        );
       }
     } else {
-      // Guest views (always increment)
-      for (const id of uniqueIds) {
-        const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
-        if (rpcError) {
-          const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
-          await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
-        }
-        incrementedIds.push(id);
-      }
+      // Guest views (always increment) - process in parallel
+      await Promise.allSettled(
+        uniqueIds.map(async (id) => {
+          const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+          if (rpcError) {
+            const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
+            await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
+          }
+          incrementedIds.push(id);
+        })
+      );
     }
 
     // 4. Fetch latest counts and broadcast real-time updates

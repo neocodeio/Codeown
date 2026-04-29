@@ -6,7 +6,7 @@ export function useMessages() {
     const { getToken, userId } = useClerkAuth();
 
     const { data: unreadCount = 0, refetch: refetchUnreadCount } = useQuery({
-        queryKey: ["messages-unread-count", userId],
+        queryKey: ["messages-unread-count"],
         queryFn: async () => {
             const token = await getToken();
             if (!token) return 0;

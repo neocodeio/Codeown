@@ -93,7 +93,7 @@ export function usePosts(limit: number = 30, filter: FeedFilter = "all", getToke
     isLoading,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["posts", limit, filter, tag ?? "", enabled],
+    queryKey: ["posts", limit, filter, tag ?? ""],
     enabled,
     queryFn: async ({ pageParam = 1 }) => {
       const token = getToken ? await getToken() : null;

@@ -55,6 +55,9 @@ export async function likePost(req: Request, res: Response) {
 
       const updatedCount = count || 0;
 
+      // Sync denormalized count
+      await supabase.from("posts").update({ like_count: updatedCount }).eq("id", postIdNum);
+
       // Emit real-time update
       const { emitUpdate } = await import("../lib/socket.js");
       emitUpdate("post_liked", { id: postIdNum, likeCount: updatedCount });
@@ -98,6 +101,9 @@ export async function likePost(req: Request, res: Response) {
         .eq("post_id", postIdNum);
 
       const updatedCount = count || 0;
+
+      // Sync denormalized count
+      await supabase.from("posts").update({ like_count: updatedCount }).eq("id", postIdNum);
 
       // Emit real-time update
       const { emitUpdate } = await import("../lib/socket.js");

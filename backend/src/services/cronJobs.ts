@@ -29,10 +29,10 @@ export function initializeCronJobs() {
         return;
       }
 
-      // 2. Fetch all users
+      // 2. Fetch all users with email preferences
       const { data: users, error: usersError } = await supabase
         .from('users')
-        .select('email, name');
+        .select('email, name, email_notifications_enabled');
 
       if (usersError) {
         throw usersError;
@@ -42,7 +42,7 @@ export function initializeCronJobs() {
         console.log(`[Cron] Sending weekly digest to ${users.length} users.`);
         // Batch send
         for (const user of users) {
-          if (user.email && user.name) {
+          if (user.email && user.name && user.email_notifications_enabled !== false) {
             await sendWeeklyDigestEmail(user.email, user.name, projects);
           }
         }
@@ -121,14 +121,14 @@ export function initializeCronJobs() {
       // Fetch all users
       const { data: users, error: usersError } = await supabase
         .from('users')
-        .select('id, email, name, streak_count');
+        .select('id, email, name, streak_count, email_notifications_enabled');
 
       if (usersError || !users) return;
 
       console.log(`[Cron] Preparing recaps for ${users.length} users.`);
 
       for (const user of users) {
-        if (!user.email) continue;
+        if (!user.email || user.email_notifications_enabled === false) continue;
 
         try {
           // 1. New followers
@@ -207,7 +207,7 @@ export function initializeCronJobs() {
       // Fetch all users to check their join dates
       const { data: users, error: usersError } = await supabase
         .from('users')
-        .select('id, email, name, username, created_at');
+        .select('id, email, name, username, created_at, email_notifications_enabled');
 
       if (usersError || !users) return;
 
@@ -238,7 +238,7 @@ export function initializeCronJobs() {
           console.log(`[Cron] User ${user.username} reached ${reachedMilestone.label} milestone!`);
           
           // 1. Send Email
-          if (user.email) {
+          if (user.email && (user as any).email_notifications_enabled !== false) {
             const { sendMilestoneEmail } = await import('../lib/email.js');
             await sendMilestoneEmail(user.email, user.name || 'User', reachedMilestone.label, reachedMilestone.emoji);
           }
