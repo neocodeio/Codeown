@@ -289,6 +289,12 @@ const PostCard = memo(({ post, onUpdated }: PostCardProps) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIsDeleteModalOpen(false);
+      
+      // Dispatch custom event for instant UI update across pages
+      window.dispatchEvent(new CustomEvent("postDeleted", { 
+        detail: { id: post.id } 
+      }));
+      
       onUpdated?.();
     } catch (error) {
       console.error("Error deleting post:", error);

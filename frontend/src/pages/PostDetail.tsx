@@ -325,12 +325,19 @@ export default function PostDetail() {
 
   const handlePostDelete = async () => {
     if (!post?.id) return;
+    const postId = post.id;
     setIsDeleting(true);
     try {
       const token = await getToken();
-      await api.delete(`/posts/${post.id}`, {
+      await api.delete(`/posts/${postId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
+      // Dispatch custom event for instant UI update across pages
+      window.dispatchEvent(new CustomEvent("postDeleted", { 
+        detail: { id: postId } 
+      }));
+      
       toast.success("Post deleted successfully");
       navigate("/");
     } catch (error) {

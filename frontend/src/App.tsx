@@ -211,6 +211,41 @@ export default function App() {
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
     };
 
+    const removePostFromCache = (postId: string | number) => {
+      const id = Number(postId);
+      
+      // 1. Update main feed (infinite query)
+      queryClient.setQueriesData({ queryKey: ["posts"], exact: false }, (oldData: any) => {
+        if (!oldData || !oldData.pages) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            posts: page.posts?.filter((p: any) => Number(p.id) !== id) || []
+          }))
+        };
+      });
+
+      // 2. Update user profile posts
+      queryClient.setQueriesData({ queryKey: ["userPosts"], exact: false }, (oldData: any) => {
+        if (!oldData || !Array.isArray(oldData)) return oldData;
+        return oldData.filter((p: any) => Number(p.id) !== id);
+      });
+
+      // 3. Update saved posts
+      queryClient.setQueriesData({ queryKey: ["savedPosts"], exact: false }, (oldData: any) => {
+        if (!oldData || !Array.isArray(oldData)) return oldData;
+        return oldData.filter((p: any) => Number(p.id) !== id);
+      });
+
+      // 4. Remove specific post cache
+      queryClient.removeQueries({ queryKey: ["post", String(id)] });
+
+      // 5. Invalidate related caches
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    };
+
     const handleUpdate = ({ type, data }: { type: string, data: any }) => {
       if (type.startsWith("post_") || (type === "comment_liked" && data.type === "post")) {
         if (type === "post_created") {
@@ -218,6 +253,8 @@ export default function App() {
             detail: { ...data, _isFromSocket: true } 
           }));
           updatePostCache(data);
+        } else if (type === "post_deleted") {
+          removePostFromCache(data.id);
         } else {
           queryClient.invalidateQueries({ queryKey: ["posts"], exact: false });
           if (data.id || data.postId) {
@@ -275,6 +312,13 @@ export default function App() {
       updatePostCache(e.detail);
     };
     window.addEventListener("postCreated", handleLocalPostCreated);
+
+    const handleLocalPostDeleted = (e: any) => {
+      // If it's from socket, handleUpdate already called removePostFromCache
+      if (e.detail?._isFromSocket) return;
+      removePostFromCache(e.detail.id);
+    };
+    window.addEventListener("postDeleted", handleLocalPostDeleted);
 
     const handleNewNotification = (notif: { type: string, actorId: string, data?: any }) => {
       // FIX: Use correctly matching query keys from useNotifications.ts
