@@ -24,7 +24,7 @@ import {
   Moon02Icon,
   DocumentCodeIcon,
   Building02Icon,
-  MedalIcon,
+
   Chart01Icon,
   ArrowRight02Icon,
   PencilIcon
@@ -225,7 +225,7 @@ export default function Navbar() {
         <div onClick={() => handleSilentNavigate("/search")} className="sidebar-nav-link" style={{ ...linkStyle("/search"), cursor: "pointer" }}><HugeiconsIcon icon={Search01Icon} size={20} /><span>Search</span></div>
         <div onClick={() => handleSilentNavigate("/articles")} className="sidebar-nav-link" style={{ ...linkStyle("/articles"), cursor: "pointer" }}><HugeiconsIcon icon={PencilIcon} size={20} /><span>Articles</span></div>
         <div onClick={() => handleSilentNavigate("/leaderboard")} className="sidebar-nav-link" style={{ ...linkStyle("/leaderboard"), cursor: "pointer" }}><HugeiconsIcon icon={UserGroupIcon} size={20} /><span>Builders</span></div>
-        <div onClick={() => handleSilentNavigate("/ogs")} className="sidebar-nav-link" style={{ ...linkStyle("/ogs"), cursor: "pointer" }}><HugeiconsIcon icon={MedalIcon} size={20} /><span>Our OGs</span></div>
+
         <div onClick={() => handleSilentNavigate("/dashboard")} className="sidebar-nav-link" style={{ ...linkStyle("/dashboard"), cursor: "pointer" }}><HugeiconsIcon icon={Chart01Icon} size={20} /><span>Analytics</span></div>
         <div onClick={() => handleSilentNavigate("/startups")} className="sidebar-nav-link" style={{ ...linkStyle("/startups"), cursor: "pointer" }}><HugeiconsIcon icon={Building02Icon} size={20} /><span>Startups</span></div>
         <div onClick={() => handleSilentNavigate("/changelog")} className="sidebar-nav-link" style={{ ...linkStyle("/changelog"), cursor: "pointer" }}><HugeiconsIcon icon={DocumentCodeIcon} size={20} /><span>Changelog</span></div>
@@ -514,7 +514,7 @@ export default function Navbar() {
               <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", margin: "8px 0" }} />
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Building02Icon} size={18} /> Startups Hub</div>
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/dashboard"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Chart01Icon} size={18} /> Analytics</div>
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/ogs"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={MedalIcon} size={18} /> Our OGs</div>
+
               <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/changelog"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={DocumentCodeIcon} size={18} /> Changelog</div>
             </div>
           )}
