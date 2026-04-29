@@ -632,6 +632,30 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                         <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "6px" }}>Description</label>
                         <textarea style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box", resize: "none" }} rows={2} value={work.description} onChange={(e) => handleUpdateWork(index, "description", e.target.value)} placeholder="Short summary of your impact" />
                       </div>
+
+                      {index === workExperience.length - 1 && (
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px" }}>
+                          <button 
+                            type="button" 
+                            onClick={handleAddWork}
+                            style={{ 
+                              padding: "8px 16px", 
+                              borderRadius: "var(--radius-sm)", 
+                              fontSize: "12px", 
+                              fontWeight: 700, 
+                              backgroundColor: "var(--bg-hover)", 
+                              color: "var(--text-primary)", 
+                              border: "0.5px solid var(--border-hairline)",
+                              cursor: "pointer",
+                              transition: "all 0.15s ease"
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--text-primary)"; e.currentTarget.style.color = "var(--bg-page)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+                          >
+                            + Add another work
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                   {workExperience.length === 0 && <p style={{ fontSize: "12px", color: "var(--text-tertiary)", fontStyle: "italic" }}>No work history added.</p>}
@@ -671,6 +695,30 @@ export default function EditProfileModal({ isOpen, onClose, onUpdated, currentUs
                           <input style={{ width: "100%", padding: "10px 14px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", fontSize: "13px", background: "var(--bg-hover)", color: "var(--text-primary)", outline: "none", boxSizing: "border-box" }} value={edu.end_date} onChange={(e) => handleUpdateEducation(index, "end_date", e.target.value)} placeholder="e.g. 2021" />
                         </div>
                       </div>
+
+                      {index === education.length - 1 && (
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px" }}>
+                          <button 
+                            type="button" 
+                            onClick={handleAddEducation}
+                            style={{ 
+                              padding: "8px 16px", 
+                              borderRadius: "var(--radius-sm)", 
+                              fontSize: "12px", 
+                              fontWeight: 700, 
+                              backgroundColor: "var(--bg-hover)", 
+                              color: "var(--text-primary)", 
+                              border: "0.5px solid var(--border-hairline)",
+                              cursor: "pointer",
+                              transition: "all 0.15s ease"
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--text-primary)"; e.currentTarget.style.color = "var(--bg-page)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+                          >
+                            + Add another education
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                   {education.length === 0 && <p style={{ fontSize: "12px", color: "var(--text-tertiary)", fontStyle: "italic" }}>No education history added.</p>}
