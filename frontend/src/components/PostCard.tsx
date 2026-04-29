@@ -103,7 +103,7 @@ const PostCard = memo(({ post, onUpdated }: PostCardProps) => {
       if (!type || !data) return;
 
       // 1. Handle view updates
-      if (type === "post_viewed" && data.postId === post.id) {
+      if (type === "post_viewed" && String(data.postId) === String(post.id)) {
         setViewCountLocal(data.viewCount);
       }
 

@@ -1024,23 +1024,61 @@ export async function batchImpressions(req: Request, res: Response) {
       return res.json({ success: true, count: 0 });
     }
 
-    // Process up to 20 impressions at once to prevent timeouts
-    const batch = ids.slice(0, 20);
-    
-    // We run these in sequence to avoid hitting Supabase rate limits on parallel unique inserts,
-    // but they are now localized to the server-supabase network leg instead of client-server.
-    for (const id of batch) {
-       // Minimal logic to increment count
-       try {
-         await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
-       } catch (e) {
-         // Fallback increment
-         const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
-         await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
-       }
+    const uniqueIds = [...new Set(ids)].slice(0, 50); // Deduplicate and limit to 50
+    const incrementedIds: any[] = [];
+
+    if (userId) {
+      // 1. Check which views are new for this user
+      const { data: existingViews } = await supabase
+        .from("post_views")
+        .select("post_id")
+        .eq("user_id", userId)
+        .in("post_id", uniqueIds);
+      
+      const viewedIds = new Set(existingViews?.map(v => v.post_id) || []);
+      const newIdsToRecord = uniqueIds.filter(id => !viewedIds.has(id));
+
+      if (newIdsToRecord.length > 0) {
+        // 2. Bulk insert new views (ignore duplicates just in case)
+        const inserts = newIdsToRecord.map(id => ({ post_id: id, user_id: userId }));
+        await supabase.from("post_views").insert(inserts);
+        
+        // 3. Increment counts
+        for (const id of newIdsToRecord) {
+           const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+           if (rpcError) {
+             // Fallback
+             const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
+             await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
+           }
+           incrementedIds.push(id);
+        }
+      }
+    } else {
+      // Guest views (always increment)
+      for (const id of uniqueIds) {
+        const { error: rpcError } = await supabase.rpc('increment_view_count', { row_id: id, table_name: 'posts' });
+        if (rpcError) {
+          const { data: p } = await supabase.from("posts").select("view_count").eq("id", id).single();
+          await supabase.from("posts").update({ view_count: (p?.view_count || 0) + 1 }).eq("id", id);
+        }
+        incrementedIds.push(id);
+      }
     }
 
-    return res.json({ success: true, count: batch.length });
+    // 4. Fetch latest counts and broadcast real-time updates
+    if (incrementedIds.length > 0) {
+       const { data: posts } = await supabase
+         .from("posts")
+         .select("id, view_count")
+         .in("id", incrementedIds);
+       
+       posts?.forEach(p => {
+         emitUpdate("post_viewed", { postId: p.id, viewCount: p.view_count });
+       });
+    }
+
+    return res.json({ success: true, count: incrementedIds.length });
   } catch (err: any) {
     console.error("Error in batchImpressions:", err);
     return res.status(500).json({ error: "Internal server error" });
