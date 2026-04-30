@@ -27,7 +27,8 @@ import {
 
   Chart01Icon,
   ArrowRight02Icon,
-  PencilIcon
+  PencilIcon,
+  ChatFeedbackIcon
 } from "@hugeicons/core-free-icons";
 import { useTheme } from "../context/ThemeContext";
 import logo from "../assets/icon-removebg.png";
@@ -177,7 +178,24 @@ export default function Navbar() {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    const handleOpenPostModal = () => {
+      setIsModalOpen(true);
+      setIsCreateMenuOpen(false);
+    };
+    
+    const handleOpenPostMenu = () => {
+      setIsCreateMenuOpen(prev => !prev);
+    };
+
+    window.addEventListener("openPostModal", handleOpenPostModal);
+    window.addEventListener("openPostMenu", handleOpenPostMenu);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("openPostModal", handleOpenPostModal);
+      window.removeEventListener("openPostMenu", handleOpenPostMenu);
+    };
   }, []);
 
   const linkStyle = (path: string) => {
@@ -459,28 +477,66 @@ export default function Navbar() {
   return (
     <>
       <div style={{
-        position: "fixed",
+        position: "sticky",
         top: 0,
         left: 0,
         right: 0,
-        height: "64px",
+        height: "60px",
         backgroundColor: "var(--bg-page)",
-        borderBottom: "0.5px solid var(--border-hairline)",
+        borderBottom: "1px solid var(--border-hairline)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 20px",
-        zIndex: 2000,
-        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        transform: isVisible ? "translateY(0)" : "translateY(-100%)"
+        padding: "0 16px",
+        zIndex: 1000
       }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
-          <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "24px", width: "auto" }} />
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>Codeown</span>
+        {/* Left: Profile */}
+        <div 
+          onClick={() => {
+            const username = profile?.username || user?.username;
+            const path = username ? `/${username}` : "/profile";
+            handleSilentNavigate(path);
+          }}
+          style={{ flex: 1, display: "flex", justifyContent: "flex-start", cursor: "pointer" }}
+        >
+          {userAvatarUrl ? (
+            <img src={userAvatarUrl} alt="" style={{ width: "32px", height: "32px", borderRadius: "50%", border: "1px solid var(--border-hairline)", objectFit: "cover" }} />
+          ) : (
+            <HugeiconsIcon icon={UserIcon} size={24} color="var(--text-primary)" />
+          )}
+        </div>
+
+        {/* Middle: Logo */}
+        <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          <img src={theme === "dark" ? logoWhite : logo} alt="Codeown" style={{ height: "32px", width: "32px", borderRadius: "8px", objectFit: "contain" }} />
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <button onClick={toggleTheme} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-tertiary)", padding: "8px" }}>{theme === 'light' ? <HugeiconsIcon icon={Moon02Icon} size={20} /> : <HugeiconsIcon icon={Sun03Icon} size={20} />}</button>
-          {isSignedIn && <div style={{ padding: "4px" }}><StreakBadge count={profile?.streak_count || 0} /></div>}
+
+        {/* Right: Streak & Notifications */}
+        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "12px" }}>
+          {isSignedIn && <StreakBadge count={profile?.streak_count || 0} />}
+          <div onClick={() => handleSilentNavigate("/notifications")} style={{ position: "relative", cursor: "pointer", color: location.pathname === "/notifications" ? "var(--text-primary)" : "var(--text-tertiary)", display: "flex", alignItems: "center" }}>
+            <HugeiconsIcon icon={Notification01Icon} size={24} />
+            {unreadCount > 0 && (
+              <span style={{ 
+                position: "absolute", 
+                top: "-4px", 
+                right: "-4px", 
+                minWidth: "16px", 
+                height: "16px", 
+                backgroundColor: "#ef4444", 
+                color: "#fff", 
+                fontSize: "9px", 
+                borderRadius: "50%", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                fontWeight: 700,
+                border: "2px solid var(--bg-page)"
+              }}>
+                {unreadCount}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -500,50 +556,77 @@ export default function Navbar() {
         transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         transform: isVisible ? "translateY(0)" : "translateY(100%)"
       }}>
-        <div onClick={() => handleSilentNavigate("/")} style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer", color: location.pathname === "/" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Home01Icon} size={22} /></div>
-        <div onClick={() => handleSilentNavigate("/search")} style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Search01Icon} size={22} /></div>
+        <div onClick={() => handleSilentNavigate("/")} style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer", color: location.pathname === "/" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Home01Icon} size={24} /></div>
+        <div onClick={() => handleSilentNavigate("/search")} style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer", color: location.pathname === "/search" ? "var(--text-primary)" : "var(--text-tertiary)" }}><HugeiconsIcon icon={Search01Icon} size={24} /></div>
 
-        <div onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)} style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: isCreateMenuOpen ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <HugeiconsIcon icon={PlusSignIcon} size={26} style={{ transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
-          {isCreateMenuOpen && (
-            <div style={{ position: "absolute", bottom: "80px", left: "50%", transform: "translateX(-50%)", backgroundColor: "var(--bg-page)", border: "1px solid var(--border-hairline)", borderRadius: "var(--radius-md)", padding: "10px", minWidth: "220px", zIndex: 2001, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}>
-              <style>{`.mobile-menu-item { padding: 12px 16px; display: flex; alignItems: center; gap: 12px; cursor: pointer; color: var(--text-primary); font-weight: 700; font-size: 15px; border-radius: 16px; transition: all 0.2s; } .mobile-menu-item:active { background: var(--bg-hover); transform: scale(0.98); }`}</style>
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsModalOpen(true); }}><HugeiconsIcon icon={PlusSignIcon} size={18} /> Add post</div>
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/articles"); }}><HugeiconsIcon icon={PencilIcon} size={18} /> Articles</div>
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}><HugeiconsIcon icon={Rocket01Icon} size={18} /> Launch project</div>
-              <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", margin: "8px 0" }} />
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Building02Icon} size={18} /> Startups Hub</div>
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/dashboard"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Chart01Icon} size={18} /> Analytics</div>
-
-              <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/changelog"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={DocumentCodeIcon} size={18} /> Changelog</div>
-            </div>
-          )}
+        <div onClick={() => window.dispatchEvent(new CustomEvent("openPostMenu"))} style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", color: isCreateMenuOpen ? "var(--text-primary)" : "var(--text-tertiary)" }}>
+          <HugeiconsIcon 
+            icon={PlusSignIcon} 
+            size={28} 
+            style={{ 
+              transform: isCreateMenuOpen ? "rotate(45deg)" : "rotate(0deg)", 
+              transition: "transform 0.2s" 
+            }} 
+          />
         </div>
 
         <div onClick={() => handleSilentNavigate("/messages")} style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", cursor: "pointer", color: location.pathname === "/messages" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <HugeiconsIcon icon={Chat01Icon} size={22} />
-          {messageUnreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{messageUnreadCount}</span>}
+          <HugeiconsIcon icon={Chat01Icon} size={24} />
+          {messageUnreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "20%", minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, border: "2px solid var(--bg-page)" }}>{messageUnreadCount}</span>}
         </div>
 
-        <div onClick={() => handleSilentNavigate("/notifications")} style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative", cursor: "pointer", color: location.pathname === "/notifications" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
-          <HugeiconsIcon icon={Notification01Icon} size={22} />
-          {unreadCount > 0 && <span style={{ position: "absolute", top: "14px", right: "15%", minWidth: "16px", height: "16px", backgroundColor: "#ef4444", color: "#fff", fontSize: "9px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{unreadCount}</span>}
-        </div>
-
-        <div
-          onClick={() => {
-            const username = profile?.username || user?.username;
-            const path = username ? `/${username}` : "/profile";
-            handleSilentNavigate(path);
-          }}
-          style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer" }}
-        >
-          {userAvatarUrl ? <img src={userAvatarUrl} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", border: location.pathname.includes('/profile') || (profile?.username && location.pathname.includes(profile.username)) ? "1.5px solid var(--text-primary)" : "1px solid var(--border-hairline)", objectFit: "cover" }} /> : <HugeiconsIcon icon={UserIcon} size={22} />}
+        <div onClick={() => handleSilentNavigate("/articles")} style={{ flex: 1, display: "flex", justifyContent: "center", cursor: "pointer", color: location.pathname === "/articles" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
+          <HugeiconsIcon icon={PencilIcon} size={24} />
         </div>
       </div>
 
       <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreated={() => {}} />
       <ProjectModal isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} onUpdated={() => { }} />
+
+      {/* Mobile Create Menu Overlay */}
+      {isMobile && isCreateMenuOpen && (
+        <div 
+          onClick={() => setIsCreateMenuOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.3)",
+            zIndex: 2500,
+            backdropFilter: "blur(2px)",
+            animation: "fadeIn 0.2s ease-out"
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              position: "absolute", 
+              bottom: "80px", 
+              left: "50%", 
+              transform: "translateX(-50%)", 
+              backgroundColor: "var(--bg-page)", 
+              border: "1px solid var(--border-hairline)", 
+              borderRadius: "24px", 
+              padding: "12px", 
+              minWidth: "220px", 
+              boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+              animation: "reactionFadeUpSimple 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+            }}
+          >
+            <style>{`
+              .mobile-menu-item { padding: 14px 18px; display: flex; align-items: center; gap: 14px; cursor: pointer; color: var(--text-primary); font-weight: 700; font-size: 15px; border-radius: 16px; transition: all 0.2s; } 
+              .mobile-menu-item:active { background: var(--bg-hover); transform: scale(0.98); }
+            `}</style>
+            <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); window.dispatchEvent(new CustomEvent("openFeedback")); }}><HugeiconsIcon icon={ChatFeedbackIcon} size={18} /> Feedback</div>
+            <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/write-article"); }}><HugeiconsIcon icon={PencilIcon} size={18} /> Write Article</div>
+            <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); setIsProjectModalOpen(true); }}><HugeiconsIcon icon={Rocket01Icon} size={18} /> Launch project</div>
+            <div style={{ height: "1px", backgroundColor: "var(--border-hairline)", margin: "8px 0" }} />
+            <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/articles"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={PencilIcon} size={18} /> All Articles</div>
+            <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Building02Icon} size={18} /> Startups Hub</div>
+            <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/dashboard"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Chart01Icon} size={18} /> Analytics</div>
+            <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/changelog"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={DocumentCodeIcon} size={18} /> Changelog</div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import api from "../api/axios";
 import { X, CheckCircle } from "phosphor-react";
 import { useUser } from "@clerk/clerk-react";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ChatFeedbackIcon, Cancel01Icon, SentIcon } from "@hugeicons/core-free-icons";
+import { ChatFeedbackIcon, Cancel01Icon, SentIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
@@ -55,6 +55,15 @@ export default function FeedbackButton() {
     setOpen(false);
     reset();
   };
+
+  useEffect(() => {
+    const handleOpenFeedback = () => {
+      setOpen(true);
+      reset();
+    };
+    window.addEventListener("openFeedback", handleOpenFeedback);
+    return () => window.removeEventListener("openFeedback", handleOpenFeedback);
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -346,8 +355,13 @@ export default function FeedbackButton() {
     <>
       <button
         onClick={() => {
-          setOpen(true);
-          reset();
+          if (isMobile) {
+            // On mobile, this button acts as "Add Post" (triggering the post modal directly)
+            window.dispatchEvent(new CustomEvent("openPostModal"));
+          } else {
+            setOpen(true);
+            reset();
+          }
         }}
         style={{
           position: "fixed",
@@ -368,9 +382,9 @@ export default function FeedbackButton() {
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
         className="btn-feedback-trigger"
-        aria-label="Feedback"
+        aria-label={isMobile ? "Add Post" : "Feedback"}
       >
-        <HugeiconsIcon icon={ChatFeedbackIcon} size={isMobile ? 22 : 24} />
+        <HugeiconsIcon icon={isMobile ? PlusSignIcon : ChatFeedbackIcon} size={isMobile ? 22 : 24} />
       </button>
       {open && createPortal(modal, document.body)}
       <style>{`

@@ -685,7 +685,7 @@ export default function App() {
           maxWidth: (isStandardPage && isDesktop) ? (location.pathname.startsWith("/messages") ? "100%" : "920px") : "100%",
           position: "relative",
           minWidth: 0,
-          paddingTop: isMobile && shouldShowNavbar ? "64px" : "0px",
+          paddingTop: "0px",
           paddingBottom: isMobile && shouldShowNavbar ? "80px" : "0px"
         }}
       >

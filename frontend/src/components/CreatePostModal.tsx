@@ -263,6 +263,7 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
 
   return createPortal(
     <div
+      className="modal-overlay"
       style={{
         position: "fixed",
         inset: 0,
@@ -273,7 +274,6 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: "16px",
       }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
@@ -334,7 +334,14 @@ export default function CreatePostModal({ isOpen, onClose, onCreated, initialPro
             color: var(--bg-page);
           }
           
-          @media (max-width: 640px) {
+          .modal-overlay {
+            padding: 16px;
+          }
+
+          @media (max-width: 768px) {
+            .modal-overlay {
+              padding: 0 !important;
+            }
             .modal-content-wrapper {
               max-height: 100vh !important;
               max-width: 100vw !important;
