@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useClerkAuth } from "../hooks/useClerkAuth";
@@ -7,6 +7,10 @@ import {
   ArrowLeft01Icon,
   Image01Icon,
   LoadingIcon,
+  ArrowDown01Icon,
+  TextIcon,
+  Heading02Icon,
+  Heading03Icon
 } from "@hugeicons/core-free-icons";
 import { toast } from "react-toastify";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -21,12 +25,15 @@ export default function WriteArticle() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
+  const [isFormatMenuOpen, setIsFormatMenuOpen] = useState(false);
+  const [activeFormat, setActiveFormat] = useState("Text");
   const [isUploadingInline, setIsUploadingInline] = useState(false);
   const { getToken } = useClerkAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inlineImageInputRef = useRef<HTMLInputElement>(null);
   const savedRangeRef = useRef<Range | null>(null);
+  const formatRangeRef = useRef<Range | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowSize();
   const isDesktop = width >= 1200;
@@ -34,6 +41,24 @@ export default function WriteArticle() {
   const updateFormatState = () => {
     setIsBold(document.queryCommandState('bold'));
     setIsItalic(document.queryCommandState('italic'));
+  };
+
+  const saveSelection = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      formatRangeRef.current = sel.getRangeAt(0).cloneRange();
+    }
+  };
+
+  const restoreSelection = () => {
+    if (formatRangeRef.current && contentRef.current) {
+      contentRef.current.focus();
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(formatRangeRef.current);
+      }
+    }
   };
 
   const execCmd = (command: string, value?: string) => {
@@ -45,7 +70,101 @@ export default function WriteArticle() {
     }
   };
 
+  const applyFormat = (tag: string, formatLabel: string) => {
+    if (contentRef.current) {
+      // If there's a saved selection inside the editor, restore and apply
+      if (formatRangeRef.current && contentRef.current.contains(formatRangeRef.current.startContainer)) {
+        restoreSelection();
+        document.execCommand('formatBlock', false, tag);
+      } else {
+        // No cursor in editor yet (empty editor or never clicked inside)
+        // Create an empty block of the chosen format and place cursor inside
+        contentRef.current.focus();
+        const block = document.createElement(tag);
+        block.appendChild(document.createElement('br'));
+        contentRef.current.appendChild(block);
+        // Place cursor inside the new block
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.setStart(block, 0);
+        range.collapse(true);
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+      }
+      setContent(contentRef.current.innerHTML);
+    }
+    setActiveFormat(formatLabel);
+    setIsFormatMenuOpen(false);
+    formatRangeRef.current = null;
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // When pressing Enter inside a heading, keep the same heading format
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+
+      const range = selection.getRangeAt(0);
+      let node: Node | null = range.startContainer;
+
+      // Walk up to find the closest block element
+      let blockParent: HTMLElement | null = null;
+      while (node && node !== contentRef.current) {
+        if (node instanceof HTMLElement) {
+          const tagName = node.tagName;
+          if (tagName === 'H2' || tagName === 'H3') {
+            blockParent = node;
+            break;
+          }
+        }
+        node = node.parentNode;
+      }
+
+      if (blockParent) {
+        e.preventDefault();
+        const tag = blockParent.tagName; // "H2" or "H3"
+
+        // Split: get text after cursor to move to the new block
+        const afterRange = document.createRange();
+        afterRange.setStart(range.endContainer, range.endOffset);
+        afterRange.setEnd(blockParent, blockParent.childNodes.length);
+        const afterContent = afterRange.extractContents();
+
+        // Create new block of the same type
+        const newBlock = document.createElement(tag);
+        if (afterContent.textContent) {
+          newBlock.appendChild(afterContent);
+        } else {
+          newBlock.appendChild(document.createElement('br'));
+        }
+
+        // Insert new block after current heading
+        if (blockParent.nextSibling) {
+          blockParent.parentNode?.insertBefore(newBlock, blockParent.nextSibling);
+        } else {
+          blockParent.parentNode?.appendChild(newBlock);
+        }
+
+        // If current block is now empty, add a <br> placeholder
+        if (!blockParent.textContent) {
+          blockParent.innerHTML = '<br>';
+        }
+
+        // Place cursor at start of the new block
+        const newRange = document.createRange();
+        newRange.setStart(newBlock, 0);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+
+        if (contentRef.current) {
+          setContent(contentRef.current.innerHTML);
+        }
+        return;
+      }
+    }
+
+    // Auto-link detection on space or enter
     if (e.key === ' ' || e.key === 'Enter') {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0) return;
@@ -180,6 +299,18 @@ export default function WriteArticle() {
       }
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (formatMenuRef.current && !formatMenuRef.current.contains(event.target as Node)) {
+        setIsFormatMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const formatMenuRef = useRef<HTMLDivElement>(null);
 
   const handlePublish = async () => {
     // Get plain text length for validation
@@ -431,8 +562,77 @@ export default function WriteArticle() {
             color: "var(--text-secondary)",
             alignItems: "center",
             border: "0.5px solid var(--border-hairline)",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.02)"
+            boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
+            position: "relative"
           }}>
+             {/* Format Selector */}
+             <div ref={formatMenuRef} style={{ position: "relative" }}>
+                <button
+                  onMouseDown={(e) => { e.preventDefault(); saveSelection(); setIsFormatMenuOpen(!isFormatMenuOpen); }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    background: "none",
+                    border: "none",
+                    color: "var(--text-primary)",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    padding: "4px 8px",
+                    borderRadius: "6px",
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <span style={{ minWidth: "24px", textAlign: "center" }}>
+                    {activeFormat === "Text" ? <HugeiconsIcon icon={TextIcon} size={18} /> : activeFormat === "H2" ? "H2" : "H3"}
+                  </span>
+                  <HugeiconsIcon icon={ArrowDown01Icon} size={14} style={{ transform: isFormatMenuOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+                </button>
+
+                {isFormatMenuOpen && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "100%",
+                    left: 0,
+                    marginBottom: "12px",
+                    backgroundColor: "var(--bg-page)",
+                    border: "1px solid var(--border-hairline)",
+                    borderRadius: "12px",
+                    padding: "6px",
+                    minWidth: "160px",
+                    zIndex: 1000,
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                    animation: "reactionFadeUpSimple 0.15s ease-out"
+                  }}>
+                    <div
+                      onMouseDown={(e) => { e.preventDefault(); applyFormat('P', 'Text'); }}
+                      className="format-option"
+                      style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "8px", fontSize: "14px", fontWeight: 600 }}
+                    >
+                      <HugeiconsIcon icon={TextIcon} size={18} /> Text
+                    </div>
+                    <div
+                      onMouseDown={(e) => { e.preventDefault(); applyFormat('H2', 'H2'); }}
+                      className="format-option"
+                      style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "8px", fontSize: "14px", fontWeight: 600 }}
+                    >
+                      <HugeiconsIcon icon={Heading02Icon} size={18} /> Heading 2
+                    </div>
+                    <div
+                      onMouseDown={(e) => { e.preventDefault(); applyFormat('H3', 'H3'); }}
+                      className="format-option"
+                      style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", borderRadius: "8px", fontSize: "14px", fontWeight: 600 }}
+                    >
+                      <HugeiconsIcon icon={Heading03Icon} size={18} /> Heading 3
+                    </div>
+                  </div>
+                )}
+             </div>
+
+             <div style={{ width: "1px", height: "16px", backgroundColor: "var(--border-hairline)" }} />
              <button 
                 onClick={() => execCmd('bold')}
                 title="Bold" 
@@ -576,6 +776,32 @@ export default function WriteArticle() {
           color: #3b82f6;
           text-decoration: underline;
           cursor: pointer;
+        }
+
+        .format-option:hover {
+          background-color: var(--bg-hover);
+          color: var(--text-primary);
+        }
+
+        .rich-text-editor h2 {
+          font-size: 28px !important;
+          font-weight: 800 !important;
+          margin: 24px 0 12px 0;
+          letter-spacing: -0.02em;
+          display: block;
+        }
+
+        .rich-text-editor h3 {
+          font-size: 22px !important;
+          font-weight: 700 !important;
+          margin: 20px 0 10px 0;
+          letter-spacing: -0.01em;
+          display: block;
+        }
+
+        .rich-text-editor p {
+          margin-bottom: 16px;
+          font-size: 18px !important;
         }
       `}</style>
     </div>

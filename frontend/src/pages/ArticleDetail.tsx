@@ -405,6 +405,27 @@ export default function ArticleDetail() {
         color: #3b82f6;
         text-decoration: underline;
       }
+
+      .article-content h2 {
+        font-size: 28px !important;
+        font-weight: 800 !important;
+        margin: 32px 0 16px 0;
+        letter-spacing: -0.02em;
+        line-height: 1.3;
+      }
+
+      .article-content h3 {
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        margin: 24px 0 12px 0;
+        letter-spacing: -0.01em;
+        line-height: 1.4;
+      }
+
+      .article-content p {
+        margin-bottom: 20px;
+        font-size: 19px !important;
+      }
     `}</style>
     <ConfirmDeleteModal
       isOpen={isDeleteModalOpen}
