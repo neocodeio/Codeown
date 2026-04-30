@@ -807,6 +807,8 @@ export default function Messages() {
       return Array.isArray(res.data) ? res.data : [];
     },
     enabled: !!activeConvo && activeConvo.id !== 0,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   const hasAttemptedRef = useRef(false);
@@ -863,6 +865,9 @@ export default function Messages() {
       }
       setTimeout(() => scrollToBottom(true), 150);
 
+      // Force refetch messages for this conversation to get fresh data
+      queryClient.invalidateQueries({ queryKey: ['messages', activeConvo.id] });
+
       // Clear unread count for this specific conversation
       setConversations(prev => prev.map(c =>
         String(c.id) === String(activeConvo.id) ? { ...c, unread_count: 0 } : c
@@ -877,10 +882,16 @@ export default function Messages() {
 
   useEffect(() => {
     // Update local messages when the background query finishes
-    // Added guards to prevent infinite loops
     if (!qMessagesLoading && qMessages) {
-      const hasChanged = qMessages.length !== messages.filter(m => m.status !== 'sending').length ||
-        (qMessages.length > 0 && messages.length > 0 && qMessages[0].id !== messages[0].id);
+      const nonSendingMessages = messages.filter(m => m.status !== 'sending');
+      const lastQ = qMessages[qMessages.length - 1];
+      const lastLocal = nonSendingMessages[nonSendingMessages.length - 1];
+
+      const hasChanged = qMessages.length !== nonSendingMessages.length ||
+        (qMessages.length > 0 && nonSendingMessages.length > 0 && (
+          qMessages[0].id !== nonSendingMessages[0].id ||
+          lastQ?.id !== lastLocal?.id
+        ));
 
       if (hasChanged) {
         setMessages(qMessages);
