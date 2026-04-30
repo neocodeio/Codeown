@@ -365,7 +365,7 @@ const ConversationItem = memo(({
               <span style={{ color: "var(--text-tertiary)" }}>No messages</span>
             )}
           </div>
-          {(convo.unread_count ?? 0) > 0 && <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#1D9BF0", flexShrink: 0 }} />}
+          {(convo.unread_count ?? 0) > 0 && <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#000000", flexShrink: 0 }} />}
         </div>
       </div>
     </div>
