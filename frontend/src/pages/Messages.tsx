@@ -365,7 +365,7 @@ const ConversationItem = memo(({
               <span style={{ color: "var(--text-tertiary)" }}>No messages</span>
             )}
           </div>
-          {(convo.unread_count ?? 0) > 0 && <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "var(--text-primary)", flexShrink: 0 }} />}
+          {(convo.unread_count ?? 0) > 0 && <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#1D9BF0", flexShrink: 0 }} />}
         </div>
       </div>
     </div>
@@ -835,22 +835,9 @@ export default function Messages() {
         }
       }
     }
-    
-    // If we land on Messages page and there's a global unread count but no visible unread convos,
-    // or just to be safe and synced, mark all as read.
-    const markAllRead = async () => {
-      try {
-        const token = await getToken();
-        await api.put("/messages/mark-all-read", {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        queryClient.invalidateQueries({ queryKey: ["messages-unread-count"] });
-      } catch (err) {}
-    };
-
-    // Only run if we are signed in and on the messages page
+    // Clear the global unread badge in navbar (this page is open, user sees the list)
     if (currentUser?.id) {
-       markAllRead();
+      queryClient.invalidateQueries({ queryKey: ["messages-unread-count"] });
     }
   }, [qConversations, targetUserId, activeConvo, startPlaceholderConvo, getToken, currentUser?.id, queryClient]);
 
@@ -865,6 +852,11 @@ export default function Messages() {
         setMessages([]);
       }
       setTimeout(() => scrollToBottom(true), 150);
+
+      // Clear unread count for this specific conversation
+      setConversations(prev => prev.map(c =>
+        String(c.id) === String(activeConvo.id) ? { ...c, unread_count: 0 } : c
+      ));
 
       // Reset total unread count badge in Navbar
       queryClient.invalidateQueries({ queryKey: ["messages-unread-count"] });
