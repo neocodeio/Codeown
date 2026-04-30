@@ -392,7 +392,7 @@ export default function Profile() {
 
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end", flexShrink: 0, marginTop: "4px" }}>
                     {!isMobile && (
-                      <button onClick={() => { const u = userProfile?.username || user?.username; if (u) navigate(`/portfolio/${u}`); }} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "none", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"} onMouseLeave={(e) => e.currentTarget.style.opacity = "1"} >
+                      <button onClick={() => { const u = userProfile?.username || user?.username; if (u) navigate(`/portfolio/${u}`); }} style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", fontSize: "12px", fontWeight: 600, border: "none", backgroundColor: "var(--text-primary)", color: "var(--bg-page)", cursor: "pointer", display: "none", alignItems: "center", gap: "8px", whiteSpace: "nowrap", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"} onMouseLeave={(e) => e.currentTarget.style.opacity = "1"} >
                         Portfolio
                       </button>
                     )}
