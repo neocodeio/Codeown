@@ -348,6 +348,7 @@ export default function App() {
 
     socket.on("new_message", () => {
       queryClient.invalidateQueries({ queryKey: ["messages-unread-count"] });
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
     });
 
     socket.on("messages_read", () => {

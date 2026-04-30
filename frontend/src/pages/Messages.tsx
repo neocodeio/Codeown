@@ -791,7 +791,8 @@ export default function Messages() {
       });
       return Array.isArray(res.data) ? res.data : [];
     },
-    staleTime: 30000,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   // Messages Query
@@ -817,9 +818,18 @@ export default function Messages() {
 
   useEffect(() => {
     if (qConversations && qConversations.length > 0) {
-      // Only update if the length or first item changed to avoid loops
-      if (conversations.length !== qConversations.length ||
-        (conversations[0]?.id !== qConversations[0]?.id)) {
+      // Always sync from server data — compare by serializing key fields
+      const hasChanged = conversations.length !== qConversations.length ||
+        qConversations.some((qc: Conversation, i: number) => {
+          const lc = conversations[i];
+          if (!lc) return true;
+          return qc.id !== lc.id ||
+            qc.unread_count !== lc.unread_count ||
+            qc.last_message?.id !== lc.last_message?.id ||
+            qc.last_message?.content !== lc.last_message?.content;
+        });
+
+      if (hasChanged) {
         setConversations(qConversations);
       }
 
