@@ -9,7 +9,8 @@ import {
     Rocket01Icon,
     UserGroupIcon,
     ArrowUp02Icon,
-    ArrowRight02Icon
+    ArrowRight02Icon,
+    PencilIcon
 } from "@hugeicons/core-free-icons";
 
 import UserHoverCard from "./UserHoverCard";
@@ -111,6 +112,58 @@ function RecentLaunchItem({ project }: { project: any }) {
     );
 }
 
+function LatestArticleItem({ article }: { article: any }) {
+    return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }} className="sidebar-item">
+            <Link
+                to={`/article/${article.id}`}
+                style={{ textDecoration: "none", display: "flex", flexDirection: "column", gap: "6px" }}
+            >
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <img 
+                        src={article.users?.avatar_url || "https://images.clerk.dev/static/avatar.png"} 
+                        style={{ width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover" }} 
+                        alt="" 
+                    />
+                    <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>
+                        {article.users?.name || "User"}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>· {formatRelativeDate(article.created_at)}</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                    <h4 style={{
+                        fontSize: "14px",
+                        fontWeight: 800,
+                        color: "var(--text-primary)",
+                        lineHeight: "1.3",
+                        margin: 0,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden"
+                    }}>
+                        {article.title}
+                    </h4>
+                    {article.subtitle && (
+                        <p style={{
+                            fontSize: "12px",
+                            color: "var(--text-tertiary)",
+                            margin: 0,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 1,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            lineHeight: "1.4"
+                        }}>
+                            {article.subtitle}
+                        </p>
+                    )}
+                </div>
+            </Link>
+        </div>
+    );
+}
+
 function ProjectVoteButton({ project }: { project: any }) {
     const { isLiked, likeCount, toggleLike } = useProjectLikes(project.id, project.isLiked, project.likes_count || project.like_count || 0);
 
@@ -201,6 +254,18 @@ export default function RecommendedUsersSidebar() {
         enabled: isDesktop,
         staleTime: 60 * 1000,
         refetchInterval: 60 * 1000,
+        refetchOnWindowFocus: false,
+    });
+
+    // 5. Latest Articles fetch
+    const { data: latestArticles = [], isLoading: articlesLoading } = useQuery({
+        queryKey: ["latestArticles", "sidebar"],
+        queryFn: async () => {
+            const response = await api.get("/articles?limit=5");
+            return Array.isArray(response.data) ? response.data : [];
+        },
+        enabled: isDesktop,
+        staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: false,
     });
 
@@ -548,6 +613,40 @@ export default function RecommendedUsersSidebar() {
                                     </span>
                                 </div>
                             </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Section: Latest Articles */}
+            {!articlesLoading && latestArticles.length > 0 && (
+                <div className="sidebar-section">
+                    <div className="sidebar-title-row">
+                        <h3 className="sidebar-title">
+                            <HugeiconsIcon icon={PencilIcon} size={16} />
+                            Latest Articles
+                        </h3>
+                        <Link
+                            to="/articles"
+                            style={{
+                                fontSize: "12px",
+                                color: "var(--text-tertiary)",
+                                textDecoration: "none",
+                                fontWeight: 700,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                opacity: 0.7
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                            onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                        >
+                            View all <HugeiconsIcon icon={ArrowRight02Icon} size={14} />
+                        </Link>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                        {latestArticles.map((article: any) => (
+                            <LatestArticleItem key={article.id} article={article} />
                         ))}
                     </div>
                 </div>

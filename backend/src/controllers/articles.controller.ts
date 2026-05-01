@@ -7,7 +7,7 @@ import { notify } from "../services/notification.service.js";
 
 export async function getArticles(req: Request, res: Response) {
   try {
-    const { userId } = req.query;
+    const { userId, limit } = req.query;
     let query = supabase
       .from("articles")
       .select("*")
@@ -15,6 +15,10 @@ export async function getArticles(req: Request, res: Response) {
 
     if (userId) {
       query = query.eq("user_id", userId);
+    }
+    
+    if (limit) {
+      query = query.limit(parseInt(limit as string));
     }
 
     const { data: articles, error } = await query;
