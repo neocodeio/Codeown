@@ -116,7 +116,7 @@ function LatestArticleItem({ article }: { article: any }) {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }} className="sidebar-item">
             <Link
-                to={`/article/${article.id}`}
+                to={`/articles/${article.id}`}
                 style={{ textDecoration: "none", display: "flex", flexDirection: "column", gap: "6px" }}
             >
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
