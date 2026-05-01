@@ -611,9 +611,22 @@ export async function getUnreadMessagesCount(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
+        // 1. Get all conversation IDs where user is a participant
+        const { data: myConvos, error: convErr } = await supabase
+            .from("conversation_participants")
+            .select("conversation_id")
+            .eq("user_id", userId);
+
+        if (convErr) throw convErr;
+        if (!myConvos || myConvos.length === 0) return res.json({ count: 0 });
+
+        const convoIds = myConvos.map(c => c.conversation_id);
+
+        // 2. Count unread messages in those specific conversations
         const { count, error } = await supabase
             .from("messages")
             .select("id", { count: 'exact' })
+            .in("conversation_id", convoIds)
             .neq("sender_id", userId)
             .eq("is_read", false);
 
@@ -631,9 +644,22 @@ export async function markAllMessagesAsRead(req: Request, res: Response) {
         const userId = (req as any).user?.sub || (req as any).user?.id || (req as any).user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
+        // 1. Get all conversation IDs where user is a participant
+        const { data: myConvos, error: convErr } = await supabase
+            .from("conversation_participants")
+            .select("conversation_id")
+            .eq("user_id", userId);
+
+        if (convErr) throw convErr;
+        if (!myConvos || myConvos.length === 0) return res.json({ success: true });
+
+        const convoIds = myConvos.map(c => c.conversation_id);
+
+        // 2. Update messages only in those conversations
         const { error } = await supabase
             .from("messages")
             .update({ is_read: true })
+            .in("conversation_id", convoIds)
             .neq("sender_id", userId)
             .eq("is_read", false);
 
