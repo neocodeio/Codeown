@@ -22,7 +22,7 @@ import {
   UserGroupIcon,
   Sun03Icon,
   Moon02Icon,
-  DocumentCodeIcon,
+  // DocumentCodeIcon,
   Building02Icon,
 
   Chart01Icon,
@@ -246,7 +246,7 @@ export default function Navbar() {
 
         <div onClick={() => handleSilentNavigate("/dashboard")} className="sidebar-nav-link" style={{ ...linkStyle("/dashboard"), cursor: "pointer" }}><HugeiconsIcon icon={Chart01Icon} size={20} /><span>Analytics</span></div>
         <div onClick={() => handleSilentNavigate("/startups")} className="sidebar-nav-link" style={{ ...linkStyle("/startups"), cursor: "pointer" }}><HugeiconsIcon icon={Building02Icon} size={20} /><span>Startups</span></div>
-        <div onClick={() => handleSilentNavigate("/changelog")} className="sidebar-nav-link" style={{ ...linkStyle("/changelog"), cursor: "pointer" }}><HugeiconsIcon icon={DocumentCodeIcon} size={20} /><span>Changelog</span></div>
+        {/* <div onClick={() => handleSilentNavigate("/changelog")} className="sidebar-nav-link" style={{ ...linkStyle("/changelog"), cursor: "pointer" }}><HugeiconsIcon icon={DocumentCodeIcon} size={20} /><span>Changelog</span></div> */}
 
         {isSignedIn && (
           <div style={{ marginTop: "4px" }}>
@@ -623,7 +623,7 @@ export default function Navbar() {
             <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/articles"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={PencilIcon} size={18} /> All Articles</div>
             <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/startups"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Building02Icon} size={18} /> Startups Hub</div>
             <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/dashboard"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={Chart01Icon} size={18} /> Analytics</div>
-            <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/changelog"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={DocumentCodeIcon} size={18} /> Changelog</div>
+            {/* <div className="mobile-menu-item" onClick={() => { setIsCreateMenuOpen(false); navigate("/changelog"); }} style={{ fontSize: "14px" }}><HugeiconsIcon icon={DocumentCodeIcon} size={18} /> Changelog</div> */}
           </div>
         </div>
       )}
