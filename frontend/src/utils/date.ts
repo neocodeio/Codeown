@@ -18,21 +18,28 @@ export const formatRelativeDate = (dateString: string | null | undefined) => {
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     // If less than a minute
-    if (diffInSeconds < 60) return "just now";
+    if (diffInSeconds < 60) return "now";
 
     // If less than an hour
     if (diffInSeconds < 3600) {
         const minutes = Math.max(1, Math.floor(diffInSeconds / 60));
-        return `${minutes} ${minutes === 1 ? 'min' : 'min'} ago`;
+        return `${minutes}m`;
     }
 
     // If less than 24 hours
     if (diffInSeconds < 86400) {
         const hours = Math.floor(diffInSeconds / 3600);
-        return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+        return `${hours}h`;
     }
 
-    // After 24 hours, show the date
+    const diffInDays = Math.floor(diffInSeconds / 86400);
+    
+    // If less than 7 days, show 1d...6d
+    if (diffInDays < 7) {
+        return `${Math.max(1, diffInDays)}d`;
+    }
+
+    // After 6 days, show the date
     return date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",

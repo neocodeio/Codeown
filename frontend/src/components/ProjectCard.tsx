@@ -118,6 +118,7 @@ import { toast } from "react-toastify";
 import UserHoverCard from "./UserHoverCard";
 import RollingNumber from "./RollingNumber";
 import QuickCommentModal from "./QuickCommentModal";
+import ContentRenderer from "./ContentRenderer";
 
 interface ProjectCardProps {
   project: Project;
@@ -138,6 +139,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isQuickCommentOpen, setIsQuickCommentOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPinnedLocal, setIsPinnedLocal] = useState(false);
   const { width } = useWindowSize();
@@ -326,10 +328,10 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
       style={{
         cursor: "pointer",
         padding: isMobile ? "16px 12px" : "20px 24px",
-        backgroundColor: "transparent",
+      backgroundColor: "transparent",
         display: "flex",
-        alignItems: "center",
-        gap: isMobile ? "16px" : "20px",
+        alignItems: "flex-start", // Changed from center to top for better multi-line handling
+        gap: isMobile ? "16px" : "24px",
         transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         width: "100%",
         boxSizing: "border-box",
@@ -345,157 +347,26 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         e.currentTarget.style.backgroundColor = "transparent";
       }}
     >
-      {/* Upvote Button (Top Right) */}
-      <div style={{ position: "absolute", top: isMobile ? "12px" : "20px", right: isMobile ? "12px" : "20px", zIndex: 10 }}>
-        <Tooltip text={isLiked ? "Remove upvote" : "Upvote project"}>
-          <button
-            onClick={handleLike}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              width: isMobile ? "40px" : "48px",
-              height: isMobile ? "54px" : "64px",
-              borderRadius: "14px",
-              border: isLiked ? "1.5px solid #3b82f6" : "1.5px solid var(--border-hairline)",
-              backgroundColor: isLiked ? "rgba(59, 130, 246, 0.04)" : "transparent",
-              cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-              position: "relative",
-              overflow: "hidden"
-            }}
-            onMouseEnter={(e) => { 
-              if (!isLiked) {
-                e.currentTarget.style.borderColor = "var(--text-tertiary)";
-                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-              } else {
-                e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.08)";
-              }
-              e.currentTarget.style.transform = "translateY(-1px)";
-            }}
-            onMouseLeave={(e) => { 
-              if (!isLiked) {
-                e.currentTarget.style.borderColor = "var(--border-hairline)";
-                e.currentTarget.style.backgroundColor = "transparent";
-              } else {
-                e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.04)";
-              }
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            <HugeiconsIcon 
-              icon={ArrowUpBigIcon} 
-              size={isMobile ? 18 : 20} 
-              style={{ 
-                color: isLiked ? "#3b82f6" : "var(--text-secondary)", 
-                marginBottom: "1px",
-                transition: "transform 0.2s ease" 
-              }} 
-            />
-            <RollingNumber 
-              value={likeCount} 
-              fontWeight={700} 
-              fontSize={isMobile ? "13px" : "15px"} 
-              color={isLiked ? "#3b82f6" : "var(--text-secondary)"} 
-            />
-          </button>
-        </Tooltip>
-      </div>
-
-      {/* More Options (Bottom Right) */}
-      <div 
-        style={{ position: "absolute", bottom: isMobile ? "8px" : "0px", right: isMobile ? "8px" : "4px", zIndex: 100 }} 
-        ref={menuRef}
-      >
-        <button
-          onClick={toggleMenu}
-          style={{
-            background: "none", border: "none", color: "var(--text-tertiary)",
-            cursor: "pointer", padding: "8px", borderRadius: "50%",
-            transition: "all 0.2s ease"
-          }}
-          // onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-        >
-          <HugeiconsIcon icon={MoreHorizontalIcon} size={20} />
-        </button>
-
-        {isMenuOpen && (
-          <div style={{
-            position: "absolute",
-            bottom: "100%",
-            right: 0,
-            marginBottom: "8px",
-            backgroundColor: "var(--bg-header)", 
-            border: "0.5px solid var(--border-hairline)",
-            borderRadius: "14px",
-            boxShadow: "0 10px 30px -10px rgba(0,0,0,0.15)",
-            zIndex: 2000,
-            minWidth: "180px",
-            padding: "6px",
-            animation: "dropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)"
-          }}>
-            {[
-              { icon: Bookmark02Icon, label: isSaved ? "Saved" : "Save project", onClick: handleSave, color: isSaved ? "#3b82f6" : "var(--text-primary)" },
-              { icon: Share01Icon, label: "Share", onClick: handleShare, color: "var(--text-primary)" },
-              { icon: SentIcon, label: "Send to chat", onClick: handleSendToChat, color: "var(--text-primary)" },
-              ...(isOwnProject ? [
-                { icon: PinIcon, label: isPinned ? "Unpin from profile" : "Pin to profile", onClick: handlePinProject, color: "var(--text-primary)" },
-                { icon: PencilEdit02Icon, label: "Edit project", onClick: handleEditClick, color: "var(--text-primary)" },
-                { icon: Delete02Icon, label: "Delete project", onClick: handleDeleteClick, color: "#ef4444" }
-              ] : [])
-            ].map((item, i) => (
-              <button
-                key={i}
-                onClick={(e) => { item.onClick(e); setIsMenuOpen(false); }}
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  border: "none",
-                  background: "none",
-                  cursor: "pointer",
-                  borderRadius: "10px",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  color: item.color,
-                  textAlign: "left",
-                  transition: "all 0.1s ease"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-              >
-                <HugeiconsIcon icon={item.icon} size={18} />
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* 1. Project Icon / Logo */}
-      <div style={{ flexShrink: 0 }}>
+      <div style={{ flexShrink: 0, marginTop: "4px" }}>
         <div style={{
           width: isMobile ? "54px" : "64px",
           height: isMobile ? "54px" : "64px",
-          borderRadius: "14px",
+          borderRadius: "16px",
           backgroundColor: "var(--bg-secondary)",
-          border: "1.5px solid var(--border-hairline)",
+          border: "1px solid var(--border-hairline)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           overflow: "hidden",
-          // boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
-          transition: "transform 0.2s ease"
+          transition: "all 0.2s ease",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.02)"
         }}>
           {project.cover_image ? (
             <img 
               src={getOptimizedImageUrl(project.cover_image)} 
               alt={project.title} 
-              style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+              style={{ width: "100%", height: "100%", objectFit: "contain", padding: "4px" }} 
             />
           ) : (
             <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--text-primary)", opacity: 0.8 }}>
@@ -511,8 +382,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
         minWidth: 0, 
         display: "flex", 
         flexDirection: "column", 
-        gap: "4px",
-        paddingRight: isMobile ? "48px" : "64px" // Account for absolute buttons on the right
+        gap: "6px"
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
           <h3 style={{
@@ -520,10 +390,7 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             fontWeight: 800,
             color: "var(--text-primary)",
             margin: 0,
-            letterSpacing: "-0.02em",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis"
+            letterSpacing: "-0.02em"
           }}>
             {project.title}
           </h3>
@@ -543,36 +410,57 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
           )}
         </div>
 
-        <p style={{
+        <div style={{
           fontSize: isMobile ? "13.5px" : "14.5px",
           color: "var(--text-tertiary)",
           margin: 0,
           fontWeight: 400,
-          lineHeight: "1.4",
-          display: "-webkit-box",
-          WebkitLineClamp: 1,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          opacity: 0.9
+          lineHeight: "1.5",
+          opacity: 0.9,
+          position: "relative"
         }}>
-          {project.description}
-        </p>
+          <ContentRenderer 
+            content={!isExpanded && (project.description?.length || 0) > 180
+              ? project.description.substring(0, 180) + "..."
+              : project.description
+            }
+            fontSize={isMobile ? "13.5px" : "14.5px"}
+          />
+          {(project.description?.length || 0) > 180 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--text-primary)",
+                fontSize: "12px",
+                fontWeight: 700,
+                cursor: "pointer",
+                padding: "4px 0",
+                marginTop: "4px",
+                opacity: 0.8,
+                transition: "opacity 0.2s ease"
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = "1"}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = "0.8"}
+            >
+              {isExpanded ? "Show less" : "Read more"}
+            </button>
+          )}
+        </div>
 
         {/* Metadata Row */}
         <div style={{ 
           display: "flex", 
           alignItems: "center", 
           gap: "12px", 
-          marginTop: "4px",
+          marginTop: "6px",
           flexWrap: "wrap"
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <HugeiconsIcon icon={StarIcon} size={14} style={{ color: "#eab308" }} />
             <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-secondary)" }}>
               {(project.rating || 0).toFixed(1)}
-            </span>
-            <span style={{ fontSize: "12px", color: "var(--text-tertiary)", opacity: 0.6 }}>
-              ({project.rating_count || 0})
             </span>
           </div>
 
@@ -584,17 +472,18 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)" }}>{localCommentCount}</span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            {project.technologies_used?.slice(0, 2).map((tech, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                <TechIcon name={tech} size={12} />
-                <span style={{ fontSize: "12px", fontWeight: 500, color: "var(--text-tertiary)" }}>{tech}</span>
-              </div>
-            ))}
-          </div>
+          {!isMobile && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              {project.technologies_used?.slice(0, 2).map((tech, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <TechIcon name={tech} size={12} />
+                  <span style={{ fontSize: "12px", fontWeight: 500, color: "var(--text-tertiary)" }}>{tech}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <span style={{ fontSize: "12px", color: "var(--text-tertiary)", opacity: 0.5 }}>by</span>
             <UserHoverCard userId={project.user_id} user={project.user as any}>
               <span 
                 onClick={handleUserClick}
@@ -606,14 +495,148 @@ const ProjectCard = memo(({ project, onUpdated, isPinned: isPinnedProp }: Projec
             <VerifiedBadge username={project.user?.username} isPro={project.user?.is_pro} size="10px" />
           </div>
 
-          <div style={{ fontSize: "12px", color: "var(--text-tertiary)", opacity: 0.5 }}>
+          <div style={{ fontSize: "11px", color: "var(--text-tertiary)", opacity: 0.5 }}>
             {formatRelativeDate(project.created_at)}
           </div>
         </div>
       </div>
 
-      {/* 3. Empty spacer for absolute positioning (ensures min-height) */}
-      <div style={{ width: isMobile ? "40px" : "48px", flexShrink: 0 }} />
+      {/* 3. Actions Column (Right) */}
+      <div style={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        alignItems: "center", 
+        gap: "8px", 
+        flexShrink: 0 
+      }}>
+        {/* Upvote Button */}
+        <Tooltip text={isLiked ? "Remove upvote" : "Upvote project"}>
+          <button
+            onClick={handleLike}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: isMobile ? "44px" : "48px",
+              height: isMobile ? "58px" : "64px",
+              borderRadius: "14px",
+              border: isLiked ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid var(--border-hairline)",
+              backgroundColor: isLiked ? "rgba(59, 130, 246, 0.08)" : "var(--bg-secondary)",
+              cursor: "pointer",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              position: "relative"
+            }}
+            onMouseEnter={(e) => { 
+              if (!isLiked) {
+                e.currentTarget.style.borderColor = "var(--text-tertiary)";
+                e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              } else {
+                e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.12)";
+              }
+            }}
+            onMouseLeave={(e) => { 
+              if (!isLiked) {
+                e.currentTarget.style.borderColor = "var(--border-hairline)";
+                e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
+                e.currentTarget.style.transform = "translateY(0)";
+              } else {
+                e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.08)";
+              }
+            }}
+          >
+            <HugeiconsIcon 
+              icon={ArrowUpBigIcon} 
+              size={isMobile ? 18 : 20} 
+              style={{ 
+                color: isLiked ? "#3b82f6" : "var(--text-secondary)", 
+                marginBottom: "1px"
+              }} 
+            />
+            <RollingNumber 
+              value={likeCount} 
+              fontWeight={800} 
+              fontSize={isMobile ? "13px" : "15px"} 
+              color={isLiked ? "#3b82f6" : "var(--text-primary)"} 
+            />
+          </button>
+        </Tooltip>
+
+        {/* More Options */}
+        <div style={{ position: "relative" }} ref={menuRef}>
+          <button
+            onClick={toggleMenu}
+            style={{
+              background: "none", 
+              border: "none", 
+              color: "var(--text-tertiary)",
+              cursor: "pointer", 
+              padding: "8px", 
+              borderRadius: "50%",
+              transition: "all 0.2s ease"
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+          >
+            <HugeiconsIcon icon={MoreHorizontalIcon} size={20} />
+          </button>
+
+          {isMenuOpen && (
+            <div style={{
+              position: "absolute",
+              bottom: "100%",
+              right: 0,
+              marginBottom: "8px",
+              backgroundColor: "var(--bg-header)", 
+              border: "0.5px solid var(--border-hairline)",
+              borderRadius: "14px",
+              boxShadow: "0 10px 30px -10px rgba(0,0,0,0.15)",
+              zIndex: 2000,
+              minWidth: "180px",
+              padding: "6px",
+              animation: "dropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1)"
+            }}>
+              {[
+                { icon: Bookmark02Icon, label: isSaved ? "Saved" : "Save project", onClick: handleSave, color: isSaved ? "#3b82f6" : "var(--text-primary)" },
+                { icon: Share01Icon, label: "Share", onClick: handleShare, color: "var(--text-primary)" },
+                { icon: SentIcon, label: "Send to chat", onClick: handleSendToChat, color: "var(--text-primary)" },
+                ...(isOwnProject ? [
+                  { icon: PinIcon, label: isPinned ? "Unpin from profile" : "Pin to profile", onClick: handlePinProject, color: "var(--text-primary)" },
+                  { icon: PencilEdit02Icon, label: "Edit project", onClick: handleEditClick, color: "var(--text-primary)" },
+                  { icon: Delete02Icon, label: "Delete project", onClick: handleDeleteClick, color: "#ef4444" }
+                ] : [])
+              ].map((item, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => { item.onClick(e); setIsMenuOpen(false); }}
+                  style={{
+                    width: "100%",
+                    padding: "10px 14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    border: "none",
+                    background: "none",
+                    cursor: "pointer",
+                    borderRadius: "10px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    color: item.color,
+                    textAlign: "left",
+                    transition: "all 0.1s ease"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <HugeiconsIcon icon={item.icon} size={18} />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {showEditModal && (
         <ProjectModal

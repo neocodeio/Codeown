@@ -179,26 +179,50 @@ function ProjectVoteButton({ project }: { project: any }) {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                width: "56px",
-                height: "76px",
-                borderRadius: "22px",
-                border: isLiked ? "none" : "1.5px solid #edf2f7",
-                backgroundColor: isLiked ? "rgba(59, 130, 246, 0.1)" : "#ffffff",
+                width: "44px",
+                height: "60px",
+                borderRadius: "14px",
+                border: isLiked ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid var(--border-hairline)",
+                backgroundColor: isLiked ? "rgba(59, 130, 246, 0.08)" : "var(--bg-secondary)",
                 cursor: "pointer",
                 transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 flexShrink: 0,
                 position: "relative",
-                zIndex: 10, // Ensure it's above the parent link
-                boxShadow: isLiked ? "none" : "0 4px 12px rgba(0,0,0,0.03)"
+                zIndex: 10,
+                boxShadow: isLiked ? "none" : "0 2px 8px rgba(0,0,0,0.02)"
             }}
-            onMouseEnter={(e) => { if (!isLiked) { e.currentTarget.style.borderColor = "#cbd5e1"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
-            onMouseLeave={(e) => { if (!isLiked) { e.currentTarget.style.borderColor = "#edf2f7"; e.currentTarget.style.transform = "translateY(0)"; } }}
+            onMouseEnter={(e) => { 
+                if (!isLiked) { 
+                    e.currentTarget.style.borderColor = "var(--text-tertiary)"; 
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                    e.currentTarget.style.transform = "translateY(-1px)"; 
+                } else {
+                    e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.12)";
+                }
+            }}
+            onMouseLeave={(e) => { 
+                if (!isLiked) { 
+                    e.currentTarget.style.borderColor = "var(--border-hairline)"; 
+                    e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
+                    e.currentTarget.style.transform = "translateY(0)"; 
+                } else {
+                    e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.08)";
+                }
+            }}
         >
-            <HugeiconsIcon icon={ArrowUp02Icon} size={20} style={{ color: isLiked ? "#1a1a1a" : "#1a1a1a", marginBottom: "4px" }} />
+            <HugeiconsIcon 
+                icon={ArrowUp02Icon} 
+                size={18} 
+                style={{ 
+                    color: isLiked ? "#3b82f6" : "var(--text-secondary)", 
+                    marginBottom: "2px",
+                    transition: "transform 0.2s ease"
+                }} 
+            />
             <span style={{
-                fontSize: "16px",
+                fontSize: "14px",
                 fontWeight: 800,
-                color: isLiked ? "#1a1a1a" : "#1a1a1a"
+                color: isLiked ? "#3b82f6" : "var(--text-primary)"
             }}>
                 {likeCount}
             </span>
@@ -449,29 +473,29 @@ export default function RecommendedUsersSidebar() {
                     <div 
                         onClick={() => navigate(`/project/${projects[0].id}`)}
                         style={{
-                            backgroundColor: "#ffffff",
-                            borderRadius: "25px",
-                            border: "1.5px solid #edf2f7",
-                            padding: "10px",
+                            backgroundColor: "var(--bg-secondary)",
+                            borderRadius: "18px",
+                            border: "1px solid var(--border-hairline)",
+                            padding: "12px",
                             display: "flex",
                             alignItems: "center",
-                            gap: "15px",
-                            background: "linear-gradient(135deg, #ffffff 0%, #fffef0 100%)",
+                            gap: "14px",
+                            background: "var(--bg-header)",
                             position: "relative",
                             overflow: "hidden",
                             cursor: "pointer",
-                            transition: "all 0.2s ease",
-                            // boxShadow: "0 8px 24px rgba(0,0,0,0.04)"
+                            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                            boxShadow: "0 4px 15px rgba(0,0,0,0.02)"
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.transform = "translateY(-2px)";
-                            e.currentTarget.style.borderColor = "#cbd5e1";
-                            e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.06)";
+                            e.currentTarget.style.borderColor = "var(--text-tertiary)";
+                            e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.05)";
                         }}
                         onMouseLeave={(e) => {
                             e.currentTarget.style.transform = "translateY(0)";
-                            e.currentTarget.style.borderColor = "#edf2f7";
-                            e.currentTarget.style.boxShadow = "none";
+                            e.currentTarget.style.borderColor = "var(--border-hairline)";
+                            e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.02)";
                         }}
                     >
                         {/* The onClick on the parent handles most cases, but we keep the Link helper for SEO/Middle-click */}
@@ -480,36 +504,38 @@ export default function RecommendedUsersSidebar() {
                             onClick={(e) => e.stopPropagation()}
                             style={{ position: "absolute", inset: 0, zIndex: 1 }} 
                         />
-
-                        <div style={{
-                            width: "52px",
-                            height: "52px",
-                            borderRadius: "24px",
-                            backgroundColor: "var(--bg-page)",
+<div style={{
+                            width: "56px",
+                            height: "56px",
+                            borderRadius: "14px",
+                            backgroundColor: "#ffffff",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             flexShrink: 0,
                             overflow: "hidden",
-                            background: "linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%)",
-                            border: "1px solid rgba(0,0,0,0.05)",
+                            border: "1px solid var(--border-hairline)",
                             position: "relative",
                             zIndex: 2,
                             boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)"
                         }}>
                             {projects[0].cover_image ? (
-                                <img src={projects[0].cover_image} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" />
+                                <img 
+                                    src={projects[0].cover_image} 
+                                    style={{ width: "100%", height: "100%", objectFit: "contain", padding: "4px" }} 
+                                    alt="" 
+                                />
                             ) : (
-                                <span style={{ fontSize: "24px", fontWeight: 800, color: "#0369a1" }}>{getInitials(projects[0].title)}</span>
+                                <span style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{getInitials(projects[0].title)}</span>
                             )}
                         </div>
 
                         <div style={{ flex: 1, minWidth: 0, position: "relative", zIndex: 2 }}>
                             <h4 style={{
-                                fontSize: "19px",
+                                fontSize: "16px",
                                 fontWeight: 800,
-                                color: "#1a1a1a",
-                                marginBottom: "4px",
+                                color: "var(--text-primary)",
+                                marginBottom: "2px",
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
@@ -518,14 +544,15 @@ export default function RecommendedUsersSidebar() {
                                 {projects[0].title}
                             </h4>
                             <p style={{
-                                fontSize: "11px",
-                                color: "#4b5563",
+                                fontSize: "12px",
+                                color: "var(--text-tertiary)",
                                 lineHeight: "1.4",
-                                fontWeight: 500,
+                                fontWeight: 400,
                                 display: "-webkit-box",
                                 WebkitLineClamp: 2,
                                 WebkitBoxOrient: "vertical",
-                                overflow: "hidden"
+                                overflow: "hidden",
+                                opacity: 0.8
                             }}>
                                 {projects[0].description || "Explore this amazing project built on Codeown."}
                             </p>
