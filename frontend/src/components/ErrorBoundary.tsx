@@ -98,21 +98,6 @@ export class ErrorBoundary extends Component<Props, State> {
               >
                 Refresh app
               </button>
-              <button
-                onClick={() => window.location.href = "/"}
-                style={{
-                  padding: "12px 24px",
-                  backgroundColor: "transparent",
-                  border: "0.5px solid var(--border-hairline)",
-                  color: "var(--text-primary)",
-                  borderRadius: "var(--radius-sm)",
-                  cursor: "pointer",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                }}
-              >
-                Home
-              </button>
             </div>
           </div>
         </div>

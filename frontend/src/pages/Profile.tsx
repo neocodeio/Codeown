@@ -57,7 +57,8 @@ import {
   WorkIcon,
   PencilIcon,
   InstagramIcon,
-  Settings01Icon
+  Settings01Icon,
+  MoreIcon
 } from "@hugeicons/core-free-icons";
 import { socket } from "../lib/socket";
 import { toast, ToastContainer } from "react-toastify";
@@ -132,8 +133,8 @@ export default function Profile() {
   const userId = user?.id || null;
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "articles" | "analytics" | "startups" | "saved" | "applications">("posts");
-  const [savedSubTab, setSavedSubTab] = useState<"posts" | "projects">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "projects" | "articles" | "analytics" | "startups" | "workspace">("posts");
+  const [workspaceSubTab, setWorkspaceSubTab] = useState<"saved_posts" | "saved_projects" | "applications">("saved_posts");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
@@ -144,6 +145,7 @@ export default function Profile() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isNotificationSettingsOpen, setIsNotificationSettingsOpen] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const isOwnProfile = true; // Profile.tsx is strictly for the current user's profile view
 
 
 
@@ -183,8 +185,8 @@ export default function Profile() {
 
   const { posts, fetchUserPosts, loading: postsLoading } = useUserPosts(userId, true);
   const { projects, fetchUserProjects, loading: projectsLoading } = useUserProjects(userId, true);
-  const { savedPosts, fetchSavedPosts, loading: savedPostsLoading } = useSavedPosts(activeTab === "saved");
-  const { projects: savedProjects, fetchUserSavedProjects, loading: savedProjectsLoading } = useUserSavedProjects(userId, activeTab === "saved");
+  const { savedPosts, fetchSavedPosts, loading: savedPostsLoading } = useSavedPosts(activeTab === "workspace");
+  const { projects: savedProjects, fetchUserSavedProjects, loading: savedProjectsLoading } = useUserSavedProjects(userId, activeTab === "workspace");
   const { articles, fetchUserArticles, loading: articlesLoading } = useUserArticles(userId, activeTab === "articles");
 
   // 2. Fetch applications on demand
@@ -197,7 +199,7 @@ export default function Profile() {
       });
       return Array.isArray(res.data) ? res.data : [];
     },
-    enabled: !!userId && activeTab === "applications",
+    enabled: !!userId && activeTab === "workspace" && workspaceSubTab === "applications",
     staleTime: 1 * 60 * 1000,
   });
 
@@ -519,9 +521,13 @@ export default function Profile() {
                         { id: "articles", icon: PencilIcon, label: "Articles" },
                         { id: "analytics", icon: Chart01Icon, label: "Analytics" },
                         { id: "startups", icon: Building02Icon, label: "Startups" },
-                        { id: "applications", icon: WorkIcon, label: "Applications" },
-                        { id: "saved", icon: Bookmark02Icon, label: "Saved" }
-                      ].map((tab) => (
+                        { id: "workspace", icon: MoreIcon, label: "Workspace" }
+                      ].filter(tab => {
+                        if (tab.id === "workspace" || tab.id === "analytics") {
+                          return isOwnProfile;
+                        }
+                        return true;
+                      }).map((tab) => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "16px 0", backgroundColor: "transparent", border: "none", color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-tertiary)", fontSize: "13px", fontWeight: activeTab === tab.id ? 700 : 500, cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0 }} >
                           <HugeiconsIcon icon={tab.icon} size={18} />
                           {tab.label}
@@ -721,53 +727,85 @@ export default function Profile() {
                     </div>
                   )}
 
-                  {activeTab === "applications" && (
+                  {activeTab === "workspace" && (
                     <div className="tab-content-enter">
-                      {loadingApps ? <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}> {[...Array(3)].map((_, i) => (<div key={i} className="skeleton-pulse" style={{ height: "140px", width: "100%", borderRadius: "var(--radius-sm)" }} />))} </div> : applications.length === 0 ? (
-                        <div style={{ padding: "60px 24px", textAlign: "center", backgroundColor: "rgba(255,255,255,0.02)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)" }}>
-                          <HugeiconsIcon icon={WorkIcon} size={32} style={{ color: "var(--text-tertiary)", marginBottom: "16px" }} />
-                          <p style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px" }}>No applications</p>
-                          <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginTop: "8px" }}>You haven't applied to join any projects as a co-founder yet.</p>
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                          {applications.map(app => (
-                            <div key={app.id} className="app-card" onClick={() => navigate(`/project/${app.project_id}`)} style={{ padding: "24px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-page)", cursor: "pointer", transition: "all 0.15s ease", display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", gap: "24px" }} >
-                              <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
-                                <div style={{ width: "48px", height: "48px", flexShrink: 0, borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}> <img src={app.project.cover_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.title)}&background=212121&color=ffffff&bold=true`} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> </div>
-                                <div>
-                                  <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>{app.project.title}</h3>
-                                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}> <img src={app.project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.user?.name || "U")}&background=212121&color=ffffff&bold=true`} style={{ width: "16px", height: "16px", borderRadius: "var(--radius-sm)" }} /> <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>@{app.project.user?.username}</span> </div>
-                                </div>
-                              </div>
-                              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}> <div style={{ padding: "4px 10px", backgroundColor: "rgba(34, 197, 94, 0.1)", color: "#22c55e", border: "0.5px solid rgba(34, 197, 94, 0.2)", fontSize: "11px", fontWeight: 600, borderRadius: "var(--radius-sm)", }}> Applied </div> <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}> {new Date(app.created_at).toLocaleDateString()} </span> </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeTab === "saved" && (
-                    <div className="tab-content-enter">
-                      <div style={{ display: "flex", gap: "8px", marginBottom: "32px", marginTop: "12px" }}>
-                        <button onClick={() => setSavedSubTab("posts")} style={{ padding: "6px 14px", fontSize: "11px", fontWeight: 600, borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", backgroundColor: savedSubTab === "posts" ? "var(--text-primary)" : "transparent", color: savedSubTab === "posts" ? "var(--bg-page)" : "var(--text-tertiary)", cursor: "pointer", transition: "all 0.2s", }} > Posts </button>
-                        <button onClick={() => setSavedSubTab("projects")} style={{ padding: "6px 14px", fontSize: "11px", fontWeight: 600, borderRadius: "var(--radius-sm)", border: "0.5px solid var(--border-hairline)", backgroundColor: savedSubTab === "projects" ? "var(--text-primary)" : "transparent", color: savedSubTab === "projects" ? "var(--bg-page)" : "var(--text-tertiary)", cursor: "pointer", transition: "all 0.2s", }} > Projects </button>
+                      <div style={{ 
+                        display: "flex", 
+                        gap: "12px", 
+                        marginBottom: "32px", 
+                        marginTop: "12px",
+                        overflowX: "auto",
+                        padding: "4px 0"
+                      }} className="no-scrollbar">
+                        {[
+                          { id: "saved_posts", label: "Saved Posts" },
+                          { id: "saved_projects", label: "Saved Projects" },
+                          { id: "applications", label: "My Applications" }
+                        ].map(sub => (
+                          <button
+                            key={sub.id}
+                            onClick={() => setWorkspaceSubTab(sub.id as any)}
+                            style={{
+                              padding: "8px 16px",
+                              fontSize: "12px",
+                              fontWeight: 700,
+                              borderRadius: "100px",
+                              border: "0.5px solid var(--border-hairline)",
+                              backgroundColor: workspaceSubTab === sub.id ? "var(--text-primary)" : "transparent",
+                              color: workspaceSubTab === sub.id ? "var(--bg-page)" : "var(--text-tertiary)",
+                              cursor: "pointer",
+                              transition: "all 0.2s",
+                              whiteSpace: "nowrap"
+                            }}
+                          >
+                            {sub.label}
+                          </button>
+                        ))}
                       </div>
-                      {savedSubTab === "posts" ? (
+
+                      {workspaceSubTab === "saved_posts" && (
                         savedPostsLoading ? <div className="skeleton-pulse" style={{ height: "200px" }} /> : savedPosts.length === 0 ? (
                           <div style={{ textAlign: "center", padding: "80px 20px" }}>
                             <HugeiconsIcon icon={Bookmark02Icon} size={48} style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
                             <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No saved posts.</p>
                           </div>
                         ) : (savedPosts.map((p) => <PostCard key={p.id} post={p} onUpdated={fetchSavedPosts} />))
-                      ) : (
+                      )}
+
+                      {workspaceSubTab === "saved_projects" && (
                         savedProjectsLoading ? <div className="skeleton-pulse" style={{ height: "200px" }} /> : savedProjects.length === 0 ? (
                           <div style={{ textAlign: "center", padding: "80px 20px" }}>
                             <HugeiconsIcon icon={Bookmark02Icon} size={48} style={{ opacity: 0.1, marginBottom: "20px", display: "block", margin: "0 auto" }} />
                             <p style={{ color: "var(--text-tertiary)", fontWeight: 500, fontSize: "14px" }}>No saved projects.</p>
                           </div>
                         ) : (savedProjects.map((p) => <ProjectCard key={p.id} project={p} onUpdated={fetchUserSavedProjects} />))
+                      )}
+
+                      {workspaceSubTab === "applications" && (
+                        <div className="tab-content-enter">
+                          {loadingApps ? <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}> {[...Array(3)].map((_, i) => (<div key={i} className="skeleton-pulse" style={{ height: "140px", width: "100%", borderRadius: "var(--radius-sm)" }} />))} </div> : applications.length === 0 ? (
+                            <div style={{ padding: "60px 24px", textAlign: "center", backgroundColor: "rgba(var(--text-primary-rgb), 0.02)", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)" }}>
+                              <HugeiconsIcon icon={WorkIcon} size={32} style={{ color: "var(--text-tertiary)", marginBottom: "16px" }} />
+                              <p style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "14px" }}>No applications</p>
+                              <p style={{ color: "var(--text-tertiary)", fontSize: "14px", marginTop: "8px" }}>You haven't applied to join any projects as a co-founder yet.</p>
+                            </div>
+                          ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                              {applications.map(app => (
+                                <div key={app.id} className="app-card" onClick={() => navigate(`/project/${app.project_id}`)} style={{ padding: "24px", border: "0.5px solid var(--border-hairline)", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-page)", cursor: "pointer", transition: "all 0.15s ease", display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", gap: "24px" }} >
+                                  <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
+                                    <div style={{ width: "48px", height: "48px", flexShrink: 0, borderRadius: "var(--radius-sm)", overflow: "hidden", border: "0.5px solid var(--border-hairline)" }}> <img src={app.project.cover_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.title)}&background=212121&color=ffffff&bold=true`} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> </div>
+                                    <div>
+                                      <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>{app.project.title}</h3>
+                                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}> <img src={app.project.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.project.user?.name || "U")}&background=212121&color=ffffff&bold=true`} style={{ width: "16px", height: "16px", borderRadius: "var(--radius-sm)" }} /> <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>@{app.project.user?.username}</span> </div>
+                                    </div>
+                                  </div>
+                                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}> <div style={{ padding: "4px 10px", backgroundColor: "rgba(34, 197, 94, 0.1)", color: "#22c55e", border: "0.5px solid rgba(34, 197, 94, 0.2)", fontSize: "11px", fontWeight: 600, borderRadius: "var(--radius-sm)", }}> Applied </div> <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}> {new Date(app.created_at).toLocaleDateString()} </span> </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
